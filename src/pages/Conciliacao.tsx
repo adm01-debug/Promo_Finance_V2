@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Upload,
@@ -59,7 +59,14 @@ import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { mockContasBancarias } from '@/data/mockData';
 import { ImportarExtratoDialog } from '@/components/conciliacao/ImportarExtratoDialog';
+import { SugestoesMatch } from '@/components/conciliacao/SugestoesMatch';
 import { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
+import { 
+  LancamentoSistema, 
+  converterContasPagarParaLancamentos, 
+  converterContasReceberParaLancamentos 
+} from '@/lib/transaction-matcher';
+import { useContasPagar, useContasReceber } from '@/hooks/useFinancialData';
 import { toast } from 'sonner';
 
 const containerVariants = {
@@ -128,6 +135,22 @@ export default function Conciliacao() {
   const [transacoes, setTransacoes] = useState(mockTransacoesExtrato);
   const [sugestoes] = useState(mockSugestoes);
   const [extratoImportado, setExtratoImportado] = useState<ExtratoOFX | null>(null);
+  const [transacoesImportadas, setTransacoesImportadas] = useState<TransacaoOFX[]>([]);
+
+  // Fetch real data for matching
+  const { data: contasPagar } = useContasPagar();
+  const { data: contasReceber } = useContasReceber();
+
+  // Convert to LancamentoSistema format for matching
+  const lancamentosSistema = useMemo((): LancamentoSistema[] => {
+    const lancamentosPagar = contasPagar 
+      ? converterContasPagarParaLancamentos(contasPagar as any) 
+      : [];
+    const lancamentosReceber = contasReceber 
+      ? converterContasReceberParaLancamentos(contasReceber as any) 
+      : [];
+    return [...lancamentosPagar, ...lancamentosReceber];
+  }, [contasPagar, contasReceber]);
 
   // Handle import from OFX/OFC/CSV
   const handleImportSuccess = useCallback((extrato: ExtratoOFX) => {
@@ -142,10 +165,37 @@ export default function Conciliacao() {
     }));
 
     setTransacoes(prev => [...novasTransacoes, ...prev]);
+    setTransacoesImportadas(prev => [...extrato.transacoes, ...prev]);
     setExtratoImportado(extrato);
     
     toast.success(`${extrato.transacoes.length} transações importadas`, {
       description: `Arquivo: ${extrato.nomeArquivo}`,
+    });
+  }, []);
+
+  // Handle match confirmation from AI suggestions
+  const handleConfirmarMatch = useCallback((transacaoId: string, lancamentoId: string, tipo: 'pagar' | 'receber') => {
+    setTransacoes(prev => prev.map(t => 
+      t.id === transacaoId ? { ...t, conciliada: true } : t
+    ));
+    setTransacoesImportadas(prev => prev.filter(t => t.id !== transacaoId));
+    
+    toast.success('Transação conciliada', {
+      description: `Vinculada ao lançamento de ${tipo === 'pagar' ? 'contas a pagar' : 'contas a receber'}`,
+    });
+  }, []);
+
+  const handleRejeitarMatch = useCallback((transacaoId: string, lancamentoId: string) => {
+    // Just removes from suggestions, keeps transaction pending
+    toast.info('Sugestão rejeitada', {
+      description: 'A transação permanece pendente para conciliação manual',
+    });
+  }, []);
+
+  const handleConciliarManual = useCallback((transacaoId: string) => {
+    // Open manual reconciliation dialog
+    toast.info('Conciliação manual', {
+      description: 'Selecione um lançamento do sistema para vincular',
     });
   }, []);
 
@@ -326,6 +376,19 @@ export default function Conciliacao() {
             </CardContent>
           </Card>
         </motion.div>
+
+        {/* AI Match Suggestions */}
+        {transacoesImportadas.length > 0 && lancamentosSistema.length > 0 && (
+          <motion.div variants={itemVariants}>
+            <SugestoesMatch
+              transacoes={transacoesImportadas}
+              lancamentos={lancamentosSistema}
+              onConfirmarMatch={handleConfirmarMatch}
+              onRejeitarMatch={handleRejeitarMatch}
+              onConciliarManual={handleConciliarManual}
+            />
+          </motion.div>
+        )}
 
         {/* Transactions List */}
         <motion.div variants={itemVariants} className="space-y-3">
