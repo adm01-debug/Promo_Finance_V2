@@ -25,6 +25,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
+import { maskCnpjCpf, maskPhone } from '@/lib/masks';
 
 const clienteSchema = z.object({
   razao_social: z.string().min(2, 'Razão social é obrigatória').max(200, 'Nome muito longo'),
@@ -277,7 +278,13 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
                     <FormControl>
                       <div className="relative">
                         <FileText className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input {...field} placeholder="00.000.000/0000-00" className="pl-10" />
+                        <Input 
+                          {...field} 
+                          placeholder="00.000.000/0000-00" 
+                          className="pl-10"
+                          onChange={(e) => field.onChange(maskCnpjCpf(e.target.value))}
+                          maxLength={18}
+                        />
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -331,7 +338,13 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
                     <FormControl>
                       <div className="relative">
                         <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input {...field} placeholder="(00) 00000-0000" className="pl-10" />
+                        <Input 
+                          {...field} 
+                          placeholder="(00) 00000-0000" 
+                          className="pl-10"
+                          onChange={(e) => field.onChange(maskPhone(e.target.value))}
+                          maxLength={15}
+                        />
                       </div>
                     </FormControl>
                     <FormMessage />
