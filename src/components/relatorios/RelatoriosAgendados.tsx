@@ -16,6 +16,8 @@ import {
   BarChart3,
   Eye,
   Loader2,
+  Filter,
+  X,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -102,6 +104,51 @@ export function RelatoriosAgendados() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedHistorico, setSelectedHistorico] = useState<HistoricoRelatorio | null>(null);
   const [executingId, setExecutingId] = useState<string | null>(null);
+
+  // Filtros do histórico
+  const [filtroTipo, setFiltroTipo] = useState<string>('todos');
+  const [filtroStatus, setFiltroStatus] = useState<string>('todos');
+  const [filtroDataInicio, setFiltroDataInicio] = useState<string>('');
+  const [filtroDataFim, setFiltroDataFim] = useState<string>('');
+
+  // Filtrar histórico
+  const historicoFiltrado = historico.filter((item) => {
+    const relatorio = relatorios.find(r => r.id === item.relatorio_agendado_id);
+    
+    // Filtro por tipo
+    if (filtroTipo !== 'todos' && relatorio?.tipo_relatorio !== filtroTipo) {
+      return false;
+    }
+    
+    // Filtro por status
+    if (filtroStatus !== 'todos' && item.status !== filtroStatus) {
+      return false;
+    }
+    
+    // Filtro por data
+    const itemDate = new Date(item.executado_em);
+    if (filtroDataInicio) {
+      const dataInicio = new Date(filtroDataInicio);
+      dataInicio.setHours(0, 0, 0, 0);
+      if (itemDate < dataInicio) return false;
+    }
+    if (filtroDataFim) {
+      const dataFim = new Date(filtroDataFim);
+      dataFim.setHours(23, 59, 59, 999);
+      if (itemDate > dataFim) return false;
+    }
+    
+    return true;
+  });
+
+  const limparFiltros = () => {
+    setFiltroTipo('todos');
+    setFiltroStatus('todos');
+    setFiltroDataInicio('');
+    setFiltroDataFim('');
+  };
+
+  const temFiltrosAtivos = filtroTipo !== 'todos' || filtroStatus !== 'todos' || filtroDataInicio || filtroDataFim;
   
   const [formData, setFormData] = useState<CreateRelatorioInput>({
     nome: '',
@@ -349,54 +396,129 @@ export function RelatoriosAgendados() {
           ) : (
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Histórico de Execuções</CardTitle>
-                <CardDescription>Últimos 50 relatórios gerados</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg">Histórico de Execuções</CardTitle>
+                    <CardDescription>
+                      {historicoFiltrado.length} de {historico.length} registros
+                    </CardDescription>
+                  </div>
+                  {temFiltrosAtivos && (
+                    <Button variant="ghost" size="sm" onClick={limparFiltros} className="gap-1.5">
+                      <X className="h-4 w-4" />
+                      Limpar filtros
+                    </Button>
+                  )}
+                </div>
+                
+                {/* Filtros */}
+                <div className="flex flex-wrap gap-3 pt-4">
+                  <div className="flex items-center gap-2">
+                    <Filter className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <Select value={filtroTipo} onValueChange={setFiltroTipo}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Tipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="todos">Todos os tipos</SelectItem>
+                      {tiposRelatorio.map((tipo) => (
+                        <SelectItem key={tipo.value} value={tipo.value}>
+                          {tipo.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  
+                  <Select value={filtroStatus} onValueChange={setFiltroStatus}>
+                    <SelectTrigger className="w-[150px]">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="todos">Todos status</SelectItem>
+                      <SelectItem value="gerado">Gerado</SelectItem>
+                      <SelectItem value="enviado">Enviado</SelectItem>
+                      <SelectItem value="erro">Erro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="date"
+                      placeholder="Data início"
+                      value={filtroDataInicio}
+                      onChange={(e) => setFiltroDataInicio(e.target.value)}
+                      className="w-[150px]"
+                    />
+                    <span className="text-muted-foreground text-sm">até</span>
+                    <Input
+                      type="date"
+                      placeholder="Data fim"
+                      value={filtroDataFim}
+                      onChange={(e) => setFiltroDataFim(e.target.value)}
+                      className="w-[150px]"
+                    />
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Data/Hora</TableHead>
-                      <TableHead>Relatório</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Mensagem</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {historico.map((item) => {
-                      const relatorio = relatorios.find(r => r.id === item.relatorio_agendado_id);
-                      const hasData = item.dados_relatorio && Object.keys(item.dados_relatorio).length > 0;
-                      return (
-                        <TableRow key={item.id}>
-                          <TableCell className="text-sm">
-                            {format(new Date(item.executado_em), "dd/MM/yyyy HH:mm", { locale: ptBR })}
-                          </TableCell>
-                          <TableCell className="font-medium">
-                            {relatorio?.nome || 'Relatório removido'}
-                          </TableCell>
-                          <TableCell>{getStatusBadge(item.status)}</TableCell>
-                          <TableCell className="text-sm text-muted-foreground">
-                            {item.erro_mensagem || '-'}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {hasData && item.status === 'gerado' && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleViewReport(item)}
-                                className="gap-2"
-                              >
-                                <Eye className="h-4 w-4" />
-                                Visualizar
-                              </Button>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
+                {historicoFiltrado.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                    <AlertCircle className="h-8 w-8 mb-2" />
+                    <p>Nenhum registro encontrado com os filtros aplicados</p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Data/Hora</TableHead>
+                        <TableHead>Relatório</TableHead>
+                        <TableHead>Tipo</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Mensagem</TableHead>
+                        <TableHead className="text-right">Ações</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {historicoFiltrado.map((item) => {
+                        const relatorio = relatorios.find(r => r.id === item.relatorio_agendado_id);
+                        const hasData = item.dados_relatorio && Object.keys(item.dados_relatorio).length > 0;
+                        return (
+                          <TableRow key={item.id}>
+                            <TableCell className="text-sm">
+                              {format(new Date(item.executado_em), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                            </TableCell>
+                            <TableCell className="font-medium">
+                              {relatorio?.nome || 'Relatório removido'}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className="text-xs">
+                                {getTipoLabel(relatorio?.tipo_relatorio || '')}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>{getStatusBadge(item.status)}</TableCell>
+                            <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">
+                              {item.erro_mensagem || '-'}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {hasData && item.status === 'gerado' && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleViewReport(item)}
+                                  className="gap-2"
+                                >
+                                  <Eye className="h-4 w-4" />
+                                  Visualizar
+                                </Button>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                )}
               </CardContent>
             </Card>
           )}
