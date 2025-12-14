@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Building2, Calendar, DollarSign, FileText, Tag, CreditCard, Banknote, QrCode, Wallet, Link2, User } from 'lucide-react';
+import { Loader2, Building2, Calendar, DollarSign, FileText, Tag, CreditCard, Banknote, QrCode, Wallet, Link2, User, Edit } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useClientes, useCentrosCusto, useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
@@ -55,9 +55,29 @@ const contaReceberSchema = z.object({
 
 type ContaReceberFormData = z.infer<typeof contaReceberSchema>;
 
+interface ContaReceber {
+  id: string;
+  cliente_id: string | null;
+  cliente_nome: string;
+  descricao: string;
+  valor: number;
+  data_vencimento: string;
+  data_emissao: string;
+  empresa_id: string;
+  centro_custo_id: string | null;
+  conta_bancaria_id: string | null;
+  tipo_cobranca: string;
+  numero_documento: string | null;
+  codigo_barras: string | null;
+  chave_pix: string | null;
+  link_boleto: string | null;
+  observacoes: string | null;
+}
+
 interface ContaReceberFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  conta?: ContaReceber | null;
 }
 
 const tipoCobrancaOptions = [
@@ -68,10 +88,11 @@ const tipoCobrancaOptions = [
   { value: 'dinheiro', label: 'Dinheiro', icon: Wallet },
 ];
 
-export function ContaReceberForm({ open, onOpenChange }: ContaReceberFormProps) {
+export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberFormProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [showClienteSelect, setShowClienteSelect] = useState(false);
+  const isEditing = !!conta;
 
   const { data: clientes = [] } = useClientes();
   const { data: centrosCusto = [] } = useCentrosCusto();
@@ -92,6 +113,42 @@ export function ContaReceberForm({ open, onOpenChange }: ContaReceberFormProps) 
   });
 
   const tipoCobranca = form.watch('tipo_cobranca');
+
+  useEffect(() => {
+    if (conta && open) {
+      form.reset({
+        cliente_id: conta.cliente_id || undefined,
+        cliente_nome: conta.cliente_nome,
+        descricao: conta.descricao,
+        valor: conta.valor,
+        data_vencimento: conta.data_vencimento,
+        data_emissao: conta.data_emissao,
+        empresa_id: conta.empresa_id,
+        centro_custo_id: conta.centro_custo_id || undefined,
+        conta_bancaria_id: conta.conta_bancaria_id || undefined,
+        tipo_cobranca: conta.tipo_cobranca as any,
+        numero_documento: conta.numero_documento || undefined,
+        codigo_barras: conta.codigo_barras || undefined,
+        chave_pix: conta.chave_pix || undefined,
+        link_boleto: conta.link_boleto || undefined,
+        observacoes: conta.observacoes || undefined,
+      });
+      if (conta.cliente_id) {
+        setShowClienteSelect(true);
+      }
+    } else if (!conta && open) {
+      form.reset({
+        cliente_nome: '',
+        descricao: '',
+        valor: 0,
+        data_vencimento: '',
+        data_emissao: new Date().toISOString().split('T')[0],
+        empresa_id: '',
+        tipo_cobranca: 'boleto',
+      });
+      setShowClienteSelect(false);
+    }
+  }, [conta, open, form]);
 
   const createMutation = useMutation({
     mutationFn: async (data: ContaReceberFormData) => {
@@ -139,8 +196,57 @@ export function ContaReceberForm({ open, onOpenChange }: ContaReceberFormProps) 
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: async (data: ContaReceberFormData) => {
+      if (!conta) throw new Error('Conta não encontrada');
+
+      const { error } = await supabase
+        .from('contas_receber')
+        .update({
+          cliente_id: data.cliente_id || null,
+          cliente_nome: data.cliente_nome,
+          descricao: data.descricao,
+          valor: data.valor,
+          data_vencimento: data.data_vencimento,
+          data_emissao: data.data_emissao || new Date().toISOString().split('T')[0],
+          empresa_id: data.empresa_id,
+          centro_custo_id: data.centro_custo_id || null,
+          conta_bancaria_id: data.conta_bancaria_id || null,
+          tipo_cobranca: data.tipo_cobranca,
+          numero_documento: data.numero_documento || null,
+          codigo_barras: data.codigo_barras || null,
+          chave_pix: data.chave_pix || null,
+          link_boleto: data.link_boleto || null,
+          observacoes: data.observacoes || null,
+        })
+        .eq('id', conta.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
+      toast({
+        title: 'Conta atualizada',
+        description: 'As alterações foram salvas com sucesso.',
+      });
+      onOpenChange(false);
+    },
+    onError: (error) => {
+      console.error('Error updating conta receber:', error);
+      toast({
+        title: 'Erro ao atualizar conta',
+        description: 'Não foi possível salvar as alterações. Tente novamente.',
+        variant: 'destructive',
+      });
+    },
+  });
+
   const onSubmit = (data: ContaReceberFormData) => {
-    createMutation.mutate(data);
+    if (isEditing) {
+      updateMutation.mutate(data);
+    } else {
+      createMutation.mutate(data);
+    }
   };
 
   const handleClienteSelect = (clienteId: string) => {
@@ -151,15 +257,24 @@ export function ContaReceberForm({ open, onOpenChange }: ContaReceberFormProps) 
     }
   };
 
+  const isPending = createMutation.isPending || updateMutation.isPending;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-display">
-            <div className="h-10 w-10 rounded-xl bg-success/10 flex items-center justify-center">
-              <DollarSign className="h-5 w-5 text-success" />
+            <div className={cn(
+              "h-10 w-10 rounded-xl flex items-center justify-center",
+              isEditing ? "bg-secondary/10" : "bg-success/10"
+            )}>
+              {isEditing ? (
+                <Edit className="h-5 w-5 text-secondary" />
+              ) : (
+                <DollarSign className="h-5 w-5 text-success" />
+              )}
             </div>
-            Nova Conta a Receber
+            {isEditing ? 'Editar Conta a Receber' : 'Nova Conta a Receber'}
           </DialogTitle>
         </DialogHeader>
 
@@ -188,7 +303,7 @@ export function ContaReceberForm({ open, onOpenChange }: ContaReceberFormProps) 
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                   >
-                    <Select onValueChange={handleClienteSelect}>
+                    <Select onValueChange={handleClienteSelect} value={form.watch('cliente_id')}>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione um cliente" />
                       </SelectTrigger>
@@ -545,11 +660,16 @@ export function ContaReceberForm({ open, onOpenChange }: ContaReceberFormProps) 
               </Button>
               <Button
                 type="submit"
-                disabled={createMutation.isPending}
-                className="gap-2 bg-gradient-to-r from-success to-success/80 shadow-lg shadow-success/25 text-success-foreground"
+                disabled={isPending}
+                className={cn(
+                  "gap-2 shadow-lg",
+                  isEditing 
+                    ? "bg-gradient-to-r from-secondary to-secondary/80 shadow-secondary/25" 
+                    : "bg-gradient-to-r from-success to-success/80 shadow-success/25 text-success-foreground"
+                )}
               >
-                {createMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                Criar Conta
+                {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                {isEditing ? 'Salvar Alterações' : 'Criar Conta'}
               </Button>
             </div>
           </form>

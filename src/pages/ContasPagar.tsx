@@ -92,6 +92,7 @@ export default function ContasPagar() {
   const [formOpen, setFormOpen] = useState(false);
   const [pagamentoDialogOpen, setPagamentoDialogOpen] = useState(false);
   const [selectedConta, setSelectedConta] = useState<any>(null);
+  const [editingConta, setEditingConta] = useState<any>(null);
 
   const { data: contas = [], isLoading } = useContasPagar();
   const { data: centrosCusto = [] } = useCentrosCusto();
@@ -374,7 +375,13 @@ export default function ContasPagar() {
                                     <Eye className="h-4 w-4" />
                                     Visualizar
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem className="gap-2">
+                                  <DropdownMenuItem 
+                                    className="gap-2"
+                                    onClick={() => {
+                                      setEditingConta(conta);
+                                      setFormOpen(true);
+                                    }}
+                                  >
                                     <Edit className="h-4 w-4" />
                                     Editar
                                   </DropdownMenuItem>
@@ -409,7 +416,14 @@ export default function ContasPagar() {
           </Card>
         </motion.div>
 
-        <ContaPagarForm open={formOpen} onOpenChange={setFormOpen} />
+        <ContaPagarForm 
+          open={formOpen} 
+          onOpenChange={(open) => {
+            setFormOpen(open);
+            if (!open) setEditingConta(null);
+          }}
+          conta={editingConta}
+        />
         <RegistrarPagamentoDialog 
           conta={selectedConta} 
           open={pagamentoDialogOpen} 
