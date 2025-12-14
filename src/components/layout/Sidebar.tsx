@@ -45,6 +45,7 @@ const navItems: NavItem[] = [
   { label: 'Relatórios', icon: FileText, href: '/relatorios' },
   { label: 'Contas Bancárias', icon: Landmark, href: '/contas-bancarias' },
   { label: 'Empresas (CNPJs)', icon: Building2, href: '/empresas' },
+  { label: 'Usuários', icon: Users, href: '/usuarios' },
   { label: 'Bitrix24', icon: Zap, href: '/bitrix24' },
 ];
 
