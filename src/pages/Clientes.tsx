@@ -53,8 +53,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { ExportMenu } from '@/components/ui/export-menu';
+import { SortableHeader, useSorting } from '@/components/ui/sortable-header';
 import { useClientes, Cliente } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
+import { clientesColumns } from '@/lib/export-utils';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ClienteForm } from '@/components/clientes/ClienteForm';
@@ -212,17 +215,25 @@ export default function Clientes() {
             <h1 className="text-display-md text-foreground">Clientes</h1>
             <p className="text-muted-foreground mt-1">Gerencie sua base de clientes</p>
           </div>
-          <Button 
-            size="sm" 
-            className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
-            onClick={() => {
-              setEditingCliente(null);
-              setFormOpen(true);
-            }}
-          >
-            <Plus className="h-4 w-4" />
-            Novo Cliente
-          </Button>
+          <div className="flex items-center gap-3">
+            <ExportMenu
+              data={filteredClientes}
+              columns={clientesColumns}
+              filename="clientes"
+              title="Relatório de Clientes"
+            />
+            <Button 
+              size="sm" 
+              className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
+              onClick={() => {
+                setEditingCliente(null);
+                setFormOpen(true);
+              }}
+            >
+              <Plus className="h-4 w-4" />
+              Novo Cliente
+            </Button>
+          </div>
         </motion.div>
 
         {/* KPI Cards */}

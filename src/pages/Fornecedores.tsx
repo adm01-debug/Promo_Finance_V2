@@ -52,7 +52,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { ExportMenu } from '@/components/ui/export-menu';
 import { useFornecedores, Fornecedor } from '@/hooks/useFinancialData';
+import { fornecedoresColumns } from '@/lib/export-utils';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { FornecedorForm } from '@/components/fornecedores/FornecedorForm';
@@ -178,17 +180,25 @@ export default function Fornecedores() {
             <h1 className="text-display-md text-foreground">Fornecedores</h1>
             <p className="text-muted-foreground mt-1">Gerencie sua base de fornecedores</p>
           </div>
-          <Button 
-            size="sm" 
-            className="gap-2 bg-gradient-to-r from-warning to-warning/80 hover:from-warning/90 hover:to-warning/70 shadow-lg shadow-warning/25 text-warning-foreground"
-            onClick={() => {
-              setEditingFornecedor(null);
-              setFormOpen(true);
-            }}
-          >
-            <Plus className="h-4 w-4" />
-            Novo Fornecedor
-          </Button>
+          <div className="flex items-center gap-3">
+            <ExportMenu
+              data={filteredFornecedores}
+              columns={fornecedoresColumns}
+              filename="fornecedores"
+              title="Relatório de Fornecedores"
+            />
+            <Button 
+              size="sm" 
+              className="gap-2 bg-gradient-to-r from-warning to-warning/80 hover:from-warning/90 hover:to-warning/70 shadow-lg shadow-warning/25 text-warning-foreground"
+              onClick={() => {
+                setEditingFornecedor(null);
+                setFormOpen(true);
+              }}
+            >
+              <Plus className="h-4 w-4" />
+              Novo Fornecedor
+            </Button>
+          </div>
         </motion.div>
 
         {/* KPI Cards */}
