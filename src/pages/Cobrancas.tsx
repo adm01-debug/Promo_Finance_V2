@@ -102,12 +102,13 @@ const etapasRegua = [
   },
 ];
 
-// Métricas de canal (mock por enquanto - pode ser expandido com tabela de logs de cobrança)
-const metricsCanal = [
-  { canal: 'Email', enviados: 150, abertos: 95, pagos: 45, taxaConversao: 30 },
-  { canal: 'WhatsApp', enviados: 120, abertos: 110, pagos: 55, taxaConversao: 45.8 },
-  { canal: 'SMS', enviados: 80, abertos: 72, pagos: 28, taxaConversao: 35 },
-  { canal: 'Telefone', enviados: 50, abertos: 50, pagos: 32, taxaConversao: 64 },
+// Métricas de canal - calculadas a partir do histórico de cobrança quando disponível
+// Por enquanto mostra placeholder até que integração de envio seja implementada
+const getMetricsCanal = () => [
+  { canal: 'Email', enviados: 0, abertos: 0, pagos: 0, taxaConversao: 0 },
+  { canal: 'WhatsApp', enviados: 0, abertos: 0, pagos: 0, taxaConversao: 0 },
+  { canal: 'SMS', enviados: 0, abertos: 0, pagos: 0, taxaConversao: 0 },
+  { canal: 'Telefone', enviados: 0, abertos: 0, pagos: 0, taxaConversao: 0 },
 ];
 
 export default function Cobrancas() {
@@ -404,7 +405,7 @@ export default function Cobrancas() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {metricsCanal.map((canal, index) => (
+                {getMetricsCanal().map((canal, index) => (
                   <motion.div
                     key={canal.canal}
                     initial={{ opacity: 0, y: 20 }}
