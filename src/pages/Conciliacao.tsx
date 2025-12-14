@@ -58,6 +58,9 @@ import { formatCurrency, formatDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { mockContasBancarias } from '@/data/mockData';
+import { ImportarExtratoDialog } from '@/components/conciliacao/ImportarExtratoDialog';
+import { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
+import { toast } from 'sonner';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -121,30 +124,29 @@ export default function Conciliacao() {
   const [activeTab, setActiveTab] = useState('pendentes');
   const [selectedBanco, setSelectedBanco] = useState('1');
   const [searchTerm, setSearchTerm] = useState('');
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [showImportDialog, setShowImportDialog] = useState(false);
   const [transacoes, setTransacoes] = useState(mockTransacoesExtrato);
   const [sugestoes] = useState(mockSugestoes);
+  const [extratoImportado, setExtratoImportado] = useState<ExtratoOFX | null>(null);
 
-  // Simular upload
-  const handleFileUpload = useCallback((files: FileList | null) => {
-    if (!files || files.length === 0) return;
+  // Handle import from OFX/OFC/CSV
+  const handleImportSuccess = useCallback((extrato: ExtratoOFX) => {
+    // Convert imported transactions to the format used in the page
+    const novasTransacoes = extrato.transacoes.map((t: TransacaoOFX) => ({
+      id: t.id,
+      data: t.data,
+      descricao: t.descricao,
+      valor: t.valor,
+      tipo: t.tipo,
+      conciliada: false,
+    }));
+
+    setTransacoes(prev => [...novasTransacoes, ...prev]);
+    setExtratoImportado(extrato);
     
-    setIsUploading(true);
-    setUploadProgress(0);
-    
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setIsUploading(false);
-          setShowUploadDialog(false);
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 200);
+    toast.success(`${extrato.transacoes.length} transações importadas`, {
+      description: `Arquivo: ${extrato.nomeArquivo}`,
+    });
   }, []);
 
   // Conciliar transação
@@ -202,69 +204,22 @@ export default function Conciliacao() {
               </SelectContent>
             </Select>
             
-            <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
-              <DialogTrigger asChild>
-                <Button size="sm" className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25">
-                  <Upload className="h-4 w-4" />
-                  Importar Extrato
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Importar Extrato Bancário</DialogTitle>
-                  <DialogDescription>
-                    Faça upload do arquivo OFX ou CSV do seu banco
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                  {!isUploading ? (
-                    <div 
-                      className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
-                      onDragOver={(e) => e.preventDefault()}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        handleFileUpload(e.dataTransfer.files);
-                      }}
-                      onClick={() => document.getElementById('file-upload')?.click()}
-                    >
-                      <input
-                        id="file-upload"
-                        type="file"
-                        accept=".ofx,.csv,.txt"
-                        className="hidden"
-                        onChange={(e) => handleFileUpload(e.target.files)}
-                      />
-                      <div className="h-16 w-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
-                        <Upload className="h-8 w-8" />
-                      </div>
-                      <p className="font-medium text-foreground">Arraste o arquivo aqui</p>
-                      <p className="text-sm text-muted-foreground mt-1">ou clique para selecionar</p>
-                      <div className="flex items-center justify-center gap-2 mt-4">
-                        <Badge variant="outline">.OFX</Badge>
-                        <Badge variant="outline">.CSV</Badge>
-                        <Badge variant="outline">.TXT</Badge>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-3">
-                        <div className="h-12 w-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center animate-pulse">
-                          <FileText className="h-6 w-6" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-sm">Processando extrato...</p>
-                          <p className="text-xs text-muted-foreground">{uploadProgress}% concluído</p>
-                        </div>
-                      </div>
-                      <Progress value={uploadProgress} className="h-2" />
-                      <p className="text-xs text-muted-foreground text-center">
-                        Analisando transações e buscando correspondências...
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </DialogContent>
-            </Dialog>
+<>
+              <Button 
+                size="sm" 
+                onClick={() => setShowImportDialog(true)}
+                className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
+              >
+                <Upload className="h-4 w-4" />
+                Importar Extrato
+              </Button>
+              
+              <ImportarExtratoDialog
+                open={showImportDialog}
+                onOpenChange={setShowImportDialog}
+                onImportSuccess={handleImportSuccess}
+              />
+            </>
           </div>
         </motion.div>
 
