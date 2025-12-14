@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Loader2, DollarSign, Calendar, Wallet, CreditCard, Building2, Banknote, QrCode } from 'lucide-react';
+import { Loader2, DollarSign, Calendar, Wallet, CreditCard, Building2, Banknote, QrCode, ShieldCheck, ShieldAlert, AlertTriangle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useContasBancarias } from '@/hooks/useFinancialData';
+import { useConfiguracaoAprovacao, useCriarSolicitacaoAprovacao } from '@/hooks/useAprovacoes';
 import { toast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/formatters';
 import {
@@ -35,6 +36,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 interface ContaPagar {
@@ -45,6 +48,8 @@ interface ContaPagar {
   valor_pago: number | null;
   data_vencimento: string;
   status: string;
+  aprovado_por?: string | null;
+  aprovado_em?: string | null;
 }
 
 interface RegistrarPagamentoDialogProps {
@@ -71,9 +76,44 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
   const queryClient = useQueryClient();
   const [tipoPagamento, setTipoPagamento] = useState<'total' | 'parcial'>('total');
   const { data: contasBancarias = [] } = useContasBancarias();
+  const { data: configAprovacao } = useConfiguracaoAprovacao();
+  const criarSolicitacaoMutation = useCriarSolicitacaoAprovacao();
 
   const saldoRestante = conta ? conta.valor - (conta.valor_pago || 0) : 0;
   const percentualPago = conta ? ((conta.valor_pago || 0) / conta.valor) * 100 : 0;
+
+  // Check if this payment requires approval
+  const requerAprovacao = useMemo(() => {
+    if (!conta || !configAprovacao?.ativo) return false;
+    return conta.valor >= configAprovacao.valor_minimo_aprovacao;
+  }, [conta, configAprovacao]);
+
+  const estaAprovado = useMemo(() => {
+    return conta?.aprovado_por != null && conta?.aprovado_em != null;
+  }, [conta]);
+
+  // Check if there's a pending approval request
+  const { data: solicitacaoPendente } = useQuery({
+    queryKey: ['solicitacao-pendente', conta?.id],
+    queryFn: async () => {
+      if (!conta) return null;
+      const { data, error } = await supabase
+        .from('solicitacoes_aprovacao')
+        .select('*')
+        .eq('conta_pagar_id', conta.id)
+        .order('solicitado_em', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!conta && requerAprovacao,
+  });
+
+  const aprovacaoBloqueada = requerAprovacao && !estaAprovado;
+  const temSolicitacaoPendente = solicitacaoPendente?.status === 'pendente';
+  const solicitacaoRejeitada = solicitacaoPendente?.status === 'rejeitado';
 
   const form = useForm<PagamentoFormData>({
     resolver: zodResolver(pagamentoSchema),
@@ -98,6 +138,11 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
   const updateMutation = useMutation({
     mutationFn: async (data: PagamentoFormData) => {
       if (!conta) throw new Error('Conta não encontrada');
+
+      // Validate approval requirement
+      if (aprovacaoBloqueada) {
+        throw new Error('Este pagamento requer aprovação antes de ser efetuado.');
+      }
 
       const valorPagoAtual = conta.valor_pago || 0;
       const novoValorPago = valorPagoAtual + data.valor_pago;
@@ -130,13 +175,34 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
       console.error('Error registering payment:', error);
       toast({
         title: 'Erro ao registrar pagamento',
-        description: 'Não foi possível registrar o pagamento. Tente novamente.',
+        description: error.message || 'Não foi possível registrar o pagamento. Tente novamente.',
         variant: 'destructive',
       });
     },
   });
 
+  const handleSolicitarAprovacao = () => {
+    if (!conta) return;
+    criarSolicitacaoMutation.mutate(
+      { contaPagarId: conta.id, observacoes: form.getValues('observacoes') },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['solicitacao-pendente', conta.id] });
+        },
+      }
+    );
+  };
+
   const onSubmit = (data: PagamentoFormData) => {
+    if (aprovacaoBloqueada) {
+      toast({
+        title: 'Aprovação necessária',
+        description: 'Este pagamento requer aprovação antes de ser efetuado.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     if (data.valor_pago > saldoRestante) {
       toast({
         title: 'Valor inválido',
@@ -184,6 +250,45 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
             </div>
           </DialogDescription>
         </DialogHeader>
+
+        {/* Approval Status Alert */}
+        {requerAprovacao && (
+          <div className="space-y-3">
+            {estaAprovado ? (
+              <Alert className="border-success/50 bg-success/10">
+                <ShieldCheck className="h-4 w-4 text-success" />
+                <AlertTitle className="text-success">Pagamento Aprovado</AlertTitle>
+                <AlertDescription>
+                  Este pagamento foi aprovado e pode ser efetuado.
+                </AlertDescription>
+              </Alert>
+            ) : temSolicitacaoPendente ? (
+              <Alert className="border-warning/50 bg-warning/10">
+                <AlertTriangle className="h-4 w-4 text-warning" />
+                <AlertTitle className="text-warning">Aguardando Aprovação</AlertTitle>
+                <AlertDescription>
+                  Uma solicitação de aprovação foi enviada e está pendente de análise.
+                </AlertDescription>
+              </Alert>
+            ) : solicitacaoRejeitada ? (
+              <Alert variant="destructive">
+                <ShieldAlert className="h-4 w-4" />
+                <AlertTitle>Aprovação Rejeitada</AlertTitle>
+                <AlertDescription>
+                  A solicitação anterior foi rejeitada: {solicitacaoPendente?.motivo_rejeicao || 'Sem motivo informado'}
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <Alert variant="destructive">
+                <ShieldAlert className="h-4 w-4" />
+                <AlertTitle>Aprovação Necessária</AlertTitle>
+                <AlertDescription>
+                  Pagamentos acima de {formatCurrency(configAprovacao?.valor_minimo_aprovacao || 0)} requerem aprovação prévia.
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+        )}
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
@@ -308,14 +413,29 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancelar
               </Button>
-              <Button
-                type="submit"
-                disabled={updateMutation.isPending}
-                className="gap-2 bg-gradient-to-r from-success to-success/80 shadow-lg shadow-success/25 text-success-foreground"
-              >
-                {updateMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                Confirmar Pagamento
-              </Button>
+              
+              {/* Show "Request Approval" button if approval is required but not granted */}
+              {aprovacaoBloqueada && !temSolicitacaoPendente ? (
+                <Button
+                  type="button"
+                  onClick={handleSolicitarAprovacao}
+                  disabled={criarSolicitacaoMutation.isPending}
+                  className="gap-2 bg-gradient-to-r from-warning to-warning/80 shadow-lg shadow-warning/25 text-warning-foreground"
+                >
+                  {criarSolicitacaoMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                  <ShieldCheck className="h-4 w-4" />
+                  Solicitar Aprovação
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  disabled={updateMutation.isPending || aprovacaoBloqueada}
+                  className="gap-2 bg-gradient-to-r from-success to-success/80 shadow-lg shadow-success/25 text-success-foreground"
+                >
+                  {updateMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                  Confirmar Pagamento
+                </Button>
+              )}
             </div>
           </form>
         </Form>
