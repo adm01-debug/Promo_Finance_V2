@@ -54,6 +54,7 @@ import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime } fro
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ContaPagarForm } from '@/components/contas-pagar/ContaPagarForm';
+import { RegistrarPagamentoDialog } from '@/components/contas-pagar/RegistrarPagamentoDialog';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -89,6 +90,8 @@ export default function ContasPagar() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [centroCustoFilter, setCentroCustoFilter] = useState<string>('all');
   const [formOpen, setFormOpen] = useState(false);
+  const [pagamentoDialogOpen, setPagamentoDialogOpen] = useState(false);
+  const [selectedConta, setSelectedConta] = useState<any>(null);
 
   const { data: contas = [], isLoading } = useContasPagar();
   const { data: centrosCusto = [] } = useCentrosCusto();
@@ -376,7 +379,14 @@ export default function ContasPagar() {
                                     Editar
                                   </DropdownMenuItem>
                                   <DropdownMenuSeparator />
-                                  <DropdownMenuItem className="gap-2">
+                                  <DropdownMenuItem 
+                                    className="gap-2"
+                                    onClick={() => {
+                                      setSelectedConta(conta);
+                                      setPagamentoDialogOpen(true);
+                                    }}
+                                    disabled={conta.status === 'pago' || conta.status === 'cancelado'}
+                                  >
                                     <CheckCircle2 className="h-4 w-4" />
                                     Registrar Pagamento
                                   </DropdownMenuItem>
@@ -400,6 +410,11 @@ export default function ContasPagar() {
         </motion.div>
 
         <ContaPagarForm open={formOpen} onOpenChange={setFormOpen} />
+        <RegistrarPagamentoDialog 
+          conta={selectedConta} 
+          open={pagamentoDialogOpen} 
+          onOpenChange={setPagamentoDialogOpen} 
+        />
       </motion.div>
     </MainLayout>
   );
