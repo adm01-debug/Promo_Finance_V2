@@ -8,7 +8,6 @@ import {
   CheckCircle2, 
   Eye,
   Trash2,
-  Filter,
   CheckCheck,
   XCircle,
   ArrowRight,
@@ -16,7 +15,9 @@ import {
   DollarSign,
   Users,
   AlertCircle,
-  Info
+  Info,
+  Loader2,
+  RefreshCw
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,9 +25,18 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
-import { mockAlertas } from '@/data/mockData';
-import { Alerta, PrioridadeAlerta } from '@/types/financial';
+import { Skeleton } from '@/components/ui/skeleton';
+import { 
+  useAlertas, 
+  useMarcarAlertaComoLido, 
+  useMarcarTodosAlertasComoLidos,
+  type PrioridadeAlerta,
+  type Alerta
+} from '@/hooks/useAlertas';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -42,27 +52,32 @@ const itemVariants = {
 };
 
 const prioridadeConfig: Record<PrioridadeAlerta, { label: string; color: string; bgColor: string; icon: typeof AlertCircle }> = {
-  critica: { label: 'Crítica', color: 'text-red-600', bgColor: 'bg-red-100 dark:bg-red-900/30', icon: XCircle },
-  alta: { label: 'Alta', color: 'text-orange-600', bgColor: 'bg-orange-100 dark:bg-orange-900/30', icon: AlertTriangle },
-  media: { label: 'Média', color: 'text-yellow-600', bgColor: 'bg-yellow-100 dark:bg-yellow-900/30', icon: AlertCircle },
-  baixa: { label: 'Baixa', color: 'text-blue-600', bgColor: 'bg-blue-100 dark:bg-blue-900/30', icon: Info }
+  critica: { label: 'Crítica', color: 'text-destructive', bgColor: 'bg-destructive/10', icon: XCircle },
+  alta: { label: 'Alta', color: 'text-warning', bgColor: 'bg-warning/10', icon: AlertTriangle },
+  media: { label: 'Média', color: 'text-primary', bgColor: 'bg-primary/10', icon: AlertCircle },
+  baixa: { label: 'Baixa', color: 'text-secondary', bgColor: 'bg-secondary/10', icon: Info }
 };
 
-const tipoConfig = {
-  vencimento: { label: 'Vencimento', icon: Calendar, color: 'text-orange-500' },
-  fluxo_caixa: { label: 'Fluxo de Caixa', icon: TrendingDown, color: 'text-red-500' },
-  inadimplencia: { label: 'Inadimplência', icon: Users, color: 'text-purple-500' },
-  conciliacao: { label: 'Conciliação', icon: CheckCircle2, color: 'text-blue-500' },
-  meta: { label: 'Meta', icon: DollarSign, color: 'text-green-500' }
+const tipoConfig: Record<string, { label: string; icon: typeof Calendar; color: string }> = {
+  vencimento: { label: 'Vencimento', icon: Calendar, color: 'text-warning' },
+  fluxo_caixa: { label: 'Fluxo de Caixa', icon: TrendingDown, color: 'text-destructive' },
+  inadimplencia: { label: 'Inadimplência', icon: Users, color: 'text-accent' },
+  conciliacao: { label: 'Conciliação', icon: CheckCircle2, color: 'text-secondary' },
+  meta: { label: 'Meta', icon: DollarSign, color: 'text-success' },
+  sistema: { label: 'Sistema', icon: Bell, color: 'text-muted-foreground' }
 };
 
 export default function Alertas() {
-  const [alertas, setAlertas] = useState<Alerta[]>(mockAlertas);
+  const navigate = useNavigate();
+  const { data: alertas = [], isLoading, refetch } = useAlertas();
+  const marcarComoLido = useMarcarAlertaComoLido();
+  const marcarTodosComoLidos = useMarcarTodosAlertasComoLidos();
+  
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('todos');
 
   const alertasNaoLidos = alertas.filter(a => !a.lido);
-  const alertasPorTipo = {
+  const alertasPorTipo: Record<string, Alerta[]> = {
     todos: alertas,
     vencimento: alertas.filter(a => a.tipo === 'vencimento'),
     inadimplencia: alertas.filter(a => a.tipo === 'inadimplencia'),
@@ -75,25 +90,15 @@ export default function Alertas() {
     alertasNaoLidos.filter(a => a.prioridade === priority).length;
 
   const handleMarkAsRead = (id: string) => {
-    setAlertas(prev => prev.map(a => a.id === id ? { ...a, lido: true } : a));
+    marcarComoLido.mutate(id);
   };
 
   const handleMarkAllAsRead = () => {
-    setAlertas(prev => prev.map(a => ({ ...a, lido: true })));
-  };
-
-  const handleDelete = (id: string) => {
-    setAlertas(prev => prev.filter(a => a.id !== id));
-    setSelectedIds(prev => prev.filter(i => i !== id));
-  };
-
-  const handleDeleteSelected = () => {
-    setAlertas(prev => prev.filter(a => !selectedIds.includes(a.id)));
-    setSelectedIds([]);
+    marcarTodosComoLidos.mutate();
   };
 
   const handleSelectAll = () => {
-    const currentTabAlertas = alertasPorTipo[activeTab as keyof typeof alertasPorTipo];
+    const currentTabAlertas = alertasPorTipo[activeTab] || [];
     if (selectedIds.length === currentTabAlertas.length) {
       setSelectedIds([]);
     } else {
@@ -107,18 +112,50 @@ export default function Alertas() {
     );
   };
 
-  const formatDate = (date: Date) => {
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 60) return `${diffMins}min atrás`;
-    if (diffHours < 24) return `${diffHours}h atrás`;
-    if (diffDays < 7) return `${diffDays}d atrás`;
-    return date.toLocaleDateString('pt-BR');
+  const handleNavigate = (alerta: Alerta) => {
+    if (alerta.acao_url) {
+      navigate(alerta.acao_url);
+    } else if (alerta.entidade_tipo) {
+      const routes: Record<string, string> = {
+        conta_pagar: '/contas-pagar',
+        conta_receber: '/contas-receber',
+        cliente: '/clientes',
+        fornecedor: '/fornecedores',
+        boleto: '/boletos',
+      };
+      const route = routes[alerta.entidade_tipo];
+      if (route) navigate(route);
+    }
   };
+
+  const formatDate = (dateStr: string) => {
+    try {
+      return formatDistanceToNow(new Date(dateStr), { addSuffix: true, locale: ptBR });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const getTipoInfo = (tipo: string) => {
+    return tipoConfig[tipo] || tipoConfig.sistema;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <Skeleton className="h-10 w-64" />
+          <Skeleton className="h-9 w-48" />
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-24" />
+          ))}
+        </div>
+        <Skeleton className="h-[600px]" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -131,16 +168,23 @@ export default function Alertas() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleMarkAllAsRead}>
-            <CheckCheck className="h-4 w-4 mr-2" />
+          <Button variant="outline" size="sm" onClick={() => refetch()}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Atualizar
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleMarkAllAsRead}
+            disabled={alertasNaoLidos.length === 0 || marcarTodosComoLidos.isPending}
+          >
+            {marcarTodosComoLidos.isPending ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <CheckCheck className="h-4 w-4 mr-2" />
+            )}
             Marcar todos como lidos
           </Button>
-          {selectedIds.length > 0 && (
-            <Button variant="destructive" size="sm" onClick={handleDeleteSelected}>
-              <Trash2 className="h-4 w-4 mr-2" />
-              Excluir ({selectedIds.length})
-            </Button>
-          )}
         </div>
       </div>
 
@@ -159,10 +203,10 @@ export default function Alertas() {
           return (
             <motion.div key={prioridade} variants={itemVariants}>
               <Card className={cn("border-l-4", 
-                prioridade === 'critica' && "border-l-red-500",
-                prioridade === 'alta' && "border-l-orange-500",
-                prioridade === 'media' && "border-l-yellow-500",
-                prioridade === 'baixa' && "border-l-blue-500"
+                prioridade === 'critica' && "border-l-destructive",
+                prioridade === 'alta' && "border-l-warning",
+                prioridade === 'media' && "border-l-primary",
+                prioridade === 'baixa' && "border-l-secondary"
               )}>
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
@@ -206,7 +250,7 @@ export default function Alertas() {
 
           <div className="flex items-center gap-2">
             <Checkbox 
-              checked={selectedIds.length === alertasPorTipo[activeTab as keyof typeof alertasPorTipo].length && alertasPorTipo[activeTab as keyof typeof alertasPorTipo].length > 0}
+              checked={selectedIds.length === (alertasPorTipo[activeTab]?.length || 0) && (alertasPorTipo[activeTab]?.length || 0) > 0}
               onCheckedChange={handleSelectAll}
             />
             <span className="text-sm text-muted-foreground">Selecionar todos</span>
@@ -230,7 +274,7 @@ export default function Alertas() {
                     </div>
                   ) : (
                     lista.map((alerta) => {
-                      const tipoInfo = tipoConfig[alerta.tipo];
+                      const tipoInfo = getTipoInfo(alerta.tipo);
                       const prioridadeInfo = prioridadeConfig[alerta.prioridade];
                       const TipoIcon = tipoInfo.icon;
                       const PrioridadeIcon = prioridadeInfo.icon;
@@ -282,17 +326,18 @@ export default function Alertas() {
                                 </Badge>
                                 <span className="text-xs text-muted-foreground flex items-center gap-1">
                                   <Clock className="h-3 w-3" />
-                                  {formatDate(alerta.createdAt)}
+                                  {formatDate(alerta.created_at)}
                                 </span>
                               </div>
 
-                              {alerta.acao && (
+                              {(alerta.acao_url || alerta.entidade_tipo) && (
                                 <Button 
                                   variant="link" 
                                   size="sm" 
                                   className="px-0 mt-2 h-auto"
+                                  onClick={() => handleNavigate(alerta)}
                                 >
-                                  {alerta.acao}
+                                  Ver detalhes
                                   <ArrowRight className="h-3 w-3 ml-1" />
                                 </Button>
                               )}
@@ -304,18 +349,15 @@ export default function Alertas() {
                                   variant="ghost" 
                                   size="icon"
                                   onClick={() => handleMarkAsRead(alerta.id)}
+                                  disabled={marcarComoLido.isPending}
                                 >
-                                  <Eye className="h-4 w-4" />
+                                  {marcarComoLido.isPending ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <Eye className="h-4 w-4" />
+                                  )}
                                 </Button>
                               )}
-                              <Button 
-                                variant="ghost" 
-                                size="icon"
-                                onClick={() => handleDelete(alerta.id)}
-                                className="text-muted-foreground hover:text-destructive"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
                             </div>
                           </div>
                         </motion.div>
@@ -333,7 +375,7 @@ export default function Alertas() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-orange-500" />
+            <AlertTriangle className="h-5 w-5 text-warning" />
             Ações Recomendadas
           </CardTitle>
         </CardHeader>
@@ -343,7 +385,7 @@ export default function Alertas() {
               .filter(a => a.prioridade === 'critica' || a.prioridade === 'alta')
               .slice(0, 5)
               .map((alerta) => {
-                const tipoInfo = tipoConfig[alerta.tipo];
+                const tipoInfo = getTipoInfo(alerta.tipo);
                 const TipoIcon = tipoInfo.icon;
 
                 return (
@@ -353,15 +395,15 @@ export default function Alertas() {
                   >
                     <div className={cn(
                       "p-2 rounded-full",
-                      alerta.prioridade === 'critica' ? "bg-red-100 dark:bg-red-900/30" : "bg-orange-100 dark:bg-orange-900/30"
+                      alerta.prioridade === 'critica' ? "bg-destructive/10" : "bg-warning/10"
                     )}>
                       <TipoIcon className={cn("h-4 w-4", tipoInfo.color)} />
                     </div>
                     <div className="flex-1">
                       <p className="font-medium text-sm">{alerta.titulo}</p>
-                      <p className="text-xs text-muted-foreground">{alerta.acao || 'Verificar imediatamente'}</p>
+                      <p className="text-xs text-muted-foreground line-clamp-1">{alerta.mensagem}</p>
                     </div>
-                    <Button size="sm">
+                    <Button size="sm" onClick={() => handleNavigate(alerta)}>
                       Resolver
                       <ArrowRight className="h-4 w-4 ml-1" />
                     </Button>
@@ -370,7 +412,7 @@ export default function Alertas() {
               })}
             {alertasNaoLidos.filter(a => a.prioridade === 'critica' || a.prioridade === 'alta').length === 0 && (
               <div className="text-center py-4 text-muted-foreground">
-                <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-green-500" />
+                <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-success" />
                 <p>Nenhuma ação urgente pendente</p>
               </div>
             )}
