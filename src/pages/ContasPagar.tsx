@@ -526,6 +526,24 @@ export default function ContasPagar() {
                                 const historico = historicoAprovacaoPorConta.get(conta.id) || [];
                                 const temHistorico = historico.length > 0;
                                 
+                                // Calcular dias restantes para vencimento
+                                const diasRestantes = -overdueDays; // overdueDays é negativo para datas futuras
+                                const vencido = overdueDays > 0;
+                                const vendeHoje = overdueDays === 0;
+                                const urgente = diasRestantes <= 3 && diasRestantes > 0;
+                                const atencao = diasRestantes <= 7 && diasRestantes > 3;
+                                
+                                const getUrgenciaLabel = () => {
+                                  if (vencido) return `${overdueDays}d atrasado`;
+                                  if (vendeHoje) return 'Vence hoje!';
+                                  if (urgente) return `${diasRestantes}d restante${diasRestantes > 1 ? 's' : ''}`;
+                                  if (atencao) return `${diasRestantes}d restantes`;
+                                  return null;
+                                };
+                                
+                                const urgenciaLabel = getUrgenciaLabel();
+                                const mostrarUrgencia = (temSolicitacaoPendente || aguardandoSolicitacao) && conta.status !== 'pago' && conta.status !== 'cancelado';
+                                
                                 const getBadgeContent = () => {
                                   if (estaAprovado) {
                                     return (
@@ -545,18 +563,54 @@ export default function ContasPagar() {
                                   }
                                   if (temSolicitacaoPendente) {
                                     return (
-                                      <Badge variant="outline" className="gap-1 bg-warning/10 text-warning border-warning/20 cursor-pointer">
-                                        <ShieldAlert className="h-3 w-3" />
-                                        Pendente
-                                      </Badge>
+                                      <div className="flex flex-col items-start gap-1">
+                                        <Badge variant="outline" className={cn(
+                                          "gap-1 cursor-pointer",
+                                          vencido || vendeHoje 
+                                            ? "bg-destructive/10 text-destructive border-destructive/20 animate-pulse" 
+                                            : urgente 
+                                              ? "bg-warning/10 text-warning border-warning/20" 
+                                              : "bg-warning/10 text-warning border-warning/20"
+                                        )}>
+                                          <ShieldAlert className="h-3 w-3" />
+                                          Pendente
+                                        </Badge>
+                                        {mostrarUrgencia && urgenciaLabel && (
+                                          <span className={cn(
+                                            "text-[10px] font-medium flex items-center gap-1",
+                                            vencido || vendeHoje ? "text-destructive" : urgente ? "text-warning" : "text-muted-foreground"
+                                          )}>
+                                            <Clock className="h-3 w-3" />
+                                            {urgenciaLabel}
+                                          </span>
+                                        )}
+                                      </div>
                                     );
                                   }
                                   if (aguardandoSolicitacao) {
                                     return (
-                                      <Badge variant="outline" className="gap-1 bg-muted text-muted-foreground cursor-pointer">
-                                        <ShieldAlert className="h-3 w-3" />
-                                        Requer Aprovação
-                                      </Badge>
+                                      <div className="flex flex-col items-start gap-1">
+                                        <Badge variant="outline" className={cn(
+                                          "gap-1 cursor-pointer",
+                                          vencido || vendeHoje 
+                                            ? "bg-destructive/10 text-destructive border-destructive/20" 
+                                            : urgente 
+                                              ? "bg-warning/10 text-warning border-warning/20" 
+                                              : "bg-muted text-muted-foreground"
+                                        )}>
+                                          <ShieldAlert className="h-3 w-3" />
+                                          Requer Aprovação
+                                        </Badge>
+                                        {mostrarUrgencia && urgenciaLabel && (
+                                          <span className={cn(
+                                            "text-[10px] font-medium flex items-center gap-1",
+                                            vencido || vendeHoje ? "text-destructive" : urgente ? "text-warning" : "text-muted-foreground"
+                                          )}>
+                                            <Clock className="h-3 w-3" />
+                                            {urgenciaLabel}
+                                          </span>
+                                        )}
+                                      </div>
                                     );
                                   }
                                   return <span className="text-xs text-muted-foreground">-</span>;
