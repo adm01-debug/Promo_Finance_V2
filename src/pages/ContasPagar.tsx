@@ -66,7 +66,9 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { ContaPagarForm } from '@/components/contas-pagar/ContaPagarForm';
 import { RegistrarPagamentoDialog } from '@/components/contas-pagar/RegistrarPagamentoDialog';
 import { supabase } from '@/integrations/supabase/client';
-import { useConfiguracaoAprovacao } from '@/hooks/useAprovacoes';
+import { useConfiguracaoAprovacao, useCriarSolicitacaoAprovacao } from '@/hooks/useAprovacoes';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -110,6 +112,25 @@ export default function ContasPagar() {
   const { data: contas = [], isLoading } = useContasPagar();
   const { data: centrosCusto = [] } = useCentrosCusto();
   const { data: configuracao } = useConfiguracaoAprovacao();
+  const criarSolicitacaoMutation = useCriarSolicitacaoAprovacao();
+  const { user } = useAuth();
+
+  // Handler para solicitar aprovação rápida
+  const handleSolicitarAprovacao = async (conta: any) => {
+    if (!user) {
+      toast.error('Usuário não autenticado');
+      return;
+    }
+    
+    try {
+      await criarSolicitacaoMutation.mutateAsync({
+        contaPagarId: conta.id,
+      });
+      toast.success('Solicitação de aprovação enviada com sucesso');
+    } catch (error) {
+      toast.error('Erro ao solicitar aprovação');
+    }
+  };
   
   // Buscar solicitações de aprovação com detalhes
   const { data: solicitacoesAprovacao = [] } = useQuery({
@@ -601,13 +622,22 @@ export default function ContasPagar() {
                                     Editar
                                   </DropdownMenuItem>
                                   <DropdownMenuSeparator />
+                                  {aguardandoSolicitacao && (
+                                    <DropdownMenuItem 
+                                      className="gap-2 text-warning"
+                                      onClick={() => handleSolicitarAprovacao(conta)}
+                                    >
+                                      <ShieldAlert className="h-4 w-4" />
+                                      Solicitar Aprovação
+                                    </DropdownMenuItem>
+                                  )}
                                   <DropdownMenuItem 
                                     className="gap-2"
                                     onClick={() => {
                                       setSelectedConta(conta);
                                       setPagamentoDialogOpen(true);
                                     }}
-                                    disabled={conta.status === 'pago' || conta.status === 'cancelado'}
+                                    disabled={conta.status === 'pago' || conta.status === 'cancelado' || (aguardandoSolicitacao || temSolicitacaoPendente)}
                                   >
                                     <CheckCircle2 className="h-4 w-4" />
                                     Registrar Pagamento
