@@ -224,12 +224,27 @@ export default function ContasPagar() {
   };
 
   // Contar pendentes de aprovação
-  const countPendentesAprovacao = contas.filter(c => {
+  const contasPendentesAprovacao = contas.filter(c => {
     const precisaAprovacao = requerAprovacao(c.valor);
     const temSolicitacaoPendente = aprovacaoStatusMap.get(c.id) === 'pendente';
     const naoAprovado = !c.aprovado_por && precisaAprovacao;
     return (temSolicitacaoPendente || (naoAprovado && !aprovacaoStatusMap.has(c.id))) && c.status !== 'pago' && c.status !== 'cancelado';
-  }).length;
+  });
+  
+  const countPendentesAprovacao = contasPendentesAprovacao.length;
+
+  // Contar aprovações urgentes (vence em 3 dias ou menos, incluindo vencidos)
+  const aprovacoesUrgentes = contasPendentesAprovacao.filter(c => {
+    const dataVenc = new Date(c.data_vencimento);
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    dataVenc.setHours(0, 0, 0, 0);
+    const diffDias = Math.ceil((dataVenc.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+    return diffDias <= 3; // Vence em 3 dias ou menos (ou já venceu)
+  });
+  
+  const countAprovacoesUrgentes = aprovacoesUrgentes.length;
+  const valorAprovacoesUrgentes = aprovacoesUrgentes.reduce((sum, c) => sum + c.valor, 0);
 
   const filteredContas = contas.filter(c => {
     const matchesSearch = c.fornecedor_nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -279,7 +294,7 @@ export default function ContasPagar() {
         </motion.div>
 
         {/* KPI Cards */}
-        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <Card className="stat-card group">
             <CardContent className="p-5">
               <div className="flex items-start justify-between">
@@ -332,6 +347,32 @@ export default function ContasPagar() {
                 </div>
                 <div className="h-12 w-12 rounded-xl bg-warning/10 text-warning flex items-center justify-center transition-transform group-hover:scale-110">
                   <Calendar className="h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className={cn(
+            "stat-card group cursor-pointer transition-all",
+            countAprovacoesUrgentes > 0 && "ring-2 ring-warning/50 animate-pulse"
+          )} onClick={() => setAprovacaoFilter('pendente_aprovacao')}>
+            <CardContent className="p-5">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Aprovações Urgentes</p>
+                  <p className={cn(
+                    "text-2xl font-bold font-display mt-1",
+                    countAprovacoesUrgentes > 0 ? "text-warning" : ""
+                  )}>{countAprovacoesUrgentes}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {countAprovacoesUrgentes > 0 ? formatCurrency(valorAprovacoesUrgentes) : 'Nenhuma pendente'}
+                  </p>
+                </div>
+                <div className={cn(
+                  "h-12 w-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110",
+                  countAprovacoesUrgentes > 0 ? "bg-warning/10 text-warning" : "bg-muted text-muted-foreground"
+                )}>
+                  <ShieldAlert className="h-6 w-6" />
                 </div>
               </div>
             </CardContent>
