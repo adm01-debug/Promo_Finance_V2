@@ -25,6 +25,8 @@ import Boletos from "./pages/Boletos";
 import NotasFiscais from "./pages/NotasFiscais";
 import Usuarios from "./pages/Usuarios";
 import AuditLogs from "./pages/AuditLogs";
+import Clientes from "./pages/Clientes";
+import Fornecedores from "./pages/Fornecedores";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +53,8 @@ const App = () => (
               <Route path="/cobrancas" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><Cobrancas /></ProtectedRoute>} />
               <Route path="/boletos" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><Boletos /></ProtectedRoute>} />
               <Route path="/notas-fiscais" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><NotasFiscais /></ProtectedRoute>} />
+              <Route path="/clientes" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><Clientes /></ProtectedRoute>} />
+              <Route path="/fornecedores" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><Fornecedores /></ProtectedRoute>} />
               
               {/* Protected routes - Financeiro+ */}
               <Route path="/centro-custos" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><CentroCustos /></ProtectedRoute>} />

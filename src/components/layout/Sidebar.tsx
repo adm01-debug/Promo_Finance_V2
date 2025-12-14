@@ -20,6 +20,8 @@ import {
   Users,
   Zap,
   ScrollText,
+  User,
+  Truck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -40,6 +42,8 @@ const navItems: NavItem[] = [
   { label: 'Cobrança', icon: Receipt, href: '/cobrancas' },
   { label: 'Boletos', icon: CreditCard, href: '/boletos' },
   { label: 'Notas Fiscais', icon: FileText, href: '/notas-fiscais' },
+  { label: 'Clientes', icon: User, href: '/clientes' },
+  { label: 'Fornecedores', icon: Truck, href: '/fornecedores' },
   { label: 'Conciliação', icon: RefreshCcw, href: '/conciliacao', badge: 12 },
   { label: 'Fluxo de Caixa', icon: BarChart3, href: '/fluxo-caixa' },
   { label: 'Centro de Custos', icon: PieChart, href: '/centro-custos' },
