@@ -14,7 +14,6 @@ import {
   AlertTriangle,
   Clock,
   TrendingUp,
-  TrendingDown,
   DollarSign,
   Calendar,
   Building2,
@@ -22,6 +21,7 @@ import {
   CreditCard,
   Banknote,
   QrCode,
+  Loader2,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -49,10 +49,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { mockContasPagar, mockCentrosCusto } from '@/data/mockData';
+import { useContasPagar, useCentrosCusto } from '@/hooks/useFinancialData';
 import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
-import { StatusPagamento, TipoCobranca } from '@/types/financial';
 import { MainLayout } from '@/components/layout/MainLayout';
 
 const containerVariants = {
@@ -64,6 +63,9 @@ const itemVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
 } as const;
+
+type StatusPagamento = 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
+type TipoCobranca = 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';
 
 const statusConfig: Record<StatusPagamento, { label: string; color: string; icon: typeof CheckCircle2 }> = {
   pago: { label: 'Pago', color: 'bg-success/10 text-success border-success/20', icon: CheckCircle2 },
@@ -86,30 +88,25 @@ export default function ContasPagar() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [centroCustoFilter, setCentroCustoFilter] = useState<string>('all');
 
-  const contas = mockContasPagar;
+  const { data: contas = [], isLoading } = useContasPagar();
+  const { data: centrosCusto = [] } = useCentrosCusto();
 
   // KPIs
-  const totalPagar = contas.reduce((sum, c) => c.status !== 'pago' && c.status !== 'cancelado' ? sum + c.valor - (c.valorPago || 0) : sum, 0);
-  const totalVencido = contas.filter(c => c.status === 'vencido').reduce((sum, c) => sum + c.valor - (c.valorPago || 0), 0);
-  const totalPagoMes = contas.filter(c => c.status === 'pago').reduce((sum, c) => sum + (c.valorPago || 0), 0);
+  const totalPagar = contas.reduce((sum, c) => c.status !== 'pago' && c.status !== 'cancelado' ? sum + c.valor - (c.valor_pago || 0) : sum, 0);
+  const totalVencido = contas.filter(c => c.status === 'vencido').reduce((sum, c) => sum + c.valor - (c.valor_pago || 0), 0);
+  const totalPagoMes = contas.filter(c => c.status === 'pago').reduce((sum, c) => sum + (c.valor_pago || 0), 0);
   const venceHoje = contas.filter(c => {
     const hoje = new Date().toDateString();
-    return new Date(c.dataVencimento).toDateString() === hoje && c.status === 'pendente';
+    return new Date(c.data_vencimento).toDateString() === hoje && c.status === 'pendente';
   }).length;
 
   const filteredContas = contas.filter(c => {
-    const matchesSearch = c.fornecedor.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = c.fornecedor_nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
       c.descricao.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
-    const matchesCentroCusto = centroCustoFilter === 'all' || c.centroCustoId === centroCustoFilter;
+    const matchesCentroCusto = centroCustoFilter === 'all' || c.centro_custo_id === centroCustoFilter;
     return matchesSearch && matchesStatus && matchesCentroCusto;
   });
-
-  const getCentroCustoNome = (id?: string) => {
-    if (!id) return '-';
-    const cc = mockCentrosCusto.find(c => c.id === id);
-    return cc?.nome || '-';
-  };
 
   return (
     <MainLayout>
@@ -140,10 +137,6 @@ export default function ContasPagar() {
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Total a Pagar</p>
                   <p className="text-2xl font-bold font-display mt-1">{formatCurrency(totalPagar)}</p>
-                  <div className="flex items-center gap-1 text-sm font-medium text-destructive mt-1">
-                    <TrendingUp className="h-4 w-4" />
-                    <span>+3.2%</span>
-                  </div>
                 </div>
                 <div className="h-12 w-12 rounded-xl bg-destructive/10 text-destructive flex items-center justify-center transition-transform group-hover:scale-110">
                   <DollarSign className="h-6 w-6" />
@@ -158,10 +151,6 @@ export default function ContasPagar() {
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Pago no Mês</p>
                   <p className="text-2xl font-bold font-display mt-1">{formatCurrency(totalPagoMes)}</p>
-                  <div className="flex items-center gap-1 text-sm font-medium text-success mt-1">
-                    <CheckCircle2 className="h-4 w-4" />
-                    <span>Em dia</span>
-                  </div>
                 </div>
                 <div className="h-12 w-12 rounded-xl bg-success/10 text-success flex items-center justify-center transition-transform group-hover:scale-110">
                   <CheckCircle2 className="h-6 w-6" />
@@ -176,10 +165,6 @@ export default function ContasPagar() {
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Vencido</p>
                   <p className="text-2xl font-bold font-display mt-1 text-destructive">{formatCurrency(totalVencido)}</p>
-                  <div className="flex items-center gap-1 text-sm font-medium text-destructive mt-1">
-                    <AlertTriangle className="h-4 w-4" />
-                    <span>Atenção!</span>
-                  </div>
                 </div>
                 <div className="h-12 w-12 rounded-xl bg-destructive/10 text-destructive flex items-center justify-center transition-transform group-hover:scale-110">
                   <AlertTriangle className="h-6 w-6" />
@@ -194,10 +179,7 @@ export default function ContasPagar() {
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Vence Hoje</p>
                   <p className="text-2xl font-bold font-display mt-1">{venceHoje}</p>
-                  <div className="flex items-center gap-1 text-sm font-medium text-warning mt-1">
-                    <Clock className="h-4 w-4" />
-                    <span>Contas</span>
-                  </div>
+                  <p className="text-xs text-muted-foreground">Contas</p>
                 </div>
                 <div className="h-12 w-12 rounded-xl bg-warning/10 text-warning flex items-center justify-center transition-transform group-hover:scale-110">
                   <Calendar className="h-6 w-6" />
@@ -240,7 +222,7 @@ export default function ContasPagar() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todos os centros</SelectItem>
-                    {mockCentrosCusto.map(cc => (
+                    {centrosCusto.map(cc => (
                       <SelectItem key={cc.id} value={cc.id}>{cc.nome}</SelectItem>
                     ))}
                   </SelectContent>
@@ -256,144 +238,158 @@ export default function ContasPagar() {
         {/* Table */}
         <motion.div variants={itemVariants}>
           <Card className="card-elevated overflow-hidden">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-transparent">
-                    <TableHead className="w-[250px]">
-                      <Button variant="ghost" size="sm" className="gap-1 -ml-3 h-8 font-semibold">
-                        Fornecedor
-                        <ArrowUpDown className="h-3 w-3" />
-                      </Button>
-                    </TableHead>
-                    <TableHead>Descrição</TableHead>
-                    <TableHead>
-                      <Button variant="ghost" size="sm" className="gap-1 -ml-3 h-8 font-semibold">
-                        Valor
-                        <ArrowUpDown className="h-3 w-3" />
-                      </Button>
-                    </TableHead>
-                    <TableHead>
-                      <Button variant="ghost" size="sm" className="gap-1 -ml-3 h-8 font-semibold">
-                        Vencimento
-                        <ArrowUpDown className="h-3 w-3" />
-                      </Button>
-                    </TableHead>
-                    <TableHead>Centro de Custo</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="w-[80px]"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredContas.map((conta, index) => {
-                    const status = statusConfig[conta.status];
-                    const StatusIcon = status.icon;
-                    const TipoIcon = tipoCobrancaIcons[conta.tipoCobranca];
-                    const overdueDays = calculateOverdueDays(conta.dataVencimento);
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead className="w-[250px]">
+                        <Button variant="ghost" size="sm" className="gap-1 -ml-3 h-8 font-semibold">
+                          Fornecedor
+                          <ArrowUpDown className="h-3 w-3" />
+                        </Button>
+                      </TableHead>
+                      <TableHead>Descrição</TableHead>
+                      <TableHead>
+                        <Button variant="ghost" size="sm" className="gap-1 -ml-3 h-8 font-semibold">
+                          Valor
+                          <ArrowUpDown className="h-3 w-3" />
+                        </Button>
+                      </TableHead>
+                      <TableHead>
+                        <Button variant="ghost" size="sm" className="gap-1 -ml-3 h-8 font-semibold">
+                          Vencimento
+                          <ArrowUpDown className="h-3 w-3" />
+                        </Button>
+                      </TableHead>
+                      <TableHead>Centro de Custo</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="w-[80px]"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredContas.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
+                          {contas.length === 0 ? 'Nenhuma conta cadastrada' : 'Nenhuma conta encontrada com os filtros aplicados'}
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      filteredContas.map((conta, index) => {
+                        const status = statusConfig[conta.status as StatusPagamento];
+                        const StatusIcon = status?.icon || Clock;
+                        const TipoIcon = tipoCobrancaIcons[conta.tipo_cobranca as TipoCobranca] || Banknote;
+                        const overdueDays = calculateOverdueDays(new Date(conta.data_vencimento));
 
-                    return (
-                      <motion.tr
-                        key={conta.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className="group hover:bg-muted/50 transition-colors"
-                      >
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-lg bg-secondary/10 flex items-center justify-center">
-                              <Building2 className="h-5 w-5 text-secondary" />
-                            </div>
-                            <div>
-                              <p className="font-medium">{conta.fornecedor}</p>
-                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <TipoIcon className="h-3 w-3" />
-                                <span className="capitalize">{conta.tipoCobranca}</span>
+                        return (
+                          <motion.tr
+                            key={conta.id}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            className="group hover:bg-muted/50 transition-colors"
+                          >
+                            <TableCell>
+                              <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-lg bg-secondary/10 flex items-center justify-center">
+                                  <Building2 className="h-5 w-5 text-secondary" />
+                                </div>
+                                <div>
+                                  <p className="font-medium">{conta.fornecedor_nome}</p>
+                                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                    <TipoIcon className="h-3 w-3" />
+                                    <span className="capitalize">{conta.tipo_cobranca}</span>
+                                  </div>
+                                </div>
                               </div>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm truncate max-w-[200px]">{conta.descricao}</span>
-                          </div>
-                          {conta.numeroDocumento && (
-                            <p className="text-xs text-muted-foreground mt-0.5">{conta.numeroDocumento}</p>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <p className="font-semibold">{formatCurrency(conta.valor)}</p>
-                            {conta.recorrente && (
-                              <Badge variant="outline" className="text-xs mt-1">Recorrente</Badge>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4 text-muted-foreground" />
-                            <div>
-                              <p className="text-sm">{formatDate(conta.dataVencimento)}</p>
-                              {overdueDays > 0 && conta.status !== 'pago' && (
-                                <p className="text-xs text-destructive font-medium">
-                                  {overdueDays} dias em atraso
-                                </p>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <FileText className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm truncate max-w-[200px]">{conta.descricao}</span>
+                              </div>
+                              {conta.numero_documento && (
+                                <p className="text-xs text-muted-foreground mt-0.5">{conta.numero_documento}</p>
                               )}
-                              {overdueDays < 0 && conta.status !== 'pago' && (
-                                <p className="text-xs text-muted-foreground">
-                                  Vence {getRelativeTime(conta.dataVencimento)}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="text-xs">
-                            {getCentroCustoNome(conta.centroCustoId)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={cn("gap-1", status.color)}>
-                            <StatusIcon className="h-3 w-3" />
-                            {status.label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem className="gap-2">
-                                <Eye className="h-4 w-4" />
-                                Visualizar
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="gap-2">
-                                <Edit className="h-4 w-4" />
-                                Editar
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem className="gap-2">
-                                <CheckCircle2 className="h-4 w-4" />
-                                Registrar Pagamento
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem className="gap-2 text-destructive">
-                                <Trash2 className="h-4 w-4" />
-                                Excluir
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </motion.tr>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
+                            </TableCell>
+                            <TableCell>
+                              <div>
+                                <p className="font-semibold">{formatCurrency(conta.valor)}</p>
+                                {conta.recorrente && (
+                                  <Badge variant="outline" className="text-xs mt-1">Recorrente</Badge>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <Calendar className="h-4 w-4 text-muted-foreground" />
+                                <div>
+                                  <p className="text-sm">{formatDate(new Date(conta.data_vencimento))}</p>
+                                  {overdueDays > 0 && conta.status !== 'pago' && (
+                                    <p className="text-xs text-destructive font-medium">
+                                      {overdueDays} dias em atraso
+                                    </p>
+                                  )}
+                                  {overdueDays < 0 && conta.status !== 'pago' && (
+                                    <p className="text-xs text-muted-foreground">
+                                      Vence {getRelativeTime(new Date(conta.data_vencimento))}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className="text-xs">
+                                {(conta.centros_custo as any)?.nome || '-'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className={cn("gap-1", status?.color)}>
+                                <StatusIcon className="h-3 w-3" />
+                                {status?.label || conta.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem className="gap-2">
+                                    <Eye className="h-4 w-4" />
+                                    Visualizar
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem className="gap-2">
+                                    <Edit className="h-4 w-4" />
+                                    Editar
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem className="gap-2">
+                                    <CheckCircle2 className="h-4 w-4" />
+                                    Registrar Pagamento
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem className="gap-2 text-destructive">
+                                    <Trash2 className="h-4 w-4" />
+                                    Excluir
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
+                          </motion.tr>
+                        );
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </Card>
         </motion.div>
       </motion.div>

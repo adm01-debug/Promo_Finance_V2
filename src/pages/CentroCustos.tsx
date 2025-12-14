@@ -1,8 +1,6 @@
 import { motion } from 'framer-motion';
 import {
   Plus,
-  TrendingUp,
-  TrendingDown,
   AlertTriangle,
   CheckCircle2,
   DollarSign,
@@ -12,12 +10,13 @@ import {
   Settings,
   ArrowUpRight,
   ArrowDownRight,
+  Loader2,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { mockCentrosCusto, mockDistribuicaoCentroCusto } from '@/data/mockData';
+import { useCentrosCusto } from '@/hooks/useFinancialData';
 import { formatCurrency, formatPercentage } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -36,22 +35,38 @@ const itemVariants = {
 const COLORS = ['hsl(24, 95%, 46%)', 'hsl(215, 90%, 42%)', 'hsl(150, 70%, 32%)', 'hsl(275, 75%, 48%)', 'hsl(42, 95%, 48%)'];
 
 export default function CentroCustos() {
-  const centros = mockCentrosCusto;
-  const distribuicao = mockDistribuicaoCentroCusto;
+  const { data: centros = [], isLoading } = useCentrosCusto();
 
   // KPIs
-  const totalOrcado = centros.reduce((sum, c) => sum + c.orcamentoPrevisto, 0);
-  const totalRealizado = centros.reduce((sum, c) => sum + c.orcamentoRealizado, 0);
-  const percentualGasto = (totalRealizado / totalOrcado) * 100;
+  const totalOrcado = centros.reduce((sum, c) => sum + c.orcamento_previsto, 0);
+  const totalRealizado = centros.reduce((sum, c) => sum + c.orcamento_realizado, 0);
+  const percentualGasto = totalOrcado > 0 ? (totalRealizado / totalOrcado) * 100 : 0;
   const saldoDisponivel = totalOrcado - totalRealizado;
 
   // Dados para o gráfico de barras comparativo
   const barData = centros.map(c => ({
     nome: c.codigo,
-    Orçado: c.orcamentoPrevisto,
-    Realizado: c.orcamentoRealizado,
-    percentual: ((c.orcamentoRealizado / c.orcamentoPrevisto) * 100).toFixed(1),
+    Orçado: c.orcamento_previsto,
+    Realizado: c.orcamento_realizado,
+    percentual: c.orcamento_previsto > 0 ? ((c.orcamento_realizado / c.orcamento_previsto) * 100).toFixed(1) : '0',
   }));
+
+  // Dados para distribuição
+  const distribuicao = centros.map(c => ({
+    nome: c.nome,
+    valor: c.orcamento_realizado,
+    percentual: totalRealizado > 0 ? (c.orcamento_realizado / totalRealizado) * 100 : 0,
+  }));
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center h-96">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -139,7 +154,7 @@ export default function CentroCustos() {
                   <p className="text-sm font-medium text-muted-foreground">Centros Ativos</p>
                   <p className="text-2xl font-bold font-display mt-1">{centros.filter(c => c.ativo).length}</p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {centros.filter(c => c.orcamentoRealizado > c.orcamentoPrevisto).length} acima do orçamento
+                    {centros.filter(c => c.orcamento_realizado > c.orcamento_previsto).length} acima do orçamento
                   </p>
                 </div>
                 <div className="h-12 w-12 rounded-xl bg-accent/10 text-accent flex items-center justify-center transition-transform group-hover:scale-110">
@@ -151,147 +166,155 @@ export default function CentroCustos() {
         </motion.div>
 
         {/* Charts Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Comparativo Orçado x Realizado */}
-          <motion.div variants={itemVariants} className="lg:col-span-2">
-            <Card className="card-elevated h-[400px]">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-display flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-primary" />
-                  Orçado vs Realizado
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="h-[320px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={barData} layout="vertical">
-                    <XAxis type="number" tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} />
-                    <YAxis type="category" dataKey="nome" width={50} />
-                    <Tooltip 
-                      formatter={(v: number) => formatCurrency(v)}
-                      labelFormatter={(l) => `Centro: ${l}`}
-                    />
-                    <Legend />
-                    <Bar dataKey="Orçado" fill="hsl(var(--muted))" radius={[0, 4, 4, 0]} />
-                    <Bar dataKey="Realizado" fill="hsl(24, 95%, 46%)" radius={[0, 4, 4, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </motion.div>
+        {centros.length > 0 && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Comparativo Orçado x Realizado */}
+            <motion.div variants={itemVariants} className="lg:col-span-2">
+              <Card className="card-elevated h-[400px]">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg font-display flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5 text-primary" />
+                    Orçado vs Realizado
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="h-[320px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={barData} layout="vertical">
+                      <XAxis type="number" tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} />
+                      <YAxis type="category" dataKey="nome" width={50} />
+                      <Tooltip 
+                        formatter={(v: number) => formatCurrency(v)}
+                        labelFormatter={(l) => `Centro: ${l}`}
+                      />
+                      <Legend />
+                      <Bar dataKey="Orçado" fill="hsl(var(--muted))" radius={[0, 4, 4, 0]} />
+                      <Bar dataKey="Realizado" fill="hsl(24, 95%, 46%)" radius={[0, 4, 4, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-          {/* Distribuição por Centro */}
-          <motion.div variants={itemVariants}>
-            <Card className="card-elevated h-[400px]">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-display flex items-center gap-2">
-                  <PieChart className="h-5 w-5 text-primary" />
-                  Distribuição
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="h-[320px]">
-                <ResponsiveContainer width="100%" height="75%">
-                  <RePieChart>
-                    <Pie
-                      data={distribuicao}
-                      dataKey="valor"
-                      nameKey="nome"
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={50}
-                      outerRadius={80}
-                      paddingAngle={2}
-                    >
-                      {distribuicao.map((_, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(v: number) => formatCurrency(v)} />
-                  </RePieChart>
-                </ResponsiveContainer>
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {distribuicao.slice(0, 3).map((item, i) => (
-                    <Badge key={item.nome} variant="outline" className="text-xs">
-                      <span className="h-2 w-2 rounded-full mr-1" style={{ background: COLORS[i] }} />
-                      {item.nome} ({item.percentual.toFixed(1)}%)
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
+            {/* Distribuição por Centro */}
+            <motion.div variants={itemVariants}>
+              <Card className="card-elevated h-[400px]">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg font-display flex items-center gap-2">
+                    <PieChart className="h-5 w-5 text-primary" />
+                    Distribuição
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="h-[320px]">
+                  <ResponsiveContainer width="100%" height="75%">
+                    <RePieChart>
+                      <Pie
+                        data={distribuicao}
+                        dataKey="valor"
+                        nameKey="nome"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={50}
+                        outerRadius={80}
+                        paddingAngle={2}
+                      >
+                        {distribuicao.map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(v: number) => formatCurrency(v)} />
+                    </RePieChart>
+                  </ResponsiveContainer>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {distribuicao.slice(0, 3).map((item, i) => (
+                      <Badge key={item.nome} variant="outline" className="text-xs">
+                        <span className="h-2 w-2 rounded-full mr-1" style={{ background: COLORS[i] }} />
+                        {item.nome} ({item.percentual.toFixed(1)}%)
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        )}
 
         {/* Centro de Custos Cards */}
         <motion.div variants={itemVariants}>
           <h2 className="text-xl font-display font-bold mb-4">Detalhamento por Centro</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {centros.map((centro, index) => {
-              const percentual = (centro.orcamentoRealizado / centro.orcamentoPrevisto) * 100;
-              const diferenca = centro.orcamentoRealizado - centro.orcamentoPrevisto;
-              const isOver = diferenca > 0;
+          {centros.length === 0 ? (
+            <Card className="p-8 text-center text-muted-foreground">
+              Nenhum centro de custo cadastrado
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {centros.map((centro, index) => {
+                const percentual = centro.orcamento_previsto > 0 ? (centro.orcamento_realizado / centro.orcamento_previsto) * 100 : 0;
+                const diferenca = centro.orcamento_realizado - centro.orcamento_previsto;
+                const isOver = diferenca > 0;
 
-              return (
-                <motion.div
-                  key={centro.id}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.08 }}
-                >
-                  <Card className="card-interactive h-full">
-                    <CardContent className="p-5">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <div 
-                            className="h-10 w-10 rounded-lg flex items-center justify-center"
-                            style={{ background: `${COLORS[index % COLORS.length]}20`, color: COLORS[index % COLORS.length] }}
+                return (
+                  <motion.div
+                    key={centro.id}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.08 }}
+                  >
+                    <Card className="card-interactive h-full">
+                      <CardContent className="p-5">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <div 
+                              className="h-10 w-10 rounded-lg flex items-center justify-center"
+                              style={{ background: `${COLORS[index % COLORS.length]}20`, color: COLORS[index % COLORS.length] }}
+                            >
+                              <span className="font-bold text-sm">{centro.codigo}</span>
+                            </div>
+                            <div>
+                              <h3 className="font-semibold">{centro.nome}</h3>
+                              <p className="text-xs text-muted-foreground">{centro.descricao || '-'}</p>
+                            </div>
+                          </div>
+                          <Badge 
+                            variant="outline" 
+                            className={cn(
+                              "text-xs",
+                              isOver ? "bg-destructive/10 text-destructive border-destructive/20" : "bg-success/10 text-success border-success/20"
+                            )}
                           >
-                            <span className="font-bold text-sm">{centro.codigo}</span>
-                          </div>
-                          <div>
-                            <h3 className="font-semibold">{centro.nome}</h3>
-                            <p className="text-xs text-muted-foreground">{centro.descricao}</p>
-                          </div>
+                            {isOver ? <ArrowUpRight className="h-3 w-3 mr-1" /> : <ArrowDownRight className="h-3 w-3 mr-1" />}
+                            {formatPercentage(percentual - 100)}
+                          </Badge>
                         </div>
-                        <Badge 
-                          variant="outline" 
-                          className={cn(
-                            "text-xs",
-                            isOver ? "bg-destructive/10 text-destructive border-destructive/20" : "bg-success/10 text-success border-success/20"
-                          )}
-                        >
-                          {isOver ? <ArrowUpRight className="h-3 w-3 mr-1" /> : <ArrowDownRight className="h-3 w-3 mr-1" />}
-                          {formatPercentage(percentual - 100)}
-                        </Badge>
-                      </div>
 
-                      <div className="space-y-3">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Orçado</span>
-                          <span className="font-medium">{formatCurrency(centro.orcamentoPrevisto)}</span>
+                        <div className="space-y-3">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Orçado</span>
+                            <span className="font-medium">{formatCurrency(centro.orcamento_previsto)}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Realizado</span>
+                            <span className={cn("font-medium", isOver ? "text-destructive" : "text-success")}>
+                              {formatCurrency(centro.orcamento_realizado)}
+                            </span>
+                          </div>
+                          <Progress 
+                            value={percentual > 100 ? 100 : percentual} 
+                            className={cn("h-2", isOver && "[&>div]:bg-destructive")} 
+                          />
+                          <div className="flex justify-between text-xs text-muted-foreground">
+                            <span>{percentual.toFixed(1)}% utilizado</span>
+                            <span className={cn(isOver ? "text-destructive" : "text-success")}>
+                              {isOver ? '+' : ''}{formatCurrency(diferenca)}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Realizado</span>
-                          <span className={cn("font-medium", isOver ? "text-destructive" : "text-success")}>
-                            {formatCurrency(centro.orcamentoRealizado)}
-                          </span>
-                        </div>
-                        <Progress 
-                          value={percentual > 100 ? 100 : percentual} 
-                          className={cn("h-2", isOver && "[&>div]:bg-destructive")} 
-                        />
-                        <div className="flex justify-between text-xs text-muted-foreground">
-                          <span>{percentual.toFixed(1)}% utilizado</span>
-                          <span className={cn(isOver ? "text-destructive" : "text-success")}>
-                            {isOver ? '+' : ''}{formatCurrency(diferenca)}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
         </motion.div>
       </motion.div>
     </MainLayout>
