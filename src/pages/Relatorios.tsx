@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { 
   FileText,
@@ -22,6 +22,7 @@ import {
   ArrowUpDown,
   Eye,
   Clock,
+  Loader2,
 } from 'lucide-react';
 import { RelatoriosAgendados } from '@/components/relatorios/RelatoriosAgendados';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -31,6 +32,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Select,
   SelectContent,
@@ -70,10 +72,19 @@ import {
   Legend,
   ComposedChart
 } from 'recharts';
-import { mockCNPJs, mockContasBancarias } from '@/data/mockData';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { useEmpresas, useContasBancarias } from '@/hooks/useFinancialData';
+import {
+  useComparativoPeriodos,
+  useFluxoMensal,
+  useDespesasPorCategoria,
+  useReceitasPorCliente,
+  useInadimplenciaPorMes,
+  useRelatorioKPIs,
+} from '@/hooks/useRelatoriosData';
+import { generateFluxoCaixaPDF, generateFluxoCaixaCSV } from '@/lib/pdf-generator';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -90,52 +101,6 @@ const itemVariants = {
 
 const COLORS = ['hsl(24, 95%, 46%)', 'hsl(215, 90%, 42%)', 'hsl(150, 70%, 32%)', 'hsl(275, 75%, 48%)', 'hsl(42, 95%, 48%)', 'hsl(0, 78%, 55%)'];
 
-// Mock data para relatórios
-const comparativoPeriodos = [
-  { mes: 'Jul', atual: 85000, anterior: 72000 },
-  { mes: 'Ago', atual: 92000, anterior: 78000 },
-  { mes: 'Set', atual: 78000, anterior: 85000 },
-  { mes: 'Out', atual: 105000, anterior: 92000 },
-  { mes: 'Nov', atual: 118000, anterior: 98000 },
-  { mes: 'Dez', atual: 145000, anterior: 115000 },
-];
-
-const fluxoMensal = [
-  { mes: 'Jul', receitas: 85000, despesas: 62000, saldo: 23000 },
-  { mes: 'Ago', receitas: 92000, despesas: 71000, saldo: 21000 },
-  { mes: 'Set', receitas: 78000, despesas: 58000, saldo: 20000 },
-  { mes: 'Out', receitas: 105000, despesas: 75000, saldo: 30000 },
-  { mes: 'Nov', receitas: 118000, despesas: 82000, saldo: 36000 },
-  { mes: 'Dez', receitas: 145000, despesas: 95000, saldo: 50000 },
-];
-
-const despesasPorCategoria = [
-  { nome: 'Fornecedores', valor: 125000, percentual: 35 },
-  { nome: 'Folha de Pagamento', valor: 89000, percentual: 25 },
-  { nome: 'Marketing', valor: 53500, percentual: 15 },
-  { nome: 'Infraestrutura', valor: 35700, percentual: 10 },
-  { nome: 'Impostos', valor: 28560, percentual: 8 },
-  { nome: 'Outros', valor: 25000, percentual: 7 },
-];
-
-const receitasPorCliente = [
-  { cliente: 'ABC Ltda', valor: 45000, percentual: 18 },
-  { cliente: 'XYZ Corp', valor: 38000, percentual: 15 },
-  { cliente: 'Tech Solutions', valor: 32000, percentual: 13 },
-  { cliente: 'Global Services', valor: 28000, percentual: 11 },
-  { cliente: 'Mega Store', valor: 25000, percentual: 10 },
-  { cliente: 'Outros', valor: 82000, percentual: 33 },
-];
-
-const inadimplenciaPorMes = [
-  { mes: 'Jul', taxa: 5.2, valor: 12500 },
-  { mes: 'Ago', taxa: 4.8, valor: 11200 },
-  { mes: 'Set', taxa: 6.1, valor: 14800 },
-  { mes: 'Out', taxa: 4.5, valor: 10500 },
-  { mes: 'Nov', taxa: 3.9, valor: 9200 },
-  { mes: 'Dez', taxa: 4.2, valor: 10800 },
-];
-
 const relatoriosDisponiveis = [
   { id: '1', nome: 'DRE - Demonstrativo de Resultados', categoria: 'Contábil', icon: FileText },
   { id: '2', nome: 'Fluxo de Caixa Realizado', categoria: 'Financeiro', icon: TrendingUp },
@@ -148,25 +113,62 @@ const relatoriosDisponiveis = [
 ];
 
 export default function Relatorios() {
-  const [periodoInicio, setPeriodoInicio] = useState('2024-07-01');
-  const [periodoFim, setPeriodoFim] = useState('2024-12-31');
+  const [periodoInicio, setPeriodoInicio] = useState(() => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - 6);
+    return d.toISOString().split('T')[0];
+  });
+  const [periodoFim, setPeriodoFim] = useState(() => new Date().toISOString().split('T')[0]);
   const [empresaSelecionada, setEmpresaSelecionada] = useState('all');
   const [contaSelecionada, setContaSelecionada] = useState('all');
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
-  const handleExport = (format: 'pdf' | 'excel') => {
+  // Real data hooks
+  const { data: empresas, isLoading: loadingEmpresas } = useEmpresas();
+  const { data: contasBancarias, isLoading: loadingContas } = useContasBancarias();
+  const { data: comparativoPeriodos, isLoading: loadingComparativo } = useComparativoPeriodos();
+  const { data: fluxoMensal, isLoading: loadingFluxo } = useFluxoMensal();
+  const { data: despesasPorCategoria, isLoading: loadingDespesas } = useDespesasPorCategoria();
+  const { data: receitasPorCliente, isLoading: loadingReceitas } = useReceitasPorCliente();
+  const { data: inadimplenciaPorMes, isLoading: loadingInadimplencia } = useInadimplenciaPorMes();
+  const { data: kpis, isLoading: loadingKpis, refetch: refetchKpis } = useRelatorioKPIs(periodoInicio, periodoFim);
+
+  const isLoading = loadingComparativo || loadingFluxo || loadingDespesas || loadingReceitas || loadingInadimplencia || loadingKpis;
+
+  const handleExport = async (format: 'pdf' | 'excel') => {
     setIsGenerating(true);
-    setTimeout(() => {
-      setIsGenerating(false);
+    try {
+      const fluxoData = (fluxoMensal || []).map(f => ({
+        data: f.mes,
+        receitas: f.receitas,
+        despesas: f.despesas,
+        saldo: f.saldo,
+      }));
+      
+      if (format === 'pdf') {
+        generateFluxoCaixaPDF(fluxoData, 'Relatório Financeiro');
+      } else {
+        generateFluxoCaixaCSV(fluxoData);
+      }
+      
       toast({
         title: `Relatório exportado`,
         description: `O arquivo ${format.toUpperCase()} foi gerado com sucesso.`,
       });
-    }, 1500);
+    } catch (error) {
+      toast({
+        title: 'Erro ao exportar',
+        description: 'Não foi possível gerar o arquivo.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handlePrint = () => {
+    window.print();
     toast({
       title: "Preparando impressão",
       description: "O relatório está sendo preparado para impressão.",
@@ -180,10 +182,25 @@ export default function Relatorios() {
     });
   };
 
-  const totalReceitas = fluxoMensal.reduce((acc, m) => acc + m.receitas, 0);
-  const totalDespesas = fluxoMensal.reduce((acc, m) => acc + m.despesas, 0);
-  const saldoPeriodo = totalReceitas - totalDespesas;
-  const crescimento = ((comparativoPeriodos[5].atual - comparativoPeriodos[5].anterior) / comparativoPeriodos[5].anterior) * 100;
+  const handleRefresh = () => {
+    refetchKpis();
+    toast({
+      title: "Atualizando dados",
+      description: "Os relatórios estão sendo recarregados.",
+    });
+  };
+
+  // Calculate KPIs
+  const totalReceitas = kpis?.totalReceitas || 0;
+  const totalDespesas = kpis?.totalDespesas || 0;
+  const saldoPeriodo = kpis?.saldoPeriodo || 0;
+  
+  const crescimento = useMemo(() => {
+    if (!comparativoPeriodos || comparativoPeriodos.length < 2) return 0;
+    const ultimo = comparativoPeriodos[comparativoPeriodos.length - 1];
+    if (ultimo.anterior === 0) return 0;
+    return ((ultimo.atual - ultimo.anterior) / ultimo.anterior) * 100;
+  }, [comparativoPeriodos]);
 
   return (
     <div className="space-y-6">
@@ -264,8 +281,10 @@ export default function Relatorios() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas as empresas</SelectItem>
-                  {mockCNPJs.map(cnpj => (
-                    <SelectItem key={cnpj.id} value={cnpj.id}>{cnpj.nomeFantasia}</SelectItem>
+                  {(empresas || []).map(empresa => (
+                    <SelectItem key={empresa.id} value={empresa.id}>
+                      {empresa.nome_fantasia || empresa.razao_social}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -278,15 +297,21 @@ export default function Relatorios() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas as contas</SelectItem>
-                  {mockContasBancarias.map(conta => (
-                    <SelectItem key={conta.id} value={conta.id}>{conta.banco}</SelectItem>
+                  {(contasBancarias || []).map(conta => (
+                    <SelectItem key={conta.id} value={conta.id}>
+                      {conta.banco} - {conta.conta}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="flex items-end">
-              <Button className="w-full">
-                <RefreshCw className="h-4 w-4 mr-2" />
+              <Button className="w-full" onClick={handleRefresh} disabled={isLoading}>
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                )}
                 Atualizar
               </Button>
             </div>
@@ -302,56 +327,74 @@ export default function Relatorios() {
         animate="visible"
       >
         <motion.div variants={itemVariants}>
-          <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20">
+          <Card className="bg-gradient-to-br from-success/10 to-success/5 border-success/20">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Receitas do Período</p>
-                  <p className="text-2xl font-bold text-green-600">{formatCurrency(totalReceitas)}</p>
+                  {loadingKpis ? (
+                    <Skeleton className="h-8 w-24 mt-1" />
+                  ) : (
+                    <p className="text-2xl font-bold text-success">{formatCurrency(totalReceitas)}</p>
+                  )}
                 </div>
-                <TrendingUp className="h-8 w-8 text-green-500/50" />
+                <TrendingUp className="h-8 w-8 text-success/50" />
               </div>
             </CardContent>
           </Card>
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <Card className="bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-500/20">
+          <Card className="bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/20">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Despesas do Período</p>
-                  <p className="text-2xl font-bold text-red-500">{formatCurrency(totalDespesas)}</p>
+                  {loadingKpis ? (
+                    <Skeleton className="h-8 w-24 mt-1" />
+                  ) : (
+                    <p className="text-2xl font-bold text-destructive">{formatCurrency(totalDespesas)}</p>
+                  )}
                 </div>
-                <TrendingDown className="h-8 w-8 text-red-500/50" />
+                <TrendingDown className="h-8 w-8 text-destructive/50" />
               </div>
             </CardContent>
           </Card>
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20">
+          <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Saldo do Período</p>
-                  <p className="text-2xl font-bold text-blue-600">{formatCurrency(saldoPeriodo)}</p>
+                  {loadingKpis ? (
+                    <Skeleton className="h-8 w-24 mt-1" />
+                  ) : (
+                    <p className="text-2xl font-bold text-primary">{formatCurrency(saldoPeriodo)}</p>
+                  )}
                 </div>
-                <DollarSign className="h-8 w-8 text-blue-500/50" />
+                <DollarSign className="h-8 w-8 text-primary/50" />
               </div>
             </CardContent>
           </Card>
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <Card className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 border-purple-500/20">
+          <Card className="bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Crescimento</p>
-                  <p className="text-2xl font-bold text-purple-600">+{crescimento.toFixed(1)}%</p>
+                  {loadingComparativo ? (
+                    <Skeleton className="h-8 w-16 mt-1" />
+                  ) : (
+                    <p className="text-2xl font-bold text-accent">
+                      {crescimento >= 0 ? '+' : ''}{crescimento.toFixed(1)}%
+                    </p>
+                  )}
                 </div>
-                <BarChart3 className="h-8 w-8 text-purple-500/50" />
+                <BarChart3 className="h-8 w-8 text-accent/50" />
               </div>
             </CardContent>
           </Card>
@@ -392,20 +435,26 @@ export default function Relatorios() {
                 <CardDescription>Receitas, despesas e saldo por mês</CardDescription>
               </CardHeader>
               <CardContent className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={fluxoMensal}>
-                    <XAxis dataKey="mes" stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                    <YAxis tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                    <Tooltip 
-                      formatter={(v: number) => formatCurrency(v)}
-                      contentStyle={{ backgroundColor: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
-                    />
-                    <Legend />
-                    <Bar dataKey="receitas" name="Receitas" fill="hsl(150, 70%, 42%)" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="despesas" name="Despesas" fill="hsl(0, 78%, 55%)" radius={[4, 4, 0, 0]} />
-                    <Line type="monotone" dataKey="saldo" name="Saldo" stroke="hsl(215, 90%, 52%)" strokeWidth={3} dot={{ r: 4 }} />
-                  </ComposedChart>
-                </ResponsiveContainer>
+                {loadingFluxo ? (
+                  <div className="flex items-center justify-center h-full">
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ComposedChart data={fluxoMensal || []}>
+                      <XAxis dataKey="mes" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                      <YAxis tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                      <Tooltip 
+                        formatter={(v: number) => formatCurrency(v)}
+                        contentStyle={{ backgroundColor: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
+                      />
+                      <Legend />
+                      <Bar dataKey="receitas" name="Receitas" fill="hsl(var(--success))" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="despesas" name="Despesas" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
+                      <Line type="monotone" dataKey="saldo" name="Saldo" stroke="hsl(var(--primary))" strokeWidth={3} dot={{ r: 4 }} />
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                )}
               </CardContent>
             </Card>
 
@@ -416,39 +465,50 @@ export default function Relatorios() {
                 <CardDescription>Distribuição de gastos</CardDescription>
               </CardHeader>
               <CardContent className="h-[300px]">
-                <div className="flex h-full">
-                  <div className="w-1/2">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie 
-                          data={despesasPorCategoria} 
-                          dataKey="valor" 
-                          nameKey="nome" 
-                          cx="50%" 
-                          cy="50%" 
-                          innerRadius={50} 
-                          outerRadius={80}
-                        >
-                          {despesasPorCategoria.map((_, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip formatter={(v: number) => formatCurrency(v)} />
-                      </PieChart>
-                    </ResponsiveContainer>
+                {loadingDespesas ? (
+                  <div className="flex items-center justify-center h-full">
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                   </div>
-                  <div className="w-1/2 flex flex-col justify-center space-y-2">
-                    {despesasPorCategoria.map((cat, i) => (
-                      <div key={cat.nome} className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2">
-                          <div className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS[i] }} />
-                          <span className="truncate">{cat.nome}</span>
+                ) : (despesasPorCategoria || []).length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+                    <PieChartIcon className="h-12 w-12 mb-2 opacity-20" />
+                    <p>Sem dados de despesas</p>
+                  </div>
+                ) : (
+                  <div className="flex h-full">
+                    <div className="w-1/2">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie 
+                            data={despesasPorCategoria} 
+                            dataKey="valor" 
+                            nameKey="nome" 
+                            cx="50%" 
+                            cy="50%" 
+                            innerRadius={50} 
+                            outerRadius={80}
+                          >
+                            {(despesasPorCategoria || []).map((_, index) => (
+                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Tooltip formatter={(v: number) => formatCurrency(v)} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div className="w-1/2 flex flex-col justify-center space-y-2">
+                      {(despesasPorCategoria || []).map((cat, i) => (
+                        <div key={cat.nome} className="flex items-center justify-between text-sm">
+                          <div className="flex items-center gap-2">
+                            <div className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS[i] }} />
+                            <span className="truncate">{cat.nome}</span>
+                          </div>
+                          <span className="font-medium">{cat.percentual.toFixed(1)}%</span>
                         </div>
-                        <span className="font-medium">{cat.percentual}%</span>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </CardContent>
             </Card>
 
