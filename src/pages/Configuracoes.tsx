@@ -25,6 +25,7 @@ import {
   Zap,
   ToggleLeft
 } from 'lucide-react';
+import { NotificacoesConfig } from '@/components/configuracoes/NotificacoesConfig';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -444,6 +445,9 @@ export default function Configuracoes() {
             initial="hidden"
             animate="visible"
           >
+            {/* Push Notifications Config */}
+            <NotificacoesConfig />
+
             <Card>
               <CardHeader>
                 <CardTitle>Preferências de Notificação</CardTitle>
@@ -465,24 +469,6 @@ export default function Configuracoes() {
                   <Switch 
                     checked={preferencias.notificacoesEmail}
                     onCheckedChange={(checked) => setPreferencias(p => ({ ...p, notificacoesEmail: checked }))}
-                  />
-                </motion.div>
-
-                <Separator />
-
-                <motion.div variants={itemVariants} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
-                      <Bell className="h-5 w-5 text-purple-500" />
-                    </div>
-                    <div>
-                      <p className="font-medium">Notificações Push</p>
-                      <p className="text-sm text-muted-foreground">Notificações em tempo real no navegador</p>
-                    </div>
-                  </div>
-                  <Switch 
-                    checked={preferencias.notificacoesPush}
-                    onCheckedChange={(checked) => setPreferencias(p => ({ ...p, notificacoesPush: checked }))}
                   />
                 </motion.div>
 
