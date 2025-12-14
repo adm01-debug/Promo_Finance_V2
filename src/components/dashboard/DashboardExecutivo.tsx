@@ -64,6 +64,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useEmpresas, useCentrosCusto, useContasBancarias, useContasPagar, useContasReceber } from '@/hooks/useFinancialData';
 import { useAprovacoesPendentesCount } from '@/hooks/useAprovacoesPendentesCount';
+import { PrevisaoIA } from './PrevisaoIA';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -691,6 +692,11 @@ export const DashboardExecutivo = () => {
           </Card>
         </motion.div>
       </div>
+
+      {/* Previsão com IA */}
+      <motion.div variants={itemVariants}>
+        <PrevisaoIA />
+      </motion.div>
     </motion.div>
   );
 };
