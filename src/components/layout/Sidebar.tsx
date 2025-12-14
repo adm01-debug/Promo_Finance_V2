@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -28,28 +28,30 @@ import {
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useAprovacoesPendentesCount } from '@/hooks/useAprovacoesPendentesCount';
 
 interface NavItem {
   label: string;
   icon: React.ElementType;
   href: string;
   badge?: number;
+  badgeKey?: string;
   children?: { label: string; href: string }[];
 }
 
-const navItems: NavItem[] = [
+const baseNavItems: NavItem[] = [
   { label: 'Dashboard', icon: LayoutDashboard, href: '/' },
-  { label: 'Contas a Receber', icon: ArrowDownCircle, href: '/contas-receber', badge: 3 },
-  { label: 'Contas a Pagar', icon: ArrowUpCircle, href: '/contas-pagar', badge: 2 },
+  { label: 'Contas a Receber', icon: ArrowDownCircle, href: '/contas-receber' },
+  { label: 'Contas a Pagar', icon: ArrowUpCircle, href: '/contas-pagar' },
   { label: 'Cobrança', icon: Receipt, href: '/cobrancas' },
   { label: 'Boletos', icon: CreditCard, href: '/boletos' },
   { label: 'Notas Fiscais', icon: FileText, href: '/notas-fiscais' },
   { label: 'Clientes', icon: User, href: '/clientes' },
   { label: 'Fornecedores', icon: Truck, href: '/fornecedores' },
-  { label: 'Conciliação', icon: RefreshCcw, href: '/conciliacao', badge: 12 },
+  { label: 'Conciliação', icon: RefreshCcw, href: '/conciliacao' },
   { label: 'Fluxo de Caixa', icon: BarChart3, href: '/fluxo-caixa' },
   { label: 'Demonstrativos', icon: FileSpreadsheet, href: '/demonstrativos' },
-  { label: 'Aprovações', icon: ShieldCheck, href: '/aprovacoes' },
+  { label: 'Aprovações', icon: ShieldCheck, href: '/aprovacoes', badgeKey: 'aprovacoes' },
   { label: 'Centro de Custos', icon: PieChart, href: '/centro-custos' },
   { label: 'Relatórios', icon: FileText, href: '/relatorios' },
   { label: 'Contas Bancárias', icon: Landmark, href: '/contas-bancarias' },
@@ -60,13 +62,24 @@ const navItems: NavItem[] = [
 ];
 
 const bottomNavItems: NavItem[] = [
-  { label: 'Alertas', icon: Bell, href: '/alertas', badge: 5 },
+  { label: 'Alertas', icon: Bell, href: '/alertas' },
   { label: 'Configurações', icon: Settings, href: '/configuracoes' },
 ];
 
 export const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const { count: aprovacoesPendentes } = useAprovacoesPendentesCount();
+
+  // Merge dynamic badge counts into nav items
+  const navItems = useMemo(() => {
+    return baseNavItems.map(item => {
+      if (item.badgeKey === 'aprovacoes' && aprovacoesPendentes > 0) {
+        return { ...item, badge: aprovacoesPendentes };
+      }
+      return item;
+    });
+  }, [aprovacoesPendentes]);
 
   const NavItemComponent = ({ item }: { item: NavItem }) => {
     const isActive = location.pathname === item.href;
