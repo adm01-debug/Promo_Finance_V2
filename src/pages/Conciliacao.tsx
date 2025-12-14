@@ -37,15 +37,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from '@/components/ui/dialog';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -53,6 +44,7 @@ import { useContasBancarias } from '@/hooks/useFinancialData';
 import { useConciliacao } from '@/hooks/useConciliacao';
 import { ImportarExtratoDialog } from '@/components/conciliacao/ImportarExtratoDialog';
 import { SugestoesMatch } from '@/components/conciliacao/SugestoesMatch';
+import { ConciliacaoManualDialog } from '@/components/conciliacao/ConciliacaoManualDialog';
 import { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
 import { 
   LancamentoSistema, 
@@ -86,6 +78,8 @@ export default function Conciliacao() {
   const [selectedBanco, setSelectedBanco] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [showImportDialog, setShowImportDialog] = useState(false);
+  const [showManualDialog, setShowManualDialog] = useState(false);
+  const [selectedTransacaoManual, setSelectedTransacaoManual] = useState<TransacaoExtrato | null>(null);
   const [transacoes, setTransacoes] = useState<TransacaoExtrato[]>([]);
   const [extratoImportado, setExtratoImportado] = useState<ExtratoOFX | null>(null);
   const [transacoesImportadas, setTransacoesImportadas] = useState<TransacaoOFX[]>([]);
@@ -148,9 +142,21 @@ export default function Conciliacao() {
   }, []);
 
   const handleConciliarManual = useCallback((transacaoId: string) => {
-    // Open manual reconciliation dialog
-    toast.info('Conciliação manual', {
-      description: 'Selecione um lançamento do sistema para vincular',
+    const transacao = transacoes.find(t => t.id === transacaoId);
+    if (transacao) {
+      setSelectedTransacaoManual(transacao);
+      setShowManualDialog(true);
+    }
+  }, [transacoes]);
+
+  const handleManualSuccess = useCallback((transacaoId: string, lancamentoId: string, tipo: 'pagar' | 'receber') => {
+    setTransacoes(prev => prev.map(t => 
+      t.id === transacaoId ? { ...t, conciliada: true } : t
+    ));
+    setTransacoesImportadas(prev => prev.filter(t => t.id !== transacaoId));
+    
+    toast.success('Transação conciliada manualmente', {
+      description: `Vinculada ao lançamento de ${tipo === 'pagar' ? 'contas a pagar' : 'contas a receber'}`,
     });
   }, []);
 
@@ -469,6 +475,15 @@ export default function Conciliacao() {
             </Card>
           )}
         </motion.div>
+
+        {/* Dialog de Conciliação Manual */}
+        <ConciliacaoManualDialog
+          open={showManualDialog}
+          onOpenChange={setShowManualDialog}
+          transacao={selectedTransacaoManual}
+          lancamentos={lancamentosSistema}
+          onSuccess={handleManualSuccess}
+        />
       </motion.div>
     </MainLayout>
   );
