@@ -54,6 +54,7 @@ import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime } fro
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ContaReceberForm } from '@/components/contas-receber/ContaReceberForm';
+import { RegistrarRecebimentoDialog } from '@/components/contas-receber/RegistrarRecebimentoDialog';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -93,6 +94,8 @@ export default function ContasReceber() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [formOpen, setFormOpen] = useState(false);
+  const [recebimentoDialogOpen, setRecebimentoDialogOpen] = useState(false);
+  const [selectedConta, setSelectedConta] = useState<any>(null);
 
   const { data: contas = [], isLoading } = useContasReceber();
 
@@ -384,9 +387,16 @@ export default function ContasReceber() {
                                     Enviar Cobrança
                                   </DropdownMenuItem>
                                   <DropdownMenuSeparator />
-                                  <DropdownMenuItem className="gap-2">
+                                  <DropdownMenuItem 
+                                    className="gap-2"
+                                    onClick={() => {
+                                      setSelectedConta(conta);
+                                      setRecebimentoDialogOpen(true);
+                                    }}
+                                    disabled={conta.status === 'pago' || conta.status === 'cancelado'}
+                                  >
                                     <CheckCircle2 className="h-4 w-4" />
-                                    Registrar Pagamento
+                                    Registrar Recebimento
                                   </DropdownMenuItem>
                                   <DropdownMenuSeparator />
                                   <DropdownMenuItem className="gap-2 text-destructive">
@@ -408,6 +418,11 @@ export default function ContasReceber() {
         </motion.div>
 
         <ContaReceberForm open={formOpen} onOpenChange={setFormOpen} />
+        <RegistrarRecebimentoDialog 
+          conta={selectedConta} 
+          open={recebimentoDialogOpen} 
+          onOpenChange={setRecebimentoDialogOpen} 
+        />
       </motion.div>
     </MainLayout>
   );
