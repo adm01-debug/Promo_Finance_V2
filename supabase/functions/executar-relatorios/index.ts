@@ -16,15 +16,34 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    console.log('[executar-relatorios] Iniciando execução de relatórios agendados...');
+    // Check for manual execution with specific report ID
+    let relatorioId: string | null = null;
+    try {
+      const body = await req.json();
+      relatorioId = body?.relatorio_id || null;
+    } catch {
+      // No body or invalid JSON - proceed with scheduled execution
+    }
+
+    if (relatorioId) {
+      console.log(`[executar-relatorios] Execução manual do relatório: ${relatorioId}`);
+    } else {
+      console.log('[executar-relatorios] Iniciando execução de relatórios agendados...');
+    }
 
     // Buscar relatórios que precisam ser executados
     const agora = new Date().toISOString();
-    const { data: relatoriosParaExecutar, error: fetchError } = await supabase
-      .from('relatorios_agendados')
-      .select('*')
-      .eq('ativo', true)
-      .lte('proximo_envio', agora);
+    let query = supabase.from('relatorios_agendados').select('*');
+
+    if (relatorioId) {
+      // Manual execution - fetch specific report
+      query = query.eq('id', relatorioId);
+    } else {
+      // Scheduled execution - fetch due reports
+      query = query.eq('ativo', true).lte('proximo_envio', agora);
+    }
+
+    const { data: relatoriosParaExecutar, error: fetchError } = await query;
 
     if (fetchError) {
       console.error('[executar-relatorios] Erro ao buscar relatórios:', fetchError);

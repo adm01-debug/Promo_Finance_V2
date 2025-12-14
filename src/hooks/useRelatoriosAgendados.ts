@@ -188,6 +188,11 @@ export function useRelatoriosAgendados() {
     },
   });
 
+  const refetch = () => {
+    queryClient.invalidateQueries({ queryKey: ['relatorios-agendados'] });
+    queryClient.invalidateQueries({ queryKey: ['historico-relatorios'] });
+  };
+
   return {
     relatorios,
     historico,
@@ -198,6 +203,7 @@ export function useRelatoriosAgendados() {
     toggleAtivo: toggleAtivo.mutate,
     isCreating: createMutation.isPending,
     isUpdating: updateMutation.isPending,
+    refetch,
   };
 }
 
