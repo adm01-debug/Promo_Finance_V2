@@ -53,6 +53,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { useContasPagar, useCentrosCusto } from '@/hooks/useFinancialData';
 import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
@@ -105,22 +111,41 @@ export default function ContasPagar() {
   const { data: centrosCusto = [] } = useCentrosCusto();
   const { data: configuracao } = useConfiguracaoAprovacao();
   
-  // Buscar solicitações de aprovação pendentes
-  const { data: solicitacoesPendentes = [] } = useQuery({
-    queryKey: ['solicitacoes-pendentes-ids'],
+  // Buscar solicitações de aprovação com detalhes
+  const { data: solicitacoesAprovacao = [] } = useQuery({
+    queryKey: ['solicitacoes-aprovacao-detalhes'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('solicitacoes_aprovacao')
-        .select('conta_pagar_id, status')
-        .in('status', ['pendente', 'rejeitada']);
+        .select('conta_pagar_id, status, motivo_rejeicao, aprovado_em, aprovado_por, solicitado_em');
       if (error) throw error;
       return data || [];
     },
   });
 
-  // Mapa de status de aprovação por conta
+  // Buscar nomes dos aprovadores
+  const { data: profiles = [] } = useQuery({
+    queryKey: ['profiles-aprovadores'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, email');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Mapa de profiles por id
+  const profilesMap = new Map(profiles.map(p => [p.id, p]));
+
+  // Mapa de solicitações por conta
+  const solicitacoesMap = new Map(
+    solicitacoesAprovacao.map(s => [s.conta_pagar_id, s])
+  );
+
+  // Mapa de status de aprovação por conta (para filtro)
   const aprovacaoStatusMap = new Map(
-    solicitacoesPendentes.map(s => [s.conta_pagar_id, s.status])
+    solicitacoesAprovacao.filter(s => s.status === 'pendente' || s.status === 'rejeitada').map(s => [s.conta_pagar_id, s.status])
   );
 
   // KPIs
@@ -437,29 +462,115 @@ export default function ContasPagar() {
                               </Badge>
                             </TableCell>
                             <TableCell>
-                              {estaAprovado ? (
-                                <Badge variant="outline" className="gap-1 bg-success/10 text-success border-success/20">
-                                  <ShieldCheck className="h-3 w-3" />
-                                  Aprovado
-                                </Badge>
-                              ) : foiRejeitado ? (
-                                <Badge variant="outline" className="gap-1 bg-destructive/10 text-destructive border-destructive/20">
-                                  <ShieldX className="h-3 w-3" />
-                                  Rejeitado
-                                </Badge>
-                              ) : temSolicitacaoPendente ? (
-                                <Badge variant="outline" className="gap-1 bg-warning/10 text-warning border-warning/20">
-                                  <ShieldAlert className="h-3 w-3" />
-                                  Pendente
-                                </Badge>
-                              ) : aguardandoSolicitacao ? (
-                                <Badge variant="outline" className="gap-1 bg-muted text-muted-foreground">
-                                  <ShieldAlert className="h-3 w-3" />
-                                  Requer Aprovação
-                                </Badge>
-                              ) : (
-                                <span className="text-xs text-muted-foreground">-</span>
-                              )}
+                              {(() => {
+                                const solicitacao = solicitacoesMap.get(conta.id);
+                                const aprovadorProfile = conta.aprovado_por ? profilesMap.get(conta.aprovado_por) : null;
+                                const aprovadorSolicitacao = solicitacao?.aprovado_por ? profilesMap.get(solicitacao.aprovado_por) : null;
+                                
+                                if (estaAprovado) {
+                                  return (
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger>
+                                          <Badge variant="outline" className="gap-1 bg-success/10 text-success border-success/20 cursor-help">
+                                            <ShieldCheck className="h-3 w-3" />
+                                            Aprovado
+                                          </Badge>
+                                        </TooltipTrigger>
+                                        <TooltipContent className="max-w-xs">
+                                          <div className="space-y-1 text-sm">
+                                            <p className="font-medium">Aprovado</p>
+                                            {aprovadorProfile && (
+                                              <p>Por: {aprovadorProfile.full_name || aprovadorProfile.email}</p>
+                                            )}
+                                            {conta.aprovado_em && (
+                                              <p>Em: {formatDate(new Date(conta.aprovado_em))}</p>
+                                            )}
+                                          </div>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  );
+                                }
+                                
+                                if (foiRejeitado && solicitacao) {
+                                  return (
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger>
+                                          <Badge variant="outline" className="gap-1 bg-destructive/10 text-destructive border-destructive/20 cursor-help">
+                                            <ShieldX className="h-3 w-3" />
+                                            Rejeitado
+                                          </Badge>
+                                        </TooltipTrigger>
+                                        <TooltipContent className="max-w-xs">
+                                          <div className="space-y-1 text-sm">
+                                            <p className="font-medium text-destructive">Rejeitado</p>
+                                            {aprovadorSolicitacao && (
+                                              <p>Por: {aprovadorSolicitacao.full_name || aprovadorSolicitacao.email}</p>
+                                            )}
+                                            {solicitacao.aprovado_em && (
+                                              <p>Em: {formatDate(new Date(solicitacao.aprovado_em))}</p>
+                                            )}
+                                            {solicitacao.motivo_rejeicao && (
+                                              <p className="text-muted-foreground">Motivo: {solicitacao.motivo_rejeicao}</p>
+                                            )}
+                                          </div>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  );
+                                }
+                                
+                                if (temSolicitacaoPendente && solicitacao) {
+                                  return (
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger>
+                                          <Badge variant="outline" className="gap-1 bg-warning/10 text-warning border-warning/20 cursor-help">
+                                            <ShieldAlert className="h-3 w-3" />
+                                            Pendente
+                                          </Badge>
+                                        </TooltipTrigger>
+                                        <TooltipContent className="max-w-xs">
+                                          <div className="space-y-1 text-sm">
+                                            <p className="font-medium text-warning">Aguardando Aprovação</p>
+                                            {solicitacao.solicitado_em && (
+                                              <p>Solicitado em: {formatDate(new Date(solicitacao.solicitado_em))}</p>
+                                            )}
+                                            <p className="text-muted-foreground">Valor: {formatCurrency(conta.valor)}</p>
+                                          </div>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  );
+                                }
+                                
+                                if (aguardandoSolicitacao) {
+                                  return (
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger>
+                                          <Badge variant="outline" className="gap-1 bg-muted text-muted-foreground cursor-help">
+                                            <ShieldAlert className="h-3 w-3" />
+                                            Requer Aprovação
+                                          </Badge>
+                                        </TooltipTrigger>
+                                        <TooltipContent className="max-w-xs">
+                                          <div className="space-y-1 text-sm">
+                                            <p className="font-medium">Aprovação Necessária</p>
+                                            <p className="text-muted-foreground">
+                                              Valor acima de {formatCurrency(configuracao?.valor_minimo_aprovacao || 0)} requer aprovação antes do pagamento.
+                                            </p>
+                                          </div>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  );
+                                }
+                                
+                                return <span className="text-xs text-muted-foreground">-</span>;
+                              })()}
                             </TableCell>
                             <TableCell>
                               <Badge variant="outline" className={cn("gap-1", status?.color)}>
