@@ -4,8 +4,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
+import { AuthProvider } from "@/hooks/useAuth";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import Auth from "./pages/Auth";
 import ContasReceber from "./pages/ContasReceber";
 import ContasPagar from "./pages/ContasPagar";
 import CentroCustos from "./pages/CentroCustos";
@@ -27,29 +30,42 @@ const App = () => (
   <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange={false}>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/contas-receber" element={<ContasReceber />} />
-            <Route path="/contas-pagar" element={<ContasPagar />} />
-            <Route path="/centro-custos" element={<CentroCustos />} />
-            <Route path="/fluxo-caixa" element={<FluxoCaixa />} />
-            <Route path="/cobrancas" element={<Cobrancas />} />
-            <Route path="/conciliacao" element={<Conciliacao />} />
-            <Route path="/alertas" element={<Alertas />} />
-            <Route path="/contas-bancarias" element={<ContasBancarias />} />
-            <Route path="/empresas" element={<Empresas />} />
-            <Route path="/configuracoes" element={<Configuracoes />} />
-          <Route path="/bitrix24" element={<Bitrix24 />} />
-          <Route path="/relatorios" element={<Relatorios />} />
-          <Route path="/boletos" element={<Boletos />} />
-          <Route path="/notas-fiscais" element={<NotasFiscais />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              {/* Public route */}
+              <Route path="/auth" element={<Auth />} />
+              
+              {/* Protected routes - All authenticated users */}
+              <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+              <Route path="/alertas" element={<ProtectedRoute><Alertas /></ProtectedRoute>} />
+              <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
+              
+              {/* Protected routes - Operacional+ */}
+              <Route path="/contas-receber" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><ContasReceber /></ProtectedRoute>} />
+              <Route path="/contas-pagar" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><ContasPagar /></ProtectedRoute>} />
+              <Route path="/cobrancas" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><Cobrancas /></ProtectedRoute>} />
+              <Route path="/boletos" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><Boletos /></ProtectedRoute>} />
+              <Route path="/notas-fiscais" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><NotasFiscais /></ProtectedRoute>} />
+              
+              {/* Protected routes - Financeiro+ */}
+              <Route path="/centro-custos" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><CentroCustos /></ProtectedRoute>} />
+              <Route path="/fluxo-caixa" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><FluxoCaixa /></ProtectedRoute>} />
+              <Route path="/conciliacao" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><Conciliacao /></ProtectedRoute>} />
+              <Route path="/contas-bancarias" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><ContasBancarias /></ProtectedRoute>} />
+              
+              {/* Protected routes - Admin only */}
+              <Route path="/empresas" element={<ProtectedRoute requiredRoles={['admin']}><Empresas /></ProtectedRoute>} />
+              <Route path="/configuracoes" element={<ProtectedRoute requiredRoles={['admin']}><Configuracoes /></ProtectedRoute>} />
+              <Route path="/bitrix24" element={<ProtectedRoute requiredRoles={['admin']}><Bitrix24 /></ProtectedRoute>} />
+              
+              {/* Catch-all */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   </ThemeProvider>
