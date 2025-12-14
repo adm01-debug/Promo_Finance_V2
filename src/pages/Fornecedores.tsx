@@ -57,6 +57,7 @@ import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { FornecedorForm } from '@/components/fornecedores/FornecedorForm';
 import { FornecedorDetailDialog } from '@/components/fornecedores/FornecedorDetailDialog';
+import { TablePagination } from '@/components/ui/table-pagination';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -84,6 +85,10 @@ export default function Fornecedores() {
   // Advanced filters
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [estadoFilter, setEstadoFilter] = useState<string>('all');
+  
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const queryClient = useQueryClient();
   const { data: fornecedores = [], isLoading } = useFornecedores();
@@ -124,6 +129,20 @@ export default function Fornecedores() {
     setStatusFilter('all');
     setEstadoFilter('all');
     setSearchTerm('');
+    setCurrentPage(1);
+  };
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredFornecedores.length / pageSize);
+  const paginatedFornecedores = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredFornecedores.slice(start, start + pageSize);
+  }, [filteredFornecedores, currentPage, pageSize]);
+
+  // Reset to page 1 when filters change
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(1);
   };
 
   const totalFornecedores = fornecedores.length;
@@ -290,19 +309,19 @@ export default function Fornecedores() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredFornecedores.length === 0 ? (
+                    {paginatedFornecedores.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
                           {fornecedores.length === 0 ? 'Nenhum fornecedor cadastrado' : 'Nenhum fornecedor encontrado'}
                         </TableCell>
                       </TableRow>
                     ) : (
-                      filteredFornecedores.map((fornecedor, index) => (
+                      paginatedFornecedores.map((fornecedor, index) => (
                         <motion.tr
                           key={fornecedor.id}
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.05 }}
+                          transition={{ delay: index * 0.02 }}
                           className="group hover:bg-muted/50 transition-colors"
                         >
                           <TableCell>
@@ -407,6 +426,16 @@ export default function Fornecedores() {
                   </TableBody>
                 </Table>
               </div>
+            )}
+            {filteredFornecedores.length > 0 && (
+              <TablePagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                totalItems={filteredFornecedores.length}
+                onPageChange={setCurrentPage}
+                onPageSizeChange={handlePageSizeChange}
+              />
             )}
           </Card>
         </motion.div>

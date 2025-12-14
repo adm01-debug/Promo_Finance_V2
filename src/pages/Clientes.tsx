@@ -59,6 +59,7 @@ import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ClienteForm } from '@/components/clientes/ClienteForm';
 import { ClienteDetailDialog } from '@/components/clientes/ClienteDetailDialog';
+import { TablePagination } from '@/components/ui/table-pagination';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -103,6 +104,10 @@ export default function Clientes() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [estadoFilter, setEstadoFilter] = useState<string>('all');
   const [scoreFilter, setScoreFilter] = useState<string>('all');
+  
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const queryClient = useQueryClient();
   const { data: clientes = [], isLoading } = useClientes();
@@ -157,6 +162,20 @@ export default function Clientes() {
     setEstadoFilter('all');
     setScoreFilter('all');
     setSearchTerm('');
+    setCurrentPage(1);
+  };
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredClientes.length / pageSize);
+  const paginatedClientes = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredClientes.slice(start, start + pageSize);
+  }, [filteredClientes, currentPage, pageSize]);
+
+  // Reset to page 1 when filters change
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(1);
   };
 
   const totalClientes = clientes.length;
@@ -373,19 +392,19 @@ export default function Clientes() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredClientes.length === 0 ? (
+                    {paginatedClientes.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
                           {clientes.length === 0 ? 'Nenhum cliente cadastrado' : 'Nenhum cliente encontrado'}
                         </TableCell>
                       </TableRow>
                     ) : (
-                      filteredClientes.map((cliente, index) => (
+                      paginatedClientes.map((cliente, index) => (
                         <motion.tr
                           key={cliente.id}
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.05 }}
+                          transition={{ delay: index * 0.02 }}
                           className="group hover:bg-muted/50 transition-colors"
                         >
                           <TableCell>
@@ -505,6 +524,16 @@ export default function Clientes() {
                   </TableBody>
                 </Table>
               </div>
+            )}
+            {filteredClientes.length > 0 && (
+              <TablePagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                totalItems={filteredClientes.length}
+                onPageChange={setCurrentPage}
+                onPageSizeChange={handlePageSizeChange}
+              />
             )}
           </Card>
         </motion.div>
