@@ -49,6 +49,7 @@ import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ClienteForm } from '@/components/clientes/ClienteForm';
+import { ClienteDetailDialog } from '@/components/clientes/ClienteDetailDialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -86,6 +87,8 @@ export default function Clientes() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingCliente, setDeletingCliente] = useState<Cliente | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [viewingCliente, setViewingCliente] = useState<Cliente | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   const queryClient = useQueryClient();
   const { data: clientes = [], isLoading } = useClientes();
@@ -322,7 +325,13 @@ export default function Clientes() {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem className="gap-2">
+                                <DropdownMenuItem 
+                                  className="gap-2"
+                                  onClick={() => {
+                                    setViewingCliente(cliente);
+                                    setDetailOpen(true);
+                                  }}
+                                >
                                   <Eye className="h-4 w-4" />
                                   Visualizar
                                 </DropdownMenuItem>
@@ -367,6 +376,15 @@ export default function Clientes() {
             if (!open) setEditingCliente(null);
           }}
           cliente={editingCliente}
+        />
+
+        <ClienteDetailDialog
+          cliente={viewingCliente}
+          open={detailOpen}
+          onOpenChange={(open) => {
+            setDetailOpen(open);
+            if (!open) setViewingCliente(null);
+          }}
         />
 
         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
