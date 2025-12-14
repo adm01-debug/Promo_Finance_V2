@@ -32,6 +32,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -106,8 +114,11 @@ export default function ContasPagar() {
   const [aprovacaoFilter, setAprovacaoFilter] = useState<string>('all');
   const [formOpen, setFormOpen] = useState(false);
   const [pagamentoDialogOpen, setPagamentoDialogOpen] = useState(false);
+  const [aprovacaoDialogOpen, setAprovacaoDialogOpen] = useState(false);
+  const [contaParaAprovacao, setContaParaAprovacao] = useState<any>(null);
   const [selectedConta, setSelectedConta] = useState<any>(null);
   const [editingConta, setEditingConta] = useState<any>(null);
+  const [observacoesAprovacao, setObservacoesAprovacao] = useState('');
 
   const { data: contas = [], isLoading } = useContasPagar();
   const { data: centrosCusto = [] } = useCentrosCusto();
@@ -115,18 +126,29 @@ export default function ContasPagar() {
   const criarSolicitacaoMutation = useCriarSolicitacaoAprovacao();
   const { user } = useAuth();
 
-  // Handler para solicitar aprovação rápida
-  const handleSolicitarAprovacao = async (conta: any) => {
-    if (!user) {
+  // Abrir modal de confirmação
+  const abrirModalAprovacao = (conta: any) => {
+    setContaParaAprovacao(conta);
+    setObservacoesAprovacao('');
+    setAprovacaoDialogOpen(true);
+  };
+
+  // Handler para solicitar aprovação
+  const handleConfirmarSolicitacao = async () => {
+    if (!user || !contaParaAprovacao) {
       toast.error('Usuário não autenticado');
       return;
     }
     
     try {
       await criarSolicitacaoMutation.mutateAsync({
-        contaPagarId: conta.id,
+        contaPagarId: contaParaAprovacao.id,
+        observacoes: observacoesAprovacao || undefined,
       });
       toast.success('Solicitação de aprovação enviada com sucesso');
+      setAprovacaoDialogOpen(false);
+      setContaParaAprovacao(null);
+      setObservacoesAprovacao('');
     } catch (error) {
       toast.error('Erro ao solicitar aprovação');
     }
@@ -625,7 +647,7 @@ export default function ContasPagar() {
                                   {aguardandoSolicitacao && (
                                     <DropdownMenuItem 
                                       className="gap-2 text-warning"
-                                      onClick={() => handleSolicitarAprovacao(conta)}
+                                      onClick={() => abrirModalAprovacao(conta)}
                                     >
                                       <ShieldAlert className="h-4 w-4" />
                                       Solicitar Aprovação
@@ -674,6 +696,95 @@ export default function ContasPagar() {
           open={pagamentoDialogOpen} 
           onOpenChange={setPagamentoDialogOpen} 
         />
+
+        {/* Modal de Confirmação de Aprovação */}
+        <Dialog open={aprovacaoDialogOpen} onOpenChange={setAprovacaoDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <ShieldAlert className="h-5 w-5 text-warning" />
+                Solicitar Aprovação
+              </DialogTitle>
+              <DialogDescription>
+                Confirme os detalhes da conta antes de enviar para aprovação.
+              </DialogDescription>
+            </DialogHeader>
+            
+            {contaParaAprovacao && (
+              <div className="space-y-4">
+                <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Fornecedor</p>
+                      <p className="font-medium">{contaParaAprovacao.fornecedor_nome}</p>
+                    </div>
+                    <Badge variant="outline" className="bg-warning/10 text-warning border-warning/20">
+                      Requer Aprovação
+                    </Badge>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Valor</p>
+                      <p className="font-semibold text-lg">{formatCurrency(contaParaAprovacao.valor)}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Vencimento</p>
+                      <p className="font-medium">{formatDate(new Date(contaParaAprovacao.data_vencimento))}</p>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm text-muted-foreground">Descrição</p>
+                    <p className="text-sm">{contaParaAprovacao.descricao}</p>
+                  </div>
+                  
+                  {contaParaAprovacao.numero_documento && (
+                    <div>
+                      <p className="text-sm text-muted-foreground">Documento</p>
+                      <p className="text-sm">{contaParaAprovacao.numero_documento}</p>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Observações (opcional)</label>
+                  <Input
+                    placeholder="Adicione uma justificativa ou observação..."
+                    value={observacoesAprovacao}
+                    onChange={(e) => setObservacoesAprovacao(e.target.value)}
+                  />
+                </div>
+              </div>
+            )}
+            
+            <DialogFooter className="gap-2 sm:gap-0">
+              <Button 
+                variant="outline" 
+                onClick={() => setAprovacaoDialogOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button 
+                onClick={handleConfirmarSolicitacao}
+                disabled={criarSolicitacaoMutation.isPending}
+                className="gap-2"
+              >
+                {criarSolicitacaoMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Enviando...
+                  </>
+                ) : (
+                  <>
+                    <ShieldAlert className="h-4 w-4" />
+                    Confirmar Solicitação
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </motion.div>
     </MainLayout>
   );
