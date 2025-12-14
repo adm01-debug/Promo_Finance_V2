@@ -2,3 +2,6 @@ project_id = "iikqosstymnnxaujzadw"
 
 [functions.analise-preditiva]
 verify_jwt = true
+
+[functions.executar-relatorios]
+verify_jwt = false
