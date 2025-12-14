@@ -18,16 +18,22 @@ import {
   BarChart3,
   Eye,
   RefreshCcw,
+  Loader2,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { mockContasReceber, mockTopDevedores } from '@/data/mockData';
-import { formatCurrency, formatDate, calculateOverdueDays } from '@/lib/formatters';
+import { Skeleton } from '@/components/ui/skeleton';
+import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { 
+  useCobrancaKPIs, 
+  useAgingData, 
+  useTopDevedores, 
+  useEtapasCobranca 
+} from '@/hooks/useCobrancas';
 import { 
   ResponsiveContainer, 
   BarChart, 
@@ -35,9 +41,6 @@ import {
   XAxis, 
   YAxis, 
   Tooltip,
-  PieChart,
-  Pie,
-  Cell,
 } from 'recharts';
 
 const containerVariants = {
@@ -53,7 +56,7 @@ const itemVariants = {
 // Régua de Cobrança - 5 Etapas
 const etapasRegua = [
   { 
-    id: 1, 
+    id: 'preventiva', 
     nome: 'Preventiva', 
     dias: -3, 
     descricao: 'Lembrete 3 dias antes do vencimento',
@@ -62,8 +65,8 @@ const etapasRegua = [
     cor: 'bg-secondary/10 text-secondary border-secondary/20',
   },
   { 
-    id: 2, 
-    nome: 'Vencimento', 
+    id: 'lembrete', 
+    nome: 'Lembrete', 
     dias: 0, 
     descricao: 'No dia do vencimento',
     canal: 'WhatsApp',
@@ -71,7 +74,7 @@ const etapasRegua = [
     cor: 'bg-warning/10 text-warning border-warning/20',
   },
   { 
-    id: 3, 
+    id: 'cobranca', 
     nome: 'Cobrança', 
     dias: 7, 
     descricao: '7 dias após vencimento',
@@ -80,8 +83,8 @@ const etapasRegua = [
     cor: 'bg-primary/10 text-primary border-primary/20',
   },
   { 
-    id: 4, 
-    nome: 'Intensiva', 
+    id: 'negociacao', 
+    nome: 'Negociação', 
     dias: 15, 
     descricao: '15 dias após vencimento',
     canal: 'Telefone',
@@ -89,7 +92,7 @@ const etapasRegua = [
     cor: 'bg-destructive/10 text-destructive border-destructive/20',
   },
   { 
-    id: 5, 
+    id: 'juridico', 
     nome: 'Jurídico', 
     dias: 30, 
     descricao: '30 dias após - Escalação',
@@ -99,7 +102,7 @@ const etapasRegua = [
   },
 ];
 
-// Métricas de canal mockadas
+// Métricas de canal (mock por enquanto - pode ser expandido com tabela de logs de cobrança)
 const metricsCanal = [
   { canal: 'Email', enviados: 150, abertos: 95, pagos: 45, taxaConversao: 30 },
   { canal: 'WhatsApp', enviados: 120, abertos: 110, pagos: 55, taxaConversao: 45.8 },
@@ -107,29 +110,15 @@ const metricsCanal = [
   { canal: 'Telefone', enviados: 50, abertos: 50, pagos: 32, taxaConversao: 64 },
 ];
 
-const COLORS = ['hsl(215, 90%, 42%)', 'hsl(150, 70%, 32%)', 'hsl(42, 95%, 48%)', 'hsl(24, 95%, 46%)'];
-
 export default function Cobrancas() {
-  const [activeTab, setActiveTab] = useState('regua');
-  
-  const contasVencidas = mockContasReceber.filter(c => c.status === 'vencido');
-  const devedores = mockTopDevedores;
+  const { data: kpis, isLoading: loadingKpis } = useCobrancaKPIs();
+  const { data: agingData, isLoading: loadingAging } = useAgingData();
+  const { data: topDevedores, isLoading: loadingDevedores } = useTopDevedores(10);
+  const { data: etapasCount, isLoading: loadingEtapas } = useEtapasCobranca();
 
-  // KPIs
-  const totalVencido = contasVencidas.reduce((sum, c) => sum + c.valor - (c.valorRecebido || 0), 0);
-  const taxaRecuperacao = 32.5; // Mock
-  const valorRecuperado = totalVencido * (taxaRecuperacao / 100);
-  const cobrancasEnviadas = 350; // Mock
-  const taxaAbertura = 78.5; // Mock
-
-  // Dados para gráfico de aging
-  const agingData = [
-    { faixa: '1-7d', valor: 45000, qtd: 8 },
-    { faixa: '8-15d', valor: 32000, qtd: 5 },
-    { faixa: '16-30d', valor: 28000, qtd: 4 },
-    { faixa: '31-60d', valor: 18000, qtd: 2 },
-    { faixa: '60+d', valor: 15000, qtd: 1 },
-  ];
+  const getEtapaCount = (etapaId: string) => {
+    return etapasCount?.find(e => e.etapa === etapaId)?.count || 0;
+  };
 
   return (
     <MainLayout>
@@ -159,7 +148,13 @@ export default function Cobrancas() {
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Total Vencido</p>
-                  <p className="text-xl font-bold font-display mt-1 text-destructive">{formatCurrency(totalVencido)}</p>
+                  {loadingKpis ? (
+                    <Skeleton className="h-7 w-28 mt-1" />
+                  ) : (
+                    <p className="text-xl font-bold font-display mt-1 text-destructive">
+                      {formatCurrency(kpis?.totalVencido || 0)}
+                    </p>
+                  )}
                 </div>
                 <div className="h-10 w-10 rounded-xl bg-destructive/10 text-destructive flex items-center justify-center transition-transform group-hover:scale-110">
                   <DollarSign className="h-5 w-5" />
@@ -172,8 +167,14 @@ export default function Cobrancas() {
             <CardContent className="p-5">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Recuperado</p>
-                  <p className="text-xl font-bold font-display mt-1 text-success">{formatCurrency(valorRecuperado)}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Recuperado (30d)</p>
+                  {loadingKpis ? (
+                    <Skeleton className="h-7 w-28 mt-1" />
+                  ) : (
+                    <p className="text-xl font-bold font-display mt-1 text-success">
+                      {formatCurrency(kpis?.totalRecuperado || 0)}
+                    </p>
+                  )}
                 </div>
                 <div className="h-10 w-10 rounded-xl bg-success/10 text-success flex items-center justify-center transition-transform group-hover:scale-110">
                   <CheckCircle2 className="h-5 w-5" />
@@ -187,8 +188,14 @@ export default function Cobrancas() {
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Taxa Recuperação</p>
-                  <p className="text-xl font-bold font-display mt-1">{taxaRecuperacao}%</p>
-                  <Progress value={taxaRecuperacao} className="h-1.5 mt-2" />
+                  {loadingKpis ? (
+                    <Skeleton className="h-7 w-16 mt-1" />
+                  ) : (
+                    <>
+                      <p className="text-xl font-bold font-display mt-1">{kpis?.taxaRecuperacao || 0}%</p>
+                      <Progress value={kpis?.taxaRecuperacao || 0} className="h-1.5 mt-2" />
+                    </>
+                  )}
                 </div>
                 <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center transition-transform group-hover:scale-110">
                   <Target className="h-5 w-5" />
@@ -201,12 +208,18 @@ export default function Cobrancas() {
             <CardContent className="p-5">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Cobranças Enviadas</p>
-                  <p className="text-xl font-bold font-display mt-1">{cobrancasEnviadas}</p>
-                  <p className="text-xs text-muted-foreground mt-1">Últimos 30 dias</p>
+                  <p className="text-sm font-medium text-muted-foreground">Títulos Vencidos</p>
+                  {loadingKpis ? (
+                    <Skeleton className="h-7 w-12 mt-1" />
+                  ) : (
+                    <>
+                      <p className="text-xl font-bold font-display mt-1">{kpis?.qtdVencidas || 0}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Em aberto</p>
+                    </>
+                  )}
                 </div>
                 <div className="h-10 w-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center transition-transform group-hover:scale-110">
-                  <Send className="h-5 w-5" />
+                  <Clock className="h-5 w-5" />
                 </div>
               </div>
             </CardContent>
@@ -216,11 +229,17 @@ export default function Cobrancas() {
             <CardContent className="p-5">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Taxa Abertura</p>
-                  <p className="text-xl font-bold font-display mt-1">{taxaAbertura}%</p>
-                  <p className="text-xs text-success mt-1 flex items-center gap-1">
-                    <TrendingUp className="h-3 w-3" /> +5.2%
-                  </p>
+                  <p className="text-sm font-medium text-muted-foreground">Recuperados (30d)</p>
+                  {loadingKpis ? (
+                    <Skeleton className="h-7 w-12 mt-1" />
+                  ) : (
+                    <>
+                      <p className="text-xl font-bold font-display mt-1">{kpis?.qtdRecuperadas || 0}</p>
+                      <p className="text-xs text-success mt-1 flex items-center gap-1">
+                        <TrendingUp className="h-3 w-3" /> Títulos pagos
+                      </p>
+                    </>
+                  )}
                 </div>
                 <div className="h-10 w-10 rounded-xl bg-accent/10 text-accent flex items-center justify-center transition-transform group-hover:scale-110">
                   <Eye className="h-5 w-5" />
@@ -243,6 +262,7 @@ export default function Cobrancas() {
               <div className="flex items-center justify-between overflow-x-auto pb-4">
                 {etapasRegua.map((etapa, index) => {
                   const EtapaIcon = etapa.icon;
+                  const count = getEtapaCount(etapa.id);
                   return (
                     <div key={etapa.id} className="flex items-center">
                       <motion.div
@@ -250,10 +270,15 @@ export default function Cobrancas() {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: index * 0.1 }}
                         className={cn(
-                          "flex flex-col items-center p-4 rounded-xl border min-w-[140px] transition-all hover:shadow-md cursor-pointer",
+                          "flex flex-col items-center p-4 rounded-xl border min-w-[140px] transition-all hover:shadow-md cursor-pointer relative",
                           etapa.cor
                         )}
                       >
+                        {count > 0 && (
+                          <Badge className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0 flex items-center justify-center text-xs">
+                            {count}
+                          </Badge>
+                        )}
                         <div className="h-12 w-12 rounded-full bg-background flex items-center justify-center mb-2">
                           <EtapaIcon className="h-6 w-6" />
                         </div>
@@ -286,21 +311,27 @@ export default function Cobrancas() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={agingData}>
-                    <XAxis dataKey="faixa" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                    <YAxis tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                    <Tooltip 
-                      formatter={(v: number, name) => [formatCurrency(v), name === 'valor' ? 'Valor' : 'Qtd']}
-                      contentStyle={{
-                        background: 'hsl(var(--card))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px',
-                      }}
-                    />
-                    <Bar dataKey="valor" fill="hsl(0, 78%, 45%)" radius={[4, 4, 0, 0]} name="Valor" />
-                  </BarChart>
-                </ResponsiveContainer>
+                {loadingAging ? (
+                  <div className="flex items-center justify-center h-full">
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={agingData || []}>
+                      <XAxis dataKey="faixa" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                      <YAxis tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                      <Tooltip 
+                        formatter={(v: number, name) => [formatCurrency(v), name === 'valor' ? 'Valor' : 'Qtd']}
+                        contentStyle={{
+                          background: 'hsl(var(--card))',
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px',
+                        }}
+                      />
+                      <Bar dataKey="valor" fill="hsl(0, 78%, 45%)" radius={[4, 4, 0, 0]} name="Valor" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
               </CardContent>
             </Card>
           </motion.div>
@@ -315,33 +346,48 @@ export default function Cobrancas() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 overflow-y-auto max-h-[300px]">
-                {devedores.map((devedor, index) => (
-                  <motion.div
-                    key={devedor.cliente}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.08 }}
-                    className="flex items-center justify-between p-3 rounded-lg bg-destructive/5 border border-destructive/10 hover:bg-destructive/10 transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="h-8 w-8 rounded-full bg-destructive/20 text-destructive flex items-center justify-center text-sm font-bold">
-                        {index + 1}
-                      </span>
-                      <div>
-                        <p className="font-medium text-sm">{devedor.cliente}</p>
-                        <p className="text-xs text-muted-foreground">{devedor.diasAtraso} dias</p>
+                {loadingDevedores ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <Skeleton key={i} className="h-16 w-full" />
+                  ))
+                ) : topDevedores && topDevedores.length > 0 ? (
+                  topDevedores.map((devedor, index) => (
+                    <motion.div
+                      key={devedor.cliente_id || devedor.cliente_nome}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.08 }}
+                      className="flex items-center justify-between p-3 rounded-lg bg-destructive/5 border border-destructive/10 hover:bg-destructive/10 transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="h-8 w-8 rounded-full bg-destructive/20 text-destructive flex items-center justify-center text-sm font-bold">
+                          {index + 1}
+                        </span>
+                        <div>
+                          <p className="font-medium text-sm">{devedor.cliente_nome}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {devedor.dias_atraso} dias • {devedor.qtd_titulos} título{devedor.qtd_titulos > 1 ? 's' : ''}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-destructive text-sm">{formatCurrency(devedor.valor)}</p>
-                      <Badge variant="outline" className={cn("text-xs mt-1",
-                        devedor.score >= 700 ? "text-success" : devedor.score >= 500 ? "text-warning" : "text-destructive"
-                      )}>
-                        Score: {devedor.score}
-                      </Badge>
-                    </div>
-                  </motion.div>
-                ))}
+                      <div className="text-right">
+                        <p className="font-bold text-destructive text-sm">{formatCurrency(devedor.valor_total)}</p>
+                        {devedor.score && (
+                          <Badge variant="outline" className={cn("text-xs mt-1",
+                            devedor.score >= 700 ? "text-success" : devedor.score >= 500 ? "text-warning" : "text-destructive"
+                          )}>
+                            Score: {devedor.score}
+                          </Badge>
+                        )}
+                      </div>
+                    </motion.div>
+                  ))
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-[250px] text-muted-foreground">
+                    <CheckCircle2 className="h-12 w-12 mb-2 text-success" />
+                    <p>Nenhum devedor encontrado</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </motion.div>
