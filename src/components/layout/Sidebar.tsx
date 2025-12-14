@@ -19,6 +19,7 @@ import {
   RefreshCcw,
   Users,
   Zap,
+  ScrollText,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -46,6 +47,7 @@ const navItems: NavItem[] = [
   { label: 'Contas Bancárias', icon: Landmark, href: '/contas-bancarias' },
   { label: 'Empresas (CNPJs)', icon: Building2, href: '/empresas' },
   { label: 'Usuários', icon: Users, href: '/usuarios' },
+  { label: 'Logs de Auditoria', icon: ScrollText, href: '/audit-logs' },
   { label: 'Bitrix24', icon: Zap, href: '/bitrix24' },
 ];
 
