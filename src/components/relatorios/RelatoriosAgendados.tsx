@@ -15,6 +15,7 @@ import {
   Building2,
   BarChart3,
   Eye,
+  Loader2,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -62,6 +63,8 @@ import { useEmpresas } from '@/hooks/useFinancialData';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { VisualizarRelatorioDialog } from './VisualizarRelatorioDialog';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const tiposRelatorio = [
   { value: 'fluxo_caixa', label: 'Fluxo de Caixa', icon: BarChart3 },
@@ -89,14 +92,16 @@ const diasSemana = [
 ];
 
 export function RelatoriosAgendados() {
-  const { relatorios, historico, isLoading, create, delete: deleteRelatorio, toggleAtivo, isCreating } = useRelatoriosAgendados();
+  const { relatorios, historico, isLoading, create, delete: deleteRelatorio, toggleAtivo, isCreating, refetch } = useRelatoriosAgendados();
   const { data: empresas = [] } = useEmpresas();
+  const { toast } = useToast();
   
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedHistorico, setSelectedHistorico] = useState<HistoricoRelatorio | null>(null);
+  const [executingId, setExecutingId] = useState<string | null>(null);
   
   const [formData, setFormData] = useState<CreateRelatorioInput>({
     nome: '',
@@ -127,6 +132,34 @@ export function RelatoriosAgendados() {
       deleteRelatorio(selectedId);
       setDeleteDialogOpen(false);
       setSelectedId(null);
+    }
+  };
+
+  const handleExecuteManual = async (relatorioId: string, relatorioNome: string) => {
+    setExecutingId(relatorioId);
+    try {
+      const { data, error } = await supabase.functions.invoke('executar-relatorios', {
+        body: { relatorio_id: relatorioId },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Relatório executado',
+        description: `"${relatorioNome}" foi gerado com sucesso.`,
+      });
+
+      // Refresh data to show new history entry
+      refetch();
+    } catch (err) {
+      console.error('Erro ao executar relatório:', err);
+      toast({
+        title: 'Erro ao executar',
+        description: 'Não foi possível gerar o relatório.',
+        variant: 'destructive',
+      });
+    } finally {
+      setExecutingId(null);
     }
   };
 
@@ -261,6 +294,20 @@ export function RelatoriosAgendados() {
                             </div>
                             
                             <div className="flex items-center gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                disabled={executingId === relatorio.id}
+                                onClick={() => handleExecuteManual(relatorio.id, relatorio.nome)}
+                                className="gap-1.5"
+                              >
+                                {executingId === relatorio.id ? (
+                                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                ) : (
+                                  <Play className="h-3.5 w-3.5" />
+                                )}
+                                Executar
+                              </Button>
                               <Switch
                                 checked={relatorio.ativo}
                                 onCheckedChange={(ativo) => toggleAtivo({ id: relatorio.id, ativo })}
