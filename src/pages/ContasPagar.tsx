@@ -119,6 +119,7 @@ export default function ContasPagar() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [centroCustoFilter, setCentroCustoFilter] = useState<string>('all');
   const [aprovacaoFilter, setAprovacaoFilter] = useState<string>('all');
+  const [ordenacao, setOrdenacao] = useState<string>('vencimento');
   const [formOpen, setFormOpen] = useState(false);
   const [pagamentoDialogOpen, setPagamentoDialogOpen] = useState(false);
   const [aprovacaoDialogOpen, setAprovacaoDialogOpen] = useState(false);
@@ -266,6 +267,47 @@ export default function ContasPagar() {
     }
     
     return matchesSearch && matchesStatus && matchesCentroCusto && matchesAprovacao;
+  });
+
+  // Função para calcular prioridade de aprovação
+  const calcularPrioridadeAprovacao = (conta: any) => {
+    const precisaAprovacao = requerAprovacao(conta.valor);
+    const temSolicitacaoPendente = aprovacaoStatusMap.get(conta.id) === 'pendente';
+    const naoAprovado = !conta.aprovado_por && precisaAprovacao;
+    const pendente = (temSolicitacaoPendente || (naoAprovado && !aprovacaoStatusMap.has(conta.id))) && conta.status !== 'pago' && conta.status !== 'cancelado';
+    
+    if (!pendente) return 999; // Sem prioridade de aprovação
+    
+    const dataVenc = new Date(conta.data_vencimento);
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    dataVenc.setHours(0, 0, 0, 0);
+    const diffDias = Math.ceil((dataVenc.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+    
+    return diffDias; // Quanto menor (ou mais negativo), maior a urgência
+  };
+
+  // Ordenar contas
+  const sortedContas = [...filteredContas].sort((a, b) => {
+    switch (ordenacao) {
+      case 'prioridade_aprovacao':
+        const prioA = calcularPrioridadeAprovacao(a);
+        const prioB = calcularPrioridadeAprovacao(b);
+        if (prioA !== prioB) return prioA - prioB;
+        return new Date(a.data_vencimento).getTime() - new Date(b.data_vencimento).getTime();
+      case 'vencimento':
+        return new Date(a.data_vencimento).getTime() - new Date(b.data_vencimento).getTime();
+      case 'vencimento_desc':
+        return new Date(b.data_vencimento).getTime() - new Date(a.data_vencimento).getTime();
+      case 'valor':
+        return b.valor - a.valor;
+      case 'valor_asc':
+        return a.valor - b.valor;
+      case 'fornecedor':
+        return a.fornecedor_nome.localeCompare(b.fornecedor_nome);
+      default:
+        return new Date(a.data_vencimento).getTime() - new Date(b.data_vencimento).getTime();
+    }
   });
 
   return (
@@ -433,6 +475,24 @@ export default function ContasPagar() {
                     <SelectItem value="rejeitado">Rejeitado</SelectItem>
                   </SelectContent>
                 </Select>
+                <Select value={ordenacao} onValueChange={setOrdenacao}>
+                  <SelectTrigger className="w-full lg:w-[200px]">
+                    <SelectValue placeholder="Ordenar por" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="prioridade_aprovacao">
+                      <div className="flex items-center gap-2">
+                        <ShieldAlert className="h-4 w-4 text-warning" />
+                        Prioridade Aprovação
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="vencimento">Vencimento (próximos)</SelectItem>
+                    <SelectItem value="vencimento_desc">Vencimento (distantes)</SelectItem>
+                    <SelectItem value="valor">Maior valor</SelectItem>
+                    <SelectItem value="valor_asc">Menor valor</SelectItem>
+                    <SelectItem value="fornecedor">Fornecedor (A-Z)</SelectItem>
+                  </SelectContent>
+                </Select>
                 <Button variant="outline" size="icon">
                   <Filter className="h-4 w-4" />
                 </Button>
@@ -479,14 +539,14 @@ export default function ContasPagar() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredContas.length === 0 ? (
+                    {sortedContas.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
                           {contas.length === 0 ? 'Nenhuma conta cadastrada' : 'Nenhuma conta encontrada com os filtros aplicados'}
                         </TableCell>
                       </TableRow>
                     ) : (
-                      filteredContas.map((conta, index) => {
+                      sortedContas.map((conta, index) => {
                         const status = statusConfig[conta.status as StatusPagamento];
                         const StatusIcon = status?.icon || Clock;
                         const TipoIcon = tipoCobrancaIcons[conta.tipo_cobranca as TipoCobranca] || Banknote;
