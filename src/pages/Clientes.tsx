@@ -34,11 +34,24 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useClientes } from '@/hooks/useFinancialData';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { useClientes, Cliente } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ClienteForm } from '@/components/clientes/ClienteForm';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -69,8 +82,12 @@ const getScoreLabel = (score: number | null) => {
 export default function Clientes() {
   const [searchTerm, setSearchTerm] = useState('');
   const [formOpen, setFormOpen] = useState(false);
-  const [editingCliente, setEditingCliente] = useState<any>(null);
+  const [editingCliente, setEditingCliente] = useState<Cliente | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletingCliente, setDeletingCliente] = useState<Cliente | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
+  const queryClient = useQueryClient();
   const { data: clientes = [], isLoading } = useClientes();
 
   const filteredClientes = clientes.filter(c => {
@@ -86,6 +103,27 @@ export default function Clientes() {
   const clientesAtivos = clientes.filter(c => c.ativo).length;
   const limiteTotal = clientes.reduce((sum, c) => sum + (c.limite_credito || 0), 0);
 
+  const handleDelete = async () => {
+    if (!deletingCliente) return;
+    setIsDeleting(true);
+    
+    const { error } = await supabase
+      .from('clientes')
+      .update({ ativo: false })
+      .eq('id', deletingCliente.id);
+    
+    setIsDeleting(false);
+    
+    if (error) {
+      toast.error('Erro ao excluir cliente');
+      return;
+    }
+    
+    toast.success('Cliente excluído com sucesso');
+    queryClient.invalidateQueries({ queryKey: ['clientes'] });
+    setDeleteDialogOpen(false);
+    setDeletingCliente(null);
+  };
   return (
     <MainLayout>
       <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
@@ -299,7 +337,13 @@ export default function Clientes() {
                                   Editar
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem className="gap-2 text-destructive">
+                                <DropdownMenuItem 
+                                  className="gap-2 text-destructive"
+                                  onClick={() => {
+                                    setDeletingCliente(cliente);
+                                    setDeleteDialogOpen(true);
+                                  }}
+                                >
                                   <Trash2 className="h-4 w-4" />
                                   Excluir
                                 </DropdownMenuItem>
@@ -324,6 +368,38 @@ export default function Clientes() {
           }}
           cliente={editingCliente}
         />
+
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+              <AlertDialogDescription>
+                Tem certeza que deseja excluir o cliente{' '}
+                <span className="font-semibold text-foreground">
+                  {deletingCliente?.razao_social}
+                </span>
+                ? Esta ação não pode ser desfeita.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Excluindo...
+                  </>
+                ) : (
+                  'Excluir'
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </motion.div>
     </MainLayout>
   );
