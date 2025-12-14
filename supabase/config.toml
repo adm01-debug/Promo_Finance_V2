@@ -5,3 +5,6 @@ verify_jwt = true
 
 [functions.executar-relatorios]
 verify_jwt = false
+
+[functions.bitrix24-sync]
+verify_jwt = true
