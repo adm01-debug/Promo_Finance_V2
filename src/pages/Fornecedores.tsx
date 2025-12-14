@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Plus,
@@ -13,11 +13,20 @@ import {
   Phone,
   MapPin,
   Loader2,
+  Filter,
+  X,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,18 +80,51 @@ export default function Fornecedores() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [viewingFornecedor, setViewingFornecedor] = useState<Fornecedor | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  
+  // Advanced filters
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [estadoFilter, setEstadoFilter] = useState<string>('all');
 
   const queryClient = useQueryClient();
   const { data: fornecedores = [], isLoading } = useFornecedores();
 
-  const filteredFornecedores = fornecedores.filter(f => {
-    const matchesSearch = 
-      f.razao_social.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (f.nome_fantasia?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (f.cnpj_cpf?.includes(searchTerm)) ||
-      (f.email?.toLowerCase().includes(searchTerm.toLowerCase()));
-    return matchesSearch;
-  });
+  // Get unique states for filter
+  const estados = useMemo(() => {
+    const unique = [...new Set(fornecedores.map(f => f.estado).filter(Boolean))];
+    return unique.sort() as string[];
+  }, [fornecedores]);
+
+  const filteredFornecedores = useMemo(() => {
+    return fornecedores.filter(f => {
+      // Text search
+      const matchesSearch = 
+        f.razao_social.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (f.nome_fantasia?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (f.cnpj_cpf?.includes(searchTerm)) ||
+        (f.email?.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+      // Status filter
+      const matchesStatus = 
+        statusFilter === 'all' || 
+        (statusFilter === 'ativo' && f.ativo) ||
+        (statusFilter === 'inativo' && !f.ativo);
+      
+      // Estado filter
+      const matchesEstado = 
+        estadoFilter === 'all' || 
+        f.estado === estadoFilter;
+      
+      return matchesSearch && matchesStatus && matchesEstado;
+    });
+  }, [fornecedores, searchTerm, statusFilter, estadoFilter]);
+
+  const hasActiveFilters = statusFilter !== 'all' || estadoFilter !== 'all';
+  
+  const clearFilters = () => {
+    setStatusFilter('all');
+    setEstadoFilter('all');
+    setSearchTerm('');
+  };
 
   const totalFornecedores = fornecedores.length;
   const fornecedoresAtivos = fornecedores.filter(f => f.ativo).length;
@@ -164,7 +206,8 @@ export default function Fornecedores() {
         {/* Filters */}
         <motion.div variants={itemVariants}>
           <Card className="card-base">
-            <CardContent className="p-4">
+            <CardContent className="p-4 space-y-4">
+              {/* Search */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -173,6 +216,55 @@ export default function Fornecedores() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
                 />
+              </div>
+              
+              {/* Advanced Filters */}
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Filter className="h-4 w-4" />
+                  Filtros:
+                </div>
+                
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-[130px] h-9">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="ativo">Ativos</SelectItem>
+                    <SelectItem value="inativo">Inativos</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={estadoFilter} onValueChange={setEstadoFilter}>
+                  <SelectTrigger className="w-[130px] h-9">
+                    <SelectValue placeholder="Estado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    {estados.map((estado) => (
+                      <SelectItem key={estado} value={estado}>
+                        {estado}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {hasActiveFilters && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearFilters}
+                    className="h-9 px-2 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-4 w-4 mr-1" />
+                    Limpar
+                  </Button>
+                )}
+                
+                <div className="ml-auto text-sm text-muted-foreground">
+                  {filteredFornecedores.length} de {fornecedores.length} fornecedores
+                </div>
               </div>
             </CardContent>
           </Card>
