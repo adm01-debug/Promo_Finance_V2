@@ -53,6 +53,7 @@ import { useContasPagar, useCentrosCusto } from '@/hooks/useFinancialData';
 import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { ContaPagarForm } from '@/components/contas-pagar/ContaPagarForm';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -87,6 +88,7 @@ export default function ContasPagar() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [centroCustoFilter, setCentroCustoFilter] = useState<string>('all');
+  const [formOpen, setFormOpen] = useState(false);
 
   const { data: contas = [], isLoading } = useContasPagar();
   const { data: centrosCusto = [] } = useCentrosCusto();
@@ -122,7 +124,11 @@ export default function ContasPagar() {
               <Download className="h-4 w-4" />
               Exportar
             </Button>
-            <Button size="sm" className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25">
+            <Button 
+              size="sm" 
+              className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
+              onClick={() => setFormOpen(true)}
+            >
               <Plus className="h-4 w-4" />
               Nova Conta
             </Button>
@@ -392,6 +398,8 @@ export default function ContasPagar() {
             )}
           </Card>
         </motion.div>
+
+        <ContaPagarForm open={formOpen} onOpenChange={setFormOpen} />
       </motion.div>
     </MainLayout>
   );
