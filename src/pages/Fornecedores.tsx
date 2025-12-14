@@ -47,6 +47,7 @@ import { useFornecedores, Fornecedor } from '@/hooks/useFinancialData';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { FornecedorForm } from '@/components/fornecedores/FornecedorForm';
+import { FornecedorDetailDialog } from '@/components/fornecedores/FornecedorDetailDialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -68,6 +69,8 @@ export default function Fornecedores() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingFornecedor, setDeletingFornecedor] = useState<Fornecedor | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [viewingFornecedor, setViewingFornecedor] = useState<Fornecedor | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   const queryClient = useQueryClient();
   const { data: fornecedores = [], isLoading } = useFornecedores();
@@ -272,7 +275,13 @@ export default function Fornecedores() {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem className="gap-2">
+                                <DropdownMenuItem 
+                                  className="gap-2"
+                                  onClick={() => {
+                                    setViewingFornecedor(fornecedor);
+                                    setDetailOpen(true);
+                                  }}
+                                >
                                   <Eye className="h-4 w-4" />
                                   Visualizar
                                 </DropdownMenuItem>
@@ -317,6 +326,15 @@ export default function Fornecedores() {
             if (!open) setEditingFornecedor(null);
           }}
           fornecedor={editingFornecedor}
+        />
+
+        <FornecedorDetailDialog
+          fornecedor={viewingFornecedor}
+          open={detailOpen}
+          onOpenChange={(open) => {
+            setDetailOpen(open);
+            if (!open) setViewingFornecedor(null);
+          }}
         />
 
         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
