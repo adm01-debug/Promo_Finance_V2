@@ -208,6 +208,36 @@ export type Database = {
         }
         Relationships: []
       }
+      configuracoes_aprovacao: {
+        Row: {
+          aprovadores_obrigatorios: number
+          ativo: boolean
+          created_at: string
+          created_by: string | null
+          id: string
+          updated_at: string
+          valor_minimo_aprovacao: number
+        }
+        Insert: {
+          aprovadores_obrigatorios?: number
+          ativo?: boolean
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          updated_at?: string
+          valor_minimo_aprovacao?: number
+        }
+        Update: {
+          aprovadores_obrigatorios?: number
+          ativo?: boolean
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          updated_at?: string
+          valor_minimo_aprovacao?: number
+        }
+        Relationships: []
+      }
       contas_bancarias: {
         Row: {
           agencia: string
@@ -711,6 +741,53 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      solicitacoes_aprovacao: {
+        Row: {
+          aprovado_em: string | null
+          aprovado_por: string | null
+          conta_pagar_id: string
+          created_at: string
+          id: string
+          motivo_rejeicao: string | null
+          observacoes: string | null
+          solicitado_em: string
+          solicitado_por: string
+          status: string
+        }
+        Insert: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          conta_pagar_id: string
+          created_at?: string
+          id?: string
+          motivo_rejeicao?: string | null
+          observacoes?: string | null
+          solicitado_em?: string
+          solicitado_por: string
+          status?: string
+        }
+        Update: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          conta_pagar_id?: string
+          created_at?: string
+          id?: string
+          motivo_rejeicao?: string | null
+          observacoes?: string | null
+          solicitado_em?: string
+          solicitado_por?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solicitacoes_aprovacao_conta_pagar_id_fkey"
+            columns: ["conta_pagar_id"]
+            isOneToOne: false
+            referencedRelation: "contas_pagar"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       transacoes_bancarias: {
         Row: {
