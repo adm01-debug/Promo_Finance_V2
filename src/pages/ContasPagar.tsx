@@ -5,7 +5,6 @@ import {
   Plus,
   Search,
   Filter,
-  Download,
   ArrowUpDown,
   MoreHorizontal,
   Eye,
@@ -74,8 +73,11 @@ import {
 } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { ExportMenu } from '@/components/ui/export-menu';
+import { SortableHeader, useSorting } from '@/components/ui/sortable-header';
 import { useContasPagar, useCentrosCusto } from '@/hooks/useFinancialData';
 import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime } from '@/lib/formatters';
+import { contasPagarColumns } from '@/lib/export-utils';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ContaPagarForm } from '@/components/contas-pagar/ContaPagarForm';
@@ -320,10 +322,12 @@ export default function ContasPagar() {
             <p className="text-muted-foreground mt-1">Controle todas as obrigações financeiras e fornecedores</p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" className="gap-2">
-              <Download className="h-4 w-4" />
-              Exportar
-            </Button>
+            <ExportMenu
+              data={sortedContas}
+              columns={contasPagarColumns}
+              filename="contas_pagar"
+              title="Relatório de Contas a Pagar"
+            />
             <Button 
               size="sm" 
               className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"

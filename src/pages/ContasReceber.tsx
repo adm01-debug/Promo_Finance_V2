@@ -1,10 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Plus,
   Search,
   Filter,
-  Download,
   ArrowUpDown,
   MoreHorizontal,
   Eye,
@@ -49,8 +48,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
+import { ExportMenu } from '@/components/ui/export-menu';
+import { SortableHeader, useSorting } from '@/components/ui/sortable-header';
 import { useContasReceber } from '@/hooks/useFinancialData';
 import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime } from '@/lib/formatters';
+import { contasReceberColumns } from '@/lib/export-utils';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ContaReceberForm } from '@/components/contas-receber/ContaReceberForm';
@@ -113,6 +115,9 @@ export default function ContasReceber() {
     return matchesSearch && matchesStatus;
   });
 
+  // Use sorting hook
+  const { sortedData: sortedContas, sortKey, sortDirection, handleSort } = useSorting(filteredContas, 'data_vencimento');
+
   return (
     <MainLayout>
       <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
@@ -123,10 +128,12 @@ export default function ContasReceber() {
             <p className="text-muted-foreground mt-1">Gerencie todos os títulos a receber e acompanhe a inadimplência</p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" className="gap-2">
-              <Download className="h-4 w-4" />
-              Exportar
-            </Button>
+            <ExportMenu
+              data={sortedContas}
+              columns={contasReceberColumns}
+              filename="contas_receber"
+              title="Relatório de Contas a Receber"
+            />
             <Button 
               size="sm" 
               className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
@@ -251,23 +258,32 @@ export default function ContasReceber() {
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">
                       <TableHead className="w-[250px]">
-                        <Button variant="ghost" size="sm" className="gap-1 -ml-3 h-8 font-semibold">
-                          Cliente
-                          <ArrowUpDown className="h-3 w-3" />
-                        </Button>
+                        <SortableHeader
+                          label="Cliente"
+                          sortKey="cliente_nome"
+                          currentSort={sortKey}
+                          currentDirection={sortDirection}
+                          onSort={handleSort}
+                        />
                       </TableHead>
                       <TableHead>Descrição</TableHead>
                       <TableHead>
-                        <Button variant="ghost" size="sm" className="gap-1 -ml-3 h-8 font-semibold">
-                          Valor
-                          <ArrowUpDown className="h-3 w-3" />
-                        </Button>
+                        <SortableHeader
+                          label="Valor"
+                          sortKey="valor"
+                          currentSort={sortKey}
+                          currentDirection={sortDirection}
+                          onSort={handleSort}
+                        />
                       </TableHead>
                       <TableHead>
-                        <Button variant="ghost" size="sm" className="gap-1 -ml-3 h-8 font-semibold">
-                          Vencimento
-                          <ArrowUpDown className="h-3 w-3" />
-                        </Button>
+                        <SortableHeader
+                          label="Vencimento"
+                          sortKey="data_vencimento"
+                          currentSort={sortKey}
+                          currentDirection={sortDirection}
+                          onSort={handleSort}
+                        />
                       </TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Score</TableHead>
@@ -275,14 +291,14 @@ export default function ContasReceber() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredContas.length === 0 ? (
+                    {sortedContas.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
                           {contas.length === 0 ? 'Nenhuma conta cadastrada' : 'Nenhuma conta encontrada com os filtros aplicados'}
                         </TableCell>
                       </TableRow>
                     ) : (
-                      filteredContas.map((conta, index) => {
+                      sortedContas.map((conta, index) => {
                         const status = statusConfig[conta.status as StatusPagamento];
                         const StatusIcon = status?.icon || Clock;
                         const overdueDays = calculateOverdueDays(new Date(conta.data_vencimento));
