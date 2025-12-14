@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Calendar,
@@ -9,31 +9,40 @@ import {
   Wallet,
   AlertTriangle,
   BarChart3,
-  LineChart as LineChartIcon,
-  Filter,
   Download,
+  Settings2,
+  RefreshCw,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { mockFluxoCaixaProjetado, mockDashboardKPIs } from '@/data/mockData';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { 
   ResponsiveContainer, 
-  AreaChart, 
-  Area, 
+  ComposedChart,
+  Bar,
+  Line,
   XAxis, 
   YAxis, 
   Tooltip, 
   CartesianGrid,
-  ComposedChart,
-  Bar,
-  Line,
   Legend,
 } from 'recharts';
+import {
+  CenarioTipo,
+  gerarTodasProjecoes,
+  detectarAlertasRuptura,
+  calcularMetricasCenarios,
+  AlertaRuptura,
+} from '@/lib/cashflow-scenarios';
+import { CenarioSelector } from '@/components/fluxo-caixa/CenarioSelector';
+import { AlertasRuptura } from '@/components/fluxo-caixa/AlertasRuptura';
+import { GraficoCenarios } from '@/components/fluxo-caixa/GraficoCenarios';
+import { ResumosCenarios } from '@/components/fluxo-caixa/ResumosCenarios';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -47,25 +56,58 @@ const itemVariants = {
 
 export default function FluxoCaixa() {
   const [periodo, setPeriodo] = useState('30d');
+  const [cenarioAtivo, setCenarioAtivo] = useState<CenarioTipo>('realista');
+  const [alertasDismissed, setAlertasDismissed] = useState<string[]>([]);
+  
   const fluxo = mockFluxoCaixaProjetado;
   const kpis = mockDashboardKPIs;
 
-  // Calcular totais
-  const totalReceitas = fluxo.reduce((sum, f) => sum + f.receitas, 0);
-  const totalDespesas = fluxo.reduce((sum, f) => sum + f.despesas, 0);
-  const saldoFinal = fluxo[fluxo.length - 1]?.saldo || 0;
-  const saldoInicial = fluxo[0]?.saldo - fluxo[0]?.receitas + fluxo[0]?.despesas || 0;
+  // Calcular saldo inicial
+  const saldoInicial = useMemo(() => {
+    return fluxo[0]?.saldo - fluxo[0]?.receitas + fluxo[0]?.despesas || kpis.saldoTotal;
+  }, [fluxo, kpis.saldoTotal]);
+
+  // Gerar projeções para todos os cenários
+  const projecoes = useMemo(() => {
+    return gerarTodasProjecoes(fluxo, saldoInicial);
+  }, [fluxo, saldoInicial]);
+
+  // Calcular métricas dos cenários
+  const metricasCenarios = useMemo(() => {
+    return calcularMetricasCenarios(projecoes);
+  }, [projecoes]);
+
+  // Detectar alertas de ruptura
+  const alertas = useMemo(() => {
+    const todosAlertas = detectarAlertasRuptura(projecoes, 0, 50000, 100000);
+    return todosAlertas.filter(a => !alertasDismissed.includes(a.id));
+  }, [projecoes, alertasDismissed]);
+
+  // Dados do cenário ativo
+  const dadosCenarioAtivo = projecoes[cenarioAtivo];
+  const metricaAtiva = metricasCenarios[cenarioAtivo];
+
+  // Calcular totais do cenário ativo
+  const totalReceitas = dadosCenarioAtivo.reduce((sum, f) => sum + f.receitas, 0);
+  const totalDespesas = dadosCenarioAtivo.reduce((sum, f) => sum + f.despesas, 0);
+  const saldoFinal = metricaAtiva.saldoFinal;
   const variacao = saldoFinal - saldoInicial;
 
-  // Identificar dias críticos (saldo negativo ou baixo)
-  const diasCriticos = fluxo.filter(f => f.saldo < 100000).length;
-
   // Dados para gráfico de barras
-  const barData = fluxo.map(f => ({
+  const barData = dadosCenarioAtivo.map(f => ({
     ...f,
-    data: f.data.slice(5), // Remove ano para exibição
+    data: f.data.slice(5),
     liquido: f.receitas - f.despesas,
   }));
+
+  // Handlers
+  const handleDismissAlerta = (id: string) => {
+    setAlertasDismissed(prev => [...prev, id]);
+  };
+
+  const handleVerDetalhesAlerta = (alerta: AlertaRuptura) => {
+    setCenarioAtivo(alerta.cenario);
+  };
 
   return (
     <MainLayout>
@@ -74,9 +116,9 @@ export default function FluxoCaixa() {
         <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <h1 className="text-display-md text-foreground">Fluxo de Caixa</h1>
-            <p className="text-muted-foreground mt-1">Projeção financeira e análise de liquidez</p>
+            <p className="text-muted-foreground mt-1">Projeção financeira com análise de cenários</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <Tabs value={periodo} onValueChange={setPeriodo}>
               <TabsList className="h-9">
                 <TabsTrigger value="7d" className="text-xs px-3">7 dias</TabsTrigger>
@@ -86,9 +128,26 @@ export default function FluxoCaixa() {
               </TabsList>
             </Tabs>
             <Button variant="outline" size="sm" className="gap-2">
+              <RefreshCw className="h-4 w-4" />
+              Atualizar
+            </Button>
+            <Button variant="outline" size="sm" className="gap-2">
               <Download className="h-4 w-4" />
               Exportar
             </Button>
+          </div>
+        </motion.div>
+
+        {/* Seletor de Cenários */}
+        <motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <CenarioSelector 
+            cenarioAtivo={cenarioAtivo} 
+            onCenarioChange={setCenarioAtivo}
+            metricas={metricasCenarios}
+          />
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Settings2 className="h-4 w-4" />
+            <span>Limites: Ruptura R$ 0 | Risco R$ 50K</span>
           </div>
         </motion.div>
 
@@ -112,7 +171,7 @@ export default function FluxoCaixa() {
             <CardContent className="p-5">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Entradas</p>
+                  <p className="text-sm font-medium text-muted-foreground">Entradas ({cenarioAtivo})</p>
                   <p className="text-xl font-bold font-display mt-1 text-success">{formatCurrency(totalReceitas)}</p>
                 </div>
                 <div className="h-10 w-10 rounded-xl bg-success/10 text-success flex items-center justify-center transition-transform group-hover:scale-110">
@@ -126,7 +185,7 @@ export default function FluxoCaixa() {
             <CardContent className="p-5">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Saídas</p>
+                  <p className="text-sm font-medium text-muted-foreground">Saídas ({cenarioAtivo})</p>
                   <p className="text-xl font-bold font-display mt-1 text-destructive">{formatCurrency(totalDespesas)}</p>
                 </div>
                 <div className="h-10 w-10 rounded-xl bg-destructive/10 text-destructive flex items-center justify-center transition-transform group-hover:scale-110">
@@ -157,121 +216,95 @@ export default function FluxoCaixa() {
             </CardContent>
           </Card>
 
-          <Card className={cn("stat-card group", diasCriticos > 0 && "border-warning")}>
+          <Card className={cn("stat-card group", metricaAtiva.diasCriticos > 0 && "border-warning")}>
             <CardContent className="p-5">
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Dias Críticos</p>
-                  <p className="text-xl font-bold font-display mt-1">{diasCriticos}</p>
+                  <p className="text-xl font-bold font-display mt-1">{metricaAtiva.diasCriticos}</p>
                   <p className="text-xs text-muted-foreground mt-1">Saldo &lt; R$ 100k</p>
                 </div>
                 <div className={cn(
                   "h-10 w-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110",
-                  diasCriticos > 0 ? "bg-warning/10 text-warning" : "bg-success/10 text-success"
+                  metricaAtiva.diasCriticos > 0 ? "bg-warning/10 text-warning" : "bg-success/10 text-success"
                 )}>
-                  {diasCriticos > 0 ? <AlertTriangle className="h-5 w-5" /> : <Calendar className="h-5 w-5" />}
+                  {metricaAtiva.diasCriticos > 0 ? <AlertTriangle className="h-5 w-5" /> : <Calendar className="h-5 w-5" />}
                 </div>
               </div>
             </CardContent>
           </Card>
         </motion.div>
 
-        {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Área Chart - Fluxo Acumulado */}
-          <motion.div variants={itemVariants}>
-            <Card className="card-elevated h-[400px]">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-display flex items-center gap-2">
-                  <LineChartIcon className="h-5 w-5 text-primary" />
-                  Saldo Projetado
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="h-[320px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={fluxo}>
-                    <defs>
-                      <linearGradient id="colorSaldo" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(24, 95%, 46%)" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="hsl(24, 95%, 46%)" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis 
-                      dataKey="data" 
-                      tickFormatter={(v) => v.slice(5)} 
-                      stroke="hsl(var(--muted-foreground))" 
-                      fontSize={12} 
-                    />
-                    <YAxis 
-                      tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} 
-                      stroke="hsl(var(--muted-foreground))" 
-                      fontSize={12} 
-                    />
-                    <Tooltip 
-                      formatter={(v: number) => formatCurrency(v)} 
-                      labelFormatter={(l) => `Data: ${l}`}
-                      contentStyle={{
-                        background: 'hsl(var(--card))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px',
-                      }}
-                    />
-                    <Area 
-                      type="monotone" 
-                      dataKey="saldo" 
-                      stroke="hsl(24, 95%, 46%)" 
-                      fill="url(#colorSaldo)" 
-                      strokeWidth={2}
-                      name="Saldo"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+        {/* Resumos dos Cenários */}
+        <motion.div variants={itemVariants}>
+          <ResumosCenarios 
+            metricas={metricasCenarios}
+            saldoAtual={kpis.saldoTotal}
+            cenarioAtivo={cenarioAtivo}
+            onCenarioClick={setCenarioAtivo}
+          />
+        </motion.div>
+
+        {/* Gráfico Comparativo de Cenários + Alertas */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <motion.div variants={itemVariants} className="lg:col-span-2">
+            <GraficoCenarios 
+              projecoes={projecoes}
+              cenarioDestaque={cenarioAtivo}
+              limiteRuptura={0}
+              limiteRiscoAlto={50000}
+            />
           </motion.div>
 
-          {/* Composed Chart - Entradas x Saídas */}
           <motion.div variants={itemVariants}>
-            <Card className="card-elevated h-[400px]">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-display flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-primary" />
-                  Entradas vs Saídas
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="h-[320px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={barData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis 
-                      dataKey="data" 
-                      stroke="hsl(var(--muted-foreground))" 
-                      fontSize={12} 
-                    />
-                    <YAxis 
-                      tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} 
-                      stroke="hsl(var(--muted-foreground))" 
-                      fontSize={12} 
-                    />
-                    <Tooltip 
-                      formatter={(v: number) => formatCurrency(v)}
-                      contentStyle={{
-                        background: 'hsl(var(--card))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px',
-                      }}
-                    />
-                    <Legend />
-                    <Bar dataKey="receitas" fill="hsl(150, 70%, 32%)" name="Receitas" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="despesas" fill="hsl(0, 78%, 45%)" name="Despesas" radius={[4, 4, 0, 0]} />
-                    <Line type="monotone" dataKey="liquido" stroke="hsl(24, 95%, 46%)" strokeWidth={2} name="Líquido" dot={false} />
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+            <AlertasRuptura 
+              alertas={alertas}
+              onDismiss={handleDismissAlerta}
+              onVerDetalhes={handleVerDetalhesAlerta}
+            />
           </motion.div>
         </div>
+
+        {/* Gráfico de Entradas x Saídas do Cenário Ativo */}
+        <motion.div variants={itemVariants}>
+          <Card className="card-elevated">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-display flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-primary" />
+                Entradas vs Saídas - Cenário {cenarioAtivo.charAt(0).toUpperCase() + cenarioAtivo.slice(1)}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="h-[320px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart data={barData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis 
+                    dataKey="data" 
+                    stroke="hsl(var(--muted-foreground))" 
+                    fontSize={12} 
+                  />
+                  <YAxis 
+                    tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} 
+                    stroke="hsl(var(--muted-foreground))" 
+                    fontSize={12} 
+                  />
+                  <Tooltip 
+                    formatter={(v: number) => formatCurrency(v)}
+                    contentStyle={{
+                      background: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                    }}
+                  />
+                  <Legend />
+                  <Bar dataKey="receitas" fill="hsl(150, 70%, 32%)" name="Receitas" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="despesas" fill="hsl(0, 78%, 45%)" name="Despesas" radius={[4, 4, 0, 0]} />
+                  <Line type="monotone" dataKey="liquido" stroke="hsl(24, 95%, 46%)" strokeWidth={2} name="Líquido" dot={false} />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </motion.div>
 
         {/* Tabela de Projeção Diária */}
         <motion.div variants={itemVariants}>
@@ -279,14 +312,16 @@ export default function FluxoCaixa() {
             <CardHeader>
               <CardTitle className="text-lg font-display flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-primary" />
-                Projeção Diária
+                Projeção Diária - Cenário {cenarioAtivo.charAt(0).toUpperCase() + cenarioAtivo.slice(1)}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                {fluxo.slice(0, 15).map((dia, index) => {
+                {dadosCenarioAtivo.slice(0, 15).map((dia, index) => {
                   const liquido = dia.receitas - dia.despesas;
                   const isPositivo = liquido >= 0;
+                  const isCritico = dia.saldo < 100000;
+                  const isRuptura = dia.saldo <= 0;
                   
                   return (
                     <motion.div
@@ -296,6 +331,8 @@ export default function FluxoCaixa() {
                       transition={{ delay: index * 0.03 }}
                       className={cn(
                         "p-3 rounded-xl border transition-all hover:shadow-md",
+                        isRuptura ? "bg-destructive/10 border-destructive/40" :
+                        isCritico ? "bg-warning/10 border-warning/30" :
                         isPositivo ? "bg-success/5 border-success/20" : "bg-destructive/5 border-destructive/20"
                       )}
                     >
@@ -303,7 +340,10 @@ export default function FluxoCaixa() {
                         <span className="text-xs text-muted-foreground font-medium">
                           {new Date(dia.data).toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit' })}
                         </span>
-                        <Badge variant="outline" className={cn("text-xs h-5 px-1.5", isPositivo ? "text-success" : "text-destructive")}>
+                        <Badge variant="outline" className={cn(
+                          "text-xs h-5 px-1.5", 
+                          isPositivo ? "text-success" : "text-destructive"
+                        )}>
                           {isPositivo ? '+' : ''}{formatCurrency(liquido).replace('R$', '')}
                         </Badge>
                       </div>
@@ -317,8 +357,20 @@ export default function FluxoCaixa() {
                       </div>
                       <div className="mt-2 pt-2 border-t border-border/50">
                         <p className="text-xs text-muted-foreground">Saldo</p>
-                        <p className="text-sm font-semibold">{formatCurrency(dia.saldo)}</p>
+                        <p className={cn(
+                          "text-sm font-semibold",
+                          isRuptura ? "text-destructive" :
+                          isCritico ? "text-warning" : "text-foreground"
+                        )}>
+                          {formatCurrency(dia.saldo)}
+                        </p>
                       </div>
+                      {isRuptura && (
+                        <Badge variant="destructive" className="mt-2 w-full justify-center text-xs">
+                          <AlertTriangle className="h-3 w-3 mr-1" />
+                          Ruptura
+                        </Badge>
+                      )}
                     </motion.div>
                   );
                 })}
