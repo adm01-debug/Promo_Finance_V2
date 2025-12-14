@@ -96,6 +96,7 @@ export default function ContasReceber() {
   const [formOpen, setFormOpen] = useState(false);
   const [recebimentoDialogOpen, setRecebimentoDialogOpen] = useState(false);
   const [selectedConta, setSelectedConta] = useState<any>(null);
+  const [editingConta, setEditingConta] = useState<any>(null);
 
   const { data: contas = [], isLoading } = useContasReceber();
 
@@ -378,7 +379,13 @@ export default function ContasReceber() {
                                     <Eye className="h-4 w-4" />
                                     Visualizar
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem className="gap-2">
+                                  <DropdownMenuItem 
+                                    className="gap-2"
+                                    onClick={() => {
+                                      setEditingConta(conta);
+                                      setFormOpen(true);
+                                    }}
+                                  >
                                     <Edit className="h-4 w-4" />
                                     Editar
                                   </DropdownMenuItem>
@@ -417,7 +424,14 @@ export default function ContasReceber() {
           </Card>
         </motion.div>
 
-        <ContaReceberForm open={formOpen} onOpenChange={setFormOpen} />
+        <ContaReceberForm 
+          open={formOpen} 
+          onOpenChange={(open) => {
+            setFormOpen(open);
+            if (!open) setEditingConta(null);
+          }}
+          conta={editingConta}
+        />
         <RegistrarRecebimentoDialog 
           conta={selectedConta} 
           open={recebimentoDialogOpen} 

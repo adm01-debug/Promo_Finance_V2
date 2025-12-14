@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2, Building2, Calendar, DollarSign, FileText, Tag, CreditCard, Banknote, QrCode, Wallet } from 'lucide-react';
+import { Loader2, Building2, Calendar, DollarSign, FileText, Tag, CreditCard, Banknote, QrCode, Wallet, Edit } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useFornecedores, useCentrosCusto, useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
@@ -55,9 +55,28 @@ const contaPagarSchema = z.object({
 
 type ContaPagarFormData = z.infer<typeof contaPagarSchema>;
 
+interface ContaPagar {
+  id: string;
+  fornecedor_id: string | null;
+  fornecedor_nome: string;
+  descricao: string;
+  valor: number;
+  data_vencimento: string;
+  data_emissao: string;
+  empresa_id: string;
+  centro_custo_id: string | null;
+  conta_bancaria_id: string | null;
+  tipo_cobranca: string;
+  numero_documento: string | null;
+  codigo_barras: string | null;
+  observacoes: string | null;
+  recorrente: boolean;
+}
+
 interface ContaPagarFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  conta?: ContaPagar | null;
 }
 
 const tipoCobrancaOptions = [
@@ -68,10 +87,11 @@ const tipoCobrancaOptions = [
   { value: 'dinheiro', label: 'Dinheiro', icon: Wallet },
 ];
 
-export function ContaPagarForm({ open, onOpenChange }: ContaPagarFormProps) {
+export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [showFornecedorSelect, setShowFornecedorSelect] = useState(false);
+  const isEditing = !!conta;
 
   const { data: fornecedores = [] } = useFornecedores();
   const { data: centrosCusto = [] } = useCentrosCusto();
@@ -91,6 +111,42 @@ export function ContaPagarForm({ open, onOpenChange }: ContaPagarFormProps) {
       recorrente: false,
     },
   });
+
+  useEffect(() => {
+    if (conta && open) {
+      form.reset({
+        fornecedor_id: conta.fornecedor_id || undefined,
+        fornecedor_nome: conta.fornecedor_nome,
+        descricao: conta.descricao,
+        valor: conta.valor,
+        data_vencimento: conta.data_vencimento,
+        data_emissao: conta.data_emissao,
+        empresa_id: conta.empresa_id,
+        centro_custo_id: conta.centro_custo_id || undefined,
+        conta_bancaria_id: conta.conta_bancaria_id || undefined,
+        tipo_cobranca: conta.tipo_cobranca as any,
+        numero_documento: conta.numero_documento || undefined,
+        codigo_barras: conta.codigo_barras || undefined,
+        observacoes: conta.observacoes || undefined,
+        recorrente: conta.recorrente,
+      });
+      if (conta.fornecedor_id) {
+        setShowFornecedorSelect(true);
+      }
+    } else if (!conta && open) {
+      form.reset({
+        fornecedor_nome: '',
+        descricao: '',
+        valor: 0,
+        data_vencimento: '',
+        data_emissao: new Date().toISOString().split('T')[0],
+        empresa_id: '',
+        tipo_cobranca: 'boleto',
+        recorrente: false,
+      });
+      setShowFornecedorSelect(false);
+    }
+  }, [conta, open, form]);
 
   const createMutation = useMutation({
     mutationFn: async (data: ContaPagarFormData) => {
@@ -136,8 +192,56 @@ export function ContaPagarForm({ open, onOpenChange }: ContaPagarFormProps) {
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: async (data: ContaPagarFormData) => {
+      if (!conta) throw new Error('Conta não encontrada');
+
+      const { error } = await supabase
+        .from('contas_pagar')
+        .update({
+          fornecedor_id: data.fornecedor_id || null,
+          fornecedor_nome: data.fornecedor_nome,
+          descricao: data.descricao,
+          valor: data.valor,
+          data_vencimento: data.data_vencimento,
+          data_emissao: data.data_emissao || new Date().toISOString().split('T')[0],
+          empresa_id: data.empresa_id,
+          centro_custo_id: data.centro_custo_id || null,
+          conta_bancaria_id: data.conta_bancaria_id || null,
+          tipo_cobranca: data.tipo_cobranca,
+          numero_documento: data.numero_documento || null,
+          codigo_barras: data.codigo_barras || null,
+          observacoes: data.observacoes || null,
+          recorrente: data.recorrente,
+        })
+        .eq('id', conta.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
+      toast({
+        title: 'Conta atualizada',
+        description: 'As alterações foram salvas com sucesso.',
+      });
+      onOpenChange(false);
+    },
+    onError: (error) => {
+      console.error('Error updating conta pagar:', error);
+      toast({
+        title: 'Erro ao atualizar conta',
+        description: 'Não foi possível salvar as alterações. Tente novamente.',
+        variant: 'destructive',
+      });
+    },
+  });
+
   const onSubmit = (data: ContaPagarFormData) => {
-    createMutation.mutate(data);
+    if (isEditing) {
+      updateMutation.mutate(data);
+    } else {
+      createMutation.mutate(data);
+    }
   };
 
   const handleFornecedorSelect = (fornecedorId: string) => {
@@ -148,15 +252,24 @@ export function ContaPagarForm({ open, onOpenChange }: ContaPagarFormProps) {
     }
   };
 
+  const isPending = createMutation.isPending || updateMutation.isPending;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-display">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-              <DollarSign className="h-5 w-5 text-primary" />
+            <div className={cn(
+              "h-10 w-10 rounded-xl flex items-center justify-center",
+              isEditing ? "bg-secondary/10" : "bg-primary/10"
+            )}>
+              {isEditing ? (
+                <Edit className="h-5 w-5 text-secondary" />
+              ) : (
+                <DollarSign className="h-5 w-5 text-primary" />
+              )}
             </div>
-            Nova Conta a Pagar
+            {isEditing ? 'Editar Conta a Pagar' : 'Nova Conta a Pagar'}
           </DialogTitle>
         </DialogHeader>
 
@@ -185,7 +298,7 @@ export function ContaPagarForm({ open, onOpenChange }: ContaPagarFormProps) {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                   >
-                    <Select onValueChange={handleFornecedorSelect}>
+                    <Select onValueChange={handleFornecedorSelect} value={form.watch('fornecedor_id')}>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione um fornecedor" />
                       </SelectTrigger>
@@ -496,11 +609,16 @@ export function ContaPagarForm({ open, onOpenChange }: ContaPagarFormProps) {
               </Button>
               <Button
                 type="submit"
-                disabled={createMutation.isPending}
-                className="gap-2 bg-gradient-to-r from-primary to-primary/80 shadow-lg shadow-primary/25"
+                disabled={isPending}
+                className={cn(
+                  "gap-2 shadow-lg",
+                  isEditing 
+                    ? "bg-gradient-to-r from-secondary to-secondary/80 shadow-secondary/25" 
+                    : "bg-gradient-to-r from-primary to-primary/80 shadow-primary/25"
+                )}
               >
-                {createMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                Criar Conta
+                {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                {isEditing ? 'Salvar Alterações' : 'Criar Conta'}
               </Button>
             </div>
           </form>
