@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
 import {
   Plus,
   Search,
@@ -22,6 +23,7 @@ import {
   Banknote,
   QrCode,
   Loader2,
+  ShieldAlert,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -55,6 +57,8 @@ import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ContaPagarForm } from '@/components/contas-pagar/ContaPagarForm';
 import { RegistrarPagamentoDialog } from '@/components/contas-pagar/RegistrarPagamentoDialog';
+import { supabase } from '@/integrations/supabase/client';
+import { useConfiguracaoAprovacao } from '@/hooks/useAprovacoes';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -89,6 +93,7 @@ export default function ContasPagar() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [centroCustoFilter, setCentroCustoFilter] = useState<string>('all');
+  const [aprovacaoFilter, setAprovacaoFilter] = useState<string>('all');
   const [formOpen, setFormOpen] = useState(false);
   const [pagamentoDialogOpen, setPagamentoDialogOpen] = useState(false);
   const [selectedConta, setSelectedConta] = useState<any>(null);
@@ -96,6 +101,25 @@ export default function ContasPagar() {
 
   const { data: contas = [], isLoading } = useContasPagar();
   const { data: centrosCusto = [] } = useCentrosCusto();
+  const { data: configuracao } = useConfiguracaoAprovacao();
+  
+  // Buscar solicitações de aprovação pendentes
+  const { data: solicitacoesPendentes = [] } = useQuery({
+    queryKey: ['solicitacoes-pendentes-ids'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('solicitacoes_aprovacao')
+        .select('conta_pagar_id, status')
+        .in('status', ['pendente', 'rejeitada']);
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Mapa de status de aprovação por conta
+  const aprovacaoStatusMap = new Map(
+    solicitacoesPendentes.map(s => [s.conta_pagar_id, s.status])
+  );
 
   // KPIs
   const totalPagar = contas.reduce((sum, c) => c.status !== 'pago' && c.status !== 'cancelado' ? sum + c.valor - (c.valor_pago || 0) : sum, 0);
@@ -106,12 +130,40 @@ export default function ContasPagar() {
     return new Date(c.data_vencimento).toDateString() === hoje && c.status === 'pendente';
   }).length;
 
+  // Verificar se conta requer aprovação
+  const requerAprovacao = (valor: number) => {
+    if (!configuracao?.ativo) return false;
+    return valor >= configuracao.valor_minimo_aprovacao;
+  };
+
+  // Contar pendentes de aprovação
+  const countPendentesAprovacao = contas.filter(c => {
+    const precisaAprovacao = requerAprovacao(c.valor);
+    const temSolicitacaoPendente = aprovacaoStatusMap.get(c.id) === 'pendente';
+    const naoAprovado = !c.aprovado_por && precisaAprovacao;
+    return (temSolicitacaoPendente || (naoAprovado && !aprovacaoStatusMap.has(c.id))) && c.status !== 'pago' && c.status !== 'cancelado';
+  }).length;
+
   const filteredContas = contas.filter(c => {
     const matchesSearch = c.fornecedor_nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
       c.descricao.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
     const matchesCentroCusto = centroCustoFilter === 'all' || c.centro_custo_id === centroCustoFilter;
-    return matchesSearch && matchesStatus && matchesCentroCusto;
+    
+    // Filtro de aprovação
+    let matchesAprovacao = true;
+    if (aprovacaoFilter === 'pendente_aprovacao') {
+      const precisaAprovacao = requerAprovacao(c.valor);
+      const temSolicitacaoPendente = aprovacaoStatusMap.get(c.id) === 'pendente';
+      const naoAprovado = !c.aprovado_por && precisaAprovacao;
+      matchesAprovacao = (temSolicitacaoPendente || (naoAprovado && !aprovacaoStatusMap.has(c.id))) && c.status !== 'pago' && c.status !== 'cancelado';
+    } else if (aprovacaoFilter === 'aprovado') {
+      matchesAprovacao = !!c.aprovado_por;
+    } else if (aprovacaoFilter === 'rejeitado') {
+      matchesAprovacao = aprovacaoStatusMap.get(c.id) === 'rejeitada';
+    }
+    
+    return matchesSearch && matchesStatus && matchesCentroCusto && matchesAprovacao;
   });
 
   return (
@@ -235,6 +287,22 @@ export default function ContasPagar() {
                     {centrosCusto.map(cc => (
                       <SelectItem key={cc.id} value={cc.id}>{cc.nome}</SelectItem>
                     ))}
+                  </SelectContent>
+                </Select>
+                <Select value={aprovacaoFilter} onValueChange={setAprovacaoFilter}>
+                  <SelectTrigger className="w-full lg:w-[200px]">
+                    <SelectValue placeholder="Aprovação" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas aprovações</SelectItem>
+                    <SelectItem value="pendente_aprovacao">
+                      <div className="flex items-center gap-2">
+                        <ShieldAlert className="h-4 w-4 text-warning" />
+                        Pendente de Aprovação {countPendentesAprovacao > 0 && `(${countPendentesAprovacao})`}
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="aprovado">Aprovado</SelectItem>
+                    <SelectItem value="rejeitado">Rejeitado</SelectItem>
                   </SelectContent>
                 </Select>
                 <Button variant="outline" size="icon">
