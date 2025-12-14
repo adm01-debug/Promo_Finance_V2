@@ -91,7 +91,25 @@ const BoletoPreview = ({ boleto, onUpdateStatus }: {
   };
 
   const handleDownloadPDF = () => {
-    toast.success('PDF do boleto gerado com sucesso!');
+    // Import and use the PDF generator
+    import('@/lib/pdf-generator').then(({ generateBoletoPDF }) => {
+      generateBoletoPDF({
+        numero: boleto.numero,
+        linha_digitavel: boleto.linha_digitavel,
+        codigo_barras: boleto.codigo_barras,
+        valor: boleto.valor,
+        vencimento: boleto.vencimento,
+        cedente_nome: boleto.cedente_nome,
+        cedente_cnpj: boleto.cedente_cnpj,
+        sacado_nome: boleto.sacado_nome,
+        sacado_cpf_cnpj: boleto.sacado_cpf_cnpj,
+        banco: boleto.banco,
+        agencia: boleto.agencia,
+        conta: boleto.conta,
+        descricao: boleto.descricao,
+      });
+      toast.success('PDF do boleto gerado com sucesso!');
+    });
   };
 
   const handlePrint = () => {
