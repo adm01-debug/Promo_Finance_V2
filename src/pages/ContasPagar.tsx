@@ -67,6 +67,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 import { useContasPagar, useCentrosCusto } from '@/hooks/useFinancialData';
 import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
@@ -154,13 +161,14 @@ export default function ContasPagar() {
     }
   };
   
-  // Buscar solicitações de aprovação com detalhes
+  // Buscar solicitações de aprovação com detalhes (histórico completo)
   const { data: solicitacoesAprovacao = [] } = useQuery({
     queryKey: ['solicitacoes-aprovacao-detalhes'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('solicitacoes_aprovacao')
-        .select('conta_pagar_id, status, motivo_rejeicao, aprovado_em, aprovado_por, solicitado_em');
+        .select('id, conta_pagar_id, status, motivo_rejeicao, aprovado_em, aprovado_por, solicitado_em, solicitado_por, observacoes')
+        .order('solicitado_em', { ascending: false });
       if (error) throw error;
       return data || [];
     },
@@ -181,10 +189,19 @@ export default function ContasPagar() {
   // Mapa de profiles por id
   const profilesMap = new Map(profiles.map(p => [p.id, p]));
 
-  // Mapa de solicitações por conta
+  // Mapa de solicitações por conta (apenas a mais recente para exibição)
   const solicitacoesMap = new Map(
     solicitacoesAprovacao.map(s => [s.conta_pagar_id, s])
   );
+
+  // Histórico de solicitações agrupado por conta
+  const historicoAprovacaoPorConta = solicitacoesAprovacao.reduce((acc, s) => {
+    if (!acc.has(s.conta_pagar_id)) {
+      acc.set(s.conta_pagar_id, []);
+    }
+    acc.get(s.conta_pagar_id)!.push(s);
+    return acc;
+  }, new Map<string, typeof solicitacoesAprovacao>());
 
   // Mapa de status de aprovação por conta (para filtro)
   const aprovacaoStatusMap = new Map(
@@ -506,113 +523,170 @@ export default function ContasPagar() {
                             </TableCell>
                             <TableCell>
                               {(() => {
-                                const solicitacao = solicitacoesMap.get(conta.id);
-                                const aprovadorProfile = conta.aprovado_por ? profilesMap.get(conta.aprovado_por) : null;
-                                const aprovadorSolicitacao = solicitacao?.aprovado_por ? profilesMap.get(solicitacao.aprovado_por) : null;
+                                const historico = historicoAprovacaoPorConta.get(conta.id) || [];
+                                const temHistorico = historico.length > 0;
                                 
-                                if (estaAprovado) {
-                                  return (
-                                    <TooltipProvider>
-                                      <Tooltip>
-                                        <TooltipTrigger>
-                                          <Badge variant="outline" className="gap-1 bg-success/10 text-success border-success/20 cursor-help">
-                                            <ShieldCheck className="h-3 w-3" />
-                                            Aprovado
-                                          </Badge>
-                                        </TooltipTrigger>
-                                        <TooltipContent className="max-w-xs">
-                                          <div className="space-y-1 text-sm">
-                                            <p className="font-medium">Aprovado</p>
-                                            {aprovadorProfile && (
-                                              <p>Por: {aprovadorProfile.full_name || aprovadorProfile.email}</p>
-                                            )}
-                                            {conta.aprovado_em && (
-                                              <p>Em: {formatDate(new Date(conta.aprovado_em))}</p>
-                                            )}
-                                          </div>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    </TooltipProvider>
-                                  );
+                                const getBadgeContent = () => {
+                                  if (estaAprovado) {
+                                    return (
+                                      <Badge variant="outline" className="gap-1 bg-success/10 text-success border-success/20 cursor-pointer">
+                                        <ShieldCheck className="h-3 w-3" />
+                                        Aprovado
+                                      </Badge>
+                                    );
+                                  }
+                                  if (foiRejeitado) {
+                                    return (
+                                      <Badge variant="outline" className="gap-1 bg-destructive/10 text-destructive border-destructive/20 cursor-pointer">
+                                        <ShieldX className="h-3 w-3" />
+                                        Rejeitado
+                                      </Badge>
+                                    );
+                                  }
+                                  if (temSolicitacaoPendente) {
+                                    return (
+                                      <Badge variant="outline" className="gap-1 bg-warning/10 text-warning border-warning/20 cursor-pointer">
+                                        <ShieldAlert className="h-3 w-3" />
+                                        Pendente
+                                      </Badge>
+                                    );
+                                  }
+                                  if (aguardandoSolicitacao) {
+                                    return (
+                                      <Badge variant="outline" className="gap-1 bg-muted text-muted-foreground cursor-pointer">
+                                        <ShieldAlert className="h-3 w-3" />
+                                        Requer Aprovação
+                                      </Badge>
+                                    );
+                                  }
+                                  return <span className="text-xs text-muted-foreground">-</span>;
+                                };
+
+                                const getStatusIcon = (status: string) => {
+                                  switch (status) {
+                                    case 'aprovada': return <ShieldCheck className="h-4 w-4 text-success" />;
+                                    case 'rejeitada': return <ShieldX className="h-4 w-4 text-destructive" />;
+                                    case 'pendente': return <ShieldAlert className="h-4 w-4 text-warning" />;
+                                    default: return <Clock className="h-4 w-4 text-muted-foreground" />;
+                                  }
+                                };
+
+                                const getStatusLabel = (status: string) => {
+                                  switch (status) {
+                                    case 'aprovada': return 'Aprovada';
+                                    case 'rejeitada': return 'Rejeitada';
+                                    case 'pendente': return 'Pendente';
+                                    default: return status;
+                                  }
+                                };
+
+                                if (!temHistorico && !aguardandoSolicitacao && !estaAprovado) {
+                                  return <span className="text-xs text-muted-foreground">-</span>;
                                 }
-                                
-                                if (foiRejeitado && solicitacao) {
-                                  return (
-                                    <TooltipProvider>
-                                      <Tooltip>
-                                        <TooltipTrigger>
-                                          <Badge variant="outline" className="gap-1 bg-destructive/10 text-destructive border-destructive/20 cursor-help">
-                                            <ShieldX className="h-3 w-3" />
-                                            Rejeitado
-                                          </Badge>
-                                        </TooltipTrigger>
-                                        <TooltipContent className="max-w-xs">
-                                          <div className="space-y-1 text-sm">
-                                            <p className="font-medium text-destructive">Rejeitado</p>
-                                            {aprovadorSolicitacao && (
-                                              <p>Por: {aprovadorSolicitacao.full_name || aprovadorSolicitacao.email}</p>
-                                            )}
-                                            {solicitacao.aprovado_em && (
-                                              <p>Em: {formatDate(new Date(solicitacao.aprovado_em))}</p>
-                                            )}
-                                            {solicitacao.motivo_rejeicao && (
-                                              <p className="text-muted-foreground">Motivo: {solicitacao.motivo_rejeicao}</p>
-                                            )}
-                                          </div>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    </TooltipProvider>
-                                  );
-                                }
-                                
-                                if (temSolicitacaoPendente && solicitacao) {
-                                  return (
-                                    <TooltipProvider>
-                                      <Tooltip>
-                                        <TooltipTrigger>
-                                          <Badge variant="outline" className="gap-1 bg-warning/10 text-warning border-warning/20 cursor-help">
-                                            <ShieldAlert className="h-3 w-3" />
-                                            Pendente
-                                          </Badge>
-                                        </TooltipTrigger>
-                                        <TooltipContent className="max-w-xs">
-                                          <div className="space-y-1 text-sm">
-                                            <p className="font-medium text-warning">Aguardando Aprovação</p>
-                                            {solicitacao.solicitado_em && (
-                                              <p>Solicitado em: {formatDate(new Date(solicitacao.solicitado_em))}</p>
-                                            )}
-                                            <p className="text-muted-foreground">Valor: {formatCurrency(conta.valor)}</p>
-                                          </div>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    </TooltipProvider>
-                                  );
-                                }
-                                
-                                if (aguardandoSolicitacao) {
-                                  return (
-                                    <TooltipProvider>
-                                      <Tooltip>
-                                        <TooltipTrigger>
-                                          <Badge variant="outline" className="gap-1 bg-muted text-muted-foreground cursor-help">
-                                            <ShieldAlert className="h-3 w-3" />
-                                            Requer Aprovação
-                                          </Badge>
-                                        </TooltipTrigger>
-                                        <TooltipContent className="max-w-xs">
-                                          <div className="space-y-1 text-sm">
-                                            <p className="font-medium">Aprovação Necessária</p>
-                                            <p className="text-muted-foreground">
-                                              Valor acima de {formatCurrency(configuracao?.valor_minimo_aprovacao || 0)} requer aprovação antes do pagamento.
-                                            </p>
-                                          </div>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    </TooltipProvider>
-                                  );
-                                }
-                                
-                                return <span className="text-xs text-muted-foreground">-</span>;
+
+                                return (
+                                  <Popover>
+                                    <PopoverTrigger asChild>
+                                      <button className="focus:outline-none focus:ring-2 focus:ring-primary/50 rounded">
+                                        {getBadgeContent()}
+                                      </button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-80 p-0" align="start">
+                                      <div className="p-3 border-b">
+                                        <h4 className="font-semibold text-sm flex items-center gap-2">
+                                          <Clock className="h-4 w-4" />
+                                          Histórico de Aprovação
+                                        </h4>
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                          {temHistorico ? `${historico.length} registro(s)` : 'Nenhum registro'}
+                                        </p>
+                                      </div>
+                                      
+                                      <ScrollArea className="max-h-64">
+                                        <div className="p-2 space-y-2">
+                                          {/* Status atual da conta */}
+                                          {estaAprovado && (
+                                            <div className="p-2 rounded-lg bg-success/5 border border-success/20">
+                                              <div className="flex items-start gap-2">
+                                                <ShieldCheck className="h-4 w-4 text-success mt-0.5" />
+                                                <div className="flex-1 min-w-0">
+                                                  <p className="text-sm font-medium text-success">Aprovado na Conta</p>
+                                                  {conta.aprovado_por && (
+                                                    <p className="text-xs text-muted-foreground">
+                                                      Por: {profilesMap.get(conta.aprovado_por)?.full_name || profilesMap.get(conta.aprovado_por)?.email || 'Usuário'}
+                                                    </p>
+                                                  )}
+                                                  {conta.aprovado_em && (
+                                                    <p className="text-xs text-muted-foreground">
+                                                      {formatDate(new Date(conta.aprovado_em))}
+                                                    </p>
+                                                  )}
+                                                </div>
+                                              </div>
+                                            </div>
+                                          )}
+
+                                          {/* Histórico de solicitações */}
+                                          {historico.map((item, idx) => {
+                                            const solicitante = profilesMap.get(item.solicitado_por);
+                                            const aprovador = item.aprovado_por ? profilesMap.get(item.aprovado_por) : null;
+                                            
+                                            return (
+                                              <div key={item.id || idx} className="p-2 rounded-lg bg-muted/30 border">
+                                                <div className="flex items-start gap-2">
+                                                  {getStatusIcon(item.status)}
+                                                  <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2">
+                                                      <p className="text-sm font-medium">{getStatusLabel(item.status)}</p>
+                                                    </div>
+                                                    
+                                                    <p className="text-xs text-muted-foreground">
+                                                      Solicitado: {formatDate(new Date(item.solicitado_em))}
+                                                    </p>
+                                                    
+                                                    {solicitante && (
+                                                      <p className="text-xs text-muted-foreground">
+                                                        Por: {solicitante.full_name || solicitante.email}
+                                                      </p>
+                                                    )}
+                                                    
+                                                    {item.aprovado_em && (
+                                                      <p className="text-xs text-muted-foreground mt-1">
+                                                        {item.status === 'aprovada' ? 'Aprovado' : 'Respondido'}: {formatDate(new Date(item.aprovado_em))}
+                                                        {aprovador && ` por ${aprovador.full_name || aprovador.email}`}
+                                                      </p>
+                                                    )}
+                                                    
+                                                    {item.observacoes && (
+                                                      <p className="text-xs text-muted-foreground mt-1 italic">
+                                                        "{item.observacoes}"
+                                                      </p>
+                                                    )}
+                                                    
+                                                    {item.motivo_rejeicao && (
+                                                      <p className="text-xs text-destructive mt-1">
+                                                        Motivo: {item.motivo_rejeicao}
+                                                      </p>
+                                                    )}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            );
+                                          })}
+
+                                          {/* Mensagem se requer aprovação mas não tem histórico */}
+                                          {aguardandoSolicitacao && !temHistorico && (
+                                            <div className="p-3 text-center text-sm text-muted-foreground">
+                                              <ShieldAlert className="h-8 w-8 mx-auto mb-2 text-muted-foreground/50" />
+                                              <p>Valor acima de {formatCurrency(configuracao?.valor_minimo_aprovacao || 0)}</p>
+                                              <p className="text-xs">Requer aprovação antes do pagamento</p>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </ScrollArea>
+                                    </PopoverContent>
+                                  </Popover>
+                                );
                               })()}
                             </TableCell>
                             <TableCell>
