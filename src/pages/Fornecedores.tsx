@@ -33,10 +33,23 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useFornecedores } from '@/hooks/useFinancialData';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { useFornecedores, Fornecedor } from '@/hooks/useFinancialData';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { FornecedorForm } from '@/components/fornecedores/FornecedorForm';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -51,8 +64,12 @@ const itemVariants = {
 export default function Fornecedores() {
   const [searchTerm, setSearchTerm] = useState('');
   const [formOpen, setFormOpen] = useState(false);
-  const [editingFornecedor, setEditingFornecedor] = useState<any>(null);
+  const [editingFornecedor, setEditingFornecedor] = useState<Fornecedor | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletingFornecedor, setDeletingFornecedor] = useState<Fornecedor | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
+  const queryClient = useQueryClient();
   const { data: fornecedores = [], isLoading } = useFornecedores();
 
   const filteredFornecedores = fornecedores.filter(f => {
@@ -67,6 +84,27 @@ export default function Fornecedores() {
   const totalFornecedores = fornecedores.length;
   const fornecedoresAtivos = fornecedores.filter(f => f.ativo).length;
 
+  const handleDelete = async () => {
+    if (!deletingFornecedor) return;
+    setIsDeleting(true);
+    
+    const { error } = await supabase
+      .from('fornecedores')
+      .update({ ativo: false })
+      .eq('id', deletingFornecedor.id);
+    
+    setIsDeleting(false);
+    
+    if (error) {
+      toast.error('Erro ao excluir fornecedor');
+      return;
+    }
+    
+    toast.success('Fornecedor excluído com sucesso');
+    queryClient.invalidateQueries({ queryKey: ['fornecedores'] });
+    setDeleteDialogOpen(false);
+    setDeletingFornecedor(null);
+  };
   return (
     <MainLayout>
       <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
@@ -249,7 +287,13 @@ export default function Fornecedores() {
                                   Editar
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem className="gap-2 text-destructive">
+                                <DropdownMenuItem 
+                                  className="gap-2 text-destructive"
+                                  onClick={() => {
+                                    setDeletingFornecedor(fornecedor);
+                                    setDeleteDialogOpen(true);
+                                  }}
+                                >
                                   <Trash2 className="h-4 w-4" />
                                   Excluir
                                 </DropdownMenuItem>
@@ -274,6 +318,38 @@ export default function Fornecedores() {
           }}
           fornecedor={editingFornecedor}
         />
+
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+              <AlertDialogDescription>
+                Tem certeza que deseja excluir o fornecedor{' '}
+                <span className="font-semibold text-foreground">
+                  {deletingFornecedor?.razao_social}
+                </span>
+                ? Esta ação não pode ser desfeita.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Excluindo...
+                  </>
+                ) : (
+                  'Excluir'
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </motion.div>
     </MainLayout>
   );
