@@ -58,6 +58,10 @@ import { ContaReceberForm } from '@/components/contas-receber/ContaReceberForm';
 import { RegistrarRecebimentoDialog } from '@/components/contas-receber/RegistrarRecebimentoDialog';
 import { AdvancedFiltersPopover, AdvancedFilters } from '@/components/ui/advanced-filters';
 import { useCentrosCusto } from '@/hooks/useFinancialData';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -104,6 +108,10 @@ export default function ContasReceber() {
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletingConta, setDeletingConta] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const queryClient = useQueryClient();
 
   // Server-side paginated query
   const { data: paginatedResult, isLoading } = useContasReceberPaginated({
@@ -141,6 +149,36 @@ export default function ContasReceber() {
   const handlePageSizeChange = (size: number) => {
     setPageSize(size);
     setCurrentPage(1);
+  };
+
+  // Handler para exclusão
+  const handleOpenDeleteDialog = (conta: any) => {
+    setDeletingConta(conta);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConta = async () => {
+    if (!deletingConta) return;
+    
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase
+        .from('contas_receber')
+        .delete()
+        .eq('id', deletingConta.id);
+      
+      if (error) throw error;
+      
+      toast.success('Conta excluída com sucesso');
+      queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
+      setDeleteDialogOpen(false);
+      setDeletingConta(null);
+    } catch (error) {
+      toast.error('Erro ao excluir conta');
+      console.error(error);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   // KPIs - use allContas for accurate totals
@@ -499,7 +537,10 @@ export default function ContasReceber() {
                                     Registrar Recebimento
                                   </DropdownMenuItem>
                                   <DropdownMenuSeparator />
-                                  <DropdownMenuItem className="gap-2 text-destructive">
+                                  <DropdownMenuItem 
+                                    className="gap-2 text-destructive"
+                                    onClick={() => handleOpenDeleteDialog(conta)}
+                                  >
                                     <Trash2 className="h-4 w-4" />
                                     Excluir
                                   </DropdownMenuItem>
@@ -537,6 +578,17 @@ export default function ContasReceber() {
           conta={selectedConta} 
           open={recebimentoDialogOpen} 
           onOpenChange={setRecebimentoDialogOpen} 
+        />
+        {/* Dialog de Confirmação de Exclusão */}
+        <ConfirmDialog
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          title="Confirmar exclusão"
+          description={`Tem certeza que deseja excluir a conta "${deletingConta?.descricao}" no valor de ${deletingConta?.valor ? formatCurrency(deletingConta.valor) : ''}? Esta ação não pode ser desfeita.`}
+          confirmLabel="Excluir"
+          variant="danger"
+          isLoading={isDeleting}
+          onConfirm={handleDeleteConta}
         />
       </motion.div>
     </MainLayout>
