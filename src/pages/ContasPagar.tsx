@@ -24,6 +24,8 @@ import {
   QrCode,
   Loader2,
   ShieldAlert,
+  ShieldCheck,
+  ShieldX,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -345,6 +347,7 @@ export default function ContasPagar() {
                         </Button>
                       </TableHead>
                       <TableHead>Centro de Custo</TableHead>
+                      <TableHead>Aprovação</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead className="w-[80px]"></TableHead>
                     </TableRow>
@@ -352,7 +355,7 @@ export default function ContasPagar() {
                   <TableBody>
                     {filteredContas.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
+                        <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
                           {contas.length === 0 ? 'Nenhuma conta cadastrada' : 'Nenhuma conta encontrada com os filtros aplicados'}
                         </TableCell>
                       </TableRow>
@@ -362,6 +365,14 @@ export default function ContasPagar() {
                         const StatusIcon = status?.icon || Clock;
                         const TipoIcon = tipoCobrancaIcons[conta.tipo_cobranca as TipoCobranca] || Banknote;
                         const overdueDays = calculateOverdueDays(new Date(conta.data_vencimento));
+                        
+                        // Status de aprovação
+                        const precisaAprovacao = requerAprovacao(conta.valor);
+                        const aprovacaoStatus = aprovacaoStatusMap.get(conta.id);
+                        const estaAprovado = !!conta.aprovado_por;
+                        const temSolicitacaoPendente = aprovacaoStatus === 'pendente';
+                        const foiRejeitado = aprovacaoStatus === 'rejeitada';
+                        const aguardandoSolicitacao = precisaAprovacao && !estaAprovado && !aprovacaoStatus && conta.status !== 'pago' && conta.status !== 'cancelado';
 
                         return (
                           <motion.tr
@@ -424,6 +435,31 @@ export default function ContasPagar() {
                               <Badge variant="outline" className="text-xs">
                                 {(conta.centros_custo as any)?.nome || '-'}
                               </Badge>
+                            </TableCell>
+                            <TableCell>
+                              {estaAprovado ? (
+                                <Badge variant="outline" className="gap-1 bg-success/10 text-success border-success/20">
+                                  <ShieldCheck className="h-3 w-3" />
+                                  Aprovado
+                                </Badge>
+                              ) : foiRejeitado ? (
+                                <Badge variant="outline" className="gap-1 bg-destructive/10 text-destructive border-destructive/20">
+                                  <ShieldX className="h-3 w-3" />
+                                  Rejeitado
+                                </Badge>
+                              ) : temSolicitacaoPendente ? (
+                                <Badge variant="outline" className="gap-1 bg-warning/10 text-warning border-warning/20">
+                                  <ShieldAlert className="h-3 w-3" />
+                                  Pendente
+                                </Badge>
+                              ) : aguardandoSolicitacao ? (
+                                <Badge variant="outline" className="gap-1 bg-muted text-muted-foreground">
+                                  <ShieldAlert className="h-3 w-3" />
+                                  Requer Aprovação
+                                </Badge>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">-</span>
+                              )}
                             </TableCell>
                             <TableCell>
                               <Badge variant="outline" className={cn("gap-1", status?.color)}>
