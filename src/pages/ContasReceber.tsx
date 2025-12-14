@@ -48,8 +48,9 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { ExportMenu } from '@/components/ui/export-menu';
 import { SortableHeader, useSorting } from '@/components/ui/sortable-header';
-import { useContasReceber } from '@/hooks/useFinancialData';
+import { useContasReceber, useContasReceberPaginated } from '@/hooks/useFinancialData';
 import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime } from '@/lib/formatters';
+import { TablePagination } from '@/components/ui/table-pagination';
 import { contasReceberColumns } from '@/lib/export-utils';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -101,22 +102,55 @@ export default function ContasReceber() {
   const [selectedConta, setSelectedConta] = useState<any>(null);
   const [editingConta, setEditingConta] = useState<any>(null);
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
-  const { data: contas = [], isLoading } = useContasReceber();
+  // Server-side paginated query
+  const { data: paginatedResult, isLoading } = useContasReceberPaginated({
+    page: currentPage,
+    pageSize,
+    search: searchTerm,
+    status: statusFilter,
+    centroCustoId: centroCustoFilter,
+  });
+
+  // Get all data for KPIs (non-paginated)
+  const { data: allContas = [] } = useContasReceber();
   const { data: centrosCusto = [] } = useCentrosCusto();
 
-  // KPIs
-  const totalReceber = contas.reduce((sum, c) => c.status !== 'pago' && c.status !== 'cancelado' ? sum + c.valor - (c.valor_recebido || 0) : sum, 0);
-  const totalVencido = contas.filter(c => c.status === 'vencido').reduce((sum, c) => sum + c.valor - (c.valor_recebido || 0), 0);
-  const totalRecebidoMes = contas.filter(c => c.status === 'pago').reduce((sum, c) => sum + (c.valor_recebido || 0), 0);
+  const contas = paginatedResult?.data || [];
+  const totalCount = paginatedResult?.totalCount || 0;
+  const totalPages = paginatedResult?.totalPages || 1;
+
+  // Reset page when filters change
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  const handleStatusChange = (value: string) => {
+    setStatusFilter(value);
+    setCurrentPage(1);
+  };
+
+  const handleCentroCustoChange = (value: string) => {
+    setCentroCustoFilter(value);
+    setCurrentPage(1);
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(1);
+  };
+
+  // KPIs - use allContas for accurate totals
+  const totalReceber = allContas.reduce((sum, c) => c.status !== 'pago' && c.status !== 'cancelado' ? sum + c.valor - (c.valor_recebido || 0) : sum, 0);
+  const totalVencido = allContas.filter(c => c.status === 'vencido').reduce((sum, c) => sum + c.valor - (c.valor_recebido || 0), 0);
+  const totalRecebidoMes = allContas.filter(c => c.status === 'pago').reduce((sum, c) => sum + (c.valor_recebido || 0), 0);
   const taxaInadimplencia = totalReceber > 0 ? (totalVencido / totalReceber) * 100 : 0;
 
+  // Client-side filtering for advanced filters only (server handles basic filters)
   const filteredContas = contas.filter(c => {
-    const matchesSearch = c.cliente_nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.descricao.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
-    const matchesCentroCusto = centroCustoFilter === 'all' || c.centro_custo_id === centroCustoFilter;
-    
     // Filtros avançados
     let matchesAdvanced = true;
     
@@ -143,7 +177,7 @@ export default function ContasReceber() {
       matchesAdvanced = matchesAdvanced && c.tipo_cobranca === advancedFilters.tipoCobranca;
     }
     
-    return matchesSearch && matchesStatus && matchesCentroCusto && matchesAdvanced;
+    return matchesAdvanced;
   });
 
   // Use sorting hook
@@ -251,11 +285,11 @@ export default function ContasReceber() {
                   <Input
                     placeholder="Buscar por cliente, descrição..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => handleSearchChange(e.target.value)}
                     className="pl-10"
                   />
                 </div>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <Select value={statusFilter} onValueChange={handleStatusChange}>
                   <SelectTrigger className="w-full lg:w-[180px]">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
@@ -268,7 +302,7 @@ export default function ContasReceber() {
                     <SelectItem value="cancelado">Cancelado</SelectItem>
                   </SelectContent>
                 </Select>
-                <Select value={centroCustoFilter} onValueChange={setCentroCustoFilter}>
+                <Select value={centroCustoFilter} onValueChange={handleCentroCustoChange}>
                   <SelectTrigger className="w-full lg:w-[180px]">
                     <SelectValue placeholder="Centro de Custo" />
                   </SelectTrigger>
@@ -478,6 +512,14 @@ export default function ContasReceber() {
                     )}
                   </TableBody>
                 </Table>
+                <TablePagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  pageSize={pageSize}
+                  totalItems={totalCount}
+                  onPageChange={setCurrentPage}
+                  onPageSizeChange={handlePageSizeChange}
+                />
               </div>
             )}
           </Card>

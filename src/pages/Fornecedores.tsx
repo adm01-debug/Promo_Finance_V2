@@ -55,7 +55,7 @@ import {
 import { ExportMenu } from '@/components/ui/export-menu';
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { useFornecedores, Fornecedor } from '@/hooks/useFinancialData';
+import { useFornecedores, useFornecedoresPaginated, Fornecedor } from '@/hooks/useFinancialData';
 import { fornecedoresColumns } from '@/lib/export-utils';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -95,7 +95,22 @@ export default function Fornecedores() {
   const [pageSize, setPageSize] = useState(10);
 
   const queryClient = useQueryClient();
-  const { data: fornecedores = [], isLoading } = useFornecedores();
+  
+  // Server-side paginated query
+  const { data: paginatedResult, isLoading } = useFornecedoresPaginated({
+    page: currentPage,
+    pageSize,
+    search: searchTerm,
+    status: statusFilter,
+    estado: estadoFilter,
+  });
+
+  // Get all data for KPIs
+  const { data: allFornecedores = [] } = useFornecedores();
+
+  const fornecedores = paginatedResult?.data || [];
+  const totalCount = paginatedResult?.totalCount || 0;
+  const totalPages = paginatedResult?.totalPages || 1;
 
   // Get unique states for filter
   const estados = useMemo(() => {
@@ -136,12 +151,8 @@ export default function Fornecedores() {
     setCurrentPage(1);
   };
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredFornecedores.length / pageSize);
-  const paginatedFornecedores = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return filteredFornecedores.slice(start, start + pageSize);
-  }, [filteredFornecedores, currentPage, pageSize]);
+  // Use server-side paginated data directly
+  const paginatedFornecedores = fornecedores;
 
   // Reset to page 1 when filters change
   const handlePageSizeChange = (size: number) => {
@@ -149,8 +160,8 @@ export default function Fornecedores() {
     setCurrentPage(1);
   };
 
-  const totalFornecedores = fornecedores.length;
-  const fornecedoresAtivos = fornecedores.filter(f => f.ativo).length;
+  const totalFornecedores = allFornecedores.length;
+  const fornecedoresAtivos = allFornecedores.filter(f => f.ativo).length;
 
   const handleDelete = async () => {
     if (!deletingFornecedor) return;
@@ -444,7 +455,7 @@ export default function Fornecedores() {
                 currentPage={currentPage}
                 totalPages={totalPages}
                 pageSize={pageSize}
-                totalItems={filteredFornecedores.length}
+                totalItems={totalCount}
                 onPageChange={setCurrentPage}
                 onPageSizeChange={handlePageSizeChange}
               />

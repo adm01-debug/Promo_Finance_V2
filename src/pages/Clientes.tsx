@@ -57,7 +57,7 @@ import { ExportMenu } from '@/components/ui/export-menu';
 import { SortableHeader, useSorting } from '@/components/ui/sortable-header';
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { useClientes, Cliente } from '@/hooks/useFinancialData';
+import { useClientes, useClientesPaginated, Cliente } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
 import { clientesColumns } from '@/lib/export-utils';
 import { cn } from '@/lib/utils';
@@ -115,7 +115,23 @@ export default function Clientes() {
   const [pageSize, setPageSize] = useState(10);
 
   const queryClient = useQueryClient();
-  const { data: clientes = [], isLoading } = useClientes();
+  
+  // Server-side paginated query
+  const { data: paginatedResult, isLoading } = useClientesPaginated({
+    page: currentPage,
+    pageSize,
+    search: searchTerm,
+    status: statusFilter,
+    estado: estadoFilter,
+    scoreRange: scoreFilter !== 'all' ? scoreFilter : undefined,
+  });
+
+  // Get all data for KPIs
+  const { data: allClientes = [] } = useClientes();
+
+  const clientes = paginatedResult?.data || [];
+  const totalCount = paginatedResult?.totalCount || 0;
+  const totalPages = paginatedResult?.totalPages || 1;
 
   // Get unique states for filter
   const estados = useMemo(() => {
@@ -170,12 +186,8 @@ export default function Clientes() {
     setCurrentPage(1);
   };
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredClientes.length / pageSize);
-  const paginatedClientes = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return filteredClientes.slice(start, start + pageSize);
-  }, [filteredClientes, currentPage, pageSize]);
+  // Use server-side paginated data directly
+  const paginatedClientes = clientes;
 
   // Reset to page 1 when filters change
   const handlePageSizeChange = (size: number) => {
@@ -183,9 +195,9 @@ export default function Clientes() {
     setCurrentPage(1);
   };
 
-  const totalClientes = clientes.length;
-  const clientesAtivos = clientes.filter(c => c.ativo).length;
-  const limiteTotal = clientes.reduce((sum, c) => sum + (c.limite_credito || 0), 0);
+  const totalClientes = allClientes.length;
+  const clientesAtivos = allClientes.filter(c => c.ativo).length;
+  const limiteTotal = allClientes.reduce((sum, c) => sum + (c.limite_credito || 0), 0);
 
   const handleDelete = async () => {
     if (!deletingCliente) return;
@@ -543,7 +555,7 @@ export default function Clientes() {
                 currentPage={currentPage}
                 totalPages={totalPages}
                 pageSize={pageSize}
-                totalItems={filteredClientes.length}
+                totalItems={totalCount}
                 onPageChange={setCurrentPage}
                 onPageSizeChange={handlePageSizeChange}
               />
