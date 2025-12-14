@@ -53,6 +53,8 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { ExportMenu } from '@/components/ui/export-menu';
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useFornecedores, Fornecedor } from '@/hooks/useFinancialData';
 import { fornecedoresColumns } from '@/lib/export-utils';
 import { cn } from '@/lib/utils';
@@ -303,8 +305,8 @@ export default function Fornecedores() {
         <motion.div variants={itemVariants}>
           <Card className="card-elevated overflow-hidden">
             {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <div className="p-4">
+                <LoadingSkeleton variant="table" rows={8} columns={5} />
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -468,37 +470,16 @@ export default function Fornecedores() {
           }}
         />
 
-        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-              <AlertDialogDescription>
-                Tem certeza que deseja excluir o fornecedor{' '}
-                <span className="font-semibold text-foreground">
-                  {deletingFornecedor?.razao_social}
-                </span>
-                ? Esta ação não pode ser desfeita.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                {isDeleting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Excluindo...
-                  </>
-                ) : (
-                  'Excluir'
-                )}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <ConfirmDialog
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          title="Confirmar exclusão"
+          description={`Tem certeza que deseja excluir o fornecedor "${deletingFornecedor?.razao_social}"? Esta ação não pode ser desfeita.`}
+          confirmLabel="Excluir"
+          variant="danger"
+          isLoading={isDeleting}
+          onConfirm={handleDelete}
+        />
       </motion.div>
     </MainLayout>
   );
