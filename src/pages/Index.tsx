@@ -1,10 +1,10 @@
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Dashboard } from '@/components/dashboard/Dashboard';
+import { DashboardExecutivo } from '@/components/dashboard/DashboardExecutivo';
 
 const Index = () => {
   return (
     <MainLayout>
-      <Dashboard />
+      <DashboardExecutivo />
     </MainLayout>
   );
 };

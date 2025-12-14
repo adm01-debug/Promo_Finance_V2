@@ -1,0 +1,696 @@
+import { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
+import {
+  TrendingUp,
+  TrendingDown,
+  Wallet,
+  ArrowDownCircle,
+  ArrowUpCircle,
+  AlertTriangle,
+  Clock,
+  CheckCircle2,
+  Building2,
+  CreditCard,
+  Calendar,
+  BarChart3,
+  PieChart as PieChartIcon,
+  Activity,
+  Target,
+  Filter,
+  ChevronDown,
+  ShieldAlert,
+  FileText,
+  Users,
+  Loader2,
+  RefreshCw,
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import { formatCurrency, formatPercentage } from '@/lib/formatters';
+import { cn } from '@/lib/utils';
+import { 
+  AreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  Tooltip, 
+  ResponsiveContainer, 
+  BarChart, 
+  Bar, 
+  PieChart, 
+  Pie, 
+  Cell,
+  ComposedChart,
+  Legend,
+  Line,
+} from 'recharts';
+import { Link } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useEmpresas, useCentrosCusto, useContasBancarias, useContasPagar, useContasReceber } from '@/hooks/useFinancialData';
+import { useAprovacoesPendentesCount } from '@/hooks/useAprovacoesPendentesCount';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
+} as const;
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } },
+} as const;
+
+const COLORS = ['hsl(150, 70%, 42%)', 'hsl(42, 95%, 48%)', 'hsl(0, 78%, 55%)', 'hsl(215, 90%, 52%)', 'hsl(275, 75%, 48%)'];
+
+export const DashboardExecutivo = () => {
+  const [empresaFilter, setEmpresaFilter] = useState<string>('all');
+  const [centroCustoFilter, setCentroCustoFilter] = useState<string>('all');
+  const [periodoFluxo, setPeriodoFluxo] = useState('30');
+  const [drillDownOpen, setDrillDownOpen] = useState<string | null>(null);
+
+  // Dados reais do Supabase
+  const { data: empresas = [], isLoading: loadingEmpresas } = useEmpresas();
+  const { data: centrosCusto = [], isLoading: loadingCC } = useCentrosCusto();
+  const { data: contasBancarias = [], isLoading: loadingBancos } = useContasBancarias();
+  const { data: contasPagar = [], isLoading: loadingPagar } = useContasPagar();
+  const { data: contasReceber = [], isLoading: loadingReceber } = useContasReceber();
+  const { count: aprovacoesPendentes } = useAprovacoesPendentesCount();
+
+  const isLoading = loadingEmpresas || loadingCC || loadingBancos || loadingPagar || loadingReceber;
+
+  // Filtrar dados por empresa e centro de custo
+  const contasPagarFiltradas = useMemo(() => {
+    return contasPagar.filter(c => {
+      const matchEmpresa = empresaFilter === 'all' || c.empresa_id === empresaFilter;
+      const matchCC = centroCustoFilter === 'all' || c.centro_custo_id === centroCustoFilter;
+      return matchEmpresa && matchCC;
+    });
+  }, [contasPagar, empresaFilter, centroCustoFilter]);
+
+  const contasReceberFiltradas = useMemo(() => {
+    return contasReceber.filter(c => {
+      const matchEmpresa = empresaFilter === 'all' || c.empresa_id === empresaFilter;
+      const matchCC = centroCustoFilter === 'all' || c.centro_custo_id === centroCustoFilter;
+      return matchEmpresa && matchCC;
+    });
+  }, [contasReceber, empresaFilter, centroCustoFilter]);
+
+  const contasBancariasFiltradas = useMemo(() => {
+    return contasBancarias.filter(c => {
+      return empresaFilter === 'all' || c.empresa_id === empresaFilter;
+    });
+  }, [contasBancarias, empresaFilter]);
+
+  // Cálculos de KPIs
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+
+  const saldoTotal = contasBancariasFiltradas.reduce((sum, c) => sum + c.saldo_atual, 0);
+  
+  const mesAtual = hoje.getMonth();
+  const anoAtual = hoje.getFullYear();
+
+  const receitasMes = contasReceberFiltradas
+    .filter(c => {
+      const dataRec = c.data_recebimento ? new Date(c.data_recebimento) : null;
+      return dataRec && dataRec.getMonth() === mesAtual && dataRec.getFullYear() === anoAtual;
+    })
+    .reduce((sum, c) => sum + (c.valor_recebido || 0), 0);
+
+  const despesasMes = contasPagarFiltradas
+    .filter(c => {
+      const dataPag = c.data_pagamento ? new Date(c.data_pagamento) : null;
+      return dataPag && dataPag.getMonth() === mesAtual && dataPag.getFullYear() === anoAtual;
+    })
+    .reduce((sum, c) => sum + (c.valor_pago || 0), 0);
+
+  const totalReceber = contasReceberFiltradas
+    .filter(c => c.status !== 'pago' && c.status !== 'cancelado')
+    .reduce((sum, c) => sum + c.valor - (c.valor_recebido || 0), 0);
+
+  const totalPagar = contasPagarFiltradas
+    .filter(c => c.status !== 'pago' && c.status !== 'cancelado')
+    .reduce((sum, c) => sum + c.valor - (c.valor_pago || 0), 0);
+
+  const vencidasReceber = contasReceberFiltradas.filter(c => c.status === 'vencido');
+  const vencidasPagar = contasPagarFiltradas.filter(c => c.status === 'vencido');
+  
+  const totalVencidasReceber = vencidasReceber.reduce((sum, c) => sum + c.valor - (c.valor_recebido || 0), 0);
+  const totalVencidasPagar = vencidasPagar.reduce((sum, c) => sum + c.valor - (c.valor_pago || 0), 0);
+
+  const inadimplencia = totalReceber > 0 ? (totalVencidasReceber / totalReceber) * 100 : 0;
+
+  const venceHojeReceber = contasReceberFiltradas.filter(c => {
+    const dataVenc = new Date(c.data_vencimento);
+    dataVenc.setHours(0, 0, 0, 0);
+    return dataVenc.getTime() === hoje.getTime() && c.status === 'pendente';
+  });
+
+  const venceHojePagar = contasPagarFiltradas.filter(c => {
+    const dataVenc = new Date(c.data_vencimento);
+    dataVenc.setHours(0, 0, 0, 0);
+    return dataVenc.getTime() === hoje.getTime() && c.status === 'pendente';
+  });
+
+  // Status das contas para gráfico de pizza
+  const statusContasPagar = useMemo(() => {
+    const counts = { pago: 0, pendente: 0, vencido: 0, parcial: 0 };
+    contasPagarFiltradas.forEach(c => {
+      if (counts[c.status as keyof typeof counts] !== undefined) {
+        counts[c.status as keyof typeof counts]++;
+      }
+    });
+    return [
+      { name: 'Pagas', value: counts.pago, fill: COLORS[0] },
+      { name: 'Pendentes', value: counts.pendente, fill: COLORS[1] },
+      { name: 'Vencidas', value: counts.vencido, fill: COLORS[2] },
+      { name: 'Parciais', value: counts.parcial, fill: COLORS[3] },
+    ].filter(s => s.value > 0);
+  }, [contasPagarFiltradas]);
+
+  // Dados por centro de custo para drill-down
+  const dadosPorCentroCusto = useMemo(() => {
+    const map = new Map<string, { nome: string; pagar: number; receber: number; saldo: number }>();
+    
+    contasPagarFiltradas.forEach(c => {
+      const ccId = c.centro_custo_id || 'sem-cc';
+      const ccNome = (c.centros_custo as any)?.nome || 'Sem Centro de Custo';
+      if (!map.has(ccId)) {
+        map.set(ccId, { nome: ccNome, pagar: 0, receber: 0, saldo: 0 });
+      }
+      const current = map.get(ccId)!;
+      if (c.status !== 'pago' && c.status !== 'cancelado') {
+        current.pagar += c.valor - (c.valor_pago || 0);
+      }
+    });
+
+    contasReceberFiltradas.forEach(c => {
+      const ccId = c.centro_custo_id || 'sem-cc';
+      const ccNome = (c.centros_custo as any)?.nome || 'Sem Centro de Custo';
+      if (!map.has(ccId)) {
+        map.set(ccId, { nome: ccNome, pagar: 0, receber: 0, saldo: 0 });
+      }
+      const current = map.get(ccId)!;
+      if (c.status !== 'pago' && c.status !== 'cancelado') {
+        current.receber += c.valor - (c.valor_recebido || 0);
+      }
+    });
+
+    return Array.from(map.values()).map(cc => ({
+      ...cc,
+      saldo: cc.receber - cc.pagar
+    })).sort((a, b) => b.saldo - a.saldo);
+  }, [contasPagarFiltradas, contasReceberFiltradas]);
+
+  // Fluxo de caixa projetado (próximos 30 dias)
+  const fluxoCaixaProjetado = useMemo(() => {
+    const dias = parseInt(periodoFluxo);
+    const result = [];
+    let saldoAcumulado = saldoTotal;
+
+    for (let i = 0; i < dias; i++) {
+      const data = new Date(hoje);
+      data.setDate(data.getDate() + i);
+      const dataStr = data.toISOString().split('T')[0];
+
+      const receitasDia = contasReceberFiltradas
+        .filter(c => c.data_vencimento === dataStr && c.status !== 'pago' && c.status !== 'cancelado')
+        .reduce((sum, c) => sum + c.valor - (c.valor_recebido || 0), 0);
+
+      const despesasDia = contasPagarFiltradas
+        .filter(c => c.data_vencimento === dataStr && c.status !== 'pago' && c.status !== 'cancelado')
+        .reduce((sum, c) => sum + c.valor - (c.valor_pago || 0), 0);
+
+      saldoAcumulado = saldoAcumulado + receitasDia - despesasDia;
+
+      result.push({
+        data: dataStr,
+        receitas: receitasDia,
+        despesas: despesasDia,
+        saldo: saldoAcumulado
+      });
+    }
+
+    return result;
+  }, [contasPagarFiltradas, contasReceberFiltradas, saldoTotal, periodoFluxo, hoje]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  return (
+    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+      {/* Header com Filtros */}
+      <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-display-md text-foreground">Dashboard Executivo</h1>
+          <p className="text-muted-foreground mt-1">Visão consolidada com drill-down por empresa e centro de custo</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <Select value={empresaFilter} onValueChange={setEmpresaFilter}>
+            <SelectTrigger className="w-[200px]">
+              <Building2 className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Todas Empresas" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas Empresas</SelectItem>
+              {empresas.map(e => (
+                <SelectItem key={e.id} value={e.id}>
+                  {e.nome_fantasia || e.razao_social}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={centroCustoFilter} onValueChange={setCentroCustoFilter}>
+            <SelectTrigger className="w-[200px]">
+              <Target className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Todos Centros" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos Centros de Custo</SelectItem>
+              {centrosCusto.map(cc => (
+                <SelectItem key={cc.id} value={cc.id}>{cc.nome}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Badge variant="outline" className="h-9 px-3 gap-2">
+            <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
+            Dados em tempo real
+          </Badge>
+        </div>
+      </motion.div>
+
+      {/* KPI Cards Principais */}
+      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Link to="/contas-bancarias">
+          <Card className="overflow-hidden group hover:shadow-lg transition-all cursor-pointer h-full">
+            <CardContent className="p-5">
+              <div className="flex items-start justify-between">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-muted-foreground">Saldo Total</p>
+                  <p className="text-2xl font-bold">{formatCurrency(saldoTotal)}</p>
+                  <p className="text-xs text-muted-foreground">{contasBancariasFiltradas.length} conta(s)</p>
+                </div>
+                <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center transition-transform group-hover:scale-110">
+                  <Wallet className="h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+            <div className="h-1 w-full bg-gradient-to-r from-primary to-primary/50" />
+          </Card>
+        </Link>
+
+        <Link to="/contas-receber">
+          <Card className="overflow-hidden group hover:shadow-lg transition-all cursor-pointer h-full">
+            <CardContent className="p-5">
+              <div className="flex items-start justify-between">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-muted-foreground">A Receber</p>
+                  <p className="text-2xl font-bold">{formatCurrency(totalReceber)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {receitasMes > 0 && <span className="text-success">{formatCurrency(receitasMes)} este mês</span>}
+                  </p>
+                </div>
+                <div className="h-12 w-12 rounded-xl bg-success/10 text-success flex items-center justify-center transition-transform group-hover:scale-110">
+                  <ArrowDownCircle className="h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+            <div className="h-1 w-full bg-gradient-to-r from-success to-success/50" />
+          </Card>
+        </Link>
+
+        <Link to="/contas-pagar">
+          <Card className="overflow-hidden group hover:shadow-lg transition-all cursor-pointer h-full">
+            <CardContent className="p-5">
+              <div className="flex items-start justify-between">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-muted-foreground">A Pagar</p>
+                  <p className="text-2xl font-bold">{formatCurrency(totalPagar)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {despesasMes > 0 && <span className="text-destructive">{formatCurrency(despesasMes)} este mês</span>}
+                  </p>
+                </div>
+                <div className="h-12 w-12 rounded-xl bg-destructive/10 text-destructive flex items-center justify-center transition-transform group-hover:scale-110">
+                  <ArrowUpCircle className="h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+            <div className="h-1 w-full bg-gradient-to-r from-destructive to-destructive/50" />
+          </Card>
+        </Link>
+
+        <Link to="/cobrancas">
+          <Card className="overflow-hidden group hover:shadow-lg transition-all cursor-pointer h-full">
+            <CardContent className="p-5">
+              <div className="flex items-start justify-between">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-muted-foreground">Inadimplência</p>
+                  <p className={cn("text-2xl font-bold", inadimplencia > 10 ? "text-destructive" : inadimplencia > 5 ? "text-warning" : "text-success")}>
+                    {inadimplencia.toFixed(1)}%
+                  </p>
+                  <p className="text-xs text-muted-foreground">{formatCurrency(totalVencidasReceber)} vencido</p>
+                </div>
+                <div className={cn(
+                  "h-12 w-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110",
+                  inadimplencia > 10 ? "bg-destructive/10 text-destructive" : inadimplencia > 5 ? "bg-warning/10 text-warning" : "bg-success/10 text-success"
+                )}>
+                  <AlertTriangle className="h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+            <div className={cn(
+              "h-1 w-full",
+              inadimplencia > 10 ? "bg-gradient-to-r from-destructive to-destructive/50" : inadimplencia > 5 ? "bg-gradient-to-r from-warning to-warning/50" : "bg-gradient-to-r from-success to-success/50"
+            )} />
+          </Card>
+        </Link>
+      </motion.div>
+
+      {/* KPIs Secundários */}
+      <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Building2 className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Empresas</p>
+              <p className="text-lg font-bold">{empresas.length}</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-secondary/10">
+              <CreditCard className="h-4 w-4 text-secondary" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Contas Bancárias</p>
+              <p className="text-lg font-bold">{contasBancarias.length}</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-success/10">
+              <CheckCircle2 className="h-4 w-4 text-success" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Receber Hoje</p>
+              <p className="text-lg font-bold">{venceHojeReceber.length}</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-warning/10">
+              <Clock className="h-4 w-4 text-warning" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Pagar Hoje</p>
+              <p className="text-lg font-bold">{venceHojePagar.length}</p>
+            </div>
+          </div>
+        </Card>
+        <Link to="/aprovacoes">
+          <Card className={cn("p-4 cursor-pointer hover:shadow-md transition-all", aprovacoesPendentes > 0 && "ring-2 ring-warning/50")}>
+            <div className="flex items-center gap-3">
+              <div className={cn("p-2 rounded-lg", aprovacoesPendentes > 0 ? "bg-warning/10" : "bg-muted")}>
+                <ShieldAlert className={cn("h-4 w-4", aprovacoesPendentes > 0 ? "text-warning" : "text-muted-foreground")} />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Aprovações</p>
+                <p className={cn("text-lg font-bold", aprovacoesPendentes > 0 && "text-warning")}>{aprovacoesPendentes}</p>
+              </div>
+            </div>
+          </Card>
+        </Link>
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-destructive/10">
+              <AlertTriangle className="h-4 w-4 text-destructive" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Vencidas</p>
+              <p className="text-lg font-bold text-destructive">{vencidasReceber.length + vencidasPagar.length}</p>
+            </div>
+          </div>
+        </Card>
+      </motion.div>
+
+      {/* Gráficos Principais */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Fluxo de Caixa Projetado */}
+        <motion.div variants={itemVariants} className="lg:col-span-2">
+          <Card className="h-[400px]">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Activity className="h-5 w-5 text-primary" />
+                    Fluxo de Caixa Projetado
+                  </CardTitle>
+                  <CardDescription>Receitas vs Despesas nos próximos dias</CardDescription>
+                </div>
+                <Tabs value={periodoFluxo} onValueChange={setPeriodoFluxo}>
+                  <TabsList className="h-8">
+                    <TabsTrigger value="7" className="text-xs">7d</TabsTrigger>
+                    <TabsTrigger value="15" className="text-xs">15d</TabsTrigger>
+                    <TabsTrigger value="30" className="text-xs">30d</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+            </CardHeader>
+            <CardContent className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart data={fluxoCaixaProjetado}>
+                  <defs>
+                    <linearGradient id="colorReceitas" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(150, 70%, 42%)" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="hsl(150, 70%, 42%)" stopOpacity={0}/>
+                    </linearGradient>
+                    <linearGradient id="colorDespesas" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(0, 78%, 55%)" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="hsl(0, 78%, 55%)" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="data" tickFormatter={(v) => v.slice(8)} stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                  <YAxis tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                  <Tooltip 
+                    formatter={(v: number) => formatCurrency(v)} 
+                    labelFormatter={(l) => `Data: ${l}`}
+                    contentStyle={{ backgroundColor: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
+                  />
+                  <Legend />
+                  <Area type="monotone" dataKey="receitas" name="Receitas" stroke="hsl(150, 70%, 42%)" fill="url(#colorReceitas)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="despesas" name="Despesas" stroke="hsl(0, 78%, 55%)" fill="url(#colorDespesas)" strokeWidth={2} />
+                  <Line type="monotone" dataKey="saldo" name="Saldo Projetado" stroke="hsl(215, 90%, 52%)" strokeWidth={2} dot={false} />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Saldo por Banco */}
+        <motion.div variants={itemVariants}>
+          <Card className="h-[400px]">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <CreditCard className="h-5 w-5 text-secondary" />
+                Saldo por Banco
+              </CardTitle>
+              <CardDescription>Distribuição entre contas</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3 overflow-y-auto max-h-[300px]">
+              {contasBancariasFiltradas.map((banco, index) => {
+                const percentual = saldoTotal > 0 ? (banco.saldo_atual / saldoTotal) * 100 : 0;
+                return (
+                  <div key={banco.id} className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+                        <span className="text-sm font-medium truncate max-w-[120px]">{banco.banco}</span>
+                      </div>
+                      <span className="text-sm font-bold">{formatCurrency(banco.saldo_atual)}</span>
+                    </div>
+                    <Progress value={percentual} className="h-2" />
+                  </div>
+                );
+              })}
+              <div className="pt-3 border-t">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">Total Consolidado</span>
+                  <span className="text-lg font-bold text-primary">{formatCurrency(saldoTotal)}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+
+      {/* Drill-down por Centro de Custo */}
+      <motion.div variants={itemVariants}>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Target className="h-5 w-5 text-primary" />
+              Drill-Down por Centro de Custo
+            </CardTitle>
+            <CardDescription>Clique para expandir detalhes de cada centro</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {dadosPorCentroCusto.map((cc, index) => (
+              <Collapsible 
+                key={cc.nome} 
+                open={drillDownOpen === cc.nome} 
+                onOpenChange={() => setDrillDownOpen(drillDownOpen === cc.nome ? null : cc.nome)}
+              >
+                <CollapsibleTrigger className="w-full">
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer">
+                    <div className="flex items-center gap-3">
+                      <div className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+                      <span className="font-medium">{cc.nome}</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <p className="text-xs text-muted-foreground">A Receber</p>
+                        <p className="text-sm font-semibold text-success">{formatCurrency(cc.receber)}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-muted-foreground">A Pagar</p>
+                        <p className="text-sm font-semibold text-destructive">{formatCurrency(cc.pagar)}</p>
+                      </div>
+                      <div className="text-right min-w-[100px]">
+                        <p className="text-xs text-muted-foreground">Saldo</p>
+                        <p className={cn("text-sm font-bold", cc.saldo >= 0 ? "text-success" : "text-destructive")}>
+                          {formatCurrency(cc.saldo)}
+                        </p>
+                      </div>
+                      <ChevronDown className={cn("h-4 w-4 transition-transform", drillDownOpen === cc.nome && "rotate-180")} />
+                    </div>
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="mt-2 ml-6 p-4 rounded-lg border bg-background space-y-3">
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="text-center p-3 rounded-lg bg-success/5 border border-success/20">
+                        <p className="text-xs text-muted-foreground mb-1">Total a Receber</p>
+                        <p className="text-lg font-bold text-success">{formatCurrency(cc.receber)}</p>
+                      </div>
+                      <div className="text-center p-3 rounded-lg bg-destructive/5 border border-destructive/20">
+                        <p className="text-xs text-muted-foreground mb-1">Total a Pagar</p>
+                        <p className="text-lg font-bold text-destructive">{formatCurrency(cc.pagar)}</p>
+                      </div>
+                      <div className={cn("text-center p-3 rounded-lg border", cc.saldo >= 0 ? "bg-success/5 border-success/20" : "bg-destructive/5 border-destructive/20")}>
+                        <p className="text-xs text-muted-foreground mb-1">Resultado</p>
+                        <p className={cn("text-lg font-bold", cc.saldo >= 0 ? "text-success" : "text-destructive")}>
+                          {formatCurrency(cc.saldo)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" asChild>
+                        <Link to={`/contas-receber?centro_custo=${encodeURIComponent(cc.nome)}`}>
+                          Ver Contas a Receber
+                        </Link>
+                      </Button>
+                      <Button variant="outline" size="sm" asChild>
+                        <Link to={`/contas-pagar?centro_custo=${encodeURIComponent(cc.nome)}`}>
+                          Ver Contas a Pagar
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            ))}
+            {dadosPorCentroCusto.length === 0 && (
+              <p className="text-center text-muted-foreground py-8">Nenhum dado disponível para os filtros selecionados</p>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Status das Contas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <motion.div variants={itemVariants}>
+          <Card className="h-[350px]">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <PieChartIcon className="h-5 w-5 text-warning" />
+                Status Contas a Pagar
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="h-[260px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie 
+                    data={statusContasPagar} 
+                    dataKey="value" 
+                    nameKey="name" 
+                    cx="50%" 
+                    cy="50%" 
+                    innerRadius={50} 
+                    outerRadius={80} 
+                    paddingAngle={3}
+                    label={({ name, value }) => `${name}: ${value}`}
+                  >
+                    {statusContasPagar.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <Card className="h-[350px]">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-primary" />
+                Top Centros de Custo
+              </CardTitle>
+              <CardDescription>Por volume financeiro</CardDescription>
+            </CardHeader>
+            <CardContent className="h-[260px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={dadosPorCentroCusto.slice(0, 5)} layout="vertical">
+                  <XAxis type="number" tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} fontSize={11} />
+                  <YAxis type="category" dataKey="nome" width={100} fontSize={11} />
+                  <Tooltip formatter={(v: number) => formatCurrency(v)} />
+                  <Legend />
+                  <Bar dataKey="receber" name="A Receber" fill="hsl(150, 70%, 42%)" radius={[0, 4, 4, 0]} />
+                  <Bar dataKey="pagar" name="A Pagar" fill="hsl(0, 78%, 55%)" radius={[0, 4, 4, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+};
