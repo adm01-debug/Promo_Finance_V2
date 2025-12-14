@@ -25,12 +25,15 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
-import { maskCnpjCpf, maskPhone } from '@/lib/masks';
+import { maskCnpjCpf, maskPhone, validateCnpjCpf } from '@/lib/masks';
 
 const clienteSchema = z.object({
   razao_social: z.string().min(2, 'Razão social é obrigatória').max(200, 'Nome muito longo'),
   nome_fantasia: z.string().max(200, 'Nome muito longo').optional(),
-  cnpj_cpf: z.string().max(18, 'CNPJ/CPF inválido').optional(),
+  cnpj_cpf: z.string().max(18, 'CNPJ/CPF inválido').optional().refine(
+    (val) => !val || validateCnpjCpf(val).valid,
+    (val) => ({ message: val ? validateCnpjCpf(val).message : 'Documento inválido' })
+  ),
   email: z.string().email('E-mail inválido').max(255, 'E-mail muito longo').optional().or(z.literal('')),
   telefone: z.string().max(20, 'Telefone muito longo').optional(),
   endereco: z.string().max(300, 'Endereço muito longo').optional(),
