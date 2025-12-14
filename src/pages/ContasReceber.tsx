@@ -3,8 +3,6 @@ import { motion } from 'framer-motion';
 import {
   Plus,
   Search,
-  Filter,
-  ArrowUpDown,
   MoreHorizontal,
   Eye,
   Edit,
@@ -57,6 +55,8 @@ import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ContaReceberForm } from '@/components/contas-receber/ContaReceberForm';
 import { RegistrarRecebimentoDialog } from '@/components/contas-receber/RegistrarRecebimentoDialog';
+import { AdvancedFiltersPopover, AdvancedFilters } from '@/components/ui/advanced-filters';
+import { useCentrosCusto } from '@/hooks/useFinancialData';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -95,12 +95,15 @@ const getScoreLabel = (score: number) => {
 export default function ContasReceber() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [centroCustoFilter, setCentroCustoFilter] = useState<string>('all');
   const [formOpen, setFormOpen] = useState(false);
   const [recebimentoDialogOpen, setRecebimentoDialogOpen] = useState(false);
   const [selectedConta, setSelectedConta] = useState<any>(null);
   const [editingConta, setEditingConta] = useState<any>(null);
+  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({});
 
   const { data: contas = [], isLoading } = useContasReceber();
+  const { data: centrosCusto = [] } = useCentrosCusto();
 
   // KPIs
   const totalReceber = contas.reduce((sum, c) => c.status !== 'pago' && c.status !== 'cancelado' ? sum + c.valor - (c.valor_recebido || 0) : sum, 0);
@@ -112,7 +115,35 @@ export default function ContasReceber() {
     const matchesSearch = c.cliente_nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
       c.descricao.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesCentroCusto = centroCustoFilter === 'all' || c.centro_custo_id === centroCustoFilter;
+    
+    // Filtros avançados
+    let matchesAdvanced = true;
+    
+    // Filtro de período de vencimento
+    if (advancedFilters.dataVencimentoInicio) {
+      const vencimento = new Date(c.data_vencimento);
+      matchesAdvanced = matchesAdvanced && vencimento >= advancedFilters.dataVencimentoInicio;
+    }
+    if (advancedFilters.dataVencimentoFim) {
+      const vencimento = new Date(c.data_vencimento);
+      matchesAdvanced = matchesAdvanced && vencimento <= advancedFilters.dataVencimentoFim;
+    }
+    
+    // Filtro de faixa de valor
+    if (advancedFilters.valorMinimo !== undefined) {
+      matchesAdvanced = matchesAdvanced && c.valor >= advancedFilters.valorMinimo;
+    }
+    if (advancedFilters.valorMaximo !== undefined) {
+      matchesAdvanced = matchesAdvanced && c.valor <= advancedFilters.valorMaximo;
+    }
+    
+    // Filtro de tipo de cobrança
+    if (advancedFilters.tipoCobranca) {
+      matchesAdvanced = matchesAdvanced && c.tipo_cobranca === advancedFilters.tipoCobranca;
+    }
+    
+    return matchesSearch && matchesStatus && matchesCentroCusto && matchesAdvanced;
   });
 
   // Use sorting hook
@@ -237,9 +268,21 @@ export default function ContasReceber() {
                     <SelectItem value="cancelado">Cancelado</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button variant="outline" size="icon">
-                  <Filter className="h-4 w-4" />
-                </Button>
+                <Select value={centroCustoFilter} onValueChange={setCentroCustoFilter}>
+                  <SelectTrigger className="w-full lg:w-[180px]">
+                    <SelectValue placeholder="Centro de Custo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os centros</SelectItem>
+                    {centrosCusto.map(cc => (
+                      <SelectItem key={cc.id} value={cc.id}>{cc.nome}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <AdvancedFiltersPopover
+                  filters={advancedFilters}
+                  onFiltersChange={setAdvancedFilters}
+                />
               </div>
             </CardContent>
           </Card>

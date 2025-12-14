@@ -86,6 +86,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useConfiguracaoAprovacao, useCriarSolicitacaoAprovacao } from '@/hooks/useAprovacoes';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { AdvancedFiltersPopover, AdvancedFilters } from '@/components/ui/advanced-filters';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -129,6 +130,7 @@ export default function ContasPagar() {
   const [selectedConta, setSelectedConta] = useState<any>(null);
   const [editingConta, setEditingConta] = useState<any>(null);
   const [observacoesAprovacao, setObservacoesAprovacao] = useState('');
+  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({});
 
   const { data: contas = [], isLoading } = useContasPagar();
   const { data: centrosCusto = [] } = useCentrosCusto();
@@ -268,7 +270,33 @@ export default function ContasPagar() {
       matchesAprovacao = aprovacaoStatusMap.get(c.id) === 'rejeitada';
     }
     
-    return matchesSearch && matchesStatus && matchesCentroCusto && matchesAprovacao;
+    // Filtros avançados
+    let matchesAdvanced = true;
+    
+    // Filtro de período de vencimento
+    if (advancedFilters.dataVencimentoInicio) {
+      const vencimento = new Date(c.data_vencimento);
+      matchesAdvanced = matchesAdvanced && vencimento >= advancedFilters.dataVencimentoInicio;
+    }
+    if (advancedFilters.dataVencimentoFim) {
+      const vencimento = new Date(c.data_vencimento);
+      matchesAdvanced = matchesAdvanced && vencimento <= advancedFilters.dataVencimentoFim;
+    }
+    
+    // Filtro de faixa de valor
+    if (advancedFilters.valorMinimo !== undefined) {
+      matchesAdvanced = matchesAdvanced && c.valor >= advancedFilters.valorMinimo;
+    }
+    if (advancedFilters.valorMaximo !== undefined) {
+      matchesAdvanced = matchesAdvanced && c.valor <= advancedFilters.valorMaximo;
+    }
+    
+    // Filtro de tipo de cobrança
+    if (advancedFilters.tipoCobranca) {
+      matchesAdvanced = matchesAdvanced && c.tipo_cobranca === advancedFilters.tipoCobranca;
+    }
+    
+    return matchesSearch && matchesStatus && matchesCentroCusto && matchesAprovacao && matchesAdvanced;
   });
 
   // Função para calcular prioridade de aprovação
@@ -497,9 +525,10 @@ export default function ContasPagar() {
                     <SelectItem value="fornecedor">Fornecedor (A-Z)</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button variant="outline" size="icon">
-                  <Filter className="h-4 w-4" />
-                </Button>
+                <AdvancedFiltersPopover
+                  filters={advancedFilters}
+                  onFiltersChange={setAdvancedFilters}
+                />
               </div>
             </CardContent>
           </Card>
