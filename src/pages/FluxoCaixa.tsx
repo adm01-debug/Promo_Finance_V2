@@ -13,12 +13,21 @@ import {
   Settings2,
   RefreshCw,
   Loader2,
+  FileText,
+  FileSpreadsheet,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { toast } from 'sonner';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -164,10 +173,34 @@ export default function FluxoCaixa() {
               {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
               Atualizar
             </Button>
-            <Button variant="outline" size="sm" className="gap-2">
-              <Download className="h-4 w-4" />
-              Exportar
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Download className="h-4 w-4" />
+                  Exportar
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => {
+                  import('@/lib/pdf-generator').then(({ generateFluxoCaixaPDF }) => {
+                    generateFluxoCaixaPDF(dadosCenarioAtivo, `Fluxo de Caixa - Cenário ${cenarioAtivo}`);
+                    toast.success('PDF gerado com sucesso!');
+                  });
+                }}>
+                  <FileText className="h-4 w-4 mr-2 text-red-500" />
+                  Exportar PDF
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {
+                  import('@/lib/pdf-generator').then(({ generateFluxoCaixaCSV }) => {
+                    generateFluxoCaixaCSV(dadosCenarioAtivo);
+                    toast.success('Excel exportado com sucesso!');
+                  });
+                }}>
+                  <FileSpreadsheet className="h-4 w-4 mr-2 text-green-600" />
+                  Exportar Excel
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </motion.div>
 
