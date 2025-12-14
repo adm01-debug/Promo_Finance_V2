@@ -101,6 +101,114 @@ export type Database = {
         }
         Relationships: []
       }
+      bitrix_field_mappings: {
+        Row: {
+          ativo: boolean
+          campo_bitrix: string
+          campo_sistema: string
+          created_at: string
+          entidade: string
+          id: string
+          obrigatorio: boolean
+          transformacao: string | null
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          campo_bitrix: string
+          campo_sistema: string
+          created_at?: string
+          entidade: string
+          id?: string
+          obrigatorio?: boolean
+          transformacao?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          campo_bitrix?: string
+          campo_sistema?: string
+          created_at?: string
+          entidade?: string
+          id?: string
+          obrigatorio?: boolean
+          transformacao?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      bitrix_oauth_tokens: {
+        Row: {
+          access_token: string
+          created_at: string
+          expires_at: string
+          id: string
+          refresh_token: string
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          refresh_token: string
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          refresh_token?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      bitrix_sync_logs: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          detalhes: Json | null
+          entidade: string
+          finalizado_em: string | null
+          id: string
+          iniciado_em: string
+          mensagem_erro: string | null
+          registros_com_erro: number | null
+          registros_processados: number | null
+          status: string
+          tipo: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          detalhes?: Json | null
+          entidade: string
+          finalizado_em?: string | null
+          id?: string
+          iniciado_em?: string
+          mensagem_erro?: string | null
+          registros_com_erro?: number | null
+          registros_processados?: number | null
+          status?: string
+          tipo: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          detalhes?: Json | null
+          entidade?: string
+          finalizado_em?: string | null
+          id?: string
+          iniciado_em?: string
+          mensagem_erro?: string | null
+          registros_com_erro?: number | null
+          registros_processados?: number | null
+          status?: string
+          tipo?: string
+        }
+        Relationships: []
+      }
       centros_custo: {
         Row: {
           ativo: boolean
