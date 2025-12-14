@@ -14,6 +14,7 @@ import {
   AlertCircle,
   Building2,
   BarChart3,
+  Eye,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -56,10 +57,11 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useRelatoriosAgendados, type CreateRelatorioInput } from '@/hooks/useRelatoriosAgendados';
+import { useRelatoriosAgendados, type CreateRelatorioInput, type HistoricoRelatorio } from '@/hooks/useRelatoriosAgendados';
 import { useEmpresas } from '@/hooks/useFinancialData';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { VisualizarRelatorioDialog } from './VisualizarRelatorioDialog';
 
 const tiposRelatorio = [
   { value: 'fluxo_caixa', label: 'Fluxo de Caixa', icon: BarChart3 },
@@ -92,7 +94,9 @@ export function RelatoriosAgendados() {
   
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedHistorico, setSelectedHistorico] = useState<HistoricoRelatorio | null>(null);
   
   const [formData, setFormData] = useState<CreateRelatorioInput>({
     nome: '',
@@ -145,6 +149,21 @@ export function RelatoriosAgendados() {
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
+  };
+
+  const handleViewReport = (item: HistoricoRelatorio) => {
+    setSelectedHistorico(item);
+    setViewDialogOpen(true);
+  };
+
+  const getRelatorioNome = (item: HistoricoRelatorio) => {
+    const relatorio = relatorios.find(r => r.id === item.relatorio_agendado_id);
+    return relatorio?.nome || 'Relatório removido';
+  };
+
+  const getRelatorioTipo = (item: HistoricoRelatorio) => {
+    const relatorio = relatorios.find(r => r.id === item.relatorio_agendado_id);
+    return relatorio?.tipo_relatorio || '';
   };
 
   if (isLoading) {
@@ -294,11 +313,13 @@ export function RelatoriosAgendados() {
                       <TableHead>Relatório</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Mensagem</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {historico.map((item) => {
                       const relatorio = relatorios.find(r => r.id === item.relatorio_agendado_id);
+                      const hasData = item.dados_relatorio && Object.keys(item.dados_relatorio).length > 0;
                       return (
                         <TableRow key={item.id}>
                           <TableCell className="text-sm">
@@ -310,6 +331,19 @@ export function RelatoriosAgendados() {
                           <TableCell>{getStatusBadge(item.status)}</TableCell>
                           <TableCell className="text-sm text-muted-foreground">
                             {item.erro_mensagem || '-'}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {hasData && item.status === 'gerado' && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleViewReport(item)}
+                                className="gap-2"
+                              >
+                                <Eye className="h-4 w-4" />
+                                Visualizar
+                              </Button>
+                            )}
                           </TableCell>
                         </TableRow>
                       );
@@ -493,6 +527,18 @@ export function RelatoriosAgendados() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Dialog para visualizar relatório */}
+      {selectedHistorico && (
+        <VisualizarRelatorioDialog
+          open={viewDialogOpen}
+          onOpenChange={setViewDialogOpen}
+          tipoRelatorio={getRelatorioTipo(selectedHistorico)}
+          nomeRelatorio={getRelatorioNome(selectedHistorico)}
+          dados={selectedHistorico.dados_relatorio}
+          executadoEm={selectedHistorico.executado_em}
+        />
+      )}
     </div>
   );
 }
