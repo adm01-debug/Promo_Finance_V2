@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Bell, 
@@ -26,6 +26,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
+import { BulkActionsBar } from '@/components/ui/bulk-actions-bar';
+import { useBulkActions } from '@/hooks/useBulkActions';
 import { 
   useAlertas, 
   useMarcarAlertaComoLido, 
@@ -73,7 +75,6 @@ export default function Alertas() {
   const marcarComoLido = useMarcarAlertaComoLido();
   const marcarTodosComoLidos = useMarcarTodosAlertasComoLidos();
   
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('todos');
 
   const alertasNaoLidos = alertas.filter(a => !a.lido);
@@ -86,6 +87,26 @@ export default function Alertas() {
     meta: alertas.filter(a => a.tipo === 'meta')
   };
 
+  const currentTabAlertas = useMemo(() => alertasPorTipo[activeTab] || [], [activeTab, alertas]);
+
+  // Use bulk actions hook
+  const {
+    selectedCount,
+    isProcessing,
+    progress,
+    isSelected,
+    isAllSelected,
+    selectAll,
+    toggleSelect,
+    clearSelection,
+    executeBulkAction,
+  } = useBulkActions({
+    items: currentTabAlertas,
+    getItemId: (a) => a.id,
+    successMessage: 'Alertas marcados como lidos',
+    errorMessage: 'Erro ao marcar alertas',
+  });
+
   const countByPriority = (priority: PrioridadeAlerta) => 
     alertasNaoLidos.filter(a => a.prioridade === priority).length;
 
@@ -97,19 +118,10 @@ export default function Alertas() {
     marcarTodosComoLidos.mutate();
   };
 
-  const handleSelectAll = () => {
-    const currentTabAlertas = alertasPorTipo[activeTab] || [];
-    if (selectedIds.length === currentTabAlertas.length) {
-      setSelectedIds([]);
-    } else {
-      setSelectedIds(currentTabAlertas.map(a => a.id));
-    }
-  };
-
-  const toggleSelect = (id: string) => {
-    setSelectedIds(prev => 
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-    );
+  const handleBulkMarkAsRead = () => {
+    executeBulkAction(async (id) => {
+      await marcarComoLido.mutateAsync(id);
+    }, { showProgress: true });
   };
 
   const handleNavigate = (alerta: Alerta) => {
@@ -250,8 +262,8 @@ export default function Alertas() {
 
           <div className="flex items-center gap-2">
             <Checkbox 
-              checked={selectedIds.length === (alertasPorTipo[activeTab]?.length || 0) && (alertasPorTipo[activeTab]?.length || 0) > 0}
-              onCheckedChange={handleSelectAll}
+              checked={isAllSelected}
+              onCheckedChange={selectAll}
             />
             <span className="text-sm text-muted-foreground">Selecionar todos</span>
           </div>
@@ -290,7 +302,7 @@ export default function Alertas() {
                         >
                           <div className="flex items-start gap-4">
                             <Checkbox 
-                              checked={selectedIds.includes(alerta.id)}
+                              checked={isSelected(alerta.id)}
                               onCheckedChange={() => toggleSelect(alerta.id)}
                             />
                             
@@ -419,6 +431,22 @@ export default function Alertas() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Bulk Actions Bar */}
+      <BulkActionsBar
+        selectedCount={selectedCount}
+        isProcessing={isProcessing}
+        progress={progress}
+        onClear={clearSelection}
+        actions={[
+          {
+            id: 'mark-read',
+            label: 'Marcar como lidos',
+            icon: <Eye className="h-4 w-4" />,
+            onClick: handleBulkMarkAsRead,
+          },
+        ]}
+      />
     </div>
   );
 }
