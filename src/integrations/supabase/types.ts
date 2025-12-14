@@ -209,6 +209,103 @@ export type Database = {
         }
         Relationships: []
       }
+      boletos: {
+        Row: {
+          agencia: string
+          banco: string
+          cedente_cnpj: string | null
+          cedente_nome: string
+          codigo_barras: string
+          conta: string
+          conta_bancaria_id: string | null
+          conta_receber_id: string | null
+          created_at: string
+          created_by: string
+          descricao: string | null
+          empresa_id: string
+          id: string
+          linha_digitavel: string
+          numero: string
+          observacoes: string | null
+          sacado_cpf_cnpj: string | null
+          sacado_nome: string
+          status: string
+          updated_at: string
+          valor: number
+          vencimento: string
+        }
+        Insert: {
+          agencia: string
+          banco: string
+          cedente_cnpj?: string | null
+          cedente_nome: string
+          codigo_barras: string
+          conta: string
+          conta_bancaria_id?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          created_by: string
+          descricao?: string | null
+          empresa_id: string
+          id?: string
+          linha_digitavel: string
+          numero: string
+          observacoes?: string | null
+          sacado_cpf_cnpj?: string | null
+          sacado_nome: string
+          status?: string
+          updated_at?: string
+          valor: number
+          vencimento: string
+        }
+        Update: {
+          agencia?: string
+          banco?: string
+          cedente_cnpj?: string | null
+          cedente_nome?: string
+          codigo_barras?: string
+          conta?: string
+          conta_bancaria_id?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          created_by?: string
+          descricao?: string | null
+          empresa_id?: string
+          id?: string
+          linha_digitavel?: string
+          numero?: string
+          observacoes?: string | null
+          sacado_cpf_cnpj?: string | null
+          sacado_nome?: string
+          status?: string
+          updated_at?: string
+          valor?: number
+          vencimento?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "boletos_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "boletos_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "boletos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       centros_custo: {
         Row: {
           ativo: boolean
