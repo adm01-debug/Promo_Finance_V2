@@ -616,6 +616,41 @@ export type Database = {
         }
         Relationships: []
       }
+      historico_relatorios: {
+        Row: {
+          dados_relatorio: Json | null
+          erro_mensagem: string | null
+          executado_em: string
+          id: string
+          relatorio_agendado_id: string | null
+          status: string
+        }
+        Insert: {
+          dados_relatorio?: Json | null
+          erro_mensagem?: string | null
+          executado_em?: string
+          id?: string
+          relatorio_agendado_id?: string | null
+          status?: string
+        }
+        Update: {
+          dados_relatorio?: Json | null
+          erro_mensagem?: string | null
+          executado_em?: string
+          id?: string
+          relatorio_agendado_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historico_relatorios_relatorio_agendado_id_fkey"
+            columns: ["relatorio_agendado_id"]
+            isOneToOne: false
+            referencedRelation: "relatorios_agendados"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notas_fiscais: {
         Row: {
           chave_acesso: string | null
@@ -741,6 +776,75 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      relatorios_agendados: {
+        Row: {
+          ativo: boolean
+          centro_custo_id: string | null
+          created_at: string
+          created_by: string
+          dia_mes: number | null
+          dia_semana: number | null
+          empresa_id: string | null
+          frequencia: string
+          hora_execucao: string
+          id: string
+          nome: string
+          proximo_envio: string | null
+          tipo_relatorio: string
+          ultimo_envio: string | null
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          centro_custo_id?: string | null
+          created_at?: string
+          created_by: string
+          dia_mes?: number | null
+          dia_semana?: number | null
+          empresa_id?: string | null
+          frequencia: string
+          hora_execucao?: string
+          id?: string
+          nome: string
+          proximo_envio?: string | null
+          tipo_relatorio: string
+          ultimo_envio?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          centro_custo_id?: string | null
+          created_at?: string
+          created_by?: string
+          dia_mes?: number | null
+          dia_semana?: number | null
+          empresa_id?: string | null
+          frequencia?: string
+          hora_execucao?: string
+          id?: string
+          nome?: string
+          proximo_envio?: string | null
+          tipo_relatorio?: string
+          ultimo_envio?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "relatorios_agendados_centro_custo_id_fkey"
+            columns: ["centro_custo_id"]
+            isOneToOne: false
+            referencedRelation: "centros_custo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "relatorios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       solicitacoes_aprovacao: {
         Row: {

@@ -20,8 +20,10 @@ import {
   DollarSign,
   Users,
   ArrowUpDown,
-  Eye
+  Eye,
+  Clock,
 } from 'lucide-react';
+import { RelatoriosAgendados } from '@/components/relatorios/RelatoriosAgendados';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -374,6 +376,10 @@ export default function Relatorios() {
             <FileSpreadsheet className="h-4 w-4" />
             Modelos
           </TabsTrigger>
+          <TabsTrigger value="agendados" className="gap-2">
+            <Clock className="h-4 w-4" />
+            Agendados
+          </TabsTrigger>
         </TabsList>
 
         {/* Visão Geral */}
@@ -656,6 +662,11 @@ export default function Relatorios() {
               );
             })}
           </div>
+        </TabsContent>
+
+        {/* Relatórios Agendados */}
+        <TabsContent value="agendados">
+          <RelatoriosAgendados />
         </TabsContent>
       </Tabs>
     </div>

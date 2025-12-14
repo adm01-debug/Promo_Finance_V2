@@ -1,0 +1,498 @@
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Calendar,
+  Clock,
+  Play,
+  Pause,
+  Trash2,
+  Plus,
+  FileText,
+  History,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  Building2,
+  BarChart3,
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useRelatoriosAgendados, type CreateRelatorioInput } from '@/hooks/useRelatoriosAgendados';
+import { useEmpresas } from '@/hooks/useFinancialData';
+import { format, formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+
+const tiposRelatorio = [
+  { value: 'fluxo_caixa', label: 'Fluxo de Caixa', icon: BarChart3 },
+  { value: 'contas_pagar', label: 'Contas a Pagar', icon: FileText },
+  { value: 'contas_receber', label: 'Contas a Receber', icon: FileText },
+  { value: 'dre', label: 'DRE - Demonstrativo de Resultados', icon: FileText },
+  { value: 'balanco', label: 'Balanço Patrimonial', icon: FileText },
+  { value: 'inadimplencia', label: 'Análise de Inadimplência', icon: AlertCircle },
+];
+
+const frequencias = [
+  { value: 'diario', label: 'Diário' },
+  { value: 'semanal', label: 'Semanal' },
+  { value: 'mensal', label: 'Mensal' },
+];
+
+const diasSemana = [
+  { value: 0, label: 'Domingo' },
+  { value: 1, label: 'Segunda-feira' },
+  { value: 2, label: 'Terça-feira' },
+  { value: 3, label: 'Quarta-feira' },
+  { value: 4, label: 'Quinta-feira' },
+  { value: 5, label: 'Sexta-feira' },
+  { value: 6, label: 'Sábado' },
+];
+
+export function RelatoriosAgendados() {
+  const { relatorios, historico, isLoading, create, delete: deleteRelatorio, toggleAtivo, isCreating } = useRelatoriosAgendados();
+  const { data: empresas = [] } = useEmpresas();
+  
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  
+  const [formData, setFormData] = useState<CreateRelatorioInput>({
+    nome: '',
+    tipo_relatorio: '',
+    frequencia: 'diario',
+    dia_semana: null,
+    dia_mes: null,
+    hora_execucao: '08:00',
+    empresa_id: null,
+  });
+
+  const handleCreate = () => {
+    create(formData);
+    setDialogOpen(false);
+    setFormData({
+      nome: '',
+      tipo_relatorio: '',
+      frequencia: 'diario',
+      dia_semana: null,
+      dia_mes: null,
+      hora_execucao: '08:00',
+      empresa_id: null,
+    });
+  };
+
+  const handleDelete = () => {
+    if (selectedId) {
+      deleteRelatorio(selectedId);
+      setDeleteDialogOpen(false);
+      setSelectedId(null);
+    }
+  };
+
+  const getTipoLabel = (tipo: string) => {
+    return tiposRelatorio.find(t => t.value === tipo)?.label || tipo;
+  };
+
+  const getFrequenciaLabel = (freq: string) => {
+    return frequencias.find(f => f.value === freq)?.label || freq;
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'gerado':
+        return <Badge className="bg-green-500/10 text-green-600 border-green-500/20"><CheckCircle className="h-3 w-3 mr-1" />Gerado</Badge>;
+      case 'enviado':
+        return <Badge className="bg-blue-500/10 text-blue-600 border-blue-500/20"><CheckCircle className="h-3 w-3 mr-1" />Enviado</Badge>;
+      case 'erro':
+        return <Badge className="bg-red-500/10 text-red-600 border-red-500/20"><XCircle className="h-3 w-3 mr-1" />Erro</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <Tabs defaultValue="agendados" className="space-y-4">
+        <div className="flex items-center justify-between">
+          <TabsList>
+            <TabsTrigger value="agendados" className="gap-2">
+              <Calendar className="h-4 w-4" />
+              Agendados
+            </TabsTrigger>
+            <TabsTrigger value="historico" className="gap-2">
+              <History className="h-4 w-4" />
+              Histórico
+            </TabsTrigger>
+          </TabsList>
+          
+          <Button onClick={() => setDialogOpen(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Novo Agendamento
+          </Button>
+        </div>
+
+        <TabsContent value="agendados">
+          {relatorios.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-12">
+                <Calendar className="h-12 w-12 text-muted-foreground/50 mb-4" />
+                <h3 className="text-lg font-medium mb-2">Nenhum relatório agendado</h3>
+                <p className="text-muted-foreground text-sm mb-4">
+                  Configure relatórios para geração automática
+                </p>
+                <Button onClick={() => setDialogOpen(true)} className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  Criar Agendamento
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              <AnimatePresence>
+                {relatorios.map((relatorio, index) => (
+                  <motion.div
+                    key={relatorio.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <Card className={!relatorio.ativo ? 'opacity-60' : ''}>
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className={`p-3 rounded-xl ${relatorio.ativo ? 'bg-primary/10' : 'bg-muted'}`}>
+                              <FileText className={`h-5 w-5 ${relatorio.ativo ? 'text-primary' : 'text-muted-foreground'}`} />
+                            </div>
+                            <div>
+                              <h4 className="font-medium">{relatorio.nome}</h4>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Badge variant="outline" className="text-xs">
+                                  {getTipoLabel(relatorio.tipo_relatorio)}
+                                </Badge>
+                                <Badge variant="secondary" className="text-xs">
+                                  {getFrequenciaLabel(relatorio.frequencia)}
+                                </Badge>
+                                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                  <Clock className="h-3 w-3" />
+                                  {relatorio.hora_execucao.slice(0, 5)}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-6">
+                            <div className="text-right text-sm">
+                              {relatorio.proximo_envio && (
+                                <div className="text-muted-foreground">
+                                  Próximo: {formatDistanceToNow(new Date(relatorio.proximo_envio), { addSuffix: true, locale: ptBR })}
+                                </div>
+                              )}
+                              {relatorio.ultimo_envio && (
+                                <div className="text-xs text-muted-foreground/70">
+                                  Último: {format(new Date(relatorio.ultimo_envio), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                                </div>
+                              )}
+                            </div>
+                            
+                            <div className="flex items-center gap-2">
+                              <Switch
+                                checked={relatorio.ativo}
+                                onCheckedChange={(ativo) => toggleAtivo({ id: relatorio.id, ativo })}
+                              />
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-destructive hover:text-destructive"
+                                onClick={() => {
+                                  setSelectedId(relatorio.id);
+                                  setDeleteDialogOpen(true);
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="historico">
+          {historico.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-12">
+                <History className="h-12 w-12 text-muted-foreground/50 mb-4" />
+                <h3 className="text-lg font-medium mb-2">Nenhum histórico</h3>
+                <p className="text-muted-foreground text-sm">
+                  Os relatórios gerados aparecerão aqui
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Histórico de Execuções</CardTitle>
+                <CardDescription>Últimos 50 relatórios gerados</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Data/Hora</TableHead>
+                      <TableHead>Relatório</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Mensagem</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {historico.map((item) => {
+                      const relatorio = relatorios.find(r => r.id === item.relatorio_agendado_id);
+                      return (
+                        <TableRow key={item.id}>
+                          <TableCell className="text-sm">
+                            {format(new Date(item.executado_em), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {relatorio?.nome || 'Relatório removido'}
+                          </TableCell>
+                          <TableCell>{getStatusBadge(item.status)}</TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {item.erro_mensagem || '-'}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+      </Tabs>
+
+      {/* Dialog para criar agendamento */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Novo Relatório Agendado</DialogTitle>
+            <DialogDescription>
+              Configure a geração automática de relatórios
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Nome do Agendamento</Label>
+              <Input
+                placeholder="Ex: Relatório Semanal de Fluxo"
+                value={formData.nome}
+                onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Tipo de Relatório</Label>
+              <Select
+                value={formData.tipo_relatorio}
+                onValueChange={(value) => setFormData({ ...formData, tipo_relatorio: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  {tiposRelatorio.map((tipo) => (
+                    <SelectItem key={tipo.value} value={tipo.value}>
+                      {tipo.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Frequência</Label>
+                <Select
+                  value={formData.frequencia}
+                  onValueChange={(value) => setFormData({ 
+                    ...formData, 
+                    frequencia: value,
+                    dia_semana: null,
+                    dia_mes: null,
+                  })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {frequencias.map((freq) => (
+                      <SelectItem key={freq.value} value={freq.value}>
+                        {freq.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Horário</Label>
+                <Input
+                  type="time"
+                  value={formData.hora_execucao}
+                  onChange={(e) => setFormData({ ...formData, hora_execucao: e.target.value })}
+                />
+              </div>
+            </div>
+            
+            {formData.frequencia === 'semanal' && (
+              <div className="space-y-2">
+                <Label>Dia da Semana</Label>
+                <Select
+                  value={formData.dia_semana?.toString() || ''}
+                  onValueChange={(value) => setFormData({ ...formData, dia_semana: parseInt(value) })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o dia" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {diasSemana.map((dia) => (
+                      <SelectItem key={dia.value} value={dia.value.toString()}>
+                        {dia.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            
+            {formData.frequencia === 'mensal' && (
+              <div className="space-y-2">
+                <Label>Dia do Mês</Label>
+                <Select
+                  value={formData.dia_mes?.toString() || ''}
+                  onValueChange={(value) => setFormData({ ...formData, dia_mes: parseInt(value) })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o dia" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 28 }, (_, i) => i + 1).map((dia) => (
+                      <SelectItem key={dia} value={dia.toString()}>
+                        Dia {dia}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            
+            <div className="space-y-2">
+              <Label>Empresa (opcional)</Label>
+              <Select
+                value={formData.empresa_id || 'all'}
+                onValueChange={(value) => setFormData({ 
+                  ...formData, 
+                  empresa_id: value === 'all' ? null : value 
+                })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Todas as empresas" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas as empresas</SelectItem>
+                  {empresas.map((empresa) => (
+                    <SelectItem key={empresa.id} value={empresa.id}>
+                      {empresa.nome_fantasia || empresa.razao_social}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button 
+              onClick={handleCreate}
+              disabled={!formData.nome || !formData.tipo_relatorio || isCreating}
+            >
+              {isCreating ? 'Salvando...' : 'Salvar Agendamento'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog de confirmação de exclusão */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir agendamento?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. O relatório não será mais gerado automaticamente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
