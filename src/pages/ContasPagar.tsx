@@ -75,7 +75,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { ExportMenu } from '@/components/ui/export-menu';
 import { SortableHeader, useSorting } from '@/components/ui/sortable-header';
-import { useContasPagar, useCentrosCusto } from '@/hooks/useFinancialData';
+import { useContasPagar, useContasPagarPaginated, useCentrosCusto } from '@/hooks/useFinancialData';
+import { TablePagination } from '@/components/ui/table-pagination';
 import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime } from '@/lib/formatters';
 import { contasPagarColumns } from '@/lib/export-utils';
 import { cn } from '@/lib/utils';
@@ -131,12 +132,49 @@ export default function ContasPagar() {
   const [editingConta, setEditingConta] = useState<any>(null);
   const [observacoesAprovacao, setObservacoesAprovacao] = useState('');
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
-  const { data: contas = [], isLoading } = useContasPagar();
+  // Server-side paginated query
+  const { data: paginatedResult, isLoading } = useContasPagarPaginated({
+    page: currentPage,
+    pageSize,
+    search: searchTerm,
+    status: statusFilter,
+    centroCustoId: centroCustoFilter,
+  });
+
+  // Get all data for KPIs (non-paginated)
+  const { data: allContas = [] } = useContasPagar();
   const { data: centrosCusto = [] } = useCentrosCusto();
   const { data: configuracao } = useConfiguracaoAprovacao();
   const criarSolicitacaoMutation = useCriarSolicitacaoAprovacao();
   const { user } = useAuth();
+
+  const contas = paginatedResult?.data || [];
+  const totalCount = paginatedResult?.totalCount || 0;
+  const totalPages = paginatedResult?.totalPages || 1;
+
+  // Reset page when filters change
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  const handleStatusChange = (value: string) => {
+    setStatusFilter(value);
+    setCurrentPage(1);
+  };
+
+  const handleCentroCustoChange = (value: string) => {
+    setCentroCustoFilter(value);
+    setCurrentPage(1);
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(1);
+  };
 
   // Abrir modal de confirmação
   const abrirModalAprovacao = (conta: any) => {
@@ -213,11 +251,11 @@ export default function ContasPagar() {
     solicitacoesAprovacao.filter(s => s.status === 'pendente' || s.status === 'rejeitada').map(s => [s.conta_pagar_id, s.status])
   );
 
-  // KPIs
-  const totalPagar = contas.reduce((sum, c) => c.status !== 'pago' && c.status !== 'cancelado' ? sum + c.valor - (c.valor_pago || 0) : sum, 0);
-  const totalVencido = contas.filter(c => c.status === 'vencido').reduce((sum, c) => sum + c.valor - (c.valor_pago || 0), 0);
-  const totalPagoMes = contas.filter(c => c.status === 'pago').reduce((sum, c) => sum + (c.valor_pago || 0), 0);
-  const venceHoje = contas.filter(c => {
+  // KPIs - use allContas for accurate totals
+  const totalPagar = allContas.reduce((sum, c) => c.status !== 'pago' && c.status !== 'cancelado' ? sum + c.valor - (c.valor_pago || 0) : sum, 0);
+  const totalVencido = allContas.filter(c => c.status === 'vencido').reduce((sum, c) => sum + c.valor - (c.valor_pago || 0), 0);
+  const totalPagoMes = allContas.filter(c => c.status === 'pago').reduce((sum, c) => sum + (c.valor_pago || 0), 0);
+  const venceHoje = allContas.filter(c => {
     const hoje = new Date().toDateString();
     return new Date(c.data_vencimento).toDateString() === hoje && c.status === 'pendente';
   }).length;
@@ -228,8 +266,8 @@ export default function ContasPagar() {
     return valor >= configuracao.valor_minimo_aprovacao;
   };
 
-  // Contar pendentes de aprovação
-  const contasPendentesAprovacao = contas.filter(c => {
+  // Contar pendentes de aprovação - use allContas for accurate counts
+  const contasPendentesAprovacao = allContas.filter(c => {
     const precisaAprovacao = requerAprovacao(c.valor);
     const temSolicitacaoPendente = aprovacaoStatusMap.get(c.id) === 'pendente';
     const naoAprovado = !c.aprovado_por && precisaAprovacao;
@@ -251,12 +289,8 @@ export default function ContasPagar() {
   const countAprovacoesUrgentes = aprovacoesUrgentes.length;
   const valorAprovacoesUrgentes = aprovacoesUrgentes.reduce((sum, c) => sum + c.valor, 0);
 
+  // Client-side filtering for advanced filters and approval status (server handles basic filters)
   const filteredContas = contas.filter(c => {
-    const matchesSearch = c.fornecedor_nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.descricao.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
-    const matchesCentroCusto = centroCustoFilter === 'all' || c.centro_custo_id === centroCustoFilter;
-    
     // Filtro de aprovação
     let matchesAprovacao = true;
     if (aprovacaoFilter === 'pendente_aprovacao') {
@@ -296,7 +330,7 @@ export default function ContasPagar() {
       matchesAdvanced = matchesAdvanced && c.tipo_cobranca === advancedFilters.tipoCobranca;
     }
     
-    return matchesSearch && matchesStatus && matchesCentroCusto && matchesAprovacao && matchesAdvanced;
+    return matchesAprovacao && matchesAdvanced;
   });
 
   // Função para calcular prioridade de aprovação
@@ -463,11 +497,11 @@ export default function ContasPagar() {
                   <Input
                     placeholder="Buscar por fornecedor, descrição..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => handleSearchChange(e.target.value)}
                     className="pl-10"
                   />
                 </div>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <Select value={statusFilter} onValueChange={handleStatusChange}>
                   <SelectTrigger className="w-full lg:w-[180px]">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
@@ -480,7 +514,7 @@ export default function ContasPagar() {
                     <SelectItem value="cancelado">Cancelado</SelectItem>
                   </SelectContent>
                 </Select>
-                <Select value={centroCustoFilter} onValueChange={setCentroCustoFilter}>
+                <Select value={centroCustoFilter} onValueChange={handleCentroCustoChange}>
                   <SelectTrigger className="w-full lg:w-[180px]">
                     <SelectValue placeholder="Centro de Custo" />
                   </SelectTrigger>
@@ -940,6 +974,14 @@ export default function ContasPagar() {
                     )}
                   </TableBody>
                 </Table>
+                <TablePagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  pageSize={pageSize}
+                  totalItems={totalCount}
+                  onPageChange={setCurrentPage}
+                  onPageSizeChange={handlePageSizeChange}
+                />
               </div>
             )}
           </Card>
