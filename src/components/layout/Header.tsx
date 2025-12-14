@@ -10,6 +10,7 @@ import {
   User,
   Settings,
   Monitor,
+  Shield,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,23 +28,49 @@ import { mockCNPJs, mockAlertas } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
 
 interface HeaderProps {
   sidebarCollapsed?: boolean;
 }
 
+const roleLabels: Record<string, { label: string; color: string }> = {
+  admin: { label: 'Administrador', color: 'bg-red-500/10 text-red-500 border-red-500/20' },
+  financeiro: { label: 'Financeiro', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
+  operacional: { label: 'Operacional', color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' },
+  visualizador: { label: 'Visualizador', color: 'bg-muted text-muted-foreground' },
+};
+
 export const Header = ({ sidebarCollapsed }: HeaderProps) => {
   const { theme, setTheme, resolvedTheme } = useTheme();
+  const { user, profile, role, signOut } = useAuth();
+  const navigate = useNavigate();
   const [selectedCNPJ, setSelectedCNPJ] = useState(mockCNPJs[0]);
   const unreadAlerts = mockAlertas.filter((a) => !a.lido).length;
 
   const isDark = resolvedTheme === 'dark';
 
-  const cycleTheme = () => {
-    if (theme === 'light') setTheme('dark');
-    else if (theme === 'dark') setTheme('system');
-    else setTheme('light');
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success('Você saiu do sistema');
+    navigate('/auth');
+  };
+
+  const getInitials = () => {
+    if (profile?.full_name) {
+      return profile.full_name
+        .split(' ')
+        .map((n) => n[0])
+        .slice(0, 2)
+        .join('')
+        .toUpperCase();
+    }
+    if (user?.email) {
+      return user.email.slice(0, 2).toUpperCase();
+    }
+    return 'U';
   };
 
   const getThemeIcon = () => {
@@ -53,6 +80,7 @@ export const Header = ({ sidebarCollapsed }: HeaderProps) => {
   };
 
   const ThemeIcon = getThemeIcon();
+  const roleInfo = role ? roleLabels[role] : null;
 
   return (
     <header
@@ -222,23 +250,43 @@ export const Header = ({ sidebarCollapsed }: HeaderProps) => {
                 className="h-10 gap-2 pl-2 pr-3 hover:bg-muted"
               >
                 <Avatar className="h-7 w-7">
-                  <AvatarImage src="/avatar.png" />
+                  <AvatarImage src={profile?.avatar_url || undefined} />
                   <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">
-                    PB
+                    {getInitials()}
                   </AvatarFallback>
                 </Avatar>
-                <span className="hidden sm:inline text-sm font-medium">
-                  Admin
-                </span>
+                <div className="hidden sm:flex flex-col items-start">
+                  <span className="text-sm font-medium leading-tight">
+                    {profile?.full_name || user?.email?.split('@')[0] || 'Usuário'}
+                  </span>
+                  {roleInfo && (
+                    <span className="text-[10px] text-muted-foreground leading-tight">
+                      {roleInfo.label}
+                    </span>
+                  )}
+                </div>
                 <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 bg-popover">
-              <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+            <DropdownMenuContent align="end" className="w-56 bg-popover">
+              <DropdownMenuLabel>
+                <div className="flex flex-col gap-1">
+                  <span>{profile?.full_name || 'Usuário'}</span>
+                  <span className="text-xs font-normal text-muted-foreground">
+                    {user?.email}
+                  </span>
+                  {roleInfo && (
+                    <Badge variant="outline" className={cn("mt-1 w-fit", roleInfo.color)}>
+                      <Shield className="h-3 w-3 mr-1" />
+                      {roleInfo.label}
+                    </Badge>
+                  )}
+                </div>
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="cursor-pointer">
                 <User className="h-4 w-4 mr-2" />
-                Perfil
+                Meu Perfil
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="cursor-pointer">
                 <Link to="/configuracoes">
@@ -247,7 +295,10 @@ export const Header = ({ sidebarCollapsed }: HeaderProps) => {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive">
+              <DropdownMenuItem 
+                onClick={handleSignOut}
+                className="cursor-pointer text-destructive focus:text-destructive"
+              >
                 <LogOut className="h-4 w-4 mr-2" />
                 Sair
               </DropdownMenuItem>
