@@ -22,6 +22,7 @@ import {
   ScrollText,
   User,
   Truck,
+  FileSpreadsheet,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -46,6 +47,7 @@ const navItems: NavItem[] = [
   { label: 'Fornecedores', icon: Truck, href: '/fornecedores' },
   { label: 'Conciliação', icon: RefreshCcw, href: '/conciliacao', badge: 12 },
   { label: 'Fluxo de Caixa', icon: BarChart3, href: '/fluxo-caixa' },
+  { label: 'Demonstrativos', icon: FileSpreadsheet, href: '/demonstrativos' },
   { label: 'Centro de Custos', icon: PieChart, href: '/centro-custos' },
   { label: 'Relatórios', icon: FileText, href: '/relatorios' },
   { label: 'Contas Bancárias', icon: Landmark, href: '/contas-bancarias' },
