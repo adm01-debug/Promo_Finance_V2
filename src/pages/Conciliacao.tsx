@@ -57,7 +57,8 @@ import {
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { mockContasBancarias } from '@/data/mockData';
+import { useContasBancarias } from '@/hooks/useFinancialData';
+import { useConciliacao } from '@/hooks/useConciliacao';
 import { ImportarExtratoDialog } from '@/components/conciliacao/ImportarExtratoDialog';
 import { SugestoesMatch } from '@/components/conciliacao/SugestoesMatch';
 import { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
@@ -129,7 +130,7 @@ const mockSugestoes = [
 
 export default function Conciliacao() {
   const [activeTab, setActiveTab] = useState('pendentes');
-  const [selectedBanco, setSelectedBanco] = useState('1');
+  const [selectedBanco, setSelectedBanco] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [transacoes, setTransacoes] = useState(mockTransacoesExtrato);
@@ -137,9 +138,11 @@ export default function Conciliacao() {
   const [extratoImportado, setExtratoImportado] = useState<ExtratoOFX | null>(null);
   const [transacoesImportadas, setTransacoesImportadas] = useState<TransacaoOFX[]>([]);
 
-  // Fetch real data for matching
+  // Fetch real data
+  const { data: contasBancarias } = useContasBancarias();
   const { data: contasPagar } = useContasPagar();
   const { data: contasReceber } = useContasReceber();
+  const { confirmarConciliacao } = useConciliacao();
 
   // Convert to LancamentoSistema format for matching
   const lancamentosSistema = useMemo((): LancamentoSistema[] => {
@@ -243,10 +246,10 @@ export default function Conciliacao() {
                 <SelectValue placeholder="Selecione o banco" />
               </SelectTrigger>
               <SelectContent>
-                {mockContasBancarias.map(conta => (
+                {(contasBancarias || []).map(conta => (
                   <SelectItem key={conta.id} value={conta.id}>
                     <div className="flex items-center gap-2">
-                      <span className="h-3 w-3 rounded-full" style={{ background: conta.cor }} />
+                      <span className="h-3 w-3 rounded-full" style={{ background: conta.cor || '#3B82F6' }} />
                       {conta.banco} - {conta.conta}
                     </div>
                   </SelectItem>
