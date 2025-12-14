@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Plus,
@@ -14,11 +14,20 @@ import {
   MapPin,
   Star,
   Loader2,
+  Filter,
+  X,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -89,18 +98,66 @@ export default function Clientes() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [viewingCliente, setViewingCliente] = useState<Cliente | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  
+  // Advanced filters
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [estadoFilter, setEstadoFilter] = useState<string>('all');
+  const [scoreFilter, setScoreFilter] = useState<string>('all');
 
   const queryClient = useQueryClient();
   const { data: clientes = [], isLoading } = useClientes();
 
-  const filteredClientes = clientes.filter(c => {
-    const matchesSearch = 
-      c.razao_social.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (c.nome_fantasia?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (c.cnpj_cpf?.includes(searchTerm)) ||
-      (c.email?.toLowerCase().includes(searchTerm.toLowerCase()));
-    return matchesSearch;
-  });
+  // Get unique states for filter
+  const estados = useMemo(() => {
+    const unique = [...new Set(clientes.map(c => c.estado).filter(Boolean))];
+    return unique.sort() as string[];
+  }, [clientes]);
+
+  const filteredClientes = useMemo(() => {
+    return clientes.filter(c => {
+      // Text search
+      const matchesSearch = 
+        c.razao_social.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (c.nome_fantasia?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (c.cnpj_cpf?.includes(searchTerm)) ||
+        (c.email?.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+      // Status filter
+      const matchesStatus = 
+        statusFilter === 'all' || 
+        (statusFilter === 'ativo' && c.ativo) ||
+        (statusFilter === 'inativo' && !c.ativo);
+      
+      // Estado filter
+      const matchesEstado = 
+        estadoFilter === 'all' || 
+        c.estado === estadoFilter;
+      
+      // Score filter
+      const matchesScore = (() => {
+        if (scoreFilter === 'all') return true;
+        const score = c.score || 0;
+        switch (scoreFilter) {
+          case 'excelente': return score >= 800;
+          case 'bom': return score >= 600 && score < 800;
+          case 'regular': return score >= 400 && score < 600;
+          case 'critico': return score < 400;
+          default: return true;
+        }
+      })();
+      
+      return matchesSearch && matchesStatus && matchesEstado && matchesScore;
+    });
+  }, [clientes, searchTerm, statusFilter, estadoFilter, scoreFilter]);
+
+  const hasActiveFilters = statusFilter !== 'all' || estadoFilter !== 'all' || scoreFilter !== 'all';
+  
+  const clearFilters = () => {
+    setStatusFilter('all');
+    setEstadoFilter('all');
+    setScoreFilter('all');
+    setSearchTerm('');
+  };
 
   const totalClientes = clientes.length;
   const clientesAtivos = clientes.filter(c => c.ativo).length;
@@ -197,7 +254,8 @@ export default function Clientes() {
         {/* Filters */}
         <motion.div variants={itemVariants}>
           <Card className="card-base">
-            <CardContent className="p-4">
+            <CardContent className="p-4 space-y-4">
+              {/* Search */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -206,6 +264,88 @@ export default function Clientes() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
                 />
+              </div>
+              
+              {/* Advanced Filters */}
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Filter className="h-4 w-4" />
+                  Filtros:
+                </div>
+                
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-[130px] h-9">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="ativo">Ativos</SelectItem>
+                    <SelectItem value="inativo">Inativos</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={estadoFilter} onValueChange={setEstadoFilter}>
+                  <SelectTrigger className="w-[130px] h-9">
+                    <SelectValue placeholder="Estado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    {estados.map((estado) => (
+                      <SelectItem key={estado} value={estado}>
+                        {estado}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={scoreFilter} onValueChange={setScoreFilter}>
+                  <SelectTrigger className="w-[140px] h-9">
+                    <SelectValue placeholder="Score" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="excelente">
+                      <span className="flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-success" />
+                        Excelente (800+)
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="bom">
+                      <span className="flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-warning" />
+                        Bom (600-799)
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="regular">
+                      <span className="flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-orange-500" />
+                        Regular (400-599)
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="critico">
+                      <span className="flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-destructive" />
+                        Crítico (&lt;400)
+                      </span>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {hasActiveFilters && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearFilters}
+                    className="h-9 px-2 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-4 w-4 mr-1" />
+                    Limpar
+                  </Button>
+                )}
+                
+                <div className="ml-auto text-sm text-muted-foreground">
+                  {filteredClientes.length} de {clientes.length} clientes
+                </div>
               </div>
             </CardContent>
           </Card>
