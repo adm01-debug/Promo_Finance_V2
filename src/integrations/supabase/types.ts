@@ -821,6 +821,44 @@ export type Database = {
         }
         Relationships: []
       }
+      historico_cobranca: {
+        Row: {
+          conta_receber_id: string
+          created_at: string
+          created_by: string | null
+          etapa_anterior: string | null
+          etapa_nova: string
+          id: string
+          observacoes: string | null
+        }
+        Insert: {
+          conta_receber_id: string
+          created_at?: string
+          created_by?: string | null
+          etapa_anterior?: string | null
+          etapa_nova: string
+          id?: string
+          observacoes?: string | null
+        }
+        Update: {
+          conta_receber_id?: string
+          created_at?: string
+          created_by?: string | null
+          etapa_anterior?: string | null
+          etapa_nova?: string
+          id?: string
+          observacoes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historico_cobranca_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       historico_relatorios: {
         Row: {
           dados_relatorio: Json | null
@@ -1197,6 +1235,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      confirmar_conciliacao: {
+        Args: {
+          p_conta_pagar_id?: string
+          p_conta_receber_id?: string
+          p_transacao_id: string
+        }
+        Returns: undefined
+      }
+      gerar_alertas_vencimento: { Args: never; Returns: undefined }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
