@@ -19,7 +19,11 @@ import {
   Bell,
   CheckCircle,
   AlertTriangle,
-  ExternalLink
+  ExternalLink,
+  History,
+  Plus,
+  Trash2,
+  X
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -31,8 +35,20 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useExpertContext } from '@/hooks/useExpertContext';
 import { useExpertActions, ExpertAction } from '@/hooks/useExpertActions';
+import { 
+  useExpertConversations, 
+  useExpertMessages, 
+  useCreateConversation,
+  useUpdateConversation,
+  useDeleteConversation,
+  useSaveMessage,
+  useUpdateMessageActions,
+  ExpertMessage
+} from '@/hooks/useExpertConversations';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
-interface Message {
+interface LocalMessage {
   id: string;
   role: 'user' | 'assistant';
   content: string;
@@ -90,16 +106,41 @@ const quickActions = [
 ];
 
 export default function Expert() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<LocalMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [executingActions, setExecutingActions] = useState<string | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   
   const { resumoFinanceiro, isLoading: loadingContext } = useExpertContext();
   const { executeAction, parseActionsFromMessage, getCleanContent } = useExpertActions();
+  
+  // Database hooks
+  const { data: conversations, isLoading: loadingConversations } = useExpertConversations();
+  const { data: savedMessages } = useExpertMessages(currentConversationId);
+  const createConversation = useCreateConversation();
+  const updateConversation = useUpdateConversation();
+  const deleteConversation = useDeleteConversation();
+  const saveMessage = useSaveMessage();
+  const updateMessageActions = useUpdateMessageActions();
+
+  // Load messages when conversation changes
+  useEffect(() => {
+    if (savedMessages) {
+      setMessages(savedMessages.map((m: ExpertMessage) => ({
+        id: m.id,
+        role: m.role,
+        content: m.content,
+        timestamp: new Date(m.created_at),
+        actions: m.actions,
+        actionsExecuted: m.actions_executed,
+      })));
+    }
+  }, [savedMessages]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -125,13 +166,51 @@ export default function Expert() {
       m.id === messageId ? { ...m, actionsExecuted: true } : m
     ));
     
+    // Update in database
+    if (currentConversationId) {
+      updateMessageActions.mutate({ messageId, conversationId: currentConversationId });
+    }
+    
     setExecutingActions(null);
+  };
+
+  const startNewConversation = () => {
+    setCurrentConversationId(null);
+    setMessages([]);
+    setShowHistory(false);
+  };
+
+  const loadConversation = (conversationId: string) => {
+    setCurrentConversationId(conversationId);
+    setShowHistory(false);
+  };
+
+  const handleDeleteConversation = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    deleteConversation.mutate(id);
+    if (currentConversationId === id) {
+      startNewConversation();
+    }
   };
 
   const sendMessage = async (messageText: string) => {
     if (!messageText.trim() || isLoading) return;
 
-    const userMessage: Message = {
+    // Create or get conversation
+    let conversationId = currentConversationId;
+    if (!conversationId) {
+      try {
+        const newConversation = await createConversation.mutateAsync(messageText.slice(0, 50));
+        conversationId = newConversation.id;
+        setCurrentConversationId(conversationId);
+      } catch (error) {
+        console.error('Error creating conversation:', error);
+        toast.error('Erro ao criar conversa');
+        return;
+      }
+    }
+
+    const userMessage: LocalMessage = {
       id: crypto.randomUUID(),
       role: 'user',
       content: messageText.trim(),
@@ -141,6 +220,18 @@ export default function Expert() {
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
+
+    // Save user message to database
+    try {
+      const savedUserMsg = await saveMessage.mutateAsync({
+        conversation_id: conversationId,
+        role: 'user',
+        content: messageText.trim(),
+      });
+      userMessage.id = savedUserMsg.id;
+    } catch (error) {
+      console.error('Error saving user message:', error);
+    }
 
     let assistantContent = '';
     const assistantId = crypto.randomUUID();
@@ -210,7 +301,6 @@ export default function Expert() {
               ));
             }
           } catch {
-            // Incomplete JSON, wait for more data
             textBuffer = line + '\n' + textBuffer;
             break;
           }
@@ -243,18 +333,45 @@ export default function Expert() {
 
       // Parse actions from final content
       const actions = parseActionsFromMessage(assistantContent);
+      const cleanContent = getCleanContent(assistantContent);
+      
       if (actions.length > 0) {
         setMessages(prev => prev.map(m => 
           m.id === assistantId 
-            ? { ...m, actions, content: getCleanContent(assistantContent) }
+            ? { ...m, actions, content: cleanContent }
             : m
         ));
+      }
+
+      // Save assistant message to database
+      try {
+        const savedAssistantMsg = await saveMessage.mutateAsync({
+          conversation_id: conversationId,
+          role: 'assistant',
+          content: cleanContent || assistantContent,
+          actions: actions.length > 0 ? actions : undefined,
+        });
+        
+        // Update local message ID
+        setMessages(prev => prev.map(m => 
+          m.id === assistantId ? { ...m, id: savedAssistantMsg.id } : m
+        ));
+
+        // Update conversation title with first user message summary
+        if (messages.length === 0) {
+          updateConversation.mutate({
+            id: conversationId,
+            titulo: messageText.slice(0, 50) + (messageText.length > 50 ? '...' : ''),
+            resumo: cleanContent?.slice(0, 100),
+          });
+        }
+      } catch (error) {
+        console.error('Error saving assistant message:', error);
       }
 
     } catch (error) {
       console.error('Error:', error);
       toast.error(error instanceof Error ? error.message : 'Erro ao enviar mensagem');
-      // Remove empty assistant message on error
       setMessages(prev => prev.filter(m => m.id !== assistantId));
     } finally {
       setIsLoading(false);
@@ -271,10 +388,6 @@ export default function Expert() {
       e.preventDefault();
       sendMessage(input);
     }
-  };
-
-  const clearChat = () => {
-    setMessages([]);
   };
 
   const getActionLabel = (action: ExpertAction): string => {
@@ -341,13 +454,93 @@ export default function Expert() {
               </p>
             </div>
           </div>
-          {messages.length > 0 && (
-            <Button variant="outline" size="sm" onClick={clearChat}>
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Nova Conversa
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowHistory(!showHistory)}
+              className={cn(showHistory && "bg-muted")}
+            >
+              <History className="h-4 w-4 mr-2" />
+              Histórico
+              {conversations && conversations.length > 0 && (
+                <Badge variant="secondary" className="ml-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                  {conversations.length}
+                </Badge>
+              )}
             </Button>
-          )}
+            {(messages.length > 0 || currentConversationId) && (
+              <Button variant="outline" size="sm" onClick={startNewConversation}>
+                <Plus className="h-4 w-4 mr-2" />
+                Nova Conversa
+              </Button>
+            )}
+          </div>
         </div>
+
+        {/* History Panel */}
+        <AnimatePresence>
+          {showHistory && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden mb-4"
+            >
+              <Card className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold flex items-center gap-2">
+                    <History className="h-4 w-4" />
+                    Conversas Anteriores
+                  </h3>
+                  <Button variant="ghost" size="icon" onClick={() => setShowHistory(false)}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                {loadingConversations ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : conversations && conversations.length > 0 ? (
+                  <ScrollArea className="max-h-48">
+                    <div className="space-y-2">
+                      {conversations.map((conv) => (
+                        <div
+                          key={conv.id}
+                          onClick={() => loadConversation(conv.id)}
+                          className={cn(
+                            "flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors hover:bg-muted/50 group",
+                            currentConversationId === conv.id && "bg-muted border-primary"
+                          )}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm truncate">{conv.titulo}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {formatDistanceToNow(new Date(conv.updated_at), { addSuffix: true, locale: ptBR })}
+                            </p>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={(e) => handleDeleteConversation(conv.id, e)}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    Nenhuma conversa salva ainda
+                  </p>
+                )}
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Chat Container */}
         <Card className="flex-1 flex flex-col overflow-hidden border-2">
