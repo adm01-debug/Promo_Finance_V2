@@ -50,7 +50,7 @@ export function useContasBancarias() {
         .eq('ativo', true)
         .order('banco');
       if (error) throw error;
-      return data;
+      return data as ContaBancaria[];
     },
   });
 }
