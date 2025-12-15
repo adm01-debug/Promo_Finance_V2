@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Bot, 
@@ -9,7 +9,6 @@ import {
   Lightbulb,
   TrendingUp,
   FileQuestion,
-  RefreshCw,
   User,
   Copy,
   Check,
@@ -23,14 +22,19 @@ import {
   History,
   Plus,
   Trash2,
-  X
+  X,
+  Search,
+  Calendar,
+  Filter
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useExpertContext } from '@/hooks/useExpertContext';
@@ -45,7 +49,7 @@ import {
   useUpdateMessageActions,
   ExpertMessage
 } from '@/hooks/useExpertConversations';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, isToday, isThisWeek, isThisMonth, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 interface LocalMessage {
@@ -113,6 +117,8 @@ export default function Expert() {
   const [executingActions, setExecutingActions] = useState<string | null>(null);
   const [showHistory, setShowHistory] = useState(false);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [dateFilter, setDateFilter] = useState<string>('all');
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   
@@ -127,6 +133,41 @@ export default function Expert() {
   const deleteConversation = useDeleteConversation();
   const saveMessage = useSaveMessage();
   const updateMessageActions = useUpdateMessageActions();
+
+  // Filter conversations
+  const filteredConversations = useMemo(() => {
+    if (!conversations) return [];
+    
+    return conversations.filter(conv => {
+      // Search filter
+      const matchesSearch = searchQuery === '' || 
+        conv.titulo.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (conv.resumo && conv.resumo.toLowerCase().includes(searchQuery.toLowerCase()));
+      
+      // Date filter
+      const convDate = new Date(conv.created_at);
+      let matchesDate = true;
+      
+      switch (dateFilter) {
+        case 'today':
+          matchesDate = isToday(convDate);
+          break;
+        case 'week':
+          matchesDate = isThisWeek(convDate, { locale: ptBR });
+          break;
+        case 'month':
+          matchesDate = isThisMonth(convDate);
+          break;
+        case 'older':
+          matchesDate = convDate < subDays(new Date(), 30);
+          break;
+        default:
+          matchesDate = true;
+      }
+      
+      return matchesSearch && matchesDate;
+    });
+  }, [conversations, searchQuery, dateFilter]);
 
   // Load messages when conversation changes
   useEffect(() => {
@@ -498,14 +539,40 @@ export default function Expert() {
                   </Button>
                 </div>
                 
+                {/* Search and Filters */}
+                <div className="flex gap-2 mb-3">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Buscar conversas..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9 h-9"
+                    />
+                  </div>
+                  <Select value={dateFilter} onValueChange={setDateFilter}>
+                    <SelectTrigger className="w-[140px] h-9">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      <SelectValue placeholder="Período" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas</SelectItem>
+                      <SelectItem value="today">Hoje</SelectItem>
+                      <SelectItem value="week">Esta semana</SelectItem>
+                      <SelectItem value="month">Este mês</SelectItem>
+                      <SelectItem value="older">Mais antigas</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
                 {loadingConversations ? (
                   <div className="flex items-center justify-center py-8">
                     <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                   </div>
-                ) : conversations && conversations.length > 0 ? (
+                ) : filteredConversations.length > 0 ? (
                   <ScrollArea className="max-h-48">
                     <div className="space-y-2">
-                      {conversations.map((conv) => (
+                      {filteredConversations.map((conv) => (
                         <div
                           key={conv.id}
                           onClick={() => loadConversation(conv.id)}
@@ -516,9 +583,16 @@ export default function Expert() {
                         >
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-sm truncate">{conv.titulo}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {formatDistanceToNow(new Date(conv.updated_at), { addSuffix: true, locale: ptBR })}
-                            </p>
+                            <div className="flex items-center gap-2">
+                              <p className="text-xs text-muted-foreground">
+                                {formatDistanceToNow(new Date(conv.updated_at), { addSuffix: true, locale: ptBR })}
+                              </p>
+                              {conv.resumo && (
+                                <p className="text-xs text-muted-foreground truncate max-w-[200px]">
+                                  • {conv.resumo}
+                                </p>
+                              )}
+                            </div>
                           </div>
                           <Button
                             variant="ghost"
@@ -532,6 +606,20 @@ export default function Expert() {
                       ))}
                     </div>
                   </ScrollArea>
+                ) : conversations && conversations.length > 0 ? (
+                  <div className="text-center py-4">
+                    <Filter className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">
+                      Nenhuma conversa encontrada com os filtros aplicados
+                    </p>
+                    <Button 
+                      variant="link" 
+                      size="sm" 
+                      onClick={() => { setSearchQuery(''); setDateFilter('all'); }}
+                    >
+                      Limpar filtros
+                    </Button>
+                  </div>
                 ) : (
                   <p className="text-sm text-muted-foreground text-center py-4">
                     Nenhuma conversa salva ainda
