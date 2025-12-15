@@ -16,7 +16,9 @@ import {
   Loader2,
   Filter,
   X,
+  Trophy,
 } from 'lucide-react';
+import { RankBadge, getRankFromScore, RankLegend } from '@/components/ui/rank-badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -387,8 +389,11 @@ export default function Clientes() {
                   </Button>
                 )}
                 
-                <div className="ml-auto text-sm text-muted-foreground">
-                  {filteredClientes.length} de {clientes.length} clientes
+                <div className="flex items-center gap-4 ml-auto">
+                  <RankLegend />
+                  <span className="text-sm text-muted-foreground">
+                    {filteredClientes.length} de {clientes.length} clientes
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -410,7 +415,12 @@ export default function Clientes() {
                       <TableHead className="w-[250px]">Cliente</TableHead>
                       <TableHead>Contato</TableHead>
                       <TableHead>Localização</TableHead>
-                      <TableHead>Score</TableHead>
+                      <TableHead>
+                        <div className="flex items-center gap-2">
+                          <Trophy className="h-4 w-4 text-coins" />
+                          Score / Rank
+                        </div>
+                      </TableHead>
                       <TableHead>Limite</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead className="w-[80px]"></TableHead>
@@ -476,12 +486,13 @@ export default function Clientes() {
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
-                              <span className={cn("font-bold", getScoreColor(cliente.score))}>
-                                {cliente.score || '-'}
-                              </span>
-                              <span className="text-xs text-muted-foreground">
-                                {getScoreLabel(cliente.score)}
-                              </span>
+                              <RankBadge
+                                rank={getRankFromScore(cliente.score || 0, { gold: 800, silver: 600, bronze: 400 })}
+                                size="sm"
+                                label={getScoreLabel(cliente.score)}
+                                value={cliente.score || '-'}
+                                animate={true}
+                              />
                             </div>
                           </TableCell>
                           <TableCell>
