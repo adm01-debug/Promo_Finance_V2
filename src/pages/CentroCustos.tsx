@@ -1,3 +1,4 @@
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Plus,
@@ -7,20 +8,48 @@ import {
   Target,
   PieChart,
   BarChart3,
-  Settings,
-  ArrowUpRight,
-  ArrowDownRight,
   Loader2,
+  Search,
+  Edit2,
+  Trash2,
+  RotateCcw,
+  ChevronRight,
+  FolderTree,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { useCentrosCusto } from '@/hooks/useFinancialData';
+import { Input } from '@/components/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import {
+  useAllCentrosCusto,
+  useExcluirCentroCusto,
+  useReativarCentroCusto,
+  type CentroCusto,
+} from '@/hooks/useCentrosCusto';
+import { CentroCustoForm } from '@/components/centros-custo/CentroCustoForm';
 import { formatCurrency, formatPercentage } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { ResponsiveContainer, PieChart as RePieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import {
+  ResponsiveContainer,
+  PieChart as RePieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+} from 'recharts';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -34,29 +63,118 @@ const itemVariants = {
 
 const COLORS = ['hsl(24, 95%, 46%)', 'hsl(215, 90%, 42%)', 'hsl(150, 70%, 32%)', 'hsl(275, 75%, 48%)', 'hsl(42, 95%, 48%)'];
 
+// Build hierarchy tree
+function buildHierarchy(centros: CentroCusto[]): Map<string | null, CentroCusto[]> {
+  const tree = new Map<string | null, CentroCusto[]>();
+  centros.forEach((c) => {
+    const parentId = c.parent_id || null;
+    if (!tree.has(parentId)) {
+      tree.set(parentId, []);
+    }
+    tree.get(parentId)!.push(c);
+  });
+  return tree;
+}
+
+// Get hierarchy level for indentation
+function getHierarchyLevel(centro: CentroCusto, centros: CentroCusto[]): number {
+  let level = 0;
+  let current = centro;
+  while (current.parent_id) {
+    level++;
+    const parent = centros.find((c) => c.id === current.parent_id);
+    if (!parent) break;
+    current = parent;
+  }
+  return level;
+}
+
+// Get parent name
+function getParentName(parentId: string | null, centros: CentroCusto[]): string {
+  if (!parentId) return '';
+  const parent = centros.find((c) => c.id === parentId);
+  return parent ? `${parent.codigo} - ${parent.nome}` : '';
+}
+
 export default function CentroCustos() {
-  const { data: centros = [], isLoading } = useCentrosCusto();
+  const { data: centros = [], isLoading } = useAllCentrosCusto();
+  const excluirCentroCusto = useExcluirCentroCusto();
+  const reativarCentroCusto = useReativarCentroCusto();
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingCentro, setEditingCentro] = useState<CentroCusto | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [centroToDelete, setCentroToDelete] = useState<CentroCusto | null>(null);
+  const [showInactive, setShowInactive] = useState(false);
+
+  // Filtered data
+  const filteredCentros = useMemo(() => {
+    return centros.filter((c) => {
+      const matchesSearch =
+        c.codigo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (c.descricao || '').toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesActive = showInactive || c.ativo;
+      return matchesSearch && matchesActive;
+    });
+  }, [centros, searchTerm, showInactive]);
+
+  const activeCentros = centros.filter((c) => c.ativo);
 
   // KPIs
-  const totalOrcado = centros.reduce((sum, c) => sum + c.orcamento_previsto, 0);
-  const totalRealizado = centros.reduce((sum, c) => sum + c.orcamento_realizado, 0);
+  const totalOrcado = activeCentros.reduce((sum, c) => sum + c.orcamento_previsto, 0);
+  const totalRealizado = activeCentros.reduce((sum, c) => sum + c.orcamento_realizado, 0);
   const percentualGasto = totalOrcado > 0 ? (totalRealizado / totalOrcado) * 100 : 0;
   const saldoDisponivel = totalOrcado - totalRealizado;
 
-  // Dados para o gráfico de barras comparativo
-  const barData = centros.map(c => ({
+  // Chart data
+  const barData = activeCentros.slice(0, 8).map((c) => ({
     nome: c.codigo,
     Orçado: c.orcamento_previsto,
     Realizado: c.orcamento_realizado,
-    percentual: c.orcamento_previsto > 0 ? ((c.orcamento_realizado / c.orcamento_previsto) * 100).toFixed(1) : '0',
   }));
 
-  // Dados para distribuição
-  const distribuicao = centros.map(c => ({
+  const distribuicao = activeCentros.map((c) => ({
     nome: c.nome,
     valor: c.orcamento_realizado,
     percentual: totalRealizado > 0 ? (c.orcamento_realizado / totalRealizado) * 100 : 0,
   }));
+
+  // Hierarchy
+  const hierarchy = buildHierarchy(filteredCentros);
+
+  const handleOpenCreate = () => {
+    setEditingCentro(null);
+    setIsFormOpen(true);
+  };
+
+  const handleOpenEdit = (centro: CentroCusto) => {
+    setEditingCentro(centro);
+    setIsFormOpen(true);
+  };
+
+  const handleOpenDelete = (centro: CentroCusto) => {
+    setCentroToDelete(centro);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (centroToDelete) {
+      await excluirCentroCusto.mutateAsync(centroToDelete.id);
+      setDeleteDialogOpen(false);
+      setCentroToDelete(null);
+    }
+  };
+
+  const handleReactivate = async (centro: CentroCusto) => {
+    await reativarCentroCusto.mutateAsync(centro.id);
+  };
+
+  const handleFormSuccess = () => {
+    setIsFormOpen(false);
+    setEditingCentro(null);
+  };
 
   if (isLoading) {
     return (
@@ -78,15 +196,34 @@ export default function CentroCustos() {
             <p className="text-muted-foreground mt-1">Controle orçamentário e análise de custos por departamento</p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" className="gap-2">
-              <Settings className="h-4 w-4" />
-              Configurar Metas
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowInactive(!showInactive)}
+              className={cn(showInactive && 'bg-muted')}
+            >
+              {showInactive ? 'Ocultar Inativos' : 'Mostrar Inativos'}
             </Button>
-            <Button size="sm" className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25">
+            <Button
+              size="sm"
+              onClick={handleOpenCreate}
+              className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
+            >
               <Plus className="h-4 w-4" />
               Novo Centro
             </Button>
           </div>
+        </motion.div>
+
+        {/* Search */}
+        <motion.div variants={itemVariants} className="relative max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar por código, nome ou descrição..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
         </motion.div>
 
         {/* KPI Cards */}
@@ -130,17 +267,19 @@ export default function CentroCustos() {
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Saldo Disponível</p>
-                  <p className={cn("text-2xl font-bold font-display mt-1", saldoDisponivel < 0 ? 'text-destructive' : 'text-success')}>
+                  <p className={cn('text-2xl font-bold font-display mt-1', saldoDisponivel < 0 ? 'text-destructive' : 'text-success')}>
                     {formatCurrency(saldoDisponivel)}
                   </p>
                   <div className="mt-2 w-full">
                     <Progress value={percentualGasto > 100 ? 100 : percentualGasto} className="h-2" />
                   </div>
                 </div>
-                <div className={cn(
-                  "h-12 w-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110",
-                  saldoDisponivel < 0 ? "bg-destructive/10 text-destructive" : "bg-success/10 text-success"
-                )}>
+                <div
+                  className={cn(
+                    'h-12 w-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110',
+                    saldoDisponivel < 0 ? 'bg-destructive/10 text-destructive' : 'bg-success/10 text-success'
+                  )}
+                >
                   {saldoDisponivel < 0 ? <AlertTriangle className="h-6 w-6" /> : <CheckCircle2 className="h-6 w-6" />}
                 </div>
               </div>
@@ -152,9 +291,9 @@ export default function CentroCustos() {
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Centros Ativos</p>
-                  <p className="text-2xl font-bold font-display mt-1">{centros.filter(c => c.ativo).length}</p>
+                  <p className="text-2xl font-bold font-display mt-1">{activeCentros.length}</p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {centros.filter(c => c.orcamento_realizado > c.orcamento_previsto).length} acima do orçamento
+                    {activeCentros.filter((c) => c.orcamento_realizado > c.orcamento_previsto).length} acima do orçamento
                   </p>
                 </div>
                 <div className="h-12 w-12 rounded-xl bg-accent/10 text-accent flex items-center justify-center transition-transform group-hover:scale-110">
@@ -166,9 +305,8 @@ export default function CentroCustos() {
         </motion.div>
 
         {/* Charts Row */}
-        {centros.length > 0 && (
+        {activeCentros.length > 0 && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Comparativo Orçado x Realizado */}
             <motion.div variants={itemVariants} className="lg:col-span-2">
               <Card className="card-elevated h-[400px]">
                 <CardHeader className="pb-2">
@@ -180,12 +318,9 @@ export default function CentroCustos() {
                 <CardContent className="h-[320px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={barData} layout="vertical">
-                      <XAxis type="number" tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} />
+                      <XAxis type="number" tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} />
                       <YAxis type="category" dataKey="nome" width={50} />
-                      <Tooltip 
-                        formatter={(v: number) => formatCurrency(v)}
-                        labelFormatter={(l) => `Centro: ${l}`}
-                      />
+                      <Tooltip formatter={(v: number) => formatCurrency(v)} labelFormatter={(l) => `Centro: ${l}`} />
                       <Legend />
                       <Bar dataKey="Orçado" fill="hsl(var(--muted))" radius={[0, 4, 4, 0]} />
                       <Bar dataKey="Realizado" fill="hsl(24, 95%, 46%)" radius={[0, 4, 4, 0]} />
@@ -195,7 +330,6 @@ export default function CentroCustos() {
               </Card>
             </motion.div>
 
-            {/* Distribuição por Centro */}
             <motion.div variants={itemVariants}>
               <Card className="card-elevated h-[400px]">
                 <CardHeader className="pb-2">
@@ -238,52 +372,93 @@ export default function CentroCustos() {
           </div>
         )}
 
-        {/* Centro de Custos Cards */}
+        {/* Centro de Custos Cards with Hierarchy */}
         <motion.div variants={itemVariants}>
-          <h2 className="text-xl font-display font-bold mb-4">Detalhamento por Centro</h2>
-          {centros.length === 0 ? (
+          <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+            <FolderTree className="h-5 w-5 text-primary" />
+            Detalhamento por Centro
+          </h2>
+          {filteredCentros.length === 0 ? (
             <Card className="p-8 text-center text-muted-foreground">
-              Nenhum centro de custo cadastrado
+              {searchTerm ? 'Nenhum centro de custo encontrado' : 'Nenhum centro de custo cadastrado'}
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {centros.map((centro, index) => {
-                const percentual = centro.orcamento_previsto > 0 ? (centro.orcamento_realizado / centro.orcamento_previsto) * 100 : 0;
+              {filteredCentros.map((centro, index) => {
+                const percentual =
+                  centro.orcamento_previsto > 0 ? (centro.orcamento_realizado / centro.orcamento_previsto) * 100 : 0;
                 const diferenca = centro.orcamento_realizado - centro.orcamento_previsto;
                 const isOver = diferenca > 0;
+                const level = getHierarchyLevel(centro, centros);
+                const parentName = getParentName(centro.parent_id, centros);
 
                 return (
                   <motion.div
                     key={centro.id}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.08 }}
+                    transition={{ delay: index * 0.05 }}
                   >
-                    <Card className="card-interactive h-full">
+                    <Card className={cn('card-interactive h-full', !centro.ativo && 'opacity-60')}>
                       <CardContent className="p-5">
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex items-center gap-3">
-                            <div 
+                            <div
                               className="h-10 w-10 rounded-lg flex items-center justify-center"
-                              style={{ background: `${COLORS[index % COLORS.length]}20`, color: COLORS[index % COLORS.length] }}
+                              style={{
+                                background: `${COLORS[index % COLORS.length]}20`,
+                                color: COLORS[index % COLORS.length],
+                              }}
                             >
                               <span className="font-bold text-sm">{centro.codigo}</span>
                             </div>
                             <div>
-                              <h3 className="font-semibold">{centro.nome}</h3>
+                              <div className="flex items-center gap-2">
+                                <h3 className="font-semibold">{centro.nome}</h3>
+                                {!centro.ativo && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    Inativo
+                                  </Badge>
+                                )}
+                              </div>
+                              {parentName && (
+                                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                  <ChevronRight className="h-3 w-3" />
+                                  {parentName}
+                                </div>
+                              )}
                               <p className="text-xs text-muted-foreground">{centro.descricao || '-'}</p>
                             </div>
                           </div>
-                          <Badge 
-                            variant="outline" 
-                            className={cn(
-                              "text-xs",
-                              isOver ? "bg-destructive/10 text-destructive border-destructive/20" : "bg-success/10 text-success border-success/20"
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => handleOpenEdit(centro)}
+                            >
+                              <Edit2 className="h-4 w-4" />
+                            </Button>
+                            {centro.ativo ? (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive hover:text-destructive"
+                                onClick={() => handleOpenDelete(centro)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-success hover:text-success"
+                                onClick={() => handleReactivate(centro)}
+                              >
+                                <RotateCcw className="h-4 w-4" />
+                              </Button>
                             )}
-                          >
-                            {isOver ? <ArrowUpRight className="h-3 w-3 mr-1" /> : <ArrowDownRight className="h-3 w-3 mr-1" />}
-                            {formatPercentage(percentual - 100)}
-                          </Badge>
+                          </div>
                         </div>
 
                         <div className="space-y-3">
@@ -293,18 +468,16 @@ export default function CentroCustos() {
                           </div>
                           <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">Realizado</span>
-                            <span className={cn("font-medium", isOver ? "text-destructive" : "text-success")}>
+                            <span className={cn('font-medium', isOver ? 'text-destructive' : 'text-success')}>
                               {formatCurrency(centro.orcamento_realizado)}
                             </span>
                           </div>
-                          <Progress 
-                            value={percentual > 100 ? 100 : percentual} 
-                            className={cn("h-2", isOver && "[&>div]:bg-destructive")} 
-                          />
+                          <Progress value={percentual > 100 ? 100 : percentual} className={cn('h-2', isOver && '[&>div]:bg-destructive')} />
                           <div className="flex justify-between text-xs text-muted-foreground">
                             <span>{percentual.toFixed(1)}% utilizado</span>
-                            <span className={cn(isOver ? "text-destructive" : "text-success")}>
-                              {isOver ? '+' : ''}{formatCurrency(diferenca)}
+                            <span className={cn(isOver ? 'text-destructive' : 'text-success')}>
+                              {isOver ? '+' : ''}
+                              {formatCurrency(diferenca)}
                             </span>
                           </div>
                         </div>
@@ -317,6 +490,33 @@ export default function CentroCustos() {
           )}
         </motion.div>
       </motion.div>
+
+      {/* Form Dialog */}
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{editingCentro ? 'Editar Centro de Custo' : 'Novo Centro de Custo'}</DialogTitle>
+          </DialogHeader>
+          <CentroCustoForm
+            centroCusto={editingCentro}
+            centrosCusto={centros}
+            onSuccess={handleFormSuccess}
+            onCancel={() => setIsFormOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation */}
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title="Desativar Centro de Custo"
+        description={`Tem certeza que deseja desativar o centro "${centroToDelete?.nome}"? Ele não será excluído permanentemente e poderá ser reativado depois.`}
+        confirmLabel="Desativar"
+        variant="danger"
+        onConfirm={handleConfirmDelete}
+        isLoading={excluirCentroCusto.isPending}
+      />
     </MainLayout>
   );
 }
