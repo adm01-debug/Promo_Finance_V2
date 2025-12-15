@@ -37,11 +37,12 @@ type FormValues = z.infer<typeof formSchema>;
 interface CentroCustoFormProps {
   centroCusto?: CentroCusto | null;
   centrosCusto: CentroCusto[];
+  defaultParentId?: string | null;
   onSuccess: () => void;
   onCancel: () => void;
 }
 
-export function CentroCustoForm({ centroCusto, centrosCusto, onSuccess, onCancel }: CentroCustoFormProps) {
+export function CentroCustoForm({ centroCusto, centrosCusto, defaultParentId, onSuccess, onCancel }: CentroCustoFormProps) {
   const criarCentroCusto = useCriarCentroCusto();
   const atualizarCentroCusto = useAtualizarCentroCusto();
   const isEditing = !!centroCusto;
@@ -61,7 +62,7 @@ export function CentroCustoForm({ centroCusto, centrosCusto, onSuccess, onCancel
       codigo: centroCusto?.codigo || '',
       nome: centroCusto?.nome || '',
       descricao: centroCusto?.descricao || '',
-      parent_id: centroCusto?.parent_id || undefined,
+      parent_id: centroCusto?.parent_id || defaultParentId || undefined,
       orcamento_previsto: centroCusto?.orcamento_previsto || 0,
       ativo: centroCusto?.ativo ?? true,
     },

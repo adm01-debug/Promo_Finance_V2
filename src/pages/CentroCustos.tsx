@@ -15,12 +15,15 @@ import {
   RotateCcw,
   ChevronRight,
   FolderTree,
+  LayoutGrid,
+  List,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog,
   DialogContent,
@@ -34,6 +37,7 @@ import {
   useReativarCentroCusto,
   type CentroCusto,
 } from '@/hooks/useCentrosCusto';
+import { CentroCustoTree } from '@/components/centros-custo/CentroCustoTree';
 import { CentroCustoForm } from '@/components/centros-custo/CentroCustoForm';
 import { formatCurrency, formatPercentage } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
@@ -63,32 +67,6 @@ const itemVariants = {
 
 const COLORS = ['hsl(24, 95%, 46%)', 'hsl(215, 90%, 42%)', 'hsl(150, 70%, 32%)', 'hsl(275, 75%, 48%)', 'hsl(42, 95%, 48%)'];
 
-// Build hierarchy tree
-function buildHierarchy(centros: CentroCusto[]): Map<string | null, CentroCusto[]> {
-  const tree = new Map<string | null, CentroCusto[]>();
-  centros.forEach((c) => {
-    const parentId = c.parent_id || null;
-    if (!tree.has(parentId)) {
-      tree.set(parentId, []);
-    }
-    tree.get(parentId)!.push(c);
-  });
-  return tree;
-}
-
-// Get hierarchy level for indentation
-function getHierarchyLevel(centro: CentroCusto, centros: CentroCusto[]): number {
-  let level = 0;
-  let current = centro;
-  while (current.parent_id) {
-    level++;
-    const parent = centros.find((c) => c.id === current.parent_id);
-    if (!parent) break;
-    current = parent;
-  }
-  return level;
-}
-
 // Get parent name
 function getParentName(parentId: string | null, centros: CentroCusto[]): string {
   if (!parentId) return '';
@@ -107,6 +85,8 @@ export default function CentroCustos() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [centroToDelete, setCentroToDelete] = useState<CentroCusto | null>(null);
   const [showInactive, setShowInactive] = useState(false);
+  const [viewMode, setViewMode] = useState<'cards' | 'tree'>('tree');
+  const [parentIdForNew, setParentIdForNew] = useState<string | null>(null);
 
   // Filtered data
   const filteredCentros = useMemo(() => {
@@ -141,16 +121,15 @@ export default function CentroCustos() {
     percentual: totalRealizado > 0 ? (c.orcamento_realizado / totalRealizado) * 100 : 0,
   }));
 
-  // Hierarchy
-  const hierarchy = buildHierarchy(filteredCentros);
-
-  const handleOpenCreate = () => {
+  const handleOpenCreate = (parentId?: string) => {
     setEditingCentro(null);
+    setParentIdForNew(parentId || null);
     setIsFormOpen(true);
   };
 
   const handleOpenEdit = (centro: CentroCusto) => {
     setEditingCentro(centro);
+    setParentIdForNew(null);
     setIsFormOpen(true);
   };
 
@@ -174,6 +153,7 @@ export default function CentroCustos() {
   const handleFormSuccess = () => {
     setIsFormOpen(false);
     setEditingCentro(null);
+    setParentIdForNew(null);
   };
 
   if (isLoading) {
@@ -196,6 +176,18 @@ export default function CentroCustos() {
             <p className="text-muted-foreground mt-1">Controle orçamentário e análise de custos por departamento</p>
           </div>
           <div className="flex items-center gap-3">
+            <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'cards' | 'tree')}>
+              <TabsList className="h-9">
+                <TabsTrigger value="tree" className="gap-1.5 px-3">
+                  <List className="h-4 w-4" />
+                  Árvore
+                </TabsTrigger>
+                <TabsTrigger value="cards" className="gap-1.5 px-3">
+                  <LayoutGrid className="h-4 w-4" />
+                  Cards
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
             <Button
               variant="outline"
               size="sm"
@@ -206,7 +198,7 @@ export default function CentroCustos() {
             </Button>
             <Button
               size="sm"
-              onClick={handleOpenCreate}
+              onClick={() => handleOpenCreate()}
               className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
             >
               <Plus className="h-4 w-4" />
@@ -372,13 +364,24 @@ export default function CentroCustos() {
           </div>
         )}
 
-        {/* Centro de Custos Cards with Hierarchy */}
+        {/* Centro de Custos - Tree or Cards View */}
         <motion.div variants={itemVariants}>
           <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
             <FolderTree className="h-5 w-5 text-primary" />
             Detalhamento por Centro
           </h2>
-          {filteredCentros.length === 0 ? (
+
+          {viewMode === 'tree' ? (
+            <Card className="p-4">
+              <CentroCustoTree
+                centros={filteredCentros}
+                onEdit={handleOpenEdit}
+                onDelete={handleOpenDelete}
+                onReactivate={handleReactivate}
+                onAddChild={(parentId) => handleOpenCreate(parentId)}
+              />
+            </Card>
+          ) : filteredCentros.length === 0 ? (
             <Card className="p-8 text-center text-muted-foreground">
               {searchTerm ? 'Nenhum centro de custo encontrado' : 'Nenhum centro de custo cadastrado'}
             </Card>
@@ -389,7 +392,6 @@ export default function CentroCustos() {
                   centro.orcamento_previsto > 0 ? (centro.orcamento_realizado / centro.orcamento_previsto) * 100 : 0;
                 const diferenca = centro.orcamento_realizado - centro.orcamento_previsto;
                 const isOver = diferenca > 0;
-                const level = getHierarchyLevel(centro, centros);
                 const parentName = getParentName(centro.parent_id, centros);
 
                 return (
@@ -500,6 +502,7 @@ export default function CentroCustos() {
           <CentroCustoForm
             centroCusto={editingCentro}
             centrosCusto={centros}
+            defaultParentId={parentIdForNew}
             onSuccess={handleFormSuccess}
             onCancel={() => setIsFormOpen(false)}
           />
