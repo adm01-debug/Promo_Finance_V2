@@ -12,9 +12,10 @@ import {
   RefreshCw,
   User,
   Copy,
-  Check
+  Check,
+  Database
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -22,6 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useExpertContext } from '@/hooks/useExpertContext';
 
 interface Message {
   id: string;
@@ -62,6 +64,8 @@ export default function Expert() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
+  const { resumoFinanceiro, isLoading: loadingContext } = useExpertContext();
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -105,6 +109,7 @@ export default function Expert() {
             role: m.role,
             content: m.content,
           })),
+          context: resumoFinanceiro,
         }),
       });
 
@@ -228,8 +233,19 @@ export default function Expert() {
                 EXPERT
                 <Badge variant="secondary" className="text-xs">IA</Badge>
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground flex items-center gap-2">
                 Seu assistente inteligente para decisões financeiras
+                {loadingContext ? (
+                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    Carregando dados...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1 text-xs text-success">
+                    <Database className="h-3 w-3" />
+                    Dados atualizados
+                  </span>
+                )}
               </p>
             </div>
           </div>
