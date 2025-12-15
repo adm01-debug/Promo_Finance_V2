@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Building2, 
@@ -21,7 +21,8 @@ import {
   Copy,
   ExternalLink,
   Star,
-  StarOff
+  StarOff,
+  Loader2
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -52,8 +53,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { mockCNPJs, mockContasBancarias, mockContasReceber, mockContasPagar } from '@/data/mockData';
-import { CNPJ } from '@/types/financial';
+import { useEmpresas, useContasBancarias, useContasReceber, useContasPagar } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -72,40 +72,52 @@ const itemVariants = {
 };
 
 export default function Empresas() {
-  const [empresas, setEmpresas] = useState<CNPJ[]>(mockCNPJs);
+  const { data: empresas = [], isLoading } = useEmpresas();
+  const { data: contasBancarias = [] } = useContasBancarias();
+  const { data: contasReceber = [] } = useContasReceber();
+  const { data: contasPagar = [] } = useContasPagar();
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedEmpresa, setSelectedEmpresa] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const { toast } = useToast();
 
-  const empresasFiltradas = empresas.filter(e => 
-    e.razaoSocial.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    e.nomeFantasia.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const empresasFiltradas = useMemo(() => empresas.filter(e => 
+    e.razao_social.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (e.nome_fantasia?.toLowerCase().includes(searchTerm.toLowerCase())) ||
     e.cnpj.includes(searchTerm)
-  );
+  ), [empresas, searchTerm]);
 
-  const getEmpresaStats = (cnpjId: string) => {
-    const contas = mockContasBancarias.filter(c => c.cnpjId === cnpjId);
-    const receber = mockContasReceber.filter(c => c.cnpjId === cnpjId);
-    const pagar = mockContasPagar.filter(c => c.cnpjId === cnpjId);
+  const getEmpresaStats = (empresaId: string) => {
+    const contas = contasBancarias.filter(c => c.empresa_id === empresaId);
+    const receber = contasReceber.filter(c => c.empresa_id === empresaId);
+    const pagar = contasPagar.filter(c => c.empresa_id === empresaId);
     
     return {
-      saldoTotal: contas.reduce((acc, c) => acc + c.saldoAtual, 0),
+      saldoTotal: contas.reduce((acc, c) => acc + (c.saldo_atual || 0), 0),
       contasBancarias: contas.length,
-      aReceber: receber.reduce((acc, c) => acc + c.valor, 0),
-      aPagar: pagar.reduce((acc, c) => acc + c.valor, 0),
+      aReceber: receber.reduce((acc, c) => acc + (c.valor || 0), 0),
+      aPagar: pagar.reduce((acc, c) => acc + (c.valor || 0), 0),
       titulosReceber: receber.length,
       titulosPagar: pagar.length
     };
   };
 
-  const consolidado = {
+  const consolidado = useMemo(() => ({
     saldoTotal: empresas.reduce((acc, e) => acc + getEmpresaStats(e.id).saldoTotal, 0),
     totalReceber: empresas.reduce((acc, e) => acc + getEmpresaStats(e.id).aReceber, 0),
     totalPagar: empresas.reduce((acc, e) => acc + getEmpresaStats(e.id).aPagar, 0),
     empresasAtivas: empresas.filter(e => e.ativo).length
-  };
+  }), [empresas, contasBancarias, contasReceber, contasPagar]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   const formatCNPJ = (cnpj: string) => {
     return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
@@ -128,9 +140,11 @@ export default function Empresas() {
   };
 
   const toggleAtivo = (id: string) => {
-    setEmpresas(prev => prev.map(e => 
-      e.id === id ? { ...e, ativo: !e.ativo } : e
-    ));
+    // TODO: Implement via API
+    toast({
+      title: "Ação não implementada",
+      description: "A atualização de status será implementada via API",
+    });
   };
 
   return (
@@ -317,8 +331,8 @@ export default function Empresas() {
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <CardTitle className="text-lg line-clamp-1">{empresa.nomeFantasia}</CardTitle>
-                        <p className="text-xs text-muted-foreground line-clamp-1">{empresa.razaoSocial}</p>
+                        <CardTitle className="text-lg line-clamp-1">{empresa.nome_fantasia || empresa.razao_social}</CardTitle>
+                        <p className="text-xs text-muted-foreground line-clamp-1">{empresa.razao_social}</p>
                       </div>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -456,8 +470,8 @@ export default function Empresas() {
                   >
                     <TableCell>
                       <div>
-                        <p className="font-medium">{empresa.nomeFantasia}</p>
-                        <p className="text-xs text-muted-foreground">{empresa.razaoSocial}</p>
+                        <p className="font-medium">{empresa.nome_fantasia || empresa.razao_social}</p>
+                        <p className="text-xs text-muted-foreground">{empresa.razao_social}</p>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -528,7 +542,7 @@ export default function Empresas() {
                 <div>
                   <p className="text-sm text-muted-foreground">Contexto Ativo</p>
                   <p className="font-medium">
-                    {empresas.find(e => e.id === selectedEmpresa)?.nomeFantasia}
+                    {empresas.find(e => e.id === selectedEmpresa)?.nome_fantasia || empresas.find(e => e.id === selectedEmpresa)?.razao_social}
                   </p>
                 </div>
               </div>
