@@ -20,6 +20,25 @@ export function maskCnpjCpf(value: string): string {
   }
 }
 
+// Alias functions for better semantics
+export function applyCnpjMask(value: string): string {
+  const digits = value.replace(/\D/g, '').substring(0, 14);
+  return digits
+    .replace(/(\d{2})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d)/, '$1/$2')
+    .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+}
+
+export function applyPhoneMask(value: string): string {
+  return maskPhone(value);
+}
+
+export function applyCepMask(value: string): string {
+  const digits = value.replace(/\D/g, '').substring(0, 8);
+  return digits.replace(/(\d{5})(\d{1,3})$/, '$1-$2');
+}
+
 export function maskPhone(value: string): string {
   const digits = value.replace(/\D/g, '');
   
