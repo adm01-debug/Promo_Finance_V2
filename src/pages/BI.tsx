@@ -283,22 +283,53 @@ export default function BI() {
       .slice(0, 6);
   }, [filteredPagar, centrosCusto]);
 
-  // Company comparison
+  // Company comparison with extended KPIs
   const comparativoEmpresas = useMemo(() => {
     return empresas.filter(e => e.ativo).map(empresa => {
-      const receber = contasReceber.filter(c => c.empresa_id === empresa.id && c.status === 'pago')
+      const empresaReceber = contasReceber.filter(c => c.empresa_id === empresa.id);
+      const empresaPagar = contasPagar.filter(c => c.empresa_id === empresa.id);
+      const empresaContas = contasBancarias.filter(c => c.empresa_id === empresa.id);
+      
+      const receitaTotal = empresaReceber.filter(c => c.status === 'pago')
         .reduce((acc, c) => acc + (c.valor_recebido || c.valor), 0);
-      const pagar = contasPagar.filter(c => c.empresa_id === empresa.id && c.status === 'pago')
+      const despesaTotal = empresaPagar.filter(c => c.status === 'pago')
         .reduce((acc, c) => acc + (c.valor_pago || c.valor), 0);
-      const saldo = contasBancarias.filter(c => c.empresa_id === empresa.id)
-        .reduce((acc, c) => acc + c.saldo_atual, 0);
+      const saldo = empresaContas.reduce((acc, c) => acc + c.saldo_atual, 0);
+      
+      const aReceber = empresaReceber.filter(c => c.status !== 'pago' && c.status !== 'cancelado')
+        .reduce((acc, c) => acc + c.valor, 0);
+      const aPagar = empresaPagar.filter(c => c.status !== 'pago' && c.status !== 'cancelado')
+        .reduce((acc, c) => acc + c.valor, 0);
+      
+      const vencidas = empresaReceber.filter(c => c.status === 'vencido')
+        .reduce((acc, c) => acc + c.valor, 0);
+      const inadimplencia = aReceber > 0 ? (vencidas / aReceber) * 100 : 0;
+      
+      const lucro = receitaTotal - despesaTotal;
+      const margem = receitaTotal > 0 ? (lucro / receitaTotal) * 100 : 0;
+      const liquidez = aPagar > 0 ? saldo / aPagar : 0;
+      
+      const contasCount = empresaContas.filter(c => c.ativo).length;
+      const ticketMedio = empresaReceber.filter(c => c.status === 'pago').length > 0 
+        ? receitaTotal / empresaReceber.filter(c => c.status === 'pago').length 
+        : 0;
       
       return {
+        id: empresa.id,
         nome: empresa.nome_fantasia || empresa.razao_social,
-        receitas: receber,
-        despesas: pagar,
-        lucro: receber - pagar,
-        saldo
+        cnpj: empresa.cnpj,
+        receitas: receitaTotal,
+        despesas: despesaTotal,
+        lucro,
+        margem,
+        saldo,
+        aReceber,
+        aPagar,
+        inadimplencia,
+        liquidez,
+        contasCount,
+        ticketMedio,
+        saldoProjetado: saldo + aReceber - aPagar
       };
     }).sort((a, b) => b.lucro - a.lucro);
   }, [empresas, contasReceber, contasPagar, contasBancarias]);
@@ -731,55 +762,246 @@ export default function BI() {
             </div>
           </TabsContent>
 
-          <TabsContent value="empresas">
+          <TabsContent value="empresas" className="space-y-4">
+            {/* Chart comparison */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Comparativo entre Empresas</CardTitle>
-                <CardDescription>Performance financeira consolidada</CardDescription>
+                <CardTitle className="text-lg">Comparativo Visual</CardTitle>
+                <CardDescription>Receitas, Despesas e Lucro por empresa</CardDescription>
               </CardHeader>
               <CardContent>
                 {comparativoEmpresas.length > 0 ? (
-                  <>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <BarChart data={comparativoEmpresas}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                        <XAxis dataKey="nome" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
-                        <YAxis tickFormatter={(v) => `${(v/1000).toFixed(0)}k`} stroke="hsl(var(--muted-foreground))" />
-                        <Tooltip formatter={(value: number) => formatCurrency(value)} />
-                        <Legend />
-                        <Bar dataKey="receitas" name="Receitas" fill="hsl(var(--success))" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="despesas" name="Despesas" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="lucro" name="Lucro" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                    
-                    <div className="mt-6 overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b">
-                            <th className="text-left py-2 font-medium">Empresa</th>
-                            <th className="text-right py-2 font-medium">Receitas</th>
-                            <th className="text-right py-2 font-medium">Despesas</th>
-                            <th className="text-right py-2 font-medium">Lucro</th>
-                            <th className="text-right py-2 font-medium">Saldo</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {comparativoEmpresas.map((emp, idx) => (
-                            <tr key={idx} className="border-b last:border-0">
-                              <td className="py-2">{emp.nome}</td>
-                              <td className="text-right py-2 text-green-600">{formatCurrency(emp.receitas)}</td>
-                              <td className="text-right py-2 text-destructive">{formatCurrency(emp.despesas)}</td>
-                              <td className={`text-right py-2 font-medium ${emp.lucro >= 0 ? 'text-green-600' : 'text-destructive'}`}>
-                                {formatCurrency(emp.lucro)}
-                              </td>
-                              <td className="text-right py-2">{formatCurrency(emp.saldo)}</td>
-                            </tr>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={comparativoEmpresas}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis dataKey="nome" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
+                      <YAxis tickFormatter={(v) => `${(v/1000).toFixed(0)}k`} stroke="hsl(var(--muted-foreground))" />
+                      <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                      <Legend />
+                      <Bar dataKey="receitas" name="Receitas" fill="hsl(var(--success))" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="despesas" name="Despesas" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="lucro" name="Lucro" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <p className="text-center text-muted-foreground py-12">Nenhuma empresa cadastrada</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* KPIs Table comparison */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5" />
+                  KPIs por Empresa (Lado a Lado)
+                </CardTitle>
+                <CardDescription>Comparativo detalhado de indicadores financeiros</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {comparativoEmpresas.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm border-collapse">
+                      <thead>
+                        <tr className="bg-muted/50">
+                          <th className="text-left py-3 px-4 font-semibold border-b sticky left-0 bg-muted/50 z-10">Indicador</th>
+                          {comparativoEmpresas.map((emp) => (
+                            <th key={emp.id} className="text-right py-3 px-4 font-semibold border-b min-w-[150px]">
+                              <div className="truncate max-w-[140px]" title={emp.nome}>{emp.nome}</div>
+                              <div className="text-xs font-normal text-muted-foreground">{emp.cnpj}</div>
+                            </th>
                           ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {/* Saldo Atual */}
+                        <tr className="hover:bg-muted/30 transition-colors">
+                          <td className="py-3 px-4 border-b font-medium sticky left-0 bg-background">
+                            <div className="flex items-center gap-2">
+                              <DollarSign className="w-4 h-4 text-primary" />
+                              Saldo Atual
+                            </div>
+                          </td>
+                          {comparativoEmpresas.map((emp) => (
+                            <td key={emp.id} className="text-right py-3 px-4 border-b font-medium">
+                              {formatCurrency(emp.saldo)}
+                            </td>
+                          ))}
+                        </tr>
+                        
+                        {/* Receitas */}
+                        <tr className="hover:bg-muted/30 transition-colors">
+                          <td className="py-3 px-4 border-b font-medium sticky left-0 bg-background">
+                            <div className="flex items-center gap-2">
+                              <ArrowUpRight className="w-4 h-4 text-green-500" />
+                              Receitas (Pagas)
+                            </div>
+                          </td>
+                          {comparativoEmpresas.map((emp) => (
+                            <td key={emp.id} className="text-right py-3 px-4 border-b text-green-600">
+                              {formatCurrency(emp.receitas)}
+                            </td>
+                          ))}
+                        </tr>
+                        
+                        {/* Despesas */}
+                        <tr className="hover:bg-muted/30 transition-colors">
+                          <td className="py-3 px-4 border-b font-medium sticky left-0 bg-background">
+                            <div className="flex items-center gap-2">
+                              <ArrowDownRight className="w-4 h-4 text-destructive" />
+                              Despesas (Pagas)
+                            </div>
+                          </td>
+                          {comparativoEmpresas.map((emp) => (
+                            <td key={emp.id} className="text-right py-3 px-4 border-b text-destructive">
+                              {formatCurrency(emp.despesas)}
+                            </td>
+                          ))}
+                        </tr>
+                        
+                        {/* Lucro */}
+                        <tr className="hover:bg-muted/30 transition-colors bg-muted/20">
+                          <td className="py-3 px-4 border-b font-medium sticky left-0 bg-muted/20">
+                            <div className="flex items-center gap-2">
+                              <Target className="w-4 h-4 text-primary" />
+                              Lucro Líquido
+                            </div>
+                          </td>
+                          {comparativoEmpresas.map((emp) => (
+                            <td key={emp.id} className={`text-right py-3 px-4 border-b font-bold ${emp.lucro >= 0 ? 'text-green-600' : 'text-destructive'}`}>
+                              {formatCurrency(emp.lucro)}
+                            </td>
+                          ))}
+                        </tr>
+                        
+                        {/* Margem */}
+                        <tr className="hover:bg-muted/30 transition-colors">
+                          <td className="py-3 px-4 border-b font-medium sticky left-0 bg-background">
+                            <div className="flex items-center gap-2">
+                              <TrendingUp className="w-4 h-4 text-chart-2" />
+                              Margem de Lucro
+                            </div>
+                          </td>
+                          {comparativoEmpresas.map((emp) => (
+                            <td key={emp.id} className="text-right py-3 px-4 border-b">
+                              <Badge variant={emp.margem >= 20 ? "default" : emp.margem >= 10 ? "secondary" : "destructive"}>
+                                {emp.margem.toFixed(1)}%
+                              </Badge>
+                            </td>
+                          ))}
+                        </tr>
+                        
+                        {/* A Receber */}
+                        <tr className="hover:bg-muted/30 transition-colors">
+                          <td className="py-3 px-4 border-b font-medium sticky left-0 bg-background">
+                            <div className="flex items-center gap-2">
+                              <ArrowUpRight className="w-4 h-4 text-success" />
+                              A Receber (Pendente)
+                            </div>
+                          </td>
+                          {comparativoEmpresas.map((emp) => (
+                            <td key={emp.id} className="text-right py-3 px-4 border-b">
+                              {formatCurrency(emp.aReceber)}
+                            </td>
+                          ))}
+                        </tr>
+                        
+                        {/* A Pagar */}
+                        <tr className="hover:bg-muted/30 transition-colors">
+                          <td className="py-3 px-4 border-b font-medium sticky left-0 bg-background">
+                            <div className="flex items-center gap-2">
+                              <ArrowDownRight className="w-4 h-4 text-warning" />
+                              A Pagar (Pendente)
+                            </div>
+                          </td>
+                          {comparativoEmpresas.map((emp) => (
+                            <td key={emp.id} className="text-right py-3 px-4 border-b">
+                              {formatCurrency(emp.aPagar)}
+                            </td>
+                          ))}
+                        </tr>
+                        
+                        {/* Saldo Projetado */}
+                        <tr className="hover:bg-muted/30 transition-colors bg-muted/20">
+                          <td className="py-3 px-4 border-b font-medium sticky left-0 bg-muted/20">
+                            <div className="flex items-center gap-2">
+                              <LineChartIcon className="w-4 h-4 text-chart-3" />
+                              Saldo Projetado
+                            </div>
+                          </td>
+                          {comparativoEmpresas.map((emp) => (
+                            <td key={emp.id} className={`text-right py-3 px-4 border-b font-medium ${emp.saldoProjetado >= 0 ? 'text-green-600' : 'text-destructive'}`}>
+                              {formatCurrency(emp.saldoProjetado)}
+                            </td>
+                          ))}
+                        </tr>
+                        
+                        {/* Inadimplência */}
+                        <tr className="hover:bg-muted/30 transition-colors">
+                          <td className="py-3 px-4 border-b font-medium sticky left-0 bg-background">
+                            <div className="flex items-center gap-2">
+                              <AlertTriangle className="w-4 h-4 text-destructive" />
+                              Inadimplência
+                            </div>
+                          </td>
+                          {comparativoEmpresas.map((emp) => (
+                            <td key={emp.id} className="text-right py-3 px-4 border-b">
+                              <Badge variant={emp.inadimplencia <= 5 ? "default" : emp.inadimplencia <= 15 ? "secondary" : "destructive"}>
+                                {emp.inadimplencia.toFixed(1)}%
+                              </Badge>
+                            </td>
+                          ))}
+                        </tr>
+                        
+                        {/* Liquidez */}
+                        <tr className="hover:bg-muted/30 transition-colors">
+                          <td className="py-3 px-4 border-b font-medium sticky left-0 bg-background">
+                            <div className="flex items-center gap-2">
+                              <DollarSign className="w-4 h-4 text-chart-4" />
+                              Índice de Liquidez
+                            </div>
+                          </td>
+                          {comparativoEmpresas.map((emp) => (
+                            <td key={emp.id} className="text-right py-3 px-4 border-b">
+                              <Badge variant={emp.liquidez >= 1.5 ? "default" : emp.liquidez >= 1 ? "secondary" : "destructive"}>
+                                {emp.liquidez.toFixed(2)}x
+                              </Badge>
+                            </td>
+                          ))}
+                        </tr>
+                        
+                        {/* Ticket Médio */}
+                        <tr className="hover:bg-muted/30 transition-colors">
+                          <td className="py-3 px-4 border-b font-medium sticky left-0 bg-background">
+                            <div className="flex items-center gap-2">
+                              <Users className="w-4 h-4 text-chart-5" />
+                              Ticket Médio
+                            </div>
+                          </td>
+                          {comparativoEmpresas.map((emp) => (
+                            <td key={emp.id} className="text-right py-3 px-4 border-b">
+                              {formatCurrency(emp.ticketMedio)}
+                            </td>
+                          ))}
+                        </tr>
+                        
+                        {/* Contas Bancárias */}
+                        <tr className="hover:bg-muted/30 transition-colors">
+                          <td className="py-3 px-4 font-medium sticky left-0 bg-background">
+                            <div className="flex items-center gap-2">
+                              <Building2 className="w-4 h-4 text-muted-foreground" />
+                              Contas Bancárias
+                            </div>
+                          </td>
+                          {comparativoEmpresas.map((emp) => (
+                            <td key={emp.id} className="text-right py-3 px-4">
+                              <Badge variant="outline">{emp.contasCount}</Badge>
+                            </td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 ) : (
                   <p className="text-center text-muted-foreground py-12">Nenhuma empresa cadastrada</p>
                 )}
