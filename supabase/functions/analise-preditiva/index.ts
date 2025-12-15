@@ -22,10 +22,15 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Buscar dados financeiros para análise
-    const [contasReceber, contasPagar, clientes] = await Promise.all([
+    const hoje = new Date();
+    const tresMesesAtras = new Date(hoje);
+    tresMesesAtras.setMonth(tresMesesAtras.getMonth() - 3);
+    
+    const [contasReceber, contasPagar, clientes, transacoes] = await Promise.all([
       supabase.from('contas_receber').select('*').order('data_vencimento'),
       supabase.from('contas_pagar').select('*').order('data_vencimento'),
       supabase.from('clientes').select('*'),
+      supabase.from('transacoes_bancarias').select('*').gte('data', tresMesesAtras.toISOString().split('T')[0]).order('data'),
     ]);
 
     if (contasReceber.error) throw contasReceber.error;
@@ -33,8 +38,9 @@ serve(async (req) => {
     if (clientes.error) throw clientes.error;
 
     // Preparar contexto para a IA
-    const hoje = new Date().toISOString().split('T')[0];
+    const hojeStr = hoje.toISOString().split('T')[0];
     
+    // Calcular dados históricos para análise de tendências
     const recebiveisData = contasReceber.data.map(cr => ({
       cliente: cr.cliente_nome,
       valor: cr.valor,
@@ -42,6 +48,7 @@ serve(async (req) => {
       status: cr.status,
       etapa_cobranca: cr.etapa_cobranca,
       valor_recebido: cr.valor_recebido || 0,
+      data_emissao: cr.data_emissao,
     }));
 
     const pagaveisData = contasPagar.data.map(cp => ({
@@ -50,6 +57,7 @@ serve(async (req) => {
       vencimento: cp.data_vencimento,
       status: cp.status,
       valor_pago: cp.valor_pago || 0,
+      data_emissao: cp.data_emissao,
     }));
 
     const clientesData = clientes.data.map(c => ({
@@ -58,9 +66,31 @@ serve(async (req) => {
       limite_credito: c.limite_credito,
     }));
 
-    const prompt = `Você é um analista financeiro especializado em análise preditiva. Analise os seguintes dados financeiros e forneça insights detalhados.
+    // Agrupar transações por mês para análise de tendências
+    const transacoesPorMes = (transacoes.data || []).reduce((acc: Record<string, { receitas: number; despesas: number }>, t) => {
+      const mes = t.data.substring(0, 7); // YYYY-MM
+      if (!acc[mes]) acc[mes] = { receitas: 0, despesas: 0 };
+      if (t.tipo === 'receita') {
+        acc[mes].receitas += Number(t.valor);
+      } else {
+        acc[mes].despesas += Number(t.valor);
+      }
+      return acc;
+    }, {});
 
-DATA ATUAL: ${hoje}
+    // Calcular métricas históricas
+    const historicoReceitas = contasReceber.data.reduce((acc: Record<string, { total: number; recebido: number; vencido: number }>, cr) => {
+      const mes = cr.data_vencimento.substring(0, 7);
+      if (!acc[mes]) acc[mes] = { total: 0, recebido: 0, vencido: 0 };
+      acc[mes].total += Number(cr.valor);
+      if (cr.status === 'pago') acc[mes].recebido += Number(cr.valor_recebido || cr.valor);
+      if (cr.status === 'vencido') acc[mes].vencido += Number(cr.valor);
+      return acc;
+    }, {});
+
+    const prompt = `Você é um analista financeiro especializado em análise preditiva e tendências. Analise os seguintes dados financeiros e forneça insights detalhados COM ANÁLISE DE TENDÊNCIAS HISTÓRICAS.
+
+DATA ATUAL: ${hojeStr}
 
 CONTAS A RECEBER (${recebiveisData.length} registros):
 ${JSON.stringify(recebiveisData, null, 2)}
@@ -71,9 +101,15 @@ ${JSON.stringify(pagaveisData, null, 2)}
 CLIENTES E SCORES (${clientesData.length} registros):
 ${JSON.stringify(clientesData, null, 2)}
 
+HISTÓRICO DE TRANSAÇÕES POR MÊS:
+${JSON.stringify(transacoesPorMes, null, 2)}
+
+HISTÓRICO DE RECEITAS POR MÊS (total/recebido/vencido):
+${JSON.stringify(historicoReceitas, null, 2)}
+
 Por favor, forneça uma análise estruturada no seguinte formato JSON:
 {
-  "resumo_executivo": "Breve resumo da situação financeira",
+  "resumo_executivo": "Breve resumo da situação financeira com destaque para tendências",
   "analise_inadimplencia": {
     "taxa_atual": "porcentagem estimada",
     "tendencia": "crescente/estável/decrescente",
@@ -97,6 +133,36 @@ Por favor, forneça uma análise estruturada no seguinte formato JSON:
       "saldo_projetado": "valor"
     }
   },
+  "analise_tendencias": {
+    "receitas": {
+      "tendencia": "crescente/estável/decrescente",
+      "variacao_percentual": "variação % nos últimos 3 meses",
+      "previsao_proximo_mes": "valor previsto",
+      "observacao": "insight sobre a tendência"
+    },
+    "despesas": {
+      "tendencia": "crescente/estável/decrescente",
+      "variacao_percentual": "variação % nos últimos 3 meses",
+      "previsao_proximo_mes": "valor previsto",
+      "observacao": "insight sobre a tendência"
+    },
+    "inadimplencia": {
+      "tendencia": "crescente/estável/decrescente",
+      "variacao_percentual": "variação % nos últimos 3 meses",
+      "previsao_proximo_mes": "taxa prevista",
+      "observacao": "insight sobre a tendência"
+    },
+    "margem_liquida": {
+      "atual": "percentual atual",
+      "tendencia": "crescente/estável/decrescente",
+      "previsao": "projeção para próximos meses"
+    },
+    "dados_grafico": [
+      {"mes": "2024-01", "receitas": 0, "despesas": 0, "saldo": 0},
+      {"mes": "2024-02", "receitas": 0, "despesas": 0, "saldo": 0},
+      {"mes": "2024-03", "receitas": 0, "despesas": 0, "saldo": 0}
+    ]
+  },
   "alertas": [
     {
       "tipo": "critico/alto/medio/baixo",
@@ -105,14 +171,25 @@ Por favor, forneça uma análise estruturada no seguinte formato JSON:
     }
   ],
   "recomendacoes": [
-    "lista de recomendações estratégicas"
+    "lista de recomendações estratégicas baseadas nas tendências"
   ],
-  "score_saude_financeira": "0-100"
+  "score_saude_financeira": "0-100",
+  "indicadores_chave": {
+    "prazo_medio_recebimento": "X dias",
+    "prazo_medio_pagamento": "X dias",
+    "ciclo_financeiro": "X dias",
+    "liquidez_corrente": "X.XX",
+    "cobertura_despesas": "X meses"
+  }
 }
 
-Responda APENAS com o JSON, sem texto adicional.`;
+IMPORTANTE: 
+- Use valores numéricos reais baseados nos dados
+- Identifique padrões e sazonalidades
+- Projete tendências futuras com base no histórico
+- Responda APENAS com o JSON, sem texto adicional.`;
 
-    console.log("Calling Lovable AI Gateway...");
+    console.log("Calling Lovable AI Gateway for trend analysis...");
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -125,7 +202,7 @@ Responda APENAS com o JSON, sem texto adicional.`;
         messages: [
           { 
             role: "system", 
-            content: "Você é um analista financeiro expert. Sempre responda em JSON válido. Seja preciso com números e datas. Considere sazonalidade e padrões históricos quando disponíveis." 
+            content: "Você é um analista financeiro expert em análise de tendências e previsões. Sempre responda em JSON válido. Seja preciso com números e identifique padrões históricos. Use os dados reais fornecidos para calcular métricas." 
           },
           { role: "user", content: prompt }
         ],
@@ -160,7 +237,6 @@ Responda APENAS com o JSON, sem texto adicional.`;
     // Parse o JSON da resposta
     let analise;
     try {
-      // Remove possíveis marcadores de código markdown
       const cleanContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
       analise = JSON.parse(cleanContent);
     } catch (parseError) {
@@ -168,7 +244,7 @@ Responda APENAS com o JSON, sem texto adicional.`;
       throw new Error("Invalid JSON response from AI");
     }
 
-    console.log("Analysis completed successfully");
+    console.log("Trend analysis completed successfully");
 
     return new Response(JSON.stringify({ 
       analise,
@@ -177,6 +253,7 @@ Responda APENAS com o JSON, sem texto adicional.`;
         contas_receber: recebiveisData.length,
         contas_pagar: pagaveisData.length,
         clientes: clientesData.length,
+        meses_historico: Object.keys(transacoesPorMes).length,
       }
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
