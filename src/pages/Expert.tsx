@@ -13,7 +13,13 @@ import {
   User,
   Copy,
   Check,
-  Database
+  Database,
+  Zap,
+  FileText,
+  Bell,
+  CheckCircle,
+  AlertTriangle,
+  ExternalLink
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,12 +30,15 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useExpertContext } from '@/hooks/useExpertContext';
+import { useExpertActions, ExpertAction } from '@/hooks/useExpertActions';
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  actions?: ExpertAction[];
+  actionsExecuted?: boolean;
 }
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/expert-agent`;
@@ -57,15 +66,40 @@ const suggestedQuestions = [
   },
 ];
 
+const quickActions = [
+  {
+    icon: FileText,
+    label: 'Relatório de Caixa',
+    prompt: 'Gere um relatório de fluxo de caixa para os próximos dias'
+  },
+  {
+    icon: Bell,
+    label: 'Criar Alerta',
+    prompt: 'Crie um alerta de alta prioridade para revisar as contas a pagar da semana'
+  },
+  {
+    icon: CheckCircle,
+    label: 'Ver Aprovações',
+    prompt: 'Liste todas as aprovações de pagamento pendentes'
+  },
+  {
+    icon: AlertTriangle,
+    label: 'Inadimplência',
+    prompt: 'Gere um relatório de inadimplência com os títulos vencidos'
+  },
+];
+
 export default function Expert() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [executingActions, setExecutingActions] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   
   const { resumoFinanceiro, isLoading: loadingContext } = useExpertContext();
+  const { executeAction, parseActionsFromMessage, getCleanContent } = useExpertActions();
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -78,6 +112,20 @@ export default function Expert() {
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
     toast.success('Copiado para a área de transferência');
+  };
+
+  const handleExecuteActions = async (messageId: string, actions: ExpertAction[]) => {
+    setExecutingActions(messageId);
+    
+    for (const action of actions) {
+      await executeAction(action);
+    }
+    
+    setMessages(prev => prev.map(m => 
+      m.id === messageId ? { ...m, actionsExecuted: true } : m
+    ));
+    
+    setExecutingActions(null);
   };
 
   const sendMessage = async (messageText: string) => {
@@ -193,6 +241,16 @@ export default function Expert() {
         }
       }
 
+      // Parse actions from final content
+      const actions = parseActionsFromMessage(assistantContent);
+      if (actions.length > 0) {
+        setMessages(prev => prev.map(m => 
+          m.id === assistantId 
+            ? { ...m, actions, content: getCleanContent(assistantContent) }
+            : m
+        ));
+      }
+
     } catch (error) {
       console.error('Error:', error);
       toast.error(error instanceof Error ? error.message : 'Erro ao enviar mensagem');
@@ -217,6 +275,40 @@ export default function Expert() {
 
   const clearChat = () => {
     setMessages([]);
+  };
+
+  const getActionLabel = (action: ExpertAction): string => {
+    switch (action.type) {
+      case 'criar_alerta':
+        return `Criar alerta: ${action.titulo}`;
+      case 'gerar_relatorio':
+        return `Gerar relatório: ${action.relatorio}`;
+      case 'listar_aprovacoes':
+        return 'Listar aprovações pendentes';
+      case 'aprovar_pagamento':
+        return `Aprovar pagamento ${action.id}`;
+      case 'navegar':
+        return `Ir para ${action.pagina}`;
+      default:
+        return 'Executar ação';
+    }
+  };
+
+  const getActionIcon = (action: ExpertAction) => {
+    switch (action.type) {
+      case 'criar_alerta':
+        return Bell;
+      case 'gerar_relatorio':
+        return FileText;
+      case 'listar_aprovacoes':
+        return CheckCircle;
+      case 'aprovar_pagamento':
+        return CheckCircle;
+      case 'navegar':
+        return ExternalLink;
+      default:
+        return Zap;
+    }
   };
 
   return (
@@ -277,13 +369,36 @@ export default function Expert() {
                 </p>
               </motion.div>
 
+              {/* Quick Actions */}
+              <div className="w-full max-w-2xl mb-6">
+                <p className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2 justify-center">
+                  <Zap className="h-4 w-4" />
+                  Ações Rápidas
+                </p>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {quickActions.map((action, index) => (
+                    <motion.button
+                      key={index}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: index * 0.05 }}
+                      onClick={() => sendMessage(action.prompt)}
+                      className="flex items-center gap-2 px-4 py-2 rounded-full border bg-card hover:bg-primary hover:text-primary-foreground text-sm transition-colors"
+                    >
+                      <action.icon className="h-4 w-4" />
+                      {action.label}
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl">
                 {suggestedQuestions.map((item, index) => (
                   <motion.button
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
+                    transition={{ delay: 0.2 + index * 0.1 }}
                     onClick={() => sendMessage(item.question)}
                     className="flex items-start gap-3 p-4 rounded-xl border bg-card hover:bg-muted/50 text-left transition-colors group"
                   >
@@ -333,6 +448,41 @@ export default function Expert() {
                             </div>
                           )}
                         </div>
+                        
+                        {/* Action Buttons */}
+                        {message.role === 'assistant' && message.actions && message.actions.length > 0 && (
+                          <div className="mt-3 pt-3 border-t border-border/50">
+                            <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                              <Zap className="h-3 w-3" />
+                              {message.actionsExecuted ? 'Ações executadas' : 'Ações disponíveis'}
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {message.actions.map((action, idx) => {
+                                const ActionIcon = getActionIcon(action);
+                                return (
+                                  <Button
+                                    key={idx}
+                                    size="sm"
+                                    variant={message.actionsExecuted ? "ghost" : "secondary"}
+                                    disabled={message.actionsExecuted || executingActions === message.id}
+                                    onClick={() => handleExecuteActions(message.id, [action])}
+                                    className="text-xs"
+                                  >
+                                    {executingActions === message.id ? (
+                                      <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                                    ) : message.actionsExecuted ? (
+                                      <Check className="h-3 w-3 mr-1 text-success" />
+                                    ) : (
+                                      <ActionIcon className="h-3 w-3 mr-1" />
+                                    )}
+                                    {getActionLabel(action)}
+                                  </Button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                        
                         {message.role === 'assistant' && message.content && (
                           <button
                             onClick={() => copyToClipboard(message.content, message.id)}
