@@ -24,13 +24,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { mockCNPJs, mockAlertas } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { useEmpresas } from '@/hooks/useFinancialData';
+import { useAlertas } from '@/hooks/useAlertas';
 
 interface HeaderProps {
   sidebarCollapsed?: boolean;
@@ -47,8 +48,16 @@ export const Header = ({ sidebarCollapsed }: HeaderProps) => {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const { user, profile, role, signOut } = useAuth();
   const navigate = useNavigate();
-  const [selectedCNPJ, setSelectedCNPJ] = useState(mockCNPJs[0]);
-  const unreadAlerts = mockAlertas.filter((a) => !a.lido).length;
+  const { data: empresas = [] } = useEmpresas();
+  const { data: alertas = [] } = useAlertas();
+  const [selectedEmpresaId, setSelectedEmpresaId] = useState<string | null>(null);
+  
+  const selectedEmpresa = useMemo(() => {
+    if (selectedEmpresaId) return empresas.find(e => e.id === selectedEmpresaId);
+    return empresas[0];
+  }, [selectedEmpresaId, empresas]);
+  
+  const unreadAlerts = useMemo(() => alertas.filter((a) => !a.lido).length, [alertas]);
 
   const isDark = resolvedTheme === 'dark';
 
@@ -113,7 +122,7 @@ export const Header = ({ sidebarCollapsed }: HeaderProps) => {
               >
                 <Building2 className="h-4 w-4 text-primary" />
                 <span className="hidden sm:inline text-sm font-medium">
-                  {selectedCNPJ.nomeFantasia}
+                  {selectedEmpresa?.nome_fantasia || selectedEmpresa?.razao_social || 'Selecionar'}
                 </span>
                 <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
               </Button>
@@ -121,18 +130,18 @@ export const Header = ({ sidebarCollapsed }: HeaderProps) => {
             <DropdownMenuContent align="end" className="w-64 bg-popover">
               <DropdownMenuLabel>Selecionar Empresa</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {mockCNPJs.map((cnpj) => (
+              {empresas.map((empresa) => (
                 <DropdownMenuItem
-                  key={cnpj.id}
-                  onClick={() => setSelectedCNPJ(cnpj)}
+                  key={empresa.id}
+                  onClick={() => setSelectedEmpresaId(empresa.id)}
                   className={cn(
                     'flex flex-col items-start gap-0.5 cursor-pointer',
-                    selectedCNPJ.id === cnpj.id && 'bg-primary/10'
+                    selectedEmpresa?.id === empresa.id && 'bg-primary/10'
                   )}
                 >
-                  <span className="font-medium">{cnpj.nomeFantasia}</span>
+                  <span className="font-medium">{empresa.nome_fantasia || empresa.razao_social}</span>
                   <span className="text-xs text-muted-foreground">
-                    {cnpj.cnpj}
+                    {empresa.cnpj}
                   </span>
                 </DropdownMenuItem>
               ))}
@@ -208,7 +217,7 @@ export const Header = ({ sidebarCollapsed }: HeaderProps) => {
                 <Badge variant="secondary">{unreadAlerts} novas</Badge>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {mockAlertas.slice(0, 4).map((alerta) => (
+              {alertas.slice(0, 4).map((alerta) => (
                 <DropdownMenuItem
                   key={alerta.id}
                   className={cn(

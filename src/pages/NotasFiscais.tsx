@@ -46,7 +46,7 @@ import {
   Zap
 } from 'lucide-react';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/formatters';
-import { mockCNPJs } from '@/data/mockData';
+import { useEmpresas } from '@/hooks/useFinancialData';
 import { toast } from 'sonner';
 import { processarSefaz, NFEData, SefazResponse, SEFAZ_STATUS } from '@/lib/sefaz-simulator';
 import { registrarEvento } from '@/lib/sefaz-event-logger';
@@ -540,6 +540,8 @@ const SefazStatusPanel = ({
 
 // Form para nova NF-e
 const NovaNFeForm = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: (nota: NotaFiscal) => void }) => {
+  const { data: empresas = [] } = useEmpresas();
+  
   const [formData, setFormData] = useState({
     destinatarioNome: '',
     destinatarioCnpj: '',
@@ -583,7 +585,7 @@ const NovaNFeForm = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
     setIsProcessing(true);
     setSefazResponse(null);
 
-    const empresa = mockCNPJs.find(c => c.id === formData.empresa);
+    const empresa = empresas.find(c => c.id === formData.empresa);
     
     // Simula os passos de processamento
     const steps = ['validating', 'connecting', 'sending', 'processing', 'done'];
@@ -601,9 +603,9 @@ const NovaNFeForm = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
       dataEmissao: new Date(),
       emitente: {
         cnpj: empresa?.cnpj || '12.345.678/0001-90',
-        razaoSocial: empresa?.razaoSocial || 'Promo Brindes Ltda',
-        inscricaoEstadual: '123.456.789.123',
-        uf: 'SP'
+        razaoSocial: empresa?.razao_social || 'Promo Brindes Ltda',
+        inscricaoEstadual: empresa?.inscricao_estadual || '123.456.789.123',
+        uf: empresa?.estado || 'SP'
       },
       destinatario: {
         cpfCnpj: formData.destinatarioCnpj,
@@ -754,9 +756,9 @@ const NovaNFeForm = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
                 <SelectValue placeholder="Selecione" />
               </SelectTrigger>
               <SelectContent>
-                {mockCNPJs.map((empresa) => (
-                  <SelectItem key={empresa.id} value={empresa.id}>
-                    {empresa.razaoSocial}
+                {empresas.map((emp) => (
+                  <SelectItem key={emp.id} value={emp.id}>
+                    {emp.razao_social}
                   </SelectItem>
                 ))}
               </SelectContent>

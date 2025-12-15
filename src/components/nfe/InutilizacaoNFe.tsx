@@ -23,7 +23,7 @@ import {
 import { toast } from 'sonner';
 import { processarSefaz, SefazResponse } from '@/lib/sefaz-simulator';
 import { registrarEvento } from '@/lib/sefaz-event-logger';
-import { mockCNPJs } from '@/data/mockData';
+import { useEmpresas } from '@/hooks/useFinancialData';
 
 interface InutilizacaoFormData {
   empresa: string;
@@ -35,6 +35,8 @@ interface InutilizacaoFormData {
 }
 
 export function InutilizacaoNFe() {
+  const { data: empresas = [] } = useEmpresas();
+  
   const [formData, setFormData] = useState<InutilizacaoFormData>({
     empresa: '',
     serie: '1',
@@ -97,7 +99,7 @@ export function InutilizacaoNFe() {
     setIsProcessing(true);
     setSefazResponse(null);
 
-    const empresa = mockCNPJs.find(c => c.id === formData.empresa);
+    const empresa = empresas.find(c => c.id === formData.empresa);
     const tempoInicio = Date.now();
 
     // Simula os passos de processamento
@@ -186,9 +188,9 @@ export function InutilizacaoNFe() {
                     <SelectValue placeholder="Selecione a empresa" />
                   </SelectTrigger>
                   <SelectContent>
-                    {mockCNPJs.map((cnpj) => (
-                      <SelectItem key={cnpj.id} value={cnpj.id}>
-                        {cnpj.nomeFantasia} - {cnpj.cnpj}
+                    {empresas.map((emp) => (
+                      <SelectItem key={emp.id} value={emp.id}>
+                        {emp.nome_fantasia || emp.razao_social} - {emp.cnpj}
                       </SelectItem>
                     ))}
                   </SelectContent>
