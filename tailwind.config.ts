@@ -31,6 +31,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          glow: "hsl(var(--primary-glow))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -55,6 +56,7 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+          elevated: "hsl(var(--card-elevated))",
         },
         success: {
           DEFAULT: "hsl(var(--success))",
@@ -79,6 +81,35 @@ export default {
         saldo: {
           DEFAULT: "hsl(var(--saldo))",
           foreground: "hsl(var(--saldo-foreground))",
+        },
+        // Gamification colors adapted for financial context
+        xp: {
+          DEFAULT: "hsl(var(--xp))",
+          foreground: "hsl(var(--xp-foreground))",
+        },
+        coins: {
+          DEFAULT: "hsl(var(--coins))",
+          foreground: "hsl(var(--coins-foreground))",
+        },
+        streak: {
+          DEFAULT: "hsl(var(--streak))",
+          foreground: "hsl(var(--streak-foreground))",
+        },
+        "rank-gold": {
+          DEFAULT: "hsl(var(--rank-gold))",
+          foreground: "hsl(var(--rank-gold-foreground))",
+        },
+        "rank-silver": {
+          DEFAULT: "hsl(var(--rank-silver))",
+          foreground: "hsl(var(--rank-silver-foreground))",
+        },
+        "rank-bronze": {
+          DEFAULT: "hsl(var(--rank-bronze))",
+          foreground: "hsl(var(--rank-bronze-foreground))",
+        },
+        elevated: {
+          DEFAULT: "hsl(var(--elevated))",
+          hover: "hsl(var(--elevated-hover))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -116,7 +147,18 @@ export default {
         "glow-primary": "var(--shadow-glow-primary)",
         "glow-secondary": "var(--shadow-glow-secondary)",
         "glow-success": "var(--shadow-glow-success)",
+        "glow-xp": "var(--shadow-glow-xp)",
+        "glow-coins": "var(--shadow-glow-coins)",
+        "glow-streak": "var(--shadow-glow-streak)",
         header: "var(--header-shadow)",
+        elevated: "0 4px 20px -2px hsl(var(--foreground) / 0.08)",
+      },
+      spacing: {
+        card: "var(--spacing-card)",
+        "card-sm": "var(--spacing-card-sm)",
+        "card-lg": "var(--spacing-card-lg)",
+        section: "var(--spacing-section)",
+        "section-lg": "var(--spacing-section-lg)",
       },
       keyframes: {
         "accordion-down": {
@@ -180,6 +222,10 @@ export default {
           "0%, 100%": { opacity: "0.4", transform: "scale(1)" },
           "50%": { opacity: "0.8", transform: "scale(1.02)" },
         },
+        "border-glow": {
+          "0%, 100%": { borderColor: "hsl(var(--primary) / 0.3)" },
+          "50%": { borderColor: "hsl(var(--primary) / 0.8)" },
+        },
         wiggle: {
           "0%, 100%": { transform: "rotate(-3deg)" },
           "50%": { transform: "rotate(3deg)" },
@@ -192,6 +238,25 @@ export default {
         "count-up": {
           "0%": { transform: "translateY(100%)", opacity: "0" },
           "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+        // Gamification animations
+        "xp-shimmer": {
+          "0%": { backgroundPosition: "-100% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        "streak-fire": {
+          "0%, 100%": { transform: "scale(1)", filter: "brightness(1)" },
+          "50%": { transform: "scale(1.1)", filter: "brightness(1.3)" },
+        },
+        "coin-shine": {
+          "0%": { transform: "rotateY(0deg)" },
+          "50%": { transform: "rotateY(180deg)" },
+          "100%": { transform: "rotateY(360deg)" },
+        },
+        "level-up": {
+          "0%": { transform: "scale(1)", boxShadow: "0 0 0 0 hsl(var(--primary) / 0.7)" },
+          "50%": { transform: "scale(1.05)", boxShadow: "0 0 30px 10px hsl(var(--primary) / 0.4)" },
+          "100%": { transform: "scale(1)", boxShadow: "0 0 0 0 hsl(var(--primary) / 0)" },
         },
       },
       animation: {
@@ -211,13 +276,22 @@ export default {
         shimmer: "shimmer 2s linear infinite",
         float: "float 3s ease-in-out infinite",
         "glow-pulse": "glow-pulse 2s ease-in-out infinite",
+        "border-glow": "border-glow 2s ease-in-out infinite",
         wiggle: "wiggle 0.3s ease-in-out",
         pop: "pop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
         "spin-slow": "spin 2s linear infinite",
+        // Gamification animations
+        "xp-shimmer": "xp-shimmer 2s ease-in-out infinite",
+        "streak-fire": "streak-fire 0.8s ease-in-out infinite",
+        "coin-shine": "coin-shine 2s ease-in-out infinite",
+        "level-up": "level-up 0.6s ease-out",
+        enter: "fade-in 0.3s ease-out, scale-in 0.2s ease-out",
+        exit: "fade-out 0.3s ease-out, scale-out 0.2s ease-out",
       },
       transitionDuration: {
         "150": "150ms",
         "200": "200ms",
+        "250": "250ms",
         "300": "300ms",
         "400": "400ms",
         "500": "500ms",
@@ -225,7 +299,7 @@ export default {
       transitionTimingFunction: {
         "bounce-in": "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
         smooth: "cubic-bezier(0.4, 0, 0.2, 1)",
-        spring: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        spring: "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
       },
     },
   },
