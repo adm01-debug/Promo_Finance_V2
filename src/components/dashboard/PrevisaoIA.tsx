@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -20,9 +21,37 @@ import {
   Users,
   Lightbulb,
   Activity,
-  ArrowRight
+  ArrowRight,
+  BarChart3,
+  Clock,
+  Wallet,
+  PieChart,
+  Target
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area, BarChart, Bar } from 'recharts';
+
+interface AnaliseTendencia {
+  tendencia: string;
+  variacao_percentual: string;
+  previsao_proximo_mes: string;
+  observacao: string;
+}
+
+interface DadosGrafico {
+  mes: string;
+  receitas: number;
+  despesas: number;
+  saldo: number;
+}
+
+interface IndicadoresChave {
+  prazo_medio_recebimento: string;
+  prazo_medio_pagamento: string;
+  ciclo_financeiro: string;
+  liquidez_corrente: string;
+  cobertura_despesas: string;
+}
 
 interface AnalisePreditiva {
   resumo_executivo: string;
@@ -49,6 +78,17 @@ interface AnalisePreditiva {
       saldo_projetado: string;
     };
   };
+  analise_tendencias?: {
+    receitas: AnaliseTendencia;
+    despesas: AnaliseTendencia;
+    inadimplencia: AnaliseTendencia;
+    margem_liquida: {
+      atual: string;
+      tendencia: string;
+      previsao: string;
+    };
+    dados_grafico: DadosGrafico[];
+  };
   alertas: Array<{
     tipo: string;
     mensagem: string;
@@ -56,6 +96,7 @@ interface AnalisePreditiva {
   }>;
   recomendacoes: string[];
   score_saude_financeira: string;
+  indicadores_chave?: IndicadoresChave;
 }
 
 interface PrevisaoIAProps {
@@ -79,6 +120,7 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
   const [analise, setAnalise] = useState<AnalisePreditiva | null>(null);
   const [loading, setLoading] = useState(false);
   const [geradoEm, setGeradoEm] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState('visao-geral');
   const { toast } = useToast();
 
   const gerarAnalise = async () => {
@@ -97,7 +139,7 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
       
       toast({
         title: "Análise concluída",
-        description: `Analisados ${data.dados_analisados.contas_receber} recebíveis, ${data.dados_analisados.contas_pagar} pagáveis e ${data.dados_analisados.clientes} clientes.`,
+        description: `Analisados ${data.dados_analisados.contas_receber} recebíveis, ${data.dados_analisados.contas_pagar} pagáveis, ${data.dados_analisados.clientes} clientes e ${data.dados_analisados.meses_historico || 0} meses de histórico.`,
       });
     } catch (error) {
       console.error('Error:', error);
@@ -125,12 +167,26 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
   };
 
   const getTendenciaIcon = (tendencia: string) => {
-    if (tendencia.toLowerCase().includes('cresc')) {
-      return <TrendingUp className="h-4 w-4 text-destructive" />;
-    } else if (tendencia.toLowerCase().includes('decresc')) {
-      return <TrendingDown className="h-4 w-4 text-green-500" />;
+    if (tendencia?.toLowerCase().includes('cresc')) {
+      return <TrendingUp className="h-4 w-4 text-green-500" />;
+    } else if (tendencia?.toLowerCase().includes('decresc')) {
+      return <TrendingDown className="h-4 w-4 text-destructive" />;
     }
     return <Activity className="h-4 w-4 text-muted-foreground" />;
+  };
+
+  const getTendenciaColor = (tendencia: string, inverted = false) => {
+    const isUp = tendencia?.toLowerCase().includes('cresc');
+    const isDown = tendencia?.toLowerCase().includes('decresc');
+    
+    if (inverted) {
+      if (isUp) return 'text-destructive';
+      if (isDown) return 'text-green-500';
+    } else {
+      if (isUp) return 'text-green-500';
+      if (isDown) return 'text-destructive';
+    }
+    return 'text-muted-foreground';
   };
 
   const parseValor = (valor: string): number => {
@@ -164,8 +220,8 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
           </motion.div>
           <h3 className="mb-2 text-xl font-semibold">Análise Preditiva com IA</h3>
           <p className="mb-6 max-w-md text-muted-foreground">
-            Utilize inteligência artificial para prever inadimplência, analisar fluxo de caixa 
-            e receber recomendações estratégicas personalizadas.
+            Utilize inteligência artificial para analisar tendências históricas, prever inadimplência, 
+            projetar fluxo de caixa e receber recomendações estratégicas personalizadas.
           </p>
           <Button onClick={gerarAnalise} size="lg" className="gap-2">
             <Sparkles className="h-4 w-4" />
@@ -188,8 +244,8 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
               <Brain className="h-6 w-6 text-primary" />
             </motion.div>
             <div>
-              <CardTitle>Analisando dados...</CardTitle>
-              <CardDescription>A IA está processando suas informações financeiras</CardDescription>
+              <CardTitle>Analisando tendências...</CardTitle>
+              <CardDescription>A IA está processando dados históricos e identificando padrões</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -262,160 +318,407 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
             </Card>
           </motion.div>
 
-          {/* Projeção de Fluxo de Caixa */}
-          <motion.div variants={itemVariants}>
-            <h3 className="mb-3 flex items-center gap-2 font-semibold">
-              <Calendar className="h-4 w-4 text-primary" />
-              Projeção de Fluxo de Caixa
-            </h3>
-            <div className="grid gap-4 md:grid-cols-3">
-              {analise?.projecao_fluxo_caixa && Object.entries(analise.projecao_fluxo_caixa).map(([periodo, dados]) => (
-                <Card key={periodo} className="overflow-hidden">
-                  <CardHeader className="bg-muted/50 py-3">
-                    <CardTitle className="text-sm">
-                      {periodo === 'proximos_7_dias' ? 'Próximos 7 dias' :
-                       periodo === 'proximos_30_dias' ? 'Próximos 30 dias' :
-                       'Próximos 90 dias'}
+          {/* Tabs para organizar conteúdo */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="visao-geral" className="gap-2">
+                <PieChart className="h-4 w-4" />
+                Visão Geral
+              </TabsTrigger>
+              <TabsTrigger value="tendencias" className="gap-2">
+                <BarChart3 className="h-4 w-4" />
+                Tendências
+              </TabsTrigger>
+              <TabsTrigger value="projecoes" className="gap-2">
+                <Target className="h-4 w-4" />
+                Projeções
+              </TabsTrigger>
+              <TabsTrigger value="alertas" className="gap-2">
+                <AlertTriangle className="h-4 w-4" />
+                Alertas
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Visão Geral */}
+            <TabsContent value="visao-geral" className="mt-4 space-y-4">
+              {/* Indicadores Chave */}
+              {analise?.indicadores_chave && (
+                <motion.div variants={itemVariants}>
+                  <h3 className="mb-3 flex items-center gap-2 font-semibold">
+                    <Target className="h-4 w-4 text-primary" />
+                    Indicadores Chave
+                  </h3>
+                  <div className="grid gap-4 md:grid-cols-5">
+                    <Card className="text-center p-4">
+                      <Clock className="h-5 w-5 text-primary mx-auto mb-2" />
+                      <p className="text-xs text-muted-foreground">PMR</p>
+                      <p className="text-lg font-bold">{analise.indicadores_chave.prazo_medio_recebimento}</p>
+                    </Card>
+                    <Card className="text-center p-4">
+                      <Clock className="h-5 w-5 text-orange-500 mx-auto mb-2" />
+                      <p className="text-xs text-muted-foreground">PMP</p>
+                      <p className="text-lg font-bold">{analise.indicadores_chave.prazo_medio_pagamento}</p>
+                    </Card>
+                    <Card className="text-center p-4">
+                      <Activity className="h-5 w-5 text-blue-500 mx-auto mb-2" />
+                      <p className="text-xs text-muted-foreground">Ciclo Financeiro</p>
+                      <p className="text-lg font-bold">{analise.indicadores_chave.ciclo_financeiro}</p>
+                    </Card>
+                    <Card className="text-center p-4">
+                      <Wallet className="h-5 w-5 text-green-500 mx-auto mb-2" />
+                      <p className="text-xs text-muted-foreground">Liquidez</p>
+                      <p className="text-lg font-bold">{analise.indicadores_chave.liquidez_corrente}</p>
+                    </Card>
+                    <Card className="text-center p-4">
+                      <DollarSign className="h-5 w-5 text-purple-500 mx-auto mb-2" />
+                      <p className="text-xs text-muted-foreground">Cobertura</p>
+                      <p className="text-lg font-bold">{analise.indicadores_chave.cobertura_despesas}</p>
+                    </Card>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Análise de Inadimplência */}
+              <motion.div variants={itemVariants}>
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <Users className="h-4 w-4 text-primary" />
+                      Análise de Inadimplência
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="py-4 space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Entradas:</span>
-                      <span className="font-medium text-green-600">{dados.entradas_previstas}</span>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <span className="text-sm text-muted-foreground">Taxa Atual</span>
+                        <p className="font-semibold text-lg">{analise?.analise_inadimplencia?.taxa_atual}</p>
+                      </div>
+                      <div>
+                        <span className="text-sm text-muted-foreground">Tendência</span>
+                        <div className="flex items-center gap-2">
+                          {getTendenciaIcon(analise?.analise_inadimplencia?.tendencia || '')}
+                          <span className="font-medium capitalize">{analise?.analise_inadimplencia?.tendencia}</span>
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-sm text-muted-foreground">Valor em Risco</span>
+                        <p className="font-semibold text-lg text-destructive">{analise?.analise_inadimplencia?.valor_em_risco}</p>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Saídas:</span>
-                      <span className="font-medium text-destructive">{dados.saidas_previstas}</span>
-                    </div>
-                    <div className="border-t pt-2 flex items-center justify-between">
-                      <span className="text-sm font-medium">Saldo:</span>
-                      <span className={`font-bold ${parseValor(dados.saldo_projetado) >= 0 ? 'text-green-600' : 'text-destructive'}`}>
-                        {dados.saldo_projetado}
-                      </span>
-                    </div>
+                    {analise?.analise_inadimplencia?.clientes_risco?.length > 0 && (
+                      <div className="border-t pt-3">
+                        <p className="mb-2 text-sm font-medium">Clientes em Risco:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {analise.analise_inadimplencia.clientes_risco.slice(0, 5).map((cliente, i) => (
+                            <Badge key={i} variant="outline" className="text-xs">
+                              {cliente}
+                            </Badge>
+                          ))}
+                          {analise.analise_inadimplencia.clientes_risco.length > 5 && (
+                            <Badge variant="secondary" className="text-xs">
+                              +{analise.analise_inadimplencia.clientes_risco.length - 5}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
-              ))}
-            </div>
-          </motion.div>
+              </motion.div>
+            </TabsContent>
 
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* Análise de Inadimplência */}
-            <motion.div variants={itemVariants}>
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Users className="h-4 w-4 text-primary" />
-                    Análise de Inadimplência
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Taxa Atual:</span>
-                    <span className="font-semibold">{analise?.analise_inadimplencia?.taxa_atual}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Tendência:</span>
-                    <div className="flex items-center gap-2">
-                      {getTendenciaIcon(analise?.analise_inadimplencia?.tendencia || '')}
-                      <span className="font-medium capitalize">{analise?.analise_inadimplencia?.tendencia}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Valor em Risco:</span>
-                    <span className="font-semibold text-destructive">{analise?.analise_inadimplencia?.valor_em_risco}</span>
-                  </div>
-                  {analise?.analise_inadimplencia?.clientes_risco?.length > 0 && (
-                    <div className="border-t pt-3">
-                      <p className="mb-2 text-sm font-medium">Clientes em Risco:</p>
-                      <div className="flex flex-wrap gap-1">
-                        {analise.analise_inadimplencia.clientes_risco.slice(0, 5).map((cliente, i) => (
-                          <Badge key={i} variant="outline" className="text-xs">
-                            {cliente}
-                          </Badge>
-                        ))}
-                        {analise.analise_inadimplencia.clientes_risco.length > 5 && (
-                          <Badge variant="secondary" className="text-xs">
-                            +{analise.analise_inadimplencia.clientes_risco.length - 5}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
+            {/* Tendências */}
+            <TabsContent value="tendencias" className="mt-4 space-y-4">
+              {analise?.analise_tendencias && (
+                <>
+                  {/* Gráfico de Tendências */}
+                  {analise.analise_tendencias.dados_grafico?.length > 0 && (
+                    <motion.div variants={itemVariants}>
+                      <Card>
+                        <CardHeader className="pb-3">
+                          <CardTitle className="flex items-center gap-2 text-base">
+                            <BarChart3 className="h-4 w-4 text-primary" />
+                            Evolução Histórica
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <ResponsiveContainer width="100%" height={300}>
+                            <AreaChart data={analise.analise_tendencias.dados_grafico}>
+                              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                              <XAxis dataKey="mes" className="text-xs" />
+                              <YAxis className="text-xs" tickFormatter={(v) => `R$ ${(v / 1000).toFixed(0)}k`} />
+                              <Tooltip 
+                                formatter={(value: number) => formatCurrency(value)}
+                                labelFormatter={(label) => `Período: ${label}`}
+                              />
+                              <Legend />
+                              <Area 
+                                type="monotone" 
+                                dataKey="receitas" 
+                                name="Receitas"
+                                stroke="hsl(var(--chart-1))" 
+                                fill="hsl(var(--chart-1))" 
+                                fillOpacity={0.3}
+                              />
+                              <Area 
+                                type="monotone" 
+                                dataKey="despesas" 
+                                name="Despesas"
+                                stroke="hsl(var(--chart-2))" 
+                                fill="hsl(var(--chart-2))" 
+                                fillOpacity={0.3}
+                              />
+                              <Line 
+                                type="monotone" 
+                                dataKey="saldo" 
+                                name="Saldo"
+                                stroke="hsl(var(--chart-3))" 
+                                strokeWidth={2}
+                              />
+                            </AreaChart>
+                          </ResponsiveContainer>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
                   )}
-                </CardContent>
-              </Card>
-            </motion.div>
+
+                  {/* Cards de Tendências */}
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <motion.div variants={itemVariants}>
+                      <Card>
+                        <CardHeader className="pb-3">
+                          <CardTitle className="flex items-center gap-2 text-base">
+                            <TrendingUp className="h-4 w-4 text-green-500" />
+                            Tendência de Receitas
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Direção:</span>
+                            <div className={`flex items-center gap-2 ${getTendenciaColor(analise.analise_tendencias.receitas?.tendencia)}`}>
+                              {getTendenciaIcon(analise.analise_tendencias.receitas?.tendencia)}
+                              <span className="font-medium capitalize">{analise.analise_tendencias.receitas?.tendencia}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Variação (3m):</span>
+                            <span className="font-semibold">{analise.analise_tendencias.receitas?.variacao_percentual}</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Previsão:</span>
+                            <span className="font-semibold text-green-600">{analise.analise_tendencias.receitas?.previsao_proximo_mes}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground border-t pt-3">
+                            {analise.analise_tendencias.receitas?.observacao}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+
+                    <motion.div variants={itemVariants}>
+                      <Card>
+                        <CardHeader className="pb-3">
+                          <CardTitle className="flex items-center gap-2 text-base">
+                            <TrendingDown className="h-4 w-4 text-orange-500" />
+                            Tendência de Despesas
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Direção:</span>
+                            <div className={`flex items-center gap-2 ${getTendenciaColor(analise.analise_tendencias.despesas?.tendencia, true)}`}>
+                              {getTendenciaIcon(analise.analise_tendencias.despesas?.tendencia)}
+                              <span className="font-medium capitalize">{analise.analise_tendencias.despesas?.tendencia}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Variação (3m):</span>
+                            <span className="font-semibold">{analise.analise_tendencias.despesas?.variacao_percentual}</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Previsão:</span>
+                            <span className="font-semibold text-orange-600">{analise.analise_tendencias.despesas?.previsao_proximo_mes}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground border-t pt-3">
+                            {analise.analise_tendencias.despesas?.observacao}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+
+                    <motion.div variants={itemVariants}>
+                      <Card>
+                        <CardHeader className="pb-3">
+                          <CardTitle className="flex items-center gap-2 text-base">
+                            <AlertTriangle className="h-4 w-4 text-destructive" />
+                            Tendência de Inadimplência
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Direção:</span>
+                            <div className={`flex items-center gap-2 ${getTendenciaColor(analise.analise_tendencias.inadimplencia?.tendencia, true)}`}>
+                              {getTendenciaIcon(analise.analise_tendencias.inadimplencia?.tendencia)}
+                              <span className="font-medium capitalize">{analise.analise_tendencias.inadimplencia?.tendencia}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Variação (3m):</span>
+                            <span className="font-semibold">{analise.analise_tendencias.inadimplencia?.variacao_percentual}</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Previsão:</span>
+                            <span className="font-semibold">{analise.analise_tendencias.inadimplencia?.previsao_proximo_mes}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground border-t pt-3">
+                            {analise.analise_tendencias.inadimplencia?.observacao}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+
+                    <motion.div variants={itemVariants}>
+                      <Card>
+                        <CardHeader className="pb-3">
+                          <CardTitle className="flex items-center gap-2 text-base">
+                            <PieChart className="h-4 w-4 text-purple-500" />
+                            Margem Líquida
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Atual:</span>
+                            <span className="font-bold text-xl">{analise.analise_tendencias.margem_liquida?.atual}</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Tendência:</span>
+                            <div className={`flex items-center gap-2 ${getTendenciaColor(analise.analise_tendencias.margem_liquida?.tendencia)}`}>
+                              {getTendenciaIcon(analise.analise_tendencias.margem_liquida?.tendencia)}
+                              <span className="font-medium capitalize">{analise.analise_tendencias.margem_liquida?.tendencia}</span>
+                            </div>
+                          </div>
+                          <p className="text-xs text-muted-foreground border-t pt-3">
+                            {analise.analise_tendencias.margem_liquida?.previsao}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  </div>
+                </>
+              )}
+            </TabsContent>
+
+            {/* Projeções */}
+            <TabsContent value="projecoes" className="mt-4 space-y-4">
+              <motion.div variants={itemVariants}>
+                <h3 className="mb-3 flex items-center gap-2 font-semibold">
+                  <Calendar className="h-4 w-4 text-primary" />
+                  Projeção de Fluxo de Caixa
+                </h3>
+                <div className="grid gap-4 md:grid-cols-3">
+                  {analise?.projecao_fluxo_caixa && Object.entries(analise.projecao_fluxo_caixa).map(([periodo, dados]) => (
+                    <Card key={periodo} className="overflow-hidden">
+                      <CardHeader className="bg-muted/50 py-3">
+                        <CardTitle className="text-sm">
+                          {periodo === 'proximos_7_dias' ? 'Próximos 7 dias' :
+                           periodo === 'proximos_30_dias' ? 'Próximos 30 dias' :
+                           'Próximos 90 dias'}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="py-4 space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">Entradas:</span>
+                          <span className="font-medium text-green-600">{dados.entradas_previstas}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">Saídas:</span>
+                          <span className="font-medium text-destructive">{dados.saidas_previstas}</span>
+                        </div>
+                        <div className="border-t pt-2 flex items-center justify-between">
+                          <span className="text-sm font-medium">Saldo:</span>
+                          <span className={`font-bold ${parseValor(dados.saldo_projetado) >= 0 ? 'text-green-600' : 'text-destructive'}`}>
+                            {dados.saldo_projetado}
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Recomendações */}
+              <motion.div variants={itemVariants}>
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <Lightbulb className="h-4 w-4 text-primary" />
+                      Recomendações Estratégicas
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2">
+                      {analise?.recomendacoes?.map((rec, i) => (
+                        <motion.li
+                          key={i}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.05 }}
+                          className="flex items-start gap-2 text-sm"
+                        >
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
+                          <span>{rec}</span>
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </TabsContent>
 
             {/* Alertas */}
-            <motion.div variants={itemVariants}>
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <AlertTriangle className="h-4 w-4 text-primary" />
-                    Alertas Identificados
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <AnimatePresence>
-                    {analise?.alertas?.length ? (
-                      <div className="space-y-3">
-                        {analise.alertas.slice(0, 4).map((alerta, i) => (
-                          <motion.div
-                            key={i}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.1 }}
-                            className="rounded-lg border bg-card p-3"
-                          >
-                            <div className="flex items-start justify-between gap-2">
-                              {getAlertaBadge(alerta.tipo)}
-                            </div>
-                            <p className="mt-2 text-sm">{alerta.mensagem}</p>
-                            <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                              <ArrowRight className="h-3 w-3" />
-                              {alerta.acao_recomendada}
-                            </p>
-                          </motion.div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-center text-sm text-muted-foreground py-4">
-                        Nenhum alerta identificado
-                      </p>
-                    )}
-                  </AnimatePresence>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
-
-          {/* Recomendações */}
-          <motion.div variants={itemVariants}>
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Lightbulb className="h-4 w-4 text-primary" />
-                  Recomendações Estratégicas
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {analise?.recomendacoes?.map((rec, i) => (
-                    <motion.li
-                      key={i}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                      className="flex items-start gap-2 text-sm"
-                    >
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
-                      <span>{rec}</span>
-                    </motion.li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          </motion.div>
+            <TabsContent value="alertas" className="mt-4">
+              <motion.div variants={itemVariants}>
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <AlertTriangle className="h-4 w-4 text-primary" />
+                      Alertas Identificados
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <AnimatePresence>
+                      {analise?.alertas?.length ? (
+                        <div className="space-y-3">
+                          {analise.alertas.map((alerta, i) => (
+                            <motion.div
+                              key={i}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: i * 0.1 }}
+                              className="rounded-lg border bg-card p-3"
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                {getAlertaBadge(alerta.tipo)}
+                              </div>
+                              <p className="mt-2 text-sm">{alerta.mensagem}</p>
+                              <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+                                <ArrowRight className="h-3 w-3" />
+                                {alerta.acao_recomendada}
+                              </p>
+                            </motion.div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-center text-sm text-muted-foreground py-4">
+                          Nenhum alerta identificado
+                        </p>
+                      )}
+                    </AnimatePresence>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
     </motion.div>
