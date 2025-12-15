@@ -43,6 +43,7 @@ interface NavItem {
 
 const baseNavItems: NavItem[] = [
   { label: 'Dashboard', icon: LayoutDashboard, href: '/' },
+  { label: 'Dashboard Empresa', icon: Building2, href: '/dashboard-empresa' },
   { label: 'EXPERT (IA)', icon: Bot, href: '/expert', highlight: true },
   { label: 'Contas a Receber', icon: ArrowDownCircle, href: '/contas-receber' },
   { label: 'Contas a Pagar', icon: ArrowUpCircle, href: '/contas-pagar' },
