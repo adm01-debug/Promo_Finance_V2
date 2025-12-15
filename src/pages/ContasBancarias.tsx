@@ -10,8 +10,6 @@ import {
   Edit,
   Trash2,
   RefreshCw,
-  ArrowUpRight,
-  ArrowDownRight,
   Wallet,
   PiggyBank,
   Landmark,
@@ -44,10 +42,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
+import { useContasBancarias, useEmpresas, ContaBancaria } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -79,6 +82,11 @@ export default function ContasBancarias() {
   const [showSaldos, setShowSaldos] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedEmpresa, setSelectedEmpresa] = useState<string>('all');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletingConta, setDeletingConta] = useState<ContaBancaria | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const contasFiltradas = selectedEmpresa === 'all' 
     ? contas 
@@ -97,11 +105,45 @@ export default function ContasBancarias() {
     return bancoLogos[banco] || { icon: Landmark, color: 'bg-gray-500' };
   };
 
+  const handleOpenDeleteDialog = (conta: ContaBancaria) => {
+    setDeletingConta(conta);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConta = async () => {
+    if (!deletingConta) return;
+    setIsDeleting(true);
+    
+    const { error } = await supabase
+      .from('contas_bancarias')
+      .update({ ativo: false })
+      .eq('id', deletingConta.id);
+    
+    setIsDeleting(false);
+    
+    if (error) {
+      toast.error('Erro ao excluir conta bancária');
+      return;
+    }
+    
+    toast.success('Conta bancária excluída com sucesso');
+    queryClient.invalidateQueries({ queryKey: ['contas-bancarias'] });
+    setDeleteDialogOpen(false);
+    setDeletingConta(null);
+  };
+
   if (isLoading) {
     return (
       <MainLayout>
-        <div className="flex items-center justify-center h-96">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Contas Bancárias</h1>
+              <p className="text-muted-foreground">Gerencie suas contas e acompanhe saldos em tempo real</p>
+            </div>
+          </div>
+          <LoadingSkeleton variant="stats" />
+          <LoadingSkeleton variant="cards" rows={2} columns={3} />
         </div>
       </MainLayout>
     );
@@ -334,7 +376,10 @@ export default function ContasBancarias() {
                               <Edit className="h-4 w-4 mr-2" />
                               Editar
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive">
+                            <DropdownMenuItem 
+                              className="text-destructive"
+                              onClick={() => handleOpenDeleteDialog(conta)}
+                            >
                               <Trash2 className="h-4 w-4 mr-2" />
                               Excluir
                             </DropdownMenuItem>
@@ -450,6 +495,19 @@ export default function ContasBancarias() {
             </CardContent>
           </Card>
         )}
+
+        {/* Confirm Delete Dialog */}
+        <ConfirmDialog
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          title="Excluir Conta Bancária"
+          description={`Tem certeza que deseja excluir a conta ${deletingConta?.banco} - ${deletingConta?.conta}? Esta ação irá desativar a conta.`}
+          confirmLabel="Excluir"
+          cancelLabel="Cancelar"
+          variant="danger"
+          isLoading={isDeleting}
+          onConfirm={handleDeleteConta}
+        />
       </div>
     </MainLayout>
   );
