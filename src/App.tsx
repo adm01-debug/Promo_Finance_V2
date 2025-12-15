@@ -29,6 +29,7 @@ import Clientes from "./pages/Clientes";
 import Fornecedores from "./pages/Fornecedores";
 import Demonstrativos from "./pages/Demonstrativos";
 import Aprovacoes from "./pages/Aprovacoes";
+import Expert from "./pages/Expert";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
               
               {/* Protected routes - All authenticated users */}
               <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+              <Route path="/expert" element={<ProtectedRoute><Expert /></ProtectedRoute>} />
               <Route path="/alertas" element={<ProtectedRoute><Alertas /></ProtectedRoute>} />
               <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
               
