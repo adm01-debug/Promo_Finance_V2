@@ -31,6 +31,7 @@ import Demonstrativos from "./pages/Demonstrativos";
 import Aprovacoes from "./pages/Aprovacoes";
 import Expert from "./pages/Expert";
 import DashboardEmpresa from "./pages/DashboardEmpresa";
+import BI from "./pages/BI";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +70,7 @@ const App = () => (
               <Route path="/demonstrativos" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><Demonstrativos /></ProtectedRoute>} />
               <Route path="/aprovacoes" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><Aprovacoes /></ProtectedRoute>} />
               <Route path="/dashboard-empresa" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><DashboardEmpresa /></ProtectedRoute>} />
+              <Route path="/bi" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><BI /></ProtectedRoute>} />
               
               {/* Protected routes - Admin only */}
               <Route path="/empresas" element={<ProtectedRoute requiredRoles={['admin']}><Empresas /></ProtectedRoute>} />
