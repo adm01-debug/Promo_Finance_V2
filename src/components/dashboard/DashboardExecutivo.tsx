@@ -24,6 +24,7 @@ import {
   Users,
   Loader2,
   RefreshCw,
+  Trophy,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -62,9 +63,10 @@ import {
 } from 'recharts';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { useEmpresas, useCentrosCusto, useContasBancarias, useContasPagar, useContasReceber } from '@/hooks/useFinancialData';
+import { useEmpresas, useCentrosCusto, useContasBancarias, useContasPagar, useContasReceber, useClientes } from '@/hooks/useFinancialData';
 import { useAprovacoesPendentesCount } from '@/hooks/useAprovacoesPendentesCount';
 import { PrevisaoIA } from './PrevisaoIA';
+import { PositionBadge, RankBadge, getRankFromScore } from '@/components/ui/rank-badge';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -90,9 +92,10 @@ export const DashboardExecutivo = () => {
   const { data: contasBancarias = [], isLoading: loadingBancos } = useContasBancarias();
   const { data: contasPagar = [], isLoading: loadingPagar } = useContasPagar();
   const { data: contasReceber = [], isLoading: loadingReceber } = useContasReceber();
+  const { data: clientes = [], isLoading: loadingClientes } = useClientes();
   const { count: aprovacoesPendentes } = useAprovacoesPendentesCount();
 
-  const isLoading = loadingEmpresas || loadingCC || loadingBancos || loadingPagar || loadingReceber;
+  const isLoading = loadingEmpresas || loadingCC || loadingBancos || loadingPagar || loadingReceber || loadingClientes;
 
   // Filtrar dados por empresa e centro de custo
   const contasPagarFiltradas = useMemo(() => {
@@ -217,6 +220,57 @@ export const DashboardExecutivo = () => {
       saldo: cc.receber - cc.pagar
     })).sort((a, b) => b.saldo - a.saldo);
   }, [contasPagarFiltradas, contasReceberFiltradas]);
+
+  // Top 10 clientes por receita gerada
+  const topClientesReceita = useMemo(() => {
+    const clienteReceitas = new Map<string, { 
+      id: string;
+      nome: string;
+      nomeFantasia: string | null;
+      receita: number;
+      pagos: number;
+      pendentes: number;
+      score: number | null;
+    }>();
+
+    contasReceberFiltradas.forEach(conta => {
+      const clienteId = conta.cliente_id || 'sem-cliente';
+      const clienteNome = conta.cliente_nome || 'Cliente não identificado';
+      
+      // Encontrar dados do cliente
+      const clienteData = clientes.find(c => c.id === clienteId);
+      
+      if (!clienteReceitas.has(clienteId)) {
+        clienteReceitas.set(clienteId, {
+          id: clienteId,
+          nome: clienteNome,
+          nomeFantasia: clienteData?.nome_fantasia || null,
+          receita: 0,
+          pagos: 0,
+          pendentes: 0,
+          score: clienteData?.score || null,
+        });
+      }
+
+      const current = clienteReceitas.get(clienteId)!;
+      current.receita += conta.valor;
+      
+      if (conta.status === 'pago') {
+        current.pagos += conta.valor_recebido || conta.valor;
+      } else if (conta.status !== 'cancelado') {
+        current.pendentes += conta.valor - (conta.valor_recebido || 0);
+      }
+    });
+
+    return Array.from(clienteReceitas.values())
+      .sort((a, b) => b.receita - a.receita)
+      .slice(0, 10)
+      .map((cliente, index) => ({
+        ...cliente,
+        posicao: index + 1,
+        adimplencia: cliente.receita > 0 ? ((cliente.pagos / cliente.receita) * 100) : 0,
+      }));
+  }, [contasReceberFiltradas, clientes]);
 
   // Fluxo de caixa projetado (próximos 30 dias)
   const fluxoCaixaProjetado = useMemo(() => {
@@ -632,17 +686,89 @@ export const DashboardExecutivo = () => {
         </Card>
       </motion.div>
 
-      {/* Status das Contas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Leaderboard de Clientes e Status das Contas */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Leaderboard Top 10 Clientes */}
+        <motion.div variants={itemVariants} className="lg:col-span-1">
+          <Card className="h-[450px]">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Trophy className="h-5 w-5 text-coins" />
+                Top 10 Clientes
+              </CardTitle>
+              <CardDescription>Por receita gerada</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2 overflow-y-auto max-h-[360px] pr-2">
+              {topClientesReceita.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8">Nenhum dado disponível</p>
+              ) : (
+                topClientesReceita.map((cliente, index) => (
+                  <motion.div
+                    key={cliente.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className={cn(
+                      "flex items-center gap-3 p-3 rounded-lg transition-all hover:scale-[1.02]",
+                      index === 0 && "bg-gradient-to-r from-coins/20 to-coins/5 border border-coins/30",
+                      index === 1 && "bg-gradient-to-r from-muted/80 to-muted/30 border border-border",
+                      index === 2 && "bg-gradient-to-r from-orange-500/20 to-orange-500/5 border border-orange-500/30",
+                      index > 2 && "bg-muted/30 hover:bg-muted/50"
+                    )}
+                  >
+                    <PositionBadge position={cliente.posicao} size="sm" showIcon={index < 3} />
+                    
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm truncate">
+                        {cliente.nomeFantasia || cliente.nome}
+                      </p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-xs text-muted-foreground">
+                          Adimplência: 
+                        </span>
+                        <RankBadge
+                          rank={getRankFromScore(cliente.adimplencia, { gold: 90, silver: 70, bronze: 50 })}
+                          size="sm"
+                          label={`${cliente.adimplencia.toFixed(0)}%`}
+                          showIcon={false}
+                          animate={false}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="text-right">
+                      <p className={cn(
+                        "font-bold text-sm",
+                        index === 0 && "text-coins glow-coins",
+                        index === 1 && "text-foreground",
+                        index === 2 && "text-orange-500",
+                        index > 2 && "text-muted-foreground"
+                      )}>
+                        {formatCurrency(cliente.receita)}
+                      </p>
+                      {cliente.pendentes > 0 && (
+                        <p className="text-xs text-warning">
+                          {formatCurrency(cliente.pendentes)} pendente
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+                ))
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Status das Contas */}
         <motion.div variants={itemVariants}>
-          <Card className="h-[350px]">
+          <Card className="h-[450px]">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center gap-2">
                 <PieChartIcon className="h-5 w-5 text-warning" />
                 Status Contas a Pagar
               </CardTitle>
             </CardHeader>
-            <CardContent className="h-[260px]">
+            <CardContent className="h-[360px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie 
@@ -669,7 +795,7 @@ export const DashboardExecutivo = () => {
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <Card className="h-[350px]">
+          <Card className="h-[450px]">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-primary" />
@@ -677,7 +803,7 @@ export const DashboardExecutivo = () => {
               </CardTitle>
               <CardDescription>Por volume financeiro</CardDescription>
             </CardHeader>
-            <CardContent className="h-[260px]">
+            <CardContent className="h-[360px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={dadosPorCentroCusto.slice(0, 5)} layout="vertical">
                   <XAxis type="number" tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} fontSize={11} />
