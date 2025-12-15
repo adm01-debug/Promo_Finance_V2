@@ -24,6 +24,7 @@ import {
   Truck,
   FileSpreadsheet,
   ShieldCheck,
+  Bot,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -36,11 +37,13 @@ interface NavItem {
   href: string;
   badge?: number;
   badgeKey?: string;
+  highlight?: boolean;
   children?: { label: string; href: string }[];
 }
 
 const baseNavItems: NavItem[] = [
   { label: 'Dashboard', icon: LayoutDashboard, href: '/' },
+  { label: 'EXPERT (IA)', icon: Bot, href: '/expert', highlight: true },
   { label: 'Contas a Receber', icon: ArrowDownCircle, href: '/contas-receber' },
   { label: 'Contas a Pagar', icon: ArrowUpCircle, href: '/contas-pagar' },
   { label: 'Cobrança', icon: Receipt, href: '/cobrancas' },
@@ -92,13 +95,16 @@ export const Sidebar = () => {
           'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative',
           isActive
             ? 'bg-primary text-primary-foreground shadow-glow-primary'
-            : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+            : item.highlight
+              ? 'bg-gradient-to-r from-accent/20 to-primary/20 text-accent-foreground hover:from-accent/30 hover:to-primary/30 border border-accent/30'
+              : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
         )}
       >
         <Icon
           className={cn(
             'h-5 w-5 flex-shrink-0 transition-transform duration-200',
-            !isActive && 'group-hover:scale-110'
+            !isActive && 'group-hover:scale-110',
+            item.highlight && !isActive && 'text-accent'
           )}
         />
         <AnimatePresence mode="wait">
