@@ -15,7 +15,9 @@ import {
   LineChart as LineChartIcon,
   Calendar,
   Filter,
-  CalendarIcon
+  CalendarIcon,
+  Trophy,
+  Crown
 } from "lucide-react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -49,6 +51,7 @@ import { useEmpresas, useContasPagar, useContasReceber, useContasBancarias, useC
 import { format, subMonths, startOfMonth, endOfMonth, differenceInDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { formatCurrency } from "@/lib/formatters";
+import { PositionBadge, getRankFromScore, RankBadge, RankLegend } from "@/components/ui/rank-badge";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -763,6 +766,88 @@ export default function BI() {
           </TabsContent>
 
           <TabsContent value="empresas" className="space-y-4">
+            {/* Ranking Cards */}
+            {comparativoEmpresas.length > 0 && (
+              <div className="grid md:grid-cols-3 gap-4">
+                {comparativoEmpresas.slice(0, 3).map((emp, index) => (
+                  <motion.div
+                    key={emp.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <Card className={cn(
+                      "relative overflow-hidden transition-all duration-300",
+                      index === 0 && "ring-2 ring-rank-gold/50 hover:shadow-glow-coins",
+                      index === 1 && "ring-1 ring-rank-silver/30",
+                      index === 2 && "ring-1 ring-rank-bronze/30"
+                    )}>
+                      <div className={cn(
+                        "absolute top-0 left-0 right-0 h-1",
+                        index === 0 && "bg-gradient-to-r from-yellow-400 to-amber-500",
+                        index === 1 && "bg-gradient-to-r from-gray-300 to-gray-400",
+                        index === 2 && "bg-gradient-to-r from-amber-600 to-amber-700"
+                      )} />
+                      <CardHeader className="pb-2">
+                        <div className="flex items-center justify-between">
+                          <PositionBadge position={index + 1} size="lg" />
+                          {index === 0 && (
+                            <Crown className="w-6 h-6 text-yellow-500 animate-wiggle" />
+                          )}
+                        </div>
+                        <CardTitle className="text-lg mt-2 truncate" title={emp.nome}>
+                          {emp.nome}
+                        </CardTitle>
+                        <CardDescription className="text-xs">{emp.cnpj}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <p className="text-xs text-muted-foreground">Lucro</p>
+                            <p className={cn(
+                              "text-lg font-bold",
+                              emp.lucro >= 0 ? "text-success" : "text-destructive"
+                            )}>
+                              {formatCurrency(emp.lucro)}
+                            </p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-xs text-muted-foreground">Margem</p>
+                            <RankBadge 
+                              rank={getRankFromScore(emp.margem, { gold: 25, silver: 15, bronze: 5 })}
+                              label={`${emp.margem.toFixed(1)}%`}
+                              showIcon={false}
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <p className="text-xs text-muted-foreground">Liquidez</p>
+                            <RankBadge 
+                              rank={getRankFromScore(emp.liquidez * 100, { gold: 200, silver: 150, bronze: 100 })}
+                              label={`${emp.liquidez.toFixed(2)}x`}
+                              showIcon={false}
+                              size="sm"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-xs text-muted-foreground">Adimplência</p>
+                            <RankBadge 
+                              rank={getRankFromScore(100 - emp.inadimplencia, { gold: 95, silver: 85, bronze: 70 })}
+                              label={`${(100 - emp.inadimplencia).toFixed(1)}%`}
+                              showIcon={false}
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+
             {/* Chart comparison */}
             <Card>
               <CardHeader>
@@ -792,11 +877,16 @@ export default function BI() {
             {/* KPIs Table comparison */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5" />
-                  KPIs por Empresa (Lado a Lado)
-                </CardTitle>
-                <CardDescription>Comparativo detalhado de indicadores financeiros</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <BarChart3 className="w-5 h-5" />
+                      KPIs por Empresa (Lado a Lado)
+                    </CardTitle>
+                    <CardDescription>Comparativo detalhado de indicadores financeiros</CardDescription>
+                  </div>
+                  <RankLegend />
+                </div>
               </CardHeader>
               <CardContent>
                 {comparativoEmpresas.length > 0 ? (
@@ -805,10 +895,13 @@ export default function BI() {
                       <thead>
                         <tr className="bg-muted/50">
                           <th className="text-left py-3 px-4 font-semibold border-b sticky left-0 bg-muted/50 z-10">Indicador</th>
-                          {comparativoEmpresas.map((emp) => (
-                            <th key={emp.id} className="text-right py-3 px-4 font-semibold border-b min-w-[150px]">
-                              <div className="truncate max-w-[140px]" title={emp.nome}>{emp.nome}</div>
-                              <div className="text-xs font-normal text-muted-foreground">{emp.cnpj}</div>
+                          {comparativoEmpresas.map((emp, index) => (
+                            <th key={emp.id} className="text-center py-3 px-4 font-semibold border-b min-w-[150px]">
+                              <div className="flex flex-col items-center gap-1">
+                                <PositionBadge position={index + 1} size="sm" />
+                                <div className="truncate max-w-[140px] mt-1" title={emp.nome}>{emp.nome}</div>
+                                <div className="text-xs font-normal text-muted-foreground">{emp.cnpj}</div>
+                              </div>
                             </th>
                           ))}
                         </tr>
