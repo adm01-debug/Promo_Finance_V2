@@ -6,7 +6,6 @@ import {
   Search,
   MoreVertical,
   Edit,
-  Trash2,
   CheckCircle2,
   XCircle,
   FileText,
@@ -14,22 +13,15 @@ import {
   TrendingUp,
   TrendingDown,
   Users,
-  MapPin,
-  Phone,
-  Mail,
-  Globe,
   Copy,
-  ExternalLink,
   Star,
-  StarOff,
-  Loader2
+  Loader2,
+  Trash2
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,7 +34,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   Table,
@@ -52,8 +43,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useEmpresas, useContasBancarias, useContasReceber, useContasPagar } from '@/hooks/useFinancialData';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { useContasBancarias, useContasReceber, useContasPagar } from '@/hooks/useFinancialData';
+import { useAllEmpresas, useExcluirEmpresa, useReativarEmpresa, type Empresa } from '@/hooks/useEmpresas';
+import { EmpresaForm } from '@/components/empresas/EmpresaForm';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -72,15 +66,20 @@ const itemVariants = {
 };
 
 export default function Empresas() {
-  const { data: empresas = [], isLoading } = useEmpresas();
+  const { data: empresas = [], isLoading } = useAllEmpresas();
   const { data: contasBancarias = [] } = useContasBancarias();
   const { data: contasReceber = [] } = useContasReceber();
   const { data: contasPagar = [] } = useContasPagar();
+  const excluirEmpresa = useExcluirEmpresa();
+  const reativarEmpresa = useReativarEmpresa();
   
   const [searchTerm, setSearchTerm] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingEmpresa, setEditingEmpresa] = useState<Empresa | null>(null);
   const [selectedEmpresa, setSelectedEmpresa] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [empresaToDelete, setEmpresaToDelete] = useState<Empresa | null>(null);
   const { toast } = useToast();
 
   const empresasFiltradas = useMemo(() => empresas.filter(e => 
@@ -111,16 +110,12 @@ export default function Empresas() {
     empresasAtivas: empresas.filter(e => e.ativo).length
   }), [empresas, contasBancarias, contasReceber, contasPagar]);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
   const formatCNPJ = (cnpj: string) => {
-    return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+    const digits = cnpj.replace(/\D/g, '');
+    if (digits.length === 14) {
+      return digits.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+    }
+    return cnpj;
   };
 
   const copyToClipboard = (text: string) => {
@@ -131,21 +126,44 @@ export default function Empresas() {
     });
   };
 
-  const toggleFavorite = (id: string) => {
-    // Simulated favorite toggle
-    toast({
-      title: "Empresa marcada como favorita",
-      description: "Esta empresa será exibida primeiro na lista",
-    });
+  const handleOpenDialog = (empresa?: Empresa) => {
+    setEditingEmpresa(empresa || null);
+    setDialogOpen(true);
   };
 
-  const toggleAtivo = (id: string) => {
-    // TODO: Implement via API
-    toast({
-      title: "Ação não implementada",
-      description: "A atualização de status será implementada via API",
-    });
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    setEditingEmpresa(null);
   };
+
+  const handleFormSuccess = () => {
+    handleCloseDialog();
+  };
+
+  const handleToggleAtivo = async (empresa: Empresa) => {
+    if (empresa.ativo) {
+      setEmpresaToDelete(empresa);
+      setDeleteConfirmOpen(true);
+    } else {
+      await reativarEmpresa.mutateAsync(empresa.id);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (empresaToDelete) {
+      await excluirEmpresa.mutateAsync(empresaToDelete.id);
+      setDeleteConfirmOpen(false);
+      setEmpresaToDelete(null);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -157,61 +175,38 @@ export default function Empresas() {
             Gerencie múltiplas empresas e consolide dados financeiros
           </p>
         </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Nova Empresa
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Cadastrar Nova Empresa</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>CNPJ</Label>
-                  <Input placeholder="00.000.000/0000-00" />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Inscrição Estadual</Label>
-                  <Input placeholder="000.000.000.000" />
-                </div>
-              </div>
-              <div className="grid gap-2">
-                <Label>Razão Social</Label>
-                <Input placeholder="Razão Social da Empresa LTDA" />
-              </div>
-              <div className="grid gap-2">
-                <Label>Nome Fantasia</Label>
-                <Input placeholder="Nome Fantasia" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>Telefone</Label>
-                  <Input placeholder="(00) 0000-0000" />
-                </div>
-                <div className="grid gap-2">
-                  <Label>E-mail</Label>
-                  <Input type="email" placeholder="contato@empresa.com" />
-                </div>
-              </div>
-              <div className="grid gap-2">
-                <Label>Endereço</Label>
-                <Input placeholder="Rua, Número, Bairro - Cidade/UF" />
-              </div>
-              <div className="flex items-center justify-between pt-2">
-                <div className="flex items-center gap-2">
-                  <Switch id="ativo" defaultChecked />
-                  <Label htmlFor="ativo">Empresa Ativa</Label>
-                </div>
-                <Button className="w-32">Cadastrar</Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <Button onClick={() => handleOpenDialog()}>
+          <Plus className="h-4 w-4 mr-2" />
+          Nova Empresa
+        </Button>
       </div>
+
+      {/* Dialog de Cadastro/Edição */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {editingEmpresa ? 'Editar Empresa' : 'Cadastrar Nova Empresa'}
+            </DialogTitle>
+          </DialogHeader>
+          <EmpresaForm
+            empresa={editingEmpresa}
+            onSuccess={handleFormSuccess}
+            onCancel={handleCloseDialog}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirmação de Exclusão */}
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        title="Desativar Empresa"
+        description={`Tem certeza que deseja desativar a empresa "${empresaToDelete?.nome_fantasia || empresaToDelete?.razao_social}"? Ela não aparecerá mais nas listagens, mas os dados serão mantidos.`}
+        onConfirm={handleConfirmDelete}
+        confirmLabel="Desativar"
+        variant="danger"
+      />
 
       {/* KPIs Consolidados */}
       <motion.div 
@@ -345,12 +340,8 @@ export default function Empresas() {
                             <CheckCircle2 className="h-4 w-4 mr-2" />
                             Selecionar Contexto
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => toggleFavorite(empresa.id)}>
-                            <Star className="h-4 w-4 mr-2" />
-                            Favoritar
-                          </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleOpenDialog(empresa)}>
                             <Edit className="h-4 w-4 mr-2" />
                             Editar
                           </DropdownMenuItem>
@@ -360,7 +351,7 @@ export default function Empresas() {
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem 
-                            onClick={() => toggleAtivo(empresa.id)}
+                            onClick={() => handleToggleAtivo(empresa)}
                             className={empresa.ativo ? "text-destructive" : "text-green-600"}
                           >
                             {empresa.ativo ? (
@@ -425,7 +416,7 @@ export default function Empresas() {
           <motion.div variants={itemVariants}>
             <Card 
               className="border-dashed hover:border-primary/50 transition-colors cursor-pointer h-full min-h-[280px] flex items-center justify-center"
-              onClick={() => setDialogOpen(true)}
+              onClick={() => handleOpenDialog()}
             >
               <CardContent className="flex flex-col items-center justify-center text-center p-6">
                 <div className="p-4 rounded-full bg-muted mb-4">
@@ -509,12 +500,12 @@ export default function Empresas() {
                             <CheckCircle2 className="h-4 w-4 mr-2" />
                             Selecionar
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleOpenDialog(empresa)}>
                             <Edit className="h-4 w-4 mr-2" />
                             Editar
                           </DropdownMenuItem>
                           <DropdownMenuItem 
-                            onClick={() => toggleAtivo(empresa.id)}
+                            onClick={() => handleToggleAtivo(empresa)}
                             className={empresa.ativo ? "text-destructive" : "text-green-600"}
                           >
                             {empresa.ativo ? "Desativar" : "Ativar"}
