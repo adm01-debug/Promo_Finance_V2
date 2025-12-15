@@ -25,6 +25,8 @@ import {
   Loader2,
   RefreshCw,
   Trophy,
+  Flame,
+  Zap,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -272,6 +274,72 @@ export const DashboardExecutivo = () => {
       }));
   }, [contasReceberFiltradas, clientes]);
 
+  // Cálculo do streak de dias consecutivos sem inadimplência
+  const streakData = useMemo(() => {
+    // Ordenar contas receber por data de vencimento (mais recente primeiro)
+    const contasOrdenadas = [...contasReceberFiltradas]
+      .filter(c => c.status !== 'cancelado')
+      .sort((a, b) => new Date(b.data_vencimento).getTime() - new Date(a.data_vencimento).getTime());
+
+    let streakDias = 0;
+    let ultimaInadimplencia: Date | null = null;
+    const hojeDate = new Date();
+    hojeDate.setHours(0, 0, 0, 0);
+
+    // Encontrar a última inadimplência
+    for (const conta of contasOrdenadas) {
+      const dataVenc = new Date(conta.data_vencimento);
+      dataVenc.setHours(0, 0, 0, 0);
+      
+      if (conta.status === 'vencido' && dataVenc < hojeDate) {
+        ultimaInadimplencia = dataVenc;
+        break;
+      }
+    }
+
+    if (ultimaInadimplencia) {
+      // Calcular dias desde a última inadimplência
+      const diffTime = hojeDate.getTime() - ultimaInadimplencia.getTime();
+      streakDias = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    } else {
+      // Se nunca houve inadimplência, calcular desde a primeira conta
+      const primeiraContaPaga = contasOrdenadas
+        .filter(c => c.status === 'pago')
+        .sort((a, b) => new Date(a.data_vencimento).getTime() - new Date(b.data_vencimento).getTime())[0];
+      
+      if (primeiraContaPaga) {
+        const primeiraData = new Date(primeiraContaPaga.data_vencimento);
+        const diffTime = hojeDate.getTime() - primeiraData.getTime();
+        streakDias = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+      }
+    }
+
+    // Determinar nível do streak
+    let nivel = 'bronze';
+    let proximoNivel = 30;
+    if (streakDias >= 90) {
+      nivel = 'gold';
+      proximoNivel = 180;
+    } else if (streakDias >= 30) {
+      nivel = 'silver';
+      proximoNivel = 90;
+    }
+
+    const progresso = nivel === 'gold' 
+      ? (streakDias / proximoNivel) * 100 
+      : nivel === 'silver' 
+        ? ((streakDias - 30) / (90 - 30)) * 100 
+        : (streakDias / 30) * 100;
+
+    return {
+      dias: streakDias,
+      nivel,
+      proximoNivel,
+      progresso: Math.min(100, Math.max(0, progresso)),
+      temInadimplencia: vencidasReceber.length > 0,
+    };
+  }, [contasReceberFiltradas, vencidasReceber]);
+
   // Fluxo de caixa projetado (próximos 30 dias)
   const fluxoCaixaProjetado = useMemo(() => {
     const dias = parseInt(periodoFluxo);
@@ -441,76 +509,181 @@ export const DashboardExecutivo = () => {
         </Link>
       </motion.div>
 
-      {/* KPIs Secundários */}
-      <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <Building2 className="h-4 w-4 text-primary" />
+      {/* Streak Card + KPIs Secundários */}
+      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        {/* Streak Card */}
+        <Card className={cn(
+          "p-4 col-span-1 overflow-hidden relative",
+          streakData.temInadimplencia 
+            ? "bg-gradient-to-br from-destructive/10 to-background border-destructive/30"
+            : streakData.nivel === 'gold' 
+              ? "bg-gradient-to-br from-coins/20 to-coins/5 border-coins/30"
+              : streakData.nivel === 'silver'
+                ? "bg-gradient-to-br from-muted to-background"
+                : "bg-gradient-to-br from-orange-500/20 to-orange-500/5 border-orange-500/30"
+        )}>
+          {/* Background animation */}
+          {!streakData.temInadimplencia && streakData.dias > 0 && (
+            <div className="absolute inset-0 opacity-10">
+              <div className={cn(
+                "absolute top-2 right-2 h-16 w-16 rounded-full blur-xl",
+                streakData.nivel === 'gold' && "bg-coins animate-pulse",
+                streakData.nivel === 'silver' && "bg-foreground/50",
+                streakData.nivel === 'bronze' && "bg-orange-500"
+              )} />
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Empresas</p>
-              <p className="text-lg font-bold">{empresas.length}</p>
+          )}
+          
+          <div className="relative z-10 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className={cn(
+                  "p-2 rounded-lg",
+                  streakData.temInadimplencia 
+                    ? "bg-destructive/20"
+                    : streakData.nivel === 'gold' 
+                      ? "bg-coins/20"
+                      : streakData.nivel === 'silver'
+                        ? "bg-foreground/10"
+                        : "bg-orange-500/20"
+                )}>
+                  <Flame className={cn(
+                    "h-5 w-5",
+                    streakData.temInadimplencia 
+                      ? "text-destructive"
+                      : streakData.nivel === 'gold' 
+                        ? "text-coins animate-fire-pulse"
+                        : streakData.nivel === 'silver'
+                          ? "text-foreground"
+                          : "text-orange-500"
+                  )} />
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground">Streak de Adimplência</p>
+                  <p className={cn(
+                    "text-2xl font-bold font-display",
+                    streakData.temInadimplencia 
+                      ? "text-destructive"
+                      : streakData.nivel === 'gold' 
+                        ? "text-coins glow-coins"
+                        : streakData.nivel === 'silver'
+                          ? "text-foreground"
+                          : "text-orange-500"
+                  )}>
+                    {streakData.dias} dias
+                  </p>
+                </div>
+              </div>
+              
+              {!streakData.temInadimplencia && streakData.dias > 0 && (
+                <div className={cn(
+                  "flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold",
+                  streakData.nivel === 'gold' && "bg-coins/20 text-coins",
+                  streakData.nivel === 'silver' && "bg-foreground/10 text-foreground",
+                  streakData.nivel === 'bronze' && "bg-orange-500/20 text-orange-500"
+                )}>
+                  <Zap className="h-3 w-3" />
+                  {streakData.nivel === 'gold' ? 'Ouro' : streakData.nivel === 'silver' ? 'Prata' : 'Bronze'}
+                </div>
+              )}
             </div>
+            
+            {!streakData.temInadimplencia && streakData.nivel !== 'gold' && (
+              <div className="space-y-1">
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Próximo nível</span>
+                  <span>{streakData.proximoNivel} dias</span>
+                </div>
+                <Progress 
+                  value={streakData.progresso} 
+                  className={cn(
+                    "h-2",
+                    streakData.nivel === 'silver' && "[&>div]:bg-coins",
+                    streakData.nivel === 'bronze' && "[&>div]:bg-foreground/60"
+                  )}
+                />
+              </div>
+            )}
+            
+            {streakData.temInadimplencia && (
+              <p className="text-xs text-destructive">
+                Streak interrompido! Regularize as pendências para reiniciar.
+              </p>
+            )}
           </div>
         </Card>
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-secondary/10">
-              <CreditCard className="h-4 w-4 text-secondary" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Contas Bancárias</p>
-              <p className="text-lg font-bold">{contasBancarias.length}</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-success/10">
-              <CheckCircle2 className="h-4 w-4 text-success" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Receber Hoje</p>
-              <p className="text-lg font-bold">{venceHojeReceber.length}</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-warning/10">
-              <Clock className="h-4 w-4 text-warning" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Pagar Hoje</p>
-              <p className="text-lg font-bold">{venceHojePagar.length}</p>
-            </div>
-          </div>
-        </Card>
-        <Link to="/aprovacoes">
-          <Card className={cn("p-4 cursor-pointer hover:shadow-md transition-all", aprovacoesPendentes > 0 && "ring-2 ring-warning/50")}>
+
+        {/* KPIs Secundários */}
+        <div className="col-span-1 lg:col-span-3 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <Card className="p-4">
             <div className="flex items-center gap-3">
-              <div className={cn("p-2 rounded-lg", aprovacoesPendentes > 0 ? "bg-warning/10" : "bg-muted")}>
-                <ShieldAlert className={cn("h-4 w-4", aprovacoesPendentes > 0 ? "text-warning" : "text-muted-foreground")} />
+              <div className="p-2 rounded-lg bg-primary/10">
+                <Building2 className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Aprovações</p>
-                <p className={cn("text-lg font-bold", aprovacoesPendentes > 0 && "text-warning")}>{aprovacoesPendentes}</p>
+                <p className="text-xs text-muted-foreground">Empresas</p>
+                <p className="text-lg font-bold">{empresas.length}</p>
               </div>
             </div>
           </Card>
-        </Link>
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-destructive/10">
-              <AlertTriangle className="h-4 w-4 text-destructive" />
+          <Card className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-secondary/10">
+                <CreditCard className="h-4 w-4 text-secondary" />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Contas Bancárias</p>
+                <p className="text-lg font-bold">{contasBancarias.length}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Vencidas</p>
-              <p className="text-lg font-bold text-destructive">{vencidasReceber.length + vencidasPagar.length}</p>
+          </Card>
+          <Card className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-success/10">
+                <CheckCircle2 className="h-4 w-4 text-success" />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Receber Hoje</p>
+                <p className="text-lg font-bold">{venceHojeReceber.length}</p>
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+          <Card className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-warning/10">
+                <Clock className="h-4 w-4 text-warning" />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Pagar Hoje</p>
+                <p className="text-lg font-bold">{venceHojePagar.length}</p>
+              </div>
+            </div>
+          </Card>
+          <Link to="/aprovacoes">
+            <Card className={cn("p-4 cursor-pointer hover:shadow-md transition-all h-full", aprovacoesPendentes > 0 && "ring-2 ring-warning/50")}>
+              <div className="flex items-center gap-3">
+                <div className={cn("p-2 rounded-lg", aprovacoesPendentes > 0 ? "bg-warning/10" : "bg-muted")}>
+                  <ShieldAlert className={cn("h-4 w-4", aprovacoesPendentes > 0 ? "text-warning" : "text-muted-foreground")} />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Aprovações</p>
+                  <p className={cn("text-lg font-bold", aprovacoesPendentes > 0 && "text-warning")}>{aprovacoesPendentes}</p>
+                </div>
+              </div>
+            </Card>
+          </Link>
+          <Card className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-destructive/10">
+                <AlertTriangle className="h-4 w-4 text-destructive" />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Vencidas</p>
+                <p className="text-lg font-bold text-destructive">{vencidasReceber.length + vencidasPagar.length}</p>
+              </div>
+            </div>
+          </Card>
+        </div>
       </motion.div>
 
       {/* Gráficos Principais */}
