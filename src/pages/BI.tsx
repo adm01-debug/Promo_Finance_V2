@@ -14,11 +14,16 @@ import {
   BarChart3,
   LineChart as LineChartIcon,
   Calendar,
-  Filter
+  Filter,
+  CalendarIcon
 } from "lucide-react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -60,6 +65,9 @@ const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3
 export default function BI() {
   const [periodo, setPeriodo] = useState("6");
   const [empresaId, setEmpresaId] = useState<string>("todas");
+  const [dataInicio, setDataInicio] = useState<Date | undefined>(undefined);
+  const [dataFim, setDataFim] = useState<Date | undefined>(undefined);
+  const [usarPeriodoCustom, setUsarPeriodoCustom] = useState(false);
   
   const { data: empresas = [] } = useEmpresas();
   const { data: contasPagar = [] } = useContasPagar();
@@ -130,37 +138,80 @@ export default function BI() {
     };
   }, [filteredContas, filteredReceber, filteredPagar, clientes]);
 
+  // Date range for filtering
+  const dateRange = useMemo(() => {
+    if (usarPeriodoCustom && dataInicio && dataFim) {
+      return { inicio: dataInicio, fim: dataFim };
+    }
+    const meses = parseInt(periodo);
+    return { 
+      inicio: startOfMonth(subMonths(new Date(), meses - 1)), 
+      fim: endOfMonth(new Date()) 
+    };
+  }, [usarPeriodoCustom, dataInicio, dataFim, periodo]);
+
   // Monthly evolution data
   const evolucaoMensal = useMemo(() => {
-    const meses = parseInt(periodo);
     const data = [];
     
-    for (let i = meses - 1; i >= 0; i--) {
-      const mesRef = subMonths(new Date(), i);
-      const inicio = startOfMonth(mesRef);
-      const fim = endOfMonth(mesRef);
+    if (usarPeriodoCustom && dataInicio && dataFim) {
+      // Custom period: group by month within range
+      let current = startOfMonth(dataInicio);
+      const endDate = endOfMonth(dataFim);
       
-      const receitas = filteredReceber
-        .filter(c => c.status === 'pago' && c.data_recebimento && 
-          new Date(c.data_recebimento) >= inicio && new Date(c.data_recebimento) <= fim)
-        .reduce((acc, c) => acc + (c.valor_recebido || c.valor), 0);
-      
-      const despesas = filteredPagar
-        .filter(c => c.status === 'pago' && c.data_pagamento &&
-          new Date(c.data_pagamento) >= inicio && new Date(c.data_pagamento) <= fim)
-        .reduce((acc, c) => acc + (c.valor_pago || c.valor), 0);
-      
-      data.push({
-        mes: format(mesRef, "MMM/yy", { locale: ptBR }),
-        receitas,
-        despesas,
-        lucro: receitas - despesas,
-        margem: receitas > 0 ? ((receitas - despesas) / receitas) * 100 : 0
-      });
+      while (current <= endDate) {
+        const inicio = startOfMonth(current);
+        const fim = endOfMonth(current);
+        
+        const receitas = filteredReceber
+          .filter(c => c.status === 'pago' && c.data_recebimento && 
+            new Date(c.data_recebimento) >= inicio && new Date(c.data_recebimento) <= fim)
+          .reduce((acc, c) => acc + (c.valor_recebido || c.valor), 0);
+        
+        const despesas = filteredPagar
+          .filter(c => c.status === 'pago' && c.data_pagamento &&
+            new Date(c.data_pagamento) >= inicio && new Date(c.data_pagamento) <= fim)
+          .reduce((acc, c) => acc + (c.valor_pago || c.valor), 0);
+        
+        data.push({
+          mes: format(current, "MMM/yy", { locale: ptBR }),
+          receitas,
+          despesas,
+          lucro: receitas - despesas,
+          margem: receitas > 0 ? ((receitas - despesas) / receitas) * 100 : 0
+        });
+        
+        current = subMonths(current, -1);
+      }
+    } else {
+      const meses = parseInt(periodo);
+      for (let i = meses - 1; i >= 0; i--) {
+        const mesRef = subMonths(new Date(), i);
+        const inicio = startOfMonth(mesRef);
+        const fim = endOfMonth(mesRef);
+        
+        const receitas = filteredReceber
+          .filter(c => c.status === 'pago' && c.data_recebimento && 
+            new Date(c.data_recebimento) >= inicio && new Date(c.data_recebimento) <= fim)
+          .reduce((acc, c) => acc + (c.valor_recebido || c.valor), 0);
+        
+        const despesas = filteredPagar
+          .filter(c => c.status === 'pago' && c.data_pagamento &&
+            new Date(c.data_pagamento) >= inicio && new Date(c.data_pagamento) <= fim)
+          .reduce((acc, c) => acc + (c.valor_pago || c.valor), 0);
+        
+        data.push({
+          mes: format(mesRef, "MMM/yy", { locale: ptBR }),
+          receitas,
+          despesas,
+          lucro: receitas - despesas,
+          margem: receitas > 0 ? ((receitas - despesas) / receitas) * 100 : 0
+        });
+      }
     }
     
     return data;
-  }, [filteredReceber, filteredPagar, periodo]);
+  }, [filteredReceber, filteredPagar, periodo, usarPeriodoCustom, dataInicio, dataFim]);
 
   // Status distribution
   const statusReceber = useMemo(() => {
@@ -285,8 +336,17 @@ export default function BI() {
               </SelectContent>
             </Select>
 
-            <Select value={periodo} onValueChange={setPeriodo}>
-              <SelectTrigger className="w-[140px]">
+            <Select value={usarPeriodoCustom ? "custom" : periodo} onValueChange={(val) => {
+              if (val === "custom") {
+                setUsarPeriodoCustom(true);
+              } else {
+                setUsarPeriodoCustom(false);
+                setPeriodo(val);
+                setDataInicio(undefined);
+                setDataFim(undefined);
+              }
+            }}>
+              <SelectTrigger className="w-[160px]">
                 <Calendar className="w-4 h-4 mr-2" />
                 <SelectValue />
               </SelectTrigger>
@@ -294,8 +354,61 @@ export default function BI() {
                 <SelectItem value="3">3 meses</SelectItem>
                 <SelectItem value="6">6 meses</SelectItem>
                 <SelectItem value="12">12 meses</SelectItem>
+                <SelectItem value="custom">Personalizado</SelectItem>
               </SelectContent>
             </Select>
+
+            {usarPeriodoCustom && (
+              <div className="flex items-center gap-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-[130px] justify-start text-left font-normal",
+                        !dataInicio && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dataInicio ? format(dataInicio, "dd/MM/yyyy") : "Início"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <CalendarComponent
+                      mode="single"
+                      selected={dataInicio}
+                      onSelect={setDataInicio}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-[130px] justify-start text-left font-normal",
+                        !dataFim && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dataFim ? format(dataFim, "dd/MM/yyyy") : "Fim"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <CalendarComponent
+                      mode="single"
+                      selected={dataFim}
+                      onSelect={setDataFim}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            )}
           </div>
         </motion.div>
 
