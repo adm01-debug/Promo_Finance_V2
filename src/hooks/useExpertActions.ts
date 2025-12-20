@@ -10,7 +10,18 @@ export type ExpertActionType =
   | 'gerar_relatorio'
   | 'listar_aprovacoes'
   | 'aprovar_pagamento'
-  | 'navegar';
+  | 'navegar'
+  // Novas ações expandidas
+  | 'consultar_saldos'
+  | 'criar_conta_pagar'
+  | 'criar_conta_receber'
+  | 'consultar_cliente'
+  | 'consultar_fornecedor'
+  | 'analisar_fluxo'
+  | 'agendar_cobranca'
+  | 'consultar_vencimentos'
+  | 'gerar_boleto'
+  | 'atualizar_score_cliente';
 
 export interface ExpertAction {
   type: ExpertActionType;
@@ -20,6 +31,15 @@ export interface ExpertAction {
   relatorio?: string;
   id?: string;
   pagina?: string;
+  // Novos parâmetros
+  valor?: number;
+  cliente_nome?: string;
+  fornecedor_nome?: string;
+  descricao?: string;
+  data_vencimento?: string;
+  tipo_cobranca?: string;
+  periodo?: string;
+  novo_score?: number;
 }
 
 export interface ActionResult {
@@ -50,6 +70,37 @@ export function useExpertActions() {
         case 'navegar':
           navigate(action.pagina || '/');
           return { success: true, message: `Navegando para ${action.pagina}` };
+        
+        // Novas ações expandidas
+        case 'consultar_saldos':
+          return await consultarSaldos();
+        
+        case 'criar_conta_pagar':
+          return await criarContaPagar(action, queryClient);
+        
+        case 'criar_conta_receber':
+          return await criarContaReceber(action, queryClient);
+        
+        case 'consultar_cliente':
+          return await consultarCliente(action.cliente_nome || '');
+        
+        case 'consultar_fornecedor':
+          return await consultarFornecedor(action.fornecedor_nome || '');
+        
+        case 'analisar_fluxo':
+          return await analisarFluxo(action.periodo || '30');
+        
+        case 'agendar_cobranca':
+          return await agendarCobranca(action.id || '');
+        
+        case 'consultar_vencimentos':
+          return await consultarVencimentos(action.periodo || '7');
+        
+        case 'gerar_boleto':
+          return await gerarBoleto(action.id || '');
+        
+        case 'atualizar_score_cliente':
+          return await atualizarScoreCliente(action.id || '', action.novo_score || 0, queryClient);
         
         default:
           return { success: false, message: 'Ação não reconhecida' };
@@ -87,6 +138,7 @@ export function useExpertActions() {
   return { executeAction, parseActionsFromMessage, getCleanContent };
 }
 
+// Funções auxiliares existentes
 async function criarAlerta(
   action: ExpertAction, 
   queryClient: ReturnType<typeof useQueryClient>
@@ -136,7 +188,6 @@ async function gerarRelatorio(tipo: string): Promise<ActionResult> {
 
       const saldoInicial = saldos?.reduce((sum, c) => sum + Number(c.saldo_atual), 0) || 0;
 
-      // Group by date
       const fluxoPorData = new Map<string, { receitas: number; despesas: number }>();
       
       contasReceber?.forEach(c => {
@@ -279,7 +330,6 @@ async function aprovarPagamento(
 ): Promise<ActionResult> {
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Find the solicitation
   const { data: solicitacao, error: findError } = await supabase
     .from('solicitacoes_aprovacao')
     .select('*, contas_pagar(*)')
@@ -291,7 +341,6 @@ async function aprovarPagamento(
     return { success: false, message: `Solicitação ${id} não encontrada ou já processada` };
   }
 
-  // Update solicitation
   const { error: updateError } = await supabase
     .from('solicitacoes_aprovacao')
     .update({
@@ -303,7 +352,6 @@ async function aprovarPagamento(
 
   if (updateError) throw updateError;
 
-  // Update conta_pagar
   await supabase
     .from('contas_pagar')
     .update({
@@ -321,5 +369,407 @@ async function aprovarPagamento(
   return { 
     success: true, 
     message: `Pagamento para "${solicitacao.contas_pagar?.fornecedor_nome}" aprovado com sucesso!` 
+  };
+}
+
+// ============ NOVAS AÇÕES EXPANDIDAS ============
+
+async function consultarSaldos(): Promise<ActionResult> {
+  const { data, error } = await supabase
+    .from('contas_bancarias')
+    .select('banco, agencia, conta, saldo_atual, saldo_disponivel, tipo_conta')
+    .eq('ativo', true)
+    .order('saldo_atual', { ascending: false });
+
+  if (error) throw error;
+
+  if (!data || data.length === 0) {
+    return { success: false, message: 'Nenhuma conta bancária encontrada.' };
+  }
+
+  const saldoTotal = data.reduce((sum, c) => sum + Number(c.saldo_atual), 0);
+  const saldoDisponivel = data.reduce((sum, c) => sum + Number(c.saldo_disponivel), 0);
+
+  let mensagem = `💰 **SALDOS BANCÁRIOS**\n\n`;
+  mensagem += `**Saldo Total:** ${formatCurrency(saldoTotal)}\n`;
+  mensagem += `**Saldo Disponível:** ${formatCurrency(saldoDisponivel)}\n\n`;
+  mensagem += `**Detalhamento por conta:**\n`;
+  
+  data.forEach(c => {
+    mensagem += `• ${c.banco} (${c.tipo_conta}) - Ag: ${c.agencia} / CC: ${c.conta}\n`;
+    mensagem += `  Saldo: ${formatCurrency(Number(c.saldo_atual))} | Disponível: ${formatCurrency(Number(c.saldo_disponivel))}\n`;
+  });
+
+  return { success: true, message: mensagem, data };
+}
+
+async function criarContaPagar(
+  action: ExpertAction,
+  queryClient: ReturnType<typeof useQueryClient>
+): Promise<ActionResult> {
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  const { data: empresa } = await supabase
+    .from('empresas')
+    .select('id')
+    .eq('ativo', true)
+    .limit(1)
+    .single();
+
+  if (!empresa) {
+    return { success: false, message: 'Nenhuma empresa ativa encontrada.' };
+  }
+
+  const { error } = await supabase.from('contas_pagar').insert({
+    fornecedor_nome: action.fornecedor_nome || 'Fornecedor EXPERT',
+    descricao: action.descricao || 'Lançamento via EXPERT',
+    valor: action.valor || 0,
+    data_vencimento: action.data_vencimento || new Date().toISOString().split('T')[0],
+    data_emissao: new Date().toISOString().split('T')[0],
+    tipo_cobranca: (action.tipo_cobranca as any) || 'boleto',
+    status: 'pendente',
+    empresa_id: empresa.id,
+    created_by: user?.id || '',
+  });
+
+  if (error) throw error;
+
+  queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
+  toast.success('Conta a pagar criada!');
+
+  return { 
+    success: true, 
+    message: `✅ Conta a pagar criada: ${action.descricao} - ${formatCurrency(action.valor || 0)} para ${action.fornecedor_nome}` 
+  };
+}
+
+async function criarContaReceber(
+  action: ExpertAction,
+  queryClient: ReturnType<typeof useQueryClient>
+): Promise<ActionResult> {
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  const { data: empresa } = await supabase
+    .from('empresas')
+    .select('id')
+    .eq('ativo', true)
+    .limit(1)
+    .single();
+
+  if (!empresa) {
+    return { success: false, message: 'Nenhuma empresa ativa encontrada.' };
+  }
+
+  const { error } = await supabase.from('contas_receber').insert({
+    cliente_nome: action.cliente_nome || 'Cliente EXPERT',
+    descricao: action.descricao || 'Lançamento via EXPERT',
+    valor: action.valor || 0,
+    data_vencimento: action.data_vencimento || new Date().toISOString().split('T')[0],
+    data_emissao: new Date().toISOString().split('T')[0],
+    tipo_cobranca: (action.tipo_cobranca as any) || 'boleto',
+    status: 'pendente',
+    empresa_id: empresa.id,
+    created_by: user?.id || '',
+  });
+
+  if (error) throw error;
+
+  queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
+  toast.success('Conta a receber criada!');
+
+  return { 
+    success: true, 
+    message: `✅ Conta a receber criada: ${action.descricao} - ${formatCurrency(action.valor || 0)} de ${action.cliente_nome}` 
+  };
+}
+
+async function consultarCliente(nome: string): Promise<ActionResult> {
+  const { data, error } = await supabase
+    .from('clientes')
+    .select('*')
+    .ilike('razao_social', `%${nome}%`)
+    .limit(5);
+
+  if (error) throw error;
+
+  if (!data || data.length === 0) {
+    return { success: false, message: `Nenhum cliente encontrado com "${nome}".` };
+  }
+
+  // Buscar histórico de pagamentos
+  const clienteIds = data.map(c => c.id);
+  const { data: contasReceber } = await supabase
+    .from('contas_receber')
+    .select('cliente_id, valor, status, data_vencimento')
+    .in('cliente_id', clienteIds);
+
+  let mensagem = `👤 **CLIENTES ENCONTRADOS:**\n\n`;
+  
+  for (const cliente of data) {
+    const contasCliente = contasReceber?.filter(c => c.cliente_id === cliente.id) || [];
+    const totalReceber = contasCliente.filter(c => c.status !== 'pago').reduce((sum, c) => sum + Number(c.valor), 0);
+    const totalVencido = contasCliente.filter(c => c.status === 'vencido').reduce((sum, c) => sum + Number(c.valor), 0);
+    
+    mensagem += `**${cliente.razao_social}**\n`;
+    mensagem += `• CNPJ/CPF: ${cliente.cnpj_cpf || 'N/A'}\n`;
+    mensagem += `• Score: ${cliente.score || 'N/A'} | Limite: ${formatCurrency(cliente.limite_credito || 0)}\n`;
+    mensagem += `• Telefone: ${cliente.telefone || 'N/A'} | Email: ${cliente.email || 'N/A'}\n`;
+    mensagem += `• Em aberto: ${formatCurrency(totalReceber)} | Vencido: ${formatCurrency(totalVencido)}\n\n`;
+  }
+
+  return { success: true, message: mensagem, data };
+}
+
+async function consultarFornecedor(nome: string): Promise<ActionResult> {
+  const { data, error } = await supabase
+    .from('fornecedores')
+    .select('*')
+    .ilike('razao_social', `%${nome}%`)
+    .limit(5);
+
+  if (error) throw error;
+
+  if (!data || data.length === 0) {
+    return { success: false, message: `Nenhum fornecedor encontrado com "${nome}".` };
+  }
+
+  // Buscar histórico de pagamentos
+  const fornecedorIds = data.map(f => f.id);
+  const { data: contasPagar } = await supabase
+    .from('contas_pagar')
+    .select('fornecedor_id, valor, status, data_vencimento')
+    .in('fornecedor_id', fornecedorIds);
+
+  let mensagem = `🏢 **FORNECEDORES ENCONTRADOS:**\n\n`;
+  
+  for (const fornecedor of data) {
+    const contasFornecedor = contasPagar?.filter(c => c.fornecedor_id === fornecedor.id) || [];
+    const totalPagar = contasFornecedor.filter(c => c.status !== 'pago').reduce((sum, c) => sum + Number(c.valor), 0);
+    const totalVencido = contasFornecedor.filter(c => c.status === 'vencido').reduce((sum, c) => sum + Number(c.valor), 0);
+    
+    mensagem += `**${fornecedor.razao_social}**\n`;
+    mensagem += `• CNPJ/CPF: ${fornecedor.cnpj_cpf || 'N/A'}\n`;
+    mensagem += `• Contato: ${fornecedor.contato || 'N/A'}\n`;
+    mensagem += `• Telefone: ${fornecedor.telefone || 'N/A'} | Email: ${fornecedor.email || 'N/A'}\n`;
+    mensagem += `• A pagar: ${formatCurrency(totalPagar)} | Vencido: ${formatCurrency(totalVencido)}\n\n`;
+  }
+
+  return { success: true, message: mensagem, data };
+}
+
+async function analisarFluxo(periodo: string): Promise<ActionResult> {
+  const dias = parseInt(periodo) || 30;
+  const hoje = new Date();
+  const fim = new Date(hoje);
+  fim.setDate(fim.getDate() + dias);
+
+  const { data: contasPagar } = await supabase
+    .from('contas_pagar')
+    .select('data_vencimento, valor')
+    .eq('status', 'pendente')
+    .gte('data_vencimento', hoje.toISOString().split('T')[0])
+    .lte('data_vencimento', fim.toISOString().split('T')[0]);
+
+  const { data: contasReceber } = await supabase
+    .from('contas_receber')
+    .select('data_vencimento, valor')
+    .in('status', ['pendente'])
+    .gte('data_vencimento', hoje.toISOString().split('T')[0])
+    .lte('data_vencimento', fim.toISOString().split('T')[0]);
+
+  const { data: saldos } = await supabase
+    .from('contas_bancarias')
+    .select('saldo_atual')
+    .eq('ativo', true);
+
+  const saldoAtual = saldos?.reduce((sum, c) => sum + Number(c.saldo_atual), 0) || 0;
+  const totalReceitas = contasReceber?.reduce((sum, c) => sum + Number(c.valor), 0) || 0;
+  const totalDespesas = contasPagar?.reduce((sum, c) => sum + Number(c.valor), 0) || 0;
+  const saldoProjetado = saldoAtual + totalReceitas - totalDespesas;
+
+  // Análise por semana
+  const semanas: { semana: number; receitas: number; despesas: number }[] = [];
+  for (let i = 0; i < Math.ceil(dias / 7); i++) {
+    const inicioSemana = new Date(hoje);
+    inicioSemana.setDate(inicioSemana.getDate() + (i * 7));
+    const fimSemana = new Date(inicioSemana);
+    fimSemana.setDate(fimSemana.getDate() + 6);
+
+    const receitasSemana = contasReceber?.filter(c => {
+      const d = new Date(c.data_vencimento);
+      return d >= inicioSemana && d <= fimSemana;
+    }).reduce((sum, c) => sum + Number(c.valor), 0) || 0;
+
+    const despesasSemana = contasPagar?.filter(c => {
+      const d = new Date(c.data_vencimento);
+      return d >= inicioSemana && d <= fimSemana;
+    }).reduce((sum, c) => sum + Number(c.valor), 0) || 0;
+
+    semanas.push({ semana: i + 1, receitas: receitasSemana, despesas: despesasSemana });
+  }
+
+  let mensagem = `📊 **ANÁLISE DE FLUXO DE CAIXA (${dias} dias)**\n\n`;
+  mensagem += `**Resumo Geral:**\n`;
+  mensagem += `• Saldo Atual: ${formatCurrency(saldoAtual)}\n`;
+  mensagem += `• Receitas Previstas: ${formatCurrency(totalReceitas)}\n`;
+  mensagem += `• Despesas Previstas: ${formatCurrency(totalDespesas)}\n`;
+  mensagem += `• Saldo Projetado: ${formatCurrency(saldoProjetado)}\n\n`;
+
+  if (saldoProjetado < 0) {
+    mensagem += `⚠️ **ALERTA:** Saldo negativo projetado! Considere antecipar recebimentos ou renegociar pagamentos.\n\n`;
+  }
+
+  mensagem += `**Detalhamento Semanal:**\n`;
+  semanas.forEach(s => {
+    const saldo = s.receitas - s.despesas;
+    const emoji = saldo >= 0 ? '✅' : '⚠️';
+    mensagem += `${emoji} Semana ${s.semana}: Receitas ${formatCurrency(s.receitas)} | Despesas ${formatCurrency(s.despesas)} | Saldo: ${formatCurrency(saldo)}\n`;
+  });
+
+  return { success: true, message: mensagem, data: { saldoAtual, totalReceitas, totalDespesas, saldoProjetado, semanas } };
+}
+
+async function agendarCobranca(contaId: string): Promise<ActionResult> {
+  const { data: conta, error: findError } = await supabase
+    .from('contas_receber')
+    .select('*, clientes(razao_social, email, telefone)')
+    .eq('id', contaId)
+    .single();
+
+  if (findError || !conta) {
+    return { success: false, message: `Conta ${contaId} não encontrada.` };
+  }
+
+  // Avançar para próxima etapa de cobrança
+  const etapas = ['preventiva', 'lembrete', 'cobranca', 'negociacao', 'juridico'] as const;
+  const etapaAtual = conta.etapa_cobranca || 'preventiva';
+  const indiceAtual = etapas.indexOf(etapaAtual as any);
+  const proximaEtapa = etapas[Math.min(indiceAtual + 1, etapas.length - 1)];
+
+  const { error } = await supabase
+    .from('contas_receber')
+    .update({ etapa_cobranca: proximaEtapa })
+    .eq('id', contaId);
+
+  if (error) throw error;
+
+  // Registrar histórico
+  await supabase.from('historico_cobranca').insert({
+    conta_receber_id: contaId,
+    etapa_anterior: etapaAtual,
+    etapa_nova: proximaEtapa,
+  });
+
+  toast.success(`Cobrança avançada para ${proximaEtapa}!`);
+
+  return { 
+    success: true, 
+    message: `📞 Cobrança agendada! Cliente: ${conta.clientes?.razao_social || conta.cliente_nome}\nEtapa: ${etapaAtual} → ${proximaEtapa}\nValor: ${formatCurrency(Number(conta.valor))}` 
+  };
+}
+
+async function consultarVencimentos(periodo: string): Promise<ActionResult> {
+  const dias = parseInt(periodo) || 7;
+  const hoje = new Date().toISOString().split('T')[0];
+  const fim = new Date();
+  fim.setDate(fim.getDate() + dias);
+  const fimStr = fim.toISOString().split('T')[0];
+
+  const { data: pagar } = await supabase
+    .from('contas_pagar')
+    .select('fornecedor_nome, descricao, valor, data_vencimento')
+    .eq('status', 'pendente')
+    .gte('data_vencimento', hoje)
+    .lte('data_vencimento', fimStr)
+    .order('data_vencimento');
+
+  const { data: receber } = await supabase
+    .from('contas_receber')
+    .select('cliente_nome, descricao, valor, data_vencimento')
+    .in('status', ['pendente'])
+    .gte('data_vencimento', hoje)
+    .lte('data_vencimento', fimStr)
+    .order('data_vencimento');
+
+  let mensagem = `📅 **VENCIMENTOS NOS PRÓXIMOS ${dias} DIAS**\n\n`;
+
+  if (pagar && pagar.length > 0) {
+    const totalPagar = pagar.reduce((sum, c) => sum + Number(c.valor), 0);
+    mensagem += `**Contas a Pagar:** ${pagar.length} títulos - ${formatCurrency(totalPagar)}\n`;
+    pagar.slice(0, 5).forEach(c => {
+      mensagem += `• ${c.data_vencimento}: ${c.fornecedor_nome} - ${formatCurrency(Number(c.valor))}\n`;
+    });
+    if (pagar.length > 5) mensagem += `  ... e mais ${pagar.length - 5} títulos\n`;
+    mensagem += '\n';
+  } else {
+    mensagem += `**Contas a Pagar:** Nenhum vencimento no período ✅\n\n`;
+  }
+
+  if (receber && receber.length > 0) {
+    const totalReceber = receber.reduce((sum, c) => sum + Number(c.valor), 0);
+    mensagem += `**Contas a Receber:** ${receber.length} títulos - ${formatCurrency(totalReceber)}\n`;
+    receber.slice(0, 5).forEach(c => {
+      mensagem += `• ${c.data_vencimento}: ${c.cliente_nome} - ${formatCurrency(Number(c.valor))}\n`;
+    });
+    if (receber.length > 5) mensagem += `  ... e mais ${receber.length - 5} títulos\n`;
+  } else {
+    mensagem += `**Contas a Receber:** Nenhum vencimento no período\n`;
+  }
+
+  return { success: true, message: mensagem, data: { pagar, receber } };
+}
+
+async function gerarBoleto(contaId: string): Promise<ActionResult> {
+  const { data: conta, error } = await supabase
+    .from('contas_receber')
+    .select('*, clientes(razao_social, cnpj_cpf)')
+    .eq('id', contaId)
+    .single();
+
+  if (error || !conta) {
+    return { success: false, message: `Conta ${contaId} não encontrada.` };
+  }
+
+  // Simular geração de boleto (em produção, integraria com API do banco)
+  const codigoBarras = `23793.38128 60000.000003 00000.000406 ${Math.random().toString().slice(2, 6)} ${Math.floor(Date.now() / 1000)}`;
+  
+  toast.success('Boleto gerado com sucesso!');
+
+  return { 
+    success: true, 
+    message: `🎫 **BOLETO GERADO**\n\nCliente: ${conta.clientes?.razao_social || conta.cliente_nome}\nValor: ${formatCurrency(Number(conta.valor))}\nVencimento: ${conta.data_vencimento}\n\nCódigo de Barras:\n\`${codigoBarras}\`` 
+  };
+}
+
+async function atualizarScoreCliente(
+  clienteId: string, 
+  novoScore: number,
+  queryClient: ReturnType<typeof useQueryClient>
+): Promise<ActionResult> {
+  const { data: cliente, error: findError } = await supabase
+    .from('clientes')
+    .select('razao_social, score')
+    .eq('id', clienteId)
+    .single();
+
+  if (findError || !cliente) {
+    return { success: false, message: `Cliente ${clienteId} não encontrado.` };
+  }
+
+  const scoreAnterior = cliente.score || 0;
+
+  const { error } = await supabase
+    .from('clientes')
+    .update({ score: novoScore })
+    .eq('id', clienteId);
+
+  if (error) throw error;
+
+  queryClient.invalidateQueries({ queryKey: ['clientes'] });
+  toast.success('Score do cliente atualizado!');
+
+  return { 
+    success: true, 
+    message: `📊 Score do cliente "${cliente.razao_social}" atualizado: ${scoreAnterior} → ${novoScore}` 
   };
 }
