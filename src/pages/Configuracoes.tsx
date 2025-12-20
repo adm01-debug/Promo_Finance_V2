@@ -23,9 +23,11 @@ import {
   Shield,
   Database,
   Zap,
-  ToggleLeft
+  ToggleLeft,
+  Timer
 } from 'lucide-react';
 import { NotificacoesConfig } from '@/components/configuracoes/NotificacoesConfig';
+import { CronJobsPanel } from '@/components/configuracoes/CronJobsPanel';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -184,10 +186,11 @@ export default function Configuracoes() {
       </div>
 
       <Tabs defaultValue="regua" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
+        <TabsList className="grid w-full grid-cols-5 lg:w-[750px]">
           <TabsTrigger value="regua" className="gap-2">
             <Clock className="h-4 w-4" />
-            Régua de Cobrança
+            <span className="hidden sm:inline">Régua de Cobrança</span>
+            <span className="sm:hidden">Régua</span>
           </TabsTrigger>
           <TabsTrigger value="templates" className="gap-2">
             <Mail className="h-4 w-4" />
@@ -195,7 +198,13 @@ export default function Configuracoes() {
           </TabsTrigger>
           <TabsTrigger value="notificacoes" className="gap-2">
             <Bell className="h-4 w-4" />
-            Notificações
+            <span className="hidden sm:inline">Notificações</span>
+            <span className="sm:hidden">Alertas</span>
+          </TabsTrigger>
+          <TabsTrigger value="agendamentos" className="gap-2">
+            <Timer className="h-4 w-4" />
+            <span className="hidden sm:inline">Agendamentos</span>
+            <span className="sm:hidden">Cron</span>
           </TabsTrigger>
           <TabsTrigger value="sistema" className="gap-2">
             <Settings className="h-4 w-4" />
@@ -516,6 +525,18 @@ export default function Configuracoes() {
                 </motion.div>
               </CardContent>
             </Card>
+          </motion.div>
+        </TabsContent>
+
+        {/* Agendamentos / Cron Jobs */}
+        <TabsContent value="agendamentos">
+          <motion.div 
+            className="space-y-6"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <CronJobsPanel />
           </motion.div>
         </TabsContent>
 

@@ -1486,7 +1486,22 @@ export type Database = {
         }
         Returns: undefined
       }
+      delete_cron_job: { Args: { job_id: number }; Returns: undefined }
       gerar_alertas_vencimento: { Args: never; Returns: undefined }
+      get_cron_jobs: {
+        Args: never
+        Returns: {
+          active: boolean
+          command: string
+          database: string
+          jobid: number
+          jobname: string
+          nodename: string
+          nodeport: number
+          schedule: string
+          username: string
+        }[]
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
@@ -1515,6 +1530,10 @@ export type Database = {
           _table_name?: string
         }
         Returns: string
+      }
+      toggle_cron_job: {
+        Args: { is_active: boolean; job_id: number }
+        Returns: undefined
       }
     }
     Enums: {
