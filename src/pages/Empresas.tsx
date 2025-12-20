@@ -50,7 +50,10 @@ import { useAllEmpresas, useExcluirEmpresa, useReativarEmpresa, type Empresa } f
 import { EmpresaForm } from '@/components/empresas/EmpresaForm';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
+import { EmptyState } from '@/components/ui/micro-interactions';
 import { useToast } from '@/hooks/use-toast';
+import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
+import { toast as sonnerToast } from 'sonner';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -151,9 +154,20 @@ export default function Empresas() {
 
   const handleConfirmDelete = async () => {
     if (empresaToDelete) {
-      await excluirEmpresa.mutateAsync(empresaToDelete.id);
+      const empresaBackup = { ...empresaToDelete };
       setDeleteConfirmOpen(false);
       setEmpresaToDelete(null);
+      
+      toastDeleteWithUndo({
+        item: empresaBackup,
+        itemName: `Empresa "${empresaBackup.nome_fantasia || empresaBackup.razao_social}"`,
+        onDelete: async () => {
+          await excluirEmpresa.mutateAsync(empresaBackup.id);
+        },
+        onRestore: async () => {
+          await reativarEmpresa.mutateAsync(empresaBackup.id);
+        },
+      });
     }
   };
 

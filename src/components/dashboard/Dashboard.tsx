@@ -27,6 +27,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DashboardSkeleton } from '@/components/ui/loading-skeleton';
 import { formatCurrency, formatPercentage } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { AnimatedCounter, PulseDot } from '@/components/ui/micro-interactions';
@@ -122,6 +123,13 @@ export const Dashboard = () => {
   ];
 
   const totalSaldoBancos = saldosPorBanco?.reduce((acc, b) => acc + b.saldo, 0) || 0;
+
+  // Show full skeleton when all critical data is loading
+  const isInitialLoading = loadingKpis && loadingSaldos && loadingFluxo;
+  
+  if (isInitialLoading) {
+    return <DashboardSkeleton />;
+  }
 
   return (
     <DraggableDashboardGrid>

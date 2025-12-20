@@ -3,7 +3,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Loader2, User, Building2, Mail, Phone, MapPin, FileText, Edit, Truck } from 'lucide-react';
+import { User, Building2, Mail, Phone, MapPin, FileText, Edit, Truck } from 'lucide-react';
+import { ActionButton } from '@/components/ui/action-button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import {
@@ -437,9 +438,11 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancelar
               </Button>
-              <Button
+              <ActionButton
                 type="submit"
-                disabled={isPending}
+                state={isPending ? 'loading' : 'idle'}
+                loadingText="Salvando..."
+                successText="Salvo!"
                 className={cn(
                   "gap-2 shadow-lg",
                   isEditing 
@@ -447,9 +450,8 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
                     : "bg-gradient-to-r from-warning to-warning/80 shadow-warning/25 text-warning-foreground"
                 )}
               >
-                {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                 {isEditing ? 'Salvar Alterações' : 'Cadastrar Fornecedor'}
-              </Button>
+              </ActionButton>
             </div>
           </form>
         </Form>

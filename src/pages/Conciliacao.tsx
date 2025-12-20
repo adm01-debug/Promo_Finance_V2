@@ -39,6 +39,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
+import { EmptyState } from '@/components/ui/micro-interactions';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useContasBancarias } from '@/hooks/useFinancialData';
 import { useConciliacao } from '@/hooks/useConciliacao';
