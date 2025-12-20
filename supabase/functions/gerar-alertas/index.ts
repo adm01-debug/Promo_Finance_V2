@@ -222,23 +222,61 @@ async function verificarMetasEmRisco(supabase: any, userId: string | null): Prom
       if (!alertasExistentes || alertasExistentes.length === 0) {
         console.log(`[gerar-alertas] Criando alerta para meta ${meta.tipo} (${meta.id})`);
         
+        const targetUserId = userId || meta.created_by;
+        const alertaTitulo = `${meta.titulo} em Risco`;
+        
         const { error: insertError } = await supabase
           .from('alertas')
           .insert({
             tipo: 'meta_em_risco',
-            titulo: `${meta.titulo} em Risco`,
+            titulo: alertaTitulo,
             mensagem: mensagem,
             prioridade: nivelRisco,
             entidade_tipo: 'meta_financeira',
             entidade_id: meta.id,
             acao_url: '/',
-            user_id: userId || meta.created_by,
+            user_id: targetUserId,
           });
 
         if (insertError) {
           console.error('[gerar-alertas] Erro ao criar alerta de meta:', insertError);
         } else {
           alertasCriados++;
+          
+          // Enviar notificação push
+          console.log(`[gerar-alertas] Enviando notificação push para meta ${meta.tipo}`);
+          try {
+            const pushResponse = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/send-push-notification`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+              },
+              body: JSON.stringify({
+                userId: targetUserId,
+                title: `⚠️ ${alertaTitulo}`,
+                body: mensagem,
+                icon: '/favicon.ico',
+                badge: '/favicon.ico',
+                tag: `meta-${meta.id}`,
+                data: {
+                  url: '/',
+                  tipo: 'meta_em_risco',
+                  metaId: meta.id,
+                  prioridade: nivelRisco,
+                },
+              }),
+            });
+            
+            if (!pushResponse.ok) {
+              const errorText = await pushResponse.text();
+              console.error('[gerar-alertas] Erro ao enviar push:', errorText);
+            } else {
+              console.log('[gerar-alertas] Notificação push enviada com sucesso');
+            }
+          } catch (pushError) {
+            console.error('[gerar-alertas] Erro ao enviar notificação push:', pushError);
+          }
         }
       } else {
         console.log(`[gerar-alertas] Alerta para meta ${meta.tipo} já existe nas últimas 24h`);
