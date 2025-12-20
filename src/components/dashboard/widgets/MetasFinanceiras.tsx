@@ -10,6 +10,7 @@ import { startOfMonth, endOfMonth, format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useMetasFinanceiras } from '@/hooks/useMetasFinanceiras';
 import { EditarMetasDialog } from './EditarMetasDialog';
+import { HistoricoMetasDialog } from './HistoricoMetasDialog';
 
 interface Meta {
   id: string;
@@ -123,7 +124,10 @@ export const MetasFinanceiras = () => {
             <Target className="h-5 w-5 text-purple-500" />
             Metas do Mês
           </CardTitle>
-          <EditarMetasDialog />
+          <div className="flex items-center gap-1">
+            <HistoricoMetasDialog />
+            <EditarMetasDialog />
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
