@@ -73,6 +73,8 @@ import { PrevisaoIA } from './PrevisaoIA';
 import { AlertasPreditivosPanel } from './AlertasPreditivosPanel';
 import { SimuladorCenarios } from './SimuladorCenarios';
 import { DashboardConfigDialog } from './DashboardConfigDialog';
+import { HistoricoAnalisesPreditivas } from './HistoricoAnalisesPreditivas';
+import { RecomendacoesMetasIA } from './RecomendacoesMetasIA';
 import { PositionBadge, RankBadge, getRankFromScore } from '@/components/ui/rank-badge';
 
 const containerVariants = {
@@ -1007,6 +1009,11 @@ export const DashboardExecutivo = () => {
       {/* Previsão com IA */}
       <motion.div variants={itemVariants}>
         <PrevisaoIA />
+      </motion.div>
+
+      {/* Histórico de Análises Preditivas */}
+      <motion.div variants={itemVariants}>
+        <HistoricoAnalisesPreditivas />
       </motion.div>
 
       {/* Alertas Preditivos e Simulador de Cenários */}
