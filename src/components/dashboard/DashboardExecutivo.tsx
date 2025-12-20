@@ -27,6 +27,7 @@ import {
   Trophy,
   Flame,
   Zap,
+  Settings2,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -67,7 +68,11 @@ import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useEmpresas, useCentrosCusto, useContasBancarias, useContasPagar, useContasReceber, useClientes } from '@/hooks/useFinancialData';
 import { useAprovacoesPendentesCount } from '@/hooks/useAprovacoesPendentesCount';
+import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import { PrevisaoIA } from './PrevisaoIA';
+import { AlertasPreditivosPanel } from './AlertasPreditivosPanel';
+import { SimuladorCenarios } from './SimuladorCenarios';
+import { DashboardConfigDialog } from './DashboardConfigDialog';
 import { PositionBadge, RankBadge, getRankFromScore } from '@/components/ui/rank-badge';
 
 const containerVariants = {
@@ -87,6 +92,10 @@ export const DashboardExecutivo = () => {
   const [centroCustoFilter, setCentroCustoFilter] = useState<string>('all');
   const [periodoFluxo, setPeriodoFluxo] = useState('30');
   const [drillDownOpen, setDrillDownOpen] = useState<string | null>(null);
+  const [configDialogOpen, setConfigDialogOpen] = useState(false);
+  
+  // Dashboard config
+  const { widgets, toggleWidget, resizeWidget, resetToDefault } = useDashboardConfig();
 
   // Dados reais do Supabase
   const { data: empresas = [], isLoading: loadingEmpresas } = useEmpresas();
@@ -419,6 +428,9 @@ export const DashboardExecutivo = () => {
             <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
             Dados em tempo real
           </Badge>
+          <Button variant="outline" size="icon" onClick={() => setConfigDialogOpen(true)}>
+            <Settings2 className="h-4 w-4" />
+          </Button>
         </div>
       </motion.div>
 
@@ -996,6 +1008,51 @@ export const DashboardExecutivo = () => {
       <motion.div variants={itemVariants}>
         <PrevisaoIA />
       </motion.div>
+
+      {/* Alertas Preditivos e Simulador de Cenários */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <motion.div variants={itemVariants}>
+          <AlertasPreditivosPanel
+            saldoAtual={saldoTotal}
+            receitasPrevistas={contasReceberFiltradas
+              .filter(c => c.status !== 'pago' && c.status !== 'cancelado')
+              .map(c => ({
+                valor: c.valor - (c.valor_recebido || 0),
+                dataVencimento: new Date(c.data_vencimento),
+                entidade: c.cliente_nome,
+              }))}
+            despesasPrevistas={contasPagarFiltradas
+              .filter(c => c.status !== 'pago' && c.status !== 'cancelado')
+              .map(c => ({
+                valor: c.valor - (c.valor_pago || 0),
+                dataVencimento: new Date(c.data_vencimento),
+                entidade: c.fornecedor_nome,
+              }))}
+            historicoInadimplencia={vencidasReceber.map(c => ({
+              clienteId: c.cliente_id || 'unknown',
+              diasAtraso: Math.floor((new Date().getTime() - new Date(c.data_vencimento).getTime()) / (1000 * 60 * 60 * 24)),
+            }))}
+          />
+        </motion.div>
+        <motion.div variants={itemVariants}>
+          <SimuladorCenarios
+            saldoAtual={saldoTotal}
+            receitasPrevistas={totalReceber}
+            despesasPrevistas={totalPagar}
+            taxaInadimplencia={inadimplencia}
+          />
+        </motion.div>
+      </div>
+
+      {/* Dashboard Config Dialog */}
+      <DashboardConfigDialog
+        open={configDialogOpen}
+        onOpenChange={setConfigDialogOpen}
+        widgets={widgets}
+        onToggleWidget={toggleWidget}
+        onResizeWidget={resizeWidget}
+        onResetToDefault={resetToDefault}
+      />
     </motion.div>
   );
 };
