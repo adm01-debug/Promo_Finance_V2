@@ -56,6 +56,68 @@ export type Database = {
         }
         Relationships: []
       }
+      alertas_preditivos: {
+        Row: {
+          analise_preditiva_id: string | null
+          created_at: string
+          data_previsao: string | null
+          descricao: string
+          id: string
+          impacto_estimado: number | null
+          prioridade: string
+          probabilidade: number | null
+          resolvido_em: string | null
+          resolvido_por: string | null
+          status: string
+          sugestoes: Json | null
+          tipo: string
+          titulo: string
+          user_id: string | null
+        }
+        Insert: {
+          analise_preditiva_id?: string | null
+          created_at?: string
+          data_previsao?: string | null
+          descricao: string
+          id?: string
+          impacto_estimado?: number | null
+          prioridade: string
+          probabilidade?: number | null
+          resolvido_em?: string | null
+          resolvido_por?: string | null
+          status?: string
+          sugestoes?: Json | null
+          tipo: string
+          titulo: string
+          user_id?: string | null
+        }
+        Update: {
+          analise_preditiva_id?: string | null
+          created_at?: string
+          data_previsao?: string | null
+          descricao?: string
+          id?: string
+          impacto_estimado?: number | null
+          prioridade?: string
+          probabilidade?: number | null
+          resolvido_em?: string | null
+          resolvido_por?: string | null
+          status?: string
+          sugestoes?: Json | null
+          tipo?: string
+          titulo?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alertas_preditivos_analise_preditiva_id_fkey"
+            columns: ["analise_preditiva_id"]
+            isOneToOne: false
+            referencedRelation: "historico_analises_preditivas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: Database["public"]["Enums"]["audit_action"]
@@ -925,6 +987,42 @@ export type Database = {
         }
         Relationships: []
       }
+      historico_analises_preditivas: {
+        Row: {
+          alertas_gerados: number | null
+          analise_completa: Json
+          created_at: string
+          created_by: string | null
+          dados_analisados: Json | null
+          id: string
+          projecoes: Json | null
+          resumo_executivo: string | null
+          score_saude_financeira: number
+        }
+        Insert: {
+          alertas_gerados?: number | null
+          analise_completa: Json
+          created_at?: string
+          created_by?: string | null
+          dados_analisados?: Json | null
+          id?: string
+          projecoes?: Json | null
+          resumo_executivo?: string | null
+          score_saude_financeira: number
+        }
+        Update: {
+          alertas_gerados?: number | null
+          analise_completa?: Json
+          created_at?: string
+          created_by?: string | null
+          dados_analisados?: Json | null
+          id?: string
+          projecoes?: Json | null
+          resumo_executivo?: string | null
+          score_saude_financeira?: number
+        }
+        Relationships: []
+      }
       historico_cobranca: {
         Row: {
           conta_receber_id: string
@@ -1064,6 +1162,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      historico_score_saude: {
+        Row: {
+          created_at: string
+          id: string
+          indicadores: Json | null
+          observacoes: string | null
+          score: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          indicadores?: Json | null
+          observacoes?: string | null
+          score: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          indicadores?: Json | null
+          observacoes?: string | null
+          score?: number
+        }
+        Relationships: []
       }
       metas_financeiras: {
         Row: {
@@ -1262,6 +1384,56 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      recomendacoes_metas_ia: {
+        Row: {
+          aceita: boolean | null
+          baseado_em: Json | null
+          confianca: number | null
+          created_at: string
+          id: string
+          justificativa: string
+          meta_id: string | null
+          periodo_referencia_fim: string | null
+          periodo_referencia_inicio: string | null
+          tipo_meta: string
+          valor_sugerido: number
+        }
+        Insert: {
+          aceita?: boolean | null
+          baseado_em?: Json | null
+          confianca?: number | null
+          created_at?: string
+          id?: string
+          justificativa: string
+          meta_id?: string | null
+          periodo_referencia_fim?: string | null
+          periodo_referencia_inicio?: string | null
+          tipo_meta: string
+          valor_sugerido: number
+        }
+        Update: {
+          aceita?: boolean | null
+          baseado_em?: Json | null
+          confianca?: number | null
+          created_at?: string
+          id?: string
+          justificativa?: string
+          meta_id?: string | null
+          periodo_referencia_fim?: string | null
+          periodo_referencia_inicio?: string | null
+          tipo_meta?: string
+          valor_sugerido?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recomendacoes_metas_ia_meta_id_fkey"
+            columns: ["meta_id"]
+            isOneToOne: false
+            referencedRelation: "metas_financeiras"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       relatorios_agendados: {
         Row: {
