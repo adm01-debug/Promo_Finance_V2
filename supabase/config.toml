@@ -9,6 +9,9 @@ verify_jwt = false
 [functions.bitrix24-sync]
 verify_jwt = true
 
+[functions.bitrix24-webhook]
+verify_jwt = false
+
 [functions.gerar-alertas]
 verify_jwt = false
 
@@ -26,3 +29,6 @@ verify_jwt = false
 
 [functions.analyze-document]
 verify_jwt = false
+
+[functions.open-finance]
+verify_jwt = true

@@ -271,6 +271,39 @@ export type Database = {
         }
         Relationships: []
       }
+      bitrix_webhook_events: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          event_type: string
+          id: string
+          payload: Json | null
+          processed: boolean | null
+          processed_at: string | null
+          received_at: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          event_type: string
+          id?: string
+          payload?: Json | null
+          processed?: boolean | null
+          processed_at?: string | null
+          received_at?: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          event_type?: string
+          id?: string
+          payload?: Json | null
+          processed?: boolean | null
+          processed_at?: string | null
+          received_at?: string
+        }
+        Relationships: []
+      }
       boletos: {
         Row: {
           agencia: string
@@ -1324,6 +1357,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      open_finance_consents: {
+        Row: {
+          access_token: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          institution_id: string
+          permissions: string[]
+          refresh_token: string | null
+          revoked_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id: string
+          institution_id: string
+          permissions: string[]
+          refresh_token?: string | null
+          revoked_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          institution_id?: string
+          permissions?: string[]
+          refresh_token?: string | null
+          revoked_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {

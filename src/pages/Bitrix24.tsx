@@ -52,6 +52,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/formatters';
 import { useBitrix24 } from '@/hooks/useBitrix24';
+import { BitrixWebhookPanel } from '@/components/integracoes/BitrixWebhookPanel';
 
 const containerVariants = {
   hidden: { opacity: 0 },
