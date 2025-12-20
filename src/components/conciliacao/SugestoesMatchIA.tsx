@@ -1,5 +1,6 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import confetti from 'canvas-confetti';
 import {
   Sparkles,
   CheckCircle2,
@@ -24,6 +25,7 @@ import {
   Calendar,
   User,
   DollarSign,
+  PartyPopper,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -362,7 +364,8 @@ export function SugestoesMatchIA({
   }, [matchesIA, matchesConfirmados, transacoes.length]);
 
   const handleConfirmar = async (transacaoId: string, transacaoDescricao: string, sugestao: MatchSugestaoIA) => {
-    setMatchesConfirmados(prev => new Set([...prev, transacaoId]));
+    const newConfirmed = new Set([...matchesConfirmados, transacaoId]);
+    setMatchesConfirmados(newConfirmed);
     
     // Registrar histórico e feedback
     await registrarHistorico.mutateAsync({
@@ -386,6 +389,12 @@ export function SugestoesMatchIA({
     });
 
     onConfirmarMatch(transacaoId, sugestao.lancamentoId, sugestao.lancamentoTipo);
+
+    // Check if this completes 100% reconciliation
+    const totalWithSuggestions = estatisticas.comSugestao + matchesConfirmados.size;
+    if (newConfirmed.size >= totalWithSuggestions && totalWithSuggestions > 0) {
+      triggerConfetti(true);
+    }
   };
 
   const handleRejeitar = (transacaoId: string, transacaoDescricao: string, sugestao: MatchSugestaoIA) => {
@@ -427,6 +436,37 @@ export function SugestoesMatchIA({
     setMotivoRejeicao('');
   };
 
+  // Confetti celebration function
+  const triggerConfetti = useCallback((isFullCompletion = false) => {
+    const count = isFullCompletion ? 200 : 100;
+    const defaults = {
+      origin: { y: 0.7 },
+      zIndex: 9999,
+    };
+
+    function fire(particleRatio: number, opts: confetti.Options) {
+      confetti({
+        ...defaults,
+        ...opts,
+        particleCount: Math.floor(count * particleRatio),
+      });
+    }
+
+    if (isFullCompletion) {
+      // Grand celebration for 100% completion
+      fire(0.25, { spread: 26, startVelocity: 55, colors: ['#22c55e', '#10b981'] });
+      fire(0.2, { spread: 60, colors: ['#3b82f6', '#6366f1'] });
+      fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8, colors: ['#f59e0b', '#eab308'] });
+      fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2, colors: ['#ec4899', '#f43f5e'] });
+      fire(0.1, { spread: 120, startVelocity: 45, colors: ['#22c55e', '#3b82f6', '#f59e0b'] });
+    } else {
+      // Regular celebration for batch approval
+      fire(0.25, { spread: 26, startVelocity: 55, colors: ['#22c55e', '#10b981'] });
+      fire(0.2, { spread: 60, colors: ['#22c55e', '#16a34a'] });
+      fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8, colors: ['#4ade80', '#86efac'] });
+    }
+  }, []);
+
   const handleAprovarTodos = async () => {
     // Marcar todos como confirmados localmente
     const novosConfirmados = new Set(matchesConfirmados);
@@ -439,6 +479,14 @@ export function SugestoesMatchIA({
     matchesAltaConfianca.forEach(m => {
       onConfirmarMatch(m.transacaoId, m.sugestao.lancamentoId, m.sugestao.lancamentoTipo);
     });
+
+    // Check if this completes 100%
+    const totalWithSuggestions = estatisticas.comSugestao + matchesConfirmados.size;
+    const newConfirmedCount = novosConfirmados.size;
+    const isFullCompletion = newConfirmedCount >= totalWithSuggestions && totalWithSuggestions > 0;
+
+    // Trigger confetti celebration
+    triggerConfetti(isFullCompletion);
 
     setShowAprovarTodosDialog(false);
   };
