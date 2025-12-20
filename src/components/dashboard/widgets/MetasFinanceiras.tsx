@@ -2,15 +2,18 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Target, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Target, CheckCircle2, AlertTriangle, Bell, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { formatCurrency } from '@/lib/formatters';
 import { startOfMonth, endOfMonth, format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useMetasFinanceiras } from '@/hooks/useMetasFinanceiras';
+import { useVerificarMetas } from '@/hooks/useVerificarMetas';
 import { EditarMetasDialog } from './EditarMetasDialog';
 import { HistoricoMetasDialog } from './HistoricoMetasDialog';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface Meta {
   id: string;
@@ -28,6 +31,12 @@ export const MetasFinanceiras = () => {
   const fimMes = endOfMonth(mesAtual);
 
   const { getMetaByTipo, isLoading: loadingMetas } = useMetasFinanceiras();
+  const { mutate: verificarMetas, isPending: verificando } = useVerificarMetas();
+
+  // Calcular % do mês decorrido para análise de risco
+  const diaDoMes = mesAtual.getDate();
+  const diasNoMes = endOfMonth(mesAtual).getDate();
+  const percentualMesDecorrido = (diaDoMes / diasNoMes) * 100;
 
   const { data: dadosMes } = useQuery({
     queryKey: ['metas-financeiras-dados', format(mesAtual, 'yyyy-MM')],
@@ -125,6 +134,28 @@ export const MetasFinanceiras = () => {
             Metas do Mês
           </CardTitle>
           <div className="flex items-center gap-1">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => verificarMetas()}
+                    disabled={verificando}
+                  >
+                    {verificando ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Bell className="h-4 w-4" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Verificar alertas de metas</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <HistoricoMetasDialog />
             <EditarMetasDialog />
           </div>
