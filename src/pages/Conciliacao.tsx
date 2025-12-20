@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useDebounce } from '@/hooks/useOptimizedQueries';
 import {
   Upload,
   FileText,
@@ -78,6 +79,7 @@ export default function Conciliacao() {
   const [activeTab, setActiveTab] = useState('pendentes');
   const [selectedBanco, setSelectedBanco] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm, 300);
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [showManualDialog, setShowManualDialog] = useState(false);
   const [selectedTransacaoManual, setSelectedTransacaoManual] = useState<TransacaoExtrato | null>(null);
@@ -180,13 +182,13 @@ export default function Conciliacao() {
   const percentualConciliado = totalTransacoes > 0 ? (conciliadas / totalTransacoes) * 100 : 0;
   const sugestoesDisponiveis = transacoesImportadas.filter(t => !transacoes.find(tr => tr.id === t.id)?.conciliada).length;
 
-  const filteredTransacoes = transacoes.filter(t => {
-    const matchesSearch = t.descricao.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredTransacoes = useMemo(() => transacoes.filter(t => {
+    const matchesSearch = t.descricao.toLowerCase().includes(debouncedSearch.toLowerCase());
     const matchesTab = activeTab === 'todas' || 
       (activeTab === 'pendentes' && !t.conciliada) ||
       (activeTab === 'conciliadas' && t.conciliada);
     return matchesSearch && matchesTab;
-  });
+  }), [transacoes, debouncedSearch, activeTab]);
 
   return (
     <MainLayout>

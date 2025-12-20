@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { EmptyState } from '@/components/ui/micro-interactions';
+import { useDebounce } from '@/hooks/useOptimizedQueries';
 import {
   Plus,
   Search,
@@ -103,6 +104,7 @@ const getScoreLabel = (score: number) => {
 
 export default function ContasReceber() {
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm, 300);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [centroCustoFilter, setCentroCustoFilter] = useState<string>('all');
   const [formOpen, setFormOpen] = useState(false);
@@ -117,11 +119,11 @@ export default function ContasReceber() {
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
 
-  // Server-side paginated query
+  // Server-side paginated query with debounced search
   const { data: paginatedResult, isLoading } = useContasReceberPaginated({
     page: currentPage,
     pageSize,
-    search: searchTerm,
+    search: debouncedSearch,
     status: statusFilter,
     centroCustoId: centroCustoFilter,
   });

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { EmptyState } from '@/components/ui/micro-interactions';
+import { useDebounce } from '@/hooks/useOptimizedQueries';
 import {
   Plus,
   Search,
@@ -102,6 +103,7 @@ const getScoreLabel = (score: number | null) => {
 
 export default function Clientes() {
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm, 300);
   const [formOpen, setFormOpen] = useState(false);
   const [editingCliente, setEditingCliente] = useState<Cliente | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -121,11 +123,11 @@ export default function Clientes() {
 
   const queryClient = useQueryClient();
   
-  // Server-side paginated query
+  // Server-side paginated query with debounced search
   const { data: paginatedResult, isLoading } = useClientesPaginated({
     page: currentPage,
     pageSize,
-    search: searchTerm,
+    search: debouncedSearch,
     status: statusFilter,
     estado: estadoFilter,
     scoreRange: scoreFilter !== 'all' ? scoreFilter : undefined,
