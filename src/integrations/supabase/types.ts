@@ -1065,6 +1065,45 @@ export type Database = {
           },
         ]
       }
+      metas_financeiras: {
+        Row: {
+          ano: number
+          ativo: boolean
+          created_at: string
+          created_by: string | null
+          id: string
+          mes: number
+          tipo: string
+          titulo: string
+          updated_at: string
+          valor_meta: number
+        }
+        Insert: {
+          ano: number
+          ativo?: boolean
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          mes: number
+          tipo: string
+          titulo: string
+          updated_at?: string
+          valor_meta?: number
+        }
+        Update: {
+          ano?: number
+          ativo?: boolean
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          mes?: number
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+          valor_meta?: number
+        }
+        Relationships: []
+      }
       notas_fiscais: {
         Row: {
           chave_acesso: string | null

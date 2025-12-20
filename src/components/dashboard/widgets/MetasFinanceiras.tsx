@@ -2,12 +2,14 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Target, TrendingUp, TrendingDown, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Target, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { formatCurrency } from '@/lib/formatters';
 import { startOfMonth, endOfMonth, format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useMetasFinanceiras } from '@/hooks/useMetasFinanceiras';
+import { EditarMetasDialog } from './EditarMetasDialog';
 
 interface Meta {
   id: string;
@@ -24,8 +26,10 @@ export const MetasFinanceiras = () => {
   const inicioMes = startOfMonth(mesAtual);
   const fimMes = endOfMonth(mesAtual);
 
+  const { getMetaByTipo, isLoading: loadingMetas } = useMetasFinanceiras();
+
   const { data: dadosMes } = useQuery({
-    queryKey: ['metas-financeiras', format(mesAtual, 'yyyy-MM')],
+    queryKey: ['metas-financeiras-dados', format(mesAtual, 'yyyy-MM')],
     queryFn: async () => {
       const [recebidas, pagas, pendentesReceber] = await Promise.all([
         supabase
@@ -61,9 +65,9 @@ export const MetasFinanceiras = () => {
   });
 
   const metas: Meta[] = useMemo(() => {
-    const metaReceita = 150000; // Meta de receita mensal
-    const metaDespesa = 100000; // Limite de despesas
-    const metaInadimplencia = 5; // % máximo de inadimplência
+    const metaReceita = getMetaByTipo('receita');
+    const metaDespesa = getMetaByTipo('despesa');
+    const metaInadimplencia = getMetaByTipo('inadimplencia');
 
     const progressoReceita = dadosMes ? Math.min((dadosMes.totalRecebido / metaReceita) * 100, 100) : 0;
     const progressoDespesa = dadosMes ? Math.min((dadosMes.totalPago / metaDespesa) * 100, 100) : 0;
@@ -98,7 +102,7 @@ export const MetasFinanceiras = () => {
         status: progressoInadimplencia <= 60 ? 'sucesso' : progressoInadimplencia <= 80 ? 'atencao' : 'risco',
       },
     ];
-  }, [dadosMes]);
+  }, [dadosMes, getMetaByTipo]);
 
   const getStatusIcon = (status: Meta['status']) => {
     switch (status) {
@@ -111,21 +115,16 @@ export const MetasFinanceiras = () => {
     }
   };
 
-  const getProgressColor = (meta: Meta) => {
-    if (meta.tipo === 'receita') {
-      return meta.status === 'sucesso' ? 'bg-green-500' : meta.status === 'atencao' ? 'bg-yellow-500' : 'bg-red-500';
-    }
-    // Para despesa e inadimplência, lógica inversa
-    return meta.status === 'sucesso' ? 'bg-green-500' : meta.status === 'atencao' ? 'bg-yellow-500' : 'bg-red-500';
-  };
-
   return (
     <Card className="h-full">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center gap-2">
-          <Target className="h-5 w-5 text-purple-500" />
-          Metas do Mês
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Target className="h-5 w-5 text-purple-500" />
+            Metas do Mês
+          </CardTitle>
+          <EditarMetasDialog />
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {metas.map((meta) => (
