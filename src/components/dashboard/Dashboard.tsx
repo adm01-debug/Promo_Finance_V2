@@ -297,8 +297,15 @@ export const Dashboard = () => {
             </CardHeader>
             <CardContent className="h-[300px]">
               {loadingFluxo ? (
-                <div className="flex items-center justify-center h-full">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                <div className="h-full flex items-end gap-2 pt-4 animate-pulse">
+                  {Array.from({ length: 15 }).map((_, i) => (
+                    <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                      <Skeleton 
+                        className="w-full rounded-t bg-muted" 
+                        style={{ height: `${Math.random() * 60 + 20}%` }} 
+                      />
+                    </div>
+                  ))}
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
@@ -343,8 +350,19 @@ export const Dashboard = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               {loadingSaldos ? (
-                <div className="space-y-4">
-                  {[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}
+                <div className="space-y-4 animate-pulse">
+                  {[1,2,3,4].map(i => (
+                    <div key={i} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Skeleton className="h-3 w-3 rounded-full" />
+                          <Skeleton className="h-4 w-24" />
+                        </div>
+                        <Skeleton className="h-4 w-20" />
+                      </div>
+                      <Skeleton className="h-2 w-full rounded-full" />
+                    </div>
+                  ))}
                 </div>
               ) : (
                 <>

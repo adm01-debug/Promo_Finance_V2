@@ -129,7 +129,13 @@ export const ResumoRapido = () => {
           {insights.slice(0, 4).map((insight, index) => (
             <div key={index} className="p-3 rounded-lg bg-muted/50">
               {isLoading ? (
-                <Skeleton className="h-12 w-full" />
+                <div className="space-y-2 animate-pulse">
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-7 w-7 rounded-md" />
+                    <Skeleton className="h-3 w-20" />
+                  </div>
+                  <Skeleton className="h-6 w-24" />
+                </div>
               ) : (
                 <>
                   <div className="flex items-center gap-2 mb-1">

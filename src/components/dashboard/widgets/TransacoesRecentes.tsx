@@ -84,9 +84,23 @@ export const TransacoesRecentes = () => {
       <CardContent>
         <ScrollArea className="h-[300px] pr-4">
           {isLoading ? (
-            <div className="space-y-3">
+            <div className="space-y-3 animate-pulse">
               {[1, 2, 3, 4, 5].map((i) => (
-                <Skeleton key={i} className="h-16 w-full" />
+                <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+                  <Skeleton className="h-9 w-9 rounded-full shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <div className="flex justify-between">
+                      <div className="space-y-1.5">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-3 w-24" />
+                      </div>
+                      <div className="text-right space-y-1.5">
+                        <Skeleton className="h-4 w-20 ml-auto" />
+                        <Skeleton className="h-3 w-16 ml-auto" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           ) : (transacoes || []).length === 0 ? (
