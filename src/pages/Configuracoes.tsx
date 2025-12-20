@@ -24,8 +24,10 @@ import {
   Database,
   Zap,
   ToggleLeft,
-  Timer
+  Timer,
+  Link2
 } from 'lucide-react';
+import { OpenFinancePanel } from '@/components/integracoes/OpenFinancePanel';
 import { NotificacoesConfig } from '@/components/configuracoes/NotificacoesConfig';
 import { CronJobsPanel } from '@/components/configuracoes/CronJobsPanel';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -186,7 +188,7 @@ export default function Configuracoes() {
       </div>
 
       <Tabs defaultValue="regua" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5 lg:w-[750px]">
+        <TabsList className="grid w-full grid-cols-6 lg:w-[900px]">
           <TabsTrigger value="regua" className="gap-2">
             <Clock className="h-4 w-4" />
             <span className="hidden sm:inline">Régua de Cobrança</span>
@@ -205,6 +207,11 @@ export default function Configuracoes() {
             <Timer className="h-4 w-4" />
             <span className="hidden sm:inline">Agendamentos</span>
             <span className="sm:hidden">Cron</span>
+          </TabsTrigger>
+          <TabsTrigger value="integracoes" className="gap-2">
+            <Link2 className="h-4 w-4" />
+            <span className="hidden sm:inline">Integrações</span>
+            <span className="sm:hidden">APIs</span>
           </TabsTrigger>
           <TabsTrigger value="sistema" className="gap-2">
             <Settings className="h-4 w-4" />
@@ -537,6 +544,18 @@ export default function Configuracoes() {
             animate="visible"
           >
             <CronJobsPanel />
+          </motion.div>
+        </TabsContent>
+
+        {/* Integrações */}
+        <TabsContent value="integracoes">
+          <motion.div 
+            className="space-y-6"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <OpenFinancePanel />
           </motion.div>
         </TabsContent>
 
