@@ -90,6 +90,7 @@ import { toast } from 'sonner';
 import { AdvancedFiltersPopover, AdvancedFilters } from '@/components/ui/advanced-filters';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTableOptimization } from '@/hooks/useTableOptimization';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -411,6 +412,9 @@ export default function ContasPagar() {
     }
   });
 
+  // Optimization hook for large datasets
+  const { getRowAnimation } = useTableOptimization(sortedContas.length);
+
   return (
     <MainLayout>
       <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
@@ -667,9 +671,7 @@ export default function ContasPagar() {
                         return (
                           <motion.tr
                             key={conta.id}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.05 }}
+                            {...getRowAnimation(index)}
                             className="group hover:bg-muted/50 transition-colors"
                           >
                             <TableCell>

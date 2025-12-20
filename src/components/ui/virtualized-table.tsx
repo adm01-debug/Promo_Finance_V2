@@ -23,14 +23,7 @@ interface VirtualizedTableProps<T> {
   getRowKey?: (item: T, index: number) => string | number;
 }
 
-interface RowComponentProps<T> {
-  ariaAttributes: {
-    "aria-posinset": number;
-    "aria-setsize": number;
-    role: "listitem";
-  };
-  index: number;
-  style: React.CSSProperties;
+interface RowProps<T> {
   data: T[];
   columns: Column<T>[];
   onRowClick?: (item: T, index: number) => void;
@@ -44,7 +37,19 @@ function RowComponent<T extends Record<string, unknown>>({
   columns,
   onRowClick,
   getRowKey,
-}: RowComponentProps<T>) {
+}: {
+  ariaAttributes: {
+    "aria-posinset": number;
+    "aria-setsize": number;
+    role: "listitem";
+  };
+  index: number;
+  style: React.CSSProperties;
+  data: T[];
+  columns: Column<T>[];
+  onRowClick?: (item: T, index: number) => void;
+  getRowKey?: (item: T, index: number) => string | number;
+}): React.ReactElement {
   const item = data[index];
   const key = getRowKey ? getRowKey(item, index) : index;
 
@@ -175,7 +180,9 @@ export function VirtualizedTable<T extends Record<string, unknown>>({
     );
   }
 
-  // For large datasets, use virtualization
+  // For large datasets, use virtualization with react-window v2 API
+  const rowProps: RowProps<T> = { data, columns, onRowClick, getRowKey };
+
   return (
     <div className={cn("relative w-full overflow-auto rounded-md border", className)}>
       {/* Fixed Header */}
@@ -194,24 +201,14 @@ export function VirtualizedTable<T extends Record<string, unknown>>({
         ))}
       </div>
 
-      {/* Virtualized Body */}
+      {/* Virtualized Body - using react-window v2 API */}
       <List
         rowCount={data.length}
         rowHeight={rowHeight}
         overscanCount={5}
         style={{ height }}
-        rowProps={{ data, columns, onRowClick, getRowKey }}
-        rowComponent={({ index, style, ...rowProps }) => (
-          <RowComponent
-            index={index}
-            style={style}
-            data={rowProps.data}
-            columns={rowProps.columns}
-            onRowClick={rowProps.onRowClick}
-            getRowKey={rowProps.getRowKey}
-            ariaAttributes={{ "aria-posinset": index + 1, "aria-setsize": data.length, role: "listitem" }}
-          />
-        )}
+        rowProps={rowProps}
+        rowComponent={RowComponent as any}
       />
     </div>
   );
