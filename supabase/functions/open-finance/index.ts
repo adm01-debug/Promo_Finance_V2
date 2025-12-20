@@ -13,6 +13,7 @@ interface OpenFinanceRequest {
     | "get_accounts"
     | "get_balances"
     | "get_transactions"
+    | "import_transactions"
     | "refresh_token"
     | "revoke_consent";
   params?: Record<string, any>;
@@ -86,6 +87,18 @@ serve(async (req) => {
           user.id,
           params?.consent_id,
           params?.account_id,
+          params?.start_date,
+          params?.end_date
+        );
+        break;
+
+      case "import_transactions":
+        result = await importTransactionsToSystem(
+          supabase,
+          user.id,
+          params?.consent_id,
+          params?.account_id,
+          params?.conta_bancaria_id,
           params?.start_date,
           params?.end_date
         );
@@ -420,6 +433,108 @@ async function getTransactions(
     transactions,
     total: transactions.length,
     period: { start, end },
+  };
+}
+
+// Import transactions to the system for reconciliation
+async function importTransactionsToSystem(
+  supabase: any,
+  userId: string,
+  consentId?: string,
+  accountId?: string,
+  contaBancariaId?: string,
+  startDate?: string,
+  endDate?: string
+): Promise<any> {
+  console.log(`[open-finance] Importing transactions for account ${accountId} to conta_bancaria ${contaBancariaId}`);
+
+  if (!contaBancariaId) {
+    throw new Error("ID da conta bancária do sistema é obrigatório");
+  }
+
+  // Get transactions from Open Finance
+  const transactionsResult = await getTransactions(
+    supabase,
+    userId,
+    consentId,
+    accountId,
+    startDate,
+    endDate
+  );
+
+  const transactions = transactionsResult.transactions;
+  let imported = 0;
+  let skipped = 0;
+  let errors = 0;
+
+  // Get existing transactions to avoid duplicates
+  const { data: existingTransactions } = await supabase
+    .from("transacoes_bancarias")
+    .select("descricao, data, valor")
+    .eq("conta_bancaria_id", contaBancariaId);
+
+  const existingKeys = new Set(
+    existingTransactions?.map((t: any) => `${t.descricao}-${t.data}-${t.valor}`) || []
+  );
+
+  // Calculate running balance
+  const { data: contaBancaria } = await supabase
+    .from("contas_bancarias")
+    .select("saldo_atual")
+    .eq("id", contaBancariaId)
+    .single();
+
+  let runningBalance = contaBancaria?.saldo_atual || 0;
+
+  for (const txn of transactions) {
+    const amount = parseFloat(txn.amount);
+    const txnDate = new Date(txn.date).toISOString().split("T")[0];
+    const tipo = amount >= 0 ? "receita" : "despesa";
+    const valorAbsoluto = Math.abs(amount);
+
+    // Check for duplicates
+    const key = `${txn.description}-${txnDate}-${valorAbsoluto}`;
+    if (existingKeys.has(key)) {
+      console.log(`[open-finance] Skipping duplicate transaction: ${txn.description}`);
+      skipped++;
+      continue;
+    }
+
+    try {
+      // Insert transaction
+      const { error: insertError } = await supabase.from("transacoes_bancarias").insert({
+        conta_bancaria_id: contaBancariaId,
+        data: txnDate,
+        descricao: txn.description,
+        valor: valorAbsoluto,
+        tipo: tipo,
+        saldo: runningBalance + amount,
+        conciliada: false,
+      });
+
+      if (insertError) {
+        console.error(`[open-finance] Error inserting transaction:`, insertError);
+        errors++;
+      } else {
+        imported++;
+        runningBalance += amount;
+        existingKeys.add(key);
+      }
+    } catch (err) {
+      console.error(`[open-finance] Error processing transaction:`, err);
+      errors++;
+    }
+  }
+
+  console.log(`[open-finance] Import complete: ${imported} imported, ${skipped} skipped, ${errors} errors`);
+
+  return {
+    success: true,
+    imported,
+    skipped,
+    errors,
+    total: transactions.length,
+    message: `Importação concluída: ${imported} transações importadas, ${skipped} duplicadas ignoradas`,
   };
 }
 

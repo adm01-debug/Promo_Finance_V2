@@ -167,6 +167,49 @@ export const useOpenFinance = () => {
     },
   });
 
+  // Import transactions to system mutation
+  const importTransactionsMutation = useMutation({
+    mutationFn: async ({
+      consentId,
+      accountId,
+      contaBancariaId,
+      startDate,
+      endDate,
+    }: {
+      consentId: string;
+      accountId: string;
+      contaBancariaId: string;
+      startDate?: string;
+      endDate?: string;
+    }) => {
+      const { data, error } = await supabase.functions.invoke('open-finance', {
+        body: {
+          action: 'import_transactions',
+          params: { 
+            consent_id: consentId, 
+            account_id: accountId, 
+            conta_bancaria_id: contaBancariaId,
+            start_date: startDate, 
+            end_date: endDate 
+          },
+        },
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      toast.success('Transações importadas', {
+        description: data.message,
+      });
+    },
+    onError: (error: any) => {
+      toast.error('Erro ao importar transações', {
+        description: error.message,
+      });
+    },
+  });
+
   // Revoke consent mutation
   const revokeConsentMutation = useMutation({
     mutationFn: async (consentId: string) => {
@@ -206,6 +249,8 @@ export const useOpenFinance = () => {
     gettingBalances: getBalancesMutation.isPending,
     getTransactions: getTransactionsMutation.mutateAsync,
     gettingTransactions: getTransactionsMutation.isPending,
+    importTransactions: importTransactionsMutation.mutateAsync,
+    importingTransactions: importTransactionsMutation.isPending,
     revokeConsent: revokeConsentMutation.mutate,
     revokingConsent: revokeConsentMutation.isPending,
   };
