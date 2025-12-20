@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { useDebounce } from '@/hooks/useOptimizedQueries';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
@@ -124,6 +125,7 @@ const tipoCobrancaIcons: Record<TipoCobranca, typeof CreditCard> = {
 
 export default function ContasPagar() {
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm, 300);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [centroCustoFilter, setCentroCustoFilter] = useState<string>('all');
   const [aprovacaoFilter, setAprovacaoFilter] = useState<string>('all');
@@ -142,11 +144,11 @@ export default function ContasPagar() {
   const [deletingConta, setDeletingConta] = useState<any>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Server-side paginated query
+  // Server-side paginated query with debounced search
   const { data: paginatedResult, isLoading } = useContasPagarPaginated({
     page: currentPage,
     pageSize,
-    search: searchTerm,
+    search: debouncedSearch,
     status: statusFilter,
     centroCustoId: centroCustoFilter,
   });

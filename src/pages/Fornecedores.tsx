@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { EmptyState } from '@/components/ui/micro-interactions';
+import { useDebounce } from '@/hooks/useOptimizedQueries';
 import {
   Plus,
   Search,
@@ -81,6 +82,7 @@ const itemVariants = {
 
 export default function Fornecedores() {
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm, 300);
   const [formOpen, setFormOpen] = useState(false);
   const [editingFornecedor, setEditingFornecedor] = useState<Fornecedor | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -99,11 +101,11 @@ export default function Fornecedores() {
 
   const queryClient = useQueryClient();
   
-  // Server-side paginated query
+  // Server-side paginated query with debounced search
   const { data: paginatedResult, isLoading } = useFornecedoresPaginated({
     page: currentPage,
     pageSize,
-    search: searchTerm,
+    search: debouncedSearch,
     status: statusFilter,
     estado: estadoFilter,
   });
