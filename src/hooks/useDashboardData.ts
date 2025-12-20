@@ -57,10 +57,8 @@ export function useDashboardKPIs() {
       const fimMes = endOfMonth(hoje);
       const inicioMesAnterior = startOfMonth(subMonths(hoje, 1));
       const fimMesAnterior = endOfMonth(subMonths(hoje, 1));
-      const inicioHoje = startOfDay(hoje);
-      const fimHoje = endOfDay(hoje);
 
-      // Fetch all data in parallel
+      // Fetch all data in parallel with optimized selects
       const [
         contasBancarias,
         contasReceberMes,
@@ -75,7 +73,7 @@ export function useDashboardKPIs() {
         alertasNaoLidos,
       ] = await Promise.all([
         supabase.from('contas_bancarias').select('saldo_atual').eq('ativo', true),
-        supabase.from('contas_receber').select('valor, valor_recebido, status')
+        supabase.from('contas_receber').select('valor_recebido')
           .gte('data_recebimento', inicioMes.toISOString())
           .lte('data_recebimento', fimMes.toISOString())
           .eq('status', 'pago'),
@@ -83,7 +81,7 @@ export function useDashboardKPIs() {
           .gte('data_recebimento', inicioMesAnterior.toISOString())
           .lte('data_recebimento', fimMesAnterior.toISOString())
           .eq('status', 'pago'),
-        supabase.from('contas_pagar').select('valor, valor_pago, status')
+        supabase.from('contas_pagar').select('valor_pago')
           .gte('data_pagamento', inicioMes.toISOString())
           .lte('data_pagamento', fimMes.toISOString())
           .eq('status', 'pago'),
@@ -91,16 +89,16 @@ export function useDashboardKPIs() {
           .gte('data_pagamento', inicioMesAnterior.toISOString())
           .lte('data_pagamento', fimMesAnterior.toISOString())
           .eq('status', 'pago'),
-        supabase.from('contas_receber').select('id').eq('status', 'vencido'),
-        supabase.from('contas_pagar').select('id').eq('status', 'vencido'),
-        supabase.from('contas_receber').select('id')
+        supabase.from('contas_receber').select('id', { count: 'exact', head: true }).eq('status', 'vencido'),
+        supabase.from('contas_pagar').select('id', { count: 'exact', head: true }).eq('status', 'vencido'),
+        supabase.from('contas_receber').select('id', { count: 'exact', head: true })
           .eq('data_vencimento', format(hoje, 'yyyy-MM-dd'))
           .neq('status', 'pago'),
-        supabase.from('contas_pagar').select('id')
+        supabase.from('contas_pagar').select('id', { count: 'exact', head: true })
           .eq('data_vencimento', format(hoje, 'yyyy-MM-dd'))
           .neq('status', 'pago'),
-        supabase.from('empresas').select('id').eq('ativo', true),
-        supabase.from('alertas').select('id').eq('lido', false),
+        supabase.from('empresas').select('id', { count: 'exact', head: true }).eq('ativo', true),
+        supabase.from('alertas').select('id', { count: 'exact', head: true }).eq('lido', false),
       ]);
 
       // Calculate saldo total
@@ -120,31 +118,33 @@ export function useDashboardKPIs() {
         ? ((despesasMes - despesasMesAnterior) / despesasMesAnterior) * 100 
         : 0;
 
-      // Calculate inadimplência
-      const totalReceber = receitasMes + (contasReceberVencidas.data?.length || 0);
+      // Calculate inadimplência using count
+      const vencidasCount = contasReceberVencidas.count || 0;
+      const totalReceber = receitasMes + vencidasCount;
       const inadimplencia = totalReceber > 0 
-        ? ((contasReceberVencidas.data?.length || 0) / totalReceber) * 100 
+        ? (vencidasCount / totalReceber) * 100 
         : 0;
 
       return {
         saldoTotal,
-        saldoTotalVariacao: 0, // Would need historical data
+        saldoTotalVariacao: 0,
         receitasMes,
         receitasMesVariacao,
         despesasMes,
         despesasMesVariacao,
         inadimplencia,
         inadimplenciaVariacao: 0,
-        contasReceberHoje: contasReceberHoje.data?.length || 0,
-        contasPagarHoje: contasPagarHoje.data?.length || 0,
-        contasReceberVencidas: contasReceberVencidas.data?.length || 0,
-        contasPagarVencidas: contasPagarVencidas.data?.length || 0,
-        totalEmpresas: empresas.data?.length || 0,
+        contasReceberHoje: contasReceberHoje.count || 0,
+        contasPagarHoje: contasPagarHoje.count || 0,
+        contasReceberVencidas: vencidasCount,
+        contasPagarVencidas: contasPagarVencidas.count || 0,
+        totalEmpresas: empresas.count || 0,
         totalContasBancarias: contasBancarias.data?.length || 0,
-        totalAlertas: alertasNaoLidos.data?.length || 0,
+        totalAlertas: alertasNaoLidos.count || 0,
       };
     },
-    staleTime: 60000, // 1 minute
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes cache
   });
 }
 
@@ -168,6 +168,8 @@ export function useSaldosPorBanco() {
         cor: c.cor || '#3B82F6',
       }));
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 15 * 60 * 1000, // 15 minutes cache
   });
 }
 
@@ -179,7 +181,7 @@ export function useFluxoCaixaProjetadoDashboard(dias: number = 30) {
       const dataFim = new Date(hoje);
       dataFim.setDate(dataFim.getDate() + dias);
 
-      // Fetch accounts receivable and payable
+      // Fetch accounts receivable and payable in parallel
       const [contasReceber, contasPagar, saldoInicial] = await Promise.all([
         supabase.from('contas_receber')
           .select('valor, data_vencimento')
@@ -198,7 +200,20 @@ export function useFluxoCaixaProjetadoDashboard(dias: number = 30) {
 
       const saldo = saldoInicial.data?.reduce((sum, c) => sum + (c.saldo_atual || 0), 0) || 0;
 
-      // Build daily projection
+      // Build daily projection using Map for O(1) lookups
+      const receitasPorDia = new Map<string, number>();
+      const despesasPorDia = new Map<string, number>();
+
+      contasReceber.data?.forEach(c => {
+        const current = receitasPorDia.get(c.data_vencimento) || 0;
+        receitasPorDia.set(c.data_vencimento, current + c.valor);
+      });
+
+      contasPagar.data?.forEach(c => {
+        const current = despesasPorDia.get(c.data_vencimento) || 0;
+        despesasPorDia.set(c.data_vencimento, current + c.valor);
+      });
+
       const projecao: FluxoProjetado[] = [];
       let saldoAcumulado = saldo;
 
@@ -207,13 +222,8 @@ export function useFluxoCaixaProjetadoDashboard(dias: number = 30) {
         data.setDate(data.getDate() + i);
         const dataStr = format(data, 'yyyy-MM-dd');
 
-        const receitasDia = contasReceber.data
-          ?.filter(c => c.data_vencimento === dataStr)
-          .reduce((sum, c) => sum + c.valor, 0) || 0;
-
-        const despesasDia = contasPagar.data
-          ?.filter(c => c.data_vencimento === dataStr)
-          .reduce((sum, c) => sum + c.valor, 0) || 0;
+        const receitasDia = receitasPorDia.get(dataStr) || 0;
+        const despesasDia = despesasPorDia.get(dataStr) || 0;
 
         saldoAcumulado += receitasDia - despesasDia;
 
@@ -227,6 +237,8 @@ export function useFluxoCaixaProjetadoDashboard(dias: number = 30) {
 
       return projecao;
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 15 * 60 * 1000, // 15 minutes cache
   });
 }
 
