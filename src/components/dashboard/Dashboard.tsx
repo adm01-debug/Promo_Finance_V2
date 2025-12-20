@@ -17,6 +17,10 @@ import {
   Loader2,
 } from 'lucide-react';
 import { DraggableDashboardGrid } from './DraggableDashboardGrid';
+import { CalendarioVencimentos } from './widgets/CalendarioVencimentos';
+import { MetasFinanceiras } from './widgets/MetasFinanceiras';
+import { TransacoesRecentes } from './widgets/TransacoesRecentes';
+import { ResumoRapido } from './widgets/ResumoRapido';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -485,8 +489,30 @@ export const Dashboard = () => {
             </CardContent>
           </Card>
         </motion.div>
-      </div>
+        </div>
 
+          {/* Novos Widgets - Linha 3 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Calendário de Vencimentos */}
+            <motion.div variants={itemVariants} className="lg:col-span-1">
+              {renderCard('calendario-vencimentos', <CalendarioVencimentos />)}
+            </motion.div>
+
+            {/* Metas Financeiras */}
+            <motion.div variants={itemVariants} className="lg:col-span-1">
+              {renderCard('metas-financeiras', <MetasFinanceiras />)}
+            </motion.div>
+
+            {/* Transações Recentes */}
+            <motion.div variants={itemVariants} className="lg:col-span-1">
+              {renderCard('transacoes-recentes', <TransacoesRecentes />)}
+            </motion.div>
+
+            {/* Resumo Rápido */}
+            <motion.div variants={itemVariants} className="lg:col-span-1">
+              {renderCard('resumo-rapido', <ResumoRapido />)}
+            </motion.div>
+          </div>
       {/* Quick Actions */}
       <motion.div variants={itemVariants}>
         <Card>
