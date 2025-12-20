@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
+import { EmptyState } from '@/components/ui/micro-interactions';
 import {
   Plus,
   Search,
@@ -20,6 +21,7 @@ import {
   Building2,
   FileText,
   Loader2,
+  Inbox,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -414,8 +416,12 @@ export default function ContasReceber() {
                   <TableBody>
                     {sortedContas.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
-                          {contas.length === 0 ? 'Nenhuma conta cadastrada' : 'Nenhuma conta encontrada com os filtros aplicados'}
+                        <TableCell colSpan={7} className="p-0">
+                          <EmptyState 
+                            icon={<Inbox className="h-8 w-8 text-muted-foreground" />}
+                            title={contas.length === 0 ? 'Nenhuma conta cadastrada' : 'Nenhuma conta encontrada'}
+                            description={contas.length === 0 ? 'Comece adicionando sua primeira conta a receber' : 'Tente ajustar os filtros de busca'}
+                          />
                         </TableCell>
                       </TableRow>
                     ) : (

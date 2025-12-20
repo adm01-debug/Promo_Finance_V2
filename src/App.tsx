@@ -11,6 +11,7 @@ import { KeyboardShortcutsProvider } from "@/components/layout/KeyboardShortcuts
 import { GuidedTour } from "@/components/onboarding/GuidedTour";
 import { ErrorBoundary } from "@/components/error/ErrorBoundary";
 import { SkipLinks } from "@/components/ui/skip-link";
+import { DataPrefetcher } from "@/components/providers/DataPrefetcher";
 import { Loader2 } from "lucide-react";
 
 // Lazy load pages for better performance
@@ -81,10 +82,11 @@ const App = () => (
           <AuthProvider>
             <BrowserRouter>
               <KeyboardShortcutsProvider>
-                <SkipLinks />
-                <Toaster />
-                <Sonner />
-                <GuidedTour />
+                <DataPrefetcher>
+                  <SkipLinks />
+                  <Toaster />
+                  <Sonner />
+                  <GuidedTour />
                 <Suspense fallback={<PageLoader />}>
                   <ErrorBoundary>
                     <Routes>
@@ -127,6 +129,7 @@ const App = () => (
                     </Routes>
                   </ErrorBoundary>
                 </Suspense>
+                </DataPrefetcher>
               </KeyboardShortcutsProvider>
             </BrowserRouter>
           </AuthProvider>
