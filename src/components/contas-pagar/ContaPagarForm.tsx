@@ -4,7 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Building2, Calendar, DollarSign, FileText, Tag, CreditCard, Banknote, QrCode, Wallet, Edit } from 'lucide-react';
+import { Building2, Calendar, DollarSign, FileText, Tag, CreditCard, Banknote, QrCode, Wallet, Edit } from 'lucide-react';
+import { ActionButton, useActionState } from '@/components/ui/action-button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useFornecedores, useCentrosCusto, useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
@@ -607,9 +608,11 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancelar
               </Button>
-              <Button
+              <ActionButton
                 type="submit"
-                disabled={isPending}
+                state={isPending ? 'loading' : 'idle'}
+                loadingText="Salvando..."
+                successText="Salvo!"
                 className={cn(
                   "gap-2 shadow-lg",
                   isEditing 
@@ -617,9 +620,8 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
                     : "bg-gradient-to-r from-primary to-primary/80 shadow-primary/25"
                 )}
               >
-                {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                 {isEditing ? 'Salvar Alterações' : 'Criar Conta'}
-              </Button>
+              </ActionButton>
             </div>
           </form>
         </Form>

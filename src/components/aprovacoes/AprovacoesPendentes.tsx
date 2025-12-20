@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useSolicitacoesPendentes, useAprovarSolicitacao, useRejeitarSolicitacao, SolicitacaoAprovacao } from '@/hooks/useAprovacoes';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/formatters';
+import { EmptyState } from '@/components/ui/micro-interactions';
 
 export const AprovacoesPendentes = () => {
   const { data: solicitacoes, isLoading } = useSolicitacoesPendentes();
@@ -55,15 +56,11 @@ export const AprovacoesPendentes = () => {
     return (
       <Card className="border-border/50">
         <CardContent className="pt-6">
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="h-16 w-16 rounded-full bg-success/10 flex items-center justify-center mb-4">
-              <Check className="h-8 w-8 text-success" />
-            </div>
-            <h3 className="font-semibold text-lg">Nenhuma aprovação pendente</h3>
-            <p className="text-muted-foreground text-sm mt-1">
-              Todos os pagamentos estão em dia
-            </p>
-          </div>
+          <EmptyState
+            icon={<Check className="h-8 w-8 text-success" />}
+            title="Nenhuma aprovação pendente"
+            description="Todos os pagamentos estão em dia"
+          />
         </CardContent>
       </Card>
     );

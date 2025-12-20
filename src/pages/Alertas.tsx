@@ -36,6 +36,7 @@ import {
   type Alerta
 } from '@/hooks/useAlertas';
 import { cn } from '@/lib/utils';
+import { EmptyState } from '@/components/ui/micro-interactions';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -280,10 +281,11 @@ export default function Alertas() {
                   animate="visible"
                 >
                   {lista.length === 0 ? (
-                    <div className="p-8 text-center text-muted-foreground">
-                      <Bell className="h-12 w-12 mx-auto mb-4 opacity-20" />
-                      <p>Nenhum alerta nesta categoria</p>
-                    </div>
+                    <EmptyState
+                      icon={<Bell className="h-8 w-8 text-muted-foreground" />}
+                      title="Nenhum alerta nesta categoria"
+                      description="Quando houver alertas relevantes, eles aparecerão aqui."
+                    />
                   ) : (
                     lista.map((alerta) => {
                       const tipoInfo = getTipoInfo(alerta.tipo);

@@ -42,6 +42,7 @@ import { CentroCustoForm } from '@/components/centros-custo/CentroCustoForm';
 import { formatCurrency, formatPercentage } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { EmptyState } from '@/components/ui/micro-interactions';
 import {
   ResponsiveContainer,
   PieChart as RePieChart,
@@ -382,9 +383,17 @@ export default function CentroCustos() {
               />
             </Card>
           ) : filteredCentros.length === 0 ? (
-            <Card className="p-8 text-center text-muted-foreground">
-              {searchTerm ? 'Nenhum centro de custo encontrado' : 'Nenhum centro de custo cadastrado'}
-            </Card>
+            <EmptyState
+              icon={<FolderTree className="h-8 w-8 text-muted-foreground" />}
+              title={searchTerm ? 'Nenhum centro de custo encontrado' : 'Nenhum centro de custo cadastrado'}
+              description="Crie seu primeiro centro de custo para organizar despesas e receitas."
+              action={
+                <Button onClick={() => handleOpenCreate()} className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  Novo Centro de Custo
+                </Button>
+              }
+            />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredCentros.map((centro, index) => {

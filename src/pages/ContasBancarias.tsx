@@ -46,11 +46,13 @@ import { useContasBancarias, useEmpresas, ContaBancaria } from '@/hooks/useFinan
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { EmptyState } from '@/components/ui/micro-interactions';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -112,24 +114,27 @@ export default function ContasBancarias() {
 
   const handleDeleteConta = async () => {
     if (!deletingConta) return;
-    setIsDeleting(true);
     
-    const { error } = await supabase
-      .from('contas_bancarias')
-      .update({ ativo: false })
-      .eq('id', deletingConta.id);
-    
-    setIsDeleting(false);
-    
-    if (error) {
-      toast.error('Erro ao excluir conta bancária');
-      return;
-    }
-    
-    toast.success('Conta bancária excluída com sucesso');
-    queryClient.invalidateQueries({ queryKey: ['contas-bancarias'] });
+    const contaBackup = { ...deletingConta };
     setDeleteDialogOpen(false);
     setDeletingConta(null);
+    
+    toastDeleteWithUndo({
+      item: contaBackup,
+      itemName: `Conta "${contaBackup.banco} - ${contaBackup.conta}"`,
+      onDelete: async () => {
+        const { error } = await supabase
+          .from('contas_bancarias')
+          .update({ ativo: false })
+          .eq('id', contaBackup.id);
+        
+        if (error) throw error;
+        queryClient.invalidateQueries({ queryKey: ['contas-bancarias'] });
+      },
+      onRestore: async () => {
+        queryClient.invalidateQueries({ queryKey: ['contas-bancarias'] });
+      },
+    });
   };
 
   if (isLoading) {
@@ -330,9 +335,19 @@ export default function ContasBancarias() {
           animate="visible"
         >
           {contasFiltradas.length === 0 ? (
-            <Card className="col-span-full p-8 text-center text-muted-foreground">
-              Nenhuma conta bancária cadastrada
-            </Card>
+            <div className="col-span-full">
+              <EmptyState
+                icon={<CreditCard className="h-8 w-8 text-muted-foreground" />}
+                title="Nenhuma conta bancária cadastrada"
+                description="Adicione sua primeira conta bancária para gerenciar seus saldos."
+                action={
+                  <Button onClick={() => setDialogOpen(true)} className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Adicionar Conta
+                  </Button>
+                }
+              />
+            </div>
           ) : (
             contasFiltradas.map((conta) => {
               const bancoInfo = getBancoInfo(conta.banco);

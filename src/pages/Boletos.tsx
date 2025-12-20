@@ -33,6 +33,7 @@ import { formatCurrency, formatDate } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { useBoletos, Boleto, NovoBoletoData } from '@/hooks/useBoletos';
 import { cn } from '@/lib/utils';
+import { EmptyState } from '@/components/ui/micro-interactions';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -621,18 +622,17 @@ export default function Boletos() {
                   </AnimatePresence>
                 </div>
               ) : (
-                <div className="text-center py-12">
-                  <FileText className="h-12 w-12 mx-auto text-muted-foreground opacity-50 mb-4" />
-                  <p className="text-muted-foreground">Nenhum boleto encontrado</p>
-                  <Button 
-                    variant="outline" 
-                    className="mt-4"
-                    onClick={() => setShowNovoBoleto(true)}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Criar Primeiro Boleto
-                  </Button>
-                </div>
+                <EmptyState
+                  icon={<FileText className="h-8 w-8 text-muted-foreground" />}
+                  title="Nenhum boleto encontrado"
+                  description="Gere seu primeiro boleto para começar a receber pagamentos."
+                  action={
+                    <Button onClick={() => setShowNovoBoleto(true)} className="gap-2">
+                      <Plus className="h-4 w-4" />
+                      Criar Primeiro Boleto
+                    </Button>
+                  }
+                />
               )}
             </CardContent>
           </Card>
