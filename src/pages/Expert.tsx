@@ -25,7 +25,10 @@ import {
   X,
   Search,
   Calendar,
-  Filter
+  Filter,
+  FileUp,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -35,6 +38,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useExpertContext } from '@/hooks/useExpertContext';
@@ -49,6 +53,8 @@ import {
   useUpdateMessageActions,
   ExpertMessage
 } from '@/hooks/useExpertConversations';
+import { DocumentAnalyzer } from '@/components/expert/DocumentAnalyzer';
+import { ProactiveSuggestions } from '@/components/expert/ProactiveSuggestions';
 import { formatDistanceToNow, isToday, isThisWeek, isThisMonth, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -119,6 +125,8 @@ export default function Expert() {
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFilter, setDateFilter] = useState<string>('all');
+  const [showDocumentUpload, setShowDocumentUpload] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   
@@ -630,70 +638,81 @@ export default function Expert() {
           )}
         </AnimatePresence>
 
+        {/* Proactive Suggestions Panel */}
+        {messages.length === 0 && showSuggestions && (
+          <div className="mb-4">
+            <ProactiveSuggestions 
+              onSuggestionClick={(suggestion) => sendMessage(suggestion)} 
+            />
+          </div>
+        )}
+
         {/* Chat Container */}
         <Card className="flex-1 flex flex-col overflow-hidden border-2">
           {messages.length === 0 ? (
             /* Welcome Screen */
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="mb-6"
-              >
-                <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-4 mx-auto">
-                  <Sparkles className="h-12 w-12 text-primary" />
-                </div>
-                <h2 className="text-xl font-semibold mb-2">Olá! Sou o EXPERT</h2>
-                <p className="text-muted-foreground max-w-md">
-                  Estou aqui para ajudar você a tomar melhores decisões financeiras, 
-                  prever cenários e esclarecer dúvidas sobre processos.
-                </p>
-              </motion.div>
+            <ScrollArea className="flex-1">
+              <div className="flex flex-col items-center justify-center p-8 text-center">
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="mb-6"
+                >
+                  <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-4 mx-auto">
+                    <Sparkles className="h-12 w-12 text-primary" />
+                  </div>
+                  <h2 className="text-xl font-semibold mb-2">Olá! Sou o EXPERT</h2>
+                  <p className="text-muted-foreground max-w-md">
+                    Estou aqui para ajudar você a tomar melhores decisões financeiras, 
+                    prever cenários e esclarecer dúvidas sobre processos.
+                  </p>
+                </motion.div>
 
-              {/* Quick Actions */}
-              <div className="w-full max-w-2xl mb-6">
-                <p className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2 justify-center">
-                  <Zap className="h-4 w-4" />
-                  Ações Rápidas
-                </p>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {quickActions.map((action, index) => (
+                {/* Quick Actions */}
+                <div className="w-full max-w-2xl mb-6">
+                  <p className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2 justify-center">
+                    <Zap className="h-4 w-4" />
+                    Ações Rápidas
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {quickActions.map((action, index) => (
+                      <motion.button
+                        key={index}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: index * 0.05 }}
+                        onClick={() => sendMessage(action.prompt)}
+                        className="flex items-center gap-2 px-4 py-2 rounded-full border bg-card hover:bg-primary hover:text-primary-foreground text-sm transition-colors"
+                      >
+                        <action.icon className="h-4 w-4" />
+                        {action.label}
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl">
+                  {suggestedQuestions.map((item, index) => (
                     <motion.button
                       key={index}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: index * 0.05 }}
-                      onClick={() => sendMessage(action.prompt)}
-                      className="flex items-center gap-2 px-4 py-2 rounded-full border bg-card hover:bg-primary hover:text-primary-foreground text-sm transition-colors"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 + index * 0.1 }}
+                      onClick={() => sendMessage(item.question)}
+                      className="flex items-start gap-3 p-4 rounded-xl border bg-card hover:bg-muted/50 text-left transition-colors group"
                     >
-                      <action.icon className="h-4 w-4" />
-                      {action.label}
+                      <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
+                        <item.icon className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">{item.label}</p>
+                        <p className="text-xs text-muted-foreground line-clamp-2">{item.question}</p>
+                      </div>
                     </motion.button>
                   ))}
                 </div>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl">
-                {suggestedQuestions.map((item, index) => (
-                  <motion.button
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 + index * 0.1 }}
-                    onClick={() => sendMessage(item.question)}
-                    className="flex items-start gap-3 p-4 rounded-xl border bg-card hover:bg-muted/50 text-left transition-colors group"
-                  >
-                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                      <item.icon className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-sm">{item.label}</p>
-                      <p className="text-xs text-muted-foreground line-clamp-2">{item.question}</p>
-                    </div>
-                  </motion.button>
-                ))}
-              </div>
-            </div>
+            </ScrollArea>
           ) : (
             /* Messages */
             <ScrollArea className="flex-1 p-4" ref={scrollRef}>
@@ -791,34 +810,64 @@ export default function Expert() {
 
           {/* Input Area */}
           <div className="p-4 border-t bg-card/50">
-            <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
-              <div className="relative">
-                <Textarea
-                  ref={textareaRef}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Digite sua pergunta para o EXPERT..."
-                  className="min-h-[60px] max-h-[200px] pr-14 resize-none"
-                  disabled={isLoading}
-                />
-                <Button
-                  type="submit"
-                  size="icon"
-                  disabled={!input.trim() || isLoading}
-                  className="absolute right-2 bottom-2 h-10 w-10 rounded-xl"
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <Send className="h-5 w-5" />
-                  )}
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground text-center mt-2">
-                Pressione Enter para enviar ou Shift+Enter para nova linha
-              </p>
-            </form>
+            <div className="max-w-3xl mx-auto">
+              {/* Document Upload Toggle */}
+              <Collapsible open={showDocumentUpload} onOpenChange={setShowDocumentUpload}>
+                <div className="flex items-center gap-2 mb-3">
+                  <CollapsibleTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <FileUp className="h-4 w-4" />
+                      Analisar Documento
+                      {showDocumentUpload ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </CollapsibleTrigger>
+                  <span className="text-xs text-muted-foreground">
+                    Upload de PDF, planilhas ou imagens para análise
+                  </span>
+                </div>
+                <CollapsibleContent className="mb-3">
+                  <DocumentAnalyzer 
+                    onAnalysisComplete={(analysis) => {
+                      sendMessage(`Análise do documento:\n\n${analysis}`);
+                      setShowDocumentUpload(false);
+                    }} 
+                  />
+                </CollapsibleContent>
+              </Collapsible>
+
+              <form onSubmit={handleSubmit}>
+                <div className="relative">
+                  <Textarea
+                    ref={textareaRef}
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Digite sua pergunta para o EXPERT..."
+                    className="min-h-[60px] max-h-[200px] pr-14 resize-none"
+                    disabled={isLoading}
+                  />
+                  <Button
+                    type="submit"
+                    size="icon"
+                    disabled={!input.trim() || isLoading}
+                    className="absolute right-2 bottom-2 h-10 w-10 rounded-xl"
+                  >
+                    {isLoading ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <Send className="h-5 w-5" />
+                    )}
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground text-center mt-2">
+                  Pressione Enter para enviar ou Shift+Enter para nova linha
+                </p>
+              </form>
+            </div>
           </div>
         </Card>
       </div>
