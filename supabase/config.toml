@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.executar-analise-preditiva]
 verify_jwt = false
+
+[functions.analyze-document]
+verify_jwt = false
