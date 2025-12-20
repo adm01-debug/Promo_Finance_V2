@@ -835,6 +835,45 @@ export type Database = {
           },
         ]
       }
+      feedback_conciliacao_ia: {
+        Row: {
+          acao: string
+          created_at: string
+          created_by: string | null
+          id: string
+          lancamento_descricao: string | null
+          lancamento_entidade: string
+          motivo_rejeicao: string | null
+          score_original: number
+          tipo_lancamento: string
+          transacao_descricao: string
+        }
+        Insert: {
+          acao: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          lancamento_descricao?: string | null
+          lancamento_entidade: string
+          motivo_rejeicao?: string | null
+          score_original: number
+          tipo_lancamento: string
+          transacao_descricao: string
+        }
+        Update: {
+          acao?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          lancamento_descricao?: string | null
+          lancamento_entidade?: string
+          motivo_rejeicao?: string | null
+          score_original?: number
+          tipo_lancamento?: string
+          transacao_descricao?: string
+        }
+        Relationships: []
+      }
       fornecedores: {
         Row: {
           ativo: boolean
@@ -920,6 +959,73 @@ export type Database = {
             columns: ["conta_receber_id"]
             isOneToOne: false
             referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      historico_conciliacao_ia: {
+        Row: {
+          acao: string
+          analise_ia: string | null
+          aprovado_por: string | null
+          confianca: string
+          conta_pagar_id: string | null
+          conta_receber_id: string | null
+          created_at: string
+          id: string
+          motivos: Json
+          score_ia: number
+          tipo_lancamento: string
+          transacao_bancaria_id: string | null
+        }
+        Insert: {
+          acao: string
+          analise_ia?: string | null
+          aprovado_por?: string | null
+          confianca: string
+          conta_pagar_id?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          id?: string
+          motivos?: Json
+          score_ia: number
+          tipo_lancamento: string
+          transacao_bancaria_id?: string | null
+        }
+        Update: {
+          acao?: string
+          analise_ia?: string | null
+          aprovado_por?: string | null
+          confianca?: string
+          conta_pagar_id?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          id?: string
+          motivos?: Json
+          score_ia?: number
+          tipo_lancamento?: string
+          transacao_bancaria_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historico_conciliacao_ia_conta_pagar_id_fkey"
+            columns: ["conta_pagar_id"]
+            isOneToOne: false
+            referencedRelation: "contas_pagar"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "historico_conciliacao_ia_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "historico_conciliacao_ia_transacao_bancaria_id_fkey"
+            columns: ["transacao_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "transacoes_bancarias"
             referencedColumns: ["id"]
           },
         ]
