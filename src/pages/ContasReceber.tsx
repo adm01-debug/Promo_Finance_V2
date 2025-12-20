@@ -62,6 +62,7 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { useTableOptimization } from '@/hooks/useTableOptimization';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -220,6 +221,9 @@ export default function ContasReceber() {
 
   // Use sorting hook
   const { sortedData: sortedContas, sortKey, sortDirection, handleSort } = useSorting(filteredContas, 'data_vencimento');
+
+  // Optimization hook for large datasets
+  const { getRowAnimation } = useTableOptimization(sortedContas.length);
 
   return (
     <MainLayout>
@@ -424,9 +428,7 @@ export default function ContasReceber() {
                         return (
                           <motion.tr
                             key={conta.id}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.05 }}
+                            {...getRowAnimation(index)}
                             className="group hover:bg-muted/50 transition-colors"
                           >
                             <TableCell>

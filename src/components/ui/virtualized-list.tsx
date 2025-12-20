@@ -1,5 +1,5 @@
 import * as React from "react";
-import { List, ListImperativeAPI, useListRef } from "react-window";
+import { List } from "react-window";
 import { cn } from "@/lib/utils";
 
 interface VirtualizedListProps<T> {
@@ -14,6 +14,40 @@ interface VirtualizedListProps<T> {
   isLoading?: boolean;
 }
 
+interface RowProps<T> {
+  data: T[];
+  renderItem: (item: T, index: number, style: React.CSSProperties) => React.ReactNode;
+  getItemKey?: (item: T, index: number) => string | number;
+}
+
+function RowComponent<T>({
+  index,
+  style,
+  data,
+  renderItem,
+  getItemKey,
+}: {
+  ariaAttributes: {
+    "aria-posinset": number;
+    "aria-setsize": number;
+    role: "listitem";
+  };
+  index: number;
+  style: React.CSSProperties;
+  data: T[];
+  renderItem: (item: T, index: number, style: React.CSSProperties) => React.ReactNode;
+  getItemKey?: (item: T, index: number) => string | number;
+}): React.ReactElement {
+  const item = data[index];
+  const key = getItemKey ? getItemKey(item, index) : index;
+
+  return (
+    <div style={style} key={key}>
+      {renderItem(item, index, style)}
+    </div>
+  );
+}
+
 export function VirtualizedList<T>({
   data,
   rowHeight = 48,
@@ -25,8 +59,6 @@ export function VirtualizedList<T>({
   emptyMessage = "Nenhum item encontrado",
   isLoading = false,
 }: VirtualizedListProps<T>) {
-  const listRef = useListRef();
-
   if (isLoading) {
     return (
       <div className={cn("relative w-full overflow-auto", className)}>
@@ -61,24 +93,18 @@ export function VirtualizedList<T>({
     );
   }
 
-  // For larger datasets, use virtualization
+  // For larger datasets, use virtualization with react-window v2 API
+  const rowProps: RowProps<T> = { data, renderItem, getItemKey };
+
   return (
     <List
-      listRef={listRef}
       rowCount={data.length}
       rowHeight={typeof rowHeight === "function" ? rowHeight : rowHeight}
       overscanCount={overscanCount}
       className={className}
       style={{ height }}
-      rowProps={{ data, renderItem, getItemKey }}
-      rowComponent={({ index, style, data: listData, renderItem: render, getItemKey: getKey }) => (
-        <div 
-          style={style} 
-          key={getKey ? getKey(listData[index], index) : index}
-        >
-          {render(listData[index], index, style)}
-        </div>
-      )}
+      rowProps={rowProps}
+      rowComponent={RowComponent as any}
     />
   );
 }
