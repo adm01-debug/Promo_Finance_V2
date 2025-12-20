@@ -14,9 +14,9 @@ import {
   Activity,
   Target,
   Zap,
-  ArrowRight,
   Loader2,
 } from 'lucide-react';
+import { DraggableDashboardGrid } from './DraggableDashboardGrid';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -119,138 +119,154 @@ export const Dashboard = () => {
   const totalSaldoBancos = saldosPorBanco?.reduce((acc, b) => acc + b.saldo, 0) || 0;
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
-      {/* Page Header */}
-      <motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard Financeiro</h1>
-          <p className="text-muted-foreground mt-1">Visão geral das finanças da Promo Brindes</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="h-8 px-3 gap-2">
-            <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-            Atualizado agora
-          </Badge>
-          <Button variant="outline" size="sm" asChild>
-            <Link to="/alertas">
-              <AlertTriangle className="h-4 w-4 mr-2" />
-              {kpis?.totalAlertas || 0} Alertas
-            </Link>
-          </Button>
-        </div>
-      </motion.div>
+    <DraggableDashboardGrid>
+      {({ renderCard }) => (
+        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+          {/* Page Header */}
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Dashboard Financeiro</h1>
+              <p className="text-muted-foreground mt-1">Visão geral das finanças da Promo Brindes</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="h-8 px-3 gap-2">
+                <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                Atualizado agora
+              </Badge>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/alertas">
+                  <AlertTriangle className="h-4 w-4 mr-2" />
+                  {kpis?.totalAlertas || 0} Alertas
+                </Link>
+              </Button>
+            </div>
+          </motion.div>
 
-      {/* KPI Cards Principais */}
-      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {statsCards.map((stat) => (
-          <Link key={stat.title} to={stat.href}>
-            <Card className="overflow-hidden group hover:shadow-lg transition-all cursor-pointer">
-              <CardContent className="p-5">
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                    {stat.loading ? (
-                      <Skeleton className="h-8 w-28" />
-                    ) : (
-                      <p className="text-2xl font-bold">
-                        {stat.isPercentage ? `${stat.value.toFixed(1)}%` : formatCurrency(stat.value)}
-                      </p>
-                    )}
-                    <div className={cn('flex items-center gap-1 text-sm font-medium', stat.variation >= 0 ? 'text-green-600' : 'text-red-500')}>
-                      {stat.variation >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-                      {formatPercentage(stat.variation)} vs mês anterior
-                    </div>
+          {/* KPI Cards Principais */}
+          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {statsCards.map((stat) => 
+              renderCard(stat.title, (
+                <Link key={stat.title} to={stat.href}>
+                  <Card className="overflow-hidden group hover:shadow-lg transition-all cursor-pointer">
+                    <CardContent className="p-5">
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-2">
+                          <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
+                          {stat.loading ? (
+                            <Skeleton className="h-8 w-28" />
+                          ) : (
+                            <p className="text-2xl font-bold">
+                              {stat.isPercentage ? `${stat.value.toFixed(1)}%` : formatCurrency(stat.value)}
+                            </p>
+                          )}
+                          <div className={cn('flex items-center gap-1 text-sm font-medium', stat.variation >= 0 ? 'text-green-600' : 'text-red-500')}>
+                            {stat.variation >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+                            {formatPercentage(stat.variation)} vs mês anterior
+                          </div>
+                        </div>
+                        <div className={cn('h-12 w-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110',
+                          stat.color === 'primary' && 'bg-primary/10 text-primary',
+                          stat.color === 'success' && 'bg-green-100 dark:bg-green-900/30 text-green-600',
+                          stat.color === 'destructive' && 'bg-red-100 dark:bg-red-900/30 text-red-500',
+                          stat.color === 'warning' && 'bg-orange-100 dark:bg-orange-900/30 text-orange-500'
+                        )}>
+                          <stat.icon className="h-6 w-6" />
+                        </div>
+                      </div>
+                    </CardContent>
+                    <div className={cn('h-1 w-full',
+                      stat.color === 'primary' && 'bg-gradient-to-r from-primary to-primary/50',
+                      stat.color === 'success' && 'bg-gradient-to-r from-green-500 to-green-500/50',
+                      stat.color === 'destructive' && 'bg-gradient-to-r from-red-500 to-red-500/50',
+                      stat.color === 'warning' && 'bg-gradient-to-r from-orange-500 to-orange-500/50'
+                    )} />
+                  </Card>
+                </Link>
+              ))
+            )}
+          </motion.div>
+
+          {/* KPIs Secundários */}
+          <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {renderCard('kpi-empresas', (
+              <Card className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+                    <Building2 className="h-4 w-4 text-blue-600" />
                   </div>
-                  <div className={cn('h-12 w-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110',
-                    stat.color === 'primary' && 'bg-primary/10 text-primary',
-                    stat.color === 'success' && 'bg-green-100 dark:bg-green-900/30 text-green-600',
-                    stat.color === 'destructive' && 'bg-red-100 dark:bg-red-900/30 text-red-500',
-                    stat.color === 'warning' && 'bg-orange-100 dark:bg-orange-900/30 text-orange-500'
-                  )}>
-                    <stat.icon className="h-6 w-6" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Empresas</p>
+                    {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold">{kpis?.totalEmpresas || 0}</p>}
                   </div>
                 </div>
-              </CardContent>
-              <div className={cn('h-1 w-full',
-                stat.color === 'primary' && 'bg-gradient-to-r from-primary to-primary/50',
-                stat.color === 'success' && 'bg-gradient-to-r from-green-500 to-green-500/50',
-                stat.color === 'destructive' && 'bg-gradient-to-r from-red-500 to-red-500/50',
-                stat.color === 'warning' && 'bg-gradient-to-r from-orange-500 to-orange-500/50'
-              )} />
-            </Card>
-          </Link>
-        ))}
-      </motion.div>
-
-      {/* KPIs Secundários */}
-      <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-              <Building2 className="h-4 w-4 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Empresas</p>
-              {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold">{kpis?.totalEmpresas || 0}</p>}
-            </div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
-              <CreditCard className="h-4 w-4 text-purple-600" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Contas Bancárias</p>
-              {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold">{kpis?.totalContasBancarias || 0}</p>}
-            </div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/30">
-              <CheckCircle2 className="h-4 w-4 text-green-600" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Receber Hoje</p>
-              {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold">{kpis?.contasReceberHoje || 0}</p>}
-            </div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30">
-              <Clock className="h-4 w-4 text-orange-500" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Pagar Hoje</p>
-              {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold">{kpis?.contasPagarHoje || 0}</p>}
-            </div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30">
-              <AlertTriangle className="h-4 w-4 text-red-500" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Vencidas Receber</p>
-              {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold text-red-500">{kpis?.contasReceberVencidas || 0}</p>}
-            </div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30">
-              <AlertTriangle className="h-4 w-4 text-red-500" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Vencidas Pagar</p>
-              {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold text-red-500">{kpis?.contasPagarVencidas || 0}</p>}
-            </div>
-          </div>
-        </Card>
-      </motion.div>
+              </Card>
+            ))}
+            {renderCard('kpi-contas-bancarias', (
+              <Card className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
+                    <CreditCard className="h-4 w-4 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Contas Bancárias</p>
+                    {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold">{kpis?.totalContasBancarias || 0}</p>}
+                  </div>
+                </div>
+              </Card>
+            ))}
+            {renderCard('kpi-receber-hoje', (
+              <Card className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/30">
+                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Receber Hoje</p>
+                    {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold">{kpis?.contasReceberHoje || 0}</p>}
+                  </div>
+                </div>
+              </Card>
+            ))}
+            {renderCard('kpi-pagar-hoje', (
+              <Card className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30">
+                    <Clock className="h-4 w-4 text-orange-500" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Pagar Hoje</p>
+                    {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold">{kpis?.contasPagarHoje || 0}</p>}
+                  </div>
+                </div>
+              </Card>
+            ))}
+            {renderCard('kpi-vencidas-receber', (
+              <Card className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30">
+                    <AlertTriangle className="h-4 w-4 text-red-500" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Vencidas Receber</p>
+                    {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold text-red-500">{kpis?.contasReceberVencidas || 0}</p>}
+                  </div>
+                </div>
+              </Card>
+            ))}
+            {renderCard('kpi-vencidas-pagar', (
+              <Card className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30">
+                    <AlertTriangle className="h-4 w-4 text-red-500" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Vencidas Pagar</p>
+                    {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold text-red-500">{kpis?.contasPagarVencidas || 0}</p>}
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </motion.div>
 
       {/* Gráficos Principais - Linha 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -509,8 +525,10 @@ export const Dashboard = () => {
             </div>
           </CardContent>
         </Card>
+        </motion.div>
       </motion.div>
-    </motion.div>
+      )}
+    </DraggableDashboardGrid>
   );
 };
 
