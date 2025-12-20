@@ -1,0 +1,52 @@
+{
+  "name": "Promo Brindes - Sistema Financeiro Corporativo",
+  "short_name": "Promo Brindes",
+  "description": "Sistema financeiro corporativo completo para gestão de Contas a Pagar, Contas a Receber, Conciliação Bancária e Cobrança.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#e85d04",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "pt-BR",
+  "categories": ["business", "finance", "productivity"],
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Acesso rápido ao dashboard",
+      "url": "/",
+      "icons": []
+    },
+    {
+      "name": "Contas a Pagar",
+      "short_name": "Pagar",
+      "description": "Gerenciar contas a pagar",
+      "url": "/contas-pagar",
+      "icons": []
+    },
+    {
+      "name": "Contas a Receber",
+      "short_name": "Receber",
+      "description": "Gerenciar contas a receber",
+      "url": "/contas-receber",
+      "icons": []
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

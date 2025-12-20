@@ -1,5 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
+import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import {
   Plus,
   Search,
@@ -69,7 +71,6 @@ import { ClienteDetailDialog } from '@/components/clientes/ClienteDetailDialog';
 import { TablePagination } from '@/components/ui/table-pagination';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -203,24 +204,31 @@ export default function Clientes() {
 
   const handleDelete = async () => {
     if (!deletingCliente) return;
-    setIsDeleting(true);
     
-    const { error } = await supabase
-      .from('clientes')
-      .update({ ativo: false })
-      .eq('id', deletingCliente.id);
-    
-    setIsDeleting(false);
-    
-    if (error) {
-      toast.error('Erro ao excluir cliente');
-      return;
-    }
-    
-    toast.success('Cliente excluído com sucesso');
-    queryClient.invalidateQueries({ queryKey: ['clientes'] });
+    const clienteBackup = { ...deletingCliente };
     setDeleteDialogOpen(false);
     setDeletingCliente(null);
+    
+    toastDeleteWithUndo({
+      item: clienteBackup,
+      itemName: `Cliente "${clienteBackup.razao_social}"`,
+      onDelete: async () => {
+        const { error } = await supabase
+          .from('clientes')
+          .update({ ativo: false })
+          .eq('id', clienteBackup.id);
+        
+        if (error) throw error;
+        queryClient.invalidateQueries({ queryKey: ['clientes'] });
+      },
+      onRestore: async () => {
+        await supabase
+          .from('clientes')
+          .update({ ativo: true })
+          .eq('id', clienteBackup.id);
+        queryClient.invalidateQueries({ queryKey: ['clientes'] });
+      },
+    });
   };
   return (
     <MainLayout>

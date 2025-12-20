@@ -1,5 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
+import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import {
   Plus,
   Search,
@@ -64,7 +66,6 @@ import { FornecedorDetailDialog } from '@/components/fornecedores/FornecedorDeta
 import { TablePagination } from '@/components/ui/table-pagination';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -165,24 +166,31 @@ export default function Fornecedores() {
 
   const handleDelete = async () => {
     if (!deletingFornecedor) return;
-    setIsDeleting(true);
     
-    const { error } = await supabase
-      .from('fornecedores')
-      .update({ ativo: false })
-      .eq('id', deletingFornecedor.id);
-    
-    setIsDeleting(false);
-    
-    if (error) {
-      toast.error('Erro ao excluir fornecedor');
-      return;
-    }
-    
-    toast.success('Fornecedor excluído com sucesso');
-    queryClient.invalidateQueries({ queryKey: ['fornecedores'] });
+    const fornecedorBackup = { ...deletingFornecedor };
     setDeleteDialogOpen(false);
     setDeletingFornecedor(null);
+    
+    toastDeleteWithUndo({
+      item: fornecedorBackup,
+      itemName: `Fornecedor "${fornecedorBackup.razao_social}"`,
+      onDelete: async () => {
+        const { error } = await supabase
+          .from('fornecedores')
+          .update({ ativo: false })
+          .eq('id', fornecedorBackup.id);
+        
+        if (error) throw error;
+        queryClient.invalidateQueries({ queryKey: ['fornecedores'] });
+      },
+      onRestore: async () => {
+        await supabase
+          .from('fornecedores')
+          .update({ ativo: true })
+          .eq('id', fornecedorBackup.id);
+        queryClient.invalidateQueries({ queryKey: ['fornecedores'] });
+      },
+    });
   };
   return (
     <MainLayout>

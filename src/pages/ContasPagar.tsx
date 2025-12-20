@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import {
   Plus,
   Search,
@@ -86,7 +88,6 @@ import { RegistrarPagamentoDialog } from '@/components/contas-pagar/RegistrarPag
 import { supabase } from '@/integrations/supabase/client';
 import { useConfiguracaoAprovacao, useCriarSolicitacaoAprovacao } from '@/hooks/useAprovacoes';
 import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
 import { AdvancedFiltersPopover, AdvancedFilters } from '@/components/ui/advanced-filters';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useQueryClient } from '@tanstack/react-query';
@@ -189,29 +190,31 @@ export default function ContasPagar() {
     setDeleteDialogOpen(true);
   };
 
-  // Handler para excluir conta
+  // Handler para excluir conta com undo
   const handleDeleteConta = async () => {
     if (!deletingConta) return;
     
-    setIsDeleting(true);
-    try {
-      const { error } = await supabase
-        .from('contas_pagar')
-        .delete()
-        .eq('id', deletingConta.id);
-      
-      if (error) throw error;
-      
-      toast.success('Conta excluída com sucesso');
-      queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
-      setDeleteDialogOpen(false);
-      setDeletingConta(null);
-    } catch (error) {
-      toast.error('Erro ao excluir conta');
-      console.error(error);
-    } finally {
-      setIsDeleting(false);
-    }
+    const contaBackup = { ...deletingConta };
+    setDeleteDialogOpen(false);
+    setDeletingConta(null);
+    
+    toastDeleteWithUndo({
+      item: contaBackup,
+      itemName: `Conta "${contaBackup.descricao}"`,
+      onDelete: async () => {
+        const { error } = await supabase
+          .from('contas_pagar')
+          .delete()
+          .eq('id', contaBackup.id);
+        
+        if (error) throw error;
+        queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
+      },
+      onRestore: async () => {
+        // Não faz nada - a exclusão só ocorre após o timeout
+        queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
+      },
+    });
   };
 
   // Abrir modal de confirmação

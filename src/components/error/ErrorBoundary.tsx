@@ -2,6 +2,7 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, Home, Bug } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { reportErrorToTracker, errorTracker } from '@/lib/error-tracking';
 
 interface Props {
   children: ReactNode;
@@ -35,10 +36,15 @@ export class ErrorBoundary extends Component<Props, State> {
     // Call optional error handler
     this.props.onError?.(error, errorInfo);
     
-    // Here you could also send to error tracking service (Sentry, etc.)
-    if (typeof window !== 'undefined' && (window as any).Sentry) {
-      (window as any).Sentry.captureException(error, { extra: errorInfo });
-    }
+    // Report to error tracking service
+    reportErrorToTracker(error, errorInfo.componentStack || undefined);
+    
+    // Add breadcrumb for context
+    errorTracker.addBreadcrumb({
+      category: 'error-boundary',
+      message: `Error caught: ${error.name}`,
+      data: { message: error.message }
+    });
   }
 
   private handleReload = () => {
