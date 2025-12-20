@@ -21,6 +21,33 @@ interface DadosFinanceiros {
   historicoInadimplencia: Array<{ clienteId: string; diasAtraso: number }>;
 }
 
+// Função para enviar notificação push
+async function enviarPushNotification(alerta: AlertaPreditivo) {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) return;
+
+    // Apenas alertas de alta prioridade ou ruptura
+    if (alerta.prioridade !== 'alta' && alerta.tipo !== 'ruptura') return;
+
+    await supabase.functions.invoke('send-push-notification', {
+      body: {
+        userId: user.id,
+        title: `⚠️ ${alerta.titulo}`,
+        body: alerta.descricao,
+        tag: `alerta-${alerta.tipo}-${alerta.id}`,
+        data: { url: '/alertas', alertaId: alerta.id },
+        prioridade: alerta.prioridade === 'alta' ? 'alta' : 'media',
+      },
+    });
+
+    console.log('[useAlertasPreditivos] Push notification enviada para alerta:', alerta.id);
+  } catch (error) {
+    console.error('[useAlertasPreditivos] Erro ao enviar push notification:', error);
+  }
+}
+
 export function useAlertasPreditivos() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [alertas, setAlertas] = useState<AlertaPreditivo[]>([]);
@@ -164,6 +191,12 @@ export function useAlertasPreditivos() {
         toast.info('Análise preditiva concluída', {
           description: `${novosAlertas.length} alertas identificados`
         });
+
+        // Enviar push notifications para alertas de alta prioridade
+        const alertasAlta = novosAlertas.filter(a => a.prioridade === 'alta' || a.tipo === 'ruptura');
+        for (const alerta of alertasAlta) {
+          enviarPushNotification(alerta);
+        }
       }
 
       return novosAlertas;
