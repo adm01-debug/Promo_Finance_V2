@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
+import { EmptyState } from '@/components/ui/micro-interactions';
 import {
   Plus,
   Search,
@@ -17,6 +18,7 @@ import {
   Loader2,
   Filter,
   X,
+  Package,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -342,8 +344,12 @@ export default function Fornecedores() {
                   <TableBody>
                     {paginatedFornecedores.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
-                          {fornecedores.length === 0 ? 'Nenhum fornecedor cadastrado' : 'Nenhum fornecedor encontrado'}
+                        <TableCell colSpan={5} className="p-0">
+                          <EmptyState 
+                            icon={<Package className="h-8 w-8 text-muted-foreground" />}
+                            title={fornecedores.length === 0 ? 'Nenhum fornecedor cadastrado' : 'Nenhum fornecedor encontrado'}
+                            description={fornecedores.length === 0 ? 'Comece adicionando seu primeiro fornecedor' : 'Tente ajustar os filtros de busca'}
+                          />
                         </TableCell>
                       </TableRow>
                     ) : (

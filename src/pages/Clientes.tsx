@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
+import { EmptyState } from '@/components/ui/micro-interactions';
 import {
   Plus,
   Search,
@@ -19,6 +20,7 @@ import {
   Filter,
   X,
   Trophy,
+  Users,
 } from 'lucide-react';
 import { RankBadge, getRankFromScore, RankLegend } from '@/components/ui/rank-badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -437,8 +439,12 @@ export default function Clientes() {
                   <TableBody>
                     {paginatedClientes.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
-                          {clientes.length === 0 ? 'Nenhum cliente cadastrado' : 'Nenhum cliente encontrado'}
+                        <TableCell colSpan={7} className="p-0">
+                          <EmptyState 
+                            icon={<Users className="h-8 w-8 text-muted-foreground" />}
+                            title={clientes.length === 0 ? 'Nenhum cliente cadastrado' : 'Nenhum cliente encontrado'}
+                            description={clientes.length === 0 ? 'Comece adicionando seu primeiro cliente' : 'Tente ajustar os filtros de busca'}
+                          />
                         </TableCell>
                       </TableRow>
                     ) : (

@@ -161,7 +161,14 @@ export const Dashboard = () => {
                             <Skeleton className="h-8 w-28" />
                           ) : (
                             <p className="text-2xl font-bold">
-                              {stat.isPercentage ? `${stat.value.toFixed(1)}%` : formatCurrency(stat.value)}
+                              {stat.isPercentage ? (
+                                <><AnimatedCounter value={stat.value} formatter={(v) => v.toFixed(1)} />%</>
+                              ) : (
+                                <AnimatedCounter 
+                                  value={stat.value} 
+                                  formatter={(v) => formatCurrency(v)} 
+                                />
+                              )}
                             </p>
                           )}
                           <div className={cn('flex items-center gap-1 text-sm font-medium', stat.variation >= 0 ? 'text-green-600' : 'text-red-500')}>
