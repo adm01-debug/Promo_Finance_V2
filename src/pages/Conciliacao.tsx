@@ -43,7 +43,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { useContasBancarias } from '@/hooks/useFinancialData';
 import { useConciliacao } from '@/hooks/useConciliacao';
 import { ImportarExtratoDialog } from '@/components/conciliacao/ImportarExtratoDialog';
-import { SugestoesMatch } from '@/components/conciliacao/SugestoesMatch';
+import { SugestoesMatchIA } from '@/components/conciliacao/SugestoesMatchIA';
 import { ConciliacaoManualDialog } from '@/components/conciliacao/ConciliacaoManualDialog';
 import { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
 import { 
@@ -339,7 +339,7 @@ export default function Conciliacao() {
         {/* AI Match Suggestions */}
         {transacoesImportadas.length > 0 && lancamentosSistema.length > 0 && (
           <motion.div variants={itemVariants}>
-            <SugestoesMatch
+            <SugestoesMatchIA
               transacoes={transacoesImportadas}
               lancamentos={lancamentosSistema}
               onConfirmarMatch={handleConfirmarMatch}
