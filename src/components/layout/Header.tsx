@@ -32,6 +32,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { useEmpresas } from '@/hooks/useFinancialData';
 import { useAlertas } from '@/hooks/useAlertas';
+import { KeyboardShortcutsDialog } from './KeyboardShortcutsDialog';
 
 interface HeaderProps {
   sidebarCollapsed?: boolean;
@@ -101,18 +102,18 @@ export const Header = ({ sidebarCollapsed }: HeaderProps) => {
     >
       <div className="h-full flex items-center justify-between px-6">
         {/* Left: Search */}
-        <div className="flex items-center gap-4 flex-1 max-w-xl">
+        <div className="flex items-center gap-4 flex-1 max-w-xl" data-tour="search">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Buscar transações, clientes, fornecedores..."
+              placeholder="Buscar transações, clientes, fornecedores... (Ctrl+K)"
               className="pl-10 bg-muted/50 border-transparent focus:bg-card focus:border-border h-10"
             />
           </div>
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {/* CNPJ Selector */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -148,9 +149,12 @@ export const Header = ({ sidebarCollapsed }: HeaderProps) => {
             </DropdownMenuContent>
           </DropdownMenu>
 
+          {/* Keyboard Shortcuts */}
+          <KeyboardShortcutsDialog />
+
           {/* Theme Toggle */}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger asChild data-tour="theme">
               <Button
                 variant="ghost"
                 size="icon"
@@ -201,7 +205,7 @@ export const Header = ({ sidebarCollapsed }: HeaderProps) => {
 
           {/* Notifications */}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger asChild data-tour="notifications">
               <Button variant="ghost" size="icon" className="h-10 w-10 relative">
                 <Bell className="h-5 w-5" />
                 {unreadAlerts > 0 && (

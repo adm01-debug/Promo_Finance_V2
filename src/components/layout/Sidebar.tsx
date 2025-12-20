@@ -101,6 +101,7 @@ export const Sidebar = () => {
               ? 'bg-gradient-to-r from-accent/20 to-primary/20 text-accent-foreground hover:from-accent/30 hover:to-primary/30 border border-accent/30'
               : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
         )}
+        {...(item.href === '/expert' ? { 'data-tour': 'expert' } : {})}
       >
         <Icon
           className={cn(
@@ -167,6 +168,7 @@ export const Sidebar = () => {
       className={cn(
         'fixed left-0 top-0 z-40 h-screen bg-sidebar border-r border-sidebar-border flex flex-col'
       )}
+      data-tour="sidebar"
     >
       {/* Logo */}
       <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border">
