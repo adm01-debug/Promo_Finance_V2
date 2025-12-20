@@ -1,5 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
+import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import {
   Plus,
   Search,
@@ -61,7 +63,6 @@ import { useCentrosCusto } from '@/hooks/useFinancialData';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { useTableOptimization } from '@/hooks/useTableOptimization';
 
 const containerVariants = {
@@ -161,25 +162,26 @@ export default function ContasReceber() {
   const handleDeleteConta = async () => {
     if (!deletingConta) return;
     
-    setIsDeleting(true);
-    try {
-      const { error } = await supabase
-        .from('contas_receber')
-        .delete()
-        .eq('id', deletingConta.id);
-      
-      if (error) throw error;
-      
-      toast.success('Conta excluída com sucesso');
-      queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
-      setDeleteDialogOpen(false);
-      setDeletingConta(null);
-    } catch (error) {
-      toast.error('Erro ao excluir conta');
-      console.error(error);
-    } finally {
-      setIsDeleting(false);
-    }
+    const contaBackup = { ...deletingConta };
+    setDeleteDialogOpen(false);
+    setDeletingConta(null);
+    
+    toastDeleteWithUndo({
+      item: contaBackup,
+      itemName: `Conta "${contaBackup.descricao}"`,
+      onDelete: async () => {
+        const { error } = await supabase
+          .from('contas_receber')
+          .delete()
+          .eq('id', contaBackup.id);
+        
+        if (error) throw error;
+        queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
+      },
+      onRestore: async () => {
+        queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
+      },
+    });
   };
 
   // KPIs - use allContas for accurate totals

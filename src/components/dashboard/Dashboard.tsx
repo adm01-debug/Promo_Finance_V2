@@ -29,6 +29,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCurrency, formatPercentage } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
+import { AnimatedCounter, PulseDot } from '@/components/ui/micro-interactions';
 import { 
   AreaChart, 
   Area, 
@@ -134,7 +135,7 @@ export const Dashboard = () => {
             </div>
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="h-8 px-3 gap-2">
-                <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                <PulseDot color="success" size="sm" />
                 Atualizado agora
               </Badge>
               <Button variant="outline" size="sm" asChild>
