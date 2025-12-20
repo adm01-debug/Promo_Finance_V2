@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -12,10 +12,14 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { format, subDays, startOfDay, endOfDay } from 'date-fns';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { format, subDays, startOfDay, endOfDay, differenceInMinutes } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { CalendarIcon, Search, FileText, Filter, Eye, RefreshCcw, Activity, Database, User, Clock } from 'lucide-react';
+import { CalendarIcon, Search, FileText, Filter, Eye, RefreshCcw, Activity, Database, User, Clock, Download, FileSpreadsheet, ShieldAlert, AlertTriangle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { exportToCSV, exportToPDF, ExportColumn } from '@/lib/export-utils';
+import { formatDate } from '@/lib/formatters';
+import { toast } from 'sonner';
 import type { DateRange } from 'react-day-picker';
 
 type AuditAction = 'INSERT' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'LOGOUT' | 'EXPORT' | 'APPROVE' | 'REJECT';
@@ -63,13 +67,15 @@ export default function AuditLogs() {
   const [searchTerm, setSearchTerm] = useState('');
   const [actionFilter, setActionFilter] = useState<string>('all');
   const [tableFilter, setTableFilter] = useState<string>('all');
+  const [userFilter, setUserFilter] = useState<string>('all');
+  const [dismissedAlerts, setDismissedAlerts] = useState<Set<string>>(new Set());
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subDays(new Date(), 7),
     to: new Date(),
   });
 
   const { data: logs, isLoading, refetch } = useQuery({
-    queryKey: ['audit-logs', actionFilter, tableFilter, dateRange],
+    queryKey: ['audit-logs', actionFilter, tableFilter, userFilter, dateRange],
     queryFn: async () => {
       let query = supabase
         .from('audit_logs')
@@ -83,6 +89,10 @@ export default function AuditLogs() {
 
       if (tableFilter !== 'all') {
         query = query.eq('table_name', tableFilter);
+      }
+
+      if (userFilter !== 'all') {
+        query = query.eq('user_email', userFilter);
       }
 
       if (dateRange?.from) {
@@ -105,6 +115,79 @@ export default function AuditLogs() {
     log.table_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Detectar alertas de segurança
+  const securityAlerts = useMemo(() => {
+    if (!logs) return [];
+    const alerts: Array<{ id: string; type: 'critical' | 'warning'; title: string; description: string; log: AuditLog }> = [];
+
+    // 1. Múltiplas exclusões em curto período (possível ataque)
+    const deletes = logs.filter(l => l.action === 'DELETE');
+    const deletesLast30min = deletes.filter(l => 
+      differenceInMinutes(new Date(), new Date(l.created_at)) <= 30
+    );
+    if (deletesLast30min.length >= 5) {
+      alerts.push({
+        id: 'mass-delete',
+        type: 'critical',
+        title: 'Exclusões em Massa Detectadas',
+        description: `${deletesLast30min.length} registros excluídos nos últimos 30 minutos`,
+        log: deletesLast30min[0],
+      });
+    }
+
+    // 2. Login de mesmo usuário de IPs diferentes
+    const logins = logs.filter(l => l.action === 'LOGIN' && l.ip_address);
+    const loginsByUser = logins.reduce((acc, l) => {
+      if (l.user_email) {
+        if (!acc[l.user_email]) acc[l.user_email] = new Set();
+        if (l.ip_address) acc[l.user_email].add(l.ip_address);
+      }
+      return acc;
+    }, {} as Record<string, Set<string>>);
+    
+    Object.entries(loginsByUser).forEach(([email, ips]) => {
+      if (ips.size >= 3) {
+        alerts.push({
+          id: `multi-ip-${email}`,
+          type: 'warning',
+          title: 'Múltiplos IPs Detectados',
+          description: `Usuário ${email} acessou de ${ips.size} IPs diferentes`,
+          log: logins.find(l => l.user_email === email)!,
+        });
+      }
+    });
+
+    // 3. Alteração de roles de usuário
+    const roleChanges = logs.filter(l => l.table_name === 'user_roles' && (l.action === 'UPDATE' || l.action === 'INSERT'));
+    roleChanges.forEach(log => {
+      alerts.push({
+        id: `role-change-${log.id}`,
+        type: 'warning',
+        title: 'Alteração de Permissões',
+        description: `Permissões alteradas por ${log.user_email || 'Sistema'}`,
+        log,
+      });
+    });
+
+    // 4. Múltiplas falhas ou tentativas suspeitas (se registradas)
+    const rejects = logs.filter(l => l.action === 'REJECT');
+    if (rejects.length >= 3) {
+      alerts.push({
+        id: 'multiple-rejects',
+        type: 'warning',
+        title: 'Múltiplas Rejeições',
+        description: `${rejects.length} solicitações rejeitadas no período`,
+        log: rejects[0],
+      });
+    }
+
+    return alerts.filter(a => !dismissedAlerts.has(a.id));
+  }, [logs, dismissedAlerts]);
+
+  const handleDismissAlert = (alertId: string) => {
+    setDismissedAlerts(prev => new Set([...prev, alertId]));
+  };
+
   const stats = {
     total: logs?.length || 0,
     inserts: logs?.filter(l => l.action === 'INSERT').length || 0,
@@ -113,6 +196,43 @@ export default function AuditLogs() {
   };
 
   const uniqueTables = [...new Set(logs?.map(l => l.table_name).filter(Boolean))];
+  const uniqueUsers = [...new Set(logs?.map(l => l.user_email).filter(Boolean))];
+
+  // Colunas para exportação
+  const auditColumns: ExportColumn<AuditLog>[] = [
+    { key: 'created_at', header: 'Data/Hora', formatter: (v) => formatDate(v) + ' ' + format(new Date(v), 'HH:mm:ss') },
+    { key: 'user_email', header: 'Usuário', formatter: (v) => v || 'Sistema' },
+    { key: 'action', header: 'Ação', formatter: (v) => actionConfig[v as AuditAction]?.label || v },
+    { key: 'table_name', header: 'Tabela', formatter: (v) => tableNameLabels[v] || v || '-' },
+    { key: 'details', header: 'Detalhes', formatter: (v) => v || '-' },
+    { key: 'ip_address', header: 'IP', formatter: (v) => v || '-' },
+  ];
+
+  const handleExportCSV = () => {
+    if (!filteredLogs?.length) {
+      toast.error('Nenhum registro para exportar');
+      return;
+    }
+    exportToCSV(filteredLogs, auditColumns, 'logs_auditoria');
+    toast.success('Exportado para CSV com sucesso!');
+  };
+
+  const handleExportPDF = () => {
+    if (!filteredLogs?.length) {
+      toast.error('Nenhum registro para exportar');
+      return;
+    }
+    exportToPDF(filteredLogs, auditColumns, 'Logs de Auditoria');
+    toast.success('PDF gerado para impressão!');
+  };
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setActionFilter('all');
+    setTableFilter('all');
+    setUserFilter('all');
+    setDateRange({ from: subDays(new Date(), 7), to: new Date() });
+  };
 
   return (
     <MainLayout>
@@ -229,6 +349,20 @@ export default function AuditLogs() {
                 </SelectContent>
               </Select>
 
+              <Select value={userFilter} onValueChange={setUserFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Usuário" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os Usuários</SelectItem>
+                  {uniqueUsers.map((user) => (
+                    <SelectItem key={user} value={user!}>
+                      {user}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className={cn("justify-start text-left font-normal", !dateRange && "text-muted-foreground")}>
@@ -259,8 +393,42 @@ export default function AuditLogs() {
                 </PopoverContent>
               </Popover>
             </div>
+            <div className="flex gap-2 mt-4">
+              <Button variant="outline" size="sm" onClick={clearFilters}>
+                <X className="h-4 w-4 mr-1" /> Limpar Filtros
+              </Button>
+            </div>
           </CardContent>
         </Card>
+
+        {/* Security Alerts */}
+        {securityAlerts.length > 0 && (
+          <div className="space-y-3">
+            {securityAlerts.map((alert) => (
+              <Alert key={alert.id} variant={alert.type === 'critical' ? 'destructive' : 'default'} className="relative">
+                <div className="flex items-start gap-3">
+                  {alert.type === 'critical' ? (
+                    <ShieldAlert className="h-5 w-5" />
+                  ) : (
+                    <AlertTriangle className="h-5 w-5" />
+                  )}
+                  <div className="flex-1">
+                    <AlertTitle>{alert.title}</AlertTitle>
+                    <AlertDescription>{alert.description}</AlertDescription>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={() => handleDismissAlert(alert.id)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </Alert>
+            ))}
+          </div>
+        )}
 
         {/* Logs Table */}
         <Card className="border-border/50">
@@ -275,10 +443,20 @@ export default function AuditLogs() {
                   {filteredLogs?.length || 0} registros encontrados
                 </CardDescription>
               </div>
-              <Button variant="outline" size="sm" onClick={() => refetch()}>
-                <RefreshCcw className="h-4 w-4 mr-2" />
-                Atualizar
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={handleExportCSV}>
+                  <FileSpreadsheet className="h-4 w-4 mr-2" />
+                  CSV
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleExportPDF}>
+                  <Download className="h-4 w-4 mr-2" />
+                  PDF
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => refetch()}>
+                  <RefreshCcw className="h-4 w-4 mr-2" />
+                  Atualizar
+                </Button>
+              </div>
             </div>
           </CardHeader>
           <CardContent>
