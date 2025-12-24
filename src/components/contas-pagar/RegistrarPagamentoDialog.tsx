@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useContasBancarias } from '@/hooks/useFinancialData';
 import { useConfiguracaoAprovacao, useCriarSolicitacaoAprovacao } from '@/hooks/useAprovacoes';
 import { toast } from '@/hooks/use-toast';
+import { toastPaymentSuccess } from '@/lib/toast-confetti';
 import { formatCurrency } from '@/lib/formatters';
 import {
   Dialog,
@@ -165,10 +166,8 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
-      toast({
-        title: 'Pagamento registrado',
-        description: 'O pagamento foi registrado com sucesso.',
-      });
+      // Use confetti toast for successful payment
+      toastPaymentSuccess(formatCurrency(form.getValues('valor_pago')));
       onOpenChange(false);
     },
     onError: (error) => {
