@@ -35,3 +35,6 @@ verify_jwt = true
 
 [functions.categorizar-despesa]
 verify_jwt = false
+
+[functions.enviar-alerta-email]
+verify_jwt = false

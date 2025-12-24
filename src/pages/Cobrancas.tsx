@@ -47,6 +47,7 @@ import {
 } from 'recharts';
 import { AcordoParcelamentoDialog } from '@/components/cobranca/AcordoParcelamentoDialog';
 import { NegociacaoIA } from '@/components/cobranca/NegociacaoIA';
+import { PrevisaoInadimplencia } from '@/components/cobranca/PrevisaoInadimplencia';
 
 const containerVariants = {
   hidden: { opacity: 0 },
