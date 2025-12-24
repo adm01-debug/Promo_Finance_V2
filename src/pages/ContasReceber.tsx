@@ -72,6 +72,7 @@ import { useTableOptimization } from '@/hooks/useTableOptimization';
 import { useBulkActions } from '@/hooks/useBulkActions';
 import { BulkActionsBar } from '@/components/ui/bulk-actions-bar';
 import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
+import { QuickDateFilters, useQuickDateFilter } from '@/components/ui/quick-date-filters';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -123,6 +124,9 @@ export default function ContasReceber() {
   const [deletingConta, setDeletingConta] = useState<any>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
+
+  // Quick date filter hook
+  const { filterType, handleFilterChange, filterByDate } = useQuickDateFilter();
 
   // Server-side paginated query with debounced search
   const { data: paginatedResult, isLoading } = useContasReceberPaginated({
@@ -200,7 +204,7 @@ export default function ContasReceber() {
   const taxaInadimplencia = totalReceber > 0 ? (totalVencido / totalReceber) * 100 : 0;
 
   // Client-side filtering for advanced filters only (server handles basic filters)
-  const filteredContas = contas.filter(c => {
+  const filteredContas = filterByDate(contas).filter(c => {
     // Filtros avançados
     let matchesAdvanced = true;
     
@@ -388,6 +392,15 @@ export default function ContasReceber() {
               </div>
             </CardContent>
           </Card>
+        </motion.div>
+
+        {/* Quick Date Filters */}
+        <motion.div variants={itemVariants}>
+          <QuickDateFilters
+            value={filterType}
+            onChange={handleFilterChange}
+            showOverdue
+          />
         </motion.div>
 
         {/* Filters */}
