@@ -45,6 +45,7 @@ const baseNavItems: NavItem[] = [
   { label: 'Dashboard', icon: LayoutDashboard, href: '/' },
   { label: 'BI Gestão', icon: BarChart3, href: '/bi', highlight: true },
   { label: 'Dashboard Empresa', icon: Building2, href: '/dashboard-empresa' },
+  { label: 'Dashboard Recebíveis', icon: ArrowDownCircle, href: '/dashboard-receber', highlight: true },
   { label: 'EXPERT (IA)', icon: Bot, href: '/expert', highlight: true },
   { label: 'Contas a Receber', icon: ArrowDownCircle, href: '/contas-receber' },
   { label: 'Contas a Pagar', icon: ArrowUpCircle, href: '/contas-pagar' },

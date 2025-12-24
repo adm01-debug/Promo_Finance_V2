@@ -43,6 +43,7 @@ const Expert = lazy(() => import("./pages/Expert"));
 const DashboardEmpresa = lazy(() => import("./pages/DashboardEmpresa"));
 const BI = lazy(() => import("./pages/BI"));
 const PagamentosRecorrentes = lazy(() => import("./pages/PagamentosRecorrentes"));
+const DashboardReceber = lazy(() => import("./pages/DashboardReceber"));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -121,6 +122,7 @@ const App = () => (
                         <Route path="/aprovacoes" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><Aprovacoes /></ProtectedRoute>} />
                         <Route path="/dashboard-empresa" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><DashboardEmpresa /></ProtectedRoute>} />
                         <Route path="/bi" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><BI /></ProtectedRoute>} />
+                        <Route path="/dashboard-receber" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><DashboardReceber /></ProtectedRoute>} />
                         
                         {/* Protected routes - Admin only */}
                         <Route path="/empresas" element={<ProtectedRoute requiredRoles={['admin']}><Empresas /></ProtectedRoute>} />
