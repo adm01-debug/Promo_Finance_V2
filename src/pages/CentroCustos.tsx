@@ -30,7 +30,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+
 import {
   useAllCentrosCusto,
   useExcluirCentroCusto,
@@ -40,6 +40,7 @@ import {
 import { CentroCustoTree } from '@/components/centros-custo/CentroCustoTree';
 import { CentroCustoForm } from '@/components/centros-custo/CentroCustoForm';
 import { formatCurrency, formatPercentage } from '@/lib/formatters';
+import { toastWithUndo } from '@/lib/toast-with-undo';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { EmptyState, StaggerContainer, StaggerItem } from '@/components/ui/micro-interactions';
@@ -83,8 +84,6 @@ export default function CentroCustos() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCentro, setEditingCentro] = useState<CentroCusto | null>(null);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [centroToDelete, setCentroToDelete] = useState<CentroCusto | null>(null);
   const [showInactive, setShowInactive] = useState(false);
   const [viewMode, setViewMode] = useState<'cards' | 'tree'>('tree');
   const [parentIdForNew, setParentIdForNew] = useState<string | null>(null);
@@ -134,17 +133,18 @@ export default function CentroCustos() {
     setIsFormOpen(true);
   };
 
-  const handleOpenDelete = (centro: CentroCusto) => {
-    setCentroToDelete(centro);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (centroToDelete) {
-      await excluirCentroCusto.mutateAsync(centroToDelete.id);
-      setDeleteDialogOpen(false);
-      setCentroToDelete(null);
-    }
+  const handleDelete = async (centro: CentroCusto) => {
+    // Desativa imediatamente
+    await excluirCentroCusto.mutateAsync(centro.id);
+    
+    // Mostra toast com opção de desfazer
+    toastWithUndo({
+      title: `"${centro.nome}" desativado`,
+      description: 'O centro de custo foi desativado.',
+      onUndo: async () => {
+        await reativarCentroCusto.mutateAsync(centro.id);
+      },
+    });
   };
 
   const handleReactivate = async (centro: CentroCusto) => {
@@ -377,7 +377,7 @@ export default function CentroCustos() {
               <CentroCustoTree
                 centros={filteredCentros}
                 onEdit={handleOpenEdit}
-                onDelete={handleOpenDelete}
+                onDelete={handleDelete}
                 onReactivate={handleReactivate}
                 onAddChild={(parentId) => handleOpenCreate(parentId)}
               />
@@ -450,7 +450,7 @@ export default function CentroCustos() {
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8 text-destructive hover:text-destructive"
-                                onClick={() => handleOpenDelete(centro)}
+                                onClick={() => handleDelete(centro)}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -513,17 +513,6 @@ export default function CentroCustos() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation */}
-      <ConfirmDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-        title="Desativar Centro de Custo"
-        description={`Tem certeza que deseja desativar o centro "${centroToDelete?.nome}"? Ele não será excluído permanentemente e poderá ser reativado depois.`}
-        confirmLabel="Desativar"
-        variant="danger"
-        onConfirm={handleConfirmDelete}
-        isLoading={excluirCentroCusto.isPending}
-      />
     </MainLayout>
   );
 }
