@@ -42,6 +42,7 @@ const Aprovacoes = lazy(() => import("./pages/Aprovacoes"));
 const Expert = lazy(() => import("./pages/Expert"));
 const DashboardEmpresa = lazy(() => import("./pages/DashboardEmpresa"));
 const BI = lazy(() => import("./pages/BI"));
+const PagamentosRecorrentes = lazy(() => import("./pages/PagamentosRecorrentes"));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -104,6 +105,7 @@ const App = () => (
                         {/* Protected routes - Operacional+ */}
                         <Route path="/contas-receber" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><ContasReceber /></ProtectedRoute>} />
                         <Route path="/contas-pagar" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><ContasPagar /></ProtectedRoute>} />
+                        <Route path="/pagamentos-recorrentes" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><PagamentosRecorrentes /></ProtectedRoute>} />
                         <Route path="/cobrancas" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><Cobrancas /></ProtectedRoute>} />
                         <Route path="/boletos" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><Boletos /></ProtectedRoute>} />
                         <Route path="/notas-fiscais" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><NotasFiscais /></ProtectedRoute>} />

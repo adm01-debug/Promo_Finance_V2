@@ -1400,6 +1400,107 @@ export type Database = {
         }
         Relationships: []
       }
+      pagamentos_recorrentes: {
+        Row: {
+          ativo: boolean | null
+          centro_custo_id: string | null
+          conta_bancaria_id: string | null
+          created_at: string
+          created_by: string
+          data_fim: string | null
+          data_inicio: string
+          descricao: string
+          dia_vencimento: number
+          empresa_id: string
+          fornecedor_id: string | null
+          fornecedor_nome: string
+          frequencia: string
+          id: string
+          observacoes: string | null
+          proxima_geracao: string | null
+          tipo_cobranca: Database["public"]["Enums"]["tipo_cobranca"] | null
+          total_gerado: number | null
+          ultima_geracao: string | null
+          updated_at: string
+          valor: number
+        }
+        Insert: {
+          ativo?: boolean | null
+          centro_custo_id?: string | null
+          conta_bancaria_id?: string | null
+          created_at?: string
+          created_by: string
+          data_fim?: string | null
+          data_inicio: string
+          descricao: string
+          dia_vencimento: number
+          empresa_id: string
+          fornecedor_id?: string | null
+          fornecedor_nome: string
+          frequencia?: string
+          id?: string
+          observacoes?: string | null
+          proxima_geracao?: string | null
+          tipo_cobranca?: Database["public"]["Enums"]["tipo_cobranca"] | null
+          total_gerado?: number | null
+          ultima_geracao?: string | null
+          updated_at?: string
+          valor: number
+        }
+        Update: {
+          ativo?: boolean | null
+          centro_custo_id?: string | null
+          conta_bancaria_id?: string | null
+          created_at?: string
+          created_by?: string
+          data_fim?: string | null
+          data_inicio?: string
+          descricao?: string
+          dia_vencimento?: number
+          empresa_id?: string
+          fornecedor_id?: string | null
+          fornecedor_nome?: string
+          frequencia?: string
+          id?: string
+          observacoes?: string | null
+          proxima_geracao?: string | null
+          tipo_cobranca?: Database["public"]["Enums"]["tipo_cobranca"] | null
+          total_gerado?: number | null
+          ultima_geracao?: string | null
+          updated_at?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pagamentos_recorrentes_centro_custo_id_fkey"
+            columns: ["centro_custo_id"]
+            isOneToOne: false
+            referencedRelation: "centros_custo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pagamentos_recorrentes_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pagamentos_recorrentes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pagamentos_recorrentes_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            isOneToOne: false
+            referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       portal_cliente_acessos: {
         Row: {
           acao: string
@@ -1814,6 +1915,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calcular_proxima_geracao: {
+        Args: {
+          p_dia_vencimento: number
+          p_frequencia: string
+          p_ultima_geracao: string
+        }
+        Returns: string
+      }
       confirmar_conciliacao: {
         Args: {
           p_conta_pagar_id?: string
@@ -1824,6 +1933,7 @@ export type Database = {
       }
       delete_cron_job: { Args: { job_id: number }; Returns: undefined }
       gerar_alertas_vencimento: { Args: never; Returns: undefined }
+      gerar_contas_recorrentes: { Args: never; Returns: number }
       get_cron_jobs: {
         Args: never
         Returns: {
