@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
-import { EmptyState } from '@/components/ui/micro-interactions';
+import { EmptyState, HoverLift } from '@/components/ui/micro-interactions';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
 import {
   Plus,
@@ -266,47 +266,53 @@ export default function Clientes() {
 
         {/* KPI Cards */}
         <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="stat-card group">
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total de Clientes</p>
-                  <p className="text-2xl font-bold font-display mt-1">{totalClientes}</p>
+          <HoverLift>
+            <Card className="stat-card group h-full">
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Total de Clientes</p>
+                    <p className="text-2xl font-bold font-display mt-1">{totalClientes}</p>
+                  </div>
+                  <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center transition-transform group-hover:scale-110">
+                    <User className="h-6 w-6" />
+                  </div>
                 </div>
-                <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center transition-transform group-hover:scale-110">
-                  <User className="h-6 w-6" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </HoverLift>
 
-          <Card className="stat-card group">
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Clientes Ativos</p>
-                  <p className="text-2xl font-bold font-display mt-1">{clientesAtivos}</p>
+          <HoverLift>
+            <Card className="stat-card group h-full">
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Clientes Ativos</p>
+                    <p className="text-2xl font-bold font-display mt-1">{clientesAtivos}</p>
+                  </div>
+                  <div className="h-12 w-12 rounded-xl bg-success/10 text-success flex items-center justify-center transition-transform group-hover:scale-110">
+                    <Star className="h-6 w-6" />
+                  </div>
                 </div>
-                <div className="h-12 w-12 rounded-xl bg-success/10 text-success flex items-center justify-center transition-transform group-hover:scale-110">
-                  <Star className="h-6 w-6" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </HoverLift>
 
-          <Card className="stat-card group">
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Limite Total</p>
-                  <p className="text-2xl font-bold font-display mt-1">{formatCurrency(limiteTotal)}</p>
+          <HoverLift>
+            <Card className="stat-card group h-full">
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Limite Total</p>
+                    <p className="text-2xl font-bold font-display mt-1">{formatCurrency(limiteTotal)}</p>
+                  </div>
+                  <div className="h-12 w-12 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center transition-transform group-hover:scale-110">
+                    <Building2 className="h-6 w-6" />
+                  </div>
                 </div>
-                <div className="h-12 w-12 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center transition-transform group-hover:scale-110">
-                  <Building2 className="h-6 w-6" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </HoverLift>
         </motion.div>
 
         {/* Filters */}
