@@ -50,7 +50,7 @@ import { useAllEmpresas, useExcluirEmpresa, useReativarEmpresa, type Empresa } f
 import { EmpresaForm } from '@/components/empresas/EmpresaForm';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
-import { EmptyState } from '@/components/ui/micro-interactions';
+import { EmptyState, StaggerContainer, StaggerItem } from '@/components/ui/micro-interactions';
 import { useToast } from '@/hooks/use-toast';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { toast as sonnerToast } from 'sonner';
@@ -316,17 +316,12 @@ export default function Empresas() {
 
       {/* Lista de Empresas - Cards */}
       {viewMode === 'cards' && (
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {empresasFiltradas.map((empresa) => {
             const stats = getEmpresaStats(empresa.id);
             
             return (
-              <motion.div key={empresa.id} variants={itemVariants}>
+              <StaggerItem key={empresa.id}>
                 <Card className={cn(
                   "relative overflow-hidden transition-all hover:shadow-lg",
                   !empresa.ativo && "opacity-60",
@@ -422,12 +417,12 @@ export default function Empresas() {
                     </div>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </StaggerItem>
             );
           })}
 
           {/* Card para adicionar nova empresa */}
-          <motion.div variants={itemVariants}>
+          <StaggerItem>
             <Card 
               className="border-dashed hover:border-primary/50 transition-colors cursor-pointer h-full min-h-[280px] flex items-center justify-center"
               onClick={() => handleOpenDialog()}
@@ -442,8 +437,8 @@ export default function Empresas() {
                 </p>
               </CardContent>
             </Card>
-          </motion.div>
-        </motion.div>
+          </StaggerItem>
+        </StaggerContainer>
       )}
 
       {/* Lista de Empresas - Tabela */}
