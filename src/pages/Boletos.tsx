@@ -32,6 +32,7 @@ import {
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { useBoletos, Boleto, NovoBoletoData } from '@/hooks/useBoletos';
+import { toastWithUndo } from '@/lib/toast-with-undo';
 import { cn } from '@/lib/utils';
 import { EmptyState } from '@/components/ui/micro-interactions';
 
@@ -609,7 +610,17 @@ export default function Boletos() {
                                   variant="ghost"
                                   size="icon"
                                   className="text-destructive hover:text-destructive"
-                                  onClick={() => cancelBoleto(boleto.id)}
+                                  onClick={() => {
+                                    const previousStatus = boleto.status;
+                                    cancelBoleto(boleto.id);
+                                    toastWithUndo({
+                                      title: `Boleto #${boleto.numero} cancelado`,
+                                      description: 'O boleto foi cancelado.',
+                                      onUndo: () => {
+                                        updateStatus({ id: boleto.id, status: previousStatus });
+                                      },
+                                    });
+                                  }}
                                 >
                                   <Ban className="h-4 w-4" />
                                 </Button>
