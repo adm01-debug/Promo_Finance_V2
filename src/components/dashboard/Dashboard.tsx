@@ -71,6 +71,56 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring' as const, stiffness: 260, damping: 20 } },
 };
 
+const statsCardVariants = {
+  hidden: { opacity: 0, y: 30, scale: 0.9 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1, 
+    transition: { 
+      type: 'spring' as const, 
+      stiffness: 300, 
+      damping: 24,
+    } 
+  },
+};
+
+const statsContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1, 
+    transition: { 
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
+    } 
+  },
+};
+
+const miniKpiVariants = {
+  hidden: { opacity: 0, x: -20, scale: 0.95 },
+  visible: { 
+    opacity: 1, 
+    x: 0, 
+    scale: 1, 
+    transition: { 
+      type: 'spring' as const, 
+      stiffness: 350, 
+      damping: 25,
+    } 
+  },
+};
+
+const miniKpiContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1, 
+    transition: { 
+      staggerChildren: 0.05,
+      delayChildren: 0.2,
+    } 
+  },
+};
+
 const COLORS = ['hsl(24, 95%, 46%)', 'hsl(215, 90%, 42%)', 'hsl(150, 70%, 32%)', 'hsl(275, 75%, 48%)', 'hsl(42, 95%, 48%)'];
 
 export const Dashboard = () => {
@@ -159,12 +209,18 @@ export const Dashboard = () => {
           </motion.div>
 
           {/* KPI Cards Principais */}
-          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {statsCards.map((stat) => 
+          <motion.div 
+            variants={statsContainerVariants} 
+            initial="hidden" 
+            animate="visible" 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+          >
+            {statsCards.map((stat, index) => 
               renderCard(stat.title, (
-                <Link key={stat.title} to={stat.href}>
-                  <HoverLift>
-                    <Card className="overflow-hidden group hover:shadow-lg transition-all cursor-pointer">
+                <motion.div key={stat.title} variants={statsCardVariants}>
+                  <Link to={stat.href}>
+                    <HoverLift>
+                      <Card className="overflow-hidden group hover:shadow-lg transition-all cursor-pointer">
                       <CardContent className="p-5">
                         <div className="flex items-start justify-between">
                           <div className="space-y-2">
@@ -207,98 +263,116 @@ export const Dashboard = () => {
                           </div>
                         </div>
                       </CardContent>
-                      <div className={cn('h-1 w-full',
-                        stat.color === 'primary' && 'bg-gradient-to-r from-primary to-primary/50',
-                        stat.color === 'success' && 'bg-gradient-to-r from-green-500 to-green-500/50',
-                        stat.color === 'destructive' && 'bg-gradient-to-r from-red-500 to-red-500/50',
-                        stat.color === 'warning' && 'bg-gradient-to-r from-orange-500 to-orange-500/50'
-                      )} />
-                    </Card>
-                  </HoverLift>
-                </Link>
+                        <div className={cn('h-1 w-full',
+                          stat.color === 'primary' && 'bg-gradient-to-r from-primary to-primary/50',
+                          stat.color === 'success' && 'bg-gradient-to-r from-green-500 to-green-500/50',
+                          stat.color === 'destructive' && 'bg-gradient-to-r from-red-500 to-red-500/50',
+                          stat.color === 'warning' && 'bg-gradient-to-r from-orange-500 to-orange-500/50'
+                        )} />
+                      </Card>
+                    </HoverLift>
+                  </Link>
+                </motion.div>
               ))
             )}
           </motion.div>
 
           {/* KPIs Secundários */}
-          <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <motion.div 
+            variants={miniKpiContainerVariants} 
+            initial="hidden" 
+            animate="visible" 
+            className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"
+          >
             {renderCard('kpi-empresas', (
-              <Card className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                    <Building2 className="h-4 w-4 text-blue-600" />
+              <motion.div variants={miniKpiVariants}>
+                <Card className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+                      <Building2 className="h-4 w-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Empresas</p>
+                      {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold">{kpis?.totalEmpresas || 0}</p>}
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Empresas</p>
-                    {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold">{kpis?.totalEmpresas || 0}</p>}
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </motion.div>
             ))}
             {renderCard('kpi-contas-bancarias', (
-              <Card className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
-                    <CreditCard className="h-4 w-4 text-purple-600" />
+              <motion.div variants={miniKpiVariants}>
+                <Card className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
+                      <CreditCard className="h-4 w-4 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Contas Bancárias</p>
+                      {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold">{kpis?.totalContasBancarias || 0}</p>}
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Contas Bancárias</p>
-                    {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold">{kpis?.totalContasBancarias || 0}</p>}
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </motion.div>
             ))}
             {renderCard('kpi-receber-hoje', (
-              <Card className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/30">
-                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+              <motion.div variants={miniKpiVariants}>
+                <Card className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/30">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Receber Hoje</p>
+                      {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold">{kpis?.contasReceberHoje || 0}</p>}
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Receber Hoje</p>
-                    {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold">{kpis?.contasReceberHoje || 0}</p>}
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </motion.div>
             ))}
             {renderCard('kpi-pagar-hoje', (
-              <Card className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30">
-                    <Clock className="h-4 w-4 text-orange-500" />
+              <motion.div variants={miniKpiVariants}>
+                <Card className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30">
+                      <Clock className="h-4 w-4 text-orange-500" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Pagar Hoje</p>
+                      {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold">{kpis?.contasPagarHoje || 0}</p>}
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Pagar Hoje</p>
-                    {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold">{kpis?.contasPagarHoje || 0}</p>}
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </motion.div>
             ))}
             {renderCard('kpi-vencidas-receber', (
-              <Card className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30">
-                    <AlertTriangle className="h-4 w-4 text-red-500" />
+              <motion.div variants={miniKpiVariants}>
+                <Card className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30">
+                      <AlertTriangle className="h-4 w-4 text-red-500" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Vencidas Receber</p>
+                      {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold text-red-500">{kpis?.contasReceberVencidas || 0}</p>}
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Vencidas Receber</p>
-                    {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold text-red-500">{kpis?.contasReceberVencidas || 0}</p>}
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </motion.div>
             ))}
             {renderCard('kpi-vencidas-pagar', (
-              <Card className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30">
-                    <AlertTriangle className="h-4 w-4 text-red-500" />
+              <motion.div variants={miniKpiVariants}>
+                <Card className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30">
+                      <AlertTriangle className="h-4 w-4 text-red-500" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Vencidas Pagar</p>
+                      {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold text-red-500">{kpis?.contasPagarVencidas || 0}</p>}
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Vencidas Pagar</p>
-                    {loadingKpis ? <Skeleton className="h-6 w-8" /> : <p className="text-lg font-bold text-red-500">{kpis?.contasPagarVencidas || 0}</p>}
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </motion.div>
             ))}
           </motion.div>
 
