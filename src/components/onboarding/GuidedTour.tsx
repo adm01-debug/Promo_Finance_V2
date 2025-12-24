@@ -49,6 +49,36 @@ const tourSteps: TourStep[] = [
     content: 'Use nosso assistente inteligente para análises e sugestões financeiras!',
     position: 'right',
   },
+  {
+    target: '[data-tour="contas-receber"]',
+    title: 'Contas a Receber',
+    content: 'Gerencie todas as suas receitas e acompanhe os recebimentos pendentes.',
+    position: 'right',
+  },
+  {
+    target: '[data-tour="contas-pagar"]',
+    title: 'Contas a Pagar',
+    content: 'Controle suas despesas e nunca perca um vencimento.',
+    position: 'right',
+  },
+  {
+    target: '[data-tour="fluxo-caixa"]',
+    title: 'Fluxo de Caixa',
+    content: 'Visualize projeções e cenários futuros para tomar melhores decisões.',
+    position: 'right',
+  },
+  {
+    target: '[data-tour="relatorios"]',
+    title: 'Relatórios',
+    content: 'Gere relatórios detalhados e agende envios automáticos por email.',
+    position: 'right',
+  },
+  {
+    target: '[data-tour="keyboard"]',
+    title: 'Atalhos de Teclado',
+    content: 'Pressione Alt+? para ver todos os atalhos disponíveis e navegar mais rápido!',
+    position: 'bottom',
+  },
 ];
 
 const TOUR_COMPLETED_KEY = 'promo-financeiro-tour-completed';
