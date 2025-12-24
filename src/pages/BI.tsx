@@ -53,6 +53,7 @@ import { ptBR } from "date-fns/locale";
 import { formatCurrency } from "@/lib/formatters";
 import { PositionBadge, getRankFromScore, RankBadge, RankLegend } from "@/components/ui/rank-badge";
 import { BenchmarkingSetorial } from "@/components/analytics/BenchmarkingSetorial";
+import { InadimplenciaSegmentada } from "@/components/analytics/InadimplenciaSegmentada";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -1103,6 +1104,24 @@ export default function BI() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Inadimplência Segmentada */}
+        <motion.div variants={itemVariants} className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-destructive" />
+                Inadimplência Segmentada
+              </CardTitle>
+              <CardDescription>
+                Análise de inadimplência por ramo de atividade e vendedor
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <InadimplenciaSegmentada />
+            </CardContent>
+          </Card>
+        </motion.div>
 
         {/* Benchmarking Setorial */}
         <motion.div variants={itemVariants} className="mt-6">
