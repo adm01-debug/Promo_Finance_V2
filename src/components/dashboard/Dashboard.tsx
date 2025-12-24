@@ -29,6 +29,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DashboardSkeleton } from '@/components/ui/loading-skeleton';
+import { StatsCardSkeleton, StatsGridSkeleton, MiniKpiSkeleton, MiniKpiGridSkeleton } from './StatsCardSkeleton';
 import { formatCurrency, formatPercentage } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { AnimatedCounter, PulseDot, StaggerContainer, StaggerItem, HoverLift } from '@/components/ui/micro-interactions';
