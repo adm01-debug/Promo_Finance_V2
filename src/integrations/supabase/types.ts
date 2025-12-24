@@ -1400,6 +1400,95 @@ export type Database = {
         }
         Relationships: []
       }
+      portal_cliente_acessos: {
+        Row: {
+          acao: string
+          cliente_id: string | null
+          created_at: string
+          detalhes: Json | null
+          id: string
+          ip_address: string | null
+          token_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          acao: string
+          cliente_id?: string | null
+          created_at?: string
+          detalhes?: Json | null
+          id?: string
+          ip_address?: string | null
+          token_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          acao?: string
+          cliente_id?: string | null
+          created_at?: string
+          detalhes?: Json | null
+          id?: string
+          ip_address?: string | null
+          token_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_cliente_acessos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "portal_cliente_acessos_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "portal_cliente_tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portal_cliente_tokens: {
+        Row: {
+          ativo: boolean | null
+          cliente_id: string | null
+          created_at: string
+          email_cliente: string
+          expires_at: string
+          id: string
+          token: string
+          ultimo_acesso: string | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          cliente_id?: string | null
+          created_at?: string
+          email_cliente: string
+          expires_at?: string
+          id?: string
+          token: string
+          ultimo_acesso?: string | null
+        }
+        Update: {
+          ativo?: boolean | null
+          cliente_id?: string | null
+          created_at?: string
+          email_cliente?: string
+          expires_at?: string
+          id?: string
+          token?: string
+          ultimo_acesso?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_cliente_tokens_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null

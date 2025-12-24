@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.open-finance]
 verify_jwt = true
+
+[functions.categorizar-despesa]
+verify_jwt = false
