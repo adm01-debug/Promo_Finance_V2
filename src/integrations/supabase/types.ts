@@ -14,6 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
+      acordos_parcelamento: {
+        Row: {
+          cliente_email: string | null
+          cliente_id: string | null
+          cliente_nome: string
+          cliente_telefone: string | null
+          contas_receber_ids: string[]
+          created_at: string
+          created_by: string
+          data_primeiro_vencimento: string
+          desconto_aplicado: number | null
+          dia_vencimento: number
+          empresa_id: string
+          id: string
+          juros_aplicado: number | null
+          numero_acordo: string
+          numero_parcelas: number
+          observacoes: string | null
+          status: string
+          updated_at: string
+          valor_original: number
+          valor_parcela: number
+          valor_total_acordo: number
+        }
+        Insert: {
+          cliente_email?: string | null
+          cliente_id?: string | null
+          cliente_nome: string
+          cliente_telefone?: string | null
+          contas_receber_ids?: string[]
+          created_at?: string
+          created_by: string
+          data_primeiro_vencimento: string
+          desconto_aplicado?: number | null
+          dia_vencimento: number
+          empresa_id: string
+          id?: string
+          juros_aplicado?: number | null
+          numero_acordo: string
+          numero_parcelas: number
+          observacoes?: string | null
+          status?: string
+          updated_at?: string
+          valor_original: number
+          valor_parcela: number
+          valor_total_acordo: number
+        }
+        Update: {
+          cliente_email?: string | null
+          cliente_id?: string | null
+          cliente_nome?: string
+          cliente_telefone?: string | null
+          contas_receber_ids?: string[]
+          created_at?: string
+          created_by?: string
+          data_primeiro_vencimento?: string
+          desconto_aplicado?: number | null
+          dia_vencimento?: number
+          empresa_id?: string
+          id?: string
+          juros_aplicado?: number | null
+          numero_acordo?: string
+          numero_parcelas?: number
+          observacoes?: string | null
+          status?: string
+          updated_at?: string
+          valor_original?: number
+          valor_parcela?: number
+          valor_total_acordo?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "acordos_parcelamento_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "acordos_parcelamento_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       alertas: {
         Row: {
           acao_url: string | null
@@ -1571,6 +1658,60 @@ export type Database = {
           },
         ]
       }
+      parcelas_acordo: {
+        Row: {
+          acordo_id: string
+          conta_receber_id: string | null
+          created_at: string
+          data_pagamento: string | null
+          data_vencimento: string
+          id: string
+          numero_parcela: number
+          status: string
+          valor: number
+          valor_pago: number | null
+        }
+        Insert: {
+          acordo_id: string
+          conta_receber_id?: string | null
+          created_at?: string
+          data_pagamento?: string | null
+          data_vencimento: string
+          id?: string
+          numero_parcela: number
+          status?: string
+          valor: number
+          valor_pago?: number | null
+        }
+        Update: {
+          acordo_id?: string
+          conta_receber_id?: string | null
+          created_at?: string
+          data_pagamento?: string | null
+          data_vencimento?: string
+          id?: string
+          numero_parcela?: number
+          status?: string
+          valor?: number
+          valor_pago?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parcelas_acordo_acordo_id_fkey"
+            columns: ["acordo_id"]
+            isOneToOne: false
+            referencedRelation: "acordos_parcelamento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parcelas_acordo_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       portal_cliente_acessos: {
         Row: {
           acao: string
@@ -2049,6 +2190,7 @@ export type Database = {
       delete_cron_job: { Args: { job_id: number }; Returns: undefined }
       gerar_alertas_vencimento: { Args: never; Returns: undefined }
       gerar_contas_recorrentes: { Args: never; Returns: number }
+      gerar_numero_acordo: { Args: never; Returns: string }
       get_cron_jobs: {
         Args: never
         Returns: {
