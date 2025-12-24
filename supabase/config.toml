@@ -38,3 +38,6 @@ verify_jwt = false
 
 [functions.enviar-alerta-email]
 verify_jwt = false
+
+[functions.analise-fluxo-ia]
+verify_jwt = false

@@ -52,8 +52,11 @@ import { CenarioSelector } from '@/components/fluxo-caixa/CenarioSelector';
 import { AlertasRuptura } from '@/components/fluxo-caixa/AlertasRuptura';
 import { GraficoCenarios } from '@/components/fluxo-caixa/GraficoCenarios';
 import { ResumosCenarios } from '@/components/fluxo-caixa/ResumosCenarios';
+import { IndicadorCobertura } from '@/components/fluxo-caixa/IndicadorCobertura';
+import { SimulacaoMonteCarlo } from '@/components/fluxo-caixa/SimulacaoMonteCarlo';
+import { InsightsFluxoIA } from '@/components/fluxo-caixa/InsightsFluxoIA';
 import { SimuladorAntecipacao } from '@/components/simuladores/SimuladorAntecipacao';
-import { 
+import {
   useFluxoCaixaKPIs, 
   useFluxoCaixaProjetado, 
   calcularProjecoesReais 
@@ -506,6 +509,34 @@ export default function FluxoCaixa() {
               )}
             </CardContent>
           </Card>
+        </motion.div>
+
+        {/* Indicador de Cobertura + Monte Carlo + Insights IA */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <motion.div variants={itemVariants}>
+            <IndicadorCobertura 
+              saldoAtual={kpis?.saldoTotal || 0}
+              despesaMediaDiaria={totalDespesas / dias}
+              isLoading={loadingKpis}
+            />
+          </motion.div>
+          <motion.div variants={itemVariants} className="lg:col-span-2">
+            <SimulacaoMonteCarlo
+              projecoes={dadosCenarioAtivo}
+              saldoInicial={saldoInicial}
+              isLoading={loadingFluxo}
+            />
+          </motion.div>
+        </div>
+
+        {/* Insights IA */}
+        <motion.div variants={itemVariants}>
+          <InsightsFluxoIA
+            projecoes={dadosCenarioAtivo}
+            saldoAtual={kpis?.saldoTotal || 0}
+            cenarioAtivo={cenarioAtivo}
+            diasCobertura={Math.floor((kpis?.saldoTotal || 0) / (totalDespesas / dias || 1))}
+          />
         </motion.div>
 
         {/* Simulador de Antecipação */}
