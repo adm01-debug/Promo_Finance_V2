@@ -71,6 +71,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useTableOptimization } from '@/hooks/useTableOptimization';
 import { useBulkActions } from '@/hooks/useBulkActions';
 import { BulkActionsBar } from '@/components/ui/bulk-actions-bar';
+import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -440,9 +441,7 @@ export default function ContasReceber() {
         <motion.div variants={itemVariants}>
           <Card className="card-elevated overflow-hidden">
             {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              </div>
+              <TableShimmerSkeleton rows={pageSize} columns={7} showCheckbox showAvatar />
             ) : (
               <div className="overflow-x-auto">
                 <Table>
