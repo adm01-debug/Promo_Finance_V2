@@ -381,3 +381,132 @@ export function CardSkeleton({ className }: { className?: string }) {
     </Card>
   );
 }
+
+// Shimmer skeleton row with animation
+function ShimmerRow({ columns, isFirst = false }: { columns: number; isFirst?: boolean }) {
+  return (
+    <tr className={cn("border-b border-border/50", !isFirst && "animate-pulse")}>
+      {Array.from({ length: columns }).map((_, i) => (
+        <td key={i} className="p-4">
+          <div className="relative overflow-hidden rounded">
+            <Skeleton 
+              className={cn(
+                "h-4",
+                i === 0 && "w-40",
+                i === 1 && "w-48", 
+                i === 2 && "w-24",
+                i === 3 && "w-28",
+                i === 4 && "w-20",
+                i === 5 && "w-16",
+                i === 6 && "w-20",
+                i >= 7 && "w-12"
+              )} 
+            />
+            <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          </div>
+        </td>
+      ))}
+    </tr>
+  );
+}
+
+// Table skeleton with shimmer effect for financial tables
+interface TableShimmerSkeletonProps {
+  rows?: number;
+  columns?: number;
+  showCheckbox?: boolean;
+  showAvatar?: boolean;
+  className?: string;
+}
+
+export function TableShimmerSkeleton({ 
+  rows = 5, 
+  columns = 7,
+  showCheckbox = true,
+  showAvatar = true,
+  className 
+}: TableShimmerSkeletonProps) {
+  const totalColumns = columns + (showCheckbox ? 1 : 0);
+  
+  return (
+    <div className={cn("w-full", className)}>
+      {/* Table Header Skeleton */}
+      <div className="flex items-center gap-4 px-4 py-3 border-b bg-muted/30">
+        {showCheckbox && (
+          <div className="w-[40px] flex-shrink-0">
+            <Skeleton className="h-4 w-4 rounded" />
+          </div>
+        )}
+        {Array.from({ length: columns }).map((_, i) => (
+          <div key={i} className={cn(
+            "flex-1",
+            i === 0 && "max-w-[250px]",
+            i === columns - 1 && "max-w-[80px]"
+          )}>
+            <Skeleton className="h-4 w-20" />
+          </div>
+        ))}
+      </div>
+      
+      {/* Table Rows Skeleton with staggered animation */}
+      {Array.from({ length: rows }).map((_, rowIndex) => (
+        <div 
+          key={rowIndex} 
+          className="flex items-center gap-4 px-4 py-4 border-b border-border/50"
+          style={{ 
+            animationDelay: `${rowIndex * 100}ms`,
+            opacity: 1 - (rowIndex * 0.1)
+          }}
+        >
+          {showCheckbox && (
+            <div className="w-[40px] flex-shrink-0">
+              <Skeleton className="h-4 w-4 rounded" />
+            </div>
+          )}
+          
+          {/* First column with avatar */}
+          <div className="flex-1 max-w-[250px] flex items-center gap-3">
+            {showAvatar && <Skeleton className="h-10 w-10 rounded-lg flex-shrink-0" />}
+            <div className="space-y-1.5 flex-1">
+              <div className="relative overflow-hidden rounded">
+                <Skeleton className="h-4 w-28" />
+                <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" style={{ animationDelay: `${rowIndex * 150}ms` }} />
+              </div>
+              <div className="relative overflow-hidden rounded">
+                <Skeleton className="h-3 w-20" />
+                <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" style={{ animationDelay: `${rowIndex * 150 + 50}ms` }} />
+              </div>
+            </div>
+          </div>
+          
+          {/* Other columns */}
+          {Array.from({ length: columns - 2 }).map((_, colIndex) => (
+            <div key={colIndex} className="flex-1">
+              <div className="relative overflow-hidden rounded">
+                <Skeleton 
+                  className={cn(
+                    "h-4",
+                    colIndex === 0 && "w-32",
+                    colIndex === 1 && "w-24",
+                    colIndex === 2 && "w-28",
+                    colIndex === 3 && "w-20",
+                    colIndex >= 4 && "w-16"
+                  )} 
+                />
+                <div 
+                  className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" 
+                  style={{ animationDelay: `${rowIndex * 150 + colIndex * 50}ms` }} 
+                />
+              </div>
+            </div>
+          ))}
+          
+          {/* Actions column */}
+          <div className="w-[80px] flex-shrink-0 flex justify-end">
+            <Skeleton className="h-8 w-8 rounded" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}

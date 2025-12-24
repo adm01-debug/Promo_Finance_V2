@@ -62,7 +62,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { ExportMenu } from '@/components/ui/export-menu';
 import { SortableHeader, useSorting } from '@/components/ui/sortable-header';
-import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
+import { LoadingSkeleton, TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useClientes, useClientesPaginated, Cliente } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
@@ -422,9 +422,7 @@ export default function Clientes() {
         <motion.div variants={itemVariants}>
           <Card className="card-elevated overflow-hidden">
             {isLoading ? (
-              <div className="p-4">
-                <LoadingSkeleton variant="table" rows={8} columns={7} />
-              </div>
+              <TableShimmerSkeleton rows={pageSize} columns={6} showCheckbox={false} showAvatar />
             ) : (
               <div className="overflow-x-auto">
                 <Table>
