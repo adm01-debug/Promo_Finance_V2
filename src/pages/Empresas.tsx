@@ -51,6 +51,7 @@ import { EmpresaForm } from '@/components/empresas/EmpresaForm';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { EmptyState, StaggerContainer, StaggerItem } from '@/components/ui/micro-interactions';
+import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { toast as sonnerToast } from 'sonner';
@@ -173,8 +174,16 @@ export default function Empresas() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Empresas (CNPJs)</h1>
+            <p className="text-muted-foreground">Gerencie múltiplas empresas e consolide dados financeiros</p>
+          </div>
+        </div>
+        <Card>
+          <TableShimmerSkeleton rows={6} columns={7} />
+        </Card>
       </div>
     );
   }

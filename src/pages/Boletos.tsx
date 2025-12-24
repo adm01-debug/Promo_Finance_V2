@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { 
   FileText, 
   Download, 
@@ -531,11 +532,7 @@ export default function Boletos() {
             </CardHeader>
             <CardContent>
               {isLoading ? (
-                <div className="space-y-4">
-                  {[1, 2, 3].map(i => (
-                    <Skeleton key={i} className="h-24 w-full" />
-                  ))}
-                </div>
+                <TableShimmerSkeleton rows={5} columns={4} />
               ) : filteredBoletos.length > 0 ? (
                 <div className="space-y-4">
                   <AnimatePresence>
