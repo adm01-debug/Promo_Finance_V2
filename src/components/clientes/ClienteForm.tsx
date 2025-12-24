@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { User, Building2, Mail, Phone, MapPin, FileText, Edit, CreditCard } from 'lucide-react';
 import { ActionButton } from '@/components/ui/action-button';
+import { FieldLabel } from '@/components/ui/info-tooltip';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import {
@@ -244,7 +245,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
                 name="razao_social"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Razão Social *</FormLabel>
+                    <FieldLabel label="Razão Social" required tooltip="Nome oficial registrado da empresa ou pessoa física" />
                     <FormControl>
                       <div className="relative">
                         <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -261,7 +262,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
                 name="nome_fantasia"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nome Fantasia</FormLabel>
+                    <FieldLabel label="Nome Fantasia" tooltip="Nome comercial pelo qual a empresa é conhecida" />
                     <FormControl>
                       <Input {...field} placeholder="Nome fantasia (opcional)" />
                     </FormControl>
@@ -278,7 +279,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
                 name="cnpj_cpf"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>CNPJ/CPF</FormLabel>
+                    <FieldLabel label="CNPJ/CPF" tooltip="Documento de identificação fiscal. Validação automática" />
                     <FormControl>
                       <div className="relative">
                         <FileText className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -301,7 +302,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
                 name="contato"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Pessoa de Contato</FormLabel>
+                    <FieldLabel label="Pessoa de Contato" tooltip="Nome do responsável pelo relacionamento comercial" />
                     <FormControl>
                       <div className="relative">
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -321,7 +322,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>E-mail</FormLabel>
+                    <FieldLabel label="E-mail" tooltip="E-mail principal para comunicações e cobranças" />
                     <FormControl>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -338,7 +339,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
                 name="telefone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Telefone</FormLabel>
+                    <FieldLabel label="Telefone" tooltip="Número de contato com DDD" />
                     <FormControl>
                       <div className="relative">
                         <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -362,8 +363,8 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
               control={form.control}
               name="endereco"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Endereço</FormLabel>
+                  <FormItem>
+                    <FieldLabel label="Endereço" tooltip="Endereço completo para correspondência e entrega" />
                   <FormControl>
                     <div className="relative">
                       <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -411,8 +412,8 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
               control={form.control}
               name="limite_credito"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Limite de Crédito</FormLabel>
+                  <FormItem>
+                    <FieldLabel label="Limite de Crédito" tooltip="Valor máximo de crédito concedido ao cliente para compras a prazo" />
                   <FormControl>
                     <div className="relative">
                       <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -437,8 +438,8 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
               control={form.control}
               name="observacoes"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Observações</FormLabel>
+                  <FormItem>
+                    <FieldLabel label="Observações" tooltip="Notas internas sobre o cliente (não visíveis externamente)" />
                   <FormControl>
                     <Textarea {...field} placeholder="Observações adicionais (opcional)" className="min-h-[60px]" />
                   </FormControl>

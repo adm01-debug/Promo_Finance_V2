@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, Calendar, DollarSign, FileText, Tag, CreditCard, Banknote, QrCode, Wallet, Edit } from 'lucide-react';
 import { ActionButton, useActionState } from '@/components/ui/action-button';
+import { FieldLabel } from '@/components/ui/info-tooltip';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useFornecedores, useCentrosCusto, useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
@@ -347,7 +348,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
                 name="empresa_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Empresa *</FormLabel>
+                    <FieldLabel label="Empresa" required tooltip="Empresa responsável por esta despesa" />
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -372,7 +373,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
                 name="centro_custo_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Centro de Custo</FormLabel>
+                    <FieldLabel label="Centro de Custo" tooltip="Classificação para controle orçamentário e análise de custos" />
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -398,8 +399,8 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
               control={form.control}
               name="descricao"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descrição *</FormLabel>
+                  <FormItem>
+                    <FieldLabel label="Descrição" required tooltip="Detalhamento da despesa para identificação futura" />
                   <FormControl>
                     <div className="relative">
                       <FileText className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -418,7 +419,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
                 name="valor"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Valor *</FormLabel>
+                    <FieldLabel label="Valor" required tooltip="Valor total da despesa em reais" />
                     <FormControl>
                       <div className="relative">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">R$</span>
@@ -443,7 +444,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
                 name="tipo_cobranca"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tipo de Pagamento</FormLabel>
+                    <FieldLabel label="Tipo de Pagamento" tooltip="Forma de quitação desta despesa" />
                     <div className="flex gap-2 flex-wrap">
                       {tipoCobrancaOptions.map((option) => {
                         const Icon = option.icon;

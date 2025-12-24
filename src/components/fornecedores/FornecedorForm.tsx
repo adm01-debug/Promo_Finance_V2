@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { User, Building2, Mail, Phone, MapPin, FileText, Edit, Truck } from 'lucide-react';
 import { ActionButton } from '@/components/ui/action-button';
+import { FieldLabel } from '@/components/ui/info-tooltip';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import {
@@ -237,7 +238,7 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
                 name="razao_social"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Razão Social *</FormLabel>
+                    <FieldLabel label="Razão Social" required tooltip="Nome oficial registrado da empresa fornecedora" />
                     <FormControl>
                       <div className="relative">
                         <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -254,7 +255,7 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
                 name="nome_fantasia"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nome Fantasia</FormLabel>
+                    <FieldLabel label="Nome Fantasia" tooltip="Nome comercial pelo qual o fornecedor é conhecido" />
                     <FormControl>
                       <Input {...field} placeholder="Nome fantasia (opcional)" />
                     </FormControl>
@@ -271,7 +272,7 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
                 name="cnpj_cpf"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>CNPJ/CPF</FormLabel>
+                    <FieldLabel label="CNPJ/CPF" tooltip="Documento fiscal do fornecedor. Validação automática" />
                     <FormControl>
                       <div className="relative">
                         <FileText className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -294,7 +295,7 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
                 name="contato"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Pessoa de Contato</FormLabel>
+                    <FieldLabel label="Pessoa de Contato" tooltip="Responsável por negociações e atendimento" />
                     <FormControl>
                       <div className="relative">
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -314,7 +315,7 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>E-mail</FormLabel>
+                    <FieldLabel label="E-mail" tooltip="E-mail para envio de pedidos e comunicações" />
                     <FormControl>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -331,7 +332,7 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
                 name="telefone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Telefone</FormLabel>
+                    <FieldLabel label="Telefone" tooltip="Número de contato com DDD" />
                     <FormControl>
                       <div className="relative">
                         <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -355,8 +356,8 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
               control={form.control}
               name="endereco"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Endereço</FormLabel>
+                  <FormItem>
+                    <FieldLabel label="Endereço" tooltip="Endereço comercial do fornecedor" />
                   <FormControl>
                     <div className="relative">
                       <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -404,8 +405,8 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
               control={form.control}
               name="observacoes"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Observações</FormLabel>
+                  <FormItem>
+                    <FieldLabel label="Observações" tooltip="Notas internas sobre condições de pagamento, prazos, etc." />
                   <FormControl>
                     <Textarea {...field} placeholder="Observações adicionais (opcional)" className="min-h-[60px]" />
                   </FormControl>
