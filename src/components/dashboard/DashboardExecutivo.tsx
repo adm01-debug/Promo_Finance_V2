@@ -75,6 +75,7 @@ import { SimuladorCenarios } from './SimuladorCenarios';
 import { DashboardConfigDialog } from './DashboardConfigDialog';
 import { HistoricoAnalisesPreditivas } from './HistoricoAnalisesPreditivas';
 import { RecomendacoesMetasIA } from './RecomendacoesMetasIA';
+import { CockpitCFO } from './CockpitCFO';
 import { PositionBadge, RankBadge, getRankFromScore } from '@/components/ui/rank-badge';
 
 const containerVariants = {
@@ -434,6 +435,11 @@ export const DashboardExecutivo = () => {
             <Settings2 className="h-4 w-4" />
           </Button>
         </div>
+      </motion.div>
+
+      {/* Cockpit do CFO */}
+      <motion.div variants={itemVariants}>
+        <CockpitCFO />
       </motion.div>
 
       {/* KPI Cards Principais */}
