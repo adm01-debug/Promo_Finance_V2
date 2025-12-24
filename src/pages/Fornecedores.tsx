@@ -58,7 +58,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { ExportMenu } from '@/components/ui/export-menu';
-import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
+import { LoadingSkeleton, TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useFornecedores, useFornecedoresPaginated, Fornecedor } from '@/hooks/useFinancialData';
 import { fornecedoresColumns } from '@/lib/export-utils';
@@ -328,9 +328,7 @@ export default function Fornecedores() {
         <motion.div variants={itemVariants}>
           <Card className="card-elevated overflow-hidden">
             {isLoading ? (
-              <div className="p-4">
-                <LoadingSkeleton variant="table" rows={8} columns={5} />
-              </div>
+              <TableShimmerSkeleton rows={8} columns={5} />
             ) : (
               <div className="overflow-x-auto">
                 <Table>

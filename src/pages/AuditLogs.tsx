@@ -18,6 +18,7 @@ import { ptBR } from 'date-fns/locale';
 import { CalendarIcon, Search, FileText, Filter, Eye, RefreshCcw, Activity, Database, User, Clock, Download, FileSpreadsheet, ShieldAlert, AlertTriangle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { exportToCSV, exportToPDF, ExportColumn } from '@/lib/export-utils';
+import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { formatDate } from '@/lib/formatters';
 import { toast } from 'sonner';
 import type { DateRange } from 'react-day-picker';
@@ -461,9 +462,7 @@ export default function AuditLogs() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
+              <TableShimmerSkeleton rows={8} columns={6} />
             ) : (
               <div className="rounded-md border">
                 <Table>
