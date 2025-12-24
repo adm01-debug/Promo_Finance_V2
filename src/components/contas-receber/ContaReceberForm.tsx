@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, Calendar, DollarSign, FileText, Tag, CreditCard, Banknote, QrCode, Wallet, Link2, User, Edit } from 'lucide-react';
 import { ActionButton } from '@/components/ui/action-button';
+import { FieldLabel } from '@/components/ui/info-tooltip';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useClientes, useCentrosCusto, useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
@@ -363,7 +364,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
                 name="empresa_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Empresa *</FormLabel>
+                    <FieldLabel label="Empresa" required tooltip="Empresa que receberá este valor" />
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -388,7 +389,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
                 name="centro_custo_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Centro de Custo</FormLabel>
+                    <FieldLabel label="Centro de Custo" tooltip="Classificação para controle de receitas por área" />
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -414,8 +415,8 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
               control={form.control}
               name="descricao"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descrição *</FormLabel>
+                  <FormItem>
+                    <FieldLabel label="Descrição" required tooltip="Detalhamento do recebível para identificação" />
                   <FormControl>
                     <div className="relative">
                       <FileText className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -434,7 +435,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
                 name="valor"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Valor *</FormLabel>
+                    <FieldLabel label="Valor" required tooltip="Valor a receber em reais" />
                     <FormControl>
                       <div className="relative">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">R$</span>
@@ -459,7 +460,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
                 name="tipo_cobranca"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tipo de Cobrança</FormLabel>
+                    <FieldLabel label="Tipo de Cobrança" tooltip="Forma como o cliente irá pagar" />
                     <div className="flex gap-2 flex-wrap">
                       {tipoCobrancaOptions.map((option) => {
                         const Icon = option.icon;
