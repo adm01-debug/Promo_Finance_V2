@@ -12,6 +12,7 @@ import { GuidedTour } from "@/components/onboarding/GuidedTour";
 import { ErrorBoundary } from "@/components/error/ErrorBoundary";
 import { SkipLinks } from "@/components/ui/skip-link";
 import { DataPrefetcher } from "@/components/providers/DataPrefetcher";
+import { PageTransition } from "@/components/layout/PageTransition";
 import { Loader2 } from "lucide-react";
 
 // Lazy load pages for better performance
@@ -89,44 +90,46 @@ const App = () => (
                   <GuidedTour />
                 <Suspense fallback={<PageLoader />}>
                   <ErrorBoundary>
-                    <Routes>
-                      {/* Public route */}
-                      <Route path="/auth" element={<Auth />} />
-                      
-                      {/* Protected routes - All authenticated users */}
-                      <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-                      <Route path="/expert" element={<ProtectedRoute><Expert /></ProtectedRoute>} />
-                      <Route path="/alertas" element={<ProtectedRoute><Alertas /></ProtectedRoute>} />
-                      <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
-                      
-                      {/* Protected routes - Operacional+ */}
-                      <Route path="/contas-receber" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><ContasReceber /></ProtectedRoute>} />
-                      <Route path="/contas-pagar" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><ContasPagar /></ProtectedRoute>} />
-                      <Route path="/cobrancas" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><Cobrancas /></ProtectedRoute>} />
-                      <Route path="/boletos" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><Boletos /></ProtectedRoute>} />
-                      <Route path="/notas-fiscais" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><NotasFiscais /></ProtectedRoute>} />
-                      <Route path="/clientes" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><Clientes /></ProtectedRoute>} />
-                      <Route path="/fornecedores" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><Fornecedores /></ProtectedRoute>} />
-                      
-                      {/* Protected routes - Financeiro+ */}
-                      <Route path="/centro-custos" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><CentroCustos /></ProtectedRoute>} />
-                      <Route path="/fluxo-caixa" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><FluxoCaixa /></ProtectedRoute>} />
-                      <Route path="/conciliacao" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><Conciliacao /></ProtectedRoute>} />
-                      <Route path="/contas-bancarias" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><ContasBancarias /></ProtectedRoute>} />
-                      <Route path="/demonstrativos" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><Demonstrativos /></ProtectedRoute>} />
-                      <Route path="/aprovacoes" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><Aprovacoes /></ProtectedRoute>} />
-                      <Route path="/dashboard-empresa" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><DashboardEmpresa /></ProtectedRoute>} />
-                      <Route path="/bi" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><BI /></ProtectedRoute>} />
-                      
-                      {/* Protected routes - Admin only */}
-                      <Route path="/empresas" element={<ProtectedRoute requiredRoles={['admin']}><Empresas /></ProtectedRoute>} />
-                      <Route path="/configuracoes" element={<ProtectedRoute requiredRoles={['admin']}><Configuracoes /></ProtectedRoute>} />
-                      <Route path="/bitrix24" element={<ProtectedRoute requiredRoles={['admin']}><Bitrix24 /></ProtectedRoute>} />
-                      <Route path="/usuarios" element={<ProtectedRoute requiredRoles={['admin']}><Usuarios /></ProtectedRoute>} />
-                      <Route path="/audit-logs" element={<ProtectedRoute requiredRoles={['admin']}><AuditLogs /></ProtectedRoute>} />
-                      {/* Catch-all */}
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
+                    <PageTransition>
+                      <Routes>
+                        {/* Public route */}
+                        <Route path="/auth" element={<Auth />} />
+                        
+                        {/* Protected routes - All authenticated users */}
+                        <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+                        <Route path="/expert" element={<ProtectedRoute><Expert /></ProtectedRoute>} />
+                        <Route path="/alertas" element={<ProtectedRoute><Alertas /></ProtectedRoute>} />
+                        <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
+                        
+                        {/* Protected routes - Operacional+ */}
+                        <Route path="/contas-receber" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><ContasReceber /></ProtectedRoute>} />
+                        <Route path="/contas-pagar" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><ContasPagar /></ProtectedRoute>} />
+                        <Route path="/cobrancas" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><Cobrancas /></ProtectedRoute>} />
+                        <Route path="/boletos" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><Boletos /></ProtectedRoute>} />
+                        <Route path="/notas-fiscais" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><NotasFiscais /></ProtectedRoute>} />
+                        <Route path="/clientes" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><Clientes /></ProtectedRoute>} />
+                        <Route path="/fornecedores" element={<ProtectedRoute requiredRoles={['admin', 'financeiro', 'operacional']}><Fornecedores /></ProtectedRoute>} />
+                        
+                        {/* Protected routes - Financeiro+ */}
+                        <Route path="/centro-custos" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><CentroCustos /></ProtectedRoute>} />
+                        <Route path="/fluxo-caixa" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><FluxoCaixa /></ProtectedRoute>} />
+                        <Route path="/conciliacao" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><Conciliacao /></ProtectedRoute>} />
+                        <Route path="/contas-bancarias" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><ContasBancarias /></ProtectedRoute>} />
+                        <Route path="/demonstrativos" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><Demonstrativos /></ProtectedRoute>} />
+                        <Route path="/aprovacoes" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><Aprovacoes /></ProtectedRoute>} />
+                        <Route path="/dashboard-empresa" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><DashboardEmpresa /></ProtectedRoute>} />
+                        <Route path="/bi" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><BI /></ProtectedRoute>} />
+                        
+                        {/* Protected routes - Admin only */}
+                        <Route path="/empresas" element={<ProtectedRoute requiredRoles={['admin']}><Empresas /></ProtectedRoute>} />
+                        <Route path="/configuracoes" element={<ProtectedRoute requiredRoles={['admin']}><Configuracoes /></ProtectedRoute>} />
+                        <Route path="/bitrix24" element={<ProtectedRoute requiredRoles={['admin']}><Bitrix24 /></ProtectedRoute>} />
+                        <Route path="/usuarios" element={<ProtectedRoute requiredRoles={['admin']}><Usuarios /></ProtectedRoute>} />
+                        <Route path="/audit-logs" element={<ProtectedRoute requiredRoles={['admin']}><AuditLogs /></ProtectedRoute>} />
+                        {/* Catch-all */}
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </PageTransition>
                   </ErrorBoundary>
                 </Suspense>
                 </DataPrefetcher>
