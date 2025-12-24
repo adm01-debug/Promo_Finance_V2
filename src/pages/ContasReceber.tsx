@@ -23,11 +23,13 @@ import {
   FileText,
   Loader2,
   Inbox,
+  XCircle,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -67,6 +69,8 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTableOptimization } from '@/hooks/useTableOptimization';
+import { useBulkActions } from '@/hooks/useBulkActions';
+import { BulkActionsBar } from '@/components/ui/bulk-actions-bar';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -231,6 +235,68 @@ export default function ContasReceber() {
   // Optimization hook for large datasets
   const { getRowAnimation } = useTableOptimization(sortedContas.length);
 
+  // Bulk actions
+  const {
+    selectedIds,
+    selectedCount,
+    isProcessing,
+    progress,
+    isSelected,
+    isAllSelected,
+    isSomeSelected,
+    selectAll,
+    toggleSelect,
+    clearSelection,
+    executeBulkAction,
+  } = useBulkActions({
+    items: sortedContas,
+    getItemId: (conta) => conta.id,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['contas-receber'] }),
+  });
+
+  // Bulk action handlers
+  const handleBulkMarkAsReceived = () => {
+    executeBulkAction(async (id) => {
+      const conta = sortedContas.find(c => c.id === id);
+      const { error } = await supabase
+        .from('contas_receber')
+        .update({ 
+          status: 'pago', 
+          data_recebimento: new Date().toISOString().split('T')[0],
+          valor_recebido: conta?.valor || 0
+        })
+        .eq('id', id);
+      if (error) throw error;
+    }, { showProgress: true });
+  };
+
+  const handleBulkCancel = () => {
+    executeBulkAction(async (id) => {
+      const { error } = await supabase
+        .from('contas_receber')
+        .update({ status: 'cancelado' })
+        .eq('id', id);
+      if (error) throw error;
+    }, { showProgress: true });
+  };
+
+  const bulkActions = [
+    {
+      id: 'mark-received',
+      label: 'Marcar como Recebido',
+      icon: <CheckCircle2 className="h-4 w-4" />,
+      variant: 'default' as const,
+      onClick: handleBulkMarkAsReceived,
+    },
+    {
+      id: 'cancel',
+      label: 'Cancelar',
+      icon: <XCircle className="h-4 w-4" />,
+      variant: 'destructive' as const,
+      onClick: handleBulkCancel,
+    },
+  ];
+
   return (
     <MainLayout>
       <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
@@ -382,6 +448,13 @@ export default function ContasReceber() {
                 <Table>
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">
+                      <TableHead className="w-[40px]">
+                        <Checkbox 
+                          checked={isAllSelected}
+                          onCheckedChange={selectAll}
+                          aria-label="Selecionar todos"
+                        />
+                      </TableHead>
                       <TableHead className="w-[250px]">
                         <SortableHeader
                           label="Cliente"
@@ -418,7 +491,7 @@ export default function ContasReceber() {
                   <TableBody>
                     {sortedContas.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="p-0">
+                        <TableCell colSpan={8} className="p-0">
                           <EmptyState 
                             icon={<Inbox className="h-8 w-8 text-muted-foreground" />}
                             title={contas.length === 0 ? 'Nenhuma conta cadastrada' : 'Nenhuma conta encontrada'}
@@ -441,8 +514,18 @@ export default function ContasReceber() {
                           <RowComponent
                             key={conta.id}
                             {...(getRowAnimation(index).transition ? getRowAnimation(index) : {})}
-                            className="group hover:bg-muted/50 transition-colors"
+                            className={cn(
+                              "group hover:bg-muted/50 transition-colors",
+                              isSelected(conta.id) && "bg-primary/5"
+                            )}
                           >
+                            <TableCell>
+                              <Checkbox 
+                                checked={isSelected(conta.id)}
+                                onCheckedChange={() => toggleSelect(conta.id)}
+                                aria-label={`Selecionar ${conta.descricao}`}
+                              />
+                            </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-3">
                                 <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -603,6 +686,15 @@ export default function ContasReceber() {
           variant="danger"
           isLoading={isDeleting}
           onConfirm={handleDeleteConta}
+        />
+
+        {/* Bulk Actions Bar */}
+        <BulkActionsBar
+          selectedCount={selectedCount}
+          isProcessing={isProcessing}
+          progress={progress}
+          actions={bulkActions}
+          onClear={clearSelection}
         />
       </motion.div>
     </MainLayout>

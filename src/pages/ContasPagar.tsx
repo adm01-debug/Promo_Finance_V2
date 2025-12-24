@@ -28,11 +28,13 @@ import {
   ShieldAlert,
   ShieldCheck,
   ShieldX,
+  XCircle,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -93,6 +95,8 @@ import { AdvancedFiltersPopover, AdvancedFilters } from '@/components/ui/advance
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTableOptimization } from '@/hooks/useTableOptimization';
+import { useBulkActions } from '@/hooks/useBulkActions';
+import { BulkActionsBar } from '@/components/ui/bulk-actions-bar';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -420,6 +424,67 @@ export default function ContasPagar() {
   // Optimization hook for large datasets
   const { getRowAnimation } = useTableOptimization(sortedContas.length);
 
+  // Bulk actions
+  const {
+    selectedIds,
+    selectedCount,
+    isProcessing,
+    progress,
+    isSelected,
+    isAllSelected,
+    isSomeSelected,
+    selectAll,
+    toggleSelect,
+    clearSelection,
+    executeBulkAction,
+  } = useBulkActions({
+    items: sortedContas,
+    getItemId: (conta) => conta.id,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['contas-pagar'] }),
+  });
+
+  // Bulk action handlers
+  const handleBulkMarkAsPaid = () => {
+    executeBulkAction(async (id) => {
+      const { error } = await supabase
+        .from('contas_pagar')
+        .update({ 
+          status: 'pago', 
+          data_pagamento: new Date().toISOString().split('T')[0],
+          valor_pago: sortedContas.find(c => c.id === id)?.valor || 0
+        })
+        .eq('id', id);
+      if (error) throw error;
+    }, { showProgress: true });
+  };
+
+  const handleBulkCancel = () => {
+    executeBulkAction(async (id) => {
+      const { error } = await supabase
+        .from('contas_pagar')
+        .update({ status: 'cancelado' })
+        .eq('id', id);
+      if (error) throw error;
+    }, { showProgress: true });
+  };
+
+  const bulkActions = [
+    {
+      id: 'mark-paid',
+      label: 'Marcar como Pago',
+      icon: <CheckCircle2 className="h-4 w-4" />,
+      variant: 'default' as const,
+      onClick: handleBulkMarkAsPaid,
+    },
+    {
+      id: 'cancel',
+      label: 'Cancelar',
+      icon: <XCircle className="h-4 w-4" />,
+      variant: 'destructive' as const,
+      onClick: handleBulkCancel,
+    },
+  ];
+
   return (
     <MainLayout>
       <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
@@ -626,6 +691,13 @@ export default function ContasPagar() {
                 <Table>
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">
+                      <TableHead className="w-[40px]">
+                        <Checkbox 
+                          checked={isAllSelected}
+                          onCheckedChange={selectAll}
+                          aria-label="Selecionar todos"
+                        />
+                      </TableHead>
                       <TableHead className="w-[250px]">
                         <Button variant="ghost" size="sm" className="gap-1 -ml-3 h-8 font-semibold">
                           Fornecedor
@@ -654,7 +726,7 @@ export default function ContasPagar() {
                   <TableBody>
                     {sortedContas.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
+                        <TableCell colSpan={9} className="text-center py-12 text-muted-foreground">
                           {contas.length === 0 ? 'Nenhuma conta cadastrada' : 'Nenhuma conta encontrada com os filtros aplicados'}
                         </TableCell>
                       </TableRow>
@@ -679,8 +751,18 @@ export default function ContasPagar() {
                           <RowComponent
                             key={conta.id}
                             {...(getRowAnimation(index).transition ? getRowAnimation(index) : {})}
-                            className="group hover:bg-muted/50 transition-colors"
+                            className={cn(
+                              "group hover:bg-muted/50 transition-colors",
+                              isSelected(conta.id) && "bg-primary/5"
+                            )}
                           >
+                            <TableCell>
+                              <Checkbox 
+                                checked={isSelected(conta.id)}
+                                onCheckedChange={() => toggleSelect(conta.id)}
+                                aria-label={`Selecionar ${conta.descricao}`}
+                              />
+                            </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-3">
                                 <div className="h-10 w-10 rounded-lg bg-secondary/10 flex items-center justify-center">
@@ -1149,6 +1231,15 @@ export default function ContasPagar() {
           variant="danger"
           isLoading={isDeleting}
           onConfirm={handleDeleteConta}
+        />
+
+        {/* Bulk Actions Bar */}
+        <BulkActionsBar
+          selectedCount={selectedCount}
+          isProcessing={isProcessing}
+          progress={progress}
+          actions={bulkActions}
+          onClear={clearSelection}
         />
       </motion.div>
     </MainLayout>
