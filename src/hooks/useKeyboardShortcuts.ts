@@ -24,43 +24,54 @@ export const useKeyboardShortcuts = () => {
     { key: 'e', alt: true, action: () => navigate('/expert'), description: 'Expert (IA)' },
     { key: 'b', alt: true, action: () => navigate('/bi'), description: 'BI Gestão' },
     { key: 'a', alt: true, action: () => navigate('/alertas'), description: 'Alertas' },
+    { key: 'l', alt: true, action: () => navigate('/relatorios'), description: 'Relatórios' },
+    { key: 'o', alt: true, action: () => navigate('/aprovacoes'), description: 'Aprovações' },
+    { key: 'i', alt: true, action: () => navigate('/clientes'), description: 'Clientes' },
+    { key: 'u', alt: true, action: () => navigate('/fornecedores'), description: 'Fornecedores' },
+    { key: 'n', alt: true, action: () => navigate('/notas-fiscais'), description: 'Notas Fiscais' },
+    
+    // Quick actions (Ctrl + Shift + key)
+    { key: 'n', ctrl: true, shift: true, action: () => {
+      const addBtn = document.querySelector('[data-add-new]') as HTMLButtonElement;
+      if (addBtn) addBtn.click();
+    }, description: 'Novo registro' },
+    { key: 's', ctrl: true, shift: true, action: () => {
+      const saveBtn = document.querySelector('[data-save]') as HTMLButtonElement;
+      if (saveBtn) saveBtn.click();
+    }, description: 'Salvar' },
+    { key: 'e', ctrl: true, shift: true, action: () => {
+      const exportBtn = document.querySelector('[data-export]') as HTMLButtonElement;
+      if (exportBtn) exportBtn.click();
+    }, description: 'Exportar' },
     
     // Search shortcut
-    { 
-      key: 'k', 
-      ctrl: true, 
-      action: () => {
-        const searchInput = document.querySelector('input[placeholder*="Buscar"]') as HTMLInputElement;
-        if (searchInput) {
-          searchInput.focus();
-          searchInput.select();
-        }
-      }, 
-      description: 'Focar na busca' 
-    },
+    { key: 'k', ctrl: true, action: () => {
+      const searchInput = document.querySelector('input[placeholder*="Buscar"]') as HTMLInputElement;
+      if (searchInput) { searchInput.focus(); searchInput.select(); }
+    }, description: 'Focar na busca' },
+    
+    // Theme toggle
+    { key: 't', alt: true, shift: true, action: () => {
+      const themeBtn = document.querySelector('[data-theme-toggle]') as HTMLButtonElement;
+      if (themeBtn) themeBtn.click();
+    }, description: 'Alternar tema' },
+    
+    // Refresh data
+    { key: 'r', ctrl: true, shift: true, action: () => {
+      window.dispatchEvent(new CustomEvent('refresh-data'));
+      toast.info('Atualizando dados...');
+    }, description: 'Atualizar dados' },
     
     // Global shortcuts
-    { 
-      key: '?', 
-      shift: true, 
-      action: () => {
-        toast.info('Atalhos de Teclado', {
-          description: 'Pressione Alt + ? para ver a lista completa',
-          duration: 3000,
-        });
-      }, 
-      description: 'Mostrar ajuda' 
-    },
+    { key: '?', shift: true, action: () => {
+      toast.info('Atalhos de Teclado', { description: 'Pressione Alt + ? para ver a lista completa', duration: 3000 });
+    }, description: 'Mostrar ajuda' },
     
     // Escape to close modals
-    { 
-      key: 'Escape', 
-      action: () => {
-        const closeButton = document.querySelector('[data-state="open"] button[data-radix-collection-item]') as HTMLButtonElement;
-        if (closeButton) closeButton.click();
-      }, 
-      description: 'Fechar modal/dropdown' 
-    },
+    { key: 'Escape', action: () => {
+      const closeButton = document.querySelector('[data-state="open"] button[data-radix-collection-item]') as HTMLButtonElement;
+      if (closeButton) closeButton.click();
+    }, description: 'Fechar modal/dropdown' },
   ];
 
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
@@ -107,10 +118,22 @@ export const getShortcutsList = () => [
     { keys: ['Alt', 'E'], description: 'Expert (IA)' },
     { keys: ['Alt', 'B'], description: 'BI Gestão' },
     { keys: ['Alt', 'A'], description: 'Alertas' },
+    { keys: ['Alt', 'L'], description: 'Relatórios' },
+    { keys: ['Alt', 'O'], description: 'Aprovações' },
+    { keys: ['Alt', 'I'], description: 'Clientes' },
+    { keys: ['Alt', 'U'], description: 'Fornecedores' },
+    { keys: ['Alt', 'N'], description: 'Notas Fiscais' },
+  ]},
+  { category: 'Ações Rápidas', shortcuts: [
+    { keys: ['Ctrl', 'Shift', 'N'], description: 'Novo registro' },
+    { keys: ['Ctrl', 'Shift', 'S'], description: 'Salvar' },
+    { keys: ['Ctrl', 'Shift', 'E'], description: 'Exportar' },
+    { keys: ['Ctrl', 'Shift', 'R'], description: 'Atualizar dados' },
+    { keys: ['Alt', 'Shift', 'T'], description: 'Alternar tema' },
   ]},
   { category: 'Geral', shortcuts: [
     { keys: ['Ctrl', 'K'], description: 'Focar na busca' },
     { keys: ['Esc'], description: 'Fechar modal/dropdown' },
-    { keys: ['Shift', '?'], description: 'Mostrar ajuda' },
+    { keys: ['Alt', '?'], description: 'Lista de atalhos' },
   ]},
 ];
