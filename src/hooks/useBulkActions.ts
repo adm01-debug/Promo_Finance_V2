@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
+import { toastBulkSuccess } from '@/lib/toast-confetti';
 
 interface BulkActionOptions<T> {
   items: T[];
@@ -91,10 +92,10 @@ export function useBulkActions<T>({
     setProgress(0);
 
     if (errors === 0) {
-      toast.success(successMessage, {
-        id: toastId,
-        description: `${completed} itens processados com sucesso`,
-      });
+      // Dismiss loading toast
+      toast.dismiss(toastId);
+      // Show celebratory toast with confetti
+      toastBulkSuccess(completed, 'processados');
       onSuccess?.(selectedIds);
       setSelectedIds([]);
     } else if (completed > 0) {

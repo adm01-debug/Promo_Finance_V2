@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { toastReconciliationSuccess, toastImportSuccess } from '@/lib/toast-confetti';
 
 interface ConfirmarConciliacaoParams {
   transacaoId: string;
@@ -25,7 +26,8 @@ export function useConciliacao() {
       queryClient.invalidateQueries({ queryKey: ['transacoes-bancarias'] });
       queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
       queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
-      toast.success('Conciliação confirmada com sucesso');
+      // Use confetti toast for reconciliation success
+      toastReconciliationSuccess(1);
     },
     onError: (error) => {
       console.error('Erro ao confirmar conciliação:', error);
@@ -79,7 +81,8 @@ export function useConciliacao() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['transacoes-bancarias'] });
-      toast.success(`${data.length} transações importadas com sucesso`);
+      // Use confetti toast for import success
+      toastImportSuccess(data.length, 'transações');
     },
     onError: (error) => {
       console.error('Erro ao importar transações:', error);

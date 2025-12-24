@@ -7,6 +7,7 @@ import { Loader2, DollarSign, Calendar, Wallet } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useContasBancarias } from '@/hooks/useFinancialData';
 import { toast } from '@/hooks/use-toast';
+import { toastReceiptSuccess } from '@/lib/toast-confetti';
 import { formatCurrency } from '@/lib/formatters';
 import {
   Dialog,
@@ -119,10 +120,8 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
-      toast({
-        title: 'Recebimento registrado',
-        description: 'O recebimento foi registrado com sucesso.',
-      });
+      // Use confetti toast for successful receipt
+      toastReceiptSuccess(formatCurrency(form.getValues('valor_recebido')));
       onOpenChange(false);
     },
     onError: (error) => {

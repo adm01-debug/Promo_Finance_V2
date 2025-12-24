@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { toastApprovalSuccess } from '@/lib/toast-confetti';
 
 export interface ConfiguracaoAprovacao {
   id: string;
@@ -210,10 +211,8 @@ export const useAprovarSolicitacao = () => {
       queryClient.invalidateQueries({ queryKey: ['solicitacoes-aprovacao'] });
       queryClient.invalidateQueries({ queryKey: ['solicitacoes-pendentes'] });
       queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
-      toast({
-        title: 'Pagamento aprovado',
-        description: 'O pagamento foi aprovado com sucesso.',
-      });
+      // Use confetti toast for approval success
+      toastApprovalSuccess('O pagamento foi aprovado e liberado para execução.');
     },
     onError: (error) => {
       toast({
