@@ -550,10 +550,12 @@ export type Database = {
           limite_credito: number | null
           nome_fantasia: string | null
           observacoes: string | null
+          ramo_atividade: string | null
           razao_social: string
           score: number | null
           telefone: string | null
           updated_at: string
+          vendedor_id: string | null
         }
         Insert: {
           ativo?: boolean
@@ -569,10 +571,12 @@ export type Database = {
           limite_credito?: number | null
           nome_fantasia?: string | null
           observacoes?: string | null
+          ramo_atividade?: string | null
           razao_social: string
           score?: number | null
           telefone?: string | null
           updated_at?: string
+          vendedor_id?: string | null
         }
         Update: {
           ativo?: boolean
@@ -588,12 +592,22 @@ export type Database = {
           limite_credito?: number | null
           nome_fantasia?: string | null
           observacoes?: string | null
+          ramo_atividade?: string | null
           razao_social?: string
           score?: number | null
           telefone?: string | null
           updated_at?: string
+          vendedor_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "clientes_vendedor_id_fkey"
+            columns: ["vendedor_id"]
+            isOneToOne: false
+            referencedRelation: "vendedores"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       configuracoes_aprovacao: {
         Row: {
@@ -817,6 +831,7 @@ export type Database = {
           updated_at: string
           valor: number
           valor_recebido: number | null
+          vendedor_id: string | null
         }
         Insert: {
           bitrix_deal_id?: string | null
@@ -843,6 +858,7 @@ export type Database = {
           updated_at?: string
           valor: number
           valor_recebido?: number | null
+          vendedor_id?: string | null
         }
         Update: {
           bitrix_deal_id?: string | null
@@ -869,6 +885,7 @@ export type Database = {
           updated_at?: string
           valor?: number
           valor_recebido?: number | null
+          vendedor_id?: string | null
         }
         Relationships: [
           {
@@ -897,6 +914,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contas_receber_vendedor_id_fkey"
+            columns: ["vendedor_id"]
+            isOneToOne: false
+            referencedRelation: "vendedores"
             referencedColumns: ["id"]
           },
         ]
@@ -2163,6 +2187,39 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      vendedores: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          email: string | null
+          id: string
+          meta_mensal: number | null
+          nome: string
+          telefone: string | null
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          email?: string | null
+          id?: string
+          meta_mensal?: number | null
+          nome: string
+          telefone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          email?: string | null
+          id?: string
+          meta_mensal?: number | null
+          nome?: string
+          telefone?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
