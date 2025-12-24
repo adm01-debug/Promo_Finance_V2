@@ -456,13 +456,19 @@ export default function Clientes() {
                         </TableCell>
                       </TableRow>
                     ) : (
-                      paginatedClientes.map((cliente, index) => (
-                        <motion.tr
-                          key={cliente.id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.02 }}
-                          className="group hover:bg-muted/50 transition-colors"
+                      paginatedClientes.map((cliente, index) => {
+                        // Disable animations for large datasets
+                        const shouldAnimate = paginatedClientes.length <= 20;
+                        const RowComponent = shouldAnimate ? motion.tr : 'tr';
+                        const animationProps = shouldAnimate 
+                          ? { initial: { opacity: 0, x: -20 }, animate: { opacity: 1, x: 0 }, transition: { delay: index * 0.02 } }
+                          : {};
+
+                        return (
+                          <RowComponent
+                            key={cliente.id}
+                            {...animationProps}
+                            className="group hover:bg-muted/50 transition-colors"
                         >
                           <TableCell>
                             <div className="flex items-center gap-3">
@@ -576,8 +582,9 @@ export default function Clientes() {
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </TableCell>
-                        </motion.tr>
-                      ))
+                        </RowComponent>
+                        );
+                      })
                     )}
                   </TableBody>
                 </Table>

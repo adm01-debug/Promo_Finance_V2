@@ -673,10 +673,12 @@ export default function ContasPagar() {
                         const foiRejeitado = aprovacaoStatus === 'rejeitada';
                         const aguardandoSolicitacao = precisaAprovacao && !estaAprovado && !aprovacaoStatus && conta.status !== 'pago' && conta.status !== 'cancelado';
 
+                        const RowComponent = getRowAnimation(index).transition ? motion.tr : 'tr';
+                        
                         return (
-                          <motion.tr
+                          <RowComponent
                             key={conta.id}
-                            {...getRowAnimation(index)}
+                            {...(getRowAnimation(index).transition ? getRowAnimation(index) : {})}
                             className="group hover:bg-muted/50 transition-colors"
                           >
                             <TableCell>
@@ -1015,7 +1017,7 @@ export default function ContasPagar() {
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </TableCell>
-                          </motion.tr>
+                          </RowComponent>
                         );
                       })
                     )}
