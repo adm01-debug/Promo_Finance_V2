@@ -22,6 +22,7 @@ import { MetasFinanceiras } from './widgets/MetasFinanceiras';
 import { TransacoesRecentes } from './widgets/TransacoesRecentes';
 import { ResumoRapido } from './widgets/ResumoRapido';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { AnimatedMonthlyChart } from './widgets/AnimatedMonthlyChart';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -424,38 +425,9 @@ export const Dashboard = () => {
 
       {/* Gráficos Secundários - Linha 2 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Evolução Mensal */}
+        {/* Evolução Mensal Animada */}
         <motion.div variants={itemVariants} className="lg:col-span-2">
-          <Card className="h-[320px]">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Activity className="h-5 w-5 text-blue-500" />
-                Evolução Mensal
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="h-[240px]">
-              {loadingEvolucao ? (
-                <div className="flex items-center justify-center h-full">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={evolucaoMensal || []}>
-                    <XAxis dataKey="mes" stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                    <YAxis tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                    <Tooltip 
-                      formatter={(v: number) => formatCurrency(v)}
-                      contentStyle={{ backgroundColor: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
-                    />
-                    <Legend />
-                    <Bar dataKey="receitas" name="Receitas" fill="hsl(150, 70%, 42%)" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="despesas" name="Despesas" fill="hsl(0, 78%, 55%)" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="lucro" name="Lucro" fill="hsl(215, 90%, 52%)" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              )}
-            </CardContent>
-          </Card>
+          <AnimatedMonthlyChart data={evolucaoMensal} isLoading={loadingEvolucao} />
         </motion.div>
 
         {/* Status das Contas */}
