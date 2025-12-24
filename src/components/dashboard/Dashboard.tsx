@@ -30,7 +30,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { DashboardSkeleton } from '@/components/ui/loading-skeleton';
 import { formatCurrency, formatPercentage } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
-import { AnimatedCounter, PulseDot } from '@/components/ui/micro-interactions';
+import { AnimatedCounter, PulseDot, StaggerContainer, StaggerItem } from '@/components/ui/micro-interactions';
 import { 
   AreaChart, 
   Area, 

@@ -42,7 +42,7 @@ import { CentroCustoForm } from '@/components/centros-custo/CentroCustoForm';
 import { formatCurrency, formatPercentage } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { EmptyState } from '@/components/ui/micro-interactions';
+import { EmptyState, StaggerContainer, StaggerItem } from '@/components/ui/micro-interactions';
 import {
   ResponsiveContainer,
   PieChart as RePieChart,
@@ -56,6 +56,8 @@ import {
   Legend,
 } from 'recharts';
 
+const COLORS = ['hsl(24, 95%, 46%)', 'hsl(215, 90%, 42%)', 'hsl(150, 70%, 32%)', 'hsl(275, 75%, 48%)', 'hsl(42, 95%, 48%)'];
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
@@ -65,8 +67,6 @@ const itemVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
 } as const;
-
-const COLORS = ['hsl(24, 95%, 46%)', 'hsl(215, 90%, 42%)', 'hsl(150, 70%, 32%)', 'hsl(275, 75%, 48%)', 'hsl(42, 95%, 48%)'];
 
 // Get parent name
 function getParentName(parentId: string | null, centros: CentroCusto[]): string {
@@ -395,7 +395,7 @@ export default function CentroCustos() {
               }
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredCentros.map((centro, index) => {
                 const percentual =
                   centro.orcamento_previsto > 0 ? (centro.orcamento_realizado / centro.orcamento_previsto) * 100 : 0;
@@ -404,12 +404,7 @@ export default function CentroCustos() {
                 const parentName = getParentName(centro.parent_id, centros);
 
                 return (
-                  <motion.div
-                    key={centro.id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.05 }}
-                  >
+                  <StaggerItem key={centro.id}>
                     <Card className={cn('card-interactive h-full', !centro.ativo && 'opacity-60')}>
                       <CardContent className="p-5">
                         <div className="flex items-start justify-between mb-4">
@@ -494,10 +489,10 @@ export default function CentroCustos() {
                         </div>
                       </CardContent>
                     </Card>
-                  </motion.div>
+                  </StaggerItem>
                 );
               })}
-            </div>
+            </StaggerContainer>
           )}
         </motion.div>
       </motion.div>
