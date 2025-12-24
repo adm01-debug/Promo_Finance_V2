@@ -25,11 +25,16 @@ import {
   Zap,
   ToggleLeft,
   Timer,
-  Link2
+  Link2,
+  FileText
 } from 'lucide-react';
 import { OpenFinancePanel } from '@/components/integracoes/OpenFinancePanel';
 import { NotificacoesConfig } from '@/components/configuracoes/NotificacoesConfig';
 import { CronJobsPanel } from '@/components/configuracoes/CronJobsPanel';
+import { DocumentacaoAPI } from '@/components/api/DocumentacaoAPI';
+import { GestaoContratos } from '@/components/contratos/GestaoContratos';
+import { AssinaturaDigital } from '@/components/documentos/AssinaturaDigital';
+import { ComprovanteOCR } from '@/components/comprovantes/ComprovanteOCR';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -188,34 +193,38 @@ export default function Configuracoes() {
       </div>
 
       <Tabs defaultValue="regua" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6 lg:w-[900px]">
+        <TabsList className="grid w-full grid-cols-8 lg:w-[1100px]">
           <TabsTrigger value="regua" className="gap-2">
             <Clock className="h-4 w-4" />
-            <span className="hidden sm:inline">Régua de Cobrança</span>
-            <span className="sm:hidden">Régua</span>
+            <span className="hidden sm:inline">Régua</span>
           </TabsTrigger>
           <TabsTrigger value="templates" className="gap-2">
             <Mail className="h-4 w-4" />
-            Templates
+            <span className="hidden sm:inline">Templates</span>
           </TabsTrigger>
           <TabsTrigger value="notificacoes" className="gap-2">
             <Bell className="h-4 w-4" />
-            <span className="hidden sm:inline">Notificações</span>
-            <span className="sm:hidden">Alertas</span>
+            <span className="hidden sm:inline">Alertas</span>
           </TabsTrigger>
           <TabsTrigger value="agendamentos" className="gap-2">
             <Timer className="h-4 w-4" />
-            <span className="hidden sm:inline">Agendamentos</span>
-            <span className="sm:hidden">Cron</span>
+            <span className="hidden sm:inline">Cron</span>
           </TabsTrigger>
           <TabsTrigger value="integracoes" className="gap-2">
             <Link2 className="h-4 w-4" />
-            <span className="hidden sm:inline">Integrações</span>
-            <span className="sm:hidden">APIs</span>
+            <span className="hidden sm:inline">APIs</span>
+          </TabsTrigger>
+          <TabsTrigger value="contratos" className="gap-2">
+            <FileText className="h-4 w-4" />
+            <span className="hidden sm:inline">Contratos</span>
+          </TabsTrigger>
+          <TabsTrigger value="ocr" className="gap-2">
+            <Database className="h-4 w-4" />
+            <span className="hidden sm:inline">OCR</span>
           </TabsTrigger>
           <TabsTrigger value="sistema" className="gap-2">
             <Settings className="h-4 w-4" />
-            Sistema
+            <span className="hidden sm:inline">Sistema</span>
           </TabsTrigger>
         </TabsList>
 
@@ -712,6 +721,22 @@ export default function Configuracoes() {
               </Button>
             </div>
           </motion.div>
+        </TabsContent>
+
+        {/* Gestão de Contratos */}
+        <TabsContent value="contratos">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <GestaoContratos />
+            <AssinaturaDigital documentoNome="Contrato de Serviço" />
+          </div>
+        </TabsContent>
+
+        {/* OCR de Comprovantes */}
+        <TabsContent value="ocr">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ComprovanteOCR />
+            <DocumentacaoAPI />
+          </div>
         </TabsContent>
       </Tabs>
     </div>

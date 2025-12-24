@@ -19,12 +19,15 @@ import {
   Eye,
   RefreshCcw,
   Loader2,
+  Bot,
+  FileText,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -42,6 +45,8 @@ import {
   YAxis, 
   Tooltip,
 } from 'recharts';
+import { AcordoParcelamentoDialog } from '@/components/cobranca/AcordoParcelamentoDialog';
+import { NegociacaoIA } from '@/components/cobranca/NegociacaoIA';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -450,6 +455,35 @@ export default function Cobrancas() {
                   </motion.div>
                 ))}
               </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Negociação IA e Acordos */}
+        <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <NegociacaoIA 
+            contasVencidas={topDevedores?.map(d => ({
+              id: d.cliente_id || '',
+              cliente_nome: d.cliente_nome,
+              valor: d.valor_total,
+              data_vencimento: new Date().toISOString(),
+              diasAtraso: d.dias_atraso
+            })) || []}
+          />
+          <Card className="card-elevated">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                Acordos de Parcelamento
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Crie acordos de parcelamento para clientes em atraso, com descontos e condições especiais.
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Selecione um cliente na lista de devedores acima para iniciar um acordo.
+              </p>
             </CardContent>
           </Card>
         </motion.div>

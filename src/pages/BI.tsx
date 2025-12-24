@@ -52,6 +52,7 @@ import { format, subMonths, startOfMonth, endOfMonth, differenceInDays } from "d
 import { ptBR } from "date-fns/locale";
 import { formatCurrency } from "@/lib/formatters";
 import { PositionBadge, getRankFromScore, RankBadge, RankLegend } from "@/components/ui/rank-badge";
+import { BenchmarkingSetorial } from "@/components/analytics/BenchmarkingSetorial";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -1102,6 +1103,11 @@ export default function BI() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Benchmarking Setorial */}
+        <motion.div variants={itemVariants} className="mt-6">
+          <BenchmarkingSetorial />
+        </motion.div>
       </motion.div>
     </MainLayout>
   );
