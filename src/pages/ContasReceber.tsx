@@ -435,10 +435,12 @@ export default function ContasReceber() {
                         const percentualRecebido = conta.valor_recebido ? (conta.valor_recebido / conta.valor) * 100 : 0;
                         const clienteData = conta.clientes as any;
 
+                        const RowComponent = getRowAnimation(index).transition ? motion.tr : 'tr';
+
                         return (
-                          <motion.tr
+                          <RowComponent
                             key={conta.id}
-                            {...getRowAnimation(index)}
+                            {...(getRowAnimation(index).transition ? getRowAnimation(index) : {})}
                             className="group hover:bg-muted/50 transition-colors"
                           >
                             <TableCell>
@@ -559,7 +561,7 @@ export default function ContasReceber() {
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </TableCell>
-                          </motion.tr>
+                          </RowComponent>
                         );
                       })
                     )}
