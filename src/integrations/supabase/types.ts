@@ -1094,6 +1094,76 @@ export type Database = {
           },
         ]
       }
+      historico_cobranca_whatsapp: {
+        Row: {
+          cliente_id: string | null
+          conta_receber_id: string
+          created_at: string
+          created_by: string | null
+          entregue_em: string | null
+          enviado_em: string | null
+          erro_mensagem: string | null
+          id: string
+          lido_em: string | null
+          mensagem: string
+          regua_id: string | null
+          status: string
+          telefone: string
+        }
+        Insert: {
+          cliente_id?: string | null
+          conta_receber_id: string
+          created_at?: string
+          created_by?: string | null
+          entregue_em?: string | null
+          enviado_em?: string | null
+          erro_mensagem?: string | null
+          id?: string
+          lido_em?: string | null
+          mensagem: string
+          regua_id?: string | null
+          status?: string
+          telefone: string
+        }
+        Update: {
+          cliente_id?: string | null
+          conta_receber_id?: string
+          created_at?: string
+          created_by?: string | null
+          entregue_em?: string | null
+          enviado_em?: string | null
+          erro_mensagem?: string | null
+          id?: string
+          lido_em?: string | null
+          mensagem?: string
+          regua_id?: string | null
+          status?: string
+          telefone?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historico_cobranca_whatsapp_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "historico_cobranca_whatsapp_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "historico_cobranca_whatsapp_regua_id_fkey"
+            columns: ["regua_id"]
+            isOneToOne: false
+            referencedRelation: "regua_cobranca"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       historico_conciliacao_ia: {
         Row: {
           acao: string
@@ -1699,6 +1769,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      regua_cobranca: {
+        Row: {
+          ativo: boolean | null
+          canal: string
+          created_at: string
+          created_by: string | null
+          descricao: string | null
+          dias_antes_vencimento: number | null
+          dias_apos_vencimento: number | null
+          id: string
+          nome: string
+          ordem: number
+          template_mensagem: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          canal?: string
+          created_at?: string
+          created_by?: string | null
+          descricao?: string | null
+          dias_antes_vencimento?: number | null
+          dias_apos_vencimento?: number | null
+          id?: string
+          nome: string
+          ordem?: number
+          template_mensagem: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean | null
+          canal?: string
+          created_at?: string
+          created_by?: string | null
+          descricao?: string | null
+          dias_antes_vencimento?: number | null
+          dias_apos_vencimento?: number | null
+          id?: string
+          nome?: string
+          ordem?: number
+          template_mensagem?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       relatorios_agendados: {
         Row: {

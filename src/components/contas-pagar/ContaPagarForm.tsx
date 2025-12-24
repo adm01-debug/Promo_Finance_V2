@@ -4,9 +4,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Building2, Calendar, DollarSign, FileText, Tag, CreditCard, Banknote, QrCode, Wallet, Edit } from 'lucide-react';
+import { Building2, Calendar, DollarSign, FileText, Tag, CreditCard, Banknote, QrCode, Wallet, Edit, Scan } from 'lucide-react';
 import { ActionButton, useActionState } from '@/components/ui/action-button';
 import { FieldLabel } from '@/components/ui/info-tooltip';
+import { LeitorCodigoBarras } from './LeitorCodigoBarras';
+import { DadosBoleto } from '@/lib/barcode-parser';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useFornecedores, useCentrosCusto, useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
@@ -93,6 +95,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [showFornecedorSelect, setShowFornecedorSelect] = useState(false);
+  const [showLeitorCodigoBarras, setShowLeitorCodigoBarras] = useState(false);
   const isEditing = !!conta;
 
   const { data: fornecedores = [] } = useFornecedores();
@@ -254,10 +257,41 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
     }
   };
 
+  const handleBoletoDetected = (dados: DadosBoleto) => {
+    // Preencher automaticamente os campos com os dados do boleto
+    if (dados.valor > 0) {
+      form.setValue('valor', dados.valor);
+    }
+    if (dados.dataVencimento) {
+      form.setValue('data_vencimento', dados.dataVencimento.toISOString().split('T')[0]);
+    }
+    if (dados.codigoBarras) {
+      form.setValue('codigo_barras', dados.codigoBarras);
+    }
+    // Definir tipo como boleto
+    form.setValue('tipo_cobranca', 'boleto');
+    
+    // Sugerir descrição baseada no banco
+    if (!form.getValues('descricao') && dados.banco) {
+      form.setValue('descricao', `Boleto ${dados.banco}`);
+    }
+    
+    toast({
+      title: 'Dados preenchidos automaticamente',
+      description: `Boleto do ${dados.banco} no valor de R$ ${dados.valor.toFixed(2)}`,
+    });
+  };
+
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <>
+      <LeitorCodigoBarras
+        open={showLeitorCodigoBarras}
+        onOpenChange={setShowLeitorCodigoBarras}
+        onBoletoDetected={handleBoletoDetected}
+      />
+      <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-display">
@@ -273,6 +307,18 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
             </div>
             {isEditing ? 'Editar Conta a Pagar' : 'Nova Conta a Pagar'}
           </DialogTitle>
+          {!isEditing && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowLeitorCodigoBarras(true)}
+              className="gap-2"
+            >
+              <Scan className="h-4 w-4" />
+              Ler Código de Barras
+            </Button>
+          )}
         </DialogHeader>
 
         <Form {...form}>
@@ -628,5 +674,6 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
         </Form>
       </DialogContent>
     </Dialog>
+    </>
   );
 }
