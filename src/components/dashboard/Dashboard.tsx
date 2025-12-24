@@ -30,7 +30,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { DashboardSkeleton } from '@/components/ui/loading-skeleton';
 import { formatCurrency, formatPercentage } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
-import { AnimatedCounter, PulseDot, StaggerContainer, StaggerItem } from '@/components/ui/micro-interactions';
+import { AnimatedCounter, PulseDot, StaggerContainer, StaggerItem, HoverLift } from '@/components/ui/micro-interactions';
+import { FinancialRankBadge } from '@/components/ui/rank-badge';
 import { 
   AreaChart, 
   Area, 
@@ -160,47 +161,58 @@ export const Dashboard = () => {
             {statsCards.map((stat) => 
               renderCard(stat.title, (
                 <Link key={stat.title} to={stat.href}>
-                  <Card className="overflow-hidden group hover:shadow-lg transition-all cursor-pointer">
-                    <CardContent className="p-5">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-2">
-                          <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                          {stat.loading ? (
-                            <Skeleton className="h-8 w-28" />
-                          ) : (
-                            <p className="text-2xl font-bold">
-                              {stat.isPercentage ? (
-                                <><AnimatedCounter value={stat.value} formatter={(v) => v.toFixed(1)} />%</>
-                              ) : (
-                                <AnimatedCounter 
-                                  value={stat.value} 
-                                  formatter={(v) => formatCurrency(v)} 
-                                />
-                              )}
-                            </p>
-                          )}
-                          <div className={cn('flex items-center gap-1 text-sm font-medium', stat.variation >= 0 ? 'text-green-600' : 'text-red-500')}>
-                            {stat.variation >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-                            {formatPercentage(stat.variation)} vs mês anterior
+                  <HoverLift>
+                    <Card className="overflow-hidden group hover:shadow-lg transition-all cursor-pointer">
+                      <CardContent className="p-5">
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-2">
+                            <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
+                            {stat.loading ? (
+                              <Skeleton className="h-8 w-28" />
+                            ) : (
+                              <p className="text-2xl font-bold">
+                                {stat.isPercentage ? (
+                                  <><AnimatedCounter value={stat.value} formatter={(v) => v.toFixed(1)} />%</>
+                                ) : (
+                                  <AnimatedCounter 
+                                    value={stat.value} 
+                                    formatter={(v) => formatCurrency(v)} 
+                                  />
+                                )}
+                              </p>
+                            )}
+                            <div className={cn('flex items-center gap-1 text-sm font-medium', stat.variation >= 0 ? 'text-green-600' : 'text-red-500')}>
+                              {stat.variation >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+                              {formatPercentage(stat.variation)} vs mês anterior
+                            </div>
+                            {/* Financial Rank Badge for percentage-based stats */}
+                            {stat.isPercentage && stat.title === 'Inadimplência' && (
+                              <FinancialRankBadge 
+                                type="adimplencia" 
+                                value={100 - stat.value} 
+                                size="sm"
+                                showTrend={stat.variation < 0 ? 'up' : stat.variation > 0 ? 'down' : 'neutral'}
+                              />
+                            )}
+                          </div>
+                          <div className={cn('h-12 w-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110',
+                            stat.color === 'primary' && 'bg-primary/10 text-primary',
+                            stat.color === 'success' && 'bg-green-100 dark:bg-green-900/30 text-green-600',
+                            stat.color === 'destructive' && 'bg-red-100 dark:bg-red-900/30 text-red-500',
+                            stat.color === 'warning' && 'bg-orange-100 dark:bg-orange-900/30 text-orange-500'
+                          )}>
+                            <stat.icon className="h-6 w-6" />
                           </div>
                         </div>
-                        <div className={cn('h-12 w-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110',
-                          stat.color === 'primary' && 'bg-primary/10 text-primary',
-                          stat.color === 'success' && 'bg-green-100 dark:bg-green-900/30 text-green-600',
-                          stat.color === 'destructive' && 'bg-red-100 dark:bg-red-900/30 text-red-500',
-                          stat.color === 'warning' && 'bg-orange-100 dark:bg-orange-900/30 text-orange-500'
-                        )}>
-                          <stat.icon className="h-6 w-6" />
-                        </div>
-                      </div>
-                    </CardContent>
-                    <div className={cn('h-1 w-full',
-                      stat.color === 'primary' && 'bg-gradient-to-r from-primary to-primary/50',
-                      stat.color === 'success' && 'bg-gradient-to-r from-green-500 to-green-500/50',
-                      stat.color === 'destructive' && 'bg-gradient-to-r from-red-500 to-red-500/50',
-                      stat.color === 'warning' && 'bg-gradient-to-r from-orange-500 to-orange-500/50'
-                    )} />
-                  </Card>
+                      </CardContent>
+                      <div className={cn('h-1 w-full',
+                        stat.color === 'primary' && 'bg-gradient-to-r from-primary to-primary/50',
+                        stat.color === 'success' && 'bg-gradient-to-r from-green-500 to-green-500/50',
+                        stat.color === 'destructive' && 'bg-gradient-to-r from-red-500 to-red-500/50',
+                        stat.color === 'warning' && 'bg-gradient-to-r from-orange-500 to-orange-500/50'
+                      )} />
+                    </Card>
+                  </HoverLift>
                 </Link>
               ))
             )}
