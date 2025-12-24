@@ -25,6 +25,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { RelatoriosAgendados } from '@/components/relatorios/RelatoriosAgendados';
+import { RelatorioDrillDown } from '@/components/relatorios/RelatorioDrillDown';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -407,6 +408,10 @@ export default function Relatorios() {
             <BarChart3 className="h-4 w-4" />
             Visão Geral
           </TabsTrigger>
+          <TabsTrigger value="drill-down" className="gap-2">
+            <Filter className="h-4 w-4" />
+            Drill-Down
+          </TabsTrigger>
           <TabsTrigger value="comparativo" className="gap-2">
             <ArrowUpDown className="h-4 w-4" />
             Comparativo
@@ -424,6 +429,11 @@ export default function Relatorios() {
             Agendados
           </TabsTrigger>
         </TabsList>
+
+        {/* Drill-Down Interativo */}
+        <TabsContent value="drill-down">
+          <RelatorioDrillDown />
+        </TabsContent>
 
         {/* Visão Geral */}
         <TabsContent value="visao-geral">

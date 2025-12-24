@@ -52,6 +52,7 @@ import { CenarioSelector } from '@/components/fluxo-caixa/CenarioSelector';
 import { AlertasRuptura } from '@/components/fluxo-caixa/AlertasRuptura';
 import { GraficoCenarios } from '@/components/fluxo-caixa/GraficoCenarios';
 import { ResumosCenarios } from '@/components/fluxo-caixa/ResumosCenarios';
+import { SimuladorAntecipacao } from '@/components/simuladores/SimuladorAntecipacao';
 import { 
   useFluxoCaixaKPIs, 
   useFluxoCaixaProjetado, 
@@ -505,6 +506,11 @@ export default function FluxoCaixa() {
               )}
             </CardContent>
           </Card>
+        </motion.div>
+
+        {/* Simulador de Antecipação */}
+        <motion.div variants={itemVariants}>
+          <SimuladorAntecipacao />
         </motion.div>
       </motion.div>
     </MainLayout>
