@@ -57,6 +57,7 @@ import {
   useFluxoCaixaProjetado, 
   calcularProjecoesReais 
 } from '@/hooks/useFluxoCaixa';
+import { QuickDateFilters, useQuickDateFilter, DateFilterOption } from '@/components/ui/quick-date-filters';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -79,6 +80,9 @@ export default function FluxoCaixa() {
   const [periodo, setPeriodo] = useState('30d');
   const [cenarioAtivo, setCenarioAtivo] = useState<CenarioTipo>('realista');
   const [alertasDismissed, setAlertasDismissed] = useState<string[]>([]);
+  
+  // Quick date filter for data range selection
+  const { filterType, handleFilterChange, filterByDate } = useQuickDateFilter();
   
   const dias = periodoDias[periodo] || 30;
   
@@ -202,6 +206,15 @@ export default function FluxoCaixa() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+        </motion.div>
+
+        {/* Quick Date Filters */}
+        <motion.div variants={itemVariants}>
+          <QuickDateFilters
+            value={filterType}
+            onChange={handleFilterChange}
+            extended
+          />
         </motion.div>
 
         {/* Seletor de Cenários */}
