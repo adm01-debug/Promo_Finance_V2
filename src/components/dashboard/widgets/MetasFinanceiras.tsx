@@ -14,6 +14,8 @@ import { useVerificarMetas } from '@/hooks/useVerificarMetas';
 import { EditarMetasDialog } from './EditarMetasDialog';
 import { HistoricoMetasDialog } from './HistoricoMetasDialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { AnimatedCounter } from '@/components/ui/micro-interactions';
+import { motion } from 'framer-motion';
 
 interface Meta {
   id: string;
@@ -162,41 +164,71 @@ export const MetasFinanceiras = () => {
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        {metas.map((meta) => (
-          <div key={meta.id} className="space-y-2">
+        {metas.map((meta, index) => (
+          <motion.div 
+            key={meta.id} 
+            className="space-y-2"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.1, duration: 0.3 }}
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                {getStatusIcon(meta.status)}
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: index * 0.1 + 0.2, type: 'spring', stiffness: 300 }}
+                >
+                  {getStatusIcon(meta.status)}
+                </motion.div>
                 <span className="text-sm font-medium">{meta.titulo}</span>
               </div>
               <Badge
                 variant="outline"
                 className={cn(
-                  'text-xs',
+                  'text-xs tabular-nums',
                   meta.status === 'sucesso' && 'border-green-500 text-green-600',
                   meta.status === 'atencao' && 'border-yellow-500 text-yellow-600',
                   meta.status === 'risco' && 'border-red-500 text-red-600'
                 )}
               >
-                {meta.progresso.toFixed(0)}%
+                <AnimatedCounter 
+                  value={Math.round(meta.progresso)} 
+                  duration={800}
+                  formatter={(v) => `${v}%`}
+                />
               </Badge>
             </div>
-            <Progress
-              value={meta.progresso}
-              className="h-2"
-              style={{
-                '--progress-background': meta.status === 'sucesso' 
-                  ? 'hsl(150, 70%, 42%)' 
-                  : meta.status === 'atencao' 
-                    ? 'hsl(45, 93%, 47%)' 
-                    : 'hsl(0, 78%, 55%)'
-              } as React.CSSProperties}
-            />
+            <div className="relative h-2 overflow-hidden rounded-full bg-muted">
+              <motion.div
+                className="h-full rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${meta.progresso}%` }}
+                transition={{ delay: index * 0.1 + 0.1, duration: 0.8, ease: 'easeOut' }}
+                style={{
+                  background: meta.status === 'sucesso' 
+                    ? 'linear-gradient(90deg, hsl(150, 70%, 42%), hsl(150, 70%, 52%))' 
+                    : meta.status === 'atencao' 
+                      ? 'linear-gradient(90deg, hsl(45, 93%, 47%), hsl(45, 93%, 57%))' 
+                      : 'linear-gradient(90deg, hsl(0, 78%, 55%), hsl(0, 78%, 65%))'
+                }}
+              />
+            </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>
-                {meta.tipo === 'inadimplencia'
-                  ? `${meta.valorAtual.toFixed(1)}%`
-                  : formatCurrency(meta.valorAtual)}
+              <span className="tabular-nums">
+                {meta.tipo === 'inadimplencia' ? (
+                  <AnimatedCounter 
+                    value={meta.valorAtual * 10} 
+                    duration={800}
+                    formatter={(v) => `${(v / 10).toFixed(1)}%`}
+                  />
+                ) : (
+                  <AnimatedCounter 
+                    value={meta.valorAtual} 
+                    duration={800}
+                    formatter={(v) => formatCurrency(v)}
+                  />
+                )}
               </span>
               <span>
                 Meta: {meta.tipo === 'inadimplencia'
@@ -204,22 +236,31 @@ export const MetasFinanceiras = () => {
                   : formatCurrency(meta.valorMeta)}
               </span>
             </div>
-          </div>
+          </motion.div>
         ))}
 
-        <div className="pt-4 border-t">
+        <motion.div 
+          className="pt-4 border-t"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+        >
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Economia estimada</span>
             <span className={cn(
-              'text-lg font-bold',
+              'text-lg font-bold tabular-nums',
               (dadosMes?.totalRecebido || 0) - (dadosMes?.totalPago || 0) >= 0 
                 ? 'text-green-600' 
                 : 'text-red-500'
             )}>
-              {formatCurrency((dadosMes?.totalRecebido || 0) - (dadosMes?.totalPago || 0))}
+              <AnimatedCounter 
+                value={(dadosMes?.totalRecebido || 0) - (dadosMes?.totalPago || 0)} 
+                duration={1000}
+                formatter={(v) => formatCurrency(v)}
+              />
             </span>
           </div>
-        </div>
+        </motion.div>
       </CardContent>
     </Card>
   );
