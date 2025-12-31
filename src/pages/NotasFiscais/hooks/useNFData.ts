@@ -6,9 +6,7 @@ export function useNFData() {
   
   const { data: notas, isLoading } = useQuery({
     queryKey: ['notas-fiscais', filters],
-    queryFn: async () => {
-      return [];
-    },
+    queryFn: async () => [],
   });
 
   return { notas, isLoading, filters, setFilters };
