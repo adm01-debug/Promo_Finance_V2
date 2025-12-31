@@ -36,6 +36,7 @@ import { DocumentacaoAPI } from '@/components/api/DocumentacaoAPI';
 import { GestaoContratos } from '@/components/contratos/GestaoContratos';
 import { AssinaturaDigital } from '@/components/documentos/AssinaturaDigital';
 import { ComprovanteOCR } from '@/components/comprovantes/ComprovanteOCR';
+import { BiometricSettings } from '@/components/configuracoes/BiometricSettings';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -730,7 +731,10 @@ export default function Configuracoes() {
 
         {/* Segurança */}
         <TabsContent value="seguranca">
-          <SecuritySettings />
+          <div className="space-y-6">
+            <BiometricSettings />
+            <SecuritySettings />
+          </div>
         </TabsContent>
 
         {/* Gestão de Contratos */}

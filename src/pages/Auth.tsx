@@ -17,11 +17,15 @@ import {
   Loader2,
   Building2,
   Shield,
-  AlertTriangle
+  AlertTriangle,
+  Fingerprint,
+  Scan
 } from 'lucide-react';
 import { z } from 'zod';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useDeviceDetection } from '@/hooks/useDeviceDetection';
+import { useWebAuthn } from '@/hooks/useWebAuthn';
+import { Separator } from '@/components/ui/separator';
 
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string().min(6, 'Senha deve ter no mínimo 6 caracteres');
@@ -48,7 +52,9 @@ export default function Auth() {
   const [userIp, setUserIp] = useState<string | null>(null);
   const [accountLocked, setAccountLocked] = useState(false);
   const [lockoutMessage, setLockoutMessage] = useState('');
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
   const { checkDevice } = useDeviceDetection();
+  const { isSupported: webAuthnSupported, isLoading: webAuthnLoading, authenticate, isPlatformAuthenticatorAvailable } = useWebAuthn();
 
   useEffect(() => {
     // Check if user is already logged in
@@ -60,6 +66,15 @@ export default function Auth() {
     };
     checkUser();
 
+    // Check biometric availability
+    const checkBiometric = async () => {
+      if (webAuthnSupported) {
+        const available = await isPlatformAuthenticatorAvailable();
+        setBiometricAvailable(available);
+      }
+    };
+    checkBiometric();
+
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
@@ -68,7 +83,7 @@ export default function Auth() {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, webAuthnSupported, isPlatformAuthenticatorAvailable]);
 
   const validateForm = (isSignUp: boolean) => {
     const newErrors: typeof errors = {};
@@ -258,6 +273,46 @@ export default function Auth() {
     }
   };
 
+  // Handle biometric login
+  const handleBiometricLogin = async () => {
+    if (!email) {
+      toast.error('Digite seu email primeiro');
+      return;
+    }
+
+    try {
+      emailSchema.parse(email);
+    } catch {
+      toast.error('Email inválido');
+      return;
+    }
+
+    const result = await authenticate(email);
+    
+    if (result.success && result.userId) {
+      // Sign in the user using a custom token or session
+      // For WebAuthn, we need to create a session for the authenticated user
+      // This typically requires a backend call to create a session
+      toast.success('Autenticação biométrica bem-sucedida!');
+      
+      // Log the successful biometric login
+      await supabase.from('login_attempts').insert({
+        user_email: email,
+        ip_address: userIp,
+        user_agent: navigator.userAgent,
+        success: true,
+        blocked_reason: null
+      });
+
+      // Check device after biometric login
+      await checkDevice(result.userId);
+      
+      // Navigate to home - the user will need to complete sign in
+      // In a production app, you'd use a backend to create a session
+      toast.info('Para completar o login biométrico, a integração com o backend é necessária.');
+    }
+  };
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -431,6 +486,41 @@ export default function Auth() {
                     )}
                     Entrar
                   </Button>
+
+                  {/* Biometric Login */}
+                  {biometricAvailable && (
+                    <>
+                      <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                          <Separator className="w-full" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                          <span className="bg-background px-2 text-muted-foreground">
+                            ou
+                          </span>
+                        </div>
+                      </div>
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full gap-2"
+                        onClick={handleBiometricLogin}
+                        disabled={webAuthnLoading || !email}
+                      >
+                        {webAuthnLoading ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Fingerprint className="h-4 w-4" />
+                        )}
+                        Entrar com Biometria
+                      </Button>
+
+                      <p className="text-xs text-center text-muted-foreground">
+                        Face ID, Touch ID ou Windows Hello
+                      </p>
+                    </>
+                  )}
 
                   <div className="text-center">
                     <button
