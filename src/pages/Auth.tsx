@@ -26,6 +26,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 import { useWebAuthn } from '@/hooks/useWebAuthn';
 import { Separator } from '@/components/ui/separator';
+import { PasswordStrengthIndicator } from '@/components/auth/PasswordStrengthIndicator';
 
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string().min(6, 'Senha deve ter no mínimo 6 caracteres');
@@ -660,6 +661,7 @@ export default function Auth() {
                     {errors.password && (
                       <p className="text-sm text-red-500">{errors.password}</p>
                     )}
+                    <PasswordStrengthIndicator password={password} />
                   </div>
 
                   <Button type="submit" className="w-full gap-2" disabled={isLoading}>
