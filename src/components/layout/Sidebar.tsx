@@ -25,6 +25,7 @@ import {
   FileSpreadsheet,
   ShieldCheck,
   Bot,
+  Shield,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -68,6 +69,7 @@ const baseNavItems: NavItem[] = [
 ];
 
 const bottomNavItems: NavItem[] = [
+  { label: 'Segurança', icon: Shield, href: '/seguranca', highlight: true },
   { label: 'Alertas', icon: Bell, href: '/alertas' },
   { label: 'Configurações', icon: Settings, href: '/configuracoes' },
 ];
