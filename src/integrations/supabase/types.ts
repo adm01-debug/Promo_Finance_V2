@@ -235,6 +235,33 @@ export type Database = {
           },
         ]
       }
+      allowed_countries: {
+        Row: {
+          ativo: boolean | null
+          country_code: string
+          country_name: string
+          created_at: string
+          created_by: string | null
+          id: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          country_code: string
+          country_name: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+        }
+        Update: {
+          ativo?: boolean | null
+          country_code?: string
+          country_name?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
       allowed_ips: {
         Row: {
           ativo: boolean | null
@@ -2437,6 +2464,7 @@ export type Database = {
       security_settings: {
         Row: {
           allowed_global_ips: string[] | null
+          enable_geo_restriction: boolean | null
           id: string
           require_2fa: boolean | null
           restrict_by_ip: boolean | null
@@ -2445,6 +2473,7 @@ export type Database = {
         }
         Insert: {
           allowed_global_ips?: string[] | null
+          enable_geo_restriction?: boolean | null
           id?: string
           require_2fa?: boolean | null
           restrict_by_ip?: boolean | null
@@ -2453,6 +2482,7 @@ export type Database = {
         }
         Update: {
           allowed_global_ips?: string[] | null
+          enable_geo_restriction?: boolean | null
           id?: string
           require_2fa?: boolean | null
           restrict_by_ip?: boolean | null

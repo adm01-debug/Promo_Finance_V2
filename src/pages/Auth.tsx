@@ -50,6 +50,8 @@ export default function Auth() {
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [ipBlocked, setIpBlocked] = useState(false);
   const [userIp, setUserIp] = useState<string | null>(null);
+  const [userCountry, setUserCountry] = useState<string | null>(null);
+  const [geoBlocked, setGeoBlocked] = useState(false);
   const [accountLocked, setAccountLocked] = useState(false);
   const [lockoutMessage, setLockoutMessage] = useState('');
   const [biometricAvailable, setBiometricAvailable] = useState(false);
@@ -112,18 +114,28 @@ export default function Auth() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Fetch user IP on component mount
+  // Fetch user IP and country on component mount
   useEffect(() => {
-    const fetchIp = async () => {
+    const fetchIpAndGeo = async () => {
       try {
-        const response = await fetch('https://api.ipify.org?format=json');
+        // Use ip-api.com for IP and country detection
+        const response = await fetch('http://ip-api.com/json/?fields=query,countryCode');
         const data = await response.json();
-        setUserIp(data.ip);
+        setUserIp(data.query);
+        setUserCountry(data.countryCode);
       } catch (error) {
-        console.error('Erro ao obter IP:', error);
+        console.error('Erro ao obter IP/localização:', error);
+        // Fallback to ipify for IP only
+        try {
+          const fallback = await fetch('https://api.ipify.org?format=json');
+          const fallbackData = await fallback.json();
+          setUserIp(fallbackData.ip);
+        } catch (e) {
+          console.error('Erro no fallback de IP:', e);
+        }
       }
     };
-    fetchIp();
+    fetchIpAndGeo();
   }, []);
 
   // Validate IP against allowed list
@@ -171,6 +183,46 @@ export default function Auth() {
     }
   };
 
+  // Validate geographic location against whitelist
+  const validateGeo = async (): Promise<{ allowed: boolean; reason?: string }> => {
+    if (!userCountry) {
+      return { allowed: true }; // Allow if country couldn't be detected
+    }
+
+    try {
+      // Check if geo restriction is enabled
+      const { data: settings } = await supabase
+        .from('security_settings')
+        .select('enable_geo_restriction')
+        .limit(1)
+        .maybeSingle();
+
+      if (!settings?.enable_geo_restriction) {
+        return { allowed: true }; // Geo restriction is disabled
+      }
+
+      // Check if country is in the whitelist
+      const { data: allowedCountries } = await supabase
+        .from('allowed_countries')
+        .select('country_code')
+        .eq('ativo', true);
+
+      const isAllowed = allowedCountries?.some(c => c.country_code === userCountry);
+      
+      if (!isAllowed) {
+        return { 
+          allowed: false, 
+          reason: `Acesso não permitido do país: ${userCountry}` 
+        };
+      }
+
+      return { allowed: true };
+    } catch (error) {
+      console.error('Erro ao validar localização:', error);
+      return { allowed: true }; // Allow on error to prevent lockout
+    }
+  };
+
   // Log login attempt
   const logLoginAttempt = async (success: boolean, blockedReason?: string) => {
     try {
@@ -204,6 +256,17 @@ export default function Auth() {
         setAccountLocked(true);
         setLockoutMessage('Sua conta foi bloqueada temporariamente devido a múltiplas tentativas falhas. Tente novamente em 30 minutos.');
         await logLoginAttempt(false, 'Conta bloqueada');
+        setIsLoading(false);
+        return;
+      }
+
+      // Validate geographic location before attempting login
+      const geoValidation = await validateGeo();
+      
+      if (!geoValidation.allowed) {
+        await logLoginAttempt(false, geoValidation.reason);
+        setGeoBlocked(true);
+        toast.error('Acesso bloqueado: País não autorizado');
         setIsLoading(false);
         return;
       }
@@ -438,6 +501,15 @@ export default function Auth() {
                     <AlertDescription>
                       Seu IP ({userIp}) não está autorizado para acessar o sistema.
                       Entre em contato com o administrador para liberar o acesso.
+                    </AlertDescription>
+                  </Alert>
+                )}
+                {geoBlocked && (
+                  <Alert variant="destructive" className="mb-4">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription>
+                      Acesso não permitido do seu país ({userCountry}).
+                      Entre em contato com o administrador para solicitar liberação.
                     </AlertDescription>
                   </Alert>
                 )}
