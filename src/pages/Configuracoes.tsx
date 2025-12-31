@@ -31,6 +31,7 @@ import {
 import { OpenFinancePanel } from '@/components/integracoes/OpenFinancePanel';
 import { NotificacoesConfig } from '@/components/configuracoes/NotificacoesConfig';
 import { CronJobsPanel } from '@/components/configuracoes/CronJobsPanel';
+import { SecuritySettings } from '@/components/configuracoes/SecuritySettings';
 import { DocumentacaoAPI } from '@/components/api/DocumentacaoAPI';
 import { GestaoContratos } from '@/components/contratos/GestaoContratos';
 import { AssinaturaDigital } from '@/components/documentos/AssinaturaDigital';
@@ -193,7 +194,7 @@ export default function Configuracoes() {
       </div>
 
       <Tabs defaultValue="regua" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-8 lg:w-[1100px]">
+        <TabsList className="grid w-full grid-cols-9 lg:w-[1200px]">
           <TabsTrigger value="regua" className="gap-2">
             <Clock className="h-4 w-4" />
             <span className="hidden sm:inline">Régua</span>
@@ -209,6 +210,10 @@ export default function Configuracoes() {
           <TabsTrigger value="agendamentos" className="gap-2">
             <Timer className="h-4 w-4" />
             <span className="hidden sm:inline">Cron</span>
+          </TabsTrigger>
+          <TabsTrigger value="seguranca" className="gap-2">
+            <Shield className="h-4 w-4" />
+            <span className="hidden sm:inline">Segurança</span>
           </TabsTrigger>
           <TabsTrigger value="integracoes" className="gap-2">
             <Link2 className="h-4 w-4" />
@@ -721,6 +726,11 @@ export default function Configuracoes() {
               </Button>
             </div>
           </motion.div>
+        </TabsContent>
+
+        {/* Segurança */}
+        <TabsContent value="seguranca">
+          <SecuritySettings />
         </TabsContent>
 
         {/* Gestão de Contratos */}

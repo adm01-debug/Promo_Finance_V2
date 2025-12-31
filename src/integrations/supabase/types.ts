@@ -205,6 +205,36 @@ export type Database = {
           },
         ]
       }
+      allowed_ips: {
+        Row: {
+          ativo: boolean | null
+          created_at: string
+          created_by: string | null
+          descricao: string | null
+          id: string
+          ip_address: string
+          user_id: string | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          created_at?: string
+          created_by?: string | null
+          descricao?: string | null
+          id?: string
+          ip_address: string
+          user_id?: string | null
+        }
+        Update: {
+          ativo?: boolean | null
+          created_at?: string
+          created_by?: string | null
+          descricao?: string | null
+          id?: string
+          ip_address?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action: Database["public"]["Enums"]["audit_action"]
@@ -1401,6 +1431,36 @@ export type Database = {
         }
         Relationships: []
       }
+      login_attempts: {
+        Row: {
+          blocked_reason: string | null
+          created_at: string
+          id: string
+          ip_address: string | null
+          success: boolean
+          user_agent: string | null
+          user_email: string
+        }
+        Insert: {
+          blocked_reason?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          success: boolean
+          user_agent?: string | null
+          user_email: string
+        }
+        Update: {
+          blocked_reason?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          success?: boolean
+          user_agent?: string | null
+          user_email?: string
+        }
+        Relationships: []
+      }
       metas_financeiras: {
         Row: {
           ano: number
@@ -2084,6 +2144,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      security_settings: {
+        Row: {
+          allowed_global_ips: string[] | null
+          id: string
+          require_2fa: boolean | null
+          restrict_by_ip: boolean | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          allowed_global_ips?: string[] | null
+          id?: string
+          require_2fa?: boolean | null
+          restrict_by_ip?: boolean | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          allowed_global_ips?: string[] | null
+          id?: string
+          require_2fa?: boolean | null
+          restrict_by_ip?: boolean | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
       }
       solicitacoes_aprovacao: {
         Row: {
