@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_lockouts: {
+        Row: {
+          created_at: string | null
+          failed_attempts: number | null
+          id: string
+          last_failed_attempt: string | null
+          locked_until: string | null
+          updated_at: string | null
+          user_email: string
+        }
+        Insert: {
+          created_at?: string | null
+          failed_attempts?: number | null
+          id?: string
+          last_failed_attempt?: string | null
+          locked_until?: string | null
+          updated_at?: string | null
+          user_email: string
+        }
+        Update: {
+          created_at?: string | null
+          failed_attempts?: number | null
+          id?: string
+          last_failed_attempt?: string | null
+          locked_until?: string | null
+          updated_at?: string | null
+          user_email?: string
+        }
+        Relationships: []
+      }
       acordos_parcelamento: {
         Row: {
           cliente_email: string | null
@@ -418,6 +448,45 @@ export type Database = {
           processed?: boolean | null
           processed_at?: string | null
           received_at?: string
+        }
+        Relationships: []
+      }
+      blocked_ips: {
+        Row: {
+          blocked_at: string | null
+          blocked_by: string | null
+          blocked_until: string | null
+          created_at: string | null
+          id: string
+          ip_address: string
+          permanent: boolean | null
+          reason: string | null
+          unblocked_at: string | null
+          unblocked_by: string | null
+        }
+        Insert: {
+          blocked_at?: string | null
+          blocked_by?: string | null
+          blocked_until?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address: string
+          permanent?: boolean | null
+          reason?: string | null
+          unblocked_at?: string | null
+          unblocked_by?: string | null
+        }
+        Update: {
+          blocked_at?: string | null
+          blocked_by?: string | null
+          blocked_until?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: string
+          permanent?: boolean | null
+          reason?: string | null
+          unblocked_at?: string | null
+          unblocked_by?: string | null
         }
         Relationships: []
       }
@@ -1832,6 +1901,30 @@ export type Database = {
         }
         Relationships: []
       }
+      permissions: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          module: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          module: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          module?: string
+          name?: string
+        }
+        Relationships: []
+      }
       portal_cliente_acessos: {
         Row: {
           acao: string
@@ -1978,6 +2071,36 @@ export type Database = {
           p256dh?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      rate_limit_logs: {
+        Row: {
+          blocked: boolean | null
+          created_at: string | null
+          endpoint: string
+          id: string
+          ip_address: string
+          requests_count: number | null
+          window_start: string | null
+        }
+        Insert: {
+          blocked?: boolean | null
+          created_at?: string | null
+          endpoint: string
+          id?: string
+          ip_address: string
+          requests_count?: number | null
+          window_start?: string | null
+        }
+        Update: {
+          blocked?: boolean | null
+          created_at?: string | null
+          endpoint?: string
+          id?: string
+          ip_address?: string
+          requests_count?: number | null
+          window_start?: string | null
         }
         Relationships: []
       }
@@ -2144,6 +2267,83 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      role_permissions: {
+        Row: {
+          created_at: string | null
+          id: string
+          permission_id: string | null
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          permission_id?: string | null
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          permission_id?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_permissions_permission_id_fkey"
+            columns: ["permission_id"]
+            isOneToOne: false
+            referencedRelation: "permissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      security_alerts: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          resolved: boolean | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          title: string
+          type: string
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          resolved?: boolean | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          title: string
+          type: string
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          resolved?: boolean | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          title?: string
+          type?: string
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       security_settings: {
         Row: {
@@ -2313,6 +2513,45 @@ export type Database = {
         }
         Relationships: []
       }
+      user_sessions: {
+        Row: {
+          created_at: string | null
+          device_info: string | null
+          id: string
+          ip_address: string | null
+          is_current: boolean | null
+          last_activity: string | null
+          revoked: boolean | null
+          revoked_at: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          device_info?: string | null
+          id?: string
+          ip_address?: string | null
+          is_current?: boolean | null
+          last_activity?: string | null
+          revoked?: boolean | null
+          revoked_at?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          device_info?: string | null
+          id?: string
+          ip_address?: string | null
+          is_current?: boolean | null
+          last_activity?: string | null
+          revoked?: boolean | null
+          revoked_at?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       vendedores: {
         Row: {
           ativo: boolean
@@ -2359,6 +2598,7 @@ export type Database = {
         }
         Returns: string
       }
+      check_account_lockout: { Args: { _email: string }; Returns: boolean }
       confirmar_conciliacao: {
         Args: {
           p_conta_pagar_id?: string
@@ -2396,12 +2636,20 @@ export type Database = {
         }
         Returns: boolean
       }
+      has_permission: {
+        Args: { _permission: string; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_failed_attempts: {
+        Args: { _email: string }
+        Returns: undefined
       }
       log_audit: {
         Args: {
@@ -2414,6 +2662,7 @@ export type Database = {
         }
         Returns: string
       }
+      reset_failed_attempts: { Args: { _email: string }; Returns: undefined }
       toggle_cron_job: {
         Args: { is_active: boolean; job_id: number }
         Returns: undefined
