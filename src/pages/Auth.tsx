@@ -167,18 +167,23 @@ export default function Auth() {
 
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth?reset=true`,
-      });
+      // Criar solicitação de reset que precisa de aprovação do gestor
+      const { error } = await supabase
+        .from('password_reset_requests')
+        .insert({
+          user_email: email,
+          status: 'pendente'
+        });
 
       if (error) {
-        toast.error(error.message);
+        toast.error('Erro ao solicitar reset de senha');
+        console.error(error);
       } else {
         setResetEmailSent(true);
-        toast.success('Email de recuperação enviado! Verifique sua caixa de entrada.');
+        toast.success('Solicitação enviada! Aguarde a aprovação do gestor.');
       }
     } catch (error) {
-      toast.error('Erro ao enviar email de recuperação');
+      toast.error('Erro ao solicitar reset de senha');
     } finally {
       setIsLoading(false);
     }
@@ -368,9 +373,9 @@ export default function Auth() {
                       <div className="inline-flex items-center justify-center p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
                         <Mail className="h-8 w-8 text-green-600 dark:text-green-400" />
                       </div>
-                      <h3 className="text-lg font-semibold">Email Enviado!</h3>
+                      <h3 className="text-lg font-semibold">Solicitação Enviada!</h3>
                       <p className="text-muted-foreground">
-                        Verifique sua caixa de entrada e siga as instruções para redefinir sua senha.
+                        Sua solicitação foi enviada para aprovação. Você receberá um email quando o gestor aprovar.
                       </p>
                       <Button
                         onClick={() => {

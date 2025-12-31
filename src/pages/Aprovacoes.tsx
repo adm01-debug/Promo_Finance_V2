@@ -4,6 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { AprovacoesPendentes } from '@/components/aprovacoes/AprovacoesPendentes';
 import { ConfiguracaoAprovacaoCard } from '@/components/aprovacoes/ConfiguracaoAprovacaoCard';
 import { HistoricoAprovacoes } from '@/components/aprovacoes/HistoricoAprovacoes';
+import { PasswordResetApprovals } from '@/components/aprovacoes/PasswordResetApprovals';
 import { useAuth } from '@/hooks/useAuth';
 
 const containerVariants = {
@@ -45,11 +46,16 @@ const Aprovacoes = () => {
           </div>
         </motion.div>
 
-        {/* Configurações - apenas admin */}
+        {/* Configurações e Reset de Senha - apenas admin */}
         {isAdmin && (
-          <motion.div variants={itemVariants}>
-            <ConfiguracaoAprovacaoCard />
-          </motion.div>
+          <>
+            <motion.div variants={itemVariants}>
+              <ConfiguracaoAprovacaoCard />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <PasswordResetApprovals />
+            </motion.div>
+          </>
         )}
 
         {/* Grid Principal */}
