@@ -146,25 +146,46 @@ self.addEventListener('push', (event) => {
 
   if (event.data) {
     try {
-      data = { ...data, ...event.data.json() };
+      const pushData = event.data.json();
+      data = { ...data, ...pushData };
+      console.log('[SW] Push data parsed:', data);
     } catch (e) {
       console.error('[SW] Error parsing push data:', e);
+      try {
+        const textData = event.data.text();
+        data.body = textData;
+      } catch (e2) {
+        console.error('[SW] Error getting push text:', e2);
+      }
     }
   }
+
+  // Determine priority styling
+  const isSecurityAlert = data.tag?.includes('security') || data.title?.includes('🔒');
+  const isCritical = data.prioridade === 'critica' || data.severity === 'critical';
+  const isHigh = data.prioridade === 'alta' || data.severity === 'high';
 
   const options = {
     body: data.body,
     icon: data.icon || '/favicon.ico',
     badge: data.badge || '/favicon.ico',
     tag: data.tag || 'alert-notification',
-    data: data.data || { url: '/alertas' },
-    vibrate: [200, 100, 200],
-    requireInteraction: data.prioridade === 'critica' || data.prioridade === 'alta',
-    actions: [
+    data: data.data || { url: isSecurityAlert ? '/seguranca' : '/alertas' },
+    vibrate: isCritical ? [500, 200, 500, 200, 500] : isHigh ? [300, 100, 300] : [200, 100, 200],
+    requireInteraction: isCritical || isHigh,
+    silent: false,
+    renotify: true,
+    timestamp: Date.now(),
+    actions: isSecurityAlert ? [
+      { action: 'view', title: '🔍 Ver Detalhes' },
+      { action: 'resolve', title: '✓ Resolver' }
+    ] : [
       { action: 'view', title: 'Ver Alerta' },
       { action: 'dismiss', title: 'Dispensar' }
     ]
   };
+
+  console.log('[SW] Showing notification with options:', options);
 
   event.waitUntil(
     self.registration.showNotification(data.title, options)
@@ -176,11 +197,24 @@ self.addEventListener('notificationclick', (event) => {
   
   event.notification.close();
 
-  if (event.action === 'dismiss') {
+  const action = event.action;
+  const notificationData = event.notification.data || {};
+
+  if (action === 'dismiss') {
+    console.log('[SW] Notification dismissed');
     return;
   }
 
-  const urlToOpen = event.notification.data?.url || '/alertas';
+  // Determine URL based on action and notification type
+  let urlToOpen = notificationData.url || '/alertas';
+  
+  if (action === 'resolve' && notificationData.alertId) {
+    urlToOpen = `/seguranca?resolve=${notificationData.alertId}`;
+  } else if (action === 'view') {
+    urlToOpen = notificationData.url || '/seguranca';
+  }
+
+  console.log('[SW] Opening URL:', urlToOpen);
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true })
@@ -201,5 +235,18 @@ self.addEventListener('notificationclick', (event) => {
 });
 
 self.addEventListener('notificationclose', (event) => {
-  console.log('[SW] Notification closed:', event);
+  console.log('[SW] Notification closed:', event.notification.tag);
 });
+
+// Handle background sync for offline notifications
+self.addEventListener('sync', (event) => {
+  console.log('[SW] Background sync:', event.tag);
+  if (event.tag === 'sync-notifications') {
+    event.waitUntil(syncNotifications());
+  }
+});
+
+async function syncNotifications() {
+  console.log('[SW] Syncing pending notifications...');
+  // This could be used to sync any pending notification states
+}

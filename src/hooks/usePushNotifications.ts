@@ -9,6 +9,29 @@ export function usePushNotifications() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [permission, setPermission] = useState<NotificationPermission>('default');
+  const [vapidPublicKey, setVapidPublicKey] = useState<string | null>(null);
+
+  // Fetch VAPID public key from edge function
+  const fetchVapidKey = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('get-vapid-key');
+      
+      if (error) {
+        console.error('Error fetching VAPID key:', error);
+        return null;
+      }
+      
+      if (data?.vapidPublicKey) {
+        setVapidPublicKey(data.vapidPublicKey);
+        return data.vapidPublicKey;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error fetching VAPID key:', error);
+      return null;
+    }
+  }, []);
 
   useEffect(() => {
     const checkSupport = async () => {
@@ -17,6 +40,7 @@ export function usePushNotifications() {
       
       if (supported) {
         setPermission(Notification.permission);
+        await fetchVapidKey();
         await checkSubscription();
       }
       
@@ -24,7 +48,7 @@ export function usePushNotifications() {
     };
 
     checkSupport();
-  }, [user]);
+  }, [user, fetchVapidKey]);
 
   const checkSubscription = useCallback(async () => {
     if (!('serviceWorker' in navigator)) return;
@@ -100,13 +124,24 @@ export function usePushNotifications() {
         }
       }
 
+      // Get VAPID key if not already fetched
+      let keyToUse = vapidPublicKey;
+      if (!keyToUse) {
+        keyToUse = await fetchVapidKey();
+      }
+      
+      if (!keyToUse) {
+        toast.error('Chave VAPID não configurada. Contate o administrador.');
+        setIsLoading(false);
+        return false;
+      }
+
       // Register service worker
       const registration = await registerServiceWorker();
       await navigator.serviceWorker.ready;
 
-      // Subscribe to push - using a placeholder VAPID key
-      const vapidPublicKey = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U';
-      const applicationServerKey = urlBase64ToUint8Array(vapidPublicKey);
+      // Subscribe to push
+      const applicationServerKey = urlBase64ToUint8Array(keyToUse);
 
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
@@ -120,26 +155,28 @@ export function usePushNotifications() {
         throw new Error('Failed to get subscription keys');
       }
 
-      // Save subscription to database using raw query to avoid type issues
-      const { error } = await supabase.rpc('log_audit', {
-        _action: 'INSERT',
-        _table_name: 'push_subscriptions',
-        _details: 'Push subscription created'
+      // Save subscription to database
+      const { error } = await supabase.from('push_subscriptions' as any).upsert({
+        user_id: user.id,
+        endpoint: subscription.endpoint,
+        p256dh: arrayBufferToBase64(p256dhKey),
+        auth: arrayBufferToBase64(authKey),
+        ativo: true,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id,endpoint'
       });
 
-      // Also try to insert directly (will work after types are regenerated)
-      try {
-        await supabase.from('push_subscriptions' as any).upsert({
+      if (error) {
+        console.error('Error saving subscription:', error);
+        // Try without onConflict
+        await supabase.from('push_subscriptions' as any).insert({
           user_id: user.id,
           endpoint: subscription.endpoint,
           p256dh: arrayBufferToBase64(p256dhKey),
           auth: arrayBufferToBase64(authKey),
           ativo: true
-        }, {
-          onConflict: 'user_id,endpoint'
         });
-      } catch (e) {
-        console.log('Note: push_subscriptions table may not be synced yet');
       }
 
       setIsSubscribed(true);
@@ -152,7 +189,7 @@ export function usePushNotifications() {
     } finally {
       setIsLoading(false);
     }
-  }, [user, requestPermission, registerServiceWorker]);
+  }, [user, vapidPublicKey, requestPermission, registerServiceWorker, fetchVapidKey]);
 
   const unsubscribe = useCallback(async () => {
     setIsLoading(true);
@@ -166,15 +203,11 @@ export function usePushNotifications() {
 
         // Remove from database
         if (user) {
-          try {
-            await supabase
-              .from('push_subscriptions' as any)
-              .delete()
-              .eq('user_id', user.id)
-              .eq('endpoint', subscription.endpoint);
-          } catch (e) {
-            console.log('Note: push_subscriptions table may not be synced yet');
-          }
+          await supabase
+            .from('push_subscriptions' as any)
+            .delete()
+            .eq('user_id', user.id)
+            .eq('endpoint', subscription.endpoint);
         }
       }
 
@@ -197,12 +230,30 @@ export function usePushNotifications() {
     }
 
     try {
+      // Send via edge function to test the full flow
+      const { error } = await supabase.functions.invoke('send-push-notification', {
+        body: {
+          userId: user?.id,
+          title: '🔔 Teste de Notificação',
+          body: 'Esta é uma notificação de teste do sistema de segurança',
+          tag: 'test-notification',
+          prioridade: 'media',
+          data: { url: '/configuracoes' }
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      // Also show local notification as fallback
       const registration = await navigator.serviceWorker.ready;
-      await registration.showNotification('Teste de Notificação', {
-        body: 'Esta é uma notificação de teste do sistema financeiro',
+      await registration.showNotification('🔔 Teste de Notificação', {
+        body: 'Esta é uma notificação de teste do sistema de segurança',
         icon: '/favicon.ico',
         badge: '/favicon.ico',
-        tag: 'test-notification'
+        tag: 'test-notification',
+        requireInteraction: false
       });
       
       toast.success('Notificação de teste enviada!');
@@ -210,7 +261,38 @@ export function usePushNotifications() {
       console.error('Erro ao enviar notificação de teste:', error);
       toast.error('Erro ao enviar notificação de teste');
     }
-  }, [isSubscribed]);
+  }, [isSubscribed, user]);
+
+  // Function to send security alert push notification
+  const sendSecurityPushNotification = useCallback(async (
+    title: string,
+    body: string,
+    prioridade: 'baixa' | 'media' | 'alta' | 'critica' = 'alta',
+    data?: Record<string, unknown>
+  ) => {
+    try {
+      const { error } = await supabase.functions.invoke('send-push-notification', {
+        body: {
+          userId: user?.id,
+          title: `🔒 ${title}`,
+          body,
+          tag: 'security-alert',
+          prioridade,
+          data: data || { url: '/seguranca' }
+        }
+      });
+
+      if (error) {
+        console.error('Error sending security push:', error);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error sending security push notification:', error);
+      return false;
+    }
+  }, [user]);
 
   return {
     isSupported,
@@ -220,7 +302,9 @@ export function usePushNotifications() {
     subscribe,
     unsubscribe,
     sendTestNotification,
-    requestPermission
+    sendSecurityPushNotification,
+    requestPermission,
+    vapidPublicKey
   };
 }
 
