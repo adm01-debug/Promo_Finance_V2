@@ -39,6 +39,8 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string; fullName?: string }>({});
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -151,6 +153,37 @@ export default function Auth() {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      emailSchema.parse(email);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        setErrors({ email: err.errors[0].message });
+        return;
+      }
+    }
+
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth?reset=true`,
+      });
+
+      if (error) {
+        toast.error(error.message);
+      } else {
+        setResetEmailSent(true);
+        toast.success('Email de recuperação enviado! Verifique sua caixa de entrada.');
+      }
+    } catch (error) {
+      toast.error('Erro ao enviar email de recuperação');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center p-4">
       <motion.div
@@ -237,6 +270,16 @@ export default function Auth() {
                     )}
                     Entrar
                   </Button>
+
+                  <div className="text-center">
+                    <button
+                      type="button"
+                      onClick={() => setShowForgotPassword(true)}
+                      className="text-sm text-primary hover:underline"
+                    >
+                      Esqueci minha senha
+                    </button>
+                  </div>
                 </form>
               </TabsContent>
 
@@ -311,6 +354,88 @@ export default function Auth() {
                 </form>
               </TabsContent>
             </Tabs>
+
+            {/* Forgot Password Modal */}
+            {showForgotPassword && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="bg-background border rounded-lg p-6 w-full max-w-md"
+                >
+                  {resetEmailSent ? (
+                    <div className="text-center space-y-4">
+                      <div className="inline-flex items-center justify-center p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
+                        <Mail className="h-8 w-8 text-green-600 dark:text-green-400" />
+                      </div>
+                      <h3 className="text-lg font-semibold">Email Enviado!</h3>
+                      <p className="text-muted-foreground">
+                        Verifique sua caixa de entrada e siga as instruções para redefinir sua senha.
+                      </p>
+                      <Button
+                        onClick={() => {
+                          setShowForgotPassword(false);
+                          setResetEmailSent(false);
+                          setEmail('');
+                        }}
+                        className="w-full"
+                      >
+                        Voltar ao Login
+                      </Button>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleForgotPassword} className="space-y-4">
+                      <div className="text-center mb-4">
+                        <h3 className="text-lg font-semibold">Recuperar Senha</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Digite seu email para receber as instruções de recuperação
+                        </p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="reset-email">Email</Label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="reset-email"
+                            type="email"
+                            placeholder="seu@email.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="pl-10"
+                          />
+                        </div>
+                        {errors.email && (
+                          <p className="text-sm text-red-500">{errors.email}</p>
+                        )}
+                      </div>
+
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            setShowForgotPassword(false);
+                            setErrors({});
+                          }}
+                          className="flex-1"
+                        >
+                          Cancelar
+                        </Button>
+                        <Button type="submit" className="flex-1 gap-2" disabled={isLoading}>
+                          {isLoading ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Mail className="h-4 w-4" />
+                          )}
+                          Enviar
+                        </Button>
+                      </div>
+                    </form>
+                  )}
+                </motion.div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
