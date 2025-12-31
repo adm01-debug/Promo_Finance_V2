@@ -10,6 +10,29 @@ interface DeviceInfo {
   userAgent: string;
 }
 
+async function sendDeviceAlertEmail(userId: string, email: string, deviceInfo: DeviceInfo) {
+  try {
+    const { error } = await supabase.functions.invoke('send-device-alert', {
+      body: {
+        userId,
+        email,
+        browser: deviceInfo.browser,
+        os: deviceInfo.os,
+        deviceType: deviceInfo.deviceType,
+        timestamp: new Date().toISOString()
+      }
+    });
+    
+    if (error) {
+      console.error('Error sending device alert email:', error);
+    } else {
+      console.log('Device alert email sent successfully');
+    }
+  } catch (error) {
+    console.error('Error invoking send-device-alert function:', error);
+  }
+}
+
 function generateDeviceFingerprint(): DeviceInfo {
   const userAgent = navigator.userAgent;
   const screenResolution = `${screen.width}x${screen.height}`;
@@ -122,6 +145,18 @@ export function useDeviceDetection() {
         });
       
       setIsNewDevice(true);
+      
+      // Get user email to send alert
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('email')
+        .eq('id', userId)
+        .single();
+      
+      // Send email notification in background
+      if (profile?.email) {
+        sendDeviceAlertEmail(userId, profile.email, deviceInfo);
+      }
       
       // Show toast notification
       toast.warning('Novo dispositivo detectado', {
