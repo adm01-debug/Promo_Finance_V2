@@ -20,6 +20,34 @@ interface SecurityAlert {
   created_at: string;
 }
 
+// Function to send push notification for security alerts
+async function sendSecurityPushAlert(alert: SecurityAlert) {
+  try {
+    const prioridade = alert.severity === 'critical' ? 'critica' : 
+                       alert.severity === 'high' ? 'alta' : 
+                       alert.severity === 'medium' ? 'media' : 'baixa';
+
+    await supabase.functions.invoke('send-push-notification', {
+      body: {
+        userId: alert.user_id,
+        title: `🔒 ${alert.title}`,
+        body: alert.description || 'Novo alerta de segurança detectado',
+        tag: `security-${alert.type}`,
+        prioridade,
+        data: { 
+          url: '/seguranca',
+          alertId: alert.id,
+          type: alert.type
+        }
+      }
+    });
+    
+    console.log('[useSecurityAlerts] Push notification sent for alert:', alert.id);
+  } catch (error) {
+    console.error('[useSecurityAlerts] Error sending push notification:', error);
+  }
+}
+
 export function useSecurityAlerts() {
   const { user, isAdmin } = useAuth();
   const [alerts, setAlerts] = useState<SecurityAlert[]>([]);
@@ -58,7 +86,7 @@ export function useSecurityAlerts() {
 
     // Subscribe to realtime updates
     const channel = supabase
-      .channel('security-alerts')
+      .channel('security-alerts-realtime')
       .on(
         'postgres_changes',
         {
@@ -66,16 +94,27 @@ export function useSecurityAlerts() {
           schema: 'public',
           table: 'security_alerts',
         },
-        (payload) => {
+        async (payload) => {
           const newAlert = payload.new as SecurityAlert;
           setAlerts(prev => [newAlert, ...prev]);
           setUnresolvedCount(prev => prev + 1);
           
           // Show toast notification for new alerts
-          toast.warning(`Alerta de Segurança: ${newAlert.title}`, {
+          const toastType = newAlert.severity === 'critical' || newAlert.severity === 'high' 
+            ? toast.error 
+            : toast.warning;
+          
+          toastType(`🔒 Alerta de Segurança: ${newAlert.title}`, {
             description: newAlert.description || undefined,
-            duration: 10000,
+            duration: 15000,
+            action: {
+              label: 'Ver detalhes',
+              onClick: () => window.location.href = '/seguranca'
+            }
           });
+
+          // Send push notification
+          await sendSecurityPushAlert(newAlert);
         }
       )
       .subscribe();
@@ -113,6 +152,38 @@ export function useSecurityAlerts() {
     }
   };
 
+  // Function to create a security alert manually (useful for testing)
+  const createAlert = async (
+    type: string,
+    severity: 'low' | 'medium' | 'high' | 'critical',
+    title: string,
+    description?: string,
+    metadata?: Record<string, unknown>
+  ) => {
+    try {
+      const { data, error } = await supabase
+        .from('security_alerts')
+        .insert({
+          type,
+          severity,
+          title,
+          description,
+          user_id: user?.id,
+          user_email: user?.email,
+          metadata: metadata as Json
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      return data;
+    } catch (error) {
+      console.error('Erro ao criar alerta:', error);
+      throw error;
+    }
+  };
+
   const getAlertsByType = (type: string) => alerts.filter(a => a.type === type);
   const getAlertsBySeverity = (severity: string) => alerts.filter(a => a.severity === severity);
 
@@ -121,6 +192,7 @@ export function useSecurityAlerts() {
     unresolvedCount,
     isLoading,
     resolveAlert,
+    createAlert,
     getAlertsByType,
     getAlertsBySeverity,
     refresh: fetchAlerts,
