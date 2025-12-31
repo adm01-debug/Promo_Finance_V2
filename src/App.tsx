@@ -44,6 +44,7 @@ const DashboardEmpresa = lazy(() => import("./pages/DashboardEmpresa"));
 const BI = lazy(() => import("./pages/BI"));
 const PagamentosRecorrentes = lazy(() => import("./pages/PagamentosRecorrentes"));
 const DashboardReceber = lazy(() => import("./pages/DashboardReceber"));
+const Seguranca = lazy(() => import("./pages/Seguranca"));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -130,6 +131,7 @@ const App = () => (
                         <Route path="/bitrix24" element={<ProtectedRoute requiredRoles={['admin']}><Bitrix24 /></ProtectedRoute>} />
                         <Route path="/usuarios" element={<ProtectedRoute requiredRoles={['admin']}><Usuarios /></ProtectedRoute>} />
                         <Route path="/audit-logs" element={<ProtectedRoute requiredRoles={['admin']}><AuditLogs /></ProtectedRoute>} />
+                        <Route path="/seguranca" element={<ProtectedRoute><Seguranca /></ProtectedRoute>} />
                         {/* Catch-all */}
                         <Route path="*" element={<NotFound />} />
                       </Routes>

@@ -45,6 +45,8 @@ export default function Auth() {
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [ipBlocked, setIpBlocked] = useState(false);
   const [userIp, setUserIp] = useState<string | null>(null);
+  const [accountLocked, setAccountLocked] = useState(false);
+  const [lockoutMessage, setLockoutMessage] = useState('');
 
   useEffect(() => {
     // Check if user is already logged in
@@ -174,8 +176,21 @@ export default function Auth() {
 
     setIsLoading(true);
     setIpBlocked(false);
+    setAccountLocked(false);
 
     try {
+      // Check account lockout first
+      const { data: lockoutData } = await supabase
+        .rpc('check_account_lockout', { _email: email });
+
+      if (lockoutData === true) {
+        setAccountLocked(true);
+        setLockoutMessage('Sua conta foi bloqueada temporariamente devido a múltiplas tentativas falhas. Tente novamente em 30 minutos.');
+        await logLoginAttempt(false, 'Conta bloqueada');
+        setIsLoading(false);
+        return;
+      }
+
       // Validate IP before attempting login
       const ipValidation = await validateIp();
       
@@ -187,12 +202,30 @@ export default function Auth() {
         return;
       }
 
+      // Check if IP is in blocked_ips table
+      const { data: blockedIp } = await supabase
+        .from('blocked_ips')
+        .select('id')
+        .eq('ip_address', userIp)
+        .is('unblocked_at', null)
+        .maybeSingle();
+
+      if (blockedIp) {
+        await logLoginAttempt(false, 'IP bloqueado permanentemente');
+        setIpBlocked(true);
+        toast.error('Este IP está bloqueado. Contate o administrador.');
+        setIsLoading(false);
+        return;
+      }
+
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
+        // Increment failed attempts
+        await supabase.rpc('increment_failed_attempts', { _email: email });
         await logLoginAttempt(false, error.message);
         
         if (error.message.includes('Invalid login credentials')) {
@@ -203,6 +236,8 @@ export default function Auth() {
           toast.error(error.message);
         }
       } else {
+        // Reset failed attempts on successful login
+        await supabase.rpc('reset_failed_attempts', { _email: email });
         await logLoginAttempt(true);
         toast.success('Login realizado com sucesso!');
       }
@@ -325,6 +360,14 @@ export default function Auth() {
               </TabsList>
 
               <TabsContent value="login">
+                {accountLocked && (
+                  <Alert variant="destructive" className="mb-4">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription>
+                      {lockoutMessage}
+                    </AlertDescription>
+                  </Alert>
+                )}
                 {ipBlocked && (
                   <Alert variant="destructive" className="mb-4">
                     <AlertTriangle className="h-4 w-4" />
