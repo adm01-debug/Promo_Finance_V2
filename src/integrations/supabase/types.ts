@@ -21,6 +21,7 @@ export type Database = {
           id: string
           last_failed_attempt: string | null
           locked_until: string | null
+          lockout_count: number | null
           updated_at: string | null
           user_email: string
         }
@@ -30,6 +31,7 @@ export type Database = {
           id?: string
           last_failed_attempt?: string | null
           locked_until?: string | null
+          lockout_count?: number | null
           updated_at?: string | null
           user_email: string
         }
@@ -39,6 +41,7 @@ export type Database = {
           id?: string
           last_failed_attempt?: string | null
           locked_until?: string | null
+          lockout_count?: number | null
           updated_at?: string | null
           user_email?: string
         }
@@ -2775,6 +2778,14 @@ export type Database = {
           nodeport: number
           schedule: string
           username: string
+        }[]
+      }
+      get_lockout_details: {
+        Args: { _email: string }
+        Returns: {
+          is_locked: boolean
+          lockout_count: number
+          remaining_minutes: number
         }[]
       }
       get_user_role: {
