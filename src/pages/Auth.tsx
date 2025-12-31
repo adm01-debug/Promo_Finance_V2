@@ -16,9 +16,11 @@ import {
   User,
   Loader2,
   Building2,
-  Shield
+  Shield,
+  AlertTriangle
 } from 'lucide-react';
 import { z } from 'zod';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string().min(6, 'Senha deve ter no mínimo 6 caracteres');
@@ -41,6 +43,8 @@ export default function Auth() {
   const [errors, setErrors] = useState<{ email?: string; password?: string; fullName?: string }>({});
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [ipBlocked, setIpBlocked] = useState(false);
+  const [userIp, setUserIp] = useState<string | null>(null);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -89,19 +93,108 @@ export default function Auth() {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Fetch user IP on component mount
+  useEffect(() => {
+    const fetchIp = async () => {
+      try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        setUserIp(data.ip);
+      } catch (error) {
+        console.error('Erro ao obter IP:', error);
+      }
+    };
+    fetchIp();
+  }, []);
+
+  // Validate IP against allowed list
+  const validateIp = async (): Promise<{ allowed: boolean; reason?: string }> => {
+    if (!userIp) {
+      return { allowed: true }; // Allow if IP couldn't be fetched
+    }
+
+    try {
+      // Check if IP restriction is enabled globally
+      const { data: settings } = await supabase
+        .from('security_settings')
+        .select('restrict_by_ip, allowed_global_ips')
+        .single();
+
+      if (!settings?.restrict_by_ip) {
+        return { allowed: true }; // IP restriction is disabled
+      }
+
+      // Check global allowed IPs
+      const globalIps = settings.allowed_global_ips || [];
+      if (globalIps.includes(userIp)) {
+        return { allowed: true };
+      }
+
+      // Check if IP is in the allowed_ips table (for any user or globally)
+      const { data: allowedIps } = await supabase
+        .from('allowed_ips')
+        .select('ip_address')
+        .eq('ativo', true);
+
+      const isAllowed = allowedIps?.some(ip => ip.ip_address === userIp);
+      
+      if (!isAllowed) {
+        return { 
+          allowed: false, 
+          reason: `IP ${userIp} não autorizado para acesso` 
+        };
+      }
+
+      return { allowed: true };
+    } catch (error) {
+      console.error('Erro ao validar IP:', error);
+      return { allowed: true }; // Allow on error to prevent lockout
+    }
+  };
+
+  // Log login attempt
+  const logLoginAttempt = async (success: boolean, blockedReason?: string) => {
+    try {
+      await supabase.from('login_attempts').insert({
+        user_email: email,
+        ip_address: userIp,
+        user_agent: navigator.userAgent,
+        success,
+        blocked_reason: blockedReason || null
+      });
+    } catch (error) {
+      console.error('Erro ao registrar tentativa de login:', error);
+    }
+  };
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm(false)) return;
 
     setIsLoading(true);
+    setIpBlocked(false);
+
     try {
+      // Validate IP before attempting login
+      const ipValidation = await validateIp();
+      
+      if (!ipValidation.allowed) {
+        await logLoginAttempt(false, ipValidation.reason);
+        setIpBlocked(true);
+        toast.error('Acesso bloqueado: IP não autorizado');
+        setIsLoading(false);
+        return;
+      }
+
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
+        await logLoginAttempt(false, error.message);
+        
         if (error.message.includes('Invalid login credentials')) {
           toast.error('Email ou senha incorretos');
         } else if (error.message.includes('Email not confirmed')) {
@@ -110,9 +203,11 @@ export default function Auth() {
           toast.error(error.message);
         }
       } else {
+        await logLoginAttempt(true);
         toast.success('Login realizado com sucesso!');
       }
     } catch (error) {
+      await logLoginAttempt(false, 'Erro desconhecido');
       toast.error('Erro ao realizar login');
     } finally {
       setIsLoading(false);
@@ -230,6 +325,15 @@ export default function Auth() {
               </TabsList>
 
               <TabsContent value="login">
+                {ipBlocked && (
+                  <Alert variant="destructive" className="mb-4">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription>
+                      Seu IP ({userIp}) não está autorizado para acessar o sistema.
+                      Entre em contato com o administrador para liberar o acesso.
+                    </AlertDescription>
+                  </Alert>
+                )}
                 <form onSubmit={handleSignIn} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="login-email">Email</Label>
