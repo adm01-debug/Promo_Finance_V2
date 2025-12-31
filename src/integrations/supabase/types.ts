@@ -1500,6 +1500,51 @@ export type Database = {
         }
         Relationships: []
       }
+      known_devices: {
+        Row: {
+          browser: string | null
+          created_at: string
+          device_fingerprint: string
+          device_type: string | null
+          first_seen_at: string
+          id: string
+          ip_address: string | null
+          is_trusted: boolean | null
+          last_seen_at: string
+          os: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          browser?: string | null
+          created_at?: string
+          device_fingerprint: string
+          device_type?: string | null
+          first_seen_at?: string
+          id?: string
+          ip_address?: string | null
+          is_trusted?: boolean | null
+          last_seen_at?: string
+          os?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          browser?: string | null
+          created_at?: string
+          device_fingerprint?: string
+          device_type?: string | null
+          first_seen_at?: string
+          id?: string
+          ip_address?: string | null
+          is_trusted?: boolean | null
+          last_seen_at?: string
+          os?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       login_attempts: {
         Row: {
           blocked_reason: string | null
@@ -1568,6 +1613,50 @@ export type Database = {
           valor_meta?: number
         }
         Relationships: []
+      }
+      new_device_alerts: {
+        Row: {
+          acknowledged: boolean | null
+          acknowledged_at: string | null
+          created_at: string
+          device_id: string | null
+          id: string
+          ip_address: string | null
+          seen_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          acknowledged?: boolean | null
+          acknowledged_at?: string | null
+          created_at?: string
+          device_id?: string | null
+          id?: string
+          ip_address?: string | null
+          seen_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          acknowledged?: boolean | null
+          acknowledged_at?: string | null
+          created_at?: string
+          device_id?: string | null
+          id?: string
+          ip_address?: string | null
+          seen_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "new_device_alerts_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "known_devices"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notas_fiscais: {
         Row: {
