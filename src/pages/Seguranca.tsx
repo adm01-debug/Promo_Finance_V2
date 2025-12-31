@@ -5,6 +5,7 @@ import { MFASettings } from '@/components/auth/MFASettings';
 import { RateLimitDashboard } from '@/components/security/RateLimitDashboard';
 import { SecuritySettings } from '@/components/configuracoes/SecuritySettings';
 import { KnownDevicesPanel } from '@/components/security/KnownDevicesPanel';
+import { GeoRestrictionPanel } from '@/components/security/GeoRestrictionPanel';
 import { PermissionGate } from '@/components/auth/PermissionGate';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -14,6 +15,7 @@ import {
   Settings,
   UserCog,
   Monitor,
+  Globe,
 } from 'lucide-react';
 
 export default function Seguranca() {
@@ -38,7 +40,7 @@ export default function Seguranca() {
       </div>
 
       <Tabs defaultValue="mfa" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5">
+        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
           <TabsTrigger value="mfa" className="gap-2">
             <Key className="h-4 w-4" />
             <span className="hidden sm:inline">Minha Conta</span>
@@ -49,6 +51,10 @@ export default function Seguranca() {
           </TabsTrigger>
           {isAdmin && (
             <>
+              <TabsTrigger value="geo" className="gap-2">
+                <Globe className="h-4 w-4" />
+                <span className="hidden sm:inline">Geográfico</span>
+              </TabsTrigger>
               <TabsTrigger value="settings" className="gap-2">
                 <Settings className="h-4 w-4" />
                 <span className="hidden sm:inline">Configurações</span>
@@ -74,6 +80,10 @@ export default function Seguranca() {
         </TabsContent>
 
         <PermissionGate permission="security.manage">
+          <TabsContent value="geo" className="mt-6">
+            <GeoRestrictionPanel />
+          </TabsContent>
+
           <TabsContent value="settings" className="mt-6">
             <SecuritySettings />
           </TabsContent>
