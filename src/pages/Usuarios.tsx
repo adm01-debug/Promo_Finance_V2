@@ -9,11 +9,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { Users, Shield, Search, UserCog, Crown, Briefcase, Eye, Settings } from 'lucide-react';
 import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { GerenciadorPermissoes } from '@/components/admin/GerenciadorPermissoes';
 
 type AppRole = 'admin' | 'financeiro' | 'operacional' | 'visualizador';
 
@@ -170,109 +172,128 @@ export default function Usuarios() {
           </Card>
         </div>
 
-        {/* Users Table */}
-        <Card className="border-border/50">
-          <CardHeader>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <CardTitle className="flex items-center gap-2">
-                  <UserCog className="h-5 w-5" />
-                  Usuários
-                </CardTitle>
-                <CardDescription>Lista de todos os usuários cadastrados</CardDescription>
-              </div>
-              <div className="relative w-full sm:w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar usuário..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9"
-                />
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <TableShimmerSkeleton rows={6} columns={5} />
-            ) : (
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Usuário</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Perfil Atual</TableHead>
-                      <TableHead>Data de Cadastro</TableHead>
-                      <TableHead className="text-right">Alterar Perfil</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredUsers?.map((userItem) => (
-                      <TableRow key={userItem.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
-                              <span className="text-sm font-medium text-primary">
-                                {(userItem.full_name || userItem.email).charAt(0).toUpperCase()}
-                              </span>
-                            </div>
-                            <div>
-                              <p className="font-medium">{userItem.full_name || 'Sem nome'}</p>
-                              {userItem.id === user?.id && (
-                                <Badge variant="outline" className="text-xs">Você</Badge>
+        <Tabs defaultValue="users" className="w-full">
+          <TabsList>
+            <TabsTrigger value="users" className="gap-2">
+              <UserCog className="h-4 w-4" />
+              Usuários
+            </TabsTrigger>
+            <TabsTrigger value="permissions" className="gap-2">
+              <Shield className="h-4 w-4" />
+              Permissões
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="users" className="mt-6">
+            {/* Users Table */}
+            <Card className="border-border/50">
+              <CardHeader>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <UserCog className="h-5 w-5" />
+                      Usuários
+                    </CardTitle>
+                    <CardDescription>Lista de todos os usuários cadastrados</CardDescription>
+                  </div>
+                  <div className="relative w-full sm:w-64">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Buscar usuário..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-9"
+                    />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {isLoading ? (
+                  <TableShimmerSkeleton rows={6} columns={5} />
+                ) : (
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Usuário</TableHead>
+                          <TableHead>Email</TableHead>
+                          <TableHead>Perfil Atual</TableHead>
+                          <TableHead>Data de Cadastro</TableHead>
+                          <TableHead className="text-right">Alterar Perfil</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredUsers?.map((userItem) => (
+                          <TableRow key={userItem.id}>
+                            <TableCell>
+                              <div className="flex items-center gap-3">
+                                <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
+                                  <span className="text-sm font-medium text-primary">
+                                    {(userItem.full_name || userItem.email).charAt(0).toUpperCase()}
+                                  </span>
+                                </div>
+                                <div>
+                                  <p className="font-medium">{userItem.full_name || 'Sem nome'}</p>
+                                  {userItem.id === user?.id && (
+                                    <Badge variant="outline" className="text-xs">Você</Badge>
+                                  )}
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-muted-foreground">{userItem.email}</TableCell>
+                            <TableCell>
+                              {userItem.role ? (
+                                <Badge variant="outline" className={`${roleConfig[userItem.role].color} gap-1`}>
+                                  {roleConfig[userItem.role].icon}
+                                  {roleConfig[userItem.role].label}
+                                </Badge>
+                              ) : (
+                                <Badge variant="outline" className="text-muted-foreground">
+                                  Sem perfil
+                                </Badge>
                               )}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">{userItem.email}</TableCell>
-                        <TableCell>
-                          {userItem.role ? (
-                            <Badge variant="outline" className={`${roleConfig[userItem.role].color} gap-1`}>
-                              {roleConfig[userItem.role].icon}
-                              {roleConfig[userItem.role].label}
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="text-muted-foreground">
-                              Sem perfil
-                            </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {format(new Date(userItem.created_at), "dd 'de' MMM, yyyy", { locale: ptBR })}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Select
-                            value={userItem.role || ''}
-                            onValueChange={(value) => updateRoleMutation.mutate({ userId: userItem.id, newRole: value as AppRole })}
-                            disabled={userItem.id === user?.id}
-                          >
-                            <SelectTrigger className="w-40 ml-auto">
-                              <SelectValue placeholder="Selecionar..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="admin">Administrador</SelectItem>
-                              <SelectItem value="financeiro">Financeiro</SelectItem>
-                              <SelectItem value="operacional">Operacional</SelectItem>
-                              <SelectItem value="visualizador">Visualizador</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {filteredUsers?.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                          Nenhum usuário encontrado
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                            </TableCell>
+                            <TableCell className="text-muted-foreground">
+                              {format(new Date(userItem.created_at), "dd 'de' MMM, yyyy", { locale: ptBR })}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <Select
+                                value={userItem.role || ''}
+                                onValueChange={(value) => updateRoleMutation.mutate({ userId: userItem.id, newRole: value as AppRole })}
+                                disabled={userItem.id === user?.id}
+                              >
+                                <SelectTrigger className="w-40 ml-auto">
+                                  <SelectValue placeholder="Selecionar..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="admin">Administrador</SelectItem>
+                                  <SelectItem value="financeiro">Financeiro</SelectItem>
+                                  <SelectItem value="operacional">Operacional</SelectItem>
+                                  <SelectItem value="visualizador">Visualizador</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                        {filteredUsers?.length === 0 && (
+                          <TableRow>
+                            <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                              Nenhum usuário encontrado
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="permissions" className="mt-6">
+            <GerenciadorPermissoes />
+          </TabsContent>
+        </Tabs>
       </div>
     </MainLayout>
   );
