@@ -255,13 +255,29 @@ export default function Auth() {
     setAccountLocked(false);
 
     try {
-      // Check account lockout first
+      // Check account lockout first with detailed info
       const { data: lockoutData } = await supabase
-        .rpc('check_account_lockout', { _email: email });
+        .rpc('get_lockout_details', { _email: email });
 
-      if (lockoutData === true) {
+      if (lockoutData && lockoutData.length > 0 && lockoutData[0].is_locked) {
+        const remainingMinutes = lockoutData[0].remaining_minutes;
+        const lockoutCount = lockoutData[0].lockout_count;
         setAccountLocked(true);
-        setLockoutMessage('Sua conta foi bloqueada temporariamente devido a múltiplas tentativas falhas. Tente novamente em 30 minutos.');
+        
+        let timeMessage = '';
+        if (remainingMinutes >= 60) {
+          const hours = Math.floor(remainingMinutes / 60);
+          const mins = remainingMinutes % 60;
+          timeMessage = mins > 0 ? `${hours}h ${mins}min` : `${hours} hora(s)`;
+        } else {
+          timeMessage = `${remainingMinutes} minuto(s)`;
+        }
+        
+        setLockoutMessage(
+          `Sua conta foi bloqueada temporariamente (bloqueio #${lockoutCount}). ` +
+          `Tente novamente em ${timeMessage}. ` +
+          `Bloqueios sucessivos aumentam o tempo de espera.`
+        );
         await logLoginAttempt(false, 'Conta bloqueada');
         setIsLoading(false);
         return;
