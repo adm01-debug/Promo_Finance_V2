@@ -41,3 +41,6 @@ verify_jwt = false
 
 [functions.analise-fluxo-ia]
 verify_jwt = false
+
+[functions.send-device-alert]
+verify_jwt = false
