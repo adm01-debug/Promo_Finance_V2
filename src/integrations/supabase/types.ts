@@ -1736,6 +1736,42 @@ export type Database = {
           },
         ]
       }
+      password_reset_requests: {
+        Row: {
+          aprovado_em: string | null
+          aprovado_por: string | null
+          created_at: string
+          id: string
+          motivo_rejeicao: string | null
+          solicitado_em: string
+          status: string
+          user_email: string
+          user_id: string | null
+        }
+        Insert: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          created_at?: string
+          id?: string
+          motivo_rejeicao?: string | null
+          solicitado_em?: string
+          status?: string
+          user_email: string
+          user_id?: string | null
+        }
+        Update: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          created_at?: string
+          id?: string
+          motivo_rejeicao?: string | null
+          solicitado_em?: string
+          status?: string
+          user_email?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       portal_cliente_acessos: {
         Row: {
           acao: string
