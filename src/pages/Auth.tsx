@@ -29,7 +29,9 @@ import { Separator } from '@/components/ui/separator';
 import { PasswordStrengthIndicator } from '@/components/auth/PasswordStrengthIndicator';
 
 const emailSchema = z.string().email('Email inválido');
-const passwordSchema = z.string().min(6, 'Senha deve ter no mínimo 6 caracteres');
+const passwordSchema = z.string()
+  .min(8, 'Senha deve ter no mínimo 8 caracteres')
+  .regex(/[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/~`]/, 'Senha deve conter caractere especial');
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -56,6 +58,7 @@ export default function Auth() {
   const [accountLocked, setAccountLocked] = useState(false);
   const [lockoutMessage, setLockoutMessage] = useState('');
   const [biometricAvailable, setBiometricAvailable] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState({ isStrong: false, isLeaked: false });
   const { checkDevice } = useDeviceDetection();
   const { isSupported: webAuthnSupported, isLoading: webAuthnLoading, authenticate, isPlatformAuthenticatorAvailable } = useWebAuthn();
 
@@ -382,6 +385,18 @@ export default function Auth() {
     
     if (!validateForm(true)) return;
 
+    // Check if password is leaked
+    if (passwordStrength.isLeaked) {
+      toast.error('Esta senha foi encontrada em vazamentos de dados. Escolha outra senha.');
+      return;
+    }
+
+    // Check if password meets minimum requirements
+    if (!passwordStrength.isStrong) {
+      toast.error('A senha não atende aos requisitos mínimos de segurança.');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const { error } = await supabase.auth.signUp({
@@ -652,7 +667,7 @@ export default function Auth() {
                       <Input
                         id="register-password"
                         type="password"
-                        placeholder="Mínimo 6 caracteres"
+                        placeholder="Mínimo 8 caracteres"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="pl-10"
@@ -661,7 +676,12 @@ export default function Auth() {
                     {errors.password && (
                       <p className="text-sm text-red-500">{errors.password}</p>
                     )}
-                    <PasswordStrengthIndicator password={password} />
+                    <PasswordStrengthIndicator 
+                      password={password} 
+                      onStrengthChange={(isStrong, isLeaked) => 
+                        setPasswordStrength({ isStrong, isLeaked })
+                      }
+                    />
                   </div>
 
                   <Button type="submit" className="w-full gap-2" disabled={isLoading}>
