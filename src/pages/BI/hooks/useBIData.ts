@@ -2,16 +2,23 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 export function useBIData() {
-  const [period, setPeriod] = useState('month');
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState({
+    period: 'month',
+    startDate: null,
+    endDate: null,
+  });
   
   const { data: metrics, isLoading } = useQuery({
-    queryKey: ['bi-metrics', period, filters],
+    queryKey: ['bi-metrics', filters],
     queryFn: async () => {
-      // Fetch metrics
-      return {};
+      // Fetch from Supabase
+      return {
+        revenue: 0,
+        expenses: 0,
+        profit: 0,
+      };
     },
   });
 
-  return { metrics, isLoading, period, setPeriod, filters, setFilters };
+  return { metrics, isLoading, filters, setFilters };
 }
