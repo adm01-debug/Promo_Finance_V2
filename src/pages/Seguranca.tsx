@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MFASettings } from '@/components/auth/MFASettings';
 import { RateLimitDashboard } from '@/components/security/RateLimitDashboard';
 import { SecuritySettings } from '@/components/configuracoes/SecuritySettings';
+import { KnownDevicesPanel } from '@/components/security/KnownDevicesPanel';
 import { PermissionGate } from '@/components/auth/PermissionGate';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -12,6 +13,7 @@ import {
   Activity,
   Settings,
   UserCog,
+  Monitor,
 } from 'lucide-react';
 
 export default function Seguranca() {
@@ -36,10 +38,14 @@ export default function Seguranca() {
       </div>
 
       <Tabs defaultValue="mfa" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5">
           <TabsTrigger value="mfa" className="gap-2">
             <Key className="h-4 w-4" />
             <span className="hidden sm:inline">Minha Conta</span>
+          </TabsTrigger>
+          <TabsTrigger value="devices" className="gap-2">
+            <Monitor className="h-4 w-4" />
+            <span className="hidden sm:inline">Dispositivos</span>
           </TabsTrigger>
           {isAdmin && (
             <>
@@ -61,6 +67,10 @@ export default function Seguranca() {
 
         <TabsContent value="mfa" className="mt-6">
           <MFASettings />
+        </TabsContent>
+
+        <TabsContent value="devices" className="mt-6">
+          <KnownDevicesPanel />
         </TabsContent>
 
         <PermissionGate permission="security.manage">

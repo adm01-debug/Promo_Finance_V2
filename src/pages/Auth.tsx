@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { z } from 'zod';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string().min(6, 'Senha deve ter no mínimo 6 caracteres');
@@ -47,6 +48,7 @@ export default function Auth() {
   const [userIp, setUserIp] = useState<string | null>(null);
   const [accountLocked, setAccountLocked] = useState(false);
   const [lockoutMessage, setLockoutMessage] = useState('');
+  const { checkDevice } = useDeviceDetection();
 
   useEffect(() => {
     // Check if user is already logged in
@@ -239,6 +241,13 @@ export default function Auth() {
         // Reset failed attempts on successful login
         await supabase.rpc('reset_failed_attempts', { _email: email });
         await logLoginAttempt(true);
+        
+        // Check for new device after successful login
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await checkDevice(user.id);
+        }
+        
         toast.success('Login realizado com sucesso!');
       }
     } catch (error) {
