@@ -1054,6 +1054,97 @@ export type Database = {
           },
         ]
       }
+      contratos: {
+        Row: {
+          arquivo_url: string | null
+          cliente_id: string | null
+          created_at: string
+          created_by: string
+          data_fim: string | null
+          data_inicio: string
+          data_renovacao: string | null
+          descricao: string
+          dias_aviso_renovacao: number | null
+          empresa_id: string | null
+          fornecedor_id: string | null
+          id: string
+          numero_contrato: string | null
+          observacoes: string | null
+          renovacao_automatica: boolean | null
+          status: string
+          tipo: string
+          updated_at: string
+          valor_mensal: number | null
+          valor_total: number | null
+        }
+        Insert: {
+          arquivo_url?: string | null
+          cliente_id?: string | null
+          created_at?: string
+          created_by: string
+          data_fim?: string | null
+          data_inicio: string
+          data_renovacao?: string | null
+          descricao: string
+          dias_aviso_renovacao?: number | null
+          empresa_id?: string | null
+          fornecedor_id?: string | null
+          id?: string
+          numero_contrato?: string | null
+          observacoes?: string | null
+          renovacao_automatica?: boolean | null
+          status?: string
+          tipo?: string
+          updated_at?: string
+          valor_mensal?: number | null
+          valor_total?: number | null
+        }
+        Update: {
+          arquivo_url?: string | null
+          cliente_id?: string | null
+          created_at?: string
+          created_by?: string
+          data_fim?: string | null
+          data_inicio?: string
+          data_renovacao?: string | null
+          descricao?: string
+          dias_aviso_renovacao?: number | null
+          empresa_id?: string | null
+          fornecedor_id?: string | null
+          id?: string
+          numero_contrato?: string | null
+          observacoes?: string | null
+          renovacao_automatica?: boolean | null
+          status?: string
+          tipo?: string
+          updated_at?: string
+          valor_mensal?: number | null
+          valor_total?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contratos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contratos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contratos_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            isOneToOne: false
+            referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       empresas: {
         Row: {
           ativo: boolean
@@ -2044,6 +2135,50 @@ export type Database = {
         }
         Relationships: []
       }
+      plano_contas: {
+        Row: {
+          ativo: boolean | null
+          codigo: string
+          created_at: string
+          descricao: string
+          id: string
+          natureza: string
+          nivel: number
+          parent_id: string | null
+          tipo: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          codigo: string
+          created_at?: string
+          descricao: string
+          id?: string
+          natureza: string
+          nivel?: number
+          parent_id?: string | null
+          tipo: string
+        }
+        Update: {
+          ativo?: boolean | null
+          codigo?: string
+          created_at?: string
+          descricao?: string
+          id?: string
+          natureza?: string
+          nivel?: number
+          parent_id?: string | null
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plano_contas_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "plano_contas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       portal_cliente_acessos: {
         Row: {
           acao: string
@@ -2737,6 +2872,60 @@ export type Database = {
           last_used_at?: string | null
           public_key?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      workflow_aprovacoes: {
+        Row: {
+          aprovacoes: Json
+          aprovado_em: string | null
+          aprovadores_necessarios: number
+          created_at: string
+          descricao: string
+          entidade_id: string
+          expira_em: string | null
+          id: string
+          motivo_rejeicao: string | null
+          nivel_necessario: number
+          solicitante_id: string
+          status: string
+          tipo: string
+          updated_at: string
+          valor: number
+        }
+        Insert: {
+          aprovacoes?: Json
+          aprovado_em?: string | null
+          aprovadores_necessarios?: number
+          created_at?: string
+          descricao: string
+          entidade_id: string
+          expira_em?: string | null
+          id?: string
+          motivo_rejeicao?: string | null
+          nivel_necessario?: number
+          solicitante_id: string
+          status?: string
+          tipo: string
+          updated_at?: string
+          valor: number
+        }
+        Update: {
+          aprovacoes?: Json
+          aprovado_em?: string | null
+          aprovadores_necessarios?: number
+          created_at?: string
+          descricao?: string
+          entidade_id?: string
+          expira_em?: string | null
+          id?: string
+          motivo_rejeicao?: string | null
+          nivel_necessario?: number
+          solicitante_id?: string
+          status?: string
+          tipo?: string
+          updated_at?: string
+          valor?: number
         }
         Relationships: []
       }
