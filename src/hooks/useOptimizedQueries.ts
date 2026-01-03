@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 // Prefetch common data on app load
@@ -181,9 +181,6 @@ export function useDebounce<T>(value: T, delay: number = 300): T {
 
   return debouncedValue;
 }
-
-// Import useState at the top
-import { useState } from 'react';
 
 // Cache key generators for consistency
 export const queryKeys = {

@@ -51,18 +51,18 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
 
 export function useWebAuthn() {
   const { user } = useAuth();
-  const [isSupported, setIsSupported] = useState<boolean>(false);
+  const [isSupported] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return window.PublicKeyCredential !== undefined &&
+      typeof window.PublicKeyCredential === 'function';
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [registeredCredentials, setRegisteredCredentials] = useState<StoredCredential[]>([]);
 
   // Check WebAuthn support
   const checkSupport = useCallback(() => {
-    const supported = 
-      window.PublicKeyCredential !== undefined &&
+    return window.PublicKeyCredential !== undefined &&
       typeof window.PublicKeyCredential === 'function';
-    
-    setIsSupported(supported);
-    return supported;
   }, []);
 
   // Check if platform authenticator is available (Face ID, Touch ID, Windows Hello)
@@ -307,7 +307,7 @@ export function useWebAuthn() {
   }, [user, fetchCredentials]);
 
   return {
-    isSupported: checkSupport(),
+    isSupported,
     isLoading,
     registeredCredentials,
     isPlatformAuthenticatorAvailable,
