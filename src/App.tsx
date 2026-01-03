@@ -5,7 +5,7 @@ import { queryClient } from '@/lib/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Lazy load heavy components
-const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Index = lazy(() => import('./pages/Index'));
 const ContasPagar = lazy(() => import('./pages/ContasPagar'));
 const ContasReceber = lazy(() => import('./pages/ContasReceber'));
 const BI = lazy(() => import('./pages/BI'));
@@ -30,7 +30,7 @@ export default function App() {
       <BrowserRouter>
         <Suspense fallback={<PageSkeleton />}>
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={<Index />} />
             <Route path="/contas-pagar" element={<ContasPagar />} />
             <Route path="/contas-receber" element={<ContasReceber />} />
             <Route path="/bi" element={<BI />} />
