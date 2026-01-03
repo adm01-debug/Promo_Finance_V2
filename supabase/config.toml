@@ -47,3 +47,18 @@ verify_jwt = false
 
 [functions.get-vapid-key]
 verify_jwt = false
+
+[functions.whatsapp-business]
+verify_jwt = false
+
+[functions.ml-inadimplencia]
+verify_jwt = true
+
+[functions.conciliacao-automatica]
+verify_jwt = true
+
+[functions.split-payments]
+verify_jwt = true
+
+[functions.whatsapp-ia-proativo]
+verify_jwt = false
