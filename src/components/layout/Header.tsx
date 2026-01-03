@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
-import { useTheme } from 'next-themes';
+import { useTheme } from '@/components/theme/ThemeProvider';
 import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -46,7 +46,7 @@ const roleLabels: Record<string, { label: string; color: string }> = {
 };
 
 export const Header = ({ sidebarCollapsed }: HeaderProps) => {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { theme, setTheme, isDark } = useTheme();
   const { user, profile, role, signOut } = useAuth();
   const navigate = useNavigate();
   const { data: empresas = [] } = useEmpresas();
@@ -59,8 +59,6 @@ export const Header = ({ sidebarCollapsed }: HeaderProps) => {
   }, [selectedEmpresaId, empresas]);
   
   const unreadAlerts = useMemo(() => alertas.filter((a) => !a.lido).length, [alertas]);
-
-  const isDark = resolvedTheme === 'dark';
 
   const handleSignOut = async () => {
     await signOut();

@@ -75,15 +75,6 @@ export default function Auth() {
     };
     checkUser();
 
-    // Check biometric availability
-    const checkBiometric = async () => {
-      if (webAuthnSupported) {
-        const available = await isPlatformAuthenticatorAvailable();
-        setBiometricAvailable(available);
-      }
-    };
-    checkBiometric();
-
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
@@ -92,7 +83,18 @@ export default function Auth() {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate, webAuthnSupported, isPlatformAuthenticatorAvailable]);
+  }, [navigate]);
+
+  // Check biometric availability (separate effect)
+  useEffect(() => {
+    const checkBiometric = async () => {
+      if (webAuthnSupported) {
+        const available = await isPlatformAuthenticatorAvailable();
+        setBiometricAvailable(available);
+      }
+    };
+    checkBiometric();
+  }, [webAuthnSupported]); // Only re-run when webAuthnSupported changes
 
   const validateForm = (isSignUp: boolean) => {
     const newErrors: typeof errors = {};
