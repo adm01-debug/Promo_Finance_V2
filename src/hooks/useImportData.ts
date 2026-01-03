@@ -2,13 +2,11 @@
  * FINANCE HUB - Hook para Importação de Dados
  * 
  * @module hooks/useImportData
- * @description Importação de CSV e Excel com validação Zod
+ * @description Importação de CSV com validação Zod
  */
 
 import { useState, useCallback } from 'react';
 import { z } from 'zod';
-import Papa from 'papaparse';
-import * as XLSX from 'xlsx';
 import { toast } from 'sonner';
 
 // ============================================
@@ -35,7 +33,6 @@ interface UseImportDataOptions<T> {
   schema: z.ZodSchema<T>;
   onImport: (data: T[]) => Promise<void>;
   maxRows?: number;
-  skipFirstRow?: boolean;
 }
 
 // ============================================
@@ -43,72 +40,58 @@ interface UseImportDataOptions<T> {
 // ============================================
 
 export function useImportData<T>(options: UseImportDataOptions<T>) {
-  const { schema, onImport, maxRows = 10000, skipFirstRow = false } = options;
+  const { schema, onImport, maxRows = 10000 } = options;
 
   const [status, setStatus] = useState<ImportStatus>('idle');
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState<ImportResult<T> | null>(null);
 
-  // Parsear CSV
+  // Parsear CSV simples
   const parseCSV = useCallback(async (file: File): Promise<unknown[]> => {
-    return new Promise((resolve, reject) => {
-      Papa.parse(file, {
-        header: true,
-        skipEmptyLines: true,
-        transformHeader: (header) => header.trim().toLowerCase().replace(/\s+/g, '_'),
-        complete: (results) => {
-          if (skipFirstRow && results.data.length > 0) {
-            results.data.shift();
-          }
-          resolve(results.data);
-        },
-        error: (error) => reject(error),
-      });
-    });
-  }, [skipFirstRow]);
-
-  // Parsear Excel
-  const parseExcel = useCallback(async (file: File): Promise<unknown[]> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       
       reader.onload = (e) => {
         try {
-          const data = new Uint8Array(e.target?.result as ArrayBuffer);
-          const workbook = XLSX.read(data, { type: 'array' });
-          const sheet = workbook.Sheets[workbook.SheetNames[0]];
-          const jsonData = XLSX.utils.sheet_to_json(sheet, {
-            defval: '',
-            raw: false,
-          });
+          const text = e.target?.result as string;
+          const lines = text.split('\n').filter(line => line.trim());
           
-          // Normalizar headers
-          const normalized = jsonData.map((row: Record<string, unknown>) => {
-            const newRow: Record<string, unknown> = {};
-            Object.keys(row).forEach(key => {
-              const normalizedKey = key.trim().toLowerCase().replace(/\s+/g, '_');
-              newRow[normalizedKey] = row[key];
+          if (lines.length < 2) {
+            reject(new Error('Arquivo vazio ou sem dados'));
+            return;
+          }
+
+          const separator = lines[0].includes(';') ? ';' : ',';
+          const headers = parseLine(lines[0], separator).map(h => 
+            h.trim().toLowerCase().replace(/\s+/g, '_')
+          );
+          
+          const data: Record<string, unknown>[] = [];
+          
+          for (let i = 1; i < lines.length; i++) {
+            const values = parseLine(lines[i], separator);
+            const row: Record<string, unknown> = {};
+            
+            headers.forEach((header, index) => {
+              row[header] = values[index]?.trim() || null;
             });
-            return newRow;
-          });
-          
-          if (skipFirstRow && normalized.length > 0) {
-            normalized.shift();
+            
+            data.push(row);
           }
           
-          resolve(normalized);
+          resolve(data);
         } catch (error) {
           reject(error);
         }
       };
-      
+
       reader.onerror = () => reject(new Error('Erro ao ler arquivo'));
-      reader.readAsArrayBuffer(file);
+      reader.readAsText(file, 'UTF-8');
     });
-  }, [skipFirstRow]);
+  }, []);
 
   // Validar dados com Zod
-  const validateData = useCallback((data: unknown[]): ImportResult<T> => {
+  const validateData = useCallback((data: unknown[], fileName: string): ImportResult<T> => {
     const success: T[] = [];
     const errors: ImportError[] = [];
 
@@ -120,7 +103,7 @@ export function useImportData<T>(options: UseImportDataOptions<T>) {
         if (error instanceof z.ZodError) {
           error.errors.forEach((err) => {
             errors.push({
-              row: index + 2, // +2 porque linha 1 é header
+              row: index + 2,
               field: err.path.join('.'),
               message: err.message,
               value: (row as Record<string, unknown>)[err.path[0] as string],
@@ -130,12 +113,7 @@ export function useImportData<T>(options: UseImportDataOptions<T>) {
       }
     });
 
-    return {
-      success,
-      errors,
-      total: data.length,
-      fileName: '',
-    };
+    return { success, errors, total: data.length, fileName };
   }, [schema, maxRows]);
 
   // Processar arquivo
@@ -145,14 +123,12 @@ export function useImportData<T>(options: UseImportDataOptions<T>) {
     setResult(null);
 
     try {
-      const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
-      const data = isExcel ? await parseExcel(file) : await parseCSV(file);
+      const data = await parseCSV(file);
 
       setStatus('validating');
       setProgress(40);
 
-      const validationResult = validateData(data);
-      validationResult.fileName = file.name;
+      const validationResult = validateData(data, file.name);
 
       setResult(validationResult);
       setProgress(60);
@@ -167,7 +143,7 @@ export function useImportData<T>(options: UseImportDataOptions<T>) {
       setStatus('error');
       toast.error(`Erro ao processar arquivo: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
     }
-  }, [parseCSV, parseExcel, validateData]);
+  }, [parseCSV, validateData]);
 
   // Confirmar importação
   const confirmImport = useCallback(async () => {
@@ -184,7 +160,6 @@ export function useImportData<T>(options: UseImportDataOptions<T>) {
       setProgress(100);
       toast.success(`${result.success.length} registros importados com sucesso!`);
       
-      // Reset após 2 segundos
       setTimeout(() => {
         setStatus('idle');
         setResult(null);
@@ -212,6 +187,34 @@ export function useImportData<T>(options: UseImportDataOptions<T>) {
     reset,
     isProcessing: status === 'parsing' || status === 'validating' || status === 'importing',
   };
+}
+
+// Helper para parsear linha CSV
+function parseLine(line: string, separator: string): string[] {
+  const result: string[] = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+
+    if (char === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === separator && !inQuotes) {
+      result.push(current);
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+
+  result.push(current);
+  return result;
 }
 
 export default useImportData;

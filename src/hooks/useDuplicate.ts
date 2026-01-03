@@ -2,10 +2,23 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-interface UseDuplicateOptions { tableName: string; queryKey: string[]; excludeFields?: string[]; transformData?: (data: Record<string, unknown>) => Record<string, unknown>; }
+type ValidTableName = 'clientes' | 'fornecedores' | 'empresas' | 'contas_pagar' | 'contas_receber';
 
-export function useDuplicate<T extends { id: string }>({ tableName, queryKey, excludeFields = ['id', 'created_at', 'updated_at'], transformData }: UseDuplicateOptions) {
+interface UseDuplicateOptions { 
+  tableName: string; 
+  queryKey: string[]; 
+  excludeFields?: string[]; 
+  transformData?: (data: Record<string, unknown>) => Record<string, unknown>; 
+}
+
+export function useDuplicate<T extends { id: string }>({ 
+  tableName, 
+  queryKey, 
+  excludeFields = ['id', 'created_at', 'updated_at'], 
+  transformData 
+}: UseDuplicateOptions) {
   const queryClient = useQueryClient();
+  const table = tableName as ValidTableName;
 
   return useMutation({
     mutationFn: async (item: T) => {
@@ -14,15 +27,15 @@ export function useDuplicate<T extends { id: string }>({ tableName, queryKey, ex
       if (duplicateData.name) duplicateData.name = `${duplicateData.name} (Cópia)`;
       if (duplicateData.titulo) duplicateData.titulo = `${duplicateData.titulo} (Cópia)`;
       const finalData = transformData ? transformData(duplicateData) : duplicateData;
-      const { data, error } = await supabase.from(tableName).insert(finalData).select().single();
+      const { data, error } = await supabase.from(table).insert(finalData as never).select().single();
       if (error) throw error;
-      return data as T;
+      return data as unknown as T;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey });
       toast.success('Item duplicado com sucesso!');
       return data;
     },
-    onError: (error) => toast.error(`Erro ao duplicar: ${error.message}`),
+    onError: (error: Error) => toast.error(`Erro ao duplicar: ${error.message}`),
   });
 }

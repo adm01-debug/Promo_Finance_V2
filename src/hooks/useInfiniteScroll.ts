@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useCallback, useRef, useEffect } from 'react';
+import { useCallback, useRef } from 'react';
 
 interface UseInfiniteScrollOptions<T> {
   tableName: string;
@@ -23,11 +23,19 @@ export function useInfiniteScroll<T extends { id: string }>({
   const query = useInfiniteQuery({
     queryKey: ['infinite', tableName, filters, orderBy],
     queryFn: async ({ pageParam = 0 }) => {
-      let q = supabase.from(tableName).select(select).range(pageParam, pageParam + pageSize - 1).order(orderBy.column, { ascending: orderBy.ascending });
-      Object.entries(filters).forEach(([key, value]) => { if (value !== undefined) q = q.eq(key, value); });
+      let q = supabase
+        .from(tableName as 'clientes')
+        .select(select)
+        .range(pageParam, pageParam + pageSize - 1)
+        .order(orderBy.column as 'id', { ascending: orderBy.ascending });
+      
+      Object.entries(filters).forEach(([key, value]) => { 
+        if (value !== undefined) q = q.eq(key as 'id', value as string); 
+      });
+      
       const { data, error } = await q;
       if (error) throw error;
-      return { data: data as T[], nextPage: data?.length === pageSize ? pageParam + pageSize : undefined };
+      return { data: (data || []) as unknown as T[], nextPage: data?.length === pageSize ? pageParam + pageSize : undefined };
     },
     getNextPageParam: (lastPage) => lastPage.nextPage,
     initialPageParam: 0,
@@ -35,7 +43,9 @@ export function useInfiniteScroll<T extends { id: string }>({
 
   const setLoadMoreRef = useCallback((node: HTMLDivElement | null) => {
     if (observerRef.current) observerRef.current.disconnect();
-    observerRef.current = new IntersectionObserver(entries => { if (entries[0].isIntersecting && query.hasNextPage && !query.isFetchingNextPage) query.fetchNextPage(); });
+    observerRef.current = new IntersectionObserver(entries => { 
+      if (entries[0].isIntersecting && query.hasNextPage && !query.isFetchingNextPage) query.fetchNextPage(); 
+    });
     if (node) observerRef.current.observe(node);
     loadMoreRef.current = node;
   }, [query.hasNextPage, query.isFetchingNextPage, query.fetchNextPage]);
