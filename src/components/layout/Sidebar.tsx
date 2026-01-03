@@ -26,6 +26,7 @@ import {
   ShieldCheck,
   Bot,
   Shield,
+  Scale,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -58,6 +59,7 @@ const baseNavItems: NavItem[] = [
   { label: 'Conciliação', icon: RefreshCcw, href: '/conciliacao' },
   { label: 'Fluxo de Caixa', icon: BarChart3, href: '/fluxo-caixa' },
   { label: 'Demonstrativos', icon: FileSpreadsheet, href: '/demonstrativos' },
+  { label: 'Reforma Tributária', icon: Scale, href: '/reforma-tributaria', highlight: true },
   { label: 'Aprovações', icon: ShieldCheck, href: '/aprovacoes', badgeKey: 'aprovacoes' },
   { label: 'Centro de Custos', icon: PieChart, href: '/centro-custos' },
   { label: 'Relatórios', icon: FileText, href: '/relatorios' },
