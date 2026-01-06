@@ -52,6 +52,10 @@ import { SimuladorCenariosTributarios } from './SimuladorCenariosTributarios';
 import { CronogramaTransicao } from './CronogramaTransicao';
 import { CalculadoraTributos } from './CalculadoraTributos';
 import { GestorCreditosTributarios } from './GestorCreditosTributarios';
+import { ApuracaoMensal } from './ApuracaoMensal';
+import { OperacoesLista } from './OperacoesLista';
+import { ModuloIRPJCSLL } from './ModuloIRPJCSLL';
+import { ObrigacoesAcessorias } from './ObrigacoesAcessorias';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -264,11 +268,15 @@ export function DashboardReformaTributaria() {
 
       {/* Tabs de Conteúdo */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="flex flex-wrap justify-start gap-1">
           <TabsTrigger value="visao-geral">Visão Geral</TabsTrigger>
-          <TabsTrigger value="calculadora">Calculadora</TabsTrigger>
+          <TabsTrigger value="apuracao">Apuração IBS/CBS</TabsTrigger>
+          <TabsTrigger value="irpj-csll">IRPJ/CSLL</TabsTrigger>
+          <TabsTrigger value="operacoes">Operações</TabsTrigger>
           <TabsTrigger value="creditos">Créditos</TabsTrigger>
+          <TabsTrigger value="calculadora">Calculadora</TabsTrigger>
           <TabsTrigger value="simulador">Simulador</TabsTrigger>
+          <TabsTrigger value="obrigacoes">Obrigações</TabsTrigger>
           <TabsTrigger value="cronograma">Cronograma</TabsTrigger>
         </TabsList>
 
@@ -449,6 +457,16 @@ export function DashboardReformaTributaria() {
           </Card>
         </TabsContent>
 
+        {/* Aba Apuração */}
+        <TabsContent value="apuracao">
+          <ApuracaoMensal />
+        </TabsContent>
+
+        {/* Aba Operações */}
+        <TabsContent value="operacoes">
+          <OperacoesLista />
+        </TabsContent>
+
         {/* Aba Calculadora */}
         <TabsContent value="calculadora">
           <CalculadoraTributos />
@@ -464,9 +482,19 @@ export function DashboardReformaTributaria() {
           <SimuladorCenariosTributarios />
         </TabsContent>
 
+        {/* Aba Obrigações */}
+        <TabsContent value="obrigacoes">
+          <ObrigacoesAcessorias />
+        </TabsContent>
+
         {/* Aba Cronograma */}
         <TabsContent value="cronograma">
           <CronogramaTransicao />
+        </TabsContent>
+
+        {/* Aba IRPJ/CSLL */}
+        <TabsContent value="irpj-csll">
+          <ModuloIRPJCSLL />
         </TabsContent>
       </Tabs>
     </motion.div>
