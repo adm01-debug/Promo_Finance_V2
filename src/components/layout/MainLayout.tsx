@@ -13,6 +13,8 @@ import { GuidedTour } from '@/components/onboarding/GuidedTour';
 import { ContextualBreadcrumbs } from '@/components/navigation/ContextualBreadcrumbs';
 import { OfflineBanner } from '@/components/offline/OfflineBanner';
 import { InstallPWA } from '@/components/pwa/InstallPWA';
+import { MobileBottomNav } from './sidebar/MobileBottomNav';
+import { MobileSidebarDrawer } from './sidebar/MobileSidebarDrawer';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -20,6 +22,7 @@ interface MainLayoutProps {
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isMobile = useIsMobile();
   const location = useLocation();
   
@@ -37,15 +40,23 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       {/* Offline Banner */}
       <OfflineBanner position="top" />
       
-      {/* Responsive Sidebar */}
-      <ResponsiveSidebar onCollapseChange={setSidebarCollapsed} />
+      {/* Responsive Sidebar - Desktop */}
+      {!isMobile && <ResponsiveSidebar onCollapseChange={setSidebarCollapsed} />}
+      
+      {/* Mobile Sidebar Drawer */}
+      {isMobile && (
+        <MobileSidebarDrawer 
+          isOpen={mobileMenuOpen} 
+          onClose={() => setMobileMenuOpen(false)} 
+        />
+      )}
       
       {/* Header - only show on desktop */}
       {!isMobile && <Header sidebarCollapsed={sidebarCollapsed} />}
       
       {/* Network status indicator - fixed position */}
       <div className={cn(
-        "fixed z-50 flex items-center gap-2",
+        "fixed z-40 flex items-center gap-2",
         isMobile ? "bottom-20 right-4" : "bottom-4 right-4"
       )}>
         <InstallPWA />
@@ -61,7 +72,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
         className={cn(
           'min-h-screen w-full transition-all duration-300',
-          isMobile ? 'pt-4 pb-20' : 'pt-16'
+          isMobile ? 'pt-4 pb-24' : 'pt-16'
         )}
         style={{
           width: isMobile ? '100%' : `calc(100% - ${sidebarCollapsed ? 72 : 280}px)`,
@@ -83,6 +94,11 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           </PageTransition>
         </div>
       </motion.main>
+      
+      {/* Mobile Bottom Navigation */}
+      {isMobile && (
+        <MobileBottomNav onMenuClick={() => setMobileMenuOpen(true)} />
+      )}
     </div>
   );
 };
