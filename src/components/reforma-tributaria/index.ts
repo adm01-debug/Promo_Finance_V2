@@ -16,3 +16,5 @@ export { ExportacaoSPED } from './ExportacaoSPED';
 export { AlertasTributarios } from './AlertasTributarios';
 export { RelatoriosContabeisTributarios } from './RelatoriosContabeisTributarios';
 export { DashboardMetricasTributarias } from './DashboardMetricasTributarias';
+export { SplitPaymentPanel } from './SplitPaymentPanel';
+export { PerDcompPanel } from './PerDcompPanel';

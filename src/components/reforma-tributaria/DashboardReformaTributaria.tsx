@@ -61,6 +61,8 @@ import { ExportacaoSPED } from './ExportacaoSPED';
 import { AlertasTributarios } from './AlertasTributarios';
 import { RelatoriosContabeisTributarios } from './RelatoriosContabeisTributarios';
 import { DashboardMetricasTributarias } from './DashboardMetricasTributarias';
+import { SplitPaymentPanel } from './SplitPaymentPanel';
+import { PerDcompPanel } from './PerDcompPanel';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -287,6 +289,8 @@ export function DashboardReformaTributaria() {
           <TabsTrigger value="alertas">Alertas</TabsTrigger>
           <TabsTrigger value="relatorios">Relatórios</TabsTrigger>
           <TabsTrigger value="metricas">Métricas</TabsTrigger>
+          <TabsTrigger value="split-payment">Split Payment</TabsTrigger>
+          <TabsTrigger value="per-dcomp">PER/DCOMP</TabsTrigger>
           <TabsTrigger value="cronograma">Cronograma</TabsTrigger>
         </TabsList>
 
@@ -530,6 +534,16 @@ export function DashboardReformaTributaria() {
         {/* Aba Métricas */}
         <TabsContent value="metricas">
           <DashboardMetricasTributarias />
+        </TabsContent>
+
+        {/* Aba Split Payment */}
+        <TabsContent value="split-payment">
+          <SplitPaymentPanel />
+        </TabsContent>
+
+        {/* Aba PER/DCOMP */}
+        <TabsContent value="per-dcomp">
+          <PerDcompPanel />
         </TabsContent>
       </Tabs>
     </motion.div>
