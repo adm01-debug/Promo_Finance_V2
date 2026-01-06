@@ -295,6 +295,116 @@ export type Database = {
         }
         Relationships: []
       }
+      apuracoes_tributarias: {
+        Row: {
+          ano: number
+          cbs_a_compensar: number | null
+          cbs_a_pagar: number | null
+          cbs_creditos: number | null
+          cbs_debitos: number | null
+          cbs_saldo_anterior: number | null
+          cofins_residual: number | null
+          competencia: string
+          created_at: string
+          created_by: string | null
+          data_transmissao: string | null
+          empresa_id: string
+          ibs_a_compensar: number | null
+          ibs_a_pagar: number | null
+          ibs_creditos: number | null
+          ibs_debitos: number | null
+          ibs_saldo_anterior: number | null
+          icms_residual: number | null
+          id: string
+          is_a_pagar: number | null
+          is_creditos: number | null
+          is_debitos: number | null
+          iss_residual: number | null
+          mes: number
+          pis_residual: number | null
+          protocolo_transmissao: string | null
+          status: string | null
+          total_geral: number | null
+          total_tributos_novos: number | null
+          total_tributos_residuais: number | null
+          updated_at: string
+        }
+        Insert: {
+          ano: number
+          cbs_a_compensar?: number | null
+          cbs_a_pagar?: number | null
+          cbs_creditos?: number | null
+          cbs_debitos?: number | null
+          cbs_saldo_anterior?: number | null
+          cofins_residual?: number | null
+          competencia: string
+          created_at?: string
+          created_by?: string | null
+          data_transmissao?: string | null
+          empresa_id: string
+          ibs_a_compensar?: number | null
+          ibs_a_pagar?: number | null
+          ibs_creditos?: number | null
+          ibs_debitos?: number | null
+          ibs_saldo_anterior?: number | null
+          icms_residual?: number | null
+          id?: string
+          is_a_pagar?: number | null
+          is_creditos?: number | null
+          is_debitos?: number | null
+          iss_residual?: number | null
+          mes: number
+          pis_residual?: number | null
+          protocolo_transmissao?: string | null
+          status?: string | null
+          total_geral?: number | null
+          total_tributos_novos?: number | null
+          total_tributos_residuais?: number | null
+          updated_at?: string
+        }
+        Update: {
+          ano?: number
+          cbs_a_compensar?: number | null
+          cbs_a_pagar?: number | null
+          cbs_creditos?: number | null
+          cbs_debitos?: number | null
+          cbs_saldo_anterior?: number | null
+          cofins_residual?: number | null
+          competencia?: string
+          created_at?: string
+          created_by?: string | null
+          data_transmissao?: string | null
+          empresa_id?: string
+          ibs_a_compensar?: number | null
+          ibs_a_pagar?: number | null
+          ibs_creditos?: number | null
+          ibs_debitos?: number | null
+          ibs_saldo_anterior?: number | null
+          icms_residual?: number | null
+          id?: string
+          is_a_pagar?: number | null
+          is_creditos?: number | null
+          is_debitos?: number | null
+          iss_residual?: number | null
+          mes?: number
+          pis_residual?: number | null
+          protocolo_transmissao?: string | null
+          status?: string | null
+          total_geral?: number | null
+          total_tributos_novos?: number | null
+          total_tributos_residuais?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "apuracoes_tributarias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: Database["public"]["Enums"]["audit_action"]
@@ -1145,6 +1255,122 @@ export type Database = {
           },
         ]
       }
+      creditos_tributarios: {
+        Row: {
+          aliquota: number
+          apuracao_id: string | null
+          competencia_origem: string
+          competencia_utilizacao: string | null
+          created_at: string
+          created_by: string | null
+          data_origem: string
+          documento_chave: string | null
+          documento_numero: string | null
+          documento_serie: string | null
+          documento_tipo: string | null
+          empresa_id: string
+          fornecedor_cnpj: string | null
+          fornecedor_id: string | null
+          fornecedor_nome: string | null
+          id: string
+          nota_fiscal_id: string | null
+          observacoes: string | null
+          saldo_disponivel: number | null
+          status: string | null
+          tipo_credito: string
+          tipo_tributo: string
+          updated_at: string
+          valor_base: number
+          valor_credito: number
+          valor_utilizado: number | null
+        }
+        Insert: {
+          aliquota: number
+          apuracao_id?: string | null
+          competencia_origem: string
+          competencia_utilizacao?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_origem: string
+          documento_chave?: string | null
+          documento_numero?: string | null
+          documento_serie?: string | null
+          documento_tipo?: string | null
+          empresa_id: string
+          fornecedor_cnpj?: string | null
+          fornecedor_id?: string | null
+          fornecedor_nome?: string | null
+          id?: string
+          nota_fiscal_id?: string | null
+          observacoes?: string | null
+          saldo_disponivel?: number | null
+          status?: string | null
+          tipo_credito: string
+          tipo_tributo: string
+          updated_at?: string
+          valor_base: number
+          valor_credito: number
+          valor_utilizado?: number | null
+        }
+        Update: {
+          aliquota?: number
+          apuracao_id?: string | null
+          competencia_origem?: string
+          competencia_utilizacao?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_origem?: string
+          documento_chave?: string | null
+          documento_numero?: string | null
+          documento_serie?: string | null
+          documento_tipo?: string | null
+          empresa_id?: string
+          fornecedor_cnpj?: string | null
+          fornecedor_id?: string | null
+          fornecedor_nome?: string | null
+          id?: string
+          nota_fiscal_id?: string | null
+          observacoes?: string | null
+          saldo_disponivel?: number | null
+          status?: string | null
+          tipo_credito?: string
+          tipo_tributo?: string
+          updated_at?: string
+          valor_base?: number
+          valor_credito?: number
+          valor_utilizado?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creditos_tributarios_apuracao_id_fkey"
+            columns: ["apuracao_id"]
+            isOneToOne: false
+            referencedRelation: "apuracoes_tributarias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creditos_tributarios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creditos_tributarios_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            isOneToOne: false
+            referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creditos_tributarios_nota_fiscal_id_fkey"
+            columns: ["nota_fiscal_id"]
+            isOneToOne: false
+            referencedRelation: "notas_fiscais"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       empresas: {
         Row: {
           ativo: boolean
@@ -1920,6 +2146,219 @@ export type Database = {
         }
         Relationships: []
       }
+      operacoes_tributaveis: {
+        Row: {
+          apuracao_id: string | null
+          base_calculo: number
+          cbs_aliquota: number | null
+          cbs_credito: number | null
+          cbs_valor: number | null
+          cest: string | null
+          cfop: string | null
+          cliente_id: string | null
+          cnpj_cpf_contraparte: string | null
+          cofins_aliquota: number | null
+          cofins_valor: number | null
+          competencia: string
+          created_at: string
+          created_by: string | null
+          data_operacao: string
+          documento_chave: string | null
+          documento_numero: string | null
+          documento_serie: string | null
+          documento_tipo: string
+          empresa_id: string
+          erro_mensagem: string | null
+          fornecedor_id: string | null
+          ibs_aliquota: number | null
+          ibs_credito: number | null
+          ibs_valor: number | null
+          icms_aliquota: number | null
+          icms_valor: number | null
+          id: string
+          is_aliquota: number | null
+          is_categoria: string | null
+          is_valor: number | null
+          isento: boolean | null
+          iss_aliquota: number | null
+          iss_valor: number | null
+          motivo_isencao: string | null
+          municipio_destino: string | null
+          municipio_origem: string | null
+          ncm: string | null
+          nome_contraparte: string | null
+          nota_fiscal_id: string | null
+          pis_aliquota: number | null
+          pis_valor: number | null
+          reducao_aliquota: number | null
+          regime_especial: string | null
+          split_payment: boolean | null
+          split_payment_valor: number | null
+          status: string | null
+          tipo_operacao: string
+          uf_destino: string | null
+          uf_origem: string | null
+          updated_at: string
+          valor_desconto: number | null
+          valor_frete: number | null
+          valor_operacao: number
+          valor_outros: number | null
+          valor_seguro: number | null
+        }
+        Insert: {
+          apuracao_id?: string | null
+          base_calculo: number
+          cbs_aliquota?: number | null
+          cbs_credito?: number | null
+          cbs_valor?: number | null
+          cest?: string | null
+          cfop?: string | null
+          cliente_id?: string | null
+          cnpj_cpf_contraparte?: string | null
+          cofins_aliquota?: number | null
+          cofins_valor?: number | null
+          competencia: string
+          created_at?: string
+          created_by?: string | null
+          data_operacao: string
+          documento_chave?: string | null
+          documento_numero?: string | null
+          documento_serie?: string | null
+          documento_tipo: string
+          empresa_id: string
+          erro_mensagem?: string | null
+          fornecedor_id?: string | null
+          ibs_aliquota?: number | null
+          ibs_credito?: number | null
+          ibs_valor?: number | null
+          icms_aliquota?: number | null
+          icms_valor?: number | null
+          id?: string
+          is_aliquota?: number | null
+          is_categoria?: string | null
+          is_valor?: number | null
+          isento?: boolean | null
+          iss_aliquota?: number | null
+          iss_valor?: number | null
+          motivo_isencao?: string | null
+          municipio_destino?: string | null
+          municipio_origem?: string | null
+          ncm?: string | null
+          nome_contraparte?: string | null
+          nota_fiscal_id?: string | null
+          pis_aliquota?: number | null
+          pis_valor?: number | null
+          reducao_aliquota?: number | null
+          regime_especial?: string | null
+          split_payment?: boolean | null
+          split_payment_valor?: number | null
+          status?: string | null
+          tipo_operacao: string
+          uf_destino?: string | null
+          uf_origem?: string | null
+          updated_at?: string
+          valor_desconto?: number | null
+          valor_frete?: number | null
+          valor_operacao: number
+          valor_outros?: number | null
+          valor_seguro?: number | null
+        }
+        Update: {
+          apuracao_id?: string | null
+          base_calculo?: number
+          cbs_aliquota?: number | null
+          cbs_credito?: number | null
+          cbs_valor?: number | null
+          cest?: string | null
+          cfop?: string | null
+          cliente_id?: string | null
+          cnpj_cpf_contraparte?: string | null
+          cofins_aliquota?: number | null
+          cofins_valor?: number | null
+          competencia?: string
+          created_at?: string
+          created_by?: string | null
+          data_operacao?: string
+          documento_chave?: string | null
+          documento_numero?: string | null
+          documento_serie?: string | null
+          documento_tipo?: string
+          empresa_id?: string
+          erro_mensagem?: string | null
+          fornecedor_id?: string | null
+          ibs_aliquota?: number | null
+          ibs_credito?: number | null
+          ibs_valor?: number | null
+          icms_aliquota?: number | null
+          icms_valor?: number | null
+          id?: string
+          is_aliquota?: number | null
+          is_categoria?: string | null
+          is_valor?: number | null
+          isento?: boolean | null
+          iss_aliquota?: number | null
+          iss_valor?: number | null
+          motivo_isencao?: string | null
+          municipio_destino?: string | null
+          municipio_origem?: string | null
+          ncm?: string | null
+          nome_contraparte?: string | null
+          nota_fiscal_id?: string | null
+          pis_aliquota?: number | null
+          pis_valor?: number | null
+          reducao_aliquota?: number | null
+          regime_especial?: string | null
+          split_payment?: boolean | null
+          split_payment_valor?: number | null
+          status?: string | null
+          tipo_operacao?: string
+          uf_destino?: string | null
+          uf_origem?: string | null
+          updated_at?: string
+          valor_desconto?: number | null
+          valor_frete?: number | null
+          valor_operacao?: number
+          valor_outros?: number | null
+          valor_seguro?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "operacoes_tributaveis_apuracao_id_fkey"
+            columns: ["apuracao_id"]
+            isOneToOne: false
+            referencedRelation: "apuracoes_tributarias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "operacoes_tributaveis_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "operacoes_tributaveis_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "operacoes_tributaveis_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            isOneToOne: false
+            referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "operacoes_tributaveis_nota_fiscal_id_fkey"
+            columns: ["nota_fiscal_id"]
+            isOneToOne: false
+            referencedRelation: "notas_fiscais"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pagamentos_recorrentes: {
         Row: {
           ativo: boolean | null
@@ -2408,6 +2847,65 @@ export type Database = {
           },
         ]
       }
+      regimes_especiais_empresa: {
+        Row: {
+          ativo: boolean | null
+          ato_legal: string | null
+          created_at: string
+          created_by: string | null
+          data_fim: string | null
+          data_inicio: string
+          empresa_id: string
+          id: string
+          numero_processo: string | null
+          reducao_cbs: number | null
+          reducao_ibs: number | null
+          regime_codigo: string
+          regime_nome: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          ato_legal?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_fim?: string | null
+          data_inicio: string
+          empresa_id: string
+          id?: string
+          numero_processo?: string | null
+          reducao_cbs?: number | null
+          reducao_ibs?: number | null
+          regime_codigo: string
+          regime_nome: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean | null
+          ato_legal?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_fim?: string | null
+          data_inicio?: string
+          empresa_id?: string
+          id?: string
+          numero_processo?: string | null
+          reducao_cbs?: number | null
+          reducao_ibs?: number | null
+          regime_codigo?: string
+          regime_nome?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regimes_especiais_empresa_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       regua_cobranca: {
         Row: {
           ativo: boolean | null
@@ -2672,6 +3170,96 @@ export type Database = {
             columns: ["conta_pagar_id"]
             isOneToOne: false
             referencedRelation: "contas_pagar"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      split_payment_transacoes: {
+        Row: {
+          cbs_retido: number | null
+          conta_cbs: string | null
+          conta_fornecedor: string | null
+          conta_ibs: string | null
+          conta_is: string | null
+          created_at: string
+          data_processamento: string | null
+          documento_chave: string | null
+          documento_numero: string | null
+          documento_tipo: string
+          empresa_id: string
+          erro_mensagem: string | null
+          ibs_retido: number | null
+          id: string
+          is_retido: number | null
+          operacao_id: string
+          protocolo: string | null
+          status: string | null
+          total_retido: number | null
+          updated_at: string
+          valor_liquido: number
+          valor_operacao: number
+        }
+        Insert: {
+          cbs_retido?: number | null
+          conta_cbs?: string | null
+          conta_fornecedor?: string | null
+          conta_ibs?: string | null
+          conta_is?: string | null
+          created_at?: string
+          data_processamento?: string | null
+          documento_chave?: string | null
+          documento_numero?: string | null
+          documento_tipo: string
+          empresa_id: string
+          erro_mensagem?: string | null
+          ibs_retido?: number | null
+          id?: string
+          is_retido?: number | null
+          operacao_id: string
+          protocolo?: string | null
+          status?: string | null
+          total_retido?: number | null
+          updated_at?: string
+          valor_liquido: number
+          valor_operacao: number
+        }
+        Update: {
+          cbs_retido?: number | null
+          conta_cbs?: string | null
+          conta_fornecedor?: string | null
+          conta_ibs?: string | null
+          conta_is?: string | null
+          created_at?: string
+          data_processamento?: string | null
+          documento_chave?: string | null
+          documento_numero?: string | null
+          documento_tipo?: string
+          empresa_id?: string
+          erro_mensagem?: string | null
+          ibs_retido?: number | null
+          id?: string
+          is_retido?: number | null
+          operacao_id?: string
+          protocolo?: string | null
+          status?: string | null
+          total_retido?: number | null
+          updated_at?: string
+          valor_liquido?: number
+          valor_operacao?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "split_payment_transacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "split_payment_transacoes_operacao_id_fkey"
+            columns: ["operacao_id"]
+            isOneToOne: false
+            referencedRelation: "operacoes_tributaveis"
             referencedColumns: ["id"]
           },
         ]

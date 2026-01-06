@@ -7,3 +7,5 @@ export { CalculadoraTributos } from './CalculadoraTributos';
 export { SimuladorCenariosTributarios } from './SimuladorCenariosTributarios';
 export { CronogramaTransicao } from './CronogramaTransicao';
 export { GestorCreditosTributarios } from './GestorCreditosTributarios';
+export { ApuracaoMensal } from './ApuracaoMensal';
+export { OperacoesLista } from './OperacoesLista';
