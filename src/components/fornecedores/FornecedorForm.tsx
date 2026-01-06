@@ -8,7 +8,7 @@ import { ActionButton } from '@/components/ui/action-button';
 import { FieldLabel } from '@/components/ui/info-tooltip';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { useCelebrations } from '@/components/wrappers/CelebrationActions';
+import { useConfetti } from '@/hooks/useConfetti';
 import { sounds } from '@/lib/sound-feedback';
 import {
   Dialog,
@@ -73,7 +73,7 @@ interface FornecedorFormProps {
 
 export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFormProps) {
   const queryClient = useQueryClient();
-  const { celebrateSuccess } = useCelebrations();
+  const { customCelebration } = useConfetti();
   const isEditing = !!fornecedor;
 
   const form = useForm<FornecedorFormData>({
@@ -146,7 +146,7 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['fornecedores'] });
       sounds.success();
-      celebrateSuccess('Fornecedor cadastrado!');
+      customCelebration({ title: 'Fornecedor cadastrado!', description: 'Fornecedor adicionado com sucesso.' });
       form.reset();
       onOpenChange(false);
     },
