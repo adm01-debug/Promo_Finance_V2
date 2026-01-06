@@ -58,6 +58,9 @@ import { ModuloIRPJCSLL } from './ModuloIRPJCSLL';
 import { ObrigacoesAcessorias } from './ObrigacoesAcessorias';
 import { RetencoesFonte } from './RetencoesFonte';
 import { ExportacaoSPED } from './ExportacaoSPED';
+import { AlertasTributarios } from './AlertasTributarios';
+import { RelatoriosContabeisTributarios } from './RelatoriosContabeisTributarios';
+import { DashboardMetricasTributarias } from './DashboardMetricasTributarias';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -281,6 +284,9 @@ export function DashboardReformaTributaria() {
           <TabsTrigger value="simulador">Simulador</TabsTrigger>
           <TabsTrigger value="obrigacoes">Obrigações</TabsTrigger>
           <TabsTrigger value="exportacao">Exportação SPED</TabsTrigger>
+          <TabsTrigger value="alertas">Alertas</TabsTrigger>
+          <TabsTrigger value="relatorios">Relatórios</TabsTrigger>
+          <TabsTrigger value="metricas">Métricas</TabsTrigger>
           <TabsTrigger value="cronograma">Cronograma</TabsTrigger>
         </TabsList>
 
@@ -504,6 +510,26 @@ export function DashboardReformaTributaria() {
         {/* Aba Retenções */}
         <TabsContent value="retencoes">
           <RetencoesFonte />
+        </TabsContent>
+
+        {/* Aba Exportação SPED */}
+        <TabsContent value="exportacao">
+          <ExportacaoSPED />
+        </TabsContent>
+
+        {/* Aba Alertas */}
+        <TabsContent value="alertas">
+          <AlertasTributarios />
+        </TabsContent>
+
+        {/* Aba Relatórios */}
+        <TabsContent value="relatorios">
+          <RelatoriosContabeisTributarios />
+        </TabsContent>
+
+        {/* Aba Métricas */}
+        <TabsContent value="metricas">
+          <DashboardMetricasTributarias />
         </TabsContent>
       </Tabs>
     </motion.div>
