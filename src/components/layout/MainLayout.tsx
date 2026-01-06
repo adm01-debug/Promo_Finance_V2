@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 import { ResponsiveSidebar } from './ResponsiveSidebar';
 import { Header } from './Header';
 import { cn } from '@/lib/utils';
@@ -8,6 +9,8 @@ import { usePrefetchRoutes } from '@/hooks/usePrefetchRoutes';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist';
 import { GuidedTour } from '@/components/onboarding/GuidedTour';
+import { ContextualBreadcrumbs } from '@/components/navigation/ContextualBreadcrumbs';
+import { OfflineBanner } from '@/components/offline/OfflineBanner';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -16,14 +19,21 @@ interface MainLayoutProps {
 export const MainLayout = ({ children }: MainLayoutProps) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const isMobile = useIsMobile();
+  const location = useLocation();
   
   // Initialize route prefetching
   usePrefetchRoutes();
+
+  // Show onboarding checklist only on dashboard
+  const showOnboarding = location.pathname === '/';
 
   return (
     <div className="min-h-screen bg-background">
       {/* Guided Tour for new users */}
       <GuidedTour />
+      
+      {/* Offline Banner */}
+      <OfflineBanner position="top" />
       
       {/* Responsive Sidebar */}
       <ResponsiveSidebar onCollapseChange={setSidebarCollapsed} />
@@ -55,10 +65,15 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         }}
       >
         <div className="w-full max-w-full p-4 md:p-6 lg:p-8">
+          {/* Contextual Breadcrumbs */}
+          <ContextualBreadcrumbs />
+          
           {/* Onboarding Checklist - show on dashboard */}
-          <div className="mb-6 max-w-md">
-            <OnboardingChecklist />
-          </div>
+          {showOnboarding && (
+            <div className="mb-6 max-w-md">
+              <OnboardingChecklist />
+            </div>
+          )}
           
           {children}
         </div>
