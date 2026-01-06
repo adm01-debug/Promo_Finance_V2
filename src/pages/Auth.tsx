@@ -484,33 +484,103 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center p-4">
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="w-full max-w-md"
-      >
-        {/* Logo/Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center p-4 bg-primary/10 rounded-2xl mb-4">
-            <Building2 className="h-10 w-10 text-primary" />
-          </div>
-          <h1 className="text-3xl font-bold">Promo Brindes</h1>
-          <p className="text-muted-foreground mt-2">Sistema de Gestão Financeira</p>
-        </div>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Animated background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/10" />
+      
+      {/* Animated gradient orbs */}
+      <div className="absolute inset-0 overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.5 }}
+          transition={{ duration: 1 }}
+          className="absolute -top-40 -right-40 w-80 h-80 bg-primary/20 rounded-full blur-3xl"
+        />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.3 }}
+          transition={{ duration: 1, delay: 0.2 }}
+          className="absolute -bottom-40 -left-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl"
+        />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.2 }}
+          transition={{ duration: 1, delay: 0.4 }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-primary/5 to-transparent rounded-full blur-3xl"
+        />
+      </div>
 
-        <Card className="border-2">
-          <CardHeader className="text-center pb-2">
-            <CardTitle className="flex items-center justify-center gap-2">
-              <Shield className="h-5 w-5 text-primary" />
-              Acesso ao Sistema
-            </CardTitle>
-            <CardDescription>
-              Entre com suas credenciais ou crie uma nova conta
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+      {/* Grid pattern overlay */}
+      <div 
+        className="absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px),
+                           linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)`,
+          backgroundSize: '50px 50px',
+        }}
+      />
+      
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="w-full max-w-md"
+        >
+          {/* Logo/Header with enhanced animation */}
+          <motion.div 
+            className="text-center mb-8"
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.1 }}
+          >
+            <motion.div 
+              className="inline-flex items-center justify-center p-4 bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl mb-4 shadow-lg shadow-primary/10 backdrop-blur-sm border border-primary/10"
+              whileHover={{ scale: 1.05, rotate: 5 }}
+              transition={{ type: 'spring', stiffness: 300 }}
+            >
+              <Building2 className="h-10 w-10 text-primary" />
+            </motion.div>
+            <motion.h1 
+              className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/80"
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              Promo Brindes
+            </motion.h1>
+            <motion.p 
+              className="text-muted-foreground mt-2"
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              Sistema de Gestão Financeira
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            <Card className="border-2 border-border/50 bg-card/80 backdrop-blur-xl shadow-2xl shadow-black/5">
+              <CardHeader className="text-center pb-2">
+                <CardTitle className="flex items-center justify-center gap-2">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.5, type: 'spring' }}
+                  >
+                    <Shield className="h-5 w-5 text-primary" />
+                  </motion.div>
+                  Acesso ao Sistema
+                </CardTitle>
+                <CardDescription>
+                  Entre com suas credenciais ou crie uma nova conta
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="login" className="gap-2">
@@ -826,13 +896,20 @@ export default function Auth() {
                 </motion.div>
               </div>
             )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+          </motion.div>
 
-        <p className="text-center text-sm text-muted-foreground mt-6">
-          Sistema seguro com controle de acesso por perfis (RBAC)
-        </p>
-      </motion.div>
+          <motion.p 
+            className="text-center text-sm text-muted-foreground mt-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            Sistema seguro com controle de acesso por perfis (RBAC)
+          </motion.p>
+        </motion.div>
+      </div>
     </div>
   );
 }
