@@ -11,7 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useClientes, useCentrosCusto, useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
 import { toast } from '@/hooks/use-toast';
-import { useCelebrations } from '@/components/wrappers/CelebrationActions';
+import { useConfetti } from '@/hooks/useConfetti';
 import { sounds } from '@/lib/sound-feedback';
 import {
   Dialog,
@@ -95,7 +95,7 @@ const tipoCobrancaOptions = [
 export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberFormProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { celebrateSuccess } = useCelebrations();
+  const confetti = useConfetti();
   const [showClienteSelect, setShowClienteSelect] = useState(false);
   const isEditing = !!conta;
 
@@ -185,7 +185,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
       sounds.success();
-      celebrateSuccess('Conta a receber criada!');
+      confetti.celebrateReceipt();
       form.reset();
       onOpenChange(false);
     },
