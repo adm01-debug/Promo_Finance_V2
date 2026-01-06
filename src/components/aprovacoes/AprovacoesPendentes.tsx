@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, X, Clock, AlertCircle, User, Calendar, DollarSign, FileText } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
@@ -10,11 +9,13 @@ import { Label } from '@/components/ui/label';
 import { useSolicitacoesPendentes, useAprovarSolicitacao, useRejeitarSolicitacao, SolicitacaoAprovacao } from '@/hooks/useAprovacoes';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/formatters';
 import { EmptyState } from '@/components/ui/micro-interactions';
+import { PrimaryActionButton, DangerButton, useCelebrations } from '@/components/wrappers';
 
 export const AprovacoesPendentes = () => {
   const { data: solicitacoes, isLoading } = useSolicitacoesPendentes();
   const aprovarMutation = useAprovarSolicitacao();
   const rejeitarMutation = useRejeitarSolicitacao();
+  const { celebrateApproval, warning } = useCelebrations();
   
   const [rejectDialog, setRejectDialog] = useState<{ open: boolean; solicitacao: SolicitacaoAprovacao | null }>({
     open: false,
@@ -22,8 +23,12 @@ export const AprovacoesPendentes = () => {
   });
   const [motivoRejeicao, setMotivoRejeicao] = useState('');
 
-  const handleAprovar = (solicitacaoId: string) => {
-    aprovarMutation.mutate(solicitacaoId);
+  const handleAprovar = (solicitacaoId: string, descricao?: string) => {
+    aprovarMutation.mutate(solicitacaoId, {
+      onSuccess: () => {
+        celebrateApproval(descricao);
+      },
+    });
   };
 
   const handleRejeitar = () => {
@@ -151,15 +156,16 @@ export const AprovacoesPendentes = () => {
                     </div>
 
                     <div className="flex gap-2 lg:flex-col">
-                      <Button
-                        onClick={() => handleAprovar(solicitacao.id)}
+                      <PrimaryActionButton
+                        onClick={() => handleAprovar(solicitacao.id, solicitacao.conta_pagar?.descricao)}
                         disabled={aprovarMutation.isPending}
                         className="flex-1 gap-2"
+                        showSuccessState
                       >
                         <Check className="h-4 w-4" />
                         Aprovar
-                      </Button>
-                      <Button
+                      </PrimaryActionButton>
+                      <DangerButton
                         variant="outline"
                         onClick={() => setRejectDialog({ open: true, solicitacao })}
                         disabled={rejeitarMutation.isPending}
@@ -167,7 +173,7 @@ export const AprovacoesPendentes = () => {
                       >
                         <X className="h-4 w-4" />
                         Rejeitar
-                      </Button>
+                      </DangerButton>
                     </div>
                   </div>
                 </motion.div>
@@ -211,16 +217,16 @@ export const AprovacoesPendentes = () => {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRejectDialog({ open: false, solicitacao: null })}>
+            <DangerButton variant="outline" onClick={() => setRejectDialog({ open: false, solicitacao: null })}>
               Cancelar
-            </Button>
-            <Button
+            </DangerButton>
+            <DangerButton
               variant="destructive"
               onClick={handleRejeitar}
               disabled={!motivoRejeicao.trim() || rejeitarMutation.isPending}
             >
               {rejeitarMutation.isPending ? 'Rejeitando...' : 'Confirmar Rejeição'}
-            </Button>
+            </DangerButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>
