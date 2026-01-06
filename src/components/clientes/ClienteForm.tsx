@@ -8,7 +8,7 @@ import { ActionButton } from '@/components/ui/action-button';
 import { FieldLabel } from '@/components/ui/info-tooltip';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { useCelebrations } from '@/components/wrappers/CelebrationActions';
+import { useConfetti } from '@/hooks/useConfetti';
 import { sounds } from '@/lib/sound-feedback';
 import {
   Dialog,
@@ -75,7 +75,7 @@ interface ClienteFormProps {
 
 export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
   const queryClient = useQueryClient();
-  const { celebrateSuccess } = useCelebrations();
+  const { customCelebration } = useConfetti();
   const isEditing = !!cliente;
 
   const form = useForm<ClienteFormData>({
@@ -152,7 +152,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clientes'] });
       sounds.success();
-      celebrateSuccess('Cliente cadastrado!');
+      customCelebration({ title: 'Cliente cadastrado!', description: 'Cliente adicionado com sucesso.' });
       form.reset();
       onOpenChange(false);
     },

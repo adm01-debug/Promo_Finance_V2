@@ -237,7 +237,8 @@ export default function Clientes() {
   };
   return (
     <MainLayout>
-      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+      <InteractivePageWrapper queryKeys={['clientes']} className="space-y-6">
+        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
         {/* Page Header */}
         <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
@@ -631,6 +632,7 @@ export default function Clientes() {
           onConfirm={handleDelete}
         />
       </motion.div>
+      </InteractivePageWrapper>
     </MainLayout>
   );
 }

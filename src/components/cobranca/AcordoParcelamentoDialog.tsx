@@ -46,6 +46,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { useAcordosParcelamento, simularParcelamento } from '@/hooks/useAcordosParcelamento';
 import { formatCurrency } from '@/lib/formatters';
+import { useConfetti } from '@/hooks/useConfetti';
+import { sounds } from '@/lib/sound-feedback';
 
 const formSchema = z.object({
   cliente_nome: z.string().min(2, 'Nome do cliente é obrigatório'),
@@ -80,6 +82,7 @@ export function AcordoParcelamentoDialog({
   empresaId,
 }: AcordoParcelamentoDialogProps) {
   const { criarAcordo, isCriando } = useAcordosParcelamento();
+  const { customCelebration } = useConfetti();
   const [numeroParcelas, setNumeroParcelas] = useState(3);
 
   const form = useForm<FormValues>({
@@ -143,6 +146,11 @@ export function AcordoParcelamentoDialog({
       empresa_id: empresaId,
     }, {
       onSuccess: () => {
+        sounds.success();
+        customCelebration({ 
+          title: 'Acordo criado!', 
+          description: `${numeroParcelas}x de ${formatCurrency(simulacao.valorParcela)}` 
+        });
         form.reset();
         onOpenChange(false);
       },

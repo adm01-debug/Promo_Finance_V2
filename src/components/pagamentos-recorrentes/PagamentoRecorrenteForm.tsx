@@ -33,6 +33,8 @@ import { cn } from '@/lib/utils';
 import { usePagamentosRecorrentes, FrequenciaPagamento } from '@/hooks/usePagamentosRecorrentes';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { useAllCentrosCusto } from '@/hooks/useCentrosCusto';
+import { useConfetti } from '@/hooks/useConfetti';
+import { sounds } from '@/lib/sound-feedback';
 
 const formSchema = z.object({
   descricao: z.string().min(3, 'Descrição deve ter pelo menos 3 caracteres'),
@@ -75,6 +77,7 @@ const tipoCobrancaOptions = [
 
 export function PagamentoRecorrenteForm({ onSuccess, onCancel }: PagamentoRecorrenteFormProps) {
   const { createPagamentoRecorrente, isCreating } = usePagamentosRecorrentes();
+  const { customCelebration } = useConfetti();
   const { data: empresas = [] } = useAllEmpresas();
   const { data: centrosCusto = [] } = useAllCentrosCusto();
 
@@ -110,6 +113,8 @@ export function PagamentoRecorrenteForm({ onSuccess, onCancel }: PagamentoRecorr
       observacoes: values.observacoes,
     }, {
       onSuccess: () => {
+        sounds.success();
+        customCelebration({ title: 'Pagamento recorrente criado!', description: 'Agendado com sucesso.' });
         form.reset();
         onSuccess?.();
       },
