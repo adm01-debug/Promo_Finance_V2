@@ -3,95 +3,52 @@
 // Formato compatível com Domínio, Fortes, etc.
 // ============================================
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Download, FileSpreadsheet, FileText, Settings, Calendar, Building2, CheckCircle, Info } from 'lucide-react';
+import { Download, FileSpreadsheet, Settings, Calendar, CheckCircle, Info } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { useExportacaoContabil } from '@/hooks/useExportacaoContabil';
+import { useExportacaoContabil, type ConfigExportacao } from '@/hooks/useExportacaoContabil';
 import { formatCurrency } from '@/lib/formatters';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-interface Props {
-  empresaId: string;
-}
-
 const SISTEMAS_CONTABEIS = [
-  { 
-    id: 'dominio', 
-    nome: 'Domínio Sistemas', 
-    formato: 'TXT',
-    descricao: 'Formato padrão para importação no Domínio Contábil'
-  },
-  { 
-    id: 'fortes', 
-    nome: 'Fortes Contábil', 
-    formato: 'CSV',
-    descricao: 'Layout de integração Fortes AC'
-  },
-  { 
-    id: 'sicontabil', 
-    nome: 'SICONTABIL', 
-    formato: 'TXT',
-    descricao: 'Padrão SICONTABIL para lançamentos'
-  },
-  { 
-    id: 'sped', 
-    nome: 'SPED Contábil (ECD)', 
-    formato: 'TXT',
-    descricao: 'Bloco I - Lançamentos Contábeis'
-  },
-  { 
-    id: 'csv_generico', 
-    nome: 'CSV Genérico', 
-    formato: 'CSV',
-    descricao: 'Layout flexível para outros sistemas'
-  },
-  { 
-    id: 'excel', 
-    nome: 'Excel', 
-    formato: 'XLSX',
-    descricao: 'Planilha formatada com filtros'
-  },
+  { id: 'SPED', nome: 'SPED Contábil (ECD)', formato: 'TXT', descricao: 'Bloco I - Lançamentos' },
+  { id: 'ECD', nome: 'ECD', formato: 'TXT', descricao: 'Escrituração Contábil Digital' },
+  { id: 'CSV', nome: 'CSV Genérico', formato: 'CSV', descricao: 'Layout flexível' },
+  { id: 'SICONTABIL', nome: 'SICONTABIL', formato: 'TXT', descricao: 'Padrão SICONTABIL' },
+  { id: 'DOMINIO', nome: 'Domínio Sistemas', formato: 'TXT', descricao: 'Formato Domínio' },
 ];
 
-export function ExportacaoContabilPanel({ empresaId }: Props) {
-  const [sistemaId, setSistemaId] = useState('dominio');
-  const [dataInicio, setDataInicio] = useState<Date>(() => {
-    const hoje = new Date();
-    return new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-  });
+export function ExportacaoContabilPanel() {
+  const [formato, setFormato] = useState<ConfigExportacao['formato']>('SPED');
+  const [dataInicio, setDataInicio] = useState<Date>(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1));
   const [dataFim, setDataFim] = useState<Date>(new Date());
   const [incluirEncerramento, setIncluirEncerramento] = useState(false);
-  const [incluirAbertura, setIncluirAbertura] = useState(false);
-  const [agruparPorConta, setAgruparPorConta] = useState(false);
 
-  const { 
-    exportar, 
-    isExportando, 
-    estatisticas,
-    getEstatisticasPeriodo 
-  } = useExportacaoContabil(empresaId);
+  const { exportar, exportando, getEstatisticasPeriodo, formatosDisponiveis } = useExportacaoContabil();
 
-  const sistemaAtual = SISTEMAS_CONTABEIS.find(s => s.id === sistemaId);
+  const estatisticas = useMemo(() => 
+    getEstatisticasPeriodo(dataInicio.toISOString().split('T')[0], dataFim.toISOString().split('T')[0]),
+    [dataInicio, dataFim, getEstatisticasPeriodo]
+  );
+
+  const sistemaAtual = SISTEMAS_CONTABEIS.find(s => s.id === formato);
 
   const handleExportar = async () => {
     await exportar({
-      sistema: sistemaId,
-      dataInicio,
-      dataFim,
-      incluirEncerramento,
-      incluirAbertura,
-      agruparPorConta,
+      formato,
+      periodo_inicio: dataInicio.toISOString().split('T')[0],
+      periodo_fim: dataFim.toISOString().split('T')[0],
+      incluir_encerramento: incluirEncerramento,
     });
   };
 
@@ -121,16 +78,16 @@ export function ExportacaoContabilPanel({ empresaId }: Props) {
             {/* Seleção de Sistema */}
             <div className="space-y-2">
               <Label>Sistema Contábil</Label>
-              <Select value={sistemaId} onValueChange={setSistemaId}>
+              <Select value={formato} onValueChange={(v: ConfigExportacao['formato']) => setFormato(v)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {SISTEMAS_CONTABEIS.map(sistema => (
-                    <SelectItem key={sistema.id} value={sistema.id}>
+                  {formatosDisponiveis.map(f => (
+                    <SelectItem key={f} value={f}>
                       <div className="flex items-center gap-2">
-                        <span>{sistema.nome}</span>
-                        <Badge variant="outline" className="text-xs">{sistema.formato}</Badge>
+                        <span>{SISTEMAS_CONTABEIS.find(s => s.id === f)?.nome || f}</span>
+                        <Badge variant="outline" className="text-xs">{SISTEMAS_CONTABEIS.find(s => s.id === f)?.formato || 'TXT'}</Badge>
                       </div>
                     </SelectItem>
                   ))}
@@ -183,14 +140,6 @@ export function ExportacaoContabilPanel({ empresaId }: Props) {
             {/* Opções */}
             <div className="space-y-4">
               <Label>Opções</Label>
-              
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">Lançamentos de Abertura</p>
-                  <p className="text-xs text-muted-foreground">Incluir saldos iniciais</p>
-                </div>
-                <Switch checked={incluirAbertura} onCheckedChange={setIncluirAbertura} />
-              </div>
 
               <div className="flex items-center justify-between">
                 <div>
@@ -199,19 +148,11 @@ export function ExportacaoContabilPanel({ empresaId }: Props) {
                 </div>
                 <Switch checked={incluirEncerramento} onCheckedChange={setIncluirEncerramento} />
               </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">Agrupar por Conta</p>
-                  <p className="text-xs text-muted-foreground">Consolidar lançamentos</p>
-                </div>
-                <Switch checked={agruparPorConta} onCheckedChange={setAgruparPorConta} />
-              </div>
             </div>
 
-            <Button onClick={handleExportar} className="w-full" disabled={isExportando}>
+            <Button onClick={handleExportar} className="w-full" disabled={exportando}>
               <Download className="mr-2 h-4 w-4" />
-              {isExportando ? 'Gerando...' : 'Exportar Arquivo'}
+              {exportando ? 'Gerando...' : 'Exportar Arquivo'}
             </Button>
           </CardContent>
         </Card>
@@ -228,7 +169,7 @@ export function ExportacaoContabilPanel({ empresaId }: Props) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{estatisticas?.totalLancamentos || 0}</div>
+                  <div className="text-2xl font-bold">{estatisticas?.total_lancamentos || 0}</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -241,7 +182,7 @@ export function ExportacaoContabilPanel({ empresaId }: Props) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{formatCurrency(estatisticas?.totalDebitos || 0)}</div>
+                  <div className="text-2xl font-bold">{formatCurrency(estatisticas?.total_debitos || 0)}</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -254,7 +195,7 @@ export function ExportacaoContabilPanel({ empresaId }: Props) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{formatCurrency(estatisticas?.totalCreditos || 0)}</div>
+                  <div className="text-2xl font-bold">{formatCurrency(estatisticas?.total_creditos || 0)}</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -269,17 +210,17 @@ export function ExportacaoContabilPanel({ empresaId }: Props) {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <RadioGroup value={sistemaId} onValueChange={setSistemaId}>
+              <RadioGroup value={formato} onValueChange={(v: ConfigExportacao['formato']) => setFormato(v)}>
                 <div className="grid gap-4 md:grid-cols-2">
                   {SISTEMAS_CONTABEIS.map(sistema => (
                     <div
                       key={sistema.id}
                       className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer transition-colors ${
-                        sistemaId === sistema.id 
+                        formato === sistema.id 
                           ? 'border-primary bg-primary/5' 
                           : 'border-transparent bg-muted hover:border-muted-foreground/20'
                       }`}
-                      onClick={() => setSistemaId(sistema.id)}
+                      onClick={() => setFormato(sistema.id as ConfigExportacao['formato'])}
                     >
                       <RadioGroupItem value={sistema.id} id={sistema.id} className="mt-1" />
                       <div className="flex-1">
@@ -295,7 +236,7 @@ export function ExportacaoContabilPanel({ empresaId }: Props) {
                           {sistema.descricao}
                         </p>
                       </div>
-                      {sistemaId === sistema.id && (
+                      {formato === sistema.id && (
                         <CheckCircle className="h-5 w-5 text-primary" />
                       )}
                     </div>
