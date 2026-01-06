@@ -18,3 +18,17 @@ export { RelatoriosContabeisTributarios } from './RelatoriosContabeisTributarios
 export { DashboardMetricasTributarias } from './DashboardMetricasTributarias';
 export { SplitPaymentPanel } from './SplitPaymentPanel';
 export { PerDcompPanel } from './PerDcompPanel';
+
+// Novos componentes P0/P1
+export { NavigationTributaria } from './NavigationTributaria';
+export { EmptyStateTributario } from './EmptyStateTributario';
+export { HeroKPIs } from './HeroKPIs';
+export { ProgressoMigracao } from './ProgressoMigracao';
+
+// Painéis adicionais
+export { ConciliacaoTributariaPanel } from './ConciliacaoTributariaPanel';
+export { IncentivosFiscaisPanel } from './IncentivosFiscaisPanel';
+export { AuditoriaCompliancePanel } from './AuditoriaCompliancePanel';
+export { ComparativoRegimesPanel } from './ComparativoRegimesPanel';
+export { CashbackSimuladorPanel } from './CashbackSimuladorPanel';
+export { ImportacaoXMLPanel } from './ImportacaoXMLPanel';
