@@ -47,11 +47,14 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         }}
         transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
         className={cn(
-          'min-h-screen transition-all duration-300',
+          'min-h-screen w-full transition-all duration-300',
           isMobile ? 'pt-4 pb-20' : 'pt-16'
         )}
+        style={{
+          width: isMobile ? '100%' : `calc(100% - ${sidebarCollapsed ? 72 : 280}px)`,
+        }}
       >
-        <div className="p-4 md:p-6">
+        <div className="w-full max-w-full p-4 md:p-6 lg:p-8">
           {/* Onboarding Checklist - show on dashboard */}
           <div className="mb-6 max-w-md">
             <OnboardingChecklist />
