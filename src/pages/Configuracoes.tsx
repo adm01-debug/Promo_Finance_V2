@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { InteractivePageWrapper } from '@/components/wrappers';
 import { 
   Settings,
   Bell,

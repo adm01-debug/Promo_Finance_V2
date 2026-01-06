@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { InteractivePageWrapper, useCelebrations } from '@/components/wrappers';
 import { 
   Bot, 
   Send, 

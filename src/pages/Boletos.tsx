@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { InteractivePageWrapper, PrimaryActionButton, useCelebrations } from '@/components/wrappers';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

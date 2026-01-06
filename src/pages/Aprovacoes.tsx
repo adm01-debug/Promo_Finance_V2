@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { ShieldCheck } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { InteractivePageWrapper, useCelebrations } from '@/components/wrappers';
 import { AprovacoesPendentes } from '@/components/aprovacoes/AprovacoesPendentes';
 import { ConfiguracaoAprovacaoCard } from '@/components/aprovacoes/ConfiguracaoAprovacaoCard';
 import { HistoricoAprovacoes } from '@/components/aprovacoes/HistoricoAprovacoes';

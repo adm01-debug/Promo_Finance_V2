@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { EmptyState } from '@/components/ui/micro-interactions';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
+import { InteractivePageWrapper, PrimaryActionButton, useCelebrations } from '@/components/wrappers';
 import {
   Plus,
   Search,

@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
+import { InteractivePageWrapper, PrimaryActionButton, useCelebrations, KPICard } from '@/components/wrappers';
 import {
   Upload,
   FileText,
