@@ -2963,6 +2963,98 @@ export type Database = {
         }
         Relationships: []
       }
+      per_dcomp: {
+        Row: {
+          competencia_destino: string | null
+          competencia_origem: string
+          created_at: string
+          created_by: string | null
+          creditos_ids: string[] | null
+          data_decisao: string | null
+          data_protocolo: string | null
+          data_transmissao: string | null
+          empresa_id: string
+          fundamentacao_legal: string | null
+          id: string
+          justificativa: string | null
+          numero_processo: string | null
+          numero_recibo: string | null
+          observacoes: string | null
+          prazo_recurso: string | null
+          status: string | null
+          tipo: string
+          tipo_credito_origem: string
+          tributo_destino: string | null
+          tributo_origem: string
+          updated_at: string
+          valor_atualizado: number | null
+          valor_compensado: number | null
+          valor_original: number
+        }
+        Insert: {
+          competencia_destino?: string | null
+          competencia_origem: string
+          created_at?: string
+          created_by?: string | null
+          creditos_ids?: string[] | null
+          data_decisao?: string | null
+          data_protocolo?: string | null
+          data_transmissao?: string | null
+          empresa_id: string
+          fundamentacao_legal?: string | null
+          id?: string
+          justificativa?: string | null
+          numero_processo?: string | null
+          numero_recibo?: string | null
+          observacoes?: string | null
+          prazo_recurso?: string | null
+          status?: string | null
+          tipo: string
+          tipo_credito_origem: string
+          tributo_destino?: string | null
+          tributo_origem: string
+          updated_at?: string
+          valor_atualizado?: number | null
+          valor_compensado?: number | null
+          valor_original: number
+        }
+        Update: {
+          competencia_destino?: string | null
+          competencia_origem?: string
+          created_at?: string
+          created_by?: string | null
+          creditos_ids?: string[] | null
+          data_decisao?: string | null
+          data_protocolo?: string | null
+          data_transmissao?: string | null
+          empresa_id?: string
+          fundamentacao_legal?: string | null
+          id?: string
+          justificativa?: string | null
+          numero_processo?: string | null
+          numero_recibo?: string | null
+          observacoes?: string | null
+          prazo_recurso?: string | null
+          status?: string | null
+          tipo?: string
+          tipo_credito_origem?: string
+          tributo_destino?: string | null
+          tributo_origem?: string
+          updated_at?: string
+          valor_atualizado?: number | null
+          valor_compensado?: number | null
+          valor_original?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "per_dcomp_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       permissions: {
         Row: {
           created_at: string | null
