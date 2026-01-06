@@ -1,5 +1,7 @@
 import type { Config } from "tailwindcss";
 
+// Add shimmer animation keyframes
+
 export default {
   darkMode: ["class"],
   content: [
