@@ -12,7 +12,6 @@ import {
   FileUp, Gift, CheckCircle, Calendar
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 interface NavItem {
@@ -194,9 +193,14 @@ export function NavigationTributaria({ activeTab, onTabChange }: Props) {
                           <ItemIcon className="h-4 w-4" />
                           <span className="flex-1 text-left">{item.label}</span>
                           {item.badge && (
-                            <Badge variant={item.badgeVariant || 'secondary'} className="text-xs">
+                            <span className={cn(
+                              "text-xs px-1.5 py-0.5 rounded-full font-medium",
+                              item.badgeVariant === 'destructive' 
+                                ? "bg-destructive text-destructive-foreground" 
+                                : "bg-secondary text-secondary-foreground"
+                            )}>
                               {item.badge}
-                            </Badge>
+                            </span>
                           )}
                         </button>
                       );
@@ -261,9 +265,14 @@ export function NavigationTributaria({ activeTab, onTabChange }: Props) {
                             <ItemIcon className="h-4 w-4" />
                             <span className="flex-1 text-left">{item.label}</span>
                             {item.badge && (
-                              <Badge variant={item.badgeVariant || 'secondary'} className="text-xs">
+                              <span className={cn(
+                                "text-xs px-1.5 py-0.5 rounded-full font-medium",
+                                item.badgeVariant === 'destructive' 
+                                  ? "bg-destructive text-destructive-foreground" 
+                                  : "bg-secondary text-secondary-foreground"
+                              )}>
                                 {item.badge}
-                              </Badge>
+                              </span>
                             )}
                           </button>
                         );
