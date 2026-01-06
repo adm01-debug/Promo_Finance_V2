@@ -17,6 +17,7 @@ import { Label } from '@/components/ui/label';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { useConciliacao } from '@/hooks/useConciliacao';
+import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 import { LancamentoSistema } from '@/lib/transaction-matcher';
 
 interface TransacaoExtrato {
@@ -46,6 +47,7 @@ export function ConciliacaoManualDialog({
   const [selectedLancamento, setSelectedLancamento] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { confirmarConciliacao } = useConciliacao();
+  const { celebrateReconciliation, error: showError } = useCelebrations();
 
   // Filter lancamentos by type matching transaction type
   const lancamentosFiltrados = useMemo(() => {
@@ -92,11 +94,13 @@ export function ConciliacaoManualDialog({
         contaReceberId: tipo === 'receber' ? lancamento.id : undefined,
       });
       
+      celebrateReconciliation(1);
       onSuccess(transacao.id, lancamento.id, tipo);
       onOpenChange(false);
       setSelectedLancamento(null);
       setSearch('');
     } catch (error) {
+      showError('Erro ao conciliar transação');
       console.error('Erro ao conciliar:', error);
     } finally {
       setIsLoading(false);

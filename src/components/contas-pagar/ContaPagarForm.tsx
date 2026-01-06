@@ -227,13 +227,12 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
-      toast({
-        title: 'Conta atualizada',
-        description: 'As alterações foram salvas com sucesso.',
-      });
+      sounds.success();
+      celebrateSuccess('Conta atualizada com sucesso!');
       onOpenChange(false);
     },
     onError: (error) => {
+      sounds.error();
       console.error('Error updating conta pagar:', error);
       toast({
         title: 'Erro ao atualizar conta',
