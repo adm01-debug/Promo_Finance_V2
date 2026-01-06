@@ -242,15 +242,15 @@ export function useImportacaoXMLNFe(empresaId: string) {
             .insert([{
               empresa_id: empresaId,
               numero: nfe.numero,
-              serie: nfe.serie,
+              serie: nfe.serie || '1',
               cliente_nome: nfe.nomeEmitente,
               cliente_cnpj: nfe.cnpjEmitente,
               data_emissao: nfe.dataEmissao.toISOString().split('T')[0],
               valor_total: nfe.valorTotal,
               valor_produtos: nfe.valorProdutos,
-              base_calculo_icms: nfe.baseCalculoICMS,
               valor_icms: nfe.valorICMS,
               chave_acesso: nfe.chaveAcesso,
+              natureza_operacao: nfe.naturezaOperacao || 'Compra para comercialização',
               status: 'autorizada',
               created_by: userData.user.id,
             }])
