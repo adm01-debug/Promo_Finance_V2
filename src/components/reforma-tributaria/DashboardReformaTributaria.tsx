@@ -63,6 +63,12 @@ import { RelatoriosContabeisTributarios } from './RelatoriosContabeisTributarios
 import { DashboardMetricasTributarias } from './DashboardMetricasTributarias';
 import { SplitPaymentPanel } from './SplitPaymentPanel';
 import { PerDcompPanel } from './PerDcompPanel';
+import { ConciliacaoTributariaPanel } from './ConciliacaoTributariaPanel';
+import { IncentivosFiscaisPanel } from './IncentivosFiscaisPanel';
+import { AuditoriaCompliancePanel } from './AuditoriaCompliancePanel';
+import { ComparativoRegimesPanel } from './ComparativoRegimesPanel';
+import { CashbackSimuladorPanel } from './CashbackSimuladorPanel';
+import { ImportacaoXMLPanel } from './ImportacaoXMLPanel';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -292,6 +298,12 @@ export function DashboardReformaTributaria() {
           <TabsTrigger value="split-payment">Split Payment</TabsTrigger>
           <TabsTrigger value="per-dcomp">PER/DCOMP</TabsTrigger>
           <TabsTrigger value="cronograma">Cronograma</TabsTrigger>
+          <TabsTrigger value="conciliacao">Conciliação</TabsTrigger>
+          <TabsTrigger value="incentivos">Incentivos</TabsTrigger>
+          <TabsTrigger value="auditoria">Auditoria</TabsTrigger>
+          <TabsTrigger value="comparativo">Comparativo</TabsTrigger>
+          <TabsTrigger value="cashback">Cashback</TabsTrigger>
+          <TabsTrigger value="importacao-xml">Importar XML</TabsTrigger>
         </TabsList>
 
         {/* Aba Visão Geral */}
@@ -544,6 +556,36 @@ export function DashboardReformaTributaria() {
         {/* Aba PER/DCOMP */}
         <TabsContent value="per-dcomp">
           <PerDcompPanel />
+        </TabsContent>
+
+        {/* Aba Conciliação Tributária */}
+        <TabsContent value="conciliacao">
+          <ConciliacaoTributariaPanel empresaId="default" />
+        </TabsContent>
+
+        {/* Aba Incentivos Fiscais */}
+        <TabsContent value="incentivos">
+          <IncentivosFiscaisPanel empresaId="default" />
+        </TabsContent>
+
+        {/* Aba Auditoria Compliance */}
+        <TabsContent value="auditoria">
+          <AuditoriaCompliancePanel empresaId="default" />
+        </TabsContent>
+
+        {/* Aba Comparativo de Regimes */}
+        <TabsContent value="comparativo">
+          <ComparativoRegimesPanel />
+        </TabsContent>
+
+        {/* Aba Cashback */}
+        <TabsContent value="cashback">
+          <CashbackSimuladorPanel />
+        </TabsContent>
+
+        {/* Aba Importação XML */}
+        <TabsContent value="importacao-xml">
+          <ImportacaoXMLPanel empresaId="default" />
         </TabsContent>
       </Tabs>
     </motion.div>
