@@ -10,6 +10,8 @@ import { useContasBancarias } from '@/hooks/useFinancialData';
 import { useConfiguracaoAprovacao, useCriarSolicitacaoAprovacao } from '@/hooks/useAprovacoes';
 import { toast } from '@/hooks/use-toast';
 import { toastPaymentSuccess } from '@/lib/toast-confetti';
+import { sounds } from '@/lib/sound-feedback';
+import { haptic } from '@/lib/haptic-feedback';
 import { formatCurrency } from '@/lib/formatters';
 import {
   Dialog,
@@ -166,11 +168,15 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
+      sounds.success();
+      haptic('success');
       // Use confetti toast for successful payment
       toastPaymentSuccess(formatCurrency(form.getValues('valor_pago')));
       onOpenChange(false);
     },
     onError: (error) => {
+      sounds.error();
+      haptic('error');
       console.error('Error registering payment:', error);
       toast({
         title: 'Erro ao registrar pagamento',

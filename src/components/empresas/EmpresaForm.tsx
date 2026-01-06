@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2 } from 'lucide-react';
 import { useCriarEmpresa, useAtualizarEmpresa, type Empresa } from '@/hooks/useEmpresas';
 import { applyCnpjMask, applyPhoneMask, applyCepMask } from '@/lib/masks';
+import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 
 const ESTADOS = [
   'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
@@ -43,6 +44,7 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
   const isEditing = !!empresa;
   const criarEmpresa = useCriarEmpresa();
   const atualizarEmpresa = useAtualizarEmpresa();
+  const { celebrateSuccess, error: showError } = useCelebrations();
   const isLoading = criarEmpresa.isPending || atualizarEmpresa.isPending;
 
   const {
@@ -121,12 +123,14 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
 
       if (isEditing && empresa) {
         await atualizarEmpresa.mutateAsync({ id: empresa.id, data: formPayload });
+        celebrateSuccess('Empresa atualizada com sucesso!');
       } else {
         await criarEmpresa.mutateAsync(formPayload);
+        celebrateSuccess('Empresa cadastrada com sucesso!');
       }
       onSuccess();
     } catch (error) {
-      // Error handled in mutation
+      showError('Erro ao salvar empresa');
     }
   };
 
