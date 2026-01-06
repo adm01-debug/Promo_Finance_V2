@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import { ResponsiveSidebar } from './ResponsiveSidebar';
 import { Header } from './Header';
+import { PageTransition } from './PageTransition';
 import { cn } from '@/lib/utils';
 import { NetworkStatusIndicator } from '@/components/ui/network-status-indicator';
 import { usePrefetchRoutes } from '@/hooks/usePrefetchRoutes';
@@ -11,6 +12,7 @@ import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist
 import { GuidedTour } from '@/components/onboarding/GuidedTour';
 import { ContextualBreadcrumbs } from '@/components/navigation/ContextualBreadcrumbs';
 import { OfflineBanner } from '@/components/offline/OfflineBanner';
+import { InstallPWA } from '@/components/pwa/InstallPWA';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -43,9 +45,10 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       
       {/* Network status indicator - fixed position */}
       <div className={cn(
-        "fixed z-50",
+        "fixed z-50 flex items-center gap-2",
         isMobile ? "bottom-20 right-4" : "bottom-4 right-4"
       )}>
+        <InstallPWA />
         <NetworkStatusIndicator showDetails />
       </div>
       
@@ -75,7 +78,9 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
             </div>
           )}
           
-          {children}
+          <PageTransition>
+            {children}
+          </PageTransition>
         </div>
       </motion.main>
     </div>
