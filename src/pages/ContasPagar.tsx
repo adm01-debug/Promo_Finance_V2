@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
+import { InteractivePageWrapper, PrimaryActionButton, useCelebrations } from '@/components/wrappers';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';

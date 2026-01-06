@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { InteractivePageWrapper, KPICard } from '@/components/wrappers';
 import {
   Calendar,
   TrendingUp,

@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
+import { InteractivePageWrapper } from '@/components/wrappers';
 import { 
   Bell, 
   AlertTriangle, 

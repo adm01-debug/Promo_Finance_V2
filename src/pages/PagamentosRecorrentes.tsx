@@ -3,6 +3,7 @@ import { Plus, Repeat, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { InteractivePageWrapper, PrimaryActionButton } from '@/components/wrappers';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,

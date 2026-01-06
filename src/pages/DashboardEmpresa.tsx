@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { InteractivePageWrapper, KPICard, useCelebrations } from '@/components/wrappers';
 import {
   Building2,
   Wallet,
