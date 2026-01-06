@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Building2,
@@ -86,20 +86,35 @@ interface DrillDownSectionProps {
   defaultOpen?: boolean;
 }
 
-function DrillDownSection({ title, icon, children, defaultOpen = false }: DrillDownSectionProps) {
+const DrillDownSection = React.memo(function DrillDownSection({ 
+  title, 
+  icon, 
+  children, 
+  defaultOpen = false 
+}: DrillDownSectionProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden group">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
+        className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-all duration-200"
       >
         <div className="flex items-center gap-3">
-          {icon}
+          <motion.div
+            animate={{ rotate: isOpen ? 360 : 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {icon}
+          </motion.div>
           <span className="font-semibold">{title}</span>
         </div>
-        {isOpen ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <ChevronDown className="h-5 w-5" />
+        </motion.div>
       </button>
       <AnimatePresence>
         {isOpen && (
@@ -107,7 +122,7 @@ function DrillDownSection({ title, icon, children, defaultOpen = false }: DrillD
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.25, ease: 'easeInOut' }}
           >
             <div className="p-4 pt-0 border-t">{children}</div>
           </motion.div>
@@ -115,7 +130,7 @@ function DrillDownSection({ title, icon, children, defaultOpen = false }: DrillD
       </AnimatePresence>
     </Card>
   );
-}
+});
 
 export default function DashboardEmpresa() {
   const [selectedEmpresa, setSelectedEmpresa] = useState<string>('');
