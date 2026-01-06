@@ -12,6 +12,7 @@ import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { PageLoading } from '@/components/ui/loading-skeleton';
 import { SkipLinks } from '@/components/accessibility/SkipLinks';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { CommandPalette } from '@/components/command-palette/CommandPalette';
 import './App.css';
 
 // Lazy load pages for better performance
@@ -52,6 +53,7 @@ function AppRoutes() {
     <KeyboardShortcutsProvider>
       <DataPrefetcher>
         <SkipLinks />
+        <CommandPalette />
         <Toaster richColors closeButton position="top-right" />
         <Suspense fallback={<PageLoading />}>
           <Routes>
