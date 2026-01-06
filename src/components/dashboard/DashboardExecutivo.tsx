@@ -22,7 +22,6 @@ import {
   ShieldAlert,
   FileText,
   Users,
-  Loader2,
   RefreshCw,
   Trophy,
   Flame,
@@ -76,6 +75,7 @@ import { DashboardConfigDialog } from './DashboardConfigDialog';
 import { HistoricoAnalisesPreditivas } from './HistoricoAnalisesPreditivas';
 import { RecomendacoesMetasIA } from './RecomendacoesMetasIA';
 import { CockpitCFO } from './CockpitCFO';
+import { DashboardSkeleton } from './DashboardSkeleton';
 import { PositionBadge, RankBadge, getRankFromScore } from '@/components/ui/rank-badge';
 
 const containerVariants = {
@@ -385,11 +385,7 @@ export const DashboardExecutivo = () => {
   }, [contasPagarFiltradas, contasReceberFiltradas, saldoTotal, periodoFluxo, hoje]);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (
