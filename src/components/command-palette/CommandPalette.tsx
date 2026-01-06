@@ -86,6 +86,17 @@ export function CommandPalette() {
         e.preventDefault();
         setOpen((open) => !open);
       }
+      // Quick Create shortcut - "N" key when no input focused
+      if (e.key === 'n' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        const activeElement = document.activeElement;
+        const isInput = activeElement instanceof HTMLInputElement || 
+                       activeElement instanceof HTMLTextAreaElement ||
+                       activeElement?.getAttribute('contenteditable') === 'true';
+        if (!isInput) {
+          e.preventDefault();
+          window.dispatchEvent(new CustomEvent('quick-create-open'));
+        }
+      }
     };
 
     document.addEventListener('keydown', down);

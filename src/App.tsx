@@ -8,6 +8,7 @@ import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { AuthProvider } from '@/hooks/useAuth';
 import { KeyboardShortcutsProvider } from '@/components/layout/KeyboardShortcutsProvider';
 import { DataPrefetcher } from '@/components/providers/DataPrefetcher';
+import { NavigationTracker } from '@/components/providers/NavigationTracker';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { PageLoading } from '@/components/ui/loading-skeleton';
 import { SkipLinks } from '@/components/accessibility/SkipLinks';
@@ -52,6 +53,7 @@ function AppRoutes() {
   return (
     <KeyboardShortcutsProvider>
       <DataPrefetcher>
+        <NavigationTracker />
         <SkipLinks />
         <CommandPalette />
         <Toaster richColors closeButton position="top-right" />
