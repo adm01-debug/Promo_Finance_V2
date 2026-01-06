@@ -295,6 +295,143 @@ export type Database = {
         }
         Relationships: []
       }
+      apuracoes_irpj_csll: {
+        Row: {
+          adicoes_permanentes: number | null
+          adicoes_temporarias: number | null
+          ano: number
+          compensacao_prejuizos: number | null
+          created_at: string
+          created_by: string | null
+          csll_a_pagar: number | null
+          csll_aliquota: number | null
+          csll_base: number | null
+          csll_total: number | null
+          csrf_retido: number | null
+          data_transmissao: string | null
+          empresa_id: string
+          estimativas_pagas: number | null
+          exclusoes_permanentes: number | null
+          exclusoes_temporarias: number | null
+          id: string
+          irpj_a_pagar: number | null
+          irpj_adicional: number | null
+          irpj_adicional_base: number | null
+          irpj_aliquota_normal: number | null
+          irpj_incentivos_deducoes: number | null
+          irpj_normal: number | null
+          irpj_total: number | null
+          irrf_retido: number | null
+          lucro_contabil: number | null
+          lucro_real: number | null
+          lucro_real_antes_compensacao: number | null
+          mes: number | null
+          numero_recibo: string | null
+          saldo_negativo_anterior: number | null
+          saldo_negativo_csll: number | null
+          saldo_negativo_irpj: number | null
+          status: string | null
+          tipo_apuracao: string
+          total_adicoes: number | null
+          total_exclusoes: number | null
+          total_tributos: number | null
+          trimestre: number | null
+          updated_at: string
+        }
+        Insert: {
+          adicoes_permanentes?: number | null
+          adicoes_temporarias?: number | null
+          ano: number
+          compensacao_prejuizos?: number | null
+          created_at?: string
+          created_by?: string | null
+          csll_a_pagar?: number | null
+          csll_aliquota?: number | null
+          csll_base?: number | null
+          csll_total?: number | null
+          csrf_retido?: number | null
+          data_transmissao?: string | null
+          empresa_id: string
+          estimativas_pagas?: number | null
+          exclusoes_permanentes?: number | null
+          exclusoes_temporarias?: number | null
+          id?: string
+          irpj_a_pagar?: number | null
+          irpj_adicional?: number | null
+          irpj_adicional_base?: number | null
+          irpj_aliquota_normal?: number | null
+          irpj_incentivos_deducoes?: number | null
+          irpj_normal?: number | null
+          irpj_total?: number | null
+          irrf_retido?: number | null
+          lucro_contabil?: number | null
+          lucro_real?: number | null
+          lucro_real_antes_compensacao?: number | null
+          mes?: number | null
+          numero_recibo?: string | null
+          saldo_negativo_anterior?: number | null
+          saldo_negativo_csll?: number | null
+          saldo_negativo_irpj?: number | null
+          status?: string | null
+          tipo_apuracao: string
+          total_adicoes?: number | null
+          total_exclusoes?: number | null
+          total_tributos?: number | null
+          trimestre?: number | null
+          updated_at?: string
+        }
+        Update: {
+          adicoes_permanentes?: number | null
+          adicoes_temporarias?: number | null
+          ano?: number
+          compensacao_prejuizos?: number | null
+          created_at?: string
+          created_by?: string | null
+          csll_a_pagar?: number | null
+          csll_aliquota?: number | null
+          csll_base?: number | null
+          csll_total?: number | null
+          csrf_retido?: number | null
+          data_transmissao?: string | null
+          empresa_id?: string
+          estimativas_pagas?: number | null
+          exclusoes_permanentes?: number | null
+          exclusoes_temporarias?: number | null
+          id?: string
+          irpj_a_pagar?: number | null
+          irpj_adicional?: number | null
+          irpj_adicional_base?: number | null
+          irpj_aliquota_normal?: number | null
+          irpj_incentivos_deducoes?: number | null
+          irpj_normal?: number | null
+          irpj_total?: number | null
+          irrf_retido?: number | null
+          lucro_contabil?: number | null
+          lucro_real?: number | null
+          lucro_real_antes_compensacao?: number | null
+          mes?: number | null
+          numero_recibo?: string | null
+          saldo_negativo_anterior?: number | null
+          saldo_negativo_csll?: number | null
+          saldo_negativo_irpj?: number | null
+          status?: string | null
+          tipo_apuracao?: string
+          total_adicoes?: number | null
+          total_exclusoes?: number | null
+          total_tributos?: number | null
+          trimestre?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "apuracoes_irpj_csll_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       apuracoes_tributarias: {
         Row: {
           ano: number
@@ -1847,6 +1984,65 @@ export type Database = {
         }
         Relationships: []
       }
+      incentivos_fiscais: {
+        Row: {
+          ano_fim: number | null
+          ano_inicio: number
+          ativo: boolean | null
+          ato_concessorio: string | null
+          created_at: string
+          empresa_id: string
+          id: string
+          limite_percentual: number | null
+          limite_valor: number | null
+          nome: string
+          numero_processo: string | null
+          tipo_incentivo: string
+          updated_at: string
+          valor_utilizado_ano: number | null
+        }
+        Insert: {
+          ano_fim?: number | null
+          ano_inicio: number
+          ativo?: boolean | null
+          ato_concessorio?: string | null
+          created_at?: string
+          empresa_id: string
+          id?: string
+          limite_percentual?: number | null
+          limite_valor?: number | null
+          nome: string
+          numero_processo?: string | null
+          tipo_incentivo: string
+          updated_at?: string
+          valor_utilizado_ano?: number | null
+        }
+        Update: {
+          ano_fim?: number | null
+          ano_inicio?: number
+          ativo?: boolean | null
+          ato_concessorio?: string | null
+          created_at?: string
+          empresa_id?: string
+          id?: string
+          limite_percentual?: number | null
+          limite_valor?: number | null
+          nome?: string
+          numero_processo?: string | null
+          tipo_incentivo?: string
+          updated_at?: string
+          valor_utilizado_ano?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incentivos_fiscais_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       known_devices: {
         Row: {
           browser: string | null
@@ -1891,6 +2087,75 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      lalur_lancamentos: {
+        Row: {
+          apuracao_id: string | null
+          codigo_lancamento: string | null
+          conta_contabil: string | null
+          created_at: string
+          data_realizacao: string | null
+          descricao: string
+          documento_suporte: string | null
+          empresa_id: string
+          historico: string | null
+          id: string
+          natureza: string
+          saldo_parte_b: number | null
+          tipo: string
+          updated_at: string
+          valor: number
+        }
+        Insert: {
+          apuracao_id?: string | null
+          codigo_lancamento?: string | null
+          conta_contabil?: string | null
+          created_at?: string
+          data_realizacao?: string | null
+          descricao: string
+          documento_suporte?: string | null
+          empresa_id: string
+          historico?: string | null
+          id?: string
+          natureza: string
+          saldo_parte_b?: number | null
+          tipo: string
+          updated_at?: string
+          valor: number
+        }
+        Update: {
+          apuracao_id?: string | null
+          codigo_lancamento?: string | null
+          conta_contabil?: string | null
+          created_at?: string
+          data_realizacao?: string | null
+          descricao?: string
+          documento_suporte?: string | null
+          empresa_id?: string
+          historico?: string | null
+          id?: string
+          natureza?: string
+          saldo_parte_b?: number | null
+          tipo?: string
+          updated_at?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lalur_lancamentos_apuracao_id_fkey"
+            columns: ["apuracao_id"]
+            isOneToOne: false
+            referencedRelation: "apuracoes_irpj_csll"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lalur_lancamentos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       login_attempts: {
         Row: {
@@ -2703,6 +2968,62 @@ export type Database = {
             columns: ["cliente_id"]
             isOneToOne: false
             referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prejuizos_fiscais: {
+        Row: {
+          ano_origem: number
+          created_at: string
+          data_limite_compensacao: string | null
+          empresa_id: string
+          id: string
+          observacoes: string | null
+          saldo_disponivel: number
+          status: string | null
+          tipo: string
+          trimestre_origem: number | null
+          updated_at: string
+          valor_compensado: number | null
+          valor_original: number
+        }
+        Insert: {
+          ano_origem: number
+          created_at?: string
+          data_limite_compensacao?: string | null
+          empresa_id: string
+          id?: string
+          observacoes?: string | null
+          saldo_disponivel: number
+          status?: string | null
+          tipo: string
+          trimestre_origem?: number | null
+          updated_at?: string
+          valor_compensado?: number | null
+          valor_original: number
+        }
+        Update: {
+          ano_origem?: number
+          created_at?: string
+          data_limite_compensacao?: string | null
+          empresa_id?: string
+          id?: string
+          observacoes?: string | null
+          saldo_disponivel?: number
+          status?: string | null
+          tipo?: string
+          trimestre_origem?: number | null
+          updated_at?: string
+          valor_compensado?: number | null
+          valor_original?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prejuizos_fiscais_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
             referencedColumns: ["id"]
           },
         ]
