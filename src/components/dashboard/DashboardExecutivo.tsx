@@ -77,6 +77,7 @@ import { RecomendacoesMetasIA } from './RecomendacoesMetasIA';
 import { CockpitCFO } from './CockpitCFO';
 import { DashboardSkeleton } from './DashboardSkeleton';
 import { PositionBadge, RankBadge, getRankFromScore } from '@/components/ui/rank-badge';
+import { HeroKPICard, HeroKPIGrid } from './HeroKPICards';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -393,7 +394,7 @@ export const DashboardExecutivo = () => {
       {/* Header com Filtros */}
       <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-display-md text-foreground">Dashboard Executivo</h1>
+          <h1 className="text-display-md gradient-text">Dashboard Executivo</h1>
           <p className="text-muted-foreground mt-1">Visão consolidada com drill-down por empresa e centro de custo</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -438,91 +439,63 @@ export const DashboardExecutivo = () => {
         <CockpitCFO />
       </motion.div>
 
-      {/* KPI Cards Principais */}
-      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Link to="/contas-bancarias">
-          <Card className="overflow-hidden group hover:shadow-lg transition-all cursor-pointer h-full">
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between">
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">Saldo Total</p>
-                  <p className="text-2xl font-bold">{formatCurrency(saldoTotal)}</p>
-                  <p className="text-xs text-muted-foreground">{contasBancariasFiltradas.length} conta(s)</p>
-                </div>
-                <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center transition-transform group-hover:scale-110">
-                  <Wallet className="h-6 w-6" />
-                </div>
-              </div>
-            </CardContent>
-            <div className="h-1 w-full bg-gradient-to-r from-primary to-primary/50" />
-          </Card>
-        </Link>
-
-        <Link to="/contas-receber">
-          <Card className="overflow-hidden group hover:shadow-lg transition-all cursor-pointer h-full">
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between">
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">A Receber</p>
-                  <p className="text-2xl font-bold">{formatCurrency(totalReceber)}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {receitasMes > 0 && <span className="text-success">{formatCurrency(receitasMes)} este mês</span>}
-                  </p>
-                </div>
-                <div className="h-12 w-12 rounded-xl bg-success/10 text-success flex items-center justify-center transition-transform group-hover:scale-110">
-                  <ArrowDownCircle className="h-6 w-6" />
-                </div>
-              </div>
-            </CardContent>
-            <div className="h-1 w-full bg-gradient-to-r from-success to-success/50" />
-          </Card>
-        </Link>
-
-        <Link to="/contas-pagar">
-          <Card className="overflow-hidden group hover:shadow-lg transition-all cursor-pointer h-full">
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between">
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">A Pagar</p>
-                  <p className="text-2xl font-bold">{formatCurrency(totalPagar)}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {despesasMes > 0 && <span className="text-destructive">{formatCurrency(despesasMes)} este mês</span>}
-                  </p>
-                </div>
-                <div className="h-12 w-12 rounded-xl bg-destructive/10 text-destructive flex items-center justify-center transition-transform group-hover:scale-110">
-                  <ArrowUpCircle className="h-6 w-6" />
-                </div>
-              </div>
-            </CardContent>
-            <div className="h-1 w-full bg-gradient-to-r from-destructive to-destructive/50" />
-          </Card>
-        </Link>
-
-        <Link to="/cobrancas">
-          <Card className="overflow-hidden group hover:shadow-lg transition-all cursor-pointer h-full">
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between">
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">Inadimplência</p>
-                  <p className={cn("text-2xl font-bold", inadimplencia > 10 ? "text-destructive" : inadimplencia > 5 ? "text-warning" : "text-success")}>
-                    {inadimplencia.toFixed(1)}%
-                  </p>
-                  <p className="text-xs text-muted-foreground">{formatCurrency(totalVencidasReceber)} vencido</p>
-                </div>
-                <div className={cn(
-                  "h-12 w-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110",
-                  inadimplencia > 10 ? "bg-destructive/10 text-destructive" : inadimplencia > 5 ? "bg-warning/10 text-warning" : "bg-success/10 text-success"
-                )}>
-                  <AlertTriangle className="h-6 w-6" />
-                </div>
-              </div>
-            </CardContent>
-            <div className={cn(
-              "h-1 w-full",
-              inadimplencia > 10 ? "bg-gradient-to-r from-destructive to-destructive/50" : inadimplencia > 5 ? "bg-gradient-to-r from-warning to-warning/50" : "bg-gradient-to-r from-success to-success/50"
-            )} />
-          </Card>
-        </Link>
+      {/* Hero KPI Cards - Layout Hierárquico */}
+      <motion.div variants={itemVariants}>
+        <HeroKPIGrid layout="hero-first">
+          <HeroKPICard
+            title="Saldo Total"
+            value={saldoTotal}
+            icon={Wallet}
+            iconColor="text-primary"
+            iconBg="bg-primary/10"
+            accentColor="hsl(24, 95%, 46%)"
+            href="/contas-bancarias"
+            size="hero"
+            badge={`${contasBancariasFiltradas.length} conta(s)`}
+            tooltip="Soma de todos os saldos das contas bancárias"
+            insight="Mantenha reserva de 3 meses de despesas"
+          />
+          
+          <HeroKPICard
+            title="A Receber"
+            value={totalReceber}
+            previousValue={totalReceber - receitasMes}
+            icon={ArrowDownCircle}
+            iconColor="text-success"
+            iconBg="bg-success/10"
+            accentColor="hsl(150, 70%, 42%)"
+            href="/contas-receber"
+            size="primary"
+            badge={receitasMes > 0 ? formatCurrency(receitasMes) + " este mês" : undefined}
+          />
+          
+          <HeroKPICard
+            title="A Pagar"
+            value={totalPagar}
+            previousValue={totalPagar - despesasMes}
+            icon={ArrowUpCircle}
+            iconColor="text-destructive"
+            iconBg="bg-destructive/10"
+            accentColor="hsl(0, 78%, 55%)"
+            href="/contas-pagar"
+            size="primary"
+            badge={despesasMes > 0 ? formatCurrency(despesasMes) + " este mês" : undefined}
+          />
+          
+          <HeroKPICard
+            title="Inadimplência"
+            value={inadimplencia}
+            icon={AlertTriangle}
+            iconColor={inadimplencia > 10 ? "text-destructive" : inadimplencia > 5 ? "text-warning" : "text-success"}
+            iconBg={inadimplencia > 10 ? "bg-destructive/10" : inadimplencia > 5 ? "bg-warning/10" : "bg-success/10"}
+            accentColor={inadimplencia > 10 ? "hsl(0, 78%, 55%)" : inadimplencia > 5 ? "hsl(42, 95%, 48%)" : "hsl(150, 70%, 42%)"}
+            href="/cobrancas"
+            size="primary"
+            isPercentage
+            isCurrency={false}
+            badge={formatCurrency(totalVencidasReceber) + " vencido"}
+          />
+        </HeroKPIGrid>
       </motion.div>
 
       {/* Streak Card + KPIs Secundários */}
