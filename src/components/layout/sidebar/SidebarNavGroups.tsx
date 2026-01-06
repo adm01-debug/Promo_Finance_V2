@@ -54,26 +54,18 @@ interface NavGroup {
   defaultOpen?: boolean;
 }
 
-// Define navigation groups
+// Define navigation groups - Consolidado para 5 grupos (melhor UX)
 const navGroups: NavGroup[] = [
   {
-    id: 'home',
-    label: 'Início',
+    id: 'overview',
+    label: 'Visão Geral',
     icon: LayoutDashboard,
     defaultOpen: true,
     items: [
       { label: 'Dashboard', icon: LayoutDashboard, href: '/' },
       { label: 'BI Gestão', icon: BarChart3, href: '/bi', highlight: true },
       { label: 'Dashboard Empresa', icon: Building2, href: '/dashboard-empresa' },
-    ],
-  },
-  {
-    id: 'intelligence',
-    label: 'Inteligência',
-    icon: Sparkles,
-    items: [
       { label: 'EXPERT (IA)', icon: Bot, href: '/expert', highlight: true },
-      { label: 'Reforma Tributária', icon: Scale, href: '/reforma-tributaria', highlight: true },
       { label: 'Alertas', icon: Bell, href: '/alertas' },
     ],
   },
@@ -93,10 +85,11 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    id: 'documents',
-    label: 'Documentos',
-    icon: FolderOpen,
+    id: 'fiscal',
+    label: 'Fiscal & Documentos',
+    icon: FileText,
     items: [
+      { label: 'Reforma Tributária', icon: Scale, href: '/reforma-tributaria', highlight: true },
       { label: 'Notas Fiscais', icon: FileText, href: '/notas-fiscais' },
       { label: 'Demonstrativos', icon: FileSpreadsheet, href: '/demonstrativos' },
       { label: 'Relatórios', icon: FileText, href: '/relatorios' },
@@ -115,20 +108,13 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    id: 'compliance',
-    label: 'Compliance',
+    id: 'admin',
+    label: 'Administração',
     icon: ShieldCheck,
     items: [
       { label: 'Aprovações', icon: ShieldCheck, href: '/aprovacoes', badgeKey: 'aprovacoes' },
-      { label: 'Logs de Auditoria', icon: ScrollText, href: '/audit-logs' },
       { label: 'Segurança', icon: Shield, href: '/seguranca', highlight: true },
-    ],
-  },
-  {
-    id: 'system',
-    label: 'Sistema',
-    icon: Wrench,
-    items: [
+      { label: 'Logs de Auditoria', icon: ScrollText, href: '/audit-logs' },
       { label: 'Usuários', icon: UserCog, href: '/usuarios' },
       { label: 'Bitrix24', icon: Zap, href: '/bitrix24' },
       { label: 'Configurações', icon: Settings, href: '/configuracoes' },

@@ -127,6 +127,26 @@
     --spacing-section: 2rem;
     --spacing-section-lg: 3rem;
 
+    /* Motion Tokens */
+    --motion-fast: 150ms;
+    --motion-normal: 300ms;
+    --motion-slow: 500ms;
+    --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+    --easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --easing-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Z-Index Scale */
+    --z-base: 0;
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+    --z-toast: 1080;
+    --z-max: 9999;
+
     /* Sidebar */
     --sidebar-background: 40 18% 94%;
     --sidebar-foreground: 225 35% 10%;
