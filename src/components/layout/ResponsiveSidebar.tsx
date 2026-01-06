@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CreditCard, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { SidebarNavGroups, MobileBottomNav, MobileSidebarDrawer } from './sidebar';
+import { SidebarNavGroups, MobileBottomNav, MobileSidebarDrawer, RecentAndFavorites, QuickCreateButton } from './sidebar';
 
 interface ResponsiveSidebarProps {
   onCollapseChange?: (collapsed: boolean) => void;
@@ -74,6 +74,12 @@ export const ResponsiveSidebar = ({ onCollapseChange }: ResponsiveSidebarProps) 
           </div>
         )}
       </div>
+
+      {/* Quick Create Button */}
+      <QuickCreateButton collapsed={collapsed} />
+
+      {/* Recent & Favorites */}
+      <RecentAndFavorites collapsed={collapsed} />
 
       {/* Navigation Groups */}
       <SidebarNavGroups collapsed={collapsed} />
