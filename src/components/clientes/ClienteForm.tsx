@@ -8,6 +8,8 @@ import { ActionButton } from '@/components/ui/action-button';
 import { FieldLabel } from '@/components/ui/info-tooltip';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { useCelebrations } from '@/components/wrappers/CelebrationActions';
+import { sounds } from '@/lib/sound-feedback';
 import {
   Dialog,
   DialogContent,
@@ -73,6 +75,7 @@ interface ClienteFormProps {
 
 export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
   const queryClient = useQueryClient();
+  const { celebrateSuccess } = useCelebrations();
   const isEditing = !!cliente;
 
   const form = useForm<ClienteFormData>({
@@ -148,14 +151,13 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clientes'] });
-      toast({
-        title: 'Cliente cadastrado',
-        description: 'O cliente foi adicionado com sucesso.',
-      });
+      sounds.success();
+      celebrateSuccess('Cliente cadastrado!');
       form.reset();
       onOpenChange(false);
     },
     onError: (error) => {
+      sounds.error();
       console.error('Error creating cliente:', error);
       toast({
         title: 'Erro ao cadastrar cliente',

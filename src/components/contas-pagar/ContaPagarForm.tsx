@@ -13,6 +13,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useFornecedores, useCentrosCusto, useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
 import { toast } from '@/hooks/use-toast';
+import { useCelebrations } from '@/components/wrappers/CelebrationActions';
+import { sounds } from '@/lib/sound-feedback';
 import {
   Dialog,
   DialogContent,
@@ -94,6 +96,7 @@ const tipoCobrancaOptions = [
 export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { celebrateSuccess } = useCelebrations();
   const [showFornecedorSelect, setShowFornecedorSelect] = useState(false);
   const [showLeitorCodigoBarras, setShowLeitorCodigoBarras] = useState(false);
   const isEditing = !!conta;
@@ -180,14 +183,13 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
-      toast({
-        title: 'Conta criada com sucesso',
-        description: 'A conta a pagar foi adicionada ao sistema.',
-      });
+      sounds.success();
+      celebrateSuccess('Conta criada com sucesso!');
       form.reset();
       onOpenChange(false);
     },
     onError: (error) => {
+      sounds.error();
       console.error('Error creating conta pagar:', error);
       toast({
         title: 'Erro ao criar conta',

@@ -11,6 +11,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useClientes, useCentrosCusto, useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
 import { toast } from '@/hooks/use-toast';
+import { useCelebrations } from '@/components/wrappers/CelebrationActions';
+import { sounds } from '@/lib/sound-feedback';
 import {
   Dialog,
   DialogContent,
@@ -93,6 +95,7 @@ const tipoCobrancaOptions = [
 export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberFormProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { celebrateSuccess } = useCelebrations();
   const [showClienteSelect, setShowClienteSelect] = useState(false);
   const isEditing = !!conta;
 
@@ -181,14 +184,13 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
-      toast({
-        title: 'Conta criada com sucesso',
-        description: 'A conta a receber foi adicionada ao sistema.',
-      });
+      sounds.success();
+      celebrateSuccess('Conta a receber criada!');
       form.reset();
       onOpenChange(false);
     },
     onError: (error) => {
+      sounds.error();
       console.error('Error creating conta receber:', error);
       toast({
         title: 'Erro ao criar conta',
