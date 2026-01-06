@@ -268,9 +268,14 @@ export function HeroKPICard({
             )}
           </CardContent>
         </Card>
-      </CardWrapper>
     </motion.div>
   );
+
+  if (href) {
+    return <Link to={href}>{content}</Link>;
+  }
+
+  return content;
 }
 
 // Grid layout component for KPIs
