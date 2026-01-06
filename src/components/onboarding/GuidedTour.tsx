@@ -1,106 +1,71 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight, Sparkles, CheckCircle2 } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Sparkles, CheckCircle2, SkipForward } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
+import { useLocation } from 'react-router-dom';
 
 interface TourStep {
   target: string;
   title: string;
   content: string;
   position?: 'top' | 'bottom' | 'left' | 'right';
+  route?: string; // Optional route where this step should show
 }
 
 const tourSteps: TourStep[] = [
   {
-    target: '[data-tour="dashboard"]',
-    title: 'Bem-vindo ao Dashboard!',
-    content: 'Aqui você tem uma visão geral de todas as suas finanças em tempo real.',
-    position: 'bottom',
-  },
-  {
     target: '[data-tour="sidebar"]',
-    title: 'Menu de Navegação',
-    content: 'Use o menu lateral para acessar todas as funcionalidades do sistema.',
+    title: 'Menu Organizado',
+    content: 'O menu foi reorganizado em grupos lógicos: Início, Inteligência, Financeiro, Documentos, Cadastros, Compliance e Sistema. Clique nas categorias para expandir.',
     position: 'right',
   },
   {
     target: '[data-tour="search"]',
-    title: 'Busca Rápida',
-    content: 'Pesquise transações, clientes e fornecedores rapidamente. Use Ctrl+K como atalho!',
+    title: 'Busca Global',
+    content: 'Pesquise qualquer coisa rapidamente. Use Ctrl+K (ou Cmd+K no Mac) como atalho!',
     position: 'bottom',
   },
   {
     target: '[data-tour="notifications"]',
-    title: 'Notificações',
-    content: 'Fique atento aos alertas de vencimentos e outras notificações importantes.',
+    title: 'Alertas Inteligentes',
+    content: 'Receba notificações de vencimentos, aprovações pendentes e insights financeiros importantes.',
     position: 'bottom',
   },
   {
     target: '[data-tour="theme"]',
-    title: 'Tema do Sistema',
-    content: 'Alterne entre modo claro, escuro ou automático conforme sua preferência.',
-    position: 'bottom',
-  },
-  {
-    target: '[data-tour="expert"]',
-    title: 'Expert (IA)',
-    content: 'Use nosso assistente inteligente para análises e sugestões financeiras!',
-    position: 'right',
-  },
-  {
-    target: '[data-tour="contas-receber"]',
-    title: 'Contas a Receber',
-    content: 'Gerencie todas as suas receitas e acompanhe os recebimentos pendentes.',
-    position: 'right',
-  },
-  {
-    target: '[data-tour="contas-pagar"]',
-    title: 'Contas a Pagar',
-    content: 'Controle suas despesas e nunca perca um vencimento.',
-    position: 'right',
-  },
-  {
-    target: '[data-tour="fluxo-caixa"]',
-    title: 'Fluxo de Caixa',
-    content: 'Visualize projeções e cenários futuros para tomar melhores decisões.',
-    position: 'right',
-  },
-  {
-    target: '[data-tour="relatorios"]',
-    title: 'Relatórios',
-    content: 'Gere relatórios detalhados e agende envios automáticos por email.',
-    position: 'right',
-  },
-  {
-    target: '[data-tour="keyboard"]',
-    title: 'Atalhos de Teclado',
-    content: 'Pressione Alt+? para ver todos os atalhos disponíveis e navegar mais rápido!',
+    title: 'Personalize sua Experiência',
+    content: 'Escolha entre modo claro, escuro ou automático conforme sua preferência.',
     position: 'bottom',
   },
 ];
 
-const TOUR_COMPLETED_KEY = 'promo-financeiro-tour-completed';
-const TOUR_DISMISSED_KEY = 'promo-financeiro-tour-dismissed';
+const TOUR_COMPLETED_KEY = 'promo-financeiro-tour-v2-completed';
+const TOUR_DISMISSED_KEY = 'promo-financeiro-tour-v2-dismissed';
 
 export const GuidedTour = () => {
   const [isActive, setIsActive] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [showWelcome, setShowWelcome] = useState(false);
+  const location = useLocation();
+
+  // Only show on home page
+  const isHomePage = location.pathname === '/';
 
   // Check if should show tour
   useEffect(() => {
+    if (!isHomePage) return;
+    
     const tourCompleted = localStorage.getItem(TOUR_COMPLETED_KEY);
     const tourDismissed = localStorage.getItem(TOUR_DISMISSED_KEY);
     
     if (!tourCompleted && !tourDismissed) {
       // Show welcome after a short delay
-      const timer = setTimeout(() => setShowWelcome(true), 1500);
+      const timer = setTimeout(() => setShowWelcome(true), 2000);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [isHomePage]);
 
   // Update target element position
   const updateTargetPosition = useCallback(() => {
@@ -112,11 +77,23 @@ export const GuidedTour = () => {
     if (element) {
       const rect = element.getBoundingClientRect();
       setTargetRect(rect);
+    } else {
+      // Element not found, skip to next step
+      if (currentStep < tourSteps.length - 1) {
+        setCurrentStep(currentStep + 1);
+      }
     }
   }, [isActive, currentStep]);
 
   useEffect(() => {
-    updateTargetPosition();
+    if (isActive) {
+      // Small delay to let DOM render
+      const timer = setTimeout(updateTargetPosition, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isActive, currentStep, updateTargetPosition]);
+
+  useEffect(() => {
     window.addEventListener('resize', updateTargetPosition);
     window.addEventListener('scroll', updateTargetPosition);
     
@@ -162,17 +139,17 @@ export const GuidedTour = () => {
   };
 
   const getTooltipPosition = () => {
-    if (!targetRect) return {};
+    if (!targetRect) return { top: '50%', left: '50%' };
     
     const step = tourSteps[currentStep];
     const padding = 16;
-    const tooltipWidth = 320;
-    const tooltipHeight = 180;
+    const tooltipWidth = 340;
+    const tooltipHeight = 200;
 
     switch (step.position) {
       case 'top':
         return {
-          top: targetRect.top - tooltipHeight - padding,
+          top: Math.max(padding, targetRect.top - tooltipHeight - padding),
           left: Math.max(padding, Math.min(
             targetRect.left + (targetRect.width / 2) - (tooltipWidth / 2),
             window.innerWidth - tooltipWidth - padding
@@ -180,7 +157,7 @@ export const GuidedTour = () => {
         };
       case 'bottom':
         return {
-          top: targetRect.bottom + padding,
+          top: Math.min(targetRect.bottom + padding, window.innerHeight - tooltipHeight - padding),
           left: Math.max(padding, Math.min(
             targetRect.left + (targetRect.width / 2) - (tooltipWidth / 2),
             window.innerWidth - tooltipWidth - padding
@@ -188,19 +165,27 @@ export const GuidedTour = () => {
         };
       case 'left':
         return {
-          top: targetRect.top + (targetRect.height / 2) - (tooltipHeight / 2),
-          left: targetRect.left - tooltipWidth - padding,
+          top: Math.max(padding, Math.min(
+            targetRect.top + (targetRect.height / 2) - (tooltipHeight / 2),
+            window.innerHeight - tooltipHeight - padding
+          )),
+          left: Math.max(padding, targetRect.left - tooltipWidth - padding),
         };
       case 'right':
       default:
         return {
-          top: targetRect.top + (targetRect.height / 2) - (tooltipHeight / 2),
-          left: targetRect.right + padding,
+          top: Math.max(padding, Math.min(
+            targetRect.top + (targetRect.height / 2) - (tooltipHeight / 2),
+            window.innerHeight - tooltipHeight - padding
+          )),
+          left: Math.min(targetRect.right + padding, window.innerWidth - tooltipWidth - padding),
         };
     }
   };
 
   const progress = ((currentStep + 1) / tourSteps.length) * 100;
+
+  if (!isHomePage) return null;
 
   return (
     <>
@@ -214,31 +199,39 @@ export const GuidedTour = () => {
             className="fixed inset-0 z-[100] bg-background/80 backdrop-blur-sm flex items-center justify-center p-4"
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
               className="bg-card border border-border rounded-2xl p-8 max-w-md w-full shadow-xl"
             >
               <div className="text-center space-y-4">
-                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center mx-auto shadow-glow-primary">
+                <motion.div
+                  animate={{
+                    scale: [1, 1.1, 1],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto shadow-glow-primary"
+                >
                   <Sparkles className="h-8 w-8 text-primary-foreground" />
-                </div>
+                </motion.div>
                 
                 <h2 className="text-2xl font-display font-bold">
                   Bem-vindo ao Promo Financeiro!
                 </h2>
                 
                 <p className="text-muted-foreground">
-                  Parece que é sua primeira vez aqui. Gostaria de fazer um tour rápido 
-                  para conhecer as principais funcionalidades?
+                  O sistema foi totalmente reorganizado para facilitar sua navegação.
+                  Quer conhecer as principais novidades?
                 </p>
 
                 <div className="flex gap-3 pt-4">
                   <Button
                     variant="outline"
-                    className="flex-1"
+                    className="flex-1 gap-2"
                     onClick={skipTour}
                   >
+                    <SkipForward className="h-4 w-4" />
                     Pular
                   </Button>
                   <Button
@@ -246,7 +239,7 @@ export const GuidedTour = () => {
                     onClick={startTour}
                   >
                     <Sparkles className="h-4 w-4" />
-                    Iniciar Tour
+                    Fazer Tour
                   </Button>
                 </div>
               </div>
@@ -266,24 +259,27 @@ export const GuidedTour = () => {
               exit={{ opacity: 0 }}
               className="fixed inset-0 z-[90]"
               style={{
-                background: `radial-gradient(circle at ${targetRect.left + targetRect.width / 2}px ${targetRect.top + targetRect.height / 2}px, transparent ${Math.max(targetRect.width, targetRect.height) / 2 + 20}px, rgba(0,0,0,0.7) ${Math.max(targetRect.width, targetRect.height) / 2 + 40}px)`,
+                background: `radial-gradient(circle at ${targetRect.left + targetRect.width / 2}px ${targetRect.top + targetRect.height / 2}px, transparent ${Math.max(targetRect.width, targetRect.height) / 2 + 30}px, rgba(0,0,0,0.75) ${Math.max(targetRect.width, targetRect.height) / 2 + 60}px)`,
               }}
               onClick={exitTour}
             />
 
             {/* Target highlight */}
             <motion.div
-              className="fixed z-[91] border-2 border-primary rounded-lg pointer-events-none"
+              className="fixed z-[91] rounded-xl pointer-events-none"
               style={{
-                top: targetRect.top - 4,
-                left: targetRect.left - 4,
-                width: targetRect.width + 8,
-                height: targetRect.height + 8,
+                top: targetRect.top - 8,
+                left: targetRect.left - 8,
+                width: targetRect.width + 16,
+                height: targetRect.height + 16,
+                border: '2px solid hsl(var(--primary))',
+                boxShadow: '0 0 0 4px hsl(var(--primary) / 0.3)',
               }}
               animate={{
                 boxShadow: [
-                  '0 0 0 0 rgba(var(--primary), 0.4)',
-                  '0 0 0 10px rgba(var(--primary), 0)',
+                  '0 0 0 4px hsl(var(--primary) / 0.3)',
+                  '0 0 0 8px hsl(var(--primary) / 0.1)',
+                  '0 0 0 4px hsl(var(--primary) / 0.3)',
                 ],
               }}
               transition={{
@@ -297,13 +293,13 @@ export const GuidedTour = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="fixed z-[92] w-80 bg-card border border-border rounded-xl shadow-xl overflow-hidden"
+              className="fixed z-[92] w-[340px] bg-card border border-border rounded-xl shadow-xl overflow-hidden"
               style={getTooltipPosition()}
             >
               {/* Progress bar */}
-              <div className="h-1 bg-muted">
+              <div className="h-1.5 bg-muted">
                 <motion.div
-                  className="h-full bg-primary"
+                  className="h-full bg-gradient-to-r from-primary to-accent"
                   initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
                   transition={{ duration: 0.3 }}
@@ -314,10 +310,10 @@ export const GuidedTour = () => {
                 {/* Header */}
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs font-medium text-primary">
                       Passo {currentStep + 1} de {tourSteps.length}
                     </span>
-                    <h3 className="font-semibold text-lg mt-0.5">
+                    <h3 className="font-display font-bold text-lg mt-1">
                       {tourSteps[currentStep].title}
                     </h3>
                   </div>
@@ -332,7 +328,7 @@ export const GuidedTour = () => {
                 </div>
 
                 {/* Content */}
-                <p className="text-sm text-muted-foreground mb-5">
+                <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
                   {tourSteps[currentStep].content}
                 </p>
 
@@ -349,15 +345,15 @@ export const GuidedTour = () => {
                     Anterior
                   </Button>
 
-                  <div className="flex gap-1">
+                  <div className="flex gap-1.5">
                     {tourSteps.map((_, idx) => (
                       <button
                         key={idx}
                         onClick={() => setCurrentStep(idx)}
                         className={cn(
-                          'h-2 w-2 rounded-full transition-colors',
+                          'h-2 w-2 rounded-full transition-all duration-200',
                           idx === currentStep
-                            ? 'bg-primary'
+                            ? 'bg-primary w-4'
                             : idx < currentStep
                             ? 'bg-primary/50'
                             : 'bg-muted'
