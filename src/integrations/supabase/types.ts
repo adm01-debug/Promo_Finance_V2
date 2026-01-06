@@ -1508,6 +1508,77 @@ export type Database = {
           },
         ]
       }
+      darfs: {
+        Row: {
+          codigo_barras: string | null
+          codigo_receita: string
+          competencia: string
+          created_at: string
+          created_by: string | null
+          data_pagamento: string | null
+          data_vencimento: string
+          descricao_receita: string
+          empresa_id: string
+          id: string
+          linha_digitavel: string | null
+          retencoes_ids: string[] | null
+          status: string | null
+          updated_at: string
+          valor_juros: number | null
+          valor_multa: number | null
+          valor_principal: number
+          valor_total: number
+        }
+        Insert: {
+          codigo_barras?: string | null
+          codigo_receita: string
+          competencia: string
+          created_at?: string
+          created_by?: string | null
+          data_pagamento?: string | null
+          data_vencimento: string
+          descricao_receita: string
+          empresa_id: string
+          id?: string
+          linha_digitavel?: string | null
+          retencoes_ids?: string[] | null
+          status?: string | null
+          updated_at?: string
+          valor_juros?: number | null
+          valor_multa?: number | null
+          valor_principal: number
+          valor_total: number
+        }
+        Update: {
+          codigo_barras?: string | null
+          codigo_receita?: string
+          competencia?: string
+          created_at?: string
+          created_by?: string | null
+          data_pagamento?: string | null
+          data_vencimento?: string
+          descricao_receita?: string
+          empresa_id?: string
+          id?: string
+          linha_digitavel?: string | null
+          retencoes_ids?: string[] | null
+          status?: string | null
+          updated_at?: string
+          valor_juros?: number | null
+          valor_multa?: number | null
+          valor_principal?: number
+          valor_total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "darfs_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       empresas: {
         Row: {
           ativo: boolean
@@ -3334,6 +3405,98 @@ export type Database = {
           },
           {
             foreignKeyName: "relatorios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      retencoes_fonte: {
+        Row: {
+          aliquota: number
+          cnpj_participante: string | null
+          codigo_receita: string | null
+          competencia: string
+          conta_pagar_id: string | null
+          conta_receber_id: string | null
+          created_at: string
+          created_by: string | null
+          darf_gerado: boolean | null
+          data_fato_gerador: string
+          data_recolhimento: string | null
+          data_retencao: string
+          data_vencimento: string
+          empresa_id: string
+          id: string
+          nome_participante: string
+          nota_fiscal_id: string | null
+          numero_documento: string | null
+          observacoes: string | null
+          status: string | null
+          tipo_operacao: string
+          tipo_retencao: string
+          updated_at: string
+          valor_base: number
+          valor_retido: number
+        }
+        Insert: {
+          aliquota: number
+          cnpj_participante?: string | null
+          codigo_receita?: string | null
+          competencia: string
+          conta_pagar_id?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          darf_gerado?: boolean | null
+          data_fato_gerador: string
+          data_recolhimento?: string | null
+          data_retencao: string
+          data_vencimento: string
+          empresa_id: string
+          id?: string
+          nome_participante: string
+          nota_fiscal_id?: string | null
+          numero_documento?: string | null
+          observacoes?: string | null
+          status?: string | null
+          tipo_operacao: string
+          tipo_retencao: string
+          updated_at?: string
+          valor_base: number
+          valor_retido: number
+        }
+        Update: {
+          aliquota?: number
+          cnpj_participante?: string | null
+          codigo_receita?: string | null
+          competencia?: string
+          conta_pagar_id?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          darf_gerado?: boolean | null
+          data_fato_gerador?: string
+          data_recolhimento?: string | null
+          data_retencao?: string
+          data_vencimento?: string
+          empresa_id?: string
+          id?: string
+          nome_participante?: string
+          nota_fiscal_id?: string | null
+          numero_documento?: string | null
+          observacoes?: string | null
+          status?: string | null
+          tipo_operacao?: string
+          tipo_retencao?: string
+          updated_at?: string
+          valor_base?: number
+          valor_retido?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "retencoes_fonte_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"

@@ -11,3 +11,5 @@ export { ApuracaoMensal } from './ApuracaoMensal';
 export { OperacoesLista } from './OperacoesLista';
 export { ModuloIRPJCSLL } from './ModuloIRPJCSLL';
 export { ObrigacoesAcessorias } from './ObrigacoesAcessorias';
+export { RetencoesFonte } from './RetencoesFonte';
+export { ExportacaoSPED } from './ExportacaoSPED';

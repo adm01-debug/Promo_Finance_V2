@@ -56,6 +56,8 @@ import { ApuracaoMensal } from './ApuracaoMensal';
 import { OperacoesLista } from './OperacoesLista';
 import { ModuloIRPJCSLL } from './ModuloIRPJCSLL';
 import { ObrigacoesAcessorias } from './ObrigacoesAcessorias';
+import { RetencoesFonte } from './RetencoesFonte';
+import { ExportacaoSPED } from './ExportacaoSPED';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -272,11 +274,13 @@ export function DashboardReformaTributaria() {
           <TabsTrigger value="visao-geral">Visão Geral</TabsTrigger>
           <TabsTrigger value="apuracao">Apuração IBS/CBS</TabsTrigger>
           <TabsTrigger value="irpj-csll">IRPJ/CSLL</TabsTrigger>
+          <TabsTrigger value="retencoes">Retenções</TabsTrigger>
           <TabsTrigger value="operacoes">Operações</TabsTrigger>
           <TabsTrigger value="creditos">Créditos</TabsTrigger>
           <TabsTrigger value="calculadora">Calculadora</TabsTrigger>
           <TabsTrigger value="simulador">Simulador</TabsTrigger>
           <TabsTrigger value="obrigacoes">Obrigações</TabsTrigger>
+          <TabsTrigger value="exportacao">Exportação SPED</TabsTrigger>
           <TabsTrigger value="cronograma">Cronograma</TabsTrigger>
         </TabsList>
 
@@ -495,6 +499,11 @@ export function DashboardReformaTributaria() {
         {/* Aba IRPJ/CSLL */}
         <TabsContent value="irpj-csll">
           <ModuloIRPJCSLL />
+        </TabsContent>
+
+        {/* Aba Retenções */}
+        <TabsContent value="retencoes">
+          <RetencoesFonte />
         </TabsContent>
       </Tabs>
     </motion.div>
