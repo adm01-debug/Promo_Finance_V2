@@ -52,20 +52,20 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
   });
 
   const { 
-    incentivos, 
+    incentivos = [], 
     resumo,
     isLoading, 
     criarIncentivo, 
     atualizarIncentivo, 
     excluirIncentivo,
-    calcularBeneficio 
+    calcularEconomia 
   } = useIncentivosFiscais(empresaId);
 
   const handleSubmit = async () => {
     if (editando) {
       await atualizarIncentivo.mutateAsync({ id: editando, ...formData });
     } else {
-      await criarIncentivo.mutateAsync(formData);
+      await criarIncentivo.mutateAsync({ ...formData, empresa_id: empresaId });
     }
     resetForm();
   };
@@ -259,7 +259,7 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{resumo.ativos}</div>
+              <div className="text-2xl font-bold">{resumo.totalAtivos}</div>
             </CardContent>
           </Card>
         </motion.div>
@@ -269,12 +269,12 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-green-500" />
-                Benefício Estimado
+                Limite Total
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
-                {formatCurrency(resumo.beneficioTotal)}
+                {formatCurrency(resumo.valorLimiteTotal)}
               </div>
             </CardContent>
           </Card>
@@ -285,11 +285,11 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <DollarSign className="h-4 w-4" />
-                Utilizado no Ano
+                Utilizado
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(resumo.utilizadoAno)}</div>
+              <div className="text-2xl font-bold">{formatCurrency(resumo.valorUtilizado)}</div>
             </CardContent>
           </Card>
         </motion.div>
@@ -299,11 +299,11 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Percent className="h-4 w-4" />
-                Limite Disponível
+                Disponível
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(resumo.limiteDisponivel)}</div>
+              <div className="text-2xl font-bold">{formatCurrency(resumo.valorLimiteTotal - resumo.valorUtilizado)}</div>
             </CardContent>
           </Card>
         </motion.div>
