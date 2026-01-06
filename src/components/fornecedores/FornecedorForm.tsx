@@ -8,6 +8,8 @@ import { ActionButton } from '@/components/ui/action-button';
 import { FieldLabel } from '@/components/ui/info-tooltip';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { useCelebrations } from '@/components/wrappers/CelebrationActions';
+import { sounds } from '@/lib/sound-feedback';
 import {
   Dialog,
   DialogContent,
@@ -71,6 +73,7 @@ interface FornecedorFormProps {
 
 export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFormProps) {
   const queryClient = useQueryClient();
+  const { celebrateSuccess } = useCelebrations();
   const isEditing = !!fornecedor;
 
   const form = useForm<FornecedorFormData>({
@@ -142,14 +145,13 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['fornecedores'] });
-      toast({
-        title: 'Fornecedor cadastrado',
-        description: 'O fornecedor foi adicionado com sucesso.',
-      });
+      sounds.success();
+      celebrateSuccess('Fornecedor cadastrado!');
       form.reset();
       onOpenChange(false);
     },
     onError: (error) => {
+      sounds.error();
       console.error('Error creating fornecedor:', error);
       toast({
         title: 'Erro ao cadastrar fornecedor',

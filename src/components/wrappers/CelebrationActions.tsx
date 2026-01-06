@@ -56,7 +56,17 @@ export function useCelebrations() {
     haptic('success');
   }, [confetti]);
 
-  // Generic success with sound
+  // Generic success celebration with confetti
+  const celebrateSuccess = useCallback((message?: string) => {
+    confetti.customCelebration({
+      title: message || 'Sucesso!',
+      level: 'subtle',
+      theme: 'success',
+    });
+    haptic('success');
+  }, [confetti]);
+
+  // Generic success with sound (no confetti)
   const success = useCallback((message?: string) => {
     sounds.playSuccess();
     haptic('light');
@@ -98,6 +108,7 @@ export function useCelebrations() {
     celebrateReconciliation,
     celebrateBulk,
     celebrateImport,
+    celebrateSuccess,
     
     // Generic feedback
     success,
