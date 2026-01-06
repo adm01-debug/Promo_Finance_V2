@@ -238,6 +238,83 @@ export type Database = {
           },
         ]
       }
+      alertas_tributarios: {
+        Row: {
+          acao_label: string | null
+          acao_url: string | null
+          competencia: string | null
+          created_at: string
+          data_lembrete: string | null
+          data_vencimento: string | null
+          empresa_id: string | null
+          entidade_id: string | null
+          entidade_tipo: string | null
+          id: string
+          lido: boolean | null
+          mensagem: string
+          prioridade: string
+          resolvido: boolean | null
+          resolvido_em: string | null
+          resolvido_por: string | null
+          tipo: string
+          titulo: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          acao_label?: string | null
+          acao_url?: string | null
+          competencia?: string | null
+          created_at?: string
+          data_lembrete?: string | null
+          data_vencimento?: string | null
+          empresa_id?: string | null
+          entidade_id?: string | null
+          entidade_tipo?: string | null
+          id?: string
+          lido?: boolean | null
+          mensagem: string
+          prioridade?: string
+          resolvido?: boolean | null
+          resolvido_em?: string | null
+          resolvido_por?: string | null
+          tipo: string
+          titulo: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          acao_label?: string | null
+          acao_url?: string | null
+          competencia?: string | null
+          created_at?: string
+          data_lembrete?: string | null
+          data_vencimento?: string | null
+          empresa_id?: string | null
+          entidade_id?: string | null
+          entidade_tipo?: string | null
+          id?: string
+          lido?: boolean | null
+          mensagem?: string
+          prioridade?: string
+          resolvido?: boolean | null
+          resolvido_em?: string | null
+          resolvido_por?: string | null
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alertas_tributarios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       allowed_countries: {
         Row: {
           ativo: boolean | null

@@ -13,3 +13,6 @@ export { ModuloIRPJCSLL } from './ModuloIRPJCSLL';
 export { ObrigacoesAcessorias } from './ObrigacoesAcessorias';
 export { RetencoesFonte } from './RetencoesFonte';
 export { ExportacaoSPED } from './ExportacaoSPED';
+export { AlertasTributarios } from './AlertasTributarios';
+export { RelatoriosContabeisTributarios } from './RelatoriosContabeisTributarios';
+export { DashboardMetricasTributarias } from './DashboardMetricasTributarias';
