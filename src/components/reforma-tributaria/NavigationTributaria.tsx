@@ -135,9 +135,9 @@ export function NavigationTributaria({ activeTab, onTabChange }: Props) {
   const activeGroupId = getActiveGroup();
 
   return (
-    <div className="bg-card border rounded-xl p-2 shadow-sm">
+    <div className="bg-card border rounded-lg sm:rounded-xl p-1.5 sm:p-2 shadow-sm">
       {/* Desktop: Horizontal navigation */}
-      <div className="hidden lg:flex items-center gap-1 flex-wrap">
+      <div className="hidden lg:flex items-center gap-0.5 sm:gap-1 flex-wrap">
         {NAV_GROUPS.map((group) => {
           const isActive = activeGroupId === group.id;
           const isExpanded = expandedGroup === group.id;
@@ -214,7 +214,7 @@ export function NavigationTributaria({ activeTab, onTabChange }: Props) {
       </div>
 
       {/* Mobile: Collapsible accordion */}
-      <div className="lg:hidden space-y-1">
+      <div className="lg:hidden space-y-0.5 sm:space-y-1">
         {NAV_GROUPS.map((group) => {
           const isActive = activeGroupId === group.id;
           const isExpanded = expandedGroup === group.id;
@@ -225,14 +225,14 @@ export function NavigationTributaria({ activeTab, onTabChange }: Props) {
               <button
                 onClick={() => handleGroupClick(group.id)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                  "w-full flex items-center gap-2 sm:gap-3 px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors min-h-[40px]",
                   isActive ? "bg-primary/10 text-primary" : "hover:bg-muted"
                 )}
               >
-                <Icon className={cn("h-4 w-4", group.color)} />
-                <span className="flex-1 text-left">{group.label}</span>
+                <Icon className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0", group.color)} />
+                <span className="flex-1 text-left truncate">{group.label}</span>
                 <ChevronRight className={cn(
-                  "h-4 w-4 transition-transform duration-200",
+                  "h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-200 flex-shrink-0",
                   isExpanded && "rotate-90"
                 )} />
               </button>
@@ -246,7 +246,7 @@ export function NavigationTributaria({ activeTab, onTabChange }: Props) {
                     transition={{ duration: 0.2 }}
                     className="overflow-hidden"
                   >
-                    <div className="pl-6 py-1 space-y-0.5">
+                    <div className="pl-4 sm:pl-6 py-1 space-y-0.5">
                       {group.items.map((item) => {
                         const ItemIcon = item.icon;
                         const isItemActive = activeTab === item.id;
@@ -256,17 +256,17 @@ export function NavigationTributaria({ activeTab, onTabChange }: Props) {
                             key={item.id}
                             onClick={() => onTabChange(item.id)}
                             className={cn(
-                              "w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
+                              "w-full flex items-center gap-2 sm:gap-3 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm transition-colors min-h-[36px]",
                               isItemActive 
                                 ? "bg-primary text-primary-foreground" 
                                 : "hover:bg-muted text-muted-foreground"
                             )}
                           >
-                            <ItemIcon className="h-4 w-4" />
-                            <span className="flex-1 text-left">{item.label}</span>
+                            <ItemIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                            <span className="flex-1 text-left truncate">{item.label}</span>
                             {item.badge && (
                               <span className={cn(
-                                "text-xs px-1.5 py-0.5 rounded-full font-medium",
+                                "text-[10px] sm:text-xs px-1 sm:px-1.5 py-0.5 rounded-full font-medium flex-shrink-0",
                                 item.badgeVariant === 'destructive' 
                                   ? "bg-destructive text-destructive-foreground" 
                                   : "bg-secondary text-secondary-foreground"
