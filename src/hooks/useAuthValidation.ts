@@ -1,0 +1,175 @@
+import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+
+interface GeoData {
+  ip: string | null;
+  country: string | null;
+}
+
+interface ValidationResult {
+  allowed: boolean;
+  reason?: string;
+}
+
+export function useAuthValidation() {
+  const [geoData, setGeoData] = useState<GeoData>({ ip: null, country: null });
+  const [ipBlocked, setIpBlocked] = useState(false);
+  const [geoBlocked, setGeoBlocked] = useState(false);
+
+  // Fetch user IP and country on mount
+  useEffect(() => {
+    const fetchIpAndGeo = async () => {
+      try {
+        const response = await fetch('http://ip-api.com/json/?fields=query,countryCode');
+        const data = await response.json();
+        setGeoData({ ip: data.query, country: data.countryCode });
+      } catch (error) {
+        console.error('Erro ao obter IP/localização:', error);
+        try {
+          const fallback = await fetch('https://api.ipify.org?format=json');
+          const fallbackData = await fallback.json();
+          setGeoData(prev => ({ ...prev, ip: fallbackData.ip }));
+        } catch (e) {
+          console.error('Erro no fallback de IP:', e);
+        }
+      }
+    };
+    fetchIpAndGeo();
+  }, []);
+
+  const validateIp = useCallback(async (): Promise<ValidationResult> => {
+    if (!geoData.ip) {
+      return { allowed: true };
+    }
+
+    try {
+      const { data: settings } = await supabase
+        .from('security_settings')
+        .select('restrict_by_ip, allowed_global_ips')
+        .single();
+
+      if (!settings?.restrict_by_ip) {
+        return { allowed: true };
+      }
+
+      const globalIps = settings.allowed_global_ips || [];
+      if (globalIps.includes(geoData.ip)) {
+        return { allowed: true };
+      }
+
+      const { data: allowedIps } = await supabase
+        .from('allowed_ips')
+        .select('ip_address')
+        .eq('ativo', true);
+
+      const isAllowed = allowedIps?.some(ip => ip.ip_address === geoData.ip);
+      
+      if (!isAllowed) {
+        setIpBlocked(true);
+        return { 
+          allowed: false, 
+          reason: `IP ${geoData.ip} não autorizado para acesso` 
+        };
+      }
+
+      return { allowed: true };
+    } catch (error) {
+      console.error('Erro ao validar IP:', error);
+      return { allowed: true };
+    }
+  }, [geoData.ip]);
+
+  const validateGeo = useCallback(async (): Promise<ValidationResult> => {
+    if (!geoData.country) {
+      return { allowed: true };
+    }
+
+    try {
+      const { data: settings } = await supabase
+        .from('security_settings')
+        .select('enable_geo_restriction')
+        .limit(1)
+        .maybeSingle();
+
+      if (!settings?.enable_geo_restriction) {
+        return { allowed: true };
+      }
+
+      const { data: allowedCountries } = await supabase
+        .from('allowed_countries')
+        .select('country_code')
+        .eq('ativo', true);
+
+      const isAllowed = allowedCountries?.some(c => c.country_code === geoData.country);
+      
+      if (!isAllowed) {
+        setGeoBlocked(true);
+        return { 
+          allowed: false, 
+          reason: `Acesso não permitido do país: ${geoData.country}` 
+        };
+      }
+
+      return { allowed: true };
+    } catch (error) {
+      console.error('Erro ao validar localização:', error);
+      return { allowed: true };
+    }
+  }, [geoData.country]);
+
+  const checkBlockedIp = useCallback(async (): Promise<boolean> => {
+    if (!geoData.ip) return false;
+
+    try {
+      const { data: blockedIp } = await supabase
+        .from('blocked_ips')
+        .select('id')
+        .eq('ip_address', geoData.ip)
+        .is('unblocked_at', null)
+        .maybeSingle();
+
+      if (blockedIp) {
+        setIpBlocked(true);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Erro ao verificar IP bloqueado:', error);
+      return false;
+    }
+  }, [geoData.ip]);
+
+  const logLoginAttempt = useCallback(async (
+    email: string, 
+    success: boolean, 
+    blockedReason?: string
+  ) => {
+    try {
+      await supabase.from('login_attempts').insert({
+        user_email: email,
+        ip_address: geoData.ip,
+        user_agent: navigator.userAgent,
+        success,
+        blocked_reason: blockedReason || null
+      });
+    } catch (error) {
+      console.error('Erro ao registrar tentativa de login:', error);
+    }
+  }, [geoData.ip]);
+
+  const resetBlocks = useCallback(() => {
+    setIpBlocked(false);
+    setGeoBlocked(false);
+  }, []);
+
+  return {
+    geoData,
+    ipBlocked,
+    geoBlocked,
+    validateIp,
+    validateGeo,
+    checkBlockedIp,
+    logLoginAttempt,
+    resetBlocks,
+  };
+}
