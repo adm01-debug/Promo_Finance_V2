@@ -1,54 +1,109 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useState } from 'react';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { STALE_TIMES, GC_TIMES } from '@/lib/queryClient';
 
-// Prefetch common data on app load
+// ============================================
+// PREFETCH CRITICAL DATA
+// ============================================
 export function usePrefetchCriticalData() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    // Prefetch empresas
-    queryClient.prefetchQuery({
-      queryKey: ['empresas'],
-      queryFn: async () => {
-        const { data } = await supabase
-          .from('empresas')
-          .select('*')
-          .eq('ativo', true)
-          .order('razao_social');
-        return data || [];
-      },
-      staleTime: 10 * 60 * 1000, // 10 minutes
-    });
-
-    // Prefetch contas bancarias
-    queryClient.prefetchQuery({
-      queryKey: ['contas-bancarias'],
-      queryFn: async () => {
-        const { data } = await supabase
-          .from('contas_bancarias')
-          .select('*, empresas(razao_social, nome_fantasia)')
-          .eq('ativo', true)
-          .order('banco');
-        return data || [];
-      },
-      staleTime: 5 * 60 * 1000, // 5 minutes
-    });
-
-    // Prefetch centros de custo
-    queryClient.prefetchQuery({
-      queryKey: ['centros-custo'],
-      queryFn: async () => {
-        const { data } = await supabase
-          .from('centros_custo')
-          .select('*')
-          .eq('ativo', true)
-          .order('nome');
-        return data || [];
-      },
-      staleTime: 10 * 60 * 1000, // 10 minutes
-    });
+    // Prefetch em paralelo para máxima velocidade
+    Promise.all([
+      queryClient.prefetchQuery({
+        queryKey: ['empresas'],
+        queryFn: async () => {
+          const { data } = await supabase
+            .from('empresas')
+            .select('id, razao_social, nome_fantasia, cnpj, ativo')
+            .eq('ativo', true)
+            .order('razao_social');
+          return data || [];
+        },
+        staleTime: STALE_TIMES.static,
+        gcTime: GC_TIMES.static,
+      }),
+      queryClient.prefetchQuery({
+        queryKey: ['contas-bancarias'],
+        queryFn: async () => {
+          const { data } = await supabase
+            .from('contas_bancarias')
+            .select('id, banco, agencia, conta, saldo_atual, empresa_id, cor')
+            .eq('ativo', true)
+            .order('banco');
+          return data || [];
+        },
+        staleTime: STALE_TIMES.config,
+        gcTime: GC_TIMES.normal,
+      }),
+      queryClient.prefetchQuery({
+        queryKey: ['centros-custo'],
+        queryFn: async () => {
+          const { data } = await supabase
+            .from('centros_custo')
+            .select('id, nome, codigo, ativo')
+            .eq('ativo', true)
+            .order('nome');
+          return data || [];
+        },
+        staleTime: STALE_TIMES.static,
+        gcTime: GC_TIMES.static,
+      }),
+    ]);
   }, [queryClient]);
+}
+
+// ============================================
+// HOOKS PARA DADOS CRÍTICOS (Memoizados)
+// ============================================
+export function useEmpresas() {
+  return useQuery({
+    queryKey: ['empresas'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('empresas')
+        .select('id, razao_social, nome_fantasia, cnpj, ativo')
+        .eq('ativo', true)
+        .order('razao_social');
+      return data || [];
+    },
+    staleTime: STALE_TIMES.static,
+    gcTime: GC_TIMES.static,
+  });
+}
+
+export function useContasBancariasSelect() {
+  return useQuery({
+    queryKey: ['contas-bancarias-select'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('contas_bancarias')
+        .select('id, banco, agencia, conta, empresa_id')
+        .eq('ativo', true)
+        .order('banco');
+      return data || [];
+    },
+    staleTime: STALE_TIMES.config,
+    gcTime: GC_TIMES.normal,
+  });
+}
+
+export function useCentrosCustoSelect() {
+  return useQuery({
+    queryKey: ['centros-custo-select'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('centros_custo')
+        .select('id, nome, codigo')
+        .eq('ativo', true)
+        .order('nome');
+      return data || [];
+    },
+    staleTime: STALE_TIMES.static,
+    gcTime: GC_TIMES.static,
+  });
 }
 
 // Hook for invalidating related queries efficiently

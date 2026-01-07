@@ -246,4 +246,132 @@ export function ScrollIndicator({
   );
 }
 
-export type { VirtualizedListProps };
+// ============================================
+// VIRTUALIZED TABLE (Para tabelas com muitas linhas)
+// ============================================
+interface Column<T> {
+  key: keyof T | string;
+  header: string;
+  width?: number | string;
+  render?: (item: T, index: number) => React.ReactNode;
+  className?: string;
+}
+
+interface VirtualizedTableProps<T> {
+  items: T[];
+  columns: Column<T>[];
+  height: number;
+  rowHeight?: number;
+  className?: string;
+  onRowClick?: (item: T, index: number) => void;
+  selectedIndex?: number;
+  isLoading?: boolean;
+  emptyMessage?: string;
+}
+
+export function VirtualizedTable<T extends Record<string, any>>({
+  items,
+  columns,
+  height,
+  rowHeight = 48,
+  className,
+  onRowClick,
+  selectedIndex,
+  isLoading = false,
+  emptyMessage = 'Nenhum item encontrado',
+}: VirtualizedTableProps<T>) {
+  if (isLoading) {
+    return (
+      <div className={cn('rounded-lg border border-border overflow-hidden', className)}>
+        <div className="flex items-center bg-muted/50 px-4 h-10 gap-4 border-b border-border">
+          {columns.map((col, index) => (
+            <div
+              key={index}
+              style={{ width: col.width || 'auto', flex: col.width ? 'none' : 1 }}
+              className="text-xs font-semibold text-muted-foreground uppercase tracking-wider truncate"
+            >
+              {col.header}
+            </div>
+          ))}
+        </div>
+        <ListLoadingSkeleton height={height - 40} rowCount={8} />
+      </div>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className={cn('rounded-lg border border-border overflow-hidden', className)}>
+        <div className="flex items-center bg-muted/50 px-4 h-10 gap-4 border-b border-border">
+          {columns.map((col, index) => (
+            <div
+              key={index}
+              style={{ width: col.width || 'auto', flex: col.width ? 'none' : 1 }}
+              className="text-xs font-semibold text-muted-foreground uppercase tracking-wider truncate"
+            >
+              {col.header}
+            </div>
+          ))}
+        </div>
+        <ListEmptyState message={emptyMessage} />
+      </div>
+    );
+  }
+
+  const renderTableRow = (item: T, index: number, style: React.CSSProperties) => {
+    const isSelected = selectedIndex === index;
+    return (
+      <div
+        style={style}
+        className={cn(
+          'flex items-center border-b border-border/50 px-4 gap-4 transition-colors',
+          onRowClick && 'cursor-pointer hover:bg-muted/50',
+          isSelected && 'bg-primary/10'
+        )}
+        onClick={() => onRowClick?.(item, index)}
+      >
+        {columns.map((col, colIndex) => (
+          <div
+            key={colIndex}
+            style={{ width: col.width || 'auto', flex: col.width ? 'none' : 1 }}
+            className={cn('truncate text-sm', col.className)}
+          >
+            {col.render
+              ? col.render(item, index)
+              : String(item[col.key as keyof T] ?? '')}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <div className={cn('rounded-lg border border-border overflow-hidden', className)}>
+      {/* Header */}
+      <div className="flex items-center bg-muted/50 px-4 h-10 gap-4 border-b border-border">
+        {columns.map((col, index) => (
+          <div
+            key={index}
+            style={{ width: col.width || 'auto', flex: col.width ? 'none' : 1 }}
+            className="text-xs font-semibold text-muted-foreground uppercase tracking-wider truncate"
+          >
+            {col.header}
+          </div>
+        ))}
+      </div>
+
+      {/* Body - uses VirtualizedList internally for large datasets */}
+      <VirtualizedList
+        data={items}
+        height={height - 40}
+        rowHeight={rowHeight}
+        renderItem={renderTableRow}
+        getItemKey={(item, index) => (item as any).id || index}
+        virtualizationThreshold={50}
+        animated={false}
+      />
+    </div>
+  );
+}
+
+export type { VirtualizedListProps, VirtualizedTableProps, Column };
