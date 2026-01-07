@@ -58,7 +58,7 @@ export default function FluxoCaixa() {
 
   return (
     <MainLayout>
-      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4 sm:space-y-5 lg:space-y-6">
         <FluxoCaixaHeader
           periodo={periodo}
           onPeriodoChange={setPeriodo}
@@ -76,14 +76,14 @@ export default function FluxoCaixa() {
           />
         </motion.div>
 
-        <motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <motion.div variants={itemVariants} className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <CenarioSelector 
             cenarioAtivo={cenarioAtivo} 
             onCenarioChange={setCenarioAtivo}
             metricas={metricasCenarios}
           />
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Settings2 className="h-4 w-4" />
+          <div className="hidden sm:flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+            <Settings2 className="h-3 w-3 sm:h-4 sm:w-4" />
             <span>Limites: Ruptura R$ 0 | Risco R$ 50K</span>
           </div>
         </motion.div>
@@ -109,11 +109,11 @@ export default function FluxoCaixa() {
           />
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
           <motion.div variants={itemVariants} className="lg:col-span-2">
             {isLoading ? (
-              <Card className="card-elevated h-[400px] flex items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              <Card className="card-elevated h-[300px] sm:h-[350px] lg:h-[400px] flex items-center justify-center">
+                <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-muted-foreground" />
               </Card>
             ) : (
               <GraficoCenarios 
@@ -146,7 +146,7 @@ export default function FluxoCaixa() {
           isLoading={isLoading}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
           <motion.div variants={itemVariants}>
             <IndicadorCobertura 
               saldoAtual={kpis?.saldoTotal || 0}

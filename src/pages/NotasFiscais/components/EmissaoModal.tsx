@@ -11,38 +11,41 @@ export function NFEmissaoModal() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="fixed bottom-6 right-6 gap-2 shadow-lg">
+        <Button className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 gap-1.5 sm:gap-2 shadow-lg h-10 sm:h-11 px-3 sm:px-4 text-sm">
           <Plus className="h-4 w-4" />
-          Nova NFe
+          <span className="hidden sm:inline">Nova NFe</span>
+          <span className="sm:hidden">NFe</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-[95vw] sm:max-w-lg lg:max-w-2xl mx-2 sm:mx-auto">
         <DialogHeader>
-          <DialogTitle>Emitir Nota Fiscal</DialogTitle>
+          <DialogTitle className="text-base sm:text-lg">Emitir Nota Fiscal</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label>Cliente</Label>
-            <Input placeholder="Nome do cliente" />
+        <div className="grid gap-3 sm:gap-4 py-3 sm:py-4">
+          <div className="grid gap-1.5 sm:gap-2">
+            <Label className="text-xs sm:text-sm">Cliente</Label>
+            <Input placeholder="Nome do cliente" className="h-9 sm:h-10 text-sm" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <Label>CNPJ/CPF</Label>
-              <Input placeholder="00.000.000/0000-00" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div className="grid gap-1.5 sm:gap-2">
+              <Label className="text-xs sm:text-sm">CNPJ/CPF</Label>
+              <Input placeholder="00.000.000/0000-00" className="h-9 sm:h-10 text-sm" />
             </div>
-            <div className="grid gap-2">
-              <Label>Valor Total</Label>
-              <Input type="number" placeholder="0,00" />
+            <div className="grid gap-1.5 sm:gap-2">
+              <Label className="text-xs sm:text-sm">Valor Total</Label>
+              <Input type="number" placeholder="0,00" className="h-9 sm:h-10 text-sm" />
             </div>
           </div>
-          <div className="grid gap-2">
-            <Label>Descrição</Label>
-            <Input placeholder="Descrição dos produtos/serviços" />
+          <div className="grid gap-1.5 sm:gap-2">
+            <Label className="text-xs sm:text-sm">Descrição</Label>
+            <Input placeholder="Descrição dos produtos/serviços" className="h-9 sm:h-10 text-sm" />
           </div>
         </div>
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-          <Button>Emitir NFe</Button>
+        <div className="flex flex-col-reverse sm:flex-row justify-end gap-2">
+          <Button variant="outline" onClick={() => setOpen(false)} className="w-full sm:w-auto h-9 sm:h-10 text-sm">
+            Cancelar
+          </Button>
+          <Button className="w-full sm:w-auto h-9 sm:h-10 text-sm">Emitir NFe</Button>
         </div>
       </DialogContent>
     </Dialog>
