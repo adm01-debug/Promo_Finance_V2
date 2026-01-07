@@ -124,8 +124,8 @@ export function PagamentoRecorrenteForm({ onSuccess, onCancel }: PagamentoRecorr
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <FormField
             control={form.control}
             name="descricao"
@@ -155,7 +155,7 @@ export function PagamentoRecorrenteForm({ onSuccess, onCancel }: PagamentoRecorr
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
           <FormField
             control={form.control}
             name="valor"
@@ -224,7 +224,7 @@ export function PagamentoRecorrenteForm({ onSuccess, onCancel }: PagamentoRecorr
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <FormField
             control={form.control}
             name="data_inicio"
@@ -305,7 +305,7 @@ export function PagamentoRecorrenteForm({ onSuccess, onCancel }: PagamentoRecorr
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           <FormField
             control={form.control}
             name="empresa_id"
@@ -401,13 +401,13 @@ export function PagamentoRecorrenteForm({ onSuccess, onCancel }: PagamentoRecorr
           )}
         />
 
-        <div className="flex justify-end gap-3">
+        <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 pt-2">
           {onCancel && (
-            <Button type="button" variant="outline" onClick={onCancel}>
+            <Button type="button" variant="outline" onClick={onCancel} className="w-full sm:w-auto">
               Cancelar
             </Button>
           )}
-          <Button type="submit" disabled={isCreating}>
+          <Button type="submit" disabled={isCreating} className="w-full sm:w-auto">
             {isCreating ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -416,7 +416,8 @@ export function PagamentoRecorrenteForm({ onSuccess, onCancel }: PagamentoRecorr
             ) : (
               <>
                 <Repeat className="mr-2 h-4 w-4" />
-                Criar Pagamento Recorrente
+                <span className="hidden sm:inline">Criar Pagamento Recorrente</span>
+                <span className="sm:hidden">Criar Recorrente</span>
               </>
             )}
           </Button>

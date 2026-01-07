@@ -79,40 +79,41 @@ export function PagamentosRecorrentesList() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
         <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total de Recorrentes</CardDescription>
-            <CardTitle className="text-2xl">{stats.total}</CardTitle>
+          <CardHeader className="p-3 sm:p-6 pb-2">
+            <CardDescription className="text-xs sm:text-sm">Recorrentes</CardDescription>
+            <CardTitle className="text-lg sm:text-2xl">{stats.total}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Ativos</CardDescription>
-            <CardTitle className="text-2xl text-green-600">{stats.ativos}</CardTitle>
+          <CardHeader className="p-3 sm:p-6 pb-2">
+            <CardDescription className="text-xs sm:text-sm">Ativos</CardDescription>
+            <CardTitle className="text-lg sm:text-2xl text-green-600">{stats.ativos}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Pausados</CardDescription>
-            <CardTitle className="text-2xl text-yellow-600">{stats.pausados}</CardTitle>
+          <CardHeader className="p-3 sm:p-6 pb-2">
+            <CardDescription className="text-xs sm:text-sm">Pausados</CardDescription>
+            <CardTitle className="text-lg sm:text-2xl text-yellow-600">{stats.pausados}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Valor Mensal Estimado</CardDescription>
-            <CardTitle className="text-2xl">{formatCurrency(stats.valorMensal)}</CardTitle>
+          <CardHeader className="p-3 sm:p-6 pb-2">
+            <CardDescription className="text-xs sm:text-sm truncate">Valor Mensal</CardDescription>
+            <CardTitle className="text-lg sm:text-2xl truncate">{formatCurrency(stats.valorMensal)}</CardTitle>
           </CardHeader>
         </Card>
       </div>
 
       {/* Ação de gerar contas */}
       <div className="flex justify-end">
-        <Button onClick={() => gerarContas()} disabled={isGenerating}>
-          <Zap className="mr-2 h-4 w-4" />
-          {isGenerating ? 'Gerando...' : 'Gerar Contas Pendentes'}
+        <Button onClick={() => gerarContas()} disabled={isGenerating} size="sm" className="sm:h-10 sm:px-4 sm:text-sm">
+          <Zap className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+          <span className="hidden sm:inline">{isGenerating ? 'Gerando...' : 'Gerar Contas Pendentes'}</span>
+          <span className="sm:hidden">{isGenerating ? 'Gerando...' : 'Gerar Contas'}</span>
         </Button>
       </div>
 
@@ -181,50 +182,58 @@ function PagamentoRecorrenteCard({ pagamento, index, onToggle, onDelete }: Pagam
       transition={{ delay: index * 0.05 }}
     >
       <Card className={!pagamento.ativo ? 'opacity-60' : ''}>
-        <CardContent className="pt-6">
-          <div className="flex items-start justify-between">
-            <div className="space-y-3 flex-1">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Repeat className="h-5 w-5 text-primary" />
+        <CardContent className="p-3 sm:p-6">
+          <div className="flex items-start justify-between gap-2">
+            <div className="space-y-2 sm:space-y-3 flex-1 min-w-0">
+              {/* Header com título e badges */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                  <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10 flex-shrink-0">
+                    <Repeat className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-semibold text-sm sm:text-base truncate">{pagamento.descricao}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate">{pagamento.fornecedor_nome}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold">{pagamento.descricao}</h3>
-                  <p className="text-sm text-muted-foreground">{pagamento.fornecedor_nome}</p>
+                <div className="flex items-center gap-1.5 flex-shrink-0 ml-6 sm:ml-0">
+                  <Badge variant={pagamento.ativo ? 'default' : 'secondary'} className="text-[10px] sm:text-xs">
+                    {pagamento.ativo ? 'Ativo' : 'Pausado'}
+                  </Badge>
+                  <Badge variant="outline" className="text-[10px] sm:text-xs">
+                    {frequenciaLabels[pagamento.frequencia]}
+                  </Badge>
                 </div>
-                <Badge variant={pagamento.ativo ? 'default' : 'secondary'}>
-                  {pagamento.ativo ? 'Ativo' : 'Pausado'}
-                </Badge>
-                <Badge variant="outline">{frequenciaLabels[pagamento.frequencia]}</Badge>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">{formatCurrency(pagamento.valor)}</span>
+              {/* Grid de informações */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 text-xs sm:text-sm ml-6 sm:ml-0">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+                  <span className="font-medium truncate">{formatCurrency(pagamento.valor)}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>Dia {pagamento.dia_vencimento}</span>
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+                  <span className="truncate">Dia {pagamento.dia_vencimento}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span>
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+                  <span className="truncate">
                     {pagamento.proxima_geracao
-                      ? `Próxima: ${format(new Date(pagamento.proxima_geracao), "dd/MM/yyyy", { locale: ptBR })}`
-                      : 'Não agendada'}
+                      ? format(new Date(pagamento.proxima_geracao), "dd/MM/yy", { locale: ptBR })
+                      : 'N/A'}
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-muted-foreground" />
-                  <span>{pagamento.total_gerado} gerada(s)</span>
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Building2 className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+                  <span className="truncate">{pagamento.total_gerado} gerada(s)</span>
                 </div>
               </div>
             </div>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
