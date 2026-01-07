@@ -7,7 +7,7 @@ import { NFEmissaoModal } from './components/EmissaoModal';
 export default function NotasFiscais() {
   return (
     <NFProvider>
-      <div className="space-y-6 p-6">
+      <div className="space-y-4 sm:space-y-5 lg:space-y-6 p-3 sm:p-4 lg:p-6">
         <NFHeader />
         <NFFilters />
         <NFList />

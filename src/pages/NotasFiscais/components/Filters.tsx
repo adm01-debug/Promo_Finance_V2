@@ -10,36 +10,39 @@ export function NFFilters() {
   const [search, setSearch] = useState('');
   
   return (
-    <div className="flex flex-wrap gap-4 bg-card p-4 rounded-lg">
-      <div className="relative flex-1 min-w-[200px]">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 lg:gap-4 bg-card p-3 sm:p-4 rounded-lg">
+      <div className="relative flex-1 min-w-0">
+        <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
         <Input 
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar nota fiscal..." 
-          className="pl-10"
+          className="pl-8 sm:pl-10 h-9 sm:h-10 text-sm"
         />
       </div>
-      <Select value={status} onValueChange={setStatus}>
-        <SelectTrigger className="w-48">
-          <SelectValue placeholder="Status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Todos</SelectItem>
-          <SelectItem value="autorizada">Autorizada</SelectItem>
-          <SelectItem value="pendente">Pendente</SelectItem>
-          <SelectItem value="cancelada">Cancelada</SelectItem>
-        </SelectContent>
-      </Select>
-      {(status !== 'all' || search) && (
-        <Button 
-          variant="ghost" 
-          size="icon"
-          onClick={() => { setStatus('all'); setSearch(''); }}
-        >
-          <X className="h-4 w-4" />
-        </Button>
-      )}
+      <div className="flex gap-2 sm:gap-3">
+        <Select value={status} onValueChange={setStatus}>
+          <SelectTrigger className="w-full sm:w-40 lg:w-48 h-9 sm:h-10 text-sm">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="autorizada">Autorizada</SelectItem>
+            <SelectItem value="pendente">Pendente</SelectItem>
+            <SelectItem value="cancelada">Cancelada</SelectItem>
+          </SelectContent>
+        </Select>
+        {(status !== 'all' || search) && (
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-9 w-9 sm:h-10 sm:w-10 shrink-0"
+            onClick={() => { setStatus('all'); setSearch(''); }}
+          >
+            <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

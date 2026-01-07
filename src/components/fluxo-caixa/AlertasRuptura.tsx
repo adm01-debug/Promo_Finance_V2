@@ -58,20 +58,21 @@ export function AlertasRuptura({ alertas, onDismiss, onVerDetalhes }: AlertasRup
   if (alertas.length === 0) {
     return (
       <Card className="card-elevated">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-display flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-primary" />
-            Alertas de Ruptura
+        <CardHeader className="pb-2 sm:pb-3 p-4 sm:p-6">
+          <CardTitle className="text-base sm:text-lg font-display flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+            <span className="truncate">Alertas de Ruptura</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center justify-center py-8 text-center">
-            <div className="h-12 w-12 rounded-full bg-success/10 flex items-center justify-center mb-3">
-              <AlertCircle className="h-6 w-6 text-success" />
+        <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+          <div className="flex flex-col items-center justify-center py-6 sm:py-8 text-center">
+            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-success/10 flex items-center justify-center mb-2 sm:mb-3">
+              <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-success" />
             </div>
-            <p className="text-sm font-medium text-foreground">Nenhum alerta detectado</p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Seu fluxo de caixa está saudável em todos os cenários
+            <p className="text-xs sm:text-sm font-medium text-foreground">Nenhum alerta detectado</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
+              <span className="hidden sm:inline">Seu fluxo de caixa está saudável em todos os cenários</span>
+              <span className="sm:hidden">Fluxo de caixa saudável</span>
             </p>
           </div>
         </CardContent>
@@ -89,26 +90,26 @@ export function AlertasRuptura({ alertas, onDismiss, onVerDetalhes }: AlertasRup
       "card-elevated transition-all",
       alertasRuptura.length > 0 && "border-destructive/50 shadow-destructive/10"
     )}>
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-2 sm:pb-3 p-4 sm:p-6">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-display flex items-center gap-2">
+          <CardTitle className="text-base sm:text-lg font-display flex items-center gap-2">
             <AlertTriangle className={cn(
-              "h-5 w-5",
+              "h-4 w-4 sm:h-5 sm:w-5",
               alertasRuptura.length > 0 ? "text-destructive" : "text-primary"
             )} />
-            Alertas de Ruptura
+            <span className="truncate">Alertas</span>
             {alertas.length > 0 && (
-              <Badge variant={alertasRuptura.length > 0 ? "destructive" : "secondary"} className="ml-2">
+              <Badge variant={alertasRuptura.length > 0 ? "destructive" : "secondary"} className="ml-1 sm:ml-2 text-[10px] sm:text-xs h-4 sm:h-5">
                 {alertas.length}
               </Badge>
             )}
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-[300px] pr-4">
+      <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+        <ScrollArea className="h-[250px] sm:h-[300px] pr-2 sm:pr-4">
           <AnimatePresence mode="popLayout">
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               {/* Alertas de Ruptura (mais críticos primeiro) */}
               {alertasRuptura.map((alerta, index) => (
                 <AlertaItem
@@ -169,32 +170,32 @@ function AlertaItem({ alerta, index, onDismiss, onVerDetalhes }: AlertaItemProps
       exit={{ opacity: 0, x: -100 }}
       transition={{ delay: index * 0.05 }}
       className={cn(
-        "relative p-3 rounded-lg border transition-all hover:shadow-sm",
+        "relative p-2 sm:p-3 rounded-lg border transition-all hover:shadow-sm",
         config.bgClass
       )}
     >
-      <div className="flex items-start gap-3">
-        <div className={cn("mt-0.5", config.iconClass)}>
-          <Icon className="h-5 w-5" />
+      <div className="flex items-start gap-2 sm:gap-3">
+        <div className={cn("mt-0.5 hidden sm:block", config.iconClass)}>
+          <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
         </div>
         
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <Badge variant={config.badgeVariant} className="text-xs">
+          <div className="flex items-center gap-1 sm:gap-2 mb-1 flex-wrap">
+            <Badge variant={config.badgeVariant} className="text-[10px] sm:text-xs h-4 sm:h-5 px-1 sm:px-1.5">
               {config.label}
             </Badge>
-            <Badge variant="outline" className="text-xs" style={{ borderColor: cenarioConfig.cor, color: cenarioConfig.cor }}>
+            <Badge variant="outline" className="text-[10px] sm:text-xs h-4 sm:h-5 px-1 sm:px-1.5 hidden sm:inline-flex" style={{ borderColor: cenarioConfig.cor, color: cenarioConfig.cor }}>
               {cenarioConfig.nome}
             </Badge>
           </div>
           
-          <p className="text-sm font-medium text-foreground truncate">
+          <p className="text-xs sm:text-sm font-medium text-foreground line-clamp-2 sm:truncate">
             {alerta.mensagem}
           </p>
           
-          <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <Calendar className="h-3 w-3" />
+          <div className="flex items-center gap-2 sm:gap-4 mt-1 sm:mt-2 text-[10px] sm:text-xs text-muted-foreground flex-wrap">
+            <span className="flex items-center gap-0.5 sm:gap-1">
+              <Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
               {formatDate(alerta.data)}
             </span>
             <span className={cn(
@@ -206,37 +207,37 @@ function AlertaItem({ alerta, index, onDismiss, onVerDetalhes }: AlertaItemProps
             <span className="text-warning">
               {alerta.diasAteEvento === 0 ? 'Hoje' : 
                alerta.diasAteEvento === 1 ? 'Amanhã' : 
-               `Em ${alerta.diasAteEvento} dias`}
+               `${alerta.diasAteEvento}d`}
             </span>
           </div>
           
           {alerta.acaoSugerida && (
-            <div className="flex items-center gap-1 mt-2 text-xs text-primary">
+            <div className="hidden sm:flex items-center gap-1 mt-2 text-xs text-primary">
               <Lightbulb className="h-3 w-3" />
-              <span>{alerta.acaoSugerida}</span>
+              <span className="truncate">{alerta.acaoSugerida}</span>
             </div>
           )}
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
           {onVerDetalhes && (
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7"
+              className="h-6 w-6 sm:h-7 sm:w-7"
               onClick={() => onVerDetalhes(alerta)}
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
           )}
           {onDismiss && (
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7 text-muted-foreground hover:text-destructive"
+              className="h-6 w-6 sm:h-7 sm:w-7 text-muted-foreground hover:text-destructive"
               onClick={() => onDismiss(alerta.id)}
             >
-              <X className="h-4 w-4" />
+              <X className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
           )}
         </div>
