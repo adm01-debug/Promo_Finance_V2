@@ -1,6 +1,7 @@
 // Simulador realista da SEFAZ para desenvolvimento/testes
 // Simula delays, validações e respostas autênticas do webservice
 
+import { logger } from '@/lib/logger';
 export interface SefazRequest {
   tipo: 'autorizacao' | 'consulta' | 'cancelamento' | 'inutilizacao';
   xml?: string;
@@ -306,7 +307,7 @@ function gerarXMLAutorizado(dados: NFEData, chaveAcesso: string, protocolo: stri
 
 // Função principal do simulador
 export async function processarSefaz(request: SefazRequest): Promise<SefazResponse> {
-  console.log('[SEFAZ Simulator] Processando requisição:', request.tipo);
+  logger.debug('[SEFAZ Simulator] Processando requisição:', request.tipo);
   
   // Simula delay de rede (1-3 segundos)
   await delay(1000 + Math.random() * 2000);
@@ -342,7 +343,7 @@ async function processarAutorizacao(request: SefazRequest): Promise<SefazRespons
   // Valida os dados
   const validacao = validarNFE(request.nfeData);
   if (!validacao.valid) {
-    console.log('[SEFAZ Simulator] Validação falhou:', validacao.errors);
+    logger.debug('[SEFAZ Simulator] Validação falhou:', validacao.errors);
     return {
       success: false,
       cStat: validacao.cStat || '225',
@@ -355,7 +356,7 @@ async function processarAutorizacao(request: SefazRequest): Promise<SefazRespons
   if (Math.random() < 0.05) {
     const rejections = ['204', '539', '593'];
     const randomReject = rejections[Math.floor(Math.random() * rejections.length)];
-    console.log('[SEFAZ Simulator] Rejeição aleatória:', randomReject);
+    logger.debug('[SEFAZ Simulator] Rejeição aleatória:', randomReject);
     return {
       success: false,
       cStat: randomReject,
@@ -371,7 +372,7 @@ async function processarAutorizacao(request: SefazRequest): Promise<SefazRespons
   const dataRecebimento = new Date().toISOString();
   const xmlAutorizado = gerarXMLAutorizado(request.nfeData, chaveAcesso, protocolo);
   
-  console.log('[SEFAZ Simulator] NFe autorizada:', { chaveAcesso, protocolo });
+  logger.debug('[SEFAZ Simulator] NFe autorizada:', { chaveAcesso, protocolo });
   
   return {
     success: true,

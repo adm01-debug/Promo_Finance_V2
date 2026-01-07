@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 interface UserSession {
   id: string;
@@ -104,7 +105,7 @@ export function useSessions() {
         const data = await response.json();
         ipAddress = data.ip;
       } catch {
-        console.log('Could not fetch IP');
+        logger.debug('Could not fetch IP');
       }
 
       const deviceInfo = parseUserAgent(navigator.userAgent);

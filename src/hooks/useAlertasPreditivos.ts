@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export interface AlertaPreditivo {
   id: string;
@@ -42,9 +43,9 @@ async function enviarPushNotification(alerta: AlertaPreditivo) {
       },
     });
 
-    console.log('[useAlertasPreditivos] Push notification enviada para alerta:', alerta.id);
+    logger.debug('[useAlertasPreditivos] Push notification enviada para alerta:', alerta.id);
   } catch (error) {
-    console.error('[useAlertasPreditivos] Erro ao enviar push notification:', error);
+    logger.error('[useAlertasPreditivos] Erro ao enviar push notification:', error);
   }
 }
 

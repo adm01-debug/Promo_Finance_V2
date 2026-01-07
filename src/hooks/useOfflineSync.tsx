@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 interface PendingMutation {
   id: string;
   type: 'create' | 'update' | 'delete';
   table: string;
-  data: any;
+  data: Record<string, unknown>;
   timestamp: number;
 }
 
@@ -25,7 +26,7 @@ function saveQueue(mutations: PendingMutation[]) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(mutations));
   } catch (e) {
-    console.error('Failed to save offline queue:', e);
+    logger.error('Failed to save offline queue:', e);
   }
 }
 
@@ -146,7 +147,7 @@ export function useOfflineSync() {
         }
         successfulIds.push(mutation.id);
       } catch (error) {
-        console.error('Sync failed for mutation:', mutation, error);
+        logger.error('Sync failed for mutation:', mutation, error);
         failedMutations.push(mutation);
       }
     }

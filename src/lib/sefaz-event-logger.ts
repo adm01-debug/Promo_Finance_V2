@@ -1,5 +1,6 @@
 // Sistema de logging de eventos SEFAZ
 
+import { logger } from '@/lib/logger';
 export type EventoTipo = 
   | 'ENVIO_LOTE'
   | 'RETORNO_LOTE'
@@ -53,7 +54,7 @@ export function registrarEvento(evento: Omit<EventoSefaz, 'id' | 'timestamp'>): 
     eventosLog.pop();
   }
   
-  console.log('[SEFAZ Event Logger]', novoEvento);
+  logger.debug('[SEFAZ Event Logger]', novoEvento);
   return novoEvento;
 }
 

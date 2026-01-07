@@ -1,6 +1,7 @@
 // Gerenciamento de modo de contingência para NF-e
 // Suporta emissão offline quando SEFAZ está indisponível
 
+import { logger } from '@/lib/logger';
 export type ContingencyMode = 
   | 'normal'      // Emissão normal - SEFAZ disponível
   | 'SCAN'        // Sistema de Contingência do Ambiente Nacional
@@ -235,7 +236,7 @@ export function activateContingency(
   };
   
   saveContingencyState(state);
-  console.log('[Contingência] Modo ativado:', mode, 'Motivo:', reason);
+  logger.debug('[Contingência] Modo ativado:', mode, 'Motivo:', reason);
   
   return state;
 }
@@ -254,7 +255,7 @@ export function deactivateContingency(): ContingencyState {
   };
   
   saveContingencyState(state);
-  console.log('[Contingência] Modo desativado');
+  logger.debug('[Contingência] Modo desativado');
   
   return state;
 }
@@ -298,7 +299,7 @@ export function addPendingNFe(nfe: Omit<PendingNFe, 'status' | 'tentativas' | 'u
   });
   
   saveContingencyState(state);
-  console.log('[Contingência] NF-e pendente adicionada:', nfe.numero);
+  logger.debug('[Contingência] NF-e pendente adicionada:', nfe.numero);
   
   return state;
 }

@@ -10,6 +10,9 @@ import { useQuickDateFilter } from '@/components/ui/quick-date-filters';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { AdvancedFilters } from '@/components/ui/advanced-filters';
+import type { Database } from '@/integrations/supabase/types';
+
+type ContaReceber = Database['public']['Tables']['contas_receber']['Row'];
 
 export function useContasReceberLogic() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,13 +21,13 @@ export function useContasReceberLogic() {
   const [centroCustoFilter, setCentroCustoFilter] = useState<string>('all');
   const [formOpen, setFormOpen] = useState(false);
   const [recebimentoDialogOpen, setRecebimentoDialogOpen] = useState(false);
-  const [selectedConta, setSelectedConta] = useState<any>(null);
-  const [editingConta, setEditingConta] = useState<any>(null);
+  const [selectedConta, setSelectedConta] = useState<ContaReceber | null>(null);
+  const [editingConta, setEditingConta] = useState<ContaReceber | null>(null);
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [deletingConta, setDeletingConta] = useState<any>(null);
+  const [deletingConta, setDeletingConta] = useState<ContaReceber | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
 
@@ -69,7 +72,7 @@ export function useContasReceberLogic() {
     setCurrentPage(1);
   }, []);
 
-  const handleOpenDeleteDialog = useCallback((conta: any) => {
+  const handleOpenDeleteDialog = useCallback((conta: ContaReceber) => {
     setDeletingConta(conta);
     setDeleteDialogOpen(true);
   }, []);

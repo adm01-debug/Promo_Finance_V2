@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 interface DeviceInfo {
   fingerprint: string;
@@ -24,12 +25,12 @@ async function sendDeviceAlertEmail(userId: string, email: string, deviceInfo: D
     });
     
     if (error) {
-      console.error('Error sending device alert email:', error);
+      logger.error('Error sending device alert email:', error);
     } else {
-      console.log('Device alert email sent successfully');
+      logger.debug('Device alert email sent successfully');
     }
   } catch (error) {
-    console.error('Error invoking send-device-alert function:', error);
+    logger.error('Error invoking send-device-alert function:', error);
   }
 }
 
