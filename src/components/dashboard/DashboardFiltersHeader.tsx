@@ -35,16 +35,21 @@ export function DashboardFiltersHeader({
   onOpenConfig,
 }: DashboardFiltersHeaderProps) {
   return (
-    <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <motion.div variants={itemVariants} className="flex flex-col gap-4">
+      {/* Title section */}
       <div>
         <h1 className="text-display-md gradient-text">Dashboard Executivo</h1>
-        <p className="text-muted-foreground mt-1">Visão consolidada com drill-down por empresa e centro de custo</p>
+        <p className="text-muted-foreground mt-1 text-sm sm:text-base">Visão consolidada com drill-down por empresa e centro de custo</p>
       </div>
-      <div className="flex flex-wrap items-center gap-3">
+      
+      {/* Filters section - responsive grid */}
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-3">
         <Select value={empresaFilter} onValueChange={setEmpresaFilter}>
-          <SelectTrigger className="w-[200px]">
-            <Building2 className="h-4 w-4 mr-2" />
-            <SelectValue placeholder="Todas Empresas" />
+          <SelectTrigger className="w-full sm:w-[180px]">
+            <Building2 className="h-4 w-4 mr-2 shrink-0" />
+            <span className="truncate">
+              <SelectValue placeholder="Empresas" />
+            </span>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todas Empresas</SelectItem>
@@ -55,23 +60,30 @@ export function DashboardFiltersHeader({
             ))}
           </SelectContent>
         </Select>
+        
         <Select value={centroCustoFilter} onValueChange={setCentroCustoFilter}>
-          <SelectTrigger className="w-[200px]">
-            <Target className="h-4 w-4 mr-2" />
-            <SelectValue placeholder="Todos Centros" />
+          <SelectTrigger className="w-full sm:w-[180px]">
+            <Target className="h-4 w-4 mr-2 shrink-0" />
+            <span className="truncate">
+              <SelectValue placeholder="Centros" />
+            </span>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos Centros de Custo</SelectItem>
+            <SelectItem value="all">Todos Centros</SelectItem>
             {centrosCusto.map(cc => (
               <SelectItem key={cc.id} value={cc.id}>{cc.nome}</SelectItem>
             ))}
           </SelectContent>
         </Select>
-        <Badge variant="outline" className="h-9 px-3 gap-2">
+        
+        {/* Real-time badge - hidden on mobile, visible on sm+ */}
+        <Badge variant="outline" className="hidden sm:flex h-9 px-3 gap-2 col-span-2 sm:col-span-1 justify-center">
           <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
-          Dados em tempo real
+          <span className="text-xs">Tempo real</span>
         </Badge>
-        <Button variant="outline" size="icon" onClick={onOpenConfig}>
+        
+        {/* Config button */}
+        <Button variant="outline" size="icon" onClick={onOpenConfig} className="h-9 w-9">
           <Settings2 className="h-4 w-4" />
         </Button>
       </div>
