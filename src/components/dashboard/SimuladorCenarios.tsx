@@ -190,20 +190,20 @@ export function SimuladorCenarios({
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Cenários predefinidos */}
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {CENARIOS_PREDEFINIDOS.map(cenario => (
             <Button
               key={cenario.id}
               variant={cenarioAtivo === cenario.id ? "default" : "outline"}
               size="sm"
               onClick={() => handleCenarioChange(cenario.id)}
-              className="flex-1"
+              className="flex-1 min-w-[80px] text-xs sm:text-sm"
             >
               {cenario.nome}
             </Button>
           ))}
           {cenarioAtivo === 'custom' && (
-            <Badge variant="secondary">Personalizado</Badge>
+            <Badge variant="secondary" className="text-xs">Personalizado</Badge>
           )}
         </div>
 
@@ -300,27 +300,27 @@ export function SimuladorCenarios({
         <Separator />
 
         {/* Resultado da simulação */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="text-center p-3 rounded-lg bg-muted/50 border">
-            <p className="text-xs text-muted-foreground">Receita Efetiva</p>
-            <p className="text-lg font-bold text-success">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
+          <div className="text-center p-2 sm:p-3 rounded-lg bg-muted/50 border">
+            <p className="text-[10px] sm:text-xs text-muted-foreground">Receita Efetiva</p>
+            <p className="text-sm sm:text-lg font-bold text-success truncate">
               {formatCurrency(resultadoSimulacao.receitaEfetiva)}
             </p>
             <p className={cn(
-              "text-xs",
+              "text-[10px] sm:text-xs",
               variaveis.receitaVariacao > 0 ? "text-success" : variaveis.receitaVariacao < 0 ? "text-destructive" : "text-muted-foreground"
             )}>
               {variaveis.receitaVariacao > 0 ? '+' : ''}{variaveis.receitaVariacao}% vs base
             </p>
           </div>
 
-          <div className="text-center p-3 rounded-lg bg-muted/50 border">
-            <p className="text-xs text-muted-foreground">Despesas Ajustadas</p>
-            <p className="text-lg font-bold text-destructive">
+          <div className="text-center p-2 sm:p-3 rounded-lg bg-muted/50 border">
+            <p className="text-[10px] sm:text-xs text-muted-foreground">Despesas Ajustadas</p>
+            <p className="text-sm sm:text-lg font-bold text-destructive truncate">
               {formatCurrency(resultadoSimulacao.despesaAjustada)}
             </p>
             <p className={cn(
-              "text-xs",
+              "text-[10px] sm:text-xs",
               variaveis.despesaVariacao < 0 ? "text-success" : variaveis.despesaVariacao > 0 ? "text-destructive" : "text-muted-foreground"
             )}>
               {variaveis.despesaVariacao > 0 ? '+' : ''}{variaveis.despesaVariacao}% vs base
@@ -328,16 +328,16 @@ export function SimuladorCenarios({
           </div>
 
           <div className={cn(
-            "text-center p-3 rounded-lg border",
+            "text-center p-2 sm:p-3 rounded-lg border",
             resultadoSimulacao.alertaRuptura 
               ? "bg-destructive/10 border-destructive/30" 
               : resultadoSimulacao.isPositivo 
                 ? "bg-success/10 border-success/30" 
                 : "bg-warning/10 border-warning/30"
           )}>
-            <p className="text-xs text-muted-foreground">Saldo Final</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground">Saldo Final</p>
             <p className={cn(
-              "text-lg font-bold",
+              "text-sm sm:text-lg font-bold truncate",
               resultadoSimulacao.alertaRuptura 
                 ? "text-destructive" 
                 : resultadoSimulacao.isPositivo 
@@ -348,12 +348,12 @@ export function SimuladorCenarios({
             </p>
             <div className="flex items-center justify-center gap-1">
               {resultadoSimulacao.variacaoSaldo > 0 ? (
-                <TrendingUp className="h-3 w-3 text-success" />
+                <TrendingUp className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-success" />
               ) : resultadoSimulacao.variacaoSaldo < 0 ? (
-                <TrendingDown className="h-3 w-3 text-destructive" />
+                <TrendingDown className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-destructive" />
               ) : null}
               <span className={cn(
-                "text-xs",
+                "text-[10px] sm:text-xs truncate",
                 resultadoSimulacao.variacaoSaldo > 0 ? "text-success" : resultadoSimulacao.variacaoSaldo < 0 ? "text-destructive" : "text-muted-foreground"
               )}>
                 {resultadoSimulacao.variacaoSaldo > 0 ? '+' : ''}
@@ -377,9 +377,9 @@ export function SimuladorCenarios({
         )}
 
         {/* Gráfico de projeção */}
-        <div className="h-[200px]">
+        <div className="h-[160px] sm:h-[200px]">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={resultadoSimulacao.dadosGrafico}>
+            <AreaChart data={resultadoSimulacao.dadosGrafico} margin={{ left: -10, right: 5 }}>
               <defs>
                 <linearGradient id="simuladoGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
@@ -392,14 +392,16 @@ export function SimuladorCenarios({
               </defs>
               <XAxis 
                 dataKey="dia" 
-                tick={{ fontSize: 10 }} 
+                tick={{ fontSize: 9 }} 
                 tickLine={false}
                 axisLine={false}
+                interval="preserveStartEnd"
               />
               <YAxis 
-                tick={{ fontSize: 10 }} 
+                tick={{ fontSize: 9 }} 
                 tickLine={false}
                 axisLine={false}
+                width={35}
                 tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
               />
               <Tooltip 
@@ -408,14 +410,15 @@ export function SimuladorCenarios({
                   backgroundColor: 'hsl(var(--card))',
                   border: '1px solid hsl(var(--border))',
                   borderRadius: '8px',
+                  fontSize: '12px',
                 }}
               />
-              <Legend />
+              <Legend wrapperStyle={{ fontSize: '10px' }} />
               <ReferenceLine y={0} stroke="hsl(var(--destructive))" strokeDasharray="3 3" />
               <Area
                 type="monotone"
                 dataKey="base"
-                name="Cenário Base"
+                name="Base"
                 stroke="hsl(var(--muted-foreground))"
                 fill="url(#baseGradient)"
                 strokeWidth={1}
