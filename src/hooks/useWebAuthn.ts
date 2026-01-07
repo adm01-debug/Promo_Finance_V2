@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 interface StoredCredential {
   id: string;
@@ -148,7 +149,7 @@ export function useWebAuthn() {
         },
       };
 
-      console.log('[WebAuthn] Starting credential registration...');
+      logger.debug('[WebAuthn] Starting credential registration...');
 
       const credential = await navigator.credentials.create({
         publicKey: publicKeyCredentialCreationOptions,
@@ -234,7 +235,7 @@ export function useWebAuthn() {
         userVerification: 'required',
       };
 
-      console.log('[WebAuthn] Starting authentication...');
+      logger.debug('[WebAuthn] Starting authentication...');
 
       const assertion = await navigator.credentials.get({
         publicKey: publicKeyCredentialRequestOptions,
@@ -265,7 +266,7 @@ export function useWebAuthn() {
         .update({ counter, last_used_at: new Date().toISOString() })
         .eq('credential_id', assertionCredentialId);
 
-      console.log('[WebAuthn] Authentication successful');
+      logger.debug('[WebAuthn] Authentication successful');
       return { success: true, userId: matchedCredential.user_id };
     } catch (error: any) {
       console.error('WebAuthn authentication error:', error);

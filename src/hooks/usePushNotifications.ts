@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export function usePushNotifications() {
   const { user } = useAuth();
@@ -17,7 +18,7 @@ export function usePushNotifications() {
       const { data, error } = await supabase.functions.invoke('get-vapid-key');
       
       if (error) {
-        console.error('Error fetching VAPID key:', error);
+        logger.error('Error fetching VAPID key:', error);
         return null;
       }
       
@@ -28,7 +29,7 @@ export function usePushNotifications() {
       
       return null;
     } catch (error) {
-      console.error('Error fetching VAPID key:', error);
+      logger.error('Error fetching VAPID key:', error);
       return null;
     }
   }, []);
@@ -58,7 +59,7 @@ export function usePushNotifications() {
       const subscription = await registration.pushManager.getSubscription();
       setIsSubscribed(!!subscription);
     } catch (error) {
-      console.error('Error checking push subscription:', error);
+      logger.error('Error checking push subscription:', error);
     }
   }, []);
 
@@ -72,10 +73,10 @@ export function usePushNotifications() {
         scope: '/'
       });
       
-      console.log('Service Worker registrado:', registration);
+      logger.debug('Service Worker registrado:', registration);
       return registration;
     } catch (error) {
-      console.error('Erro ao registrar Service Worker:', error);
+      logger.error('Erro ao registrar Service Worker:', error);
       throw error;
     }
   }, []);
@@ -100,7 +101,7 @@ export function usePushNotifications() {
       
       return false;
     } catch (error) {
-      console.error('Erro ao solicitar permissão:', error);
+      logger.error('Erro ao solicitar permissão:', error);
       toast.error('Erro ao solicitar permissão para notificações');
       return false;
     }
@@ -168,7 +169,7 @@ export function usePushNotifications() {
       });
 
       if (error) {
-        console.error('Error saving subscription:', error);
+        logger.error('Error saving subscription:', error);
         // Try without onConflict
         await supabase.from('push_subscriptions' as any).insert({
           user_id: user.id,
@@ -183,7 +184,7 @@ export function usePushNotifications() {
       toast.success('Notificações push ativadas com sucesso!');
       return true;
     } catch (error) {
-      console.error('Erro ao ativar notificações:', error);
+      logger.error('Erro ao ativar notificações:', error);
       toast.error('Erro ao ativar notificações push');
       return false;
     } finally {
@@ -215,7 +216,7 @@ export function usePushNotifications() {
       toast.success('Notificações push desativadas');
       return true;
     } catch (error) {
-      console.error('Erro ao desativar notificações:', error);
+      logger.error('Erro ao desativar notificações:', error);
       toast.error('Erro ao desativar notificações push');
       return false;
     } finally {
@@ -258,7 +259,7 @@ export function usePushNotifications() {
       
       toast.success('Notificação de teste enviada!');
     } catch (error) {
-      console.error('Erro ao enviar notificação de teste:', error);
+      logger.error('Erro ao enviar notificação de teste:', error);
       toast.error('Erro ao enviar notificação de teste');
     }
   }, [isSubscribed, user]);
@@ -283,13 +284,13 @@ export function usePushNotifications() {
       });
 
       if (error) {
-        console.error('Error sending security push:', error);
+        logger.error('Error sending security push:', error);
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('Error sending security push notification:', error);
+      logger.error('Error sending security push notification:', error);
       return false;
     }
   }, [user]);

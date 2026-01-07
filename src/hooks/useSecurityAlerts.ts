@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
 import type { Json } from '@/integrations/supabase/types';
+import { logger } from '@/lib/logger';
 
 interface SecurityAlert {
   id: string;
@@ -42,9 +43,9 @@ async function sendSecurityPushAlert(alert: SecurityAlert) {
       }
     });
     
-    console.log('[useSecurityAlerts] Push notification sent for alert:', alert.id);
+    logger.debug('[useSecurityAlerts] Push notification sent for alert:', alert.id);
   } catch (error) {
-    console.error('[useSecurityAlerts] Error sending push notification:', error);
+    logger.error('[useSecurityAlerts] Error sending push notification:', error);
   }
 }
 

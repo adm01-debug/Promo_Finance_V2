@@ -11,7 +11,7 @@ interface SyncLog {
   registros_processados: number;
   registros_com_erro: number;
   mensagem_erro: string | null;
-  detalhes: any;
+  detalhes: Record<string, unknown> | null;
   iniciado_em: string;
   finalizado_em: string | null;
   created_at: string;
@@ -32,7 +32,7 @@ interface SyncResult {
   message: string;
   processed?: number;
   errors?: number;
-  data?: any;
+  data?: Record<string, unknown>;
 }
 
 export function useBitrix24() {
