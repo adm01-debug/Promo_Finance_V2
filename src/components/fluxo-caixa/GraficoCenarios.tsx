@@ -71,13 +71,16 @@ export function GraficoCenarios({
 
   return (
     <Card className="card-elevated">
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-display flex items-center gap-2">
-            <LineChartIcon className="h-5 w-5 text-primary" />
-            Projeção Comparativa de Cenários
+      <CardHeader className="pb-2 p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+          <CardTitle className="text-base sm:text-lg font-display flex items-center gap-2">
+            <LineChartIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+            <span className="truncate">
+              <span className="hidden sm:inline">Projeção Comparativa de Cenários</span>
+              <span className="sm:hidden">Projeção de Cenários</span>
+            </span>
           </CardTitle>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3 overflow-x-auto pb-1 sm:pb-0">
             {(Object.keys(CENARIOS_CONFIG) as CenarioTipo[]).map((cenario) => {
               const config = CENARIOS_CONFIG[cenario];
               const metrica = metricas[cenario];
@@ -87,20 +90,20 @@ export function GraficoCenarios({
                 <div 
                   key={cenario} 
                   className={cn(
-                    "flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all",
+                    "flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border transition-all shrink-0",
                     cenarioDestaque === cenario ? "bg-accent border-primary/30" : "bg-background"
                   )}
                 >
                   <div 
-                    className="h-3 w-3 rounded-full" 
+                    className="h-2 w-2 sm:h-3 sm:w-3 rounded-full shrink-0" 
                     style={{ backgroundColor: config.cor }}
                   />
-                  <span className="text-xs font-medium">{config.nome}</span>
+                  <span className="text-[10px] sm:text-xs font-medium hidden sm:inline">{config.nome}</span>
                   <span className={cn(
-                    "text-xs font-bold flex items-center gap-0.5",
+                    "text-[10px] sm:text-xs font-bold flex items-center gap-0.5",
                     metrica.variacao >= 0 ? "text-success" : "text-destructive"
                   )}>
-                    <Icon className="h-3 w-3" />
+                    <Icon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                     {metrica.variacao >= 0 ? '+' : ''}{(metrica.variacao / 1000).toFixed(0)}K
                   </span>
                 </div>
@@ -109,7 +112,7 @@ export function GraficoCenarios({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="h-[350px]">
+      <CardContent className="h-[280px] sm:h-[320px] lg:h-[350px] p-2 sm:p-4 lg:p-6 pt-0">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={dadosGrafico}>
             <defs>
@@ -132,14 +135,16 @@ export function GraficoCenarios({
             <XAxis 
               dataKey="data" 
               stroke="hsl(var(--muted-foreground))" 
-              fontSize={11}
-              tickMargin={8}
+              fontSize={9}
+              tickMargin={6}
+              interval="preserveStartEnd"
             />
             <YAxis 
               tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} 
               stroke="hsl(var(--muted-foreground))" 
-              fontSize={11}
+              fontSize={9}
               domain={[yRange.min, yRange.max]}
+              width={35}
             />
             
             {/* Linhas de referência para limites */}
@@ -147,13 +152,13 @@ export function GraficoCenarios({
               y={limiteRuptura} 
               stroke="hsl(0, 78%, 50%)" 
               strokeDasharray="5 5"
-              label={{ value: 'Ruptura', position: 'right', fill: 'hsl(0, 78%, 50%)', fontSize: 10 }}
+              label={{ value: 'Ruptura', position: 'right', fill: 'hsl(0, 78%, 50%)', fontSize: 8 }}
             />
             <ReferenceLine 
               y={limiteRiscoAlto} 
               stroke="hsl(40, 100%, 50%)" 
               strokeDasharray="5 5"
-              label={{ value: 'Risco', position: 'right', fill: 'hsl(40, 100%, 50%)', fontSize: 10 }}
+              label={{ value: 'Risco', position: 'right', fill: 'hsl(40, 100%, 50%)', fontSize: 8 }}
             />
             
             <Tooltip 
@@ -167,13 +172,15 @@ export function GraficoCenarios({
                 border: '1px solid hsl(var(--border))',
                 borderRadius: '8px',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                fontSize: '11px',
               }}
             />
             
             <Legend 
               verticalAlign="bottom" 
-              height={36}
-              formatter={(value) => <span className="text-xs">{value}</span>}
+              height={28}
+              formatter={(value) => <span className="text-[10px] sm:text-xs">{value}</span>}
+              wrapperStyle={{ fontSize: '10px' }}
             />
             
             {/* Área Otimista */}
@@ -182,7 +189,7 @@ export function GraficoCenarios({
               dataKey="otimista" 
               stroke={CENARIOS_CONFIG.otimista.cor}
               fill="url(#colorOtimista)" 
-              strokeWidth={cenarioDestaque === 'otimista' ? 3 : 1.5}
+              strokeWidth={cenarioDestaque === 'otimista' ? 2 : 1}
               strokeOpacity={cenarioDestaque === 'otimista' ? 1 : 0.6}
               name="Otimista"
             />
@@ -193,7 +200,7 @@ export function GraficoCenarios({
               dataKey="realista" 
               stroke={CENARIOS_CONFIG.realista.cor}
               fill="url(#colorRealista)" 
-              strokeWidth={cenarioDestaque === 'realista' ? 3 : 1.5}
+              strokeWidth={cenarioDestaque === 'realista' ? 2 : 1}
               strokeOpacity={cenarioDestaque === 'realista' ? 1 : 0.6}
               name="Realista"
             />
@@ -204,7 +211,7 @@ export function GraficoCenarios({
               dataKey="pessimista" 
               stroke={CENARIOS_CONFIG.pessimista.cor}
               fill="url(#colorPessimista)" 
-              strokeWidth={cenarioDestaque === 'pessimista' ? 3 : 1.5}
+              strokeWidth={cenarioDestaque === 'pessimista' ? 2 : 1}
               strokeOpacity={cenarioDestaque === 'pessimista' ? 1 : 0.6}
               name="Pessimista"
             />

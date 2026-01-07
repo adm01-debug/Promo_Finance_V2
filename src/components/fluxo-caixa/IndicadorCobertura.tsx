@@ -39,11 +39,11 @@ export function IndicadorCobertura({
   if (isLoading) {
     return (
       <Card className="card-elevated">
-        <CardContent className="p-5">
-          <div className="animate-pulse space-y-3">
-            <div className="h-4 w-32 bg-muted rounded" />
-            <div className="h-10 w-20 bg-muted rounded" />
-            <div className="h-2 w-full bg-muted rounded" />
+        <CardContent className="p-3 sm:p-4 lg:p-5">
+          <div className="animate-pulse space-y-2 sm:space-y-3">
+            <div className="h-4 w-28 sm:w-32 bg-muted rounded" />
+            <div className="h-8 sm:h-10 w-16 sm:w-20 bg-muted rounded" />
+            <div className="h-1.5 sm:h-2 w-full bg-muted rounded" />
           </div>
         </CardContent>
       </Card>
@@ -57,55 +57,58 @@ export function IndicadorCobertura({
       transition={{ duration: 0.4 }}
     >
       <Card className={cn("card-elevated overflow-hidden", saude.nivel === 'critico' && "border-destructive")}>
-        <CardContent className="p-5">
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                Cobertura de Caixa
+        <CardContent className="p-3 sm:p-4 lg:p-5">
+          <div className="flex items-start justify-between mb-2 sm:mb-3 lg:mb-4">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs sm:text-sm font-medium text-muted-foreground flex items-center gap-1.5 sm:gap-2">
+                <Shield className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="truncate">Cobertura de Caixa</span>
               </p>
-              <div className="flex items-baseline gap-2 mt-1">
-                <span className={cn("text-3xl font-bold font-display", saude.cor)}>
+              <div className="flex items-baseline gap-1.5 sm:gap-2 mt-0.5 sm:mt-1">
+                <span className={cn("text-2xl sm:text-3xl font-bold font-display", saude.cor)}>
                   {diasCobertura}
                 </span>
-                <span className="text-sm text-muted-foreground">dias</span>
+                <span className="text-xs sm:text-sm text-muted-foreground">dias</span>
               </div>
             </div>
             <div className={cn(
-              "h-12 w-12 rounded-xl flex items-center justify-center",
+              "h-10 w-10 sm:h-12 sm:w-12 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 ml-2",
               saude.bgCor
             )}>
               {saude.nivel === 'critico' ? (
-                <AlertTriangle className={cn("h-6 w-6", saude.cor)} />
+                <AlertTriangle className={cn("h-5 w-5 sm:h-6 sm:w-6", saude.cor)} />
               ) : (
-                <Calendar className={cn("h-6 w-6", saude.cor)} />
+                <Calendar className={cn("h-5 w-5 sm:h-6 sm:w-6", saude.cor)} />
               )}
             </div>
           </div>
 
           {/* Progress Bar */}
-          <div className="space-y-2">
-            <div className="flex justify-between items-center text-xs">
+          <div className="space-y-1 sm:space-y-2">
+            <div className="flex justify-between items-center text-[10px] sm:text-xs">
               <span className={cn("font-medium", saude.cor)}>{saude.label}</span>
-              <span className="text-muted-foreground">Meta: {metaCobertura} dias</span>
+              <span className="text-muted-foreground">Meta: {metaCobertura}d</span>
             </div>
             <Progress 
               value={Math.min((diasCobertura / metaCobertura) * 100, 100)} 
-              className="h-2"
+              className="h-1.5 sm:h-2"
             />
           </div>
 
           {/* Detalhes */}
-          <div className="mt-4 pt-4 border-t border-border/50 grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-xs text-muted-foreground">Despesa Média/Dia</p>
-              <p className="text-sm font-semibold font-display text-destructive">
+          <div className="mt-3 sm:mt-4 pt-2 sm:pt-3 lg:pt-4 border-t border-border/50 grid grid-cols-2 gap-2 sm:gap-3 lg:gap-4">
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
+                <span className="hidden sm:inline">Despesa Média/Dia</span>
+                <span className="sm:hidden">Média/Dia</span>
+              </p>
+              <p className="text-xs sm:text-sm font-semibold font-display text-destructive truncate">
                 {formatCurrency(despesaMediaDiaria)}
               </p>
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Saldo Atual</p>
-              <p className="text-sm font-semibold font-display">
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Saldo Atual</p>
+              <p className="text-xs sm:text-sm font-semibold font-display truncate">
                 {formatCurrency(saldoAtual)}
               </p>
             </div>
@@ -113,12 +116,13 @@ export function IndicadorCobertura({
 
           {/* Sugestão se cobertura baixa */}
           {faltaParaMeta > 0 && (
-            <div className="mt-3 p-3 rounded-lg bg-muted/50 text-xs">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <TrendingUp className="h-3.5 w-3.5" />
-                <span>
-                  Para {metaCobertura} dias de cobertura, 
-                  precisa de mais <strong className="text-foreground">{formatCurrency(faltaParaMeta)}</strong>
+            <div className="mt-2 sm:mt-3 p-2 sm:p-3 rounded-lg bg-muted/50 text-[10px] sm:text-xs">
+              <div className="flex items-start sm:items-center gap-1.5 sm:gap-2 text-muted-foreground">
+                <TrendingUp className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0 mt-0.5 sm:mt-0" />
+                <span className="line-clamp-2 sm:line-clamp-1">
+                  <span className="hidden sm:inline">Para {metaCobertura} dias de cobertura, precisa de mais </span>
+                  <span className="sm:hidden">Falta </span>
+                  <strong className="text-foreground">{formatCurrency(faltaParaMeta)}</strong>
                 </span>
               </div>
             </div>

@@ -47,7 +47,7 @@ export function ResumosCenarios({ metricas, saldoAtual, cenarioAtivo, onCenarioC
   const piorCenario = saldosFinais.reduce((a, b) => a.saldo < b.saldo ? a : b).cenario;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
       {(Object.keys(CENARIOS_CONFIG) as CenarioTipo[]).map((cenario, index) => {
         const config = CENARIOS_CONFIG[cenario];
         const metrica = metricas[cenario];
@@ -72,63 +72,66 @@ export function ResumosCenarios({ metricas, saldoAtual, cenarioAtivo, onCenarioC
               )}
               onClick={() => onCenarioClick?.(cenario)}
             >
-              <CardContent className="p-5">
+              <CardContent className="p-3 sm:p-4 lg:p-5">
                 {/* Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-2">
+                <div className="flex items-start justify-between mb-2 sm:mb-3 lg:mb-4">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
                     <div 
-                      className="h-10 w-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110"
+                      className="h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 rounded-lg sm:rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 shrink-0"
                       style={{ 
                         backgroundColor: `${config.cor}20`,
                         color: config.cor,
                       }}
                     >
-                      {cenarioIcons[cenario]}
+                      <span className="[&>svg]:h-4 [&>svg]:w-4 sm:[&>svg]:h-5 sm:[&>svg]:w-5">
+                        {cenarioIcons[cenario]}
+                      </span>
                     </div>
-                    <div>
-                      <h3 className="font-display font-semibold">{config.nome}</h3>
-                      <p className="text-xs text-muted-foreground">{config.descricao}</p>
+                    <div className="min-w-0">
+                      <h3 className="font-display font-semibold text-sm sm:text-base truncate">{config.nome}</h3>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground truncate hidden sm:block">{config.descricao}</p>
                     </div>
                   </div>
                   {isMelhor && (
-                    <Badge variant="outline" className="text-success border-success/50 text-xs">
+                    <Badge variant="outline" className="text-success border-success/50 text-[10px] sm:text-xs h-4 sm:h-5 px-1 sm:px-1.5 shrink-0">
                       Melhor
                     </Badge>
                   )}
                   {isPior && metrica.diasCriticos > 0 && (
-                    <Badge variant="outline" className="text-destructive border-destructive/50 text-xs">
+                    <Badge variant="outline" className="text-destructive border-destructive/50 text-[10px] sm:text-xs h-4 sm:h-5 px-1 sm:px-1.5 shrink-0">
                       Atenção
                     </Badge>
                   )}
                 </div>
 
                 {/* Saldo Final */}
-                <div className="mb-4">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-muted-foreground">Saldo Projetado</span>
+                <div className="mb-2 sm:mb-3 lg:mb-4">
+                  <div className="flex items-center justify-between mb-0.5 sm:mb-1">
+                    <span className="text-xs sm:text-sm text-muted-foreground">Saldo Projetado</span>
                     <span className={cn(
-                      "text-xs font-medium flex items-center gap-1",
+                      "text-[10px] sm:text-xs font-medium flex items-center gap-0.5 sm:gap-1",
                       variacao >= 0 ? "text-success" : "text-destructive"
                     )}>
-                      {variacao >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                      {variacao >= 0 ? <TrendingUp className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> : <TrendingDown className="h-2.5 w-2.5 sm:h-3 sm:w-3" />}
                       {variacao >= 0 ? '+' : ''}{variacao.toFixed(1)}%
                     </span>
                   </div>
-                  <p className="text-2xl font-bold font-display" style={{ color: config.cor }}>
+                  <p className="text-lg sm:text-xl lg:text-2xl font-bold font-display truncate" style={{ color: config.cor }}>
                     {formatCurrency(metrica.saldoFinal)}
                   </p>
                 </div>
 
                 {/* Métricas adicionais */}
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {/* Saldo Mínimo */}
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="flex items-center gap-1.5 text-muted-foreground">
-                      <Wallet className="h-3.5 w-3.5" />
-                      Saldo Mínimo
+                  <div className="flex items-center justify-between text-xs sm:text-sm">
+                    <span className="flex items-center gap-1 sm:gap-1.5 text-muted-foreground">
+                      <Wallet className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                      <span className="hidden sm:inline">Saldo Mínimo</span>
+                      <span className="sm:hidden">Mínimo</span>
                     </span>
                     <span className={cn(
-                      "font-medium",
+                      "font-medium truncate ml-1",
                       metrica.saldoMinimo < 0 ? "text-destructive" : 
                       metrica.saldoMinimo < 50000 ? "text-warning" : "text-foreground"
                     )}>
@@ -137,24 +140,25 @@ export function ResumosCenarios({ metricas, saldoAtual, cenarioAtivo, onCenarioC
                   </div>
 
                   {/* Dias Críticos */}
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="flex items-center gap-1.5 text-muted-foreground">
-                      <AlertTriangle className="h-3.5 w-3.5" />
-                      Dias Críticos
+                  <div className="flex items-center justify-between text-xs sm:text-sm">
+                    <span className="flex items-center gap-1 sm:gap-1.5 text-muted-foreground">
+                      <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                      <span className="hidden sm:inline">Dias Críticos</span>
+                      <span className="sm:hidden">Críticos</span>
                     </span>
                     <span className={cn(
                       "font-medium",
                       metrica.diasCriticos > 5 ? "text-destructive" :
                       metrica.diasCriticos > 0 ? "text-warning" : "text-success"
                     )}>
-                      {metrica.diasCriticos} dias
+                      {metrica.diasCriticos}d
                     </span>
                   </div>
 
                   {/* Barra de Risco */}
-                  <div className="pt-2">
-                    <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="text-muted-foreground">Nível de Risco</span>
+                  <div className="pt-1 sm:pt-2">
+                    <div className="flex items-center justify-between text-[10px] sm:text-xs mb-0.5 sm:mb-1">
+                      <span className="text-muted-foreground">Risco</span>
                       <span className={cn(
                         "font-medium",
                         metrica.diasCriticos > 5 ? "text-destructive" :
@@ -167,7 +171,7 @@ export function ResumosCenarios({ metricas, saldoAtual, cenarioAtivo, onCenarioC
                     <Progress 
                       value={Math.min(100, (metrica.diasCriticos / 10) * 100)} 
                       className={cn(
-                        "h-2",
+                        "h-1.5 sm:h-2",
                         metrica.diasCriticos > 5 ? "[&>div]:bg-destructive" :
                         metrica.diasCriticos > 2 ? "[&>div]:bg-warning" : "[&>div]:bg-success"
                       )}
@@ -176,12 +180,12 @@ export function ResumosCenarios({ metricas, saldoAtual, cenarioAtivo, onCenarioC
                 </div>
 
                 {/* Footer */}
-                <div className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">
-                    {cenario === 'otimista' ? '+15% receitas' :
-                     cenario === 'pessimista' ? '-20% receitas' : 'Base histórica'}
+                <div className="mt-2 sm:mt-3 lg:mt-4 pt-2 sm:pt-3 border-t border-border/50 flex items-center justify-between">
+                  <span className="text-[10px] sm:text-xs text-muted-foreground truncate">
+                    {cenario === 'otimista' ? '+15%' :
+                     cenario === 'pessimista' ? '-20%' : 'Base'}
                   </span>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                  <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
                 </div>
               </CardContent>
             </Card>
