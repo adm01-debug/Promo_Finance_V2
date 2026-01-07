@@ -387,3 +387,51 @@ export function NoResults({
     />
   );
 }
+
+// Empty Table State
+interface EmptyTableProps {
+  title?: string;
+  description?: string;
+  onAdd?: () => void;
+  addLabel?: string;
+  className?: string;
+}
+
+export function EmptyTableState({
+  title = 'Nenhum registro encontrado',
+  description = 'Adicione novos registros para começar.',
+  onAdd,
+  addLabel = 'Adicionar',
+  className
+}: EmptyTableProps) {
+  return (
+    <EmptyState
+      illustration="empty"
+      title={title}
+      description={description}
+      action={onAdd ? {
+        label: addLabel,
+        onClick: onAdd,
+      } : undefined}
+      variant="compact"
+      className={className}
+    />
+  );
+}
+
+// No Data State
+export function NoDataState({
+  title = 'Nenhum dado disponível',
+  description = 'Não há dados para exibir no momento.',
+  className
+}: { title?: string; description?: string; className?: string }) {
+  return (
+    <EmptyState
+      illustration="empty"
+      title={title}
+      description={description}
+      variant="default"
+      className={className}
+    />
+  );
+}
