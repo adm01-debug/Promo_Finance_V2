@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { InteractivePageWrapper, useCelebrations } from '@/components/wrappers';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MFASettings } from '@/components/auth/MFASettings';
 import { RateLimitDashboard } from '@/components/security/RateLimitDashboard';
