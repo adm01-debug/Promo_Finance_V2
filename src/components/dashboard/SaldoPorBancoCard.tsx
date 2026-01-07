@@ -23,34 +23,34 @@ interface SaldoPorBancoCardProps {
 export function SaldoPorBancoCard({ contasBancariasFiltradas, saldoTotal }: SaldoPorBancoCardProps) {
   return (
     <motion.div variants={itemVariants}>
-      <Card className="h-[400px]">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-secondary" />
-            Saldo por Banco
+      <Card className="h-[320px] sm:h-[360px] md:h-[400px]">
+        <CardHeader className="pb-2 p-3 sm:p-4 md:p-6">
+          <CardTitle className="text-sm sm:text-base md:text-lg flex items-center gap-2">
+            <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-secondary shrink-0" />
+            <span className="truncate">Saldo por Banco</span>
           </CardTitle>
-          <CardDescription>Distribuição entre contas</CardDescription>
+          <CardDescription className="text-xs sm:text-sm">Distribuição entre contas</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3 overflow-y-auto max-h-[300px]">
+        <CardContent className="space-y-2 sm:space-y-3 overflow-y-auto max-h-[200px] sm:max-h-[240px] md:max-h-[300px] p-3 sm:p-4 md:p-6 pt-0">
           {contasBancariasFiltradas.map((banco, index) => {
             const percentual = saldoTotal > 0 ? (banco.saldo_atual / saldoTotal) * 100 : 0;
             return (
               <div key={banco.id} className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
-                    <span className="text-sm font-medium truncate max-w-[120px]">{banco.banco}</span>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                    <div className="h-2 w-2 sm:h-3 sm:w-3 rounded-full shrink-0" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+                    <span className="text-xs sm:text-sm font-medium truncate">{banco.banco}</span>
                   </div>
-                  <span className="text-sm font-bold">{formatCurrency(banco.saldo_atual)}</span>
+                  <span className="text-xs sm:text-sm font-bold shrink-0">{formatCurrency(banco.saldo_atual)}</span>
                 </div>
-                <Progress value={percentual} className="h-2" />
+                <Progress value={percentual} className="h-1.5 sm:h-2" />
               </div>
             );
           })}
-          <div className="pt-3 border-t">
-            <div className="flex items-center justify-between">
-              <span className="font-medium">Total Consolidado</span>
-              <span className="text-lg font-bold text-primary">{formatCurrency(saldoTotal)}</span>
+          <div className="pt-2 sm:pt-3 border-t">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs sm:text-sm font-medium">Total</span>
+              <span className="text-sm sm:text-base md:text-lg font-bold text-primary truncate">{formatCurrency(saldoTotal)}</span>
             </div>
           </div>
         </CardContent>

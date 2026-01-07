@@ -51,7 +51,7 @@ export const DashboardExecutivo = () => {
   }
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6" data-tour="dashboard">
+    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4 sm:space-y-6" data-tour="dashboard">
       <DashboardFiltersHeader
         empresas={metrics.empresas}
         centrosCusto={metrics.centrosCusto}
@@ -121,24 +121,28 @@ export const DashboardExecutivo = () => {
         </HeroKPIGrid>
       </motion.div>
 
-      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+      <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
         <StreakCard streakData={metrics.streakData} />
-        <SecondaryKPICards
-          empresasCount={metrics.empresas.length}
-          contasBancariasCount={metrics.contasBancarias.length}
-          venceHojeReceberCount={metrics.venceHojeReceber.length}
-          venceHojePagarCount={metrics.venceHojePagar.length}
-          aprovacoesPendentes={metrics.aprovacoesPendentes}
-          vencidasTotal={metrics.vencidasReceber.length + metrics.vencidasPagar.length}
-        />
+        <div className="col-span-2 lg:col-span-3">
+          <SecondaryKPICards
+            empresasCount={metrics.empresas.length}
+            contasBancariasCount={metrics.contasBancarias.length}
+            venceHojeReceberCount={metrics.venceHojeReceber.length}
+            venceHojePagarCount={metrics.venceHojePagar.length}
+            aprovacoesPendentes={metrics.aprovacoesPendentes}
+            vencidasTotal={metrics.vencidasReceber.length + metrics.vencidasPagar.length}
+          />
+        </div>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <FluxoCaixaChart
-          data={metrics.fluxoCaixaProjetado}
-          periodoFluxo={periodoFluxo}
-          setPeriodoFluxo={setPeriodoFluxo}
-        />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="lg:col-span-2">
+          <FluxoCaixaChart
+            data={metrics.fluxoCaixaProjetado}
+            periodoFluxo={periodoFluxo}
+            setPeriodoFluxo={setPeriodoFluxo}
+          />
+        </div>
         <SaldoPorBancoCard
           contasBancariasFiltradas={metrics.contasBancariasFiltradas}
           saldoTotal={metrics.saldoTotal}
@@ -147,7 +151,7 @@ export const DashboardExecutivo = () => {
 
       <CentroCustoDrillDown dadosPorCentroCusto={metrics.dadosPorCentroCusto} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         <TopClientesLeaderboard topClientesReceita={metrics.topClientesReceita} />
         <StatusContasPieChart statusContasPagar={metrics.statusContasPagar} />
         <TopCentrosCustoChart dadosPorCentroCusto={metrics.dadosPorCentroCusto} />
@@ -161,7 +165,7 @@ export const DashboardExecutivo = () => {
         <HistoricoAnalisesPreditivas />
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <motion.div variants={itemVariants}>
           <AlertasPreditivosPanel
             saldoAtual={metrics.saldoTotal}

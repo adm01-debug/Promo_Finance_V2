@@ -40,39 +40,39 @@ interface HeroKPICardProps {
 
 const sizeConfig = {
   hero: {
-    card: 'p-6 min-h-[180px]',
-    title: 'text-sm font-medium',
-    value: 'text-4xl md:text-5xl font-bold tracking-tight',
-    icon: 'h-14 w-14',
-    iconWrapper: 'h-20 w-20 rounded-2xl',
-    variation: 'text-sm',
+    card: 'p-3 sm:p-4 md:p-6 min-h-[120px] sm:min-h-[150px] md:min-h-[180px]',
+    title: 'text-xs sm:text-sm font-medium',
+    value: 'text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight',
+    icon: 'h-8 w-8 sm:h-10 sm:w-10 md:h-14 md:w-14',
+    iconWrapper: 'h-12 w-12 sm:h-14 sm:w-14 md:h-20 md:w-20 rounded-xl md:rounded-2xl',
+    variation: 'text-[10px] sm:text-xs md:text-sm',
     showSparkline: true,
   },
   primary: {
-    card: 'p-5',
-    title: 'text-sm font-medium',
-    value: 'text-2xl md:text-3xl font-bold',
-    icon: 'h-8 w-8',
-    iconWrapper: 'h-14 w-14 rounded-xl',
-    variation: 'text-sm',
+    card: 'p-3 sm:p-4 md:p-5',
+    title: 'text-[10px] sm:text-xs md:text-sm font-medium',
+    value: 'text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold',
+    icon: 'h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8',
+    iconWrapper: 'h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-lg md:rounded-xl',
+    variation: 'text-[10px] sm:text-xs md:text-sm',
     showSparkline: false,
   },
   secondary: {
-    card: 'p-4',
-    title: 'text-xs font-medium',
-    value: 'text-xl font-bold',
-    icon: 'h-5 w-5',
-    iconWrapper: 'h-10 w-10 rounded-lg',
-    variation: 'text-xs',
+    card: 'p-2 sm:p-3 md:p-4',
+    title: 'text-[10px] sm:text-xs font-medium',
+    value: 'text-base sm:text-lg md:text-xl font-bold',
+    icon: 'h-4 w-4 sm:h-5 sm:w-5',
+    iconWrapper: 'h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 rounded-lg',
+    variation: 'text-[10px] sm:text-xs',
     showSparkline: false,
   },
   mini: {
-    card: 'p-3',
-    title: 'text-xs font-medium',
-    value: 'text-lg font-bold',
-    icon: 'h-4 w-4',
-    iconWrapper: 'h-8 w-8 rounded-lg',
-    variation: 'text-xs',
+    card: 'p-2 sm:p-3',
+    title: 'text-[10px] sm:text-xs font-medium',
+    value: 'text-sm sm:text-base md:text-lg font-bold',
+    icon: 'h-3 w-3 sm:h-4 sm:w-4',
+    iconWrapper: 'h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 rounded-md sm:rounded-lg',
+    variation: 'text-[10px] sm:text-xs',
     showSparkline: false,
   },
 };
@@ -286,9 +286,9 @@ interface HeroKPIGridProps {
 
 export function HeroKPIGrid({ children, layout = 'default' }: HeroKPIGridProps) {
   const gridClasses = {
-    default: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4',
-    'hero-first': 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 [&>*:first-child]:md:col-span-2',
-    balanced: 'grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4',
+    default: 'grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4',
+    'hero-first': 'grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 [&>*:first-child]:col-span-2',
+    balanced: 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4',
   };
 
   return (
@@ -321,7 +321,7 @@ export function SecondaryKPIs({ items }: SecondaryKPIsProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3"
+      className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 sm:gap-3"
     >
       {items.map((item, index) => (
         <motion.div
@@ -330,20 +330,20 @@ export function SecondaryKPIs({ items }: SecondaryKPIsProps) {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: index * 0.05 }}
         >
-          <Card className="p-3 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3">
+          <Card className="p-2 sm:p-3 hover:shadow-md transition-shadow">
+            <div className="flex flex-col sm:flex-row items-center sm:items-center gap-1 sm:gap-3">
               <div className={cn(
-                'p-2 rounded-lg',
+                'p-1.5 sm:p-2 rounded-md sm:rounded-lg shrink-0',
                 item.iconBg || 'bg-muted',
               )}>
-                <item.icon className={cn('h-4 w-4', item.iconColor || 'text-muted-foreground')} />
+                <item.icon className={cn('h-3 w-3 sm:h-4 sm:w-4', item.iconColor || 'text-muted-foreground')} />
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground">{item.title}</p>
+              <div className="text-center sm:text-left min-w-0">
+                <p className="text-[9px] sm:text-xs text-muted-foreground truncate">{item.title}</p>
                 {item.loading ? (
-                  <Skeleton className="h-5 w-8 mt-0.5" />
+                  <Skeleton className="h-4 sm:h-5 w-6 sm:w-8 mt-0.5 mx-auto sm:mx-0" />
                 ) : (
-                  <p className="text-lg font-bold">{item.value}</p>
+                  <p className="text-sm sm:text-base md:text-lg font-bold truncate">{item.value}</p>
                 )}
               </div>
             </div>
