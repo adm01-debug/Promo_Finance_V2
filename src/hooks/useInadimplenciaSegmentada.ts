@@ -1,6 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+// Tipos internos para os dados do Supabase
+interface ContaReceberComCliente {
+  id: string;
+  valor: number;
+  valor_recebido: number | null;
+  data_vencimento: string;
+  status: string;
+  cliente_id: string | null;
+  vendedor_id: string | null;
+  clientes: { ramo_atividade: string | null } | null;
+}
+
+interface VendedorData {
+  id: string;
+  nome: string;
+  meta_mensal: number | null;
+}
+
 export interface InadimplenciaPorRamo {
   ramo: string;
   total_contas: number;
@@ -55,7 +73,7 @@ export function useInadimplenciaPorRamo() {
         dias_atraso_total: number;
       }>();
 
-      contas?.forEach((conta: any) => {
+      (contas as ContaReceberComCliente[] | null)?.forEach((conta) => {
         const ramo = conta.clientes?.ramo_atividade || "Não informado";
         const valorPendente = conta.valor - (conta.valor_recebido || 0);
         const isVencido = conta.data_vencimento < hoje;
@@ -141,9 +159,9 @@ export function useInadimplenciaPorVendedor() {
 
       // Calcular recebido por vendedor no mês
       const recebidoPorVendedor = new Map<string, number>();
-      recebidosMes?.forEach((r: any) => {
-        const atual = recebidoPorVendedor.get(r.vendedor_id) || 0;
-        recebidoPorVendedor.set(r.vendedor_id, atual + (r.valor_recebido || 0));
+      recebidosMes?.forEach((r) => {
+        const atual = recebidoPorVendedor.get(r.vendedor_id as string) || 0;
+        recebidoPorVendedor.set(r.vendedor_id as string, atual + (r.valor_recebido || 0));
       });
 
       // Agrupar por vendedor
@@ -155,7 +173,7 @@ export function useInadimplenciaPorVendedor() {
         dias_atraso_total: number;
       }>();
 
-      contas?.forEach((conta: any) => {
+      contas?.forEach((conta) => {
         if (!conta.vendedor_id) return;
         
         const valorPendente = conta.valor - (conta.valor_recebido || 0);
@@ -187,7 +205,7 @@ export function useInadimplenciaPorVendedor() {
 
       const resultado: InadimplenciaPorVendedor[] = [];
       
-      vendedores?.forEach((vendedor: any) => {
+      (vendedores as VendedorData[] | null)?.forEach((vendedor) => {
         const stats = porVendedor.get(vendedor.id) || {
           total_contas: 0,
           total_vencido: 0,
