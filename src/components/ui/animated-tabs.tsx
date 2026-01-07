@@ -1,5 +1,5 @@
 /**
- * Animated Tabs - Tabs com animações suaves
+ * Animated Tabs - Tabs com animações avançadas e sliding indicator
  */
 
 import { useState, ReactNode, createContext, useContext } from 'react';

@@ -273,98 +273,130 @@ export const AnimatedMonthlyChart = ({ data, isLoading }: AnimatedMonthlyChartPr
   };
 
   return (
-    <Card className="h-full">
-      <CardHeader className="pb-2">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <motion.div
-              animate={{ rotate: [0, 360] }}
-              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            >
-              <Sparkles className="h-5 w-5 text-primary" />
-            </motion.div>
-            <div>
-              <CardTitle className="text-lg">Evolução Mensal</CardTitle>
-              <CardDescription>Receitas, despesas e lucro</CardDescription>
-            </div>
-          </div>
-          <Tabs value={chartType} onValueChange={(v) => setChartType(v as ChartType)}>
-            <TabsList className="h-8">
-              <TabsTrigger value="area" className="text-xs gap-1.5">
-                <TrendingUp className="h-3 w-3" />
-                Área
-              </TabsTrigger>
-              <TabsTrigger value="bar" className="text-xs gap-1.5">
-                <BarChart3 className="h-3 w-3" />
-                Barras
-              </TabsTrigger>
-              <TabsTrigger value="composed" className="text-xs gap-1.5">
-                <Activity className="h-3 w-3" />
-                Misto
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Summary Cards */}
-        <div className="grid grid-cols-3 gap-3">
-          {summaryItems.map((item, index) => (
-            <motion.div
-              key={item.label}
-              custom={index}
-              initial="hidden"
-              animate="visible"
-              variants={summaryVariants}
-              className="bg-muted/50 rounded-lg p-3 text-center"
-            >
-              <p className="text-xs text-muted-foreground">{item.label}</p>
-              {isLoading ? (
-                <Skeleton className="h-5 w-20 mx-auto mt-1" />
-              ) : (
-                <p className={cn('text-sm font-semibold', item.color)}>
-                  <AnimatedCounter 
-                    value={item.value} 
-                    formatter={(v) => formatCurrency(v)} 
-                  />
-                </p>
-              )}
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Chart */}
-        <div className="h-[280px]">
-          {isLoading ? (
-            <div className="h-full flex items-end gap-2 animate-pulse">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                  <Skeleton 
-                    className="w-full rounded-t" 
-                    style={{ height: `${Math.random() * 60 + 30}%` }} 
-                  />
-                  <Skeleton className="w-8 h-3" />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <AnimatePresence mode="wait">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.3 }}
+    >
+      <Card className="h-full overflow-hidden group hover:shadow-lg transition-shadow duration-300">
+        <CardHeader className="pb-2 bg-gradient-to-r from-primary/5 to-purple-500/5">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-center gap-2">
               <motion.div
-                key={chartType}
-                variants={chartVariants}
+                className="p-2 rounded-lg bg-gradient-to-br from-primary/20 to-purple-500/20"
+                animate={{ rotate: [0, 360] }}
+                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+              >
+                <Sparkles className="h-5 w-5 text-primary" />
+              </motion.div>
+              <div>
+                <CardTitle className="text-lg bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent font-bold">
+                  Evolução Mensal
+                </CardTitle>
+                <CardDescription>Receitas, despesas e lucro</CardDescription>
+              </div>
+            </div>
+            <Tabs value={chartType} onValueChange={(v) => setChartType(v as ChartType)}>
+              <TabsList className="h-9 bg-muted/80 backdrop-blur-sm">
+                <TabsTrigger value="area" className="text-xs gap-1.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white">
+                  <TrendingUp className="h-3.5 w-3.5" />
+                  Área
+                </TabsTrigger>
+                <TabsTrigger value="bar" className="text-xs gap-1.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white">
+                  <BarChart3 className="h-3.5 w-3.5" />
+                  Barras
+                </TabsTrigger>
+                <TabsTrigger value="composed" className="text-xs gap-1.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white">
+                  <Activity className="h-3.5 w-3.5" />
+                  Misto
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Summary Cards */}
+          <div className="grid grid-cols-3 gap-3">
+            {summaryItems.map((item, index) => (
+              <motion.div
+                key={item.label}
+                custom={index}
                 initial="hidden"
                 animate="visible"
-                exit="exit"
-                className="h-full"
+                variants={summaryVariants}
+                whileHover={{ scale: 1.03, y: -2 }}
+                className={cn(
+                  "rounded-xl p-3 text-center cursor-pointer transition-all duration-200",
+                  index === 0 && "bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/30",
+                  index === 1 && "bg-gradient-to-br from-red-50 to-orange-100 dark:from-red-900/20 dark:to-orange-900/30",
+                  index === 2 && "bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/30"
+                )}
               >
-                <ResponsiveContainer width="100%" height="100%">
-                  {renderChart()}
-                </ResponsiveContainer>
+                <p className="text-xs text-muted-foreground font-medium">{item.label}</p>
+                {isLoading ? (
+                  <Skeleton className="h-5 w-20 mx-auto mt-1" />
+                ) : (
+                  <motion.p 
+                    className={cn('text-sm font-bold tabular-nums', item.color)}
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: index * 0.1 + 0.2 }}
+                  >
+                    <AnimatedCounter 
+                      value={item.value} 
+                      duration={1000}
+                      formatter={(v) => formatCurrency(v)} 
+                    />
+                  </motion.p>
+                )}
               </motion.div>
-            </AnimatePresence>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+            ))}
+          </div>
+
+          {/* Chart */}
+          <div className="h-[280px] relative">
+            {/* Decorative background */}
+            <div className="absolute inset-0 bg-gradient-to-t from-muted/30 to-transparent rounded-xl pointer-events-none" />
+            
+            {isLoading ? (
+              <div className="h-full flex items-end gap-2 p-4">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <motion.div 
+                    key={i} 
+                    className="flex-1 flex flex-col items-center gap-2"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                  >
+                    <motion.div
+                      className="w-full bg-gradient-to-t from-muted to-muted/50 rounded-t"
+                      initial={{ height: 0 }}
+                      animate={{ height: `${Math.random() * 60 + 30}%` }}
+                      transition={{ duration: 0.5, delay: i * 0.1 }}
+                    />
+                    <Skeleton className="w-8 h-3" />
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={chartType}
+                  variants={chartVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="h-full"
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    {renderChart()}
+                  </ResponsiveContainer>
+                </motion.div>
+              </AnimatePresence>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
