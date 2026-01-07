@@ -99,9 +99,9 @@ export function HeroKPIs({
     : 0;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {/* Hero Cards - 2 grandes */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
         {/* Carga Tributária - Hero */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -114,28 +114,28 @@ export function HeroKPIs({
             colorClasses.primary.bg,
             colorClasses.primary.glow
           )}>
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-bl-full" />
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Percent className="h-4 w-4" />
-                Carga Tributária Efetiva
+            <div className="absolute top-0 right-0 w-20 sm:w-32 h-20 sm:h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-bl-full" />
+            <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground flex items-center gap-1.5 sm:gap-2">
+                <Percent className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="truncate">Carga Tributária Efetiva</span>
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="flex items-baseline gap-2">
-                <span className={cn("text-5xl font-bold", colorClasses.primary.text)}>
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="flex items-baseline gap-1 sm:gap-2">
+                <span className={cn("text-3xl sm:text-4xl md:text-5xl font-bold", colorClasses.primary.text)}>
                   {cargaTributaria.toFixed(2)}
                 </span>
-                <span className="text-2xl text-muted-foreground">%</span>
+                <span className="text-lg sm:text-xl md:text-2xl text-muted-foreground">%</span>
               </div>
-              <p className="text-sm text-muted-foreground mt-2">
+              <p className="text-[10px] sm:text-sm text-muted-foreground mt-1 sm:mt-2 hidden sm:block">
                 Alíquota efetiva sobre faturamento
               </p>
-              <div className="mt-4 flex gap-2">
-                <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+              <div className="mt-2 sm:mt-4 flex gap-1.5 sm:gap-2 flex-wrap">
+                <Badge variant="secondary" className="text-[10px] sm:text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 px-1.5 sm:px-2">
                   CBS: {aliquotaCbs}%
                 </Badge>
-                <Badge variant="secondary" className="text-xs bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">
+                <Badge variant="secondary" className="text-[10px] sm:text-xs bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300 px-1.5 sm:px-2">
                   IBS: {aliquotaIbs}%
                 </Badge>
               </div>
@@ -155,25 +155,25 @@ export function HeroKPIs({
             colorClasses.green.bg,
             colorClasses.green.glow
           )}>
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-500/10 to-transparent rounded-bl-full" />
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <DollarSign className="h-4 w-4" />
-                Créditos Disponíveis
+            <div className="absolute top-0 right-0 w-20 sm:w-32 h-20 sm:h-32 bg-gradient-to-br from-green-500/10 to-transparent rounded-bl-full" />
+            <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground flex items-center gap-1.5 sm:gap-2">
+                <DollarSign className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="truncate">Créditos Disponíveis</span>
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className={cn("text-4xl font-bold", colorClasses.green.text)}>
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className={cn("text-2xl sm:text-3xl md:text-4xl font-bold truncate", colorClasses.green.text)}>
                 {formatCurrency(creditosDisponiveis)}
               </div>
-              <div className="mt-3">
-                <div className="flex justify-between text-xs text-muted-foreground mb-1">
+              <div className="mt-2 sm:mt-3">
+                <div className="flex justify-between text-[10px] sm:text-xs text-muted-foreground mb-1">
                   <span>Utilização</span>
                   <span>{percentualCreditos.toFixed(1)}%</span>
                 </div>
-                <Progress value={percentualCreditos} className="h-2" />
+                <Progress value={percentualCreditos} className="h-1.5 sm:h-2" />
               </div>
-              <p className="text-sm text-muted-foreground mt-2">
+              <p className="text-[10px] sm:text-sm text-muted-foreground mt-1 sm:mt-2 truncate hidden sm:block">
                 De {formatCurrency(creditosAcumulados)} acumulados
               </p>
             </CardContent>
@@ -182,7 +182,7 @@ export function HeroKPIs({
       </div>
 
       {/* Cards Secundários */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-2 sm:gap-4 grid-cols-2 lg:grid-cols-4">
         {/* CBS a Recolher */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -193,15 +193,15 @@ export function HeroKPIs({
             "transition-all duration-200 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700",
             colorClasses.blue.border
           )}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">CBS</CardTitle>
-              <Receipt className="h-4 w-4 text-blue-500" />
+            <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
+              <CardTitle className="text-[10px] sm:text-sm font-medium text-muted-foreground">CBS</CardTitle>
+              <Receipt className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
             </CardHeader>
-            <CardContent>
-              <div className={cn("text-2xl font-bold", colorClasses.blue.text)}>
+            <CardContent className="p-2 sm:p-6 pt-0">
+              <div className={cn("text-base sm:text-xl md:text-2xl font-bold truncate", colorClasses.blue.text)}>
                 {formatCurrency(cbsSaldo)}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">A recolher</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">A recolher</p>
             </CardContent>
           </Card>
         </motion.div>
@@ -216,15 +216,15 @@ export function HeroKPIs({
             "transition-all duration-200 hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-700",
             colorClasses.emerald.border
           )}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">IBS</CardTitle>
-              <Landmark className="h-4 w-4 text-emerald-500" />
+            <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
+              <CardTitle className="text-[10px] sm:text-sm font-medium text-muted-foreground">IBS</CardTitle>
+              <Landmark className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-500" />
             </CardHeader>
-            <CardContent>
-              <div className={cn("text-2xl font-bold", colorClasses.emerald.text)}>
+            <CardContent className="p-2 sm:p-6 pt-0">
+              <div className={cn("text-base sm:text-xl md:text-2xl font-bold truncate", colorClasses.emerald.text)}>
                 {formatCurrency(ibsSaldo)}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">A recolher</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">A recolher</p>
             </CardContent>
           </Card>
         </motion.div>
@@ -239,15 +239,15 @@ export function HeroKPIs({
             "transition-all duration-200 hover:shadow-md hover:border-amber-300 dark:hover:border-amber-700",
             colorClasses.amber.border
           )}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Migração</CardTitle>
-              <Zap className="h-4 w-4 text-amber-500" />
+            <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
+              <CardTitle className="text-[10px] sm:text-sm font-medium text-muted-foreground">Migração</CardTitle>
+              <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-amber-500" />
             </CardHeader>
-            <CardContent>
-              <div className={cn("text-2xl font-bold", colorClasses.amber.text)}>
+            <CardContent className="p-2 sm:p-6 pt-0">
+              <div className={cn("text-base sm:text-xl md:text-2xl font-bold", colorClasses.amber.text)}>
                 {percentualMigracao.toFixed(0)}%
               </div>
-              <Progress value={percentualMigracao} className="h-1.5 mt-2" />
+              <Progress value={percentualMigracao} className="h-1 sm:h-1.5 mt-1 sm:mt-2" />
             </CardContent>
           </Card>
         </motion.div>
@@ -264,21 +264,21 @@ export function HeroKPIs({
               ? `${colorClasses.red.border} animate-pulse` 
               : colorClasses.green.border
           )}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Alertas</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
+              <CardTitle className="text-[10px] sm:text-sm font-medium text-muted-foreground">Alertas</CardTitle>
               {alertasCriticos > 0 
-                ? <AlertTriangle className="h-4 w-4 text-red-500" />
-                : <CheckCircle className="h-4 w-4 text-green-500" />
+                ? <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
+                : <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
               }
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-2 sm:p-6 pt-0">
               <div className={cn(
-                "text-2xl font-bold",
+                "text-base sm:text-xl md:text-2xl font-bold",
                 alertasCriticos > 0 ? colorClasses.red.text : colorClasses.green.text
               )}>
                 {alertasCriticos > 0 ? alertasCriticos : '✓'}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">
                 {alertasCriticos > 0 ? 'Críticos' : 'Em dia'}
               </p>
             </CardContent>

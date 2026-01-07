@@ -25,28 +25,28 @@ const MARCOS = [
 export function ProgressoMigracao({ percentual, fase }: Props) {
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Zap className="h-5 w-5 text-amber-500" />
-              Progresso da Transição
+      <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="min-w-0">
+            <CardTitle className="text-sm sm:text-lg flex items-center gap-1.5 sm:gap-2">
+              <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 flex-shrink-0" />
+              <span className="truncate">Progresso da Transição</span>
             </CardTitle>
-            <CardDescription>
-              Migração do sistema tributário antigo para IBS/CBS
+            <CardDescription className="text-xs sm:text-sm mt-0.5 line-clamp-1">
+              Migração para IBS/CBS
             </CardDescription>
           </div>
           <Badge 
             variant={percentual >= 100 ? "default" : "secondary"}
-            className="text-sm px-3 py-1"
+            className="text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 self-start sm:self-auto flex-shrink-0"
           >
             {percentual.toFixed(0)}% migrado
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="pt-0">
+      <CardContent className="pt-0 p-3 sm:p-6">
         {/* Barra de progresso com gradiente */}
-        <div className="relative h-4 bg-muted rounded-full overflow-hidden">
+        <div className="relative h-3 sm:h-4 bg-muted rounded-full overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${percentual}%` }}
@@ -69,7 +69,7 @@ export function ProgressoMigracao({ percentual, fase }: Props) {
         </div>
 
         {/* Marcos */}
-        <div className="relative mt-6 px-2">
+        <div className="relative mt-4 sm:mt-6 px-1 sm:px-2">
           <div className="flex justify-between">
             {MARCOS.map((marco, i) => {
               const isCompleted = percentual >= marco.percent;
@@ -87,26 +87,26 @@ export function ProgressoMigracao({ percentual, fase }: Props) {
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: 0.3 + i * 0.1 }}
                     className={cn(
-                      "w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-300",
+                      "w-5 h-5 sm:w-8 sm:h-8 rounded-full flex items-center justify-center border-2 transition-all duration-300",
                       isCompleted 
                         ? "bg-primary border-primary text-primary-foreground" 
                         : "bg-muted border-muted-foreground/30 text-muted-foreground",
-                      isCurrent && "ring-4 ring-primary/20 animate-pulse"
+                      isCurrent && "ring-2 sm:ring-4 ring-primary/20 animate-pulse"
                     )}
                   >
                     {isCompleted ? (
-                      <CheckCircle className="h-4 w-4" />
+                      <CheckCircle className="h-2.5 w-2.5 sm:h-4 sm:w-4" />
                     ) : (
-                      <span className="text-xs font-medium">{i + 1}</span>
+                      <span className="text-[8px] sm:text-xs font-medium">{i + 1}</span>
                     )}
                   </motion.div>
                   <span className={cn(
-                    "mt-2 text-xs font-medium",
+                    "mt-1 sm:mt-2 text-[10px] sm:text-xs font-medium",
                     isCurrent ? "text-primary" : isCompleted ? "text-foreground" : "text-muted-foreground"
                   )}>
                     {marco.year}
                   </span>
-                  <span className="text-[10px] text-muted-foreground">
+                  <span className="text-[8px] sm:text-[10px] text-muted-foreground hidden sm:block">
                     {marco.label}
                   </span>
                 </div>
@@ -115,18 +115,19 @@ export function ProgressoMigracao({ percentual, fase }: Props) {
           </div>
 
           {/* Linha conectora */}
-          <div className="absolute top-4 left-6 right-6 h-0.5 bg-muted -z-10" />
+          <div className="absolute top-2.5 sm:top-4 left-4 sm:left-6 right-4 sm:right-6 h-0.5 bg-muted -z-10" />
         </div>
 
         {/* Labels */}
-        <div className="flex justify-between mt-6 text-sm text-muted-foreground">
+        <div className="flex justify-between items-center mt-4 sm:mt-6 text-[10px] sm:text-sm text-muted-foreground">
           <span className="flex items-center gap-1">
-            <span className="w-3 h-3 rounded bg-muted-foreground/30" />
-            ICMS/ISS/PIS/COFINS
+            <span className="w-2 h-2 sm:w-3 sm:h-3 rounded bg-muted-foreground/30 flex-shrink-0" />
+            <span className="hidden sm:inline">ICMS/ISS/PIS/COFINS</span>
+            <span className="sm:hidden">Antigos</span>
           </span>
-          <ArrowRight className="h-4 w-4" />
+          <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
           <span className="flex items-center gap-1">
-            <span className="w-3 h-3 rounded bg-gradient-to-r from-primary to-emerald-500" />
+            <span className="w-2 h-2 sm:w-3 sm:h-3 rounded bg-gradient-to-r from-primary to-emerald-500 flex-shrink-0" />
             IBS + CBS
           </span>
         </div>
