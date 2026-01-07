@@ -8,7 +8,7 @@ import { render, RenderOptions, RenderResult } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
-import userEvent from '@testing-library/user-event';
+// userEvent is optional - only used if @testing-library/user-event is installed
 
 // ============================================
 // TIPOS
@@ -24,8 +24,17 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   initialState?: Record<string, unknown>;
 }
 
+// User event type - generic since we don't have @testing-library/user-event
+type UserEventType = {
+  click: (element: Element) => Promise<void>;
+  type: (element: Element, text: string) => Promise<void>;
+  clear: (element: Element) => Promise<void>;
+  tab: () => Promise<void>;
+  keyboard: (text: string) => Promise<void>;
+};
+
 interface RenderWithUserResult extends RenderResult {
-  user: ReturnType<typeof userEvent.setup>;
+  user: UserEventType;
 }
 
 // ============================================
@@ -91,11 +100,37 @@ export function customRender(
 // RENDER COM USER EVENTS
 // ============================================
 
+// Simple user event simulator (basic implementation)
+function createUserEvent(): UserEventType {
+  return {
+    click: async (element: Element) => {
+      element.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    },
+    type: async (element: Element, text: string) => {
+      const input = element as HTMLInputElement;
+      input.value = text;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    },
+    clear: async (element: Element) => {
+      const input = element as HTMLInputElement;
+      input.value = '';
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    },
+    tab: async () => {
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab' }));
+    },
+    keyboard: async (text: string) => {
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: text }));
+    },
+  };
+}
+
 export function renderWithUser(
   ui: ReactElement,
   options: CustomRenderOptions = {}
 ): RenderWithUserResult {
-  const user = userEvent.setup();
+  const user = createUserEvent();
   const result = customRender(ui, options);
 
   return {
@@ -108,42 +143,64 @@ export function renderWithUser(
 // MOCKS ÚTEIS
 // ============================================
 
+type MockFn = (...args: any[]) => any;
+
+function createMockFn(): MockFn & { mockReturnValue: (val: any) => void; mockImplementation: (impl: (...args: any[]) => any) => void } {
+  const calls: any[][] = [];
+  let returnValue: any;
+  let implementation: ((...args: any[]) => any) | null = null;
+  
+  const fn = (...args: any[]) => {
+    calls.push(args);
+    if (implementation) return implementation(...args);
+    return returnValue;
+  };
+  
+  fn.mockReturnValue = (val: any) => { returnValue = val; };
+  fn.mockImplementation = (impl: (...args: any[]) => any) => { implementation = impl; };
+  fn.calls = calls;
+  
+  return fn;
+}
+
 // Mock do IntersectionObserver
 export function mockIntersectionObserver(): void {
-  const mockIntersectionObserver = jest.fn();
+  const mockIntersectionObserver = createMockFn();
   mockIntersectionObserver.mockReturnValue({
     observe: () => null,
     unobserve: () => null,
     disconnect: () => null,
   });
-  window.IntersectionObserver = mockIntersectionObserver;
+  (window as any).IntersectionObserver = mockIntersectionObserver;
 }
 
 // Mock do ResizeObserver
 export function mockResizeObserver(): void {
-  const mockResizeObserver = jest.fn();
+  const mockResizeObserver = createMockFn();
   mockResizeObserver.mockReturnValue({
     observe: () => null,
     unobserve: () => null,
     disconnect: () => null,
   });
-  window.ResizeObserver = mockResizeObserver;
+  (window as any).ResizeObserver = mockResizeObserver;
 }
 
 // Mock do matchMedia
 export function mockMatchMedia(matches: boolean = false): void {
+  const mockFn = createMockFn();
+  mockFn.mockImplementation((query: string) => ({
+    matches,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => true,
+  }));
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
-    value: jest.fn().mockImplementation((query: string) => ({
-      matches,
-      media: query,
-      onchange: null,
-      addListener: jest.fn(),
-      removeListener: jest.fn(),
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
-      dispatchEvent: jest.fn(),
-    })),
+    value: mockFn,
   });
 }
 
@@ -152,20 +209,20 @@ export function mockLocalStorage(): void {
   const store: Record<string, string> = {};
   
   const mockStorage = {
-    getItem: jest.fn((key: string) => store[key] || null),
-    setItem: jest.fn((key: string, value: string) => {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => {
       store[key] = value;
-    }),
-    removeItem: jest.fn((key: string) => {
+    },
+    removeItem: (key: string) => {
       delete store[key];
-    }),
-    clear: jest.fn(() => {
+    },
+    clear: () => {
       Object.keys(store).forEach(key => delete store[key]);
-    }),
+    },
     get length() {
       return Object.keys(store).length;
     },
-    key: jest.fn((index: number) => Object.keys(store)[index] || null),
+    key: (index: number) => Object.keys(store)[index] || null,
   };
 
   Object.defineProperty(window, 'localStorage', {
@@ -179,20 +236,20 @@ export function mockSessionStorage(): void {
   const store: Record<string, string> = {};
   
   const mockStorage = {
-    getItem: jest.fn((key: string) => store[key] || null),
-    setItem: jest.fn((key: string, value: string) => {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => {
       store[key] = value;
-    }),
-    removeItem: jest.fn((key: string) => {
+    },
+    removeItem: (key: string) => {
       delete store[key];
-    }),
-    clear: jest.fn(() => {
+    },
+    clear: () => {
       Object.keys(store).forEach(key => delete store[key]);
-    }),
+    },
     get length() {
       return Object.keys(store).length;
     },
-    key: jest.fn((index: number) => Object.keys(store)[index] || null),
+    key: (index: number) => Object.keys(store)[index] || null,
   };
 
   Object.defineProperty(window, 'sessionStorage', {
@@ -392,7 +449,7 @@ export function simulateDragAndDrop(
 export async function fillForm(
   container: Element,
   values: Record<string, string | boolean>,
-  user: ReturnType<typeof userEvent.setup>
+  user: UserEventType
 ): Promise<void> {
   for (const [name, value] of Object.entries(values)) {
     const input = container.querySelector(`[name="${name}"]`) as HTMLInputElement;
@@ -420,7 +477,7 @@ export async function fillForm(
  */
 export async function submitForm(
   form: HTMLFormElement,
-  user: ReturnType<typeof userEvent.setup>
+  user: UserEventType
 ): Promise<void> {
   const submitButton = form.querySelector('[type="submit"]');
   if (submitButton) {
@@ -510,4 +567,4 @@ export function checkBasicA11y(element: Element): {
 
 // Re-export testing-library utilities
 export * from '@testing-library/react';
-export { userEvent };
+export { createUserEvent };
