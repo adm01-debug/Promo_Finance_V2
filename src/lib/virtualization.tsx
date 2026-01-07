@@ -3,13 +3,8 @@
 // Performance otimizada para milhares de itens
 // ============================================
 
-import React, { useCallback, useRef, useState, useMemo } from 'react';
-import { FixedSizeList as RWFixedSizeList, VariableSizeList as RWVariableSizeList, FixedSizeGrid as RWFixedSizeGrid } from 'react-window';
-
-// Re-export types
-type FixedSizeList = RWFixedSizeList;
-type VariableSizeList = RWVariableSizeList;
-type FixedSizeGrid = RWFixedSizeGrid;
+import React, { useCallback, useRef, useState, useMemo, CSSProperties, ReactElement } from 'react';
+import { List, Grid, ListImperativeAPI, GridImperativeAPI, useDynamicRowHeight } from 'react-window';
 
 // ============================================
 // TIPOS
@@ -17,32 +12,32 @@ type FixedSizeGrid = RWFixedSizeGrid;
 
 interface VirtualListProps<T> {
   items: T[];
-  height: number;
+  height?: number;
   itemHeight: number | ((index: number) => number);
-  renderItem: (item: T, index: number, style: React.CSSProperties) => React.ReactNode;
+  renderItem: (item: T, index: number, style: CSSProperties) => ReactElement;
   overscanCount?: number;
   className?: string;
   onScroll?: (scrollOffset: number) => void;
-  initialScrollOffset?: number;
+  style?: CSSProperties;
 }
 
 interface VirtualGridProps<T> {
   items: T[];
-  height: number;
-  width: number;
+  height?: number;
+  width?: number;
   columnCount: number;
   rowHeight: number;
   columnWidth: number;
-  renderItem: (item: T, rowIndex: number, columnIndex: number, style: React.CSSProperties) => React.ReactNode;
-  overscanRowCount?: number;
-  overscanColumnCount?: number;
+  renderItem: (item: T, rowIndex: number, columnIndex: number, style: CSSProperties) => ReactElement;
+  overscanCount?: number;
   className?: string;
+  style?: CSSProperties;
 }
 
 interface VirtualTableProps<T> {
   data: T[];
   columns: VirtualTableColumn<T>[];
-  height: number;
+  height?: number;
   rowHeight?: number;
   headerHeight?: number;
   className?: string;
@@ -62,64 +57,58 @@ interface VirtualTableColumn<T> {
 // VIRTUAL LIST - Lista fixa ou variável
 // ============================================
 
+interface RowProps<T> {
+  items: T[];
+  renderItem: (item: T, index: number, style: CSSProperties) => ReactElement;
+}
+
+function RowComponent<T>({ 
+  index, 
+  style, 
+  items, 
+  renderItem 
+}: { 
+  ariaAttributes: unknown;
+  index: number; 
+  style: CSSProperties;
+  items: T[];
+  renderItem: (item: T, index: number, style: CSSProperties) => ReactElement;
+}): ReactElement {
+  return renderItem(items[index], index, style);
+}
+
 export function VirtualList<T>({
   items,
-  height,
+  height = 400,
   itemHeight,
   renderItem,
   overscanCount = 5,
   className = '',
-  onScroll,
-  initialScrollOffset = 0,
+  style,
 }: VirtualListProps<T>) {
-  const listRef = useRef<FixedSizeList | VariableSizeList>(null);
+  const listRef = useRef<ListImperativeAPI>(null);
 
-  const handleScroll = useCallback(({ scrollOffset }: { scrollOffset: number }) => {
-    onScroll?.(scrollOffset);
-  }, [onScroll]);
+  const rowHeightValue = typeof itemHeight === 'function' 
+    ? (index: number) => itemHeight(index)
+    : itemHeight;
 
-  // Lista de tamanho fixo
-  if (typeof itemHeight === 'number') {
-    return (
-      <RWFixedSizeList
-        ref={listRef as React.RefObject<FixedSizeList>}
-        height={height}
-        width="100%"
-        itemCount={items.length}
-        itemSize={itemHeight}
-        overscanCount={overscanCount}
-        onScroll={handleScroll}
-        initialScrollOffset={initialScrollOffset}
-        className={className}
-      >
-        {({ index, style }) => (
-          <div style={style}>
-            {renderItem(items[index], index, style)}
-          </div>
-        )}
-      </RWFixedSizeList>
-    );
-  }
-
-  // Lista de tamanho variável
   return (
-    <RWVariableSizeList
-      ref={listRef as React.RefObject<VariableSizeList>}
-      height={height}
-      width="100%"
-      itemCount={items.length}
-      itemSize={itemHeight}
+    <List
+      listRef={listRef}
+      rowCount={items.length}
+      rowHeight={rowHeightValue}
       overscanCount={overscanCount}
-      onScroll={handleScroll}
-      initialScrollOffset={initialScrollOffset}
       className={className}
-    >
-      {({ index, style }) => (
-        <div style={style}>
-          {renderItem(items[index], index, style)}
-        </div>
+      style={{ height, ...style }}
+      rowComponent={(props) => (
+        <RowComponent 
+          {...props} 
+          items={items} 
+          renderItem={renderItem}
+        />
       )}
-    </RWVariableSizeList>
+      rowProps={{ items, renderItem }}
+    />
   );
 }
 
@@ -127,43 +116,73 @@ export function VirtualList<T>({
 // VIRTUAL GRID - Grid virtualizado
 // ============================================
 
+interface CellProps<T> {
+  items: T[];
+  columnCount: number;
+  renderItem: (item: T, rowIndex: number, columnIndex: number, style: CSSProperties) => ReactElement;
+}
+
+function CellComponent<T>({ 
+  rowIndex, 
+  columnIndex,
+  style, 
+  items, 
+  columnCount,
+  renderItem 
+}: { 
+  ariaAttributes: unknown;
+  rowIndex: number;
+  columnIndex: number;
+  style: CSSProperties;
+  items: T[];
+  columnCount: number;
+  renderItem: (item: T, rowIndex: number, columnIndex: number, style: CSSProperties) => ReactElement;
+}): ReactElement {
+  const index = rowIndex * columnCount + columnIndex;
+  const item = items[index];
+  
+  if (!item) {
+    return <div style={style} />;
+  }
+  
+  return renderItem(item, rowIndex, columnIndex, style);
+}
+
 export function VirtualGrid<T>({
   items,
-  height,
-  width,
+  height = 400,
+  width = 800,
   columnCount,
   rowHeight,
   columnWidth,
   renderItem,
-  overscanRowCount = 2,
-  overscanColumnCount = 2,
+  overscanCount = 2,
   className = '',
+  style,
 }: VirtualGridProps<T>) {
+  const gridRef = useRef<GridImperativeAPI>(null);
   const rowCount = Math.ceil(items.length / columnCount);
 
-  const getItem = useCallback((rowIndex: number, columnIndex: number): T | null => {
-    const index = rowIndex * columnCount + columnIndex;
-    return index < items.length ? items[index] : null;
-  }, [items, columnCount]);
-
   return (
-    <RWFixedSizeGrid
-      height={height}
-      width={width}
+    <Grid
+      gridRef={gridRef}
       columnCount={columnCount}
       rowCount={rowCount}
       columnWidth={columnWidth}
       rowHeight={rowHeight}
-      overscanRowCount={overscanRowCount}
-      overscanColumnCount={overscanColumnCount}
+      overscanCount={overscanCount}
       className={className}
-    >
-      {({ columnIndex, rowIndex, style }) => {
-        const item = getItem(rowIndex, columnIndex);
-        if (!item) return <div style={style} />;
-        return renderItem(item, rowIndex, columnIndex, style);
-      }}
-    </RWFixedSizeGrid>
+      style={{ height, width, ...style }}
+      cellComponent={(props) => (
+        <CellComponent 
+          {...props} 
+          items={items}
+          columnCount={columnCount}
+          renderItem={renderItem}
+        />
+      )}
+      cellProps={{ items, columnCount, renderItem }}
+    />
   );
 }
 
@@ -171,10 +190,63 @@ export function VirtualGrid<T>({
 // VIRTUAL TABLE - Tabela virtualizada
 // ============================================
 
+interface TableRowProps<T> {
+  data: T[];
+  columns: VirtualTableColumn<T>[];
+  selectedIndex?: number;
+  onRowClick?: (item: T, index: number) => void;
+}
+
+function TableRowComponent<T>({ 
+  index, 
+  style, 
+  data,
+  columns,
+  selectedIndex,
+  onRowClick,
+}: { 
+  ariaAttributes: unknown;
+  index: number; 
+  style: CSSProperties;
+  data: T[];
+  columns: VirtualTableColumn<T>[];
+  selectedIndex?: number;
+  onRowClick?: (item: T, index: number) => void;
+}): ReactElement {
+  const item = data[index];
+  const isSelected = selectedIndex === index;
+
+  return (
+    <div
+      style={style}
+      className={`flex border-b border-border hover:bg-muted/50 cursor-pointer transition-colors ${
+        isSelected ? 'bg-primary/10' : ''
+      }`}
+      onClick={() => onRowClick?.(item, index)}
+    >
+      {columns.map((column) => (
+        <div
+          key={column.key}
+          style={{ width: column.width, minWidth: column.width }}
+          className={`flex items-center px-4 text-sm ${
+            column.align === 'center' ? 'justify-center' :
+            column.align === 'right' ? 'justify-end' : 'justify-start'
+          }`}
+        >
+          {column.render 
+            ? column.render(item, index)
+            : String((item as Record<string, unknown>)[column.key] ?? '-')
+          }
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function VirtualTable<T>({
   data,
   columns,
-  height,
+  height = 400,
   rowHeight = 48,
   headerHeight = 48,
   className = '',
@@ -185,37 +257,6 @@ export function VirtualTable<T>({
     columns.reduce((sum, col) => sum + col.width, 0),
     [columns]
   );
-
-  const Row = useCallback(({ index, style }: { index: number; style: React.CSSProperties }) => {
-    const item = data[index];
-    const isSelected = selectedIndex === index;
-
-    return (
-      <div
-        style={style}
-        className={`flex border-b border-border hover:bg-muted/50 cursor-pointer transition-colors ${
-          isSelected ? 'bg-primary/10' : ''
-        }`}
-        onClick={() => onRowClick?.(item, index)}
-      >
-        {columns.map((column) => (
-          <div
-            key={column.key}
-            style={{ width: column.width, minWidth: column.width }}
-            className={`flex items-center px-4 text-sm ${
-              column.align === 'center' ? 'justify-center' :
-              column.align === 'right' ? 'justify-end' : 'justify-start'
-            }`}
-          >
-            {column.render 
-              ? column.render(item, index)
-              : String((item as Record<string, unknown>)[column.key] ?? '-')
-            }
-          </div>
-        ))}
-      </div>
-    );
-  }, [data, columns, selectedIndex, onRowClick]);
 
   return (
     <div className={`border rounded-lg overflow-hidden ${className}`}>
@@ -239,15 +280,22 @@ export function VirtualTable<T>({
       </div>
 
       {/* Body */}
-      <RWFixedSizeList
-        height={height - headerHeight}
-        width={totalWidth}
-        itemCount={data.length}
-        itemSize={rowHeight}
+      <List
+        rowCount={data.length}
+        rowHeight={rowHeight}
         overscanCount={5}
-      >
-        {Row}
-      </RWFixedSizeList>
+        style={{ height: height - headerHeight, width: totalWidth }}
+        rowComponent={(props) => (
+          <TableRowComponent 
+            {...props}
+            data={data}
+            columns={columns}
+            selectedIndex={selectedIndex}
+            onRowClick={onRowClick}
+          />
+        )}
+        rowProps={{ data, columns, selectedIndex, onRowClick }}
+      />
     </div>
   );
 }
@@ -261,13 +309,49 @@ interface InfiniteScrollProps<T> {
   hasMore: boolean;
   isLoading: boolean;
   loadMore: () => void;
-  height: number;
+  height?: number;
   itemHeight: number;
-  renderItem: (item: T, index: number, style: React.CSSProperties) => React.ReactNode;
+  renderItem: (item: T, index: number, style: CSSProperties) => ReactElement;
   loadingComponent?: React.ReactNode;
   endComponent?: React.ReactNode;
   threshold?: number;
   className?: string;
+}
+
+interface InfiniteRowProps<T> {
+  items: T[];
+  hasMore: boolean;
+  renderItem: (item: T, index: number, style: CSSProperties) => ReactElement;
+  loadingComponent?: React.ReactNode;
+}
+
+function InfiniteRowComponent<T>({ 
+  index, 
+  style, 
+  items,
+  hasMore,
+  renderItem,
+  loadingComponent,
+}: { 
+  ariaAttributes: unknown;
+  index: number; 
+  style: CSSProperties;
+  items: T[];
+  hasMore: boolean;
+  renderItem: (item: T, index: number, style: CSSProperties) => ReactElement;
+  loadingComponent?: React.ReactNode;
+}): ReactElement {
+  if (index >= items.length) {
+    return (
+      <div style={style} className="flex items-center justify-center">
+        {loadingComponent || (
+          <div className="animate-pulse text-muted-foreground">Carregando...</div>
+        )}
+      </div>
+    );
+  }
+
+  return renderItem(items[index], index, style);
 }
 
 export function InfiniteScroll<T>({
@@ -275,7 +359,7 @@ export function InfiniteScroll<T>({
   hasMore,
   isLoading,
   loadMore,
-  height,
+  height = 400,
   itemHeight,
   renderItem,
   loadingComponent,
@@ -283,55 +367,43 @@ export function InfiniteScroll<T>({
   threshold = 5,
   className = '',
 }: InfiniteScrollProps<T>) {
-  const listRef = useRef<FixedSizeList>(null);
+  const listRef = useRef<ListImperativeAPI>(null);
   const loadMoreRef = useRef(loadMore);
   loadMoreRef.current = loadMore;
 
   const itemCount = items.length + (hasMore ? 1 : 0);
 
-  const isItemLoaded = useCallback((index: number) => {
-    return !hasMore || index < items.length;
-  }, [hasMore, items.length]);
-
-  const Row = useCallback(({ index, style }: { index: number; style: React.CSSProperties }) => {
-    if (!isItemLoaded(index)) {
-      return (
-        <div style={style} className="flex items-center justify-center">
-          {loadingComponent || (
-            <div className="animate-pulse text-muted-foreground">Carregando...</div>
-          )}
-        </div>
-      );
-    }
-
-    return renderItem(items[index], index, style);
-  }, [items, isItemLoaded, renderItem, loadingComponent]);
-
-  const handleScroll = useCallback(({ scrollOffset }: { scrollOffset: number }) => {
+  const handleRowsRendered = useCallback((
+    visibleRows: { startIndex: number; stopIndex: number },
+    _allRows: { startIndex: number; stopIndex: number }
+  ) => {
     if (isLoading || !hasMore) return;
-
-    const scrollHeight = itemCount * itemHeight;
-    const scrollPosition = scrollOffset + height;
-    const loadThreshold = scrollHeight - (threshold * itemHeight);
-
-    if (scrollPosition >= loadThreshold) {
+    
+    if (visibleRows.stopIndex >= items.length - threshold) {
       loadMoreRef.current();
     }
-  }, [isLoading, hasMore, itemCount, itemHeight, height, threshold]);
+  }, [isLoading, hasMore, items.length, threshold]);
 
   return (
     <div className={className}>
-      <RWFixedSizeList
-        ref={listRef}
-        height={height}
-        width="100%"
-        itemCount={itemCount}
-        itemSize={itemHeight}
-        onScroll={handleScroll}
+      <List
+        listRef={listRef}
+        rowCount={itemCount}
+        rowHeight={itemHeight}
         overscanCount={threshold}
-      >
-        {Row}
-      </RWFixedSizeList>
+        onRowsRendered={handleRowsRendered}
+        style={{ height }}
+        rowComponent={(props) => (
+          <InfiniteRowComponent 
+            {...props}
+            items={items}
+            hasMore={hasMore}
+            renderItem={renderItem}
+            loadingComponent={loadingComponent}
+          />
+        )}
+        rowProps={{ items, hasMore, renderItem, loadingComponent }}
+      />
       {!hasMore && items.length > 0 && endComponent && (
         <div className="py-4 text-center text-muted-foreground">
           {endComponent}
@@ -490,7 +562,7 @@ export function useVirtualSelection<T>(items: T[]) {
   };
 }
 
-// Hook para scroll restauration
+// Hook para scroll restoration
 export function useScrollRestoration(key: string) {
   const [scrollOffset, setScrollOffset] = useState<number>(() => {
     const saved = sessionStorage.getItem(`scroll_${key}`);
@@ -514,12 +586,10 @@ export function useScrollRestoration(key: string) {
   };
 }
 
-export default {
-  VirtualList,
-  VirtualGrid,
-  VirtualTable,
-  InfiniteScroll,
-  useInfiniteScroll,
-  useVirtualSelection,
-  useScrollRestoration,
-};
+// Hook para altura dinâmica de linhas
+export function useVirtualDynamicHeight(defaultRowHeight: number, key?: string | number) {
+  return useDynamicRowHeight({ defaultRowHeight, key });
+}
+
+// Export the original useDynamicRowHeight from react-window
+export { useDynamicRowHeight };
