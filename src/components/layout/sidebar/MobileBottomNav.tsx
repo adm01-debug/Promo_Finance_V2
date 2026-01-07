@@ -34,8 +34,8 @@ export const MobileBottomNav = ({ onMenuClick }: MobileBottomNavProps) => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-t border-border safe-area-pb md:hidden">
-      <div className="flex items-center justify-around h-16 px-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-t border-border md:hidden pb-[env(safe-area-inset-bottom)]">
+      <div className="flex items-center justify-around h-16 px-1 sm:px-2">
         {navItems.map(item => {
           const Icon = item.icon;
           const isActive = location.pathname === item.href;
@@ -44,11 +44,11 @@ export const MobileBottomNav = ({ onMenuClick }: MobileBottomNavProps) => {
             <NavLink
               key={item.href}
               to={item.href}
-              className="flex flex-col items-center justify-center flex-1 py-2 relative"
+              className="flex flex-col items-center justify-center flex-1 py-2 relative min-w-0"
             >
               <motion.div
                 className={cn(
-                  'flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-colors',
+                  'flex flex-col items-center gap-0.5 px-2 sm:px-3 py-1.5 rounded-xl transition-colors',
                   isActive
                     ? 'text-primary'
                     : 'text-muted-foreground'
@@ -65,7 +65,7 @@ export const MobileBottomNav = ({ onMenuClick }: MobileBottomNavProps) => {
                     />
                   )}
                 </div>
-                <span className="text-[10px] font-medium">{item.label}</span>
+                <span className="text-[10px] font-medium truncate max-w-[60px]">{item.label}</span>
               </motion.div>
             </NavLink>
           );
@@ -74,10 +74,10 @@ export const MobileBottomNav = ({ onMenuClick }: MobileBottomNavProps) => {
         {/* Menu Button */}
         <button
           onClick={onMenuClick}
-          className="flex flex-col items-center justify-center flex-1 py-2"
+          className="flex flex-col items-center justify-center flex-1 py-2 min-w-0"
         >
           <motion.div
-            className="flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl text-muted-foreground"
+            className="flex flex-col items-center gap-0.5 px-2 sm:px-3 py-1.5 rounded-xl text-muted-foreground"
             whileTap={{ scale: 0.95 }}
           >
             <div className="relative">
