@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { InteractivePageWrapper } from '@/components/wrappers';
 import { 
   FileText,
   Download,
