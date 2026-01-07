@@ -614,21 +614,22 @@ export const objectTransformers = {
    * Deep merge
    */
   deepMerge: <T extends object>(...objects: Partial<T>[]): T => {
-    return objects.reduce((acc, obj) => {
+    const result = objects.reduce<Record<string, unknown>>((acc, obj) => {
       Object.entries(obj).forEach(([key, value]) => {
-        const existing = (acc as Record<string, unknown>)[key];
+        const existing = acc[key];
         if (typeof value === 'object' && value !== null && !Array.isArray(value) &&
             typeof existing === 'object' && existing !== null && !Array.isArray(existing)) {
-          (acc as Record<string, unknown>)[key] = objectTransformers.deepMerge(
+          acc[key] = objectTransformers.deepMerge(
             existing as object,
             value as object
           );
         } else {
-          (acc as Record<string, unknown>)[key] = value;
+          acc[key] = value;
         }
       });
       return acc;
-    }, {} as T);
+    }, {} as Record<string, unknown>);
+    return result as T;
   },
 
   /**
