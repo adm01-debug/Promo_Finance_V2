@@ -2,14 +2,19 @@ import * as React from "react";
 
 import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
 
-const TOAST_LIMIT = 1;
-const TOAST_REMOVE_DELAY = 1000000;
+const TOAST_LIMIT = 3;
+const TOAST_REMOVE_DELAY = 5000;
+
+// ============================================================================
+// TIPOS
+// ============================================================================
 
 type ToasterToast = ToastProps & {
   id: string;
   title?: React.ReactNode;
   description?: React.ReactNode;
   action?: ToastActionElement;
+  duration?: number;
 };
 
 const actionTypes = {
@@ -52,9 +57,9 @@ interface State {
 
 const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
 
-const addToRemoveQueue = (toastId: string) => {
+const addToRemoveQueue = (toastId: string, duration: number = TOAST_REMOVE_DELAY) => {
   if (toastTimeouts.has(toastId)) {
-    return;
+    clearTimeout(toastTimeouts.get(toastId));
   }
 
   const timeout = setTimeout(() => {
@@ -63,7 +68,7 @@ const addToRemoveQueue = (toastId: string) => {
       type: "REMOVE_TOAST",
       toastId: toastId,
     });
-  }, TOAST_REMOVE_DELAY);
+  }, duration);
 
   toastTimeouts.set(toastId, timeout);
 };
@@ -85,13 +90,11 @@ export const reducer = (state: State, action: Action): State => {
     case "DISMISS_TOAST": {
       const { toastId } = action;
 
-      // ! Side effects ! - This could be extracted into a dismissToast() action,
-      // but I'll keep it here for simplicity
       if (toastId) {
-        addToRemoveQueue(toastId);
+        addToRemoveQueue(toastId, 300);
       } else {
         state.toasts.forEach((toast) => {
-          addToRemoveQueue(toast.id);
+          addToRemoveQueue(toast.id, 300);
         });
       }
 
@@ -134,7 +137,11 @@ function dispatch(action: Action) {
 
 type Toast = Omit<ToasterToast, "id">;
 
-function toast({ ...props }: Toast) {
+// ============================================================================
+// TOAST PRINCIPAL
+// ============================================================================
+
+function toast({ duration = TOAST_REMOVE_DELAY, ...props }: Toast) {
   const id = genId();
 
   const update = (props: ToasterToast) =>
@@ -156,12 +163,97 @@ function toast({ ...props }: Toast) {
     },
   });
 
+  // Auto dismiss
+  addToRemoveQueue(id, duration);
+
   return {
     id: id,
     dismiss,
     update,
   };
 }
+
+// ============================================================================
+// HELPERS DE TOAST
+// ============================================================================
+
+toast.success = (title: string, description?: string) => {
+  return toast({
+    title,
+    description,
+    className: "border-green-500/50 bg-green-50 dark:bg-green-950/50",
+  });
+};
+
+toast.error = (title: string, description?: string) => {
+  return toast({
+    title,
+    description,
+    variant: "destructive",
+  });
+};
+
+toast.warning = (title: string, description?: string) => {
+  return toast({
+    title,
+    description,
+    className: "border-yellow-500/50 bg-yellow-50 dark:bg-yellow-950/50",
+  });
+};
+
+toast.info = (title: string, description?: string) => {
+  return toast({
+    title,
+    description,
+    className: "border-blue-500/50 bg-blue-50 dark:bg-blue-950/50",
+  });
+};
+
+toast.loading = (title: string, description?: string) => {
+  return toast({
+    title,
+    description,
+    duration: 100000, // Long duration for loading
+  });
+};
+
+toast.promise = async <T,>(
+  promise: Promise<T>,
+  {
+    loading,
+    success,
+    error,
+  }: {
+    loading: string;
+    success: string | ((data: T) => string);
+    error: string | ((err: Error) => string);
+  },
+): Promise<T> => {
+  const toastInstance = toast.loading(loading);
+
+  try {
+    const result = await promise;
+    toastInstance.update({
+      id: toastInstance.id,
+      title: typeof success === "function" ? success(result) : success,
+      className: "border-green-500/50 bg-green-50 dark:bg-green-950/50",
+    } as ToasterToast);
+    addToRemoveQueue(toastInstance.id, 3000);
+    return result;
+  } catch (err) {
+    toastInstance.update({
+      id: toastInstance.id,
+      title: typeof error === "function" ? error(err as Error) : error,
+      variant: "destructive",
+    } as ToasterToast);
+    addToRemoveQueue(toastInstance.id, 5000);
+    throw err;
+  }
+};
+
+// ============================================================================
+// HOOK
+// ============================================================================
 
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState);
