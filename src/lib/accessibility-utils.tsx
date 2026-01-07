@@ -3,7 +3,7 @@
 // Helpers e hooks para melhorar a acessibilidade
 // ============================================
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 // ============================================
 // TIPOS

@@ -357,11 +357,15 @@ export function formatPercent(
  */
 export function formatList(
   items: string[],
-  options?: Intl.ListFormatOptions,
+  options?: { style?: 'long' | 'short' | 'narrow'; type?: 'conjunction' | 'disjunction' | 'unit' },
   locale?: string
 ): string {
   const targetLocale = locale || currentLocale;
-  return new Intl.ListFormat(targetLocale, {
+  // Fallback para browsers que não suportam ListFormat
+  if (typeof (Intl as any).ListFormat === 'undefined') {
+    return items.join(', ');
+  }
+  return new (Intl as any).ListFormat(targetLocale, {
     style: 'long',
     type: 'conjunction',
     ...options,
@@ -448,7 +452,7 @@ export function useLocaleFormat() {
         formatCurrency(value, currency, options, locale),
       percent: (value: number, options?: Intl.NumberFormatOptions) =>
         formatPercent(value, options, locale),
-      list: (items: string[], options?: Intl.ListFormatOptions) =>
+      list: (items: string[], options?: { style?: 'long' | 'short' | 'narrow'; type?: 'conjunction' | 'disjunction' | 'unit' }) =>
         formatList(items, options, locale),
       unit: (value: number, unit: Intl.NumberFormatOptions['unit'], options?: Intl.NumberFormatOptions) =>
         formatUnit(value, unit, options, locale),
