@@ -155,7 +155,7 @@ export function debounce<T extends AnyFunction>(
     return timeoutId !== null;
   };
 
-  const debounced = function (this: unknown, ...args: Parameters<T>) {
+  function debounced(this: unknown, ...args: Parameters<T>): ReturnType<T> {
     const time = Date.now();
     const isInvoking = shouldInvoke(time);
 
@@ -179,13 +179,13 @@ export function debounce<T extends AnyFunction>(
     }
 
     return result;
-  } as DebouncedFunction<T>;
+  }
 
   debounced.cancel = cancel;
   debounced.flush = flush;
   debounced.pending = pending;
 
-  return debounced;
+  return debounced as DebouncedFunction<T>;
 }
 
 /**
