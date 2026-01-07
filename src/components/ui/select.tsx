@@ -105,7 +105,15 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 focus:bg-accent focus:text-accent-foreground",
+      // Base styles with improved touch targets for mobile
+      "relative flex w-full cursor-default select-none items-center rounded-sm",
+      "py-2.5 sm:py-1.5 pl-8 pr-2 text-sm",
+      // Better spacing for touch on mobile
+      "min-h-[44px] sm:min-h-0",
+      "outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "focus:bg-accent focus:text-accent-foreground",
+      // Active state for touch feedback
+      "active:bg-accent/80",
       className,
     )}
     {...props}

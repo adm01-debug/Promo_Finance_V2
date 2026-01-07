@@ -42,29 +42,42 @@ export function BulkActionsBar<T>({
   return (
     <div
       className={cn(
-        'fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-lg border bg-background p-2 shadow-lg',
+        'fixed z-50',
+        // Mobile: full width at bottom with safe area
+        'bottom-20 left-4 right-4',
+        // Desktop: centered at bottom
+        'md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2',
+        // Base styles
+        'rounded-xl border bg-popover p-3 shadow-lg',
+        'flex flex-col md:flex-row items-stretch md:items-center gap-3',
         className
       )}
     >
-      <div className="flex items-center gap-2 px-2">
-        <span className="text-sm font-medium">
+      {/* Selection info + clear */}
+      <div className="flex items-center justify-between md:justify-start gap-2 px-2">
+        <span className="text-sm font-medium whitespace-nowrap">
           {selectionCount} selecionado{selectionCount > 1 ? 's' : ''}
         </span>
         <Button
           variant="ghost"
           size="icon"
-          className="h-6 w-6"
+          className="h-8 w-8 shrink-0"
           onClick={onClear}
           disabled={isExecuting}
         >
-          <X className="h-4 w-4" />
+          {isExecuting ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <X className="h-4 w-4" />
+          )}
           <span className="sr-only">Limpar seleção</span>
         </Button>
       </div>
 
-      <div className="h-6 w-px bg-border" />
+      <div className="hidden md:block h-6 w-px bg-border" />
 
-      <div className="flex items-center gap-1">
+      {/* Action buttons - grid on mobile, flex on desktop */}
+      <div className="grid grid-cols-2 md:flex items-center gap-2">
         {actions.map((action) => {
           const ActionButton = (
             <Button
@@ -73,14 +86,14 @@ export function BulkActionsBar<T>({
               size="sm"
               disabled={isExecuting}
               onClick={action.confirm ? undefined : () => onAction(action.id)}
-              className="gap-2"
+              className="gap-2 text-xs md:text-sm min-h-[40px] md:min-h-0"
             >
               {isExecuting ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                action.icon && <action.icon className="h-4 w-4" />
+                action.icon && <action.icon className="h-4 w-4 shrink-0" />
               )}
-              {action.label}
+              <span className="truncate">{action.label}</span>
             </Button>
           );
 
