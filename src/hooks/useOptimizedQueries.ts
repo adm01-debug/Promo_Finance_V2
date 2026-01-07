@@ -1,7 +1,9 @@
 import { useQueryClient, useQuery } from '@tanstack/react-query';
-import { useCallback, useEffect, useState, useMemo } from 'react';
+import { useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { STALE_TIMES, GC_TIMES } from '@/lib/queryClient';
+// Re-export useDebounce from dedicated module
+export { useDebounce } from './useDebounce';
 
 // ============================================
 // PREFETCH CRITICAL DATA
@@ -220,22 +222,7 @@ export function getPaginationRange(params: PaginationParams) {
   return { from, to };
 }
 
-// Debounced search hook
-export function useDebounce<T>(value: T, delay: number = 300): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-}
+// Note: useDebounce is re-exported from './useDebounce' at top of file
 
 // Cache key generators for consistency
 export const queryKeys = {
