@@ -457,16 +457,16 @@ export function SefazMonitor() {
                         <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" />
                     <XAxis 
                       dataKey="time" 
                       tick={{ fontSize: 10 }} 
-                      className="text-muted-foreground"
+                      stroke="hsl(var(--muted-foreground))"
                     />
                     <YAxis 
                       tick={{ fontSize: 10 }}
                       tickFormatter={(value) => `${value}ms`}
-                      className="text-muted-foreground"
+                      stroke="hsl(var(--muted-foreground))"
                     />
                     <Tooltip 
                       contentStyle={{ 
@@ -510,17 +510,17 @@ export function SefazMonitor() {
               {healthHistory.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={healthHistory}>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" />
                     <XAxis 
                       dataKey="time" 
                       tick={{ fontSize: 10 }} 
-                      className="text-muted-foreground"
+                      stroke="hsl(var(--muted-foreground))"
                     />
                     <YAxis 
                       domain={[0, 100]}
                       tick={{ fontSize: 10 }}
                       tickFormatter={(value) => value === 100 ? 'ON' : 'OFF'}
-                      className="text-muted-foreground"
+                      stroke="hsl(var(--muted-foreground))"
                     />
                     <Tooltip 
                       contentStyle={{ 

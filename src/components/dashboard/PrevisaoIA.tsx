@@ -444,9 +444,9 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
                         <CardContent>
                           <ResponsiveContainer width="100%" height={300}>
                             <AreaChart data={analise.analise_tendencias.dados_grafico}>
-                              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                              <XAxis dataKey="mes" className="text-xs" />
-                              <YAxis className="text-xs" tickFormatter={(v) => `R$ ${(v / 1000).toFixed(0)}k`} />
+                              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" />
+                              <XAxis dataKey="mes" tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
+                              <YAxis tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `R$ ${(v / 1000).toFixed(0)}k`} />
                               <Tooltip 
                                 formatter={(value: number) => formatCurrency(value)}
                                 labelFormatter={(label) => `Período: ${label}`}
