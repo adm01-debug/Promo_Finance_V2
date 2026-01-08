@@ -1,4 +1,4 @@
-import { memo, ReactNode, ComponentType, useMemo } from 'react';
+import { useMemo } from 'react';
 
 interface TableOptimizationConfig {
   /** Whether to animate row entries */
@@ -58,33 +58,3 @@ export function useTableOptimization(
     };
   }, [dataLength, animationThreshold, virtualizationThreshold]);
 }
-
-/**
- * Higher-order component to memoize table rows with proper comparison
- * Prevents unnecessary re-renders when parent component updates
- */
-export function createMemoizedRow<T extends { id: string }>(
-  RowComponent: ComponentType<{ item: T; index: number }>
-) {
-  return memo(RowComponent, (prevProps, nextProps) => {
-    // Only re-render if the item data actually changed
-    return (
-      prevProps.item.id === nextProps.item.id &&
-      prevProps.index === nextProps.index &&
-      JSON.stringify(prevProps.item) === JSON.stringify(nextProps.item)
-    );
-  });
-}
-
-interface MemoizedCellProps {
-  children: ReactNode;
-}
-
-/**
- * Memoized table cell component for complex cell content
- */
-function MemoizedCellComponent({ children }: MemoizedCellProps) {
-  return children;
-}
-
-export const MemoizedCell = memo(MemoizedCellComponent);

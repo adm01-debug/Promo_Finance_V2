@@ -285,19 +285,3 @@ export const OnboardingChecklist = () => {
     </>
   );
 };
-
-// Export a button to reset checklist for testing
-export const ResetChecklistButton = () => {
-  const resetChecklist = () => {
-    localStorage.removeItem(CHECKLIST_KEY);
-    localStorage.removeItem(CHECKLIST_DISMISSED_KEY);
-    window.location.reload();
-  };
-
-  return (
-    <Button variant="outline" size="sm" onClick={resetChecklist} className="gap-2">
-      <Sparkles className="h-4 w-4" />
-      Resetar Checklist
-    </Button>
-  );
-};
