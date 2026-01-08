@@ -43,7 +43,13 @@ import {
   WifiOff,
   Server,
   ShieldCheck,
-  Zap
+  Zap,
+  History,
+  Ban,
+  Bell,
+  BarChart3,
+  Shield,
+  Activity
 } from 'lucide-react';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/formatters';
 import { useEmpresas } from '@/hooks/useFinancialData';
@@ -57,7 +63,6 @@ import { SefazAnalytics } from '@/components/nfe/SefazAnalytics';
 import { InutilizacaoNFe } from '@/components/nfe/InutilizacaoNFe';
 import { ContingenciaNFe } from '@/components/nfe/ContingenciaNFe';
 import { SefazMonitor } from '@/components/nfe/SefazMonitor';
-import { History, Ban, Bell, BarChart3, Shield, Activity } from 'lucide-react';
 
 const containerVariants = {
   hidden: { opacity: 0 },
