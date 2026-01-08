@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 
@@ -95,8 +96,8 @@ export function InsightsFluxoIA({
       if (fnError) throw fnError;
 
       setAnalise(data);
-    } catch (err) {
-      console.error('Erro ao analisar fluxo:', err);
+    } catch (err: unknown) {
+      logger.error('Erro ao analisar fluxo:', err);
       setError('Não foi possível gerar a análise. Tente novamente.');
       toast.error('Erro ao gerar análise de IA');
     } finally {

@@ -14,6 +14,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { 
@@ -85,8 +86,8 @@ export function PasswordResetApprovals() {
       toast.success('Reset de senha aprovado! Email enviado ao usuário.');
       queryClient.invalidateQueries({ queryKey: ['password-reset-requests'] });
     },
-    onError: (error) => {
-      console.error(error);
+    onError: (error: unknown) => {
+      logger.error('Erro ao aprovar reset de senha:', error);
       toast.error('Erro ao aprovar reset de senha');
     }
   });
@@ -112,8 +113,8 @@ export function PasswordResetApprovals() {
       setRejectReason('');
       setSelectedRequest(null);
     },
-    onError: (error) => {
-      console.error(error);
+    onError: (error: unknown) => {
+      logger.error('Erro ao rejeitar solicitação:', error);
       toast.error('Erro ao rejeitar solicitação');
     }
   });

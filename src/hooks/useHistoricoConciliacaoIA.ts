@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import { useAuth } from '@/hooks/useAuth';
 import { MatchSugestaoIA } from './useConciliacaoIA';
 
@@ -115,8 +116,8 @@ export function useHistoricoConciliacaoIA() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['historico-conciliacao-ia'] });
     },
-    onError: (error) => {
-      console.error('Erro ao registrar histórico:', error);
+    onError: (error: unknown) => {
+      logger.error('Erro ao registrar histórico:', error);
     },
   });
 
@@ -143,8 +144,8 @@ export function useHistoricoConciliacaoIA() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feedback-conciliacao-ia'] });
     },
-    onError: (error) => {
-      console.error('Erro ao registrar feedback:', error);
+    onError: (error: unknown) => {
+      logger.error('Erro ao registrar feedback:', error);
     },
   });
 
@@ -182,8 +183,8 @@ export function useHistoricoConciliacaoIA() {
           });
 
           results.success++;
-        } catch (error) {
-          console.error('Erro ao aprovar match:', error);
+        } catch (error: unknown) {
+          logger.error('Erro ao aprovar match:', error);
           results.failed++;
         }
       }

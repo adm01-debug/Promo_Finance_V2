@@ -13,6 +13,7 @@ import { toastPaymentSuccess } from '@/lib/toast-confetti';
 import { sounds } from '@/lib/sound-feedback';
 import { haptic } from '@/lib/haptic-feedback';
 import { formatCurrency } from '@/lib/formatters';
+import { logger } from '@/lib/logger';
 import {
   Dialog,
   DialogContent,
@@ -174,13 +175,13 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
       toastPaymentSuccess(formatCurrency(form.getValues('valor_pago')));
       onOpenChange(false);
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
       sounds.error();
       haptic('error');
-      console.error('Error registering payment:', error);
+      logger.error('Error registering payment:', error);
       toast({
         title: 'Erro ao registrar pagamento',
-        description: error.message || 'Não foi possível registrar o pagamento. Tente novamente.',
+        description: error instanceof Error ? error.message : 'Não foi possível registrar o pagamento. Tente novamente.',
         variant: 'destructive',
       });
     },

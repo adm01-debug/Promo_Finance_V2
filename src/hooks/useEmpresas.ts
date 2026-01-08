@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import type { Tables, TablesInsert, TablesUpdate } from '@/integrations/supabase/types';
 
 export type Empresa = Tables<'empresas'>;
@@ -40,7 +41,7 @@ export function useCriarEmpresa() {
       toast.success('Empresa cadastrada com sucesso!');
     },
     onError: (error: Error) => {
-      console.error('Erro ao cadastrar empresa:', error);
+      logger.error('Erro ao cadastrar empresa:', error);
       toast.error('Erro ao cadastrar empresa: ' + error.message);
     },
   });
@@ -66,7 +67,7 @@ export function useAtualizarEmpresa() {
       toast.success('Empresa atualizada com sucesso!');
     },
     onError: (error: Error) => {
-      console.error('Erro ao atualizar empresa:', error);
+      logger.error('Erro ao atualizar empresa:', error);
       toast.error('Erro ao atualizar empresa: ' + error.message);
     },
   });
@@ -90,7 +91,7 @@ export function useExcluirEmpresa() {
       toast.success('Empresa desativada com sucesso!');
     },
     onError: (error: Error) => {
-      console.error('Erro ao desativar empresa:', error);
+      logger.error('Erro ao desativar empresa:', error);
       toast.error('Erro ao desativar empresa: ' + error.message);
     },
   });
@@ -113,7 +114,7 @@ export function useReativarEmpresa() {
       toast.success('Empresa reativada com sucesso!');
     },
     onError: (error: Error) => {
-      console.error('Erro ao reativar empresa:', error);
+      logger.error('Erro ao reativar empresa:', error);
       toast.error('Erro ao reativar empresa: ' + error.message);
     },
   });

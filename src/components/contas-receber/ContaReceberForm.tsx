@@ -13,6 +13,7 @@ import { useClientes, useCentrosCusto, useContasBancarias, useEmpresas } from '@
 import { toast } from '@/hooks/use-toast';
 import { useConfetti } from '@/hooks/useConfetti';
 import { sounds } from '@/lib/sound-feedback';
+import { logger } from '@/lib/logger';
 import {
   Dialog,
   DialogContent,
@@ -189,9 +190,9 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
       form.reset();
       onOpenChange(false);
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
       sounds.error();
-      console.error('Error creating conta receber:', error);
+      logger.error('Error creating conta receber:', error);
       toast({
         title: 'Erro ao criar conta',
         description: 'Não foi possível criar a conta. Tente novamente.',
@@ -235,8 +236,8 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
       });
       onOpenChange(false);
     },
-    onError: (error) => {
-      console.error('Error updating conta receber:', error);
+    onError: (error: unknown) => {
+      logger.error('Error updating conta receber:', error);
       toast({
         title: 'Erro ao atualizar conta',
         description: 'Não foi possível salvar as alterações. Tente novamente.',

@@ -7,6 +7,7 @@ import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import { ALIQUOTAS_TRANSICAO } from '@/types/reforma-tributaria';
 
 export interface AchamentoAuditoria {
@@ -184,9 +185,9 @@ export function useAuditoriaCompliance(empresaId?: string) {
 
       setAchamentos(novosAchamentos);
       toast.success(`Auditoria concluída: ${novosAchamentos.length} achamentos`);
-    } catch (error) {
+    } catch (error: unknown) {
       toast.error('Erro ao executar auditoria');
-      console.error(error);
+      logger.error('Erro ao executar auditoria:', error);
     } finally {
       setIsExecutando(false);
     }

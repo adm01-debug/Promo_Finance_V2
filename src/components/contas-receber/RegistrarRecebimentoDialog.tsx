@@ -11,6 +11,7 @@ import { toastReceiptSuccess } from '@/lib/toast-confetti';
 import { sounds } from '@/lib/sound-feedback';
 import { haptic } from '@/lib/haptic-feedback';
 import { formatCurrency } from '@/lib/formatters';
+import { logger } from '@/lib/logger';
 import {
   Dialog,
   DialogContent,
@@ -128,10 +129,10 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
       toastReceiptSuccess(formatCurrency(form.getValues('valor_recebido')));
       onOpenChange(false);
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
       sounds.error();
       haptic('error');
-      console.error('Error registering receipt:', error);
+      logger.error('Error registering receipt:', error);
       toast({
         title: 'Erro ao registrar recebimento',
         description: 'Não foi possível registrar o recebimento. Tente novamente.',
