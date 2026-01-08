@@ -1,9 +1,8 @@
+import { forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import {
   Settings2,
   GripVertical,
-  Eye,
-  EyeOff,
   RotateCcw,
   Check,
   Maximize2,
@@ -19,7 +18,6 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -62,14 +60,15 @@ const SIZE_OPTIONS = [
   { value: 'lg', label: 'Grande', icon: Maximize2 },
 ];
 
-export function DashboardConfigDialog({
-  open,
-  onOpenChange,
-  widgets,
-  onToggleWidget,
-  onResizeWidget,
-  onResetToDefault,
-}: DashboardConfigDialogProps) {
+export const DashboardConfigDialog = forwardRef<HTMLDivElement, DashboardConfigDialogProps>(
+  function DashboardConfigDialog({
+    open,
+    onOpenChange,
+    widgets,
+    onToggleWidget,
+    onResizeWidget,
+    onResetToDefault,
+  }, ref) {
   const visibleCount = widgets.filter(w => w.visible).length;
 
   return (
@@ -165,4 +164,4 @@ export function DashboardConfigDialog({
       </DialogContent>
     </Dialog>
   );
-}
+});
