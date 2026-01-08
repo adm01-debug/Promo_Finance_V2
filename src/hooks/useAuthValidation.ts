@@ -20,18 +20,40 @@ export function useAuthValidation() {
   useEffect(() => {
     const fetchIpAndGeo = async () => {
       try {
-        const response = await fetch('http://ip-api.com/json/?fields=query,countryCode');
-        const data = await response.json();
-        setGeoData({ ip: data.query, country: data.countryCode });
-      } catch (error) {
-        console.error('Erro ao obter IP/localização:', error);
-        try {
-          const fallback = await fetch('https://api.ipify.org?format=json');
+        // Try primary geo API
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000);
+        
+        const response = await fetch('http://ip-api.com/json/?fields=query,countryCode', {
+          signal: controller.signal
+        });
+        clearTimeout(timeout);
+        
+        if (response.ok) {
+          const data = await response.json();
+          setGeoData({ ip: data.query, country: data.countryCode });
+          return;
+        }
+      } catch {
+        // Silently fail and try fallback
+      }
+      
+      // Fallback to IP-only service
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000);
+        
+        const fallback = await fetch('https://api.ipify.org?format=json', {
+          signal: controller.signal
+        });
+        clearTimeout(timeout);
+        
+        if (fallback.ok) {
           const fallbackData = await fallback.json();
           setGeoData(prev => ({ ...prev, ip: fallbackData.ip }));
-        } catch (e) {
-          console.error('Erro no fallback de IP:', e);
         }
+      } catch {
+        // Silently fail - IP/geo validation will be skipped
       }
     };
     fetchIpAndGeo();

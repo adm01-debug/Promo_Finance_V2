@@ -32,16 +32,18 @@ export function useRecentItems() {
     if (savedRecent) {
       try {
         setRecentItems(JSON.parse(savedRecent));
-      } catch (e) {
-        console.error('Error parsing recent items:', e);
+      } catch {
+        // Silently reset on parse error
+        localStorage.removeItem(RECENT_KEY);
       }
     }
     
     if (savedFavorites) {
       try {
         setFavoriteItems(JSON.parse(savedFavorites));
-      } catch (e) {
-        console.error('Error parsing favorites:', e);
+      } catch {
+        // Silently reset on parse error
+        localStorage.removeItem(FAVORITES_KEY);
       }
     }
   }, []);
