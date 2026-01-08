@@ -76,7 +76,8 @@ Formate a resposta de forma clara e estruturada em português brasileiro.`
         if (textContent.length > 10000) {
           textContent = textContent.substring(0, 10000) + "\n\n[... conteúdo truncado ...]";
         }
-      } catch (e) {
+      } catch (e: unknown) {
+        console.error("Erro ao decodificar arquivo:", e);
         textContent = "[Não foi possível decodificar o conteúdo do arquivo]";
       }
 
