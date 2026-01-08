@@ -57,8 +57,6 @@ export const DashboardExecutivo = () => {
         onOpenConfig={() => setConfigDialogOpen(true)}
       />
 
-
-
       <motion.div variants={itemVariants}>
         <HeroKPIGrid layout="hero-first">
           <HeroKPICard
@@ -139,8 +137,6 @@ export const DashboardExecutivo = () => {
         />
       </div>
 
-      
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         <TopClientesLeaderboard topClientesReceita={metrics.topClientesReceita} />
         <StatusContasPieChart statusContasPagar={metrics.statusContasPagar} />
@@ -150,7 +146,6 @@ export const DashboardExecutivo = () => {
       <motion.div variants={itemVariants}>
         <PrevisaoIA />
       </motion.div>
-
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <motion.div variants={itemVariants}>
