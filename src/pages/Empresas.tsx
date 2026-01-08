@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { InteractivePageWrapper, PrimaryActionButton, useCelebrations } from '@/components/wrappers';
-import { 
+import {
   Building2, 
   Plus, 
   Search,
