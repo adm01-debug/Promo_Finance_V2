@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { toastReconciliationSuccess, toastImportSuccess } from '@/lib/toast-confetti';
+import { logger } from '@/lib/logger';
 
 interface ConfirmarConciliacaoParams {
   transacaoId: string;
@@ -30,7 +31,7 @@ export function useConciliacao() {
       toastReconciliationSuccess(1);
     },
     onError: (error) => {
-      console.error('Erro ao confirmar conciliação:', error);
+      logger.error('[useConciliacao] Erro ao confirmar conciliação:', error);
       toast.error('Erro ao confirmar conciliação');
     },
   });
@@ -57,7 +58,7 @@ export function useConciliacao() {
       queryClient.invalidateQueries({ queryKey: ['transacoes-bancarias'] });
     },
     onError: (error) => {
-      console.error('Erro ao inserir transação:', error);
+      logger.error('[useConciliacao] Erro ao inserir transação:', error);
       toast.error('Erro ao inserir transação');
     },
   });
@@ -85,7 +86,7 @@ export function useConciliacao() {
       toastImportSuccess(data.length, 'transações');
     },
     onError: (error) => {
-      console.error('Erro ao importar transações:', error);
+      logger.error('[useConciliacao] Erro ao importar transações:', error);
       toast.error('Erro ao importar transações');
     },
   });

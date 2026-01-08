@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 type ReauthAction = 
   | 'change_password' 
@@ -62,7 +63,7 @@ export function useReauth() {
       
       return true;
     } catch (error) {
-      console.error('Erro na re-autenticação:', error);
+      logger.error('[useReauth] Erro na re-autenticação:', error);
       toast.error('Erro ao re-autenticar');
       return false;
     } finally {

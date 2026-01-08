@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils';
 import { useConciliacao } from '@/hooks/useConciliacao';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 import { LancamentoSistema } from '@/lib/transaction-matcher';
+import { logger } from '@/lib/logger';
 
 interface TransacaoExtrato {
   id: string;
@@ -101,7 +102,7 @@ export function ConciliacaoManualDialog({
       setSearch('');
     } catch (error) {
       showError('Erro ao conciliar transação');
-      console.error('Erro ao conciliar:', error);
+      logger.error('[ConciliacaoManualDialog] Erro ao conciliar:', error);
     } finally {
       setIsLoading(false);
     }

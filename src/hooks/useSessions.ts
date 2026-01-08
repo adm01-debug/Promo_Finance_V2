@@ -78,13 +78,13 @@ export function useSessions() {
         .order('last_activity', { ascending: false });
 
       if (error) {
-        console.error('Erro ao buscar sessões:', error);
+        logger.error('[useSessions] Erro ao buscar sessões:', error);
         return;
       }
 
       setSessions(data || []);
-    } catch (error) {
-      console.error('Erro ao buscar sessões:', error);
+    } catch {
+      // Silently fail - sessions will remain empty
     } finally {
       setIsLoading(false);
     }
@@ -122,12 +122,12 @@ export function useSessions() {
         });
 
       if (error) {
-        console.error('Erro ao criar sessão:', error);
+        logger.error('[useSessions] Erro ao criar sessão:', error);
       }
 
       await fetchSessions();
-    } catch (error) {
-      console.error('Erro ao criar sessão:', error);
+    } catch {
+      // Silently fail - session creation is not critical
     }
   };
 
@@ -146,7 +146,7 @@ export function useSessions() {
       setSessions(prev => prev.filter(s => s.id !== sessionId));
       toast.success('Sessão encerrada');
     } catch (error) {
-      console.error('Erro ao encerrar sessão:', error);
+      logger.error('[useSessions] Erro ao encerrar sessão:', error);
       toast.error('Erro ao encerrar sessão');
     }
   };
@@ -169,7 +169,7 @@ export function useSessions() {
       setSessions(prev => prev.filter(s => s.is_current));
       toast.success('Todas as outras sessões foram encerradas');
     } catch (error) {
-      console.error('Erro ao encerrar sessões:', error);
+      logger.error('[useSessions] Erro ao encerrar sessões:', error);
       toast.error('Erro ao encerrar sessões');
     }
   };
@@ -180,8 +180,8 @@ export function useSessions() {
         .from('user_sessions')
         .update({ last_activity: new Date().toISOString() })
         .eq('id', sessionId);
-    } catch (error) {
-      console.error('Erro ao atualizar atividade:', error);
+    } catch {
+      // Silently fail - activity update is not critical
     }
   };
 

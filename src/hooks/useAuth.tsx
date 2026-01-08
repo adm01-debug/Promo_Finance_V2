@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 
 type AppRole = 'admin' | 'financeiro' | 'operacional' | 'visualizador';
 
@@ -44,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .maybeSingle();
 
       if (profileError) {
-        console.error('Error fetching profile:', profileError);
+        logger.error('[useAuth] Error fetching profile:', profileError);
       } else if (profileData) {
         setProfile(profileData);
       }
@@ -57,12 +58,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .maybeSingle();
 
       if (roleError) {
-        console.error('Error fetching role:', roleError);
+        logger.error('[useAuth] Error fetching role:', roleError);
       } else if (roleData) {
         setRole(roleData.role as AppRole);
       }
-    } catch (error) {
-      console.error('Error in fetchProfile:', error);
+    } catch {
+      // Silently fail - profile/role will remain null
     }
   };
 

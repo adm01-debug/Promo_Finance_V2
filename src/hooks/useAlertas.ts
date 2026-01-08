@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export type PrioridadeAlerta = 'baixa' | 'media' | 'alta' | 'critica';
 
@@ -78,7 +79,7 @@ export function useMarcarAlertaComoLido() {
       queryClient.invalidateQueries({ queryKey: ['alertas-nao-lidos-count'] });
     },
     onError: (error) => {
-      console.error('Erro ao marcar alerta como lido:', error);
+      logger.error('[useAlertas] Erro ao marcar alerta como lido:', error);
       toast.error('Erro ao marcar alerta como lido');
     },
   });
@@ -102,7 +103,7 @@ export function useMarcarTodosAlertasComoLidos() {
       toast.success('Todos alertas marcados como lidos');
     },
     onError: (error) => {
-      console.error('Erro ao marcar alertas como lidos:', error);
+      logger.error('[useAlertas] Erro ao marcar alertas como lidos:', error);
       toast.error('Erro ao marcar alertas como lidos');
     },
   });
@@ -146,7 +147,7 @@ export function useCriarAlerta() {
       queryClient.invalidateQueries({ queryKey: ['alertas-nao-lidos-count'] });
     },
     onError: (error) => {
-      console.error('Erro ao criar alerta:', error);
+      logger.error('[useAlertas] Erro ao criar alerta:', error);
       toast.error('Erro ao criar alerta');
     },
   });
