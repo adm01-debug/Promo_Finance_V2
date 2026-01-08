@@ -102,7 +102,7 @@ export function useDeviceDetection() {
         .maybeSingle();
       
       if (checkError) {
-        console.error('Error checking device:', checkError);
+        logger.error('[useDeviceDetection] Error checking device:', checkError);
         return false;
       }
       
@@ -132,7 +132,7 @@ export function useDeviceDetection() {
         .single();
       
       if (insertError) {
-        console.error('Error registering device:', insertError);
+        logger.error('[useDeviceDetection] Error registering device:', insertError);
         return false;
       }
       
@@ -171,7 +171,7 @@ export function useDeviceDetection() {
       
       return true;
     } catch (error) {
-      console.error('Device detection error:', error);
+      logger.error('[useDeviceDetection] Device detection error:', error);
       return false;
     } finally {
       setIsChecking(false);
@@ -186,7 +186,7 @@ export function useDeviceDetection() {
       .order('last_seen_at', { ascending: false });
     
     if (error) {
-      console.error('Error fetching devices:', error);
+      logger.error('[useDeviceDetection] Error fetching devices:', error);
       return [];
     }
     

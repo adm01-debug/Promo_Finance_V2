@@ -202,7 +202,7 @@ export function useAlertasPreditivos() {
 
       return novosAlertas;
     } catch (error) {
-      console.error('Erro na análise preditiva:', error);
+      logger.error('[useAlertasPreditivos] Erro na análise preditiva:', error);
       toast.error('Erro na análise preditiva');
       return [];
     } finally {

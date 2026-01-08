@@ -177,22 +177,23 @@ export function useWebAuthn() {
         });
 
       if (error) {
-        console.error('Error storing credential:', error);
+        logger.error('[WebAuthn] Error storing credential:', error);
         throw new Error('Falha ao salvar credencial');
       }
 
       await fetchCredentials();
       toast.success('Biometria registrada com sucesso!');
       return true;
-    } catch (error: any) {
-      console.error('WebAuthn registration error:', error);
+    } catch (error: unknown) {
+      const err = error as Error & { name?: string };
+      logger.error('[WebAuthn] Registration error:', err);
       
-      if (error.name === 'NotAllowedError') {
+      if (err.name === 'NotAllowedError') {
         toast.error('Registro cancelado pelo usuário');
-      } else if (error.name === 'SecurityError') {
+      } else if (err.name === 'SecurityError') {
         toast.error('Erro de segurança. Verifique se está usando HTTPS.');
       } else {
-        toast.error(error.message || 'Erro ao registrar biometria');
+        toast.error(err.message || 'Erro ao registrar biometria');
       }
       return false;
     } finally {
@@ -268,15 +269,16 @@ export function useWebAuthn() {
 
       logger.debug('[WebAuthn] Authentication successful');
       return { success: true, userId: matchedCredential.user_id };
-    } catch (error: any) {
-      console.error('WebAuthn authentication error:', error);
+    } catch (error: unknown) {
+      const err = error as Error & { name?: string };
+      logger.error('[WebAuthn] Authentication error:', err);
       
-      if (error.name === 'NotAllowedError') {
+      if (err.name === 'NotAllowedError') {
         toast.error('Autenticação cancelada');
-      } else if (error.name === 'SecurityError') {
+      } else if (err.name === 'SecurityError') {
         toast.error('Erro de segurança');
       } else {
-        toast.error(error.message || 'Erro na autenticação biométrica');
+        toast.error(err.message || 'Erro na autenticação biométrica');
       }
       return { success: false };
     } finally {

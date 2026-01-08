@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { TransacaoOFX } from '@/lib/ofx-parser';
 import { LancamentoSistema } from '@/lib/transaction-matcher';
+import { logger } from '@/lib/logger';
 
 export interface MatchSugestaoIA {
   transacaoId: string;
@@ -107,14 +108,15 @@ export function useConciliacaoIA() {
       });
 
       return matchesMap;
-    } catch (error: any) {
-      console.error('Erro na análise de IA:', error);
+    } catch (error: unknown) {
+      const err = error as Error;
+      logger.error('[useConciliacaoIA] Erro na análise de IA:', err);
       
-      if (error.message?.includes('429') || error.message?.includes('rate limit')) {
+      if (err.message?.includes('429') || err.message?.includes('rate limit')) {
         toast.error('Limite de requisições excedido', {
           description: 'Aguarde alguns instantes e tente novamente'
         });
-      } else if (error.message?.includes('402')) {
+      } else if (err.message?.includes('402')) {
         toast.error('Créditos insuficientes', {
           description: 'Entre em contato com o administrador'
         });

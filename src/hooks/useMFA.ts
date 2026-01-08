@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 interface MFAFactor {
   id: string;
@@ -33,15 +34,15 @@ export function useMFA() {
       const { data, error } = await supabase.auth.mfa.listFactors();
       
       if (error) {
-        console.error('Erro ao buscar fatores MFA:', error);
+        logger.error('[useMFA] Erro ao buscar fatores MFA:', error);
         return;
       }
 
       const verifiedFactors = data.totp.filter(f => f.status === 'verified');
       setFactors(data.totp);
       setIsEnabled(verifiedFactors.length > 0);
-    } catch (error) {
-      console.error('Erro ao buscar MFA:', error);
+    } catch {
+      // Silently fail - MFA state will remain default
     } finally {
       setIsLoading(false);
     }
@@ -71,7 +72,7 @@ export function useMFA() {
 
       return data;
     } catch (error) {
-      console.error('Erro no enrollment:', error);
+      logger.error('[useMFA] Erro no enrollment:', error);
       throw error;
     }
   };
@@ -104,7 +105,7 @@ export function useMFA() {
       await fetchFactors();
       return true;
     } catch (error) {
-      console.error('Erro na verificação:', error);
+      logger.error('[useMFA] Erro na verificação:', error);
       throw error;
     }
   };
@@ -124,7 +125,7 @@ export function useMFA() {
       await fetchFactors();
       return true;
     } catch (error) {
-      console.error('Erro ao desativar MFA:', error);
+      logger.error('[useMFA] Erro ao desativar MFA:', error);
       throw error;
     }
   };
@@ -158,7 +159,7 @@ export function useMFA() {
 
       return true;
     } catch (error) {
-      console.error('Erro na verificação:', error);
+      logger.error('[useMFA] Erro na verificação:', error);
       throw error;
     }
   };

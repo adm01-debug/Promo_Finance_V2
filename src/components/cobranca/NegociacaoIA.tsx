@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { formatCurrency } from '@/lib/formatters';
 import { motion, AnimatePresence } from 'framer-motion';
+import { logger } from '@/lib/logger';
 
 interface ContaVencida {
   id: string;
@@ -133,7 +134,7 @@ Pergunta do usuário: ${mensagemUsuario}
 
       return { resposta: respostaIA, propostas };
     } catch (error) {
-      console.error('Erro na negociação IA:', error);
+      logger.error('[NegociacaoIA] Erro na negociação IA:', error);
       toast.error('Erro ao gerar propostas');
       return { resposta: 'Desculpe, não foi possível processar sua solicitação.', propostas: [] };
     } finally {
