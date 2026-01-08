@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import { gerarEFD_IBS_CBS, gerarEFD_Contribuicoes, downloadArquivoSPED, validarArquivoSPED } from '@/lib/sped-generator';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { useOperacoesTributaveis } from '@/hooks/useOperacoesTributaveis';
@@ -183,9 +184,9 @@ export function ExportacaoSPED() {
       toast.success('Arquivo SPED gerado com sucesso', {
         description: nomeArquivo,
       });
-    } catch (error) {
+    } catch (error: unknown) {
       toast.error('Erro ao gerar arquivo');
-      console.error(error);
+      logger.error('Erro ao gerar SPED:', error);
     } finally {
       setGerando(false);
       setProgresso(0);

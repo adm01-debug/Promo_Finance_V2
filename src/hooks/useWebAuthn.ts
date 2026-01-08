@@ -88,15 +88,15 @@ export function useWebAuthn() {
         .eq('user_id', user.id);
 
       if (error) {
-        console.error('Error fetching credentials:', error);
+        logger.error('Error fetching credentials:', error);
         return [];
       }
 
       const credentials = (data || []) as unknown as StoredCredential[];
       setRegisteredCredentials(credentials);
       return credentials;
-    } catch (error) {
-      console.error('Error fetching credentials:', error);
+    } catch (error: unknown) {
+      logger.error('Error fetching credentials:', error);
       return [];
     }
   }, [user]);
@@ -302,8 +302,8 @@ export function useWebAuthn() {
       await fetchCredentials();
       toast.success('Biometria removida');
       return true;
-    } catch (error) {
-      console.error('Error removing credential:', error);
+    } catch (error: unknown) {
+      logger.error('Error removing credential:', error);
       toast.error('Erro ao remover biometria');
       return false;
     }

@@ -41,6 +41,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import { useExpertContext } from '@/hooks/useExpertContext';
 import { useExpertActions, ExpertAction } from '@/hooks/useExpertActions';
 import { 
@@ -252,8 +253,8 @@ export default function Expert() {
         const newConversation = await createConversation.mutateAsync(messageText.slice(0, 50));
         conversationId = newConversation.id;
         setCurrentConversationId(conversationId);
-      } catch (error) {
-        console.error('Error creating conversation:', error);
+      } catch (error: unknown) {
+        logger.error('Error creating conversation:', error);
         toast.error('Erro ao criar conversa');
         return;
       }
@@ -278,8 +279,8 @@ export default function Expert() {
         content: messageText.trim(),
       });
       userMessage.id = savedUserMsg.id;
-    } catch (error) {
-      console.error('Error saving user message:', error);
+    } catch (error: unknown) {
+      logger.error('Error saving user message:', error);
     }
 
     let assistantContent = '';
@@ -414,12 +415,12 @@ export default function Expert() {
             resumo: cleanContent?.slice(0, 100),
           });
         }
-      } catch (error) {
-        console.error('Error saving assistant message:', error);
+      } catch (error: unknown) {
+        logger.error('Error saving assistant message:', error);
       }
 
-    } catch (error) {
-      console.error('Error:', error);
+    } catch (error: unknown) {
+      logger.error('Error:', error);
       toast.error(error instanceof Error ? error.message : 'Erro ao enviar mensagem');
       setMessages(prev => prev.filter(m => m.id !== assistantId));
     } finally {

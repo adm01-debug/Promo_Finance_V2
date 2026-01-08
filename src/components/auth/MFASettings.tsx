@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { logger } from '@/lib/logger';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -58,8 +59,8 @@ export function MFASettings() {
       await unenroll(disableFactorId);
       setShowDisableDialog(false);
       setDisableFactorId(null);
-    } catch (error) {
-      console.error('Erro ao desativar MFA:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao desativar MFA:', error);
     }
   };
 

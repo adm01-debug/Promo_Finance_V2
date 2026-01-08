@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 
 interface GeoData {
   ip: string | null;
@@ -95,8 +96,8 @@ export function useAuthValidation() {
       }
 
       return { allowed: true };
-    } catch (error) {
-      console.error('Erro ao validar IP:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao validar IP:', error);
       return { allowed: true };
     }
   }, [geoData.ip]);
@@ -133,8 +134,8 @@ export function useAuthValidation() {
       }
 
       return { allowed: true };
-    } catch (error) {
-      console.error('Erro ao validar localização:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao validar localização:', error);
       return { allowed: true };
     }
   }, [geoData.country]);
@@ -155,8 +156,8 @@ export function useAuthValidation() {
         return true;
       }
       return false;
-    } catch (error) {
-      console.error('Erro ao verificar IP bloqueado:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao verificar IP bloqueado:', error);
       return false;
     }
   }, [geoData.ip]);
@@ -174,8 +175,8 @@ export function useAuthValidation() {
         success,
         blocked_reason: blockedReason || null
       });
-    } catch (error) {
-      console.error('Erro ao registrar tentativa de login:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao registrar tentativa de login:', error);
     }
   }, [geoData.ip]);
 

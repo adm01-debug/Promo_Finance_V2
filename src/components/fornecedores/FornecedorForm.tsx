@@ -30,6 +30,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { maskCnpjCpf, maskPhone, validateCnpjCpf } from '@/lib/masks';
+import { logger } from '@/lib/logger';
 
 const fornecedorSchema = z.object({
   razao_social: z.string().min(2, 'Razão social é obrigatória').max(200, 'Nome muito longo'),
@@ -150,9 +151,9 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
       form.reset();
       onOpenChange(false);
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
       sounds.error();
-      console.error('Error creating fornecedor:', error);
+      logger.error('Error creating fornecedor:', error);
       toast({
         title: 'Erro ao cadastrar fornecedor',
         description: 'Não foi possível cadastrar o fornecedor. Tente novamente.',
@@ -192,8 +193,8 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
       });
       onOpenChange(false);
     },
-    onError: (error) => {
-      console.error('Error updating fornecedor:', error);
+    onError: (error: unknown) => {
+      logger.error('Error updating fornecedor:', error);
       toast({
         title: 'Erro ao atualizar fornecedor',
         description: 'Não foi possível salvar as alterações. Tente novamente.',

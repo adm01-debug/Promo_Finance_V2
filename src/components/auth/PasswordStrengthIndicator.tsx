@@ -1,6 +1,7 @@
 import { useMemo, useEffect, useState } from 'react';
 import { Check, X, AlertTriangle, Loader2, ShieldAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/logger';
 
 interface PasswordStrengthIndicatorProps {
   password: string;
@@ -43,8 +44,8 @@ async function checkLeakedPassword(password: string): Promise<{ leaked: boolean;
     }
     
     return { leaked: false, count: 0 };
-  } catch (error) {
-    console.error('Error checking password:', error);
+  } catch (error: unknown) {
+    logger.error('Error checking password:', error);
     return { leaked: false, count: 0 };
   }
 }

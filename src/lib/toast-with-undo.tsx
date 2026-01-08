@@ -1,5 +1,6 @@
 import { toast } from 'sonner';
 import { Undo2 } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface UndoToastOptions {
   title: string;
@@ -39,8 +40,8 @@ export function toastWithUndo({
       if (!undoClicked && onConfirm) {
         try {
           await onConfirm();
-        } catch (error) {
-          console.error('Error on confirm:', error);
+        } catch (error: unknown) {
+          logger.error('Error on confirm:', error);
         }
       }
     },

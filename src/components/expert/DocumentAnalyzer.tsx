@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/logger';
 
 interface DocumentAnalyzerProps {
   onAnalysisComplete: (analysis: string) => void;
@@ -97,8 +98,8 @@ export function DocumentAnalyzer({ onAnalysisComplete }: DocumentAnalyzerProps) 
         onAnalysisComplete(`📄 **Análise do documento "${file.name}":**\n\n${analysis}`);
         toast.success(`Documento "${file.name}" analisado com sucesso!`);
 
-      } catch (error) {
-        console.error('Error analyzing document:', error);
+      } catch (error: unknown) {
+        logger.error('Error analyzing document:', error);
         setDocuments(prev => 
           prev.map(d => d.name === file.name ? { ...d, status: 'error' } : d)
         );

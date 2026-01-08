@@ -41,6 +41,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/logger';
 
 const contaPagarSchema = z.object({
   fornecedor_id: z.string().optional(),
@@ -188,9 +189,9 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
       form.reset();
       onOpenChange(false);
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
       sounds.error();
-      console.error('Error creating conta pagar:', error);
+      logger.error('Error creating conta pagar:', error);
       toast({
         title: 'Erro ao criar conta',
         description: 'Não foi possível criar a conta. Tente novamente.',
@@ -231,9 +232,9 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
       celebrateSuccess('Conta atualizada com sucesso!');
       onOpenChange(false);
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
       sounds.error();
-      console.error('Error updating conta pagar:', error);
+      logger.error('Error updating conta pagar:', error);
       toast({
         title: 'Erro ao atualizar conta',
         description: 'Não foi possível salvar as alterações. Tente novamente.',

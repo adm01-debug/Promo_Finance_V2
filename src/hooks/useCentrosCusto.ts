@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import type { Tables, TablesInsert, TablesUpdate } from '@/integrations/supabase/types';
 
 export type CentroCusto = Tables<'centros_custo'>;
@@ -40,7 +41,7 @@ export function useCriarCentroCusto() {
       toast.success('Centro de custo cadastrado com sucesso!');
     },
     onError: (error: Error) => {
-      console.error('Erro ao cadastrar centro de custo:', error);
+      logger.error('Erro ao cadastrar centro de custo:', error);
       toast.error('Erro ao cadastrar centro de custo: ' + error.message);
     },
   });
@@ -66,7 +67,7 @@ export function useAtualizarCentroCusto() {
       toast.success('Centro de custo atualizado com sucesso!');
     },
     onError: (error: Error) => {
-      console.error('Erro ao atualizar centro de custo:', error);
+      logger.error('Erro ao atualizar centro de custo:', error);
       toast.error('Erro ao atualizar centro de custo: ' + error.message);
     },
   });
@@ -90,7 +91,7 @@ export function useExcluirCentroCusto() {
       toast.success('Centro de custo desativado com sucesso!');
     },
     onError: (error: Error) => {
-      console.error('Erro ao desativar centro de custo:', error);
+      logger.error('Erro ao desativar centro de custo:', error);
       toast.error('Erro ao desativar centro de custo: ' + error.message);
     },
   });
@@ -113,7 +114,7 @@ export function useReativarCentroCusto() {
       toast.success('Centro de custo reativado com sucesso!');
     },
     onError: (error: Error) => {
-      console.error('Erro ao reativar centro de custo:', error);
+      logger.error('Erro ao reativar centro de custo:', error);
       toast.error('Erro ao reativar centro de custo: ' + error.message);
     },
   });
