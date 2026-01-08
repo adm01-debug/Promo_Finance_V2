@@ -3,13 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check, X, Clock, AlertCircle, User, Calendar, DollarSign, FileText } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useSolicitacoesPendentes, useAprovarSolicitacao, useRejeitarSolicitacao, SolicitacaoAprovacao } from '@/hooks/useAprovacoes';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/formatters';
 import { EmptyState } from '@/components/ui/micro-interactions';
-import { PrimaryActionButton, DangerButton, useCelebrations } from '@/components/wrappers';
+import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 
 export const AprovacoesPendentes = () => {
   const { data: solicitacoes, isLoading } = useSolicitacoesPendentes();
@@ -156,16 +157,15 @@ export const AprovacoesPendentes = () => {
                     </div>
 
                     <div className="flex gap-2 lg:flex-col">
-                      <PrimaryActionButton
+                      <Button
                         onClick={() => handleAprovar(solicitacao.id, solicitacao.conta_pagar?.descricao)}
                         disabled={aprovarMutation.isPending}
                         className="flex-1 gap-2"
-                        showSuccessState
                       >
                         <Check className="h-4 w-4" />
                         Aprovar
-                      </PrimaryActionButton>
-                      <DangerButton
+                      </Button>
+                      <Button
                         variant="outline"
                         onClick={() => setRejectDialog({ open: true, solicitacao })}
                         disabled={rejeitarMutation.isPending}
@@ -173,7 +173,7 @@ export const AprovacoesPendentes = () => {
                       >
                         <X className="h-4 w-4" />
                         Rejeitar
-                      </DangerButton>
+                      </Button>
                     </div>
                   </div>
                 </motion.div>
@@ -217,16 +217,16 @@ export const AprovacoesPendentes = () => {
           </div>
 
           <DialogFooter>
-            <DangerButton variant="outline" onClick={() => setRejectDialog({ open: false, solicitacao: null })}>
+            <Button variant="outline" onClick={() => setRejectDialog({ open: false, solicitacao: null })}>
               Cancelar
-            </DangerButton>
-            <DangerButton
+            </Button>
+            <Button
               variant="destructive"
               onClick={handleRejeitar}
               disabled={!motivoRejeicao.trim() || rejeitarMutation.isPending}
             >
               {rejeitarMutation.isPending ? 'Rejeitando...' : 'Confirmar Rejeição'}
-            </DangerButton>
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
