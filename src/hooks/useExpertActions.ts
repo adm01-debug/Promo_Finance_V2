@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { generateFluxoCaixaPDF } from '@/lib/pdf-generator';
 import { formatCurrency } from '@/lib/formatters';
+import { logger } from '@/lib/logger';
 
 export type ExpertActionType = 
   | 'criar_alerta'
@@ -105,8 +106,8 @@ export function useExpertActions() {
         default:
           return { success: false, message: 'Ação não reconhecida' };
       }
-    } catch (error) {
-      console.error('Erro ao executar ação:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao executar ação:', error);
       return { 
         success: false, 
         message: error instanceof Error ? error.message : 'Erro ao executar ação' 
@@ -123,8 +124,8 @@ export function useExpertActions() {
       try {
         const actionData = JSON.parse(match[1].trim());
         actions.push(actionData);
-      } catch (error) {
-        console.error('Erro ao parsear ação:', error);
+      } catch {
+        // Silently ignore parsing errors for non-action content
       }
     }
 

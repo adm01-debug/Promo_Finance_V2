@@ -53,6 +53,7 @@ import { useToast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/formatters';
 import { useBitrix24 } from '@/hooks/useBitrix24';
 import { BitrixWebhookPanel } from '@/components/integracoes/BitrixWebhookPanel';
+import { logger } from '@/lib/logger';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -99,10 +100,12 @@ export default function Bitrix24() {
         description: result.message,
         variant: result.success ? 'default' : 'destructive',
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      logger.error('Erro ao testar conexão Bitrix24:', error);
       toast({
         title: 'Erro',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive',
       });
     }

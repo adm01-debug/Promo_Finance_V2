@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { logger } from '@/lib/logger';
 
 interface SyncLog {
   id: string;
@@ -135,8 +136,9 @@ export function useBitrix24() {
       const result = await callBitrixSync('test_connection');
       setIsConnected(result.success);
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       setIsConnected(false);
+      logger.error('Erro ao testar conexão Bitrix24:', error);
       throw error;
     }
   }, [callBitrixSync]);
@@ -276,10 +278,11 @@ export function useBitrix24() {
         title: 'Sincronização completa',
         description: 'Todos os dados foram sincronizados com sucesso.',
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: 'Erro na sincronização',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {

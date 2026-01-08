@@ -69,14 +69,14 @@ export function useSecurityAlerts() {
         .limit(100);
 
       if (error) {
-        console.error('Erro ao buscar alertas:', error);
+        logger.error('Erro ao buscar alertas:', error);
         return;
       }
 
       setAlerts(data || []);
       setUnresolvedCount(data?.filter(a => !a.resolved).length || 0);
-    } catch (error) {
-      console.error('Erro ao buscar alertas:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao buscar alertas:', error);
     } finally {
       setIsLoading(false);
     }
@@ -147,8 +147,8 @@ export function useSecurityAlerts() {
       );
       setUnresolvedCount(prev => Math.max(0, prev - 1));
       toast.success('Alerta resolvido');
-    } catch (error) {
-      console.error('Erro ao resolver alerta:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao resolver alerta:', error);
       toast.error('Erro ao resolver alerta');
     }
   };
@@ -179,8 +179,8 @@ export function useSecurityAlerts() {
       if (error) throw error;
 
       return data;
-    } catch (error) {
-      console.error('Erro ao criar alerta:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao criar alerta:', error);
       throw error;
     }
   };

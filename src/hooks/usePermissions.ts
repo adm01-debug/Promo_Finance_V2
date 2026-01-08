@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { logger } from '@/lib/logger';
 
 interface Permission {
   id: string;
@@ -29,7 +30,7 @@ export function usePermissions() {
         .order('module', { ascending: true });
 
       if (permError) {
-        console.error('Erro ao buscar permissões:', permError);
+        logger.error('Erro ao buscar permissões:', permError);
         return;
       }
 
@@ -49,7 +50,7 @@ export function usePermissions() {
           .eq('role', role);
 
         if (roleError) {
-          console.error('Erro ao buscar permissões do role:', roleError);
+          logger.error('Erro ao buscar permissões do role:', roleError);
           return;
         }
 
@@ -59,8 +60,8 @@ export function usePermissions() {
         
         setUserPermissions(permNames);
       }
-    } catch (error) {
-      console.error('Erro ao buscar permissões:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao buscar permissões:', error);
     } finally {
       setIsLoading(false);
     }

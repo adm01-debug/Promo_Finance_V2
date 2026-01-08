@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export interface CategoriaDetectada {
   categoria: string;
@@ -41,8 +42,8 @@ export function useCategorizacaoIA() {
       }
       
       return null;
-    } catch (error) {
-      console.error('Erro ao categorizar despesa:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao categorizar despesa:', error);
       toast.error('Erro ao categorizar despesa com IA');
       return null;
     } finally {
@@ -71,8 +72,8 @@ export function useCategorizacaoIA() {
       
       toast.success(`${resultados.size} despesas categorizadas com sucesso`);
       return resultados;
-    } catch (error) {
-      console.error('Erro ao categorizar despesas em lote:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao categorizar despesas em lote:', error);
       toast.error('Erro ao categorizar despesas');
       return resultados;
     } finally {

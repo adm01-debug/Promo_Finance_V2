@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatDate } from '@/lib/formatters';
+import { logger } from '@/lib/logger';
 
 interface DadosExtraidos {
   tipo?: string;
@@ -159,8 +160,8 @@ export function ComprovanteOCR({ onDadosExtraidos, onVincularPagamento }: Compro
         onDadosExtraidos?.(dadosExtraidos, analise);
         toast.success(`Comprovante analisado com sucesso!`);
 
-      } catch (error) {
-        console.error('Erro ao analisar comprovante:', error);
+      } catch (error: unknown) {
+        logger.error('Erro ao analisar comprovante:', error);
         setComprovantes(prev => 
           prev.map(c => c.id === id ? { ...c, status: 'error' } : c)
         );

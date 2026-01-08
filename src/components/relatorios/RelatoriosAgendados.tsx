@@ -67,6 +67,7 @@ import { ptBR } from 'date-fns/locale';
 import { VisualizarRelatorioDialog } from './VisualizarRelatorioDialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { logger } from '@/lib/logger';
 
 const tiposRelatorio = [
   { value: 'fluxo_caixa', label: 'Fluxo de Caixa', icon: BarChart3 },
@@ -198,8 +199,8 @@ export function RelatoriosAgendados() {
 
       // Refresh data to show new history entry
       refetch();
-    } catch (err) {
-      console.error('Erro ao executar relatório:', err);
+    } catch (err: unknown) {
+      logger.error('Erro ao executar relatório:', err);
       toast({
         title: 'Erro ao executar',
         description: 'Não foi possível gerar o relatório.',

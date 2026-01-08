@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import type { Database } from '@/integrations/supabase/types';
 
 export type FrequenciaPagamento = 'semanal' | 'quinzenal' | 'mensal' | 'bimestral' | 'trimestral' | 'semestral' | 'anual';
@@ -103,8 +104,8 @@ export function usePagamentosRecorrentes() {
       queryClient.invalidateQueries({ queryKey: ['pagamentos-recorrentes'] });
       toast.success('Pagamento recorrente criado com sucesso!');
     },
-    onError: (error) => {
-      console.error('Erro ao criar pagamento recorrente:', error);
+    onError: (error: unknown) => {
+      logger.error('Erro ao criar pagamento recorrente:', error);
       toast.error('Erro ao criar pagamento recorrente');
     },
   });

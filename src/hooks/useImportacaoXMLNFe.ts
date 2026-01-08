@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import { ALIQUOTAS_TRANSICAO } from '@/types/reforma-tributaria';
 
 export interface NFeParsed {
@@ -135,8 +136,8 @@ export function useImportacaoXMLNFe(empresaId: string) {
         itens,
         status: 'pendente',
       };
-    } catch (error) {
-      console.error('Erro ao parsear XML:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao parsear XML:', error);
       return null;
     }
   };
