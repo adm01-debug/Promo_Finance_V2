@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 export interface DashboardWidget {
   id: string;
-  type: 'kpi-saldo' | 'kpi-receber' | 'kpi-pagar' | 'kpi-vencidas' | 'fluxo-caixa' | 'composicao' | 'vencimentos' | 'streak' | 'previsao-ia' | 'aprovacoes' | 'top-clientes' | 'calendario-vencimentos' | 'metas-financeiras' | 'transacoes-recentes' | 'resumo-rapido';
+  type: 'kpi-saldo' | 'kpi-receber' | 'kpi-pagar' | 'kpi-vencidas' | 'fluxo-caixa' | 'composicao' | 'vencimentos' | 'previsao-ia' | 'aprovacoes' | 'top-clientes';
   title: string;
   visible: boolean;
   order: number;
@@ -18,14 +18,9 @@ const DEFAULT_WIDGETS: DashboardWidget[] = [
   { id: 'fluxo-caixa', type: 'fluxo-caixa', title: 'Fluxo de Caixa', visible: true, order: 4, size: 'lg' },
   { id: 'composicao', type: 'composicao', title: 'Composição Financeira', visible: true, order: 5, size: 'md' },
   { id: 'vencimentos', type: 'vencimentos', title: 'Próximos Vencimentos', visible: true, order: 6, size: 'md' },
-  { id: 'streak', type: 'streak', title: 'Streak de Adimplência', visible: true, order: 7, size: 'sm' },
-  { id: 'previsao-ia', type: 'previsao-ia', title: 'Previsão IA', visible: true, order: 8, size: 'md' },
-  { id: 'aprovacoes', type: 'aprovacoes', title: 'Aprovações Pendentes', visible: true, order: 9, size: 'sm' },
-  { id: 'top-clientes', type: 'top-clientes', title: 'Top Clientes', visible: true, order: 10, size: 'md' },
-  { id: 'calendario-vencimentos', type: 'calendario-vencimentos', title: 'Calendário de Vencimentos', visible: true, order: 11, size: 'md' },
-  { id: 'metas-financeiras', type: 'metas-financeiras', title: 'Metas do Mês', visible: true, order: 12, size: 'md' },
-  { id: 'transacoes-recentes', type: 'transacoes-recentes', title: 'Transações Recentes', visible: true, order: 13, size: 'md' },
-  { id: 'resumo-rapido', type: 'resumo-rapido', title: 'Resumo Rápido', visible: true, order: 14, size: 'md' },
+  { id: 'previsao-ia', type: 'previsao-ia', title: 'Previsão IA', visible: true, order: 7, size: 'md' },
+  { id: 'aprovacoes', type: 'aprovacoes', title: 'Aprovações Pendentes', visible: true, order: 8, size: 'sm' },
+  { id: 'top-clientes', type: 'top-clientes', title: 'Top Clientes', visible: true, order: 9, size: 'md' },
 ];
 
 const STORAGE_KEY = 'dashboard-widgets-config';
