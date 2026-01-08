@@ -137,7 +137,7 @@ serve(async (req) => {
               const aiData = await aiResponse.json();
               alerta.mensagem = aiData.choices[0].message.content.trim();
             }
-          } catch (e) {
+          } catch (e: unknown) {
             console.error('Erro ao gerar mensagem IA:', e);
             alerta.mensagem = gerarMensagemFallback(alerta);
           }
