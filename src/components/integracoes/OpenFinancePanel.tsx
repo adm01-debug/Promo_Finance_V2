@@ -52,6 +52,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format, subDays } from 'date-fns';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export const OpenFinancePanel = () => {
   const {
@@ -118,8 +119,8 @@ export const OpenFinancePanel = () => {
         endDate: format(endDate, 'yyyy-MM-dd'),
       });
       setImportDialogOpen(false);
-    } catch (error) {
-      console.error('Import error:', error);
+    } catch (error: unknown) {
+      logger.error('Import error:', error);
     }
   };
 

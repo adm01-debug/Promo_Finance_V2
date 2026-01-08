@@ -22,6 +22,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Loader2 } from 'lucide-react';
 import { useCriarCentroCusto, useAtualizarCentroCusto, type CentroCusto } from '@/hooks/useCentrosCusto';
+import { logger } from '@/lib/logger';
 
 const formSchema = z.object({
   codigo: z.string().min(1, 'Código é obrigatório').max(10, 'Máximo 10 caracteres'),
@@ -85,8 +86,8 @@ export function CentroCustoForm({ centroCusto, centrosCusto, defaultParentId, on
         await criarCentroCusto.mutateAsync(data);
       }
       onSuccess();
-    } catch (error) {
-      console.error('Erro ao salvar centro de custo:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao salvar centro de custo:', error);
     }
   };
 

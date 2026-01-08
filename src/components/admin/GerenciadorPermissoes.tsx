@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import { 
   Shield, 
   Users, 
@@ -100,8 +101,8 @@ export function GerenciadorPermissoes() {
 
       setPermissions(permResult.data || []);
       setRolePermissions(rolePermResult.data || []);
-    } catch (error) {
-      console.error('Erro ao carregar permissões:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao carregar permissões:', error);
       toast.error('Erro ao carregar permissões');
     } finally {
       setIsLoading(false);
@@ -178,8 +179,8 @@ export function GerenciadorPermissoes() {
       toast.success('Permissões atualizadas com sucesso!');
       setPendingChanges(new Map());
       await fetchData();
-    } catch (error) {
-      console.error('Erro ao salvar permissões:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao salvar permissões:', error);
       toast.error('Erro ao salvar permissões');
     } finally {
       setIsSaving(false);

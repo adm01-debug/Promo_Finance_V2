@@ -24,6 +24,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -105,7 +106,7 @@ export function CronJobsPanel() {
       
       if (error) {
         // Se a função não existir, tentar query direta
-        console.error('Erro ao buscar cron jobs:', error);
+        logger.error('Erro ao buscar cron jobs:', error);
         throw error;
       }
       
@@ -131,8 +132,8 @@ export function CronJobsPanel() {
       queryClient.invalidateQueries({ queryKey: ['cron-jobs'] });
       toast.success('Job atualizado com sucesso');
     },
-    onError: (error) => {
-      console.error('Erro ao atualizar job:', error);
+    onError: (error: unknown) => {
+      logger.error('Erro ao atualizar job:', error);
       toast.error('Erro ao atualizar job');
     },
   });
@@ -148,8 +149,8 @@ export function CronJobsPanel() {
       toast.success('Job removido com sucesso');
       setDeletingId(null);
     },
-    onError: (error) => {
-      console.error('Erro ao remover job:', error);
+    onError: (error: unknown) => {
+      logger.error('Erro ao remover job:', error);
       toast.error('Erro ao remover job');
       setDeletingId(null);
     },

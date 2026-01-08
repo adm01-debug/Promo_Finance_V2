@@ -56,7 +56,7 @@ export function useRateLimitLogs() {
         .limit(500);
 
       if (logsError) {
-        console.error('Erro ao buscar logs:', logsError);
+        logger.error('Erro ao buscar logs:', logsError);
         return;
       }
 
@@ -69,7 +69,7 @@ export function useRateLimitLogs() {
         .order('blocked_at', { ascending: false });
 
       if (blockedError) {
-        console.error('Erro ao buscar IPs bloqueados:', blockedError);
+        logger.error('Erro ao buscar IPs bloqueados:', blockedError);
         return;
       }
 
@@ -111,8 +111,8 @@ export function useRateLimitLogs() {
           topIPs,
         });
       }
-    } catch (error) {
-      console.error('Erro ao buscar dados:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao buscar dados:', error);
     } finally {
       setIsLoading(false);
     }
@@ -137,8 +137,8 @@ export function useRateLimitLogs() {
       if (error) throw error;
       await fetchLogs();
       return true;
-    } catch (error) {
-      console.error('Erro ao bloquear IP:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao bloquear IP:', error);
       throw error;
     }
   };
@@ -156,8 +156,8 @@ export function useRateLimitLogs() {
       if (error) throw error;
       await fetchLogs();
       return true;
-    } catch (error) {
-      console.error('Erro ao desbloquear IP:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao desbloquear IP:', error);
       throw error;
     }
   };
@@ -175,8 +175,8 @@ export function useRateLimitLogs() {
       if (error) throw error;
       await fetchLogs();
       return true;
-    } catch (error) {
-      console.error('Erro ao limpar logs:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao limpar logs:', error);
       throw error;
     }
   };

@@ -161,7 +161,7 @@ export function useAcordosParcelamento() {
           .update({ observacoes: `Em acordo: ${numeroData}` })
           .in('id', data.contas_receber_ids);
         
-        if (updateError) console.error('Erro ao atualizar contas:', updateError);
+        if (updateError) logger.error('Erro ao atualizar contas:', updateError);
       }
 
       return acordo;
@@ -171,8 +171,8 @@ export function useAcordosParcelamento() {
       queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
       toast.success('Acordo de parcelamento criado com sucesso!');
     },
-    onError: (error) => {
-      console.error('Erro ao criar acordo:', error);
+    onError: (error: unknown) => {
+      logger.error('Erro ao criar acordo:', error);
       toast.error('Erro ao criar acordo de parcelamento');
     },
   });
@@ -213,8 +213,8 @@ export function useAcordosParcelamento() {
       queryClient.invalidateQueries({ queryKey: ['acordos-parcelamento'] });
       toast.success('Pagamento registrado!');
     },
-    onError: (error) => {
-      console.error('Erro ao registrar pagamento:', error);
+    onError: (error: unknown) => {
+      logger.error('Erro ao registrar pagamento:', error);
       toast.error('Erro ao registrar pagamento');
     },
   });
@@ -240,8 +240,8 @@ export function useAcordosParcelamento() {
       queryClient.invalidateQueries({ queryKey: ['acordos-parcelamento'] });
       toast.success('Acordo cancelado');
     },
-    onError: (error) => {
-      console.error('Erro ao cancelar acordo:', error);
+    onError: (error: unknown) => {
+      logger.error('Erro ao cancelar acordo:', error);
       toast.error('Erro ao cancelar acordo');
     },
   });

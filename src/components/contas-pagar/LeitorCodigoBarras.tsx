@@ -34,6 +34,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { toast } from 'sonner';
 import { parseBoleto, DadosBoleto, formatarLinhaDigitavel, validarCodigoBarras } from '@/lib/barcode-parser';
 import { formatCurrency } from '@/lib/formatters';
+import { logger } from '@/lib/logger';
 
 interface LeitorCodigoBarrasProps {
   open: boolean;
@@ -74,8 +75,8 @@ export function LeitorCodigoBarras({ open, onOpenChange, onBoletoDetected }: Lei
       } else {
         toast.error(`Erros encontrados: ${dados.erros.join(', ')}`);
       }
-    } catch (error) {
-      console.error('Erro ao processar código:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao processar código:', error);
       toast.error('Não foi possível processar o código de barras');
     } finally {
       setIsProcessing(false);
@@ -112,8 +113,8 @@ export function LeitorCodigoBarras({ open, onOpenChange, onBoletoDetected }: Lei
       }
       
       toast.info('Aponte a câmera para o código de barras do boleto');
-    } catch (error) {
-      console.error('Erro ao acessar câmera:', error);
+    } catch (error: unknown) {
+      logger.error('Erro ao acessar câmera:', error);
       toast.error('Não foi possível acessar a câmera. Use a entrada manual.');
       setActiveTab('manual');
     }
