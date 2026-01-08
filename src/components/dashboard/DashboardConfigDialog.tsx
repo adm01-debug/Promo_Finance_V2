@@ -48,7 +48,6 @@ const WIDGET_LABELS: Record<string, { label: string; description: string }> = {
   'fluxo-caixa': { label: 'Fluxo de Caixa', description: 'Gráfico de projeção financeira' },
   'composicao': { label: 'Composição Financeira', description: 'Gráfico de pizza com distribuição' },
   'vencimentos': { label: 'Próximos Vencimentos', description: 'Lista de contas próximas ao vencimento' },
-  'streak': { label: 'Streak de Adimplência', description: 'Dias consecutivos sem inadimplência' },
   'previsao-ia': { label: 'Previsão IA', description: 'Previsões inteligentes de fluxo de caixa' },
   'aprovacoes': { label: 'Aprovações Pendentes', description: 'Contador de aprovações necessárias' },
   'top-clientes': { label: 'Top Clientes', description: 'Ranking de clientes por volume' },
