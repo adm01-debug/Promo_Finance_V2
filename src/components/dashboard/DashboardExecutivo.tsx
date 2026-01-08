@@ -6,18 +6,13 @@ import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import { useDashboardMetrics } from '@/hooks/useDashboardMetrics';
 import { PrevisaoIA } from './PrevisaoIA';
 import { AlertasPreditivosPanel } from './AlertasPreditivosPanel';
-import { SimuladorCenarios } from './SimuladorCenarios';
 import { DashboardConfigDialog } from './DashboardConfigDialog';
-import { HistoricoAnalisesPreditivas } from './HistoricoAnalisesPreditivas';
-import { CockpitCFO } from './CockpitCFO';
 import { DashboardSkeleton } from './DashboardSkeleton';
 import { HeroKPICard, HeroKPIGrid } from './HeroKPICards';
 import { DashboardFiltersHeader } from './DashboardFiltersHeader';
-import { StreakCard } from './StreakCard';
 import { SecondaryKPICards } from './SecondaryKPICards';
 import { FluxoCaixaChart } from './FluxoCaixaChart';
 import { SaldoPorBancoCard } from './SaldoPorBancoCard';
-import { CentroCustoDrillDown } from './CentroCustoDrillDown';
 import { TopClientesLeaderboard } from './TopClientesLeaderboard';
 import { StatusContasPieChart } from './StatusContasPieChart';
 import { TopCentrosCustoChart } from './TopCentrosCustoChart';
@@ -62,9 +57,7 @@ export const DashboardExecutivo = () => {
         onOpenConfig={() => setConfigDialogOpen(true)}
       />
 
-      <motion.div variants={itemVariants}>
-        <CockpitCFO />
-      </motion.div>
+
 
       <motion.div variants={itemVariants}>
         <HeroKPIGrid layout="hero-first">
@@ -121,18 +114,15 @@ export const DashboardExecutivo = () => {
         </HeroKPIGrid>
       </motion.div>
 
-      <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
-        <StreakCard streakData={metrics.streakData} />
-        <div className="col-span-2 lg:col-span-3">
-          <SecondaryKPICards
-            empresasCount={metrics.empresas.length}
-            contasBancariasCount={metrics.contasBancarias.length}
-            venceHojeReceberCount={metrics.venceHojeReceber.length}
-            venceHojePagarCount={metrics.venceHojePagar.length}
-            aprovacoesPendentes={metrics.aprovacoesPendentes}
-            vencidasTotal={metrics.vencidasReceber.length + metrics.vencidasPagar.length}
-          />
-        </div>
+      <motion.div variants={itemVariants}>
+        <SecondaryKPICards
+          empresasCount={metrics.empresas.length}
+          contasBancariasCount={metrics.contasBancarias.length}
+          venceHojeReceberCount={metrics.venceHojeReceber.length}
+          venceHojePagarCount={metrics.venceHojePagar.length}
+          aprovacoesPendentes={metrics.aprovacoesPendentes}
+          vencidasTotal={metrics.vencidasReceber.length + metrics.vencidasPagar.length}
+        />
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -149,7 +139,7 @@ export const DashboardExecutivo = () => {
         />
       </div>
 
-      <CentroCustoDrillDown dadosPorCentroCusto={metrics.dadosPorCentroCusto} />
+      
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         <TopClientesLeaderboard topClientesReceita={metrics.topClientesReceita} />
@@ -161,9 +151,6 @@ export const DashboardExecutivo = () => {
         <PrevisaoIA />
       </motion.div>
 
-      <motion.div variants={itemVariants}>
-        <HistoricoAnalisesPreditivas />
-      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <motion.div variants={itemVariants}>
@@ -187,14 +174,6 @@ export const DashboardExecutivo = () => {
               clienteId: c.cliente_id || 'unknown',
               diasAtraso: Math.floor((new Date().getTime() - new Date(c.data_vencimento).getTime()) / (1000 * 60 * 60 * 24)),
             }))}
-          />
-        </motion.div>
-        <motion.div variants={itemVariants}>
-          <SimuladorCenarios
-            saldoAtual={metrics.saldoTotal}
-            receitasPrevistas={metrics.totalReceber}
-            despesasPrevistas={metrics.totalPagar}
-            taxaInadimplencia={metrics.inadimplencia}
           />
         </motion.div>
       </div>
