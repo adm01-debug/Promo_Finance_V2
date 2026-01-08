@@ -1,10 +1,8 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { EmptyState, HoverLift } from '@/components/ui/micro-interactions';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
-import { InteractivePageWrapper, PrimaryActionButton, KPICard } from '@/components/wrappers';
 import {
   Plus,
   Search,
@@ -18,7 +16,6 @@ import {
   Phone,
   MapPin,
   Star,
-  Loader2,
   Filter,
   X,
   Trophy,
@@ -237,8 +234,7 @@ export default function Clientes() {
   };
   return (
     <MainLayout>
-      <InteractivePageWrapper queryKeys={['clientes']} className="space-y-6">
-        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
         {/* Page Header */}
         <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
@@ -632,7 +628,6 @@ export default function Clientes() {
           onConfirm={handleDelete}
         />
       </motion.div>
-      </InteractivePageWrapper>
     </MainLayout>
   );
 }

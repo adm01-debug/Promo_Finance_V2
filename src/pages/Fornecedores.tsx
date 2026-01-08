@@ -1,10 +1,8 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { EmptyState } from '@/components/ui/micro-interactions';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
-import { InteractivePageWrapper, PrimaryActionButton, KPICard } from '@/components/wrappers';
 import {
   Plus,
   Search,
@@ -17,7 +15,6 @@ import {
   Mail,
   Phone,
   MapPin,
-  Loader2,
   Filter,
   X,
   Package,
@@ -199,8 +196,7 @@ export default function Fornecedores() {
   };
   return (
     <MainLayout>
-      <InteractivePageWrapper queryKeys={['fornecedores']} className="space-y-6">
-        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
         {/* Page Header */}
         <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
@@ -508,7 +504,6 @@ export default function Fornecedores() {
           onConfirm={handleDelete}
         />
       </motion.div>
-      </InteractivePageWrapper>
     </MainLayout>
   );
 }
