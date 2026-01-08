@@ -197,67 +197,6 @@ export function useDashboardMetrics(filters: DashboardFilters) {
       }));
   }, [contasReceberFiltradas, clientes]);
 
-  // Streak de adimplência
-  const streakData = useMemo(() => {
-    const contasOrdenadas = [...contasReceberFiltradas]
-      .filter(c => c.status !== 'cancelado')
-      .sort((a, b) => new Date(b.data_vencimento).getTime() - new Date(a.data_vencimento).getTime());
-
-    let streakDias = 0;
-    let ultimaInadimplencia: Date | null = null;
-    const hojeDate = new Date();
-    hojeDate.setHours(0, 0, 0, 0);
-
-    for (const conta of contasOrdenadas) {
-      const dataVenc = new Date(conta.data_vencimento);
-      dataVenc.setHours(0, 0, 0, 0);
-      
-      if (conta.status === 'vencido' && dataVenc < hojeDate) {
-        ultimaInadimplencia = dataVenc;
-        break;
-      }
-    }
-
-    if (ultimaInadimplencia) {
-      const diffTime = hojeDate.getTime() - ultimaInadimplencia.getTime();
-      streakDias = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    } else {
-      const primeiraContaPaga = contasOrdenadas
-        .filter(c => c.status === 'pago')
-        .sort((a, b) => new Date(a.data_vencimento).getTime() - new Date(b.data_vencimento).getTime())[0];
-      
-      if (primeiraContaPaga) {
-        const primeiraData = new Date(primeiraContaPaga.data_vencimento);
-        const diffTime = hojeDate.getTime() - primeiraData.getTime();
-        streakDias = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
-      }
-    }
-
-    let nivel = 'bronze';
-    let proximoNivel = 30;
-    if (streakDias >= 90) {
-      nivel = 'gold';
-      proximoNivel = 180;
-    } else if (streakDias >= 30) {
-      nivel = 'silver';
-      proximoNivel = 90;
-    }
-
-    const progresso = nivel === 'gold' 
-      ? (streakDias / proximoNivel) * 100 
-      : nivel === 'silver' 
-        ? ((streakDias - 30) / (90 - 30)) * 100 
-        : (streakDias / 30) * 100;
-
-    return {
-      dias: streakDias,
-      nivel,
-      proximoNivel,
-      progresso: Math.min(100, Math.max(0, progresso)),
-      temInadimplencia: vencidasReceber.length > 0,
-    };
-  }, [contasReceberFiltradas, vencidasReceber]);
-
   // Fluxo de caixa projetado
   const fluxoCaixaProjetado = useMemo(() => {
     const dias = parseInt(periodoFluxo);
@@ -319,7 +258,6 @@ export function useDashboardMetrics(filters: DashboardFilters) {
     statusContasPagar,
     dadosPorCentroCusto,
     topClientesReceita,
-    streakData,
     fluxoCaixaProjetado,
   };
 }
