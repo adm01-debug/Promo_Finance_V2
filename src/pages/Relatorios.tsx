@@ -157,7 +157,7 @@ export default function Relatorios() {
         title: `Relatório exportado`,
         description: `O arquivo ${format.toUpperCase()} foi gerado com sucesso.`,
       });
-    } catch (error) {
+    } catch (error: unknown) {
       toast({
         title: 'Erro ao exportar',
         description: 'Não foi possível gerar o arquivo.',

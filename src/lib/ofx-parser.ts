@@ -88,7 +88,7 @@ export function parseOFX(content: string, fileName: string): ResultadoImportacao
       },
       avisos,
     };
-  } catch (error) {
+  } catch (error: unknown) {
     return {
       sucesso: false,
       erro: `Erro ao processar arquivo OFX: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
@@ -114,7 +114,7 @@ export function parseOFC(content: string, fileName: string): ResultadoImportacao
       resultado.extrato.formato = 'OFC';
     }
     return resultado;
-  } catch (error) {
+  } catch (error: unknown) {
     return {
       sucesso: false,
       erro: `Erro ao processar arquivo OFC: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
@@ -236,7 +236,7 @@ export function parseCSV(content: string, fileName: string): ResultadoImportacao
       },
       avisos,
     };
-  } catch (error) {
+  } catch (error: unknown) {
     return {
       sucesso: false,
       erro: `Erro ao processar arquivo CSV: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,

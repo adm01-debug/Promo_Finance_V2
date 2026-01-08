@@ -100,7 +100,7 @@ export function ConciliacaoManualDialog({
       onOpenChange(false);
       setSelectedLancamento(null);
       setSearch('');
-    } catch (error) {
+    } catch (error: unknown) {
       showError('Erro ao conciliar transação');
       logger.error('[ConciliacaoManualDialog] Erro ao conciliar:', error);
     } finally {

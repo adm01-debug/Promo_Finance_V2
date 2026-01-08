@@ -92,7 +92,7 @@ export function withErrorTracking<T extends (...args: any[]) => Promise<any>>(
   return (async (...args: Parameters<T>) => {
     try {
       return await fn(...args);
-    } catch (error) {
+    } catch (error: unknown) {
       errorTracker.captureException(error as Error, {
         ...context,
         extra: { args },

@@ -202,8 +202,8 @@ export function getContingencyState(): ContingencyState {
         })),
       };
     }
-  } catch (error) {
-    console.error('[Contingência] Erro ao carregar estado:', error);
+  } catch (error: unknown) {
+    logger.error('[Contingência] Erro ao carregar estado:', error);
   }
   return initialState;
 }
@@ -212,8 +212,8 @@ export function getContingencyState(): ContingencyState {
 function saveContingencyState(state: ContingencyState): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch (error) {
-    console.error('[Contingência] Erro ao salvar estado:', error);
+  } catch (error: unknown) {
+    logger.error('[Contingência] Erro ao salvar estado:', error);
   }
 }
 
@@ -343,8 +343,8 @@ export function getSefazHealthStatus(): SefazHealthStatus {
         lastCheck: new Date(parsed.lastCheck),
       };
     }
-  } catch (error) {
-    console.error('[Contingência] Erro ao carregar status de saúde:', error);
+  } catch (error: unknown) {
+    logger.error('[Contingência] Erro ao carregar status de saúde:', error);
   }
   
   return {
@@ -412,8 +412,8 @@ export function getAutoContingencyConfig(): AutoContingencyConfig {
         })),
       };
     }
-  } catch (error) {
-    console.error('[Contingência] Erro ao carregar configuração automática:', error);
+  } catch (error: unknown) {
+    logger.error('[Contingência] Erro ao carregar configuração automática:', error);
   }
   return defaultAutoConfig;
 }
@@ -422,8 +422,8 @@ export function getAutoContingencyConfig(): AutoContingencyConfig {
 export function saveAutoContingencyConfig(config: AutoContingencyConfig): void {
   try {
     localStorage.setItem(RULES_KEY, JSON.stringify(config));
-  } catch (error) {
-    console.error('[Contingência] Erro ao salvar configuração automática:', error);
+  } catch (error: unknown) {
+    logger.error('[Contingência] Erro ao salvar configuração automática:', error);
   }
 }
 

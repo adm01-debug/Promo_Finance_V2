@@ -129,7 +129,7 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
         celebrateSuccess('Empresa cadastrada com sucesso!');
       }
       onSuccess();
-    } catch (error) {
+    } catch (error: unknown) {
       showError('Erro ao salvar empresa');
     }
   };

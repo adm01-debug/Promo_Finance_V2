@@ -28,7 +28,7 @@ export function usePushNotifications() {
       }
       
       return null;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Error fetching VAPID key:', error);
       return null;
     }
@@ -58,7 +58,7 @@ export function usePushNotifications() {
       const registration = await navigator.serviceWorker.ready;
       const subscription = await registration.pushManager.getSubscription();
       setIsSubscribed(!!subscription);
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Error checking push subscription:', error);
     }
   }, []);
@@ -75,7 +75,7 @@ export function usePushNotifications() {
       
       logger.debug('Service Worker registrado:', registration);
       return registration;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Erro ao registrar Service Worker:', error);
       throw error;
     }
@@ -100,7 +100,7 @@ export function usePushNotifications() {
       }
       
       return false;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Erro ao solicitar permissão:', error);
       toast.error('Erro ao solicitar permissão para notificações');
       return false;
@@ -183,7 +183,7 @@ export function usePushNotifications() {
       setIsSubscribed(true);
       toast.success('Notificações push ativadas com sucesso!');
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Erro ao ativar notificações:', error);
       toast.error('Erro ao ativar notificações push');
       return false;
@@ -215,7 +215,7 @@ export function usePushNotifications() {
       setIsSubscribed(false);
       toast.success('Notificações push desativadas');
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Erro ao desativar notificações:', error);
       toast.error('Erro ao desativar notificações push');
       return false;
@@ -258,7 +258,7 @@ export function usePushNotifications() {
       });
       
       toast.success('Notificação de teste enviada!');
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Erro ao enviar notificação de teste:', error);
       toast.error('Erro ao enviar notificação de teste');
     }
@@ -289,7 +289,7 @@ export function usePushNotifications() {
       }
 
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Error sending security push notification:', error);
       return false;
     }

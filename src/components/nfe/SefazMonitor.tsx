@@ -189,7 +189,7 @@ export function SefazMonitor() {
         addAlert('error', `${newHealth.consecutiveFailures} falhas consecutivas de comunicação`);
       }
 
-    } catch (error) {
+    } catch (error: unknown) {
       addAlert('error', 'Erro ao verificar status da SEFAZ');
     } finally {
       setIsChecking(false);

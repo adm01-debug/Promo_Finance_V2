@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRateLimitLogs } from '@/hooks/useRateLimitLogs';
 import { useSecurityAlerts } from '@/hooks/useSecurityAlerts';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import {
   BarChart,
   Bar,
@@ -87,7 +88,8 @@ export function RateLimitDashboard() {
       setNewBlockIP('');
       setNewBlockReason('');
       setNewBlockPermanent(false);
-    } catch (error) {
+    } catch (error: unknown) {
+      logger.error('Erro ao bloquear IP:', error);
       toast.error('Erro ao bloquear IP');
     } finally {
       setIsBlocking(false);
@@ -98,7 +100,8 @@ export function RateLimitDashboard() {
     try {
       await unblockIP(id);
       toast.success('IP desbloqueado');
-    } catch (error) {
+    } catch (error: unknown) {
+      logger.error('Erro ao desbloquear IP:', error);
       toast.error('Erro ao desbloquear IP');
     }
   };
@@ -107,7 +110,8 @@ export function RateLimitDashboard() {
     try {
       await clearOldLogs(30);
       toast.success('Logs antigos removidos');
-    } catch (error) {
+    } catch (error: unknown) {
+      logger.error('Erro ao limpar logs:', error);
       toast.error('Erro ao limpar logs');
     }
   };

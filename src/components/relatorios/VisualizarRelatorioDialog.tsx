@@ -75,7 +75,7 @@ export function VisualizarRelatorioDialog({
         title: 'Exportado com sucesso',
         description: 'O arquivo CSV foi baixado.',
       });
-    } catch (error) {
+    } catch (error: unknown) {
       toast({
         title: 'Erro ao exportar',
         description: 'Não foi possível gerar o arquivo.',

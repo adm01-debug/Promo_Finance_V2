@@ -97,7 +97,7 @@ export function ImportarExtratoDialog({
       } else {
         setStep('error');
       }
-    } catch (error) {
+    } catch (error: unknown) {
       setResultado({
         sucesso: false,
         erro: `Erro ao ler arquivo: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
