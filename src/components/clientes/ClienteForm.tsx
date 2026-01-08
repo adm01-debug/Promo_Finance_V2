@@ -9,6 +9,7 @@ import { FieldLabel } from '@/components/ui/info-tooltip';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useConfetti } from '@/hooks/useConfetti';
+import { logger } from '@/lib/logger';
 import { sounds } from '@/lib/sound-feedback';
 import {
   Dialog,
@@ -156,9 +157,9 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
       form.reset();
       onOpenChange(false);
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
       sounds.error();
-      console.error('Error creating cliente:', error);
+      logger.error('Error creating cliente:', error);
       toast({
         title: 'Erro ao cadastrar cliente',
         description: 'Não foi possível cadastrar o cliente. Tente novamente.',
@@ -199,8 +200,8 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
       });
       onOpenChange(false);
     },
-    onError: (error) => {
-      console.error('Error updating cliente:', error);
+    onError: (error: unknown) => {
+      logger.error('Error updating cliente:', error);
       toast({
         title: 'Erro ao atualizar cliente',
         description: 'Não foi possível salvar as alterações. Tente novamente.',

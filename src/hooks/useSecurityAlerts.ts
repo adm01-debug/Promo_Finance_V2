@@ -44,7 +44,7 @@ async function sendSecurityPushAlert(alert: SecurityAlert) {
     });
     
     logger.debug('[useSecurityAlerts] Push notification sent for alert:', alert.id);
-  } catch (error) {
+  } catch (error: unknown) {
     logger.error('[useSecurityAlerts] Error sending push notification:', error);
   }
 }

@@ -146,7 +146,7 @@ export function useOfflineSync() {
             break;
         }
         successfulIds.push(mutation.id);
-      } catch (error) {
+      } catch (error: unknown) {
         logger.error('Sync failed for mutation:', mutation, error);
         failedMutations.push(mutation);
       }

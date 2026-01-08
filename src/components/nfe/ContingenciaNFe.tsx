@@ -159,7 +159,7 @@ export function ContingenciaNFe() {
       } else {
         toast.warning('SEFAZ está indisponível');
       }
-    } catch (error) {
+    } catch (error: unknown) {
       toast.error('Erro ao verificar status da SEFAZ');
     } finally {
       setIsChecking(false);

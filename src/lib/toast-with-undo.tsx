@@ -29,7 +29,7 @@ export function toastWithUndo({
         try {
           await onUndo();
           toast.success('Ação desfeita', { duration: 2000 });
-        } catch (error) {
+        } catch (error: unknown) {
           toast.error('Erro ao desfazer', {
             description: 'Não foi possível desfazer a ação.',
           });

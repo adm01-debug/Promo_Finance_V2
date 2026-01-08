@@ -126,8 +126,8 @@ export function usePagamentosRecorrentes() {
       queryClient.invalidateQueries({ queryKey: ['pagamentos-recorrentes'] });
       toast.success('Pagamento recorrente atualizado!');
     },
-    onError: (error) => {
-      console.error('Erro ao atualizar pagamento recorrente:', error);
+    onError: (error: unknown) => {
+      logger.error('Erro ao atualizar pagamento recorrente:', error);
       toast.error('Erro ao atualizar pagamento recorrente');
     },
   });
@@ -145,8 +145,8 @@ export function usePagamentosRecorrentes() {
       queryClient.invalidateQueries({ queryKey: ['pagamentos-recorrentes'] });
       toast.success(variables.ativo ? 'Pagamento ativado!' : 'Pagamento pausado!');
     },
-    onError: (error) => {
-      console.error('Erro ao alterar status:', error);
+    onError: (error: unknown) => {
+      logger.error('Erro ao alterar status:', error);
       toast.error('Erro ao alterar status do pagamento');
     },
   });
@@ -164,8 +164,8 @@ export function usePagamentosRecorrentes() {
       queryClient.invalidateQueries({ queryKey: ['pagamentos-recorrentes'] });
       toast.success('Pagamento recorrente excluído!');
     },
-    onError: (error) => {
-      console.error('Erro ao excluir pagamento recorrente:', error);
+    onError: (error: unknown) => {
+      logger.error('Erro ao excluir pagamento recorrente:', error);
       toast.error('Erro ao excluir pagamento recorrente');
     },
   });
@@ -185,8 +185,8 @@ export function usePagamentosRecorrentes() {
         toast.info('Nenhuma conta pendente para gerar');
       }
     },
-    onError: (error) => {
-      console.error('Erro ao gerar contas:', error);
+    onError: (error: unknown) => {
+      logger.error('Erro ao gerar contas:', error);
       toast.error('Erro ao gerar contas recorrentes');
     },
   });

@@ -285,7 +285,7 @@ export function useContasPagarLogic() {
       setAprovacaoDialogOpen(false);
       setContaParaAprovacao(null);
       setObservacoesAprovacao('');
-    } catch (error) {
+    } catch (error: unknown) {
       toast.error('Erro ao solicitar aprovação');
     }
   };

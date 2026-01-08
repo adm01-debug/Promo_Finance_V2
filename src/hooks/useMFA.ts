@@ -71,7 +71,7 @@ export function useMFA() {
       });
 
       return data;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('[useMFA] Erro no enrollment:', error);
       throw error;
     }
@@ -104,7 +104,7 @@ export function useMFA() {
       setEnrollmentData(null);
       await fetchFactors();
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('[useMFA] Erro na verificação:', error);
       throw error;
     }
@@ -124,7 +124,7 @@ export function useMFA() {
       toast.success('MFA desativado');
       await fetchFactors();
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('[useMFA] Erro ao desativar MFA:', error);
       throw error;
     }
@@ -158,7 +158,7 @@ export function useMFA() {
       }
 
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('[useMFA] Erro na verificação:', error);
       throw error;
     }

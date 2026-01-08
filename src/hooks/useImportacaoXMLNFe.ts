@@ -310,7 +310,7 @@ export function useImportacaoXMLNFe(empresaId: string) {
 
           processadas[i] = { ...nfe, status: 'importado' };
           sucesso++;
-        } catch (error) {
+        } catch (error: unknown) {
           processadas[i] = { ...nfe, status: 'erro', mensagemErro: (error as Error).message };
           erros++;
         }

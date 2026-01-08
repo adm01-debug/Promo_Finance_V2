@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { LogIn, UserPlus, Shield } from 'lucide-react';
+import { logger } from '@/lib/logger';
 import { z } from 'zod';
 import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 import { useWebAuthn } from '@/hooks/useWebAuthn';
@@ -205,7 +206,7 @@ export default function Auth() {
         
         toast.success('Login realizado com sucesso!');
       }
-    } catch (error) {
+    } catch (error: unknown) {
       await logLoginAttempt(email, false, 'Erro desconhecido');
       toast.error('Erro ao realizar login');
     } finally {
@@ -271,7 +272,7 @@ export default function Auth() {
       } else {
         toast.success('Conta criada com sucesso!');
       }
-    } catch (error) {
+    } catch (error: unknown) {
       toast.error('Erro ao criar conta');
     } finally {
       setIsLoading(false);
@@ -298,12 +299,12 @@ export default function Auth() {
 
       if (error) {
         toast.error('Erro ao solicitar reset de senha');
-        console.error(error);
+        logger.error('Erro ao solicitar reset de senha:', error);
       } else {
         setResetEmailSent(true);
         toast.success('Solicitação enviada! Aguarde a aprovação do gestor.');
       }
-    } catch (error) {
+    } catch (error: unknown) {
       toast.error('Erro ao solicitar reset de senha');
     } finally {
       setIsLoading(false);

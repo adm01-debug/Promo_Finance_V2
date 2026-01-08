@@ -44,7 +44,7 @@ async function enviarPushNotification(alerta: AlertaPreditivo) {
     });
 
     logger.debug('[useAlertasPreditivos] Push notification enviada para alerta:', alerta.id);
-  } catch (error) {
+  } catch (error: unknown) {
     logger.error('[useAlertasPreditivos] Erro ao enviar push notification:', error);
   }
 }
@@ -201,7 +201,7 @@ export function useAlertasPreditivos() {
       }
 
       return novosAlertas;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('[useAlertasPreditivos] Erro na análise preditiva:', error);
       toast.error('Erro na análise preditiva');
       return [];

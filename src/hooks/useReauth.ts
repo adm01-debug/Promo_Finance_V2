@@ -62,7 +62,7 @@ export function useReauth() {
       }
       
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('[useReauth] Erro na re-autenticação:', error);
       toast.error('Erro ao re-autenticar');
       return false;

@@ -29,6 +29,7 @@ import {
   Target
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
+import { logger } from '@/lib/logger';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area, BarChart, Bar } from 'recharts';
 
 interface AnaliseTendencia {
@@ -141,8 +142,8 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
         title: "Análise concluída",
         description: `Analisados ${data.dados_analisados.contas_receber} recebíveis, ${data.dados_analisados.contas_pagar} pagáveis, ${data.dados_analisados.clientes} clientes e ${data.dados_analisados.meses_historico || 0} meses de histórico.`,
       });
-    } catch (error) {
-      console.error('Error:', error);
+    } catch (error: unknown) {
+      logger.error('Erro na análise preditiva:', error);
       toast({
         title: "Erro na análise",
         description: error instanceof Error ? error.message : "Não foi possível gerar a análise preditiva.",

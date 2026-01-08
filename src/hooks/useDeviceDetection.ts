@@ -29,7 +29,7 @@ async function sendDeviceAlertEmail(userId: string, email: string, deviceInfo: D
     } else {
       logger.debug('Device alert email sent successfully');
     }
-  } catch (error) {
+  } catch (error: unknown) {
     logger.error('Error invoking send-device-alert function:', error);
   }
 }
@@ -170,7 +170,7 @@ export function useDeviceDetection() {
       });
       
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('[useDeviceDetection] Device detection error:', error);
       return false;
     } finally {

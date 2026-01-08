@@ -164,7 +164,7 @@ export function useBulkActions<T extends { id: string }>({
         description: `${selectedItems.length} item(s) processado(s)`,
       });
       onSuccess?.();
-    } catch (error) {
+    } catch (error: unknown) {
       toast({
         title: errorMessage,
         description: error instanceof Error ? error.message : 'Erro desconhecido',
@@ -205,7 +205,7 @@ export function useBulkActions<T extends { id: string }>({
         description: `${total} item(s) processado(s)`,
       });
       onSuccess?.();
-    } catch (error) {
+    } catch (error: unknown) {
       toast({
         title: errorMessage,
         description: error instanceof Error ? error.message : 'Erro desconhecido',

@@ -133,7 +133,7 @@ Pergunta do usuário: ${mensagemUsuario}
       });
 
       return { resposta: respostaIA, propostas };
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('[NegociacaoIA] Erro na negociação IA:', error);
       toast.error('Erro ao gerar propostas');
       return { resposta: 'Desculpe, não foi possível processar sua solicitação.', propostas: [] };

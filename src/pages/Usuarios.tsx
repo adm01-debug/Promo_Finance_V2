@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { Users, Shield, Search, UserCog, Crown, Briefcase, Eye, Settings } from 'lucide-react';
+import { logger } from '@/lib/logger';
 import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -90,8 +91,8 @@ export default function Usuarios() {
       queryClient.invalidateQueries({ queryKey: ['users-management'] });
       toast.success('Perfil atualizado com sucesso');
     },
-    onError: (error) => {
-      console.error('Error updating role:', error);
+    onError: (error: unknown) => {
+      logger.error('Error updating role:', error);
       toast.error('Erro ao atualizar perfil');
     },
   });

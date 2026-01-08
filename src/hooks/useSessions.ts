@@ -145,7 +145,7 @@ export function useSessions() {
 
       setSessions(prev => prev.filter(s => s.id !== sessionId));
       toast.success('Sessão encerrada');
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('[useSessions] Erro ao encerrar sessão:', error);
       toast.error('Erro ao encerrar sessão');
     }
@@ -168,7 +168,7 @@ export function useSessions() {
 
       setSessions(prev => prev.filter(s => s.is_current));
       toast.success('Todas as outras sessões foram encerradas');
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('[useSessions] Erro ao encerrar sessões:', error);
       toast.error('Erro ao encerrar sessões');
     }
