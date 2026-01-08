@@ -1,4 +1,4 @@
-import { LucideIcon, Search, FileX, Inbox, FolderOpen, AlertCircle, RefreshCw } from 'lucide-react';
+import { LucideIcon, Search, FileX, Inbox, FolderOpen, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
