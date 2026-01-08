@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { InteractivePageWrapper, useCelebrations } from '@/components/wrappers';
 import { 
   Zap,
   RefreshCw,

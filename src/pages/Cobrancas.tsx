@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { InteractivePageWrapper, KPICard, useCelebrations } from '@/components/wrappers';
 import {
   Send,
   Mail,
