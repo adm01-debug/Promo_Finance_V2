@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { InteractivePageWrapper, PrimaryActionButton, KPICard } from '@/components/wrappers';
 import { 
   Building2, 
   Plus, 
@@ -15,7 +14,6 @@ import {
   PiggyBank,
   Landmark,
   DollarSign,
-  Loader2,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
