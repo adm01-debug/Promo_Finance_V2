@@ -251,37 +251,6 @@ export function PageLoading({ message = "Carregando..." }: { message?: string })
   );
 }
 
-
-
-
-// Shimmer skeleton row with animation
-function ShimmerRow({ columns, isFirst = false }: { columns: number; isFirst?: boolean }) {
-  return (
-    <tr className={cn("border-b border-border/50", !isFirst && "animate-pulse")}>
-      {Array.from({ length: columns }).map((_, i) => (
-        <td key={i} className="p-4">
-          <div className="relative overflow-hidden rounded">
-            <Skeleton 
-              className={cn(
-                "h-4",
-                i === 0 && "w-40",
-                i === 1 && "w-48", 
-                i === 2 && "w-24",
-                i === 3 && "w-28",
-                i === 4 && "w-20",
-                i === 5 && "w-16",
-                i === 6 && "w-20",
-                i >= 7 && "w-12"
-              )} 
-            />
-            <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-          </div>
-        </td>
-      ))}
-    </tr>
-  );
-}
-
 // Table skeleton with shimmer effect for financial tables
 interface TableShimmerSkeletonProps {
   rows?: number;
