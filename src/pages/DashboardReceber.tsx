@@ -60,8 +60,8 @@ import {
   Cell,
   Legend,
 } from "recharts";
-import { useContasReceber, useEmpresas, useClientes } from "@/hooks/useFinancialData";
-import { useVendedores } from "@/hooks/useInadimplenciaSegmentada";
+import { useContasReceber, useEmpresas, useClientes, ContaReceber, Empresa, Cliente } from "@/hooks/useFinancialData";
+import { useVendedores, Vendedor } from "@/hooks/useInadimplenciaSegmentada";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { format, subDays, addDays, startOfMonth, endOfMonth, differenceInDays, isWithinInterval, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -112,7 +112,7 @@ export default function DashboardReceber() {
 
   // Get unique ramos from clients
   const ramosAtividade = useMemo(() => {
-    const ramos = [...new Set(clientes.map((c: any) => c.ramo_atividade).filter(Boolean))];
+    const ramos = [...new Set(clientes.map((c) => c.ramo_atividade).filter(Boolean))] as string[];
     return ramos.sort();
   }, [clientes]);
 
@@ -121,31 +121,31 @@ export default function DashboardReceber() {
     let filtered = [...contasReceber];
 
     if (empresaId !== "todas") {
-      filtered = filtered.filter((c: any) => c.empresa_id === empresaId);
+      filtered = filtered.filter((c) => c.empresa_id === empresaId);
     }
 
     if (vendedorId !== "todos") {
-      filtered = filtered.filter((c: any) => c.vendedor_id === vendedorId);
+      filtered = filtered.filter((c) => c.vendedor_id === vendedorId);
     }
 
     if (clienteId !== "todos") {
-      filtered = filtered.filter((c: any) => c.cliente_id === clienteId);
+      filtered = filtered.filter((c) => c.cliente_id === clienteId);
     }
 
     if (statusFilter !== "todos") {
-      filtered = filtered.filter((c: any) => c.status === statusFilter);
+      filtered = filtered.filter((c) => c.status === statusFilter);
     }
 
     if (ramoAtividade !== "todos") {
       const clientesDoRamo = clientes
-        .filter((c: any) => c.ramo_atividade === ramoAtividade)
-        .map((c: any) => c.id);
-      filtered = filtered.filter((c: any) => clientesDoRamo.includes(c.cliente_id));
+        .filter((c) => c.ramo_atividade === ramoAtividade)
+        .map((c) => c.id);
+      filtered = filtered.filter((c) => clientesDoRamo.includes(c.cliente_id || ''));
     }
 
     // Filter by date range
     if (dataInicio && dataFim) {
-      filtered = filtered.filter((c: any) => {
+      filtered = filtered.filter((c) => {
         const dataVenc = parseISO(c.data_vencimento);
         return isWithinInterval(dataVenc, { start: dataInicio, end: dataFim });
       });
