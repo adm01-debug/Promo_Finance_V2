@@ -183,7 +183,20 @@ export function useApuracoesTributarias(empresaId?: string) {
       let is_debitos = 0;
       let icms_residual = 0, iss_residual = 0, pis_residual = 0, cofins_residual = 0;
 
-      (operacoes || []).forEach((op: any) => {
+      interface OperacaoData {
+        tipo_operacao: string;
+        cbs_valor: number | null;
+        ibs_valor: number | null;
+        is_valor: number | null;
+        cbs_credito: number | null;
+        ibs_credito: number | null;
+        icms_valor: number | null;
+        iss_valor: number | null;
+        pis_valor: number | null;
+        cofins_valor: number | null;
+      }
+
+      (operacoes || []).forEach((op: OperacaoData) => {
         if (['venda', 'servico_prestado'].includes(op.tipo_operacao)) {
           cbs_debitos += Number(op.cbs_valor) || 0;
           ibs_debitos += Number(op.ibs_valor) || 0;

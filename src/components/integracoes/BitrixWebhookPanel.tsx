@@ -200,7 +200,7 @@ export const BitrixWebhookPanel = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {events.map((event: any) => (
+                  {events.map((event) => (
                     <TableRow key={event.id}>
                       <TableCell>{getEventTypeBadge(event.event_type)}</TableCell>
                       <TableCell className="font-mono text-xs max-w-[200px] truncate">

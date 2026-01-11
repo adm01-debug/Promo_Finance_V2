@@ -222,7 +222,7 @@ export function useWebAuthn() {
 
       const challenge = generateChallenge();
 
-      const allowCredentials: PublicKeyCredentialDescriptor[] = credentials.map((cred: any) => ({
+      const allowCredentials: PublicKeyCredentialDescriptor[] = credentials.map((cred: StoredCredential) => ({
         type: 'public-key' as const,
         id: base64UrlDecode(cred.credential_id),
         transports: ['internal'] as AuthenticatorTransport[],
@@ -251,7 +251,7 @@ export function useWebAuthn() {
 
       // Verify credential exists
       const matchedCredential = credentials.find(
-        (c: any) => c.credential_id === assertionCredentialId
+        (c: StoredCredential) => c.credential_id === assertionCredentialId
       );
 
       if (!matchedCredential) {

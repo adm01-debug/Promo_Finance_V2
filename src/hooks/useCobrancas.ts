@@ -68,7 +68,19 @@ export function useContasVencidas() {
 
       if (error) throw error;
 
-      return (data || []).map((conta: any) => ({
+      interface ContaVencidaData {
+        id: string;
+        cliente_nome: string;
+        cliente_id: string | null;
+        valor: number;
+        valor_recebido: number | null;
+        data_vencimento: string;
+        etapa_cobranca: 'preventiva' | 'lembrete' | 'cobranca' | 'negociacao' | 'juridico' | null;
+        status: 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
+        clientes?: { score: number | null } | null;
+      }
+
+      return (data || []).map((conta: ContaVencidaData) => ({
         id: conta.id,
         cliente_nome: conta.cliente_nome,
         cliente_id: conta.cliente_id,
@@ -189,7 +201,16 @@ export function useTopDevedores(limit: number = 10) {
       if (error) throw error;
 
       // Agrupar por cliente
-      const devedoresPorCliente = (data || []).reduce((acc: Record<string, TopDevedor>, conta: any) => {
+      interface ContaDevedorData {
+        cliente_id: string | null;
+        cliente_nome: string;
+        valor: number;
+        valor_recebido: number | null;
+        data_vencimento: string;
+        clientes?: { score: number | null } | null;
+      }
+
+      const devedoresPorCliente = (data || []).reduce((acc: Record<string, TopDevedor>, conta: ContaDevedorData) => {
         const key = conta.cliente_id || conta.cliente_nome;
         if (!acc[key]) {
           acc[key] = {
