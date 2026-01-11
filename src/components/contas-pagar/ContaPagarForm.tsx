@@ -61,6 +61,7 @@ const contaPagarSchema = z.object({
 });
 
 type ContaPagarFormData = z.infer<typeof contaPagarSchema>;
+type TipoCobranca = 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';
 
 interface ContaPagar {
   id: string;
@@ -73,7 +74,7 @@ interface ContaPagar {
   empresa_id: string;
   centro_custo_id: string | null;
   conta_bancaria_id: string | null;
-  tipo_cobranca: string;
+  tipo_cobranca: TipoCobranca;
   numero_documento: string | null;
   codigo_barras: string | null;
   observacoes: string | null;
@@ -133,7 +134,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
         empresa_id: conta.empresa_id,
         centro_custo_id: conta.centro_custo_id || undefined,
         conta_bancaria_id: conta.conta_bancaria_id || undefined,
-        tipo_cobranca: conta.tipo_cobranca as any,
+        tipo_cobranca: conta.tipo_cobranca,
         numero_documento: conta.numero_documento || undefined,
         codigo_barras: conta.codigo_barras || undefined,
         observacoes: conta.observacoes || undefined,
@@ -573,7 +574,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {contasBancarias.map((cb: any) => (
+                        {contasBancarias.map((cb) => (
                           <SelectItem key={cb.id} value={cb.id}>
                             {cb.banco} - Ag: {cb.agencia} / CC: {cb.conta}
                           </SelectItem>

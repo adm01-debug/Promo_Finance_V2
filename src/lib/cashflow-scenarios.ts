@@ -171,10 +171,16 @@ export function detectarAlertasRuptura(
 }
 
 // Calcular métricas resumidas dos cenários
+interface MetricaCenario {
+  saldoFinal: number;
+  saldoMinimo: number;
+  diasCriticos: number;
+}
+
 export function calcularMetricasCenarios(
   projecoes: Record<CenarioTipo, ProjecaoCenario[]>
-): Record<CenarioTipo, { saldoFinal: number; saldoMinimo: number; diasCriticos: number }> {
-  const resultado: Record<CenarioTipo, { saldoFinal: number; saldoMinimo: number; diasCriticos: number }> = {} as any;
+): Record<CenarioTipo, MetricaCenario> {
+  const resultado = {} as Record<CenarioTipo, MetricaCenario>;
 
   Object.entries(projecoes).forEach(([cenario, dados]) => {
     const saldos = dados.map(d => d.saldo);

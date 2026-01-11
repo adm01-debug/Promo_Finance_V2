@@ -55,7 +55,24 @@ interface AnaliseInadimplencia {
   geradoEm: string;
 }
 
-function calcularProbabilidadeAtraso(cliente: any, contasPendentes: any[], historicoContas: any[]): number {
+interface ClienteData {
+  score: number | null;
+  limite_credito: number | null;
+}
+
+interface ContaData {
+  valor: number;
+  valor_recebido: number | null;
+  status: string;
+  data_vencimento: string;
+}
+
+// Interface parcial para histórico que só tem status
+interface HistoricoContaData {
+  status: string;
+}
+
+function calcularProbabilidadeAtraso(cliente: ClienteData, contasPendentes: ContaData[], historicoContas: HistoricoContaData[]): number {
   let score = 0;
   
   // Fator 1: Score do cliente (peso 30%)
@@ -101,7 +118,7 @@ function determinarNivelRisco(probabilidade: number): 'alto' | 'medio' | 'baixo'
   return 'baixo';
 }
 
-function gerarFatoresRisco(cliente: any, contasPendentes: any[], historicoContas: any[]): string[] {
+function gerarFatoresRisco(cliente: ClienteData, contasPendentes: ContaData[], historicoContas: HistoricoContaData[]): string[] {
   const fatores: string[] = [];
   
   if ((cliente.score || 100) < 70) {

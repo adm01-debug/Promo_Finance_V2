@@ -190,12 +190,16 @@ export function getContingencyState(): ContingencyState {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
+      interface ParsedNFe {
+        dataEmissao: string;
+        ultimaTentativa?: string | null;
+      }
       return {
         ...parsed,
         activatedAt: parsed.activatedAt ? new Date(parsed.activatedAt) : null,
         estimatedReturn: parsed.estimatedReturn ? new Date(parsed.estimatedReturn) : null,
         lastFailure: parsed.lastFailure ? new Date(parsed.lastFailure) : null,
-        pendingNFes: parsed.pendingNFes.map((nfe: any) => ({
+        pendingNFes: parsed.pendingNFes.map((nfe: ParsedNFe) => ({
           ...nfe,
           dataEmissao: new Date(nfe.dataEmissao),
           ultimaTentativa: nfe.ultimaTentativa ? new Date(nfe.ultimaTentativa) : null,
@@ -403,9 +407,13 @@ export function getAutoContingencyConfig(): AutoContingencyConfig {
     const stored = localStorage.getItem(RULES_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
+      interface ParsedRule {
+        createdAt: string;
+        lastTriggered?: string | null;
+      }
       return {
         ...parsed,
-        rules: parsed.rules.map((rule: any) => ({
+        rules: parsed.rules.map((rule: ParsedRule) => ({
           ...rule,
           createdAt: new Date(rule.createdAt),
           lastTriggered: rule.lastTriggered ? new Date(rule.lastTriggered) : undefined,
@@ -621,8 +629,12 @@ export function getContingencyStats(): {
 }
 
 // Gerar XML em contingência
+export interface NFeData {
+  [key: string]: unknown;
+}
+
 export function generateContingencyXml(
-  nfeData: any,
+  _nfeData: NFeData,
   mode: ContingencyMode,
   chaveAcesso: string
 ): string {

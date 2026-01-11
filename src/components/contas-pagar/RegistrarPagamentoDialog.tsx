@@ -387,7 +387,7 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {contasBancarias.map((cb: any) => (
+                      {contasBancarias.map((cb) => (
                         <SelectItem key={cb.id} value={cb.id}>
                           {cb.banco} - Ag: {cb.agencia} / CC: {cb.conta}
                         </SelectItem>

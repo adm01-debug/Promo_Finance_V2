@@ -54,6 +54,22 @@ import { format, subDays } from 'date-fns';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 
+interface OpenFinanceConsent {
+  id: string;
+  institution_id: string;
+  status: string;
+  created_at: string;
+}
+
+interface ContaBancariaOpenFinance {
+  id: string;
+  banco: string;
+  agencia: string;
+  conta: string;
+  empresa_id: string;
+  empresas: { razao_social: string } | null;
+}
+
 export const OpenFinancePanel = () => {
   const {
     institutions,
@@ -70,7 +86,7 @@ export const OpenFinancePanel = () => {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
-  const [selectedConsent, setSelectedConsent] = useState<any>(null);
+  const [selectedConsent, setSelectedConsent] = useState<OpenFinanceConsent | null>(null);
   const [selectedContaBancaria, setSelectedContaBancaria] = useState<string>('');
   const [selectedPeriod, setSelectedPeriod] = useState<string>('30');
 
@@ -94,7 +110,7 @@ export const OpenFinancePanel = () => {
     setDialogOpen(false);
   };
 
-  const handleOpenImportDialog = (consent: any) => {
+  const handleOpenImportDialog = (consent: OpenFinanceConsent) => {
     setSelectedConsent(consent);
     setSelectedContaBancaria('');
     setSelectedPeriod('30');
@@ -234,7 +250,7 @@ export const OpenFinancePanel = () => {
             </div>
           ) : consents && consents.length > 0 ? (
             <div className="space-y-4">
-              {consents.map((consent: any) => {
+              {(consents as OpenFinanceConsent[]).map((consent) => {
                 const institution = institutions?.find((i) => i.id === consent.institution_id);
                 return (
                   <div
@@ -348,7 +364,7 @@ export const OpenFinancePanel = () => {
                   <SelectValue placeholder="Selecione a conta no sistema" />
                 </SelectTrigger>
                 <SelectContent>
-                  {contasBancarias?.map((conta: any) => (
+                  {(contasBancarias as ContaBancariaOpenFinance[] | undefined)?.map((conta) => (
                     <SelectItem key={conta.id} value={conta.id}>
                       {conta.banco} - Ag: {conta.agencia} / Cc: {conta.conta}
                       {conta.empresas && ` (${conta.empresas.razao_social})`}

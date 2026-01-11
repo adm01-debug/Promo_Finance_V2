@@ -354,7 +354,20 @@ export function useOperacoesTributaveis(empresaId?: string) {
           residuais: { icms: 0, iss: 0, pis: 0, cofins: 0 },
         };
         
-        (data || []).forEach((op: any) => {
+        interface OperacaoTributavel {
+          tipo_operacao: string;
+          cbs_valor: number | null;
+          ibs_valor: number | null;
+          is_valor: number | null;
+          cbs_credito: number | null;
+          ibs_credito: number | null;
+          icms_valor: number | null;
+          iss_valor: number | null;
+          pis_valor: number | null;
+          cofins_valor: number | null;
+        }
+        
+        (data || []).forEach((op: OperacaoTributavel) => {
           if (['venda', 'servico_prestado'].includes(op.tipo_operacao)) {
             stats.debitos.cbs += Number(op.cbs_valor) || 0;
             stats.debitos.ibs += Number(op.ibs_valor) || 0;

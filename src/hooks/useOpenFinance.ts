@@ -105,7 +105,7 @@ export const useOpenFinance = () => {
         window.open(data.authorization_url, '_blank');
       }
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error('Erro ao criar consentimento', {
         description: error.message,
       });
@@ -203,7 +203,7 @@ export const useOpenFinance = () => {
         description: data.message,
       });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error('Erro ao importar transações', {
         description: error.message,
       });
@@ -227,7 +227,7 @@ export const useOpenFinance = () => {
       toast.success('Consentimento revogado');
       queryClient.invalidateQueries({ queryKey: ['open-finance-consents'] });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error('Erro ao revogar consentimento', {
         description: error.message,
       });

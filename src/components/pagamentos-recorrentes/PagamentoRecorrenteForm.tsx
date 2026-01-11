@@ -67,7 +67,9 @@ const frequenciaOptions: { value: FrequenciaPagamento; label: string }[] = [
   { value: 'anual', label: 'Anual' },
 ];
 
-const tipoCobrancaOptions = [
+type TipoCobranca = 'boleto' | 'pix' | 'transferencia' | 'cartao' | 'dinheiro';
+
+const tipoCobrancaOptions: { value: TipoCobranca; label: string }[] = [
   { value: 'boleto', label: 'Boleto' },
   { value: 'pix', label: 'PIX' },
   { value: 'transferencia', label: 'Transferência' },
@@ -109,7 +111,7 @@ export function PagamentoRecorrenteForm({ onSuccess, onCancel }: PagamentoRecorr
       data_fim: values.data_fim ? format(values.data_fim, 'yyyy-MM-dd') : null,
       empresa_id: values.empresa_id,
       centro_custo_id: values.centro_custo_id,
-      tipo_cobranca: values.tipo_cobranca as any,
+      tipo_cobranca: values.tipo_cobranca as TipoCobranca,
       observacoes: values.observacoes,
     }, {
       onSuccess: () => {

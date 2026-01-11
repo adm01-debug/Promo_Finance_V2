@@ -68,12 +68,12 @@ export function useSorting<T>(data: T[], initialSort?: string) {
     
     return [...data].sort((a, b) => {
       const keys = sortKey.split('.');
-      let aValue: any = a;
-      let bValue: any = b;
+      let aValue: unknown = a;
+      let bValue: unknown = b;
       
       for (const k of keys) {
-        aValue = aValue?.[k];
-        bValue = bValue?.[k];
+        aValue = (aValue as Record<string, unknown>)?.[k];
+        bValue = (bValue as Record<string, unknown>)?.[k];
       }
       
       // Handle null/undefined
@@ -83,8 +83,8 @@ export function useSorting<T>(data: T[], initialSort?: string) {
       
       // Handle dates
       if (aValue instanceof Date || (typeof aValue === 'string' && !isNaN(Date.parse(aValue)))) {
-        const dateA = new Date(aValue).getTime();
-        const dateB = new Date(bValue).getTime();
+        const dateA = new Date(aValue as string | Date).getTime();
+        const dateB = new Date(bValue as string | Date).getTime();
         return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
       }
       
