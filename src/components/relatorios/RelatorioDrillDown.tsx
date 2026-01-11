@@ -116,13 +116,21 @@ export function RelatorioDrillDown() {
 
       if (error || !contas) return [];
 
+      interface ContaRecord {
+        empresa_id: string;
+        valor: number;
+        status: string;
+        valor_recebido?: number;
+        valor_pago?: number;
+      }
+
       const porEmpresa = empresas?.map(emp => {
-        const contasEmpresa = contas.filter((c: any) => c.empresa_id === emp.id);
-        const total = contasEmpresa.reduce((acc: number, c: any) => acc + (c.valor || 0), 0);
+        const contasEmpresa = (contas as ContaRecord[]).filter(c => c.empresa_id === emp.id);
+        const total = contasEmpresa.reduce((acc, c) => acc + (c.valor || 0), 0);
         const valorField = drillState.categoria === 'receitas' ? 'valor_recebido' : 'valor_pago';
         const realizado = contasEmpresa
-          .filter((c: any) => c.status === 'pago')
-          .reduce((acc: number, c: any) => acc + (c[valorField] || c.valor || 0), 0);
+          .filter(c => c.status === 'pago')
+          .reduce((acc, c) => acc + ((c[valorField as keyof ContaRecord] as number) || c.valor || 0), 0);
 
         return {
           id: emp.id,

@@ -836,7 +836,7 @@ export default function DashboardReceber() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {contasVencidasDetalhes.map((conta: any) => {
+                      {contasVencidasDetalhes.map((conta) => {
                         const diasAtraso = differenceInDays(new Date(), parseISO(conta.data_vencimento));
                         const valorPendente = conta.valor - (conta.valor_recebido || 0);
                         

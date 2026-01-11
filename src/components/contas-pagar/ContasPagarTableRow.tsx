@@ -77,8 +77,28 @@ interface Profile {
   email: string | null;
 }
 
+interface CentroCustoInfo {
+  nome: string;
+}
+
+interface ContaPagarRow {
+  id: string;
+  fornecedor_nome: string;
+  descricao: string;
+  valor: number;
+  valor_pago: number | null;
+  data_vencimento: string;
+  status: string;
+  tipo_cobranca: string;
+  numero_documento: string | null;
+  recorrente: boolean;
+  aprovado_por?: string | null;
+  aprovado_em?: string | null;
+  centros_custo?: CentroCustoInfo | null;
+}
+
 interface ContasPagarTableRowProps {
-  conta: any;
+  conta: ContaPagarRow;
   index: number;
   isSelected: boolean;
   onToggleSelect: () => void;
@@ -94,7 +114,7 @@ interface ContasPagarTableRowProps {
   historico: SolicitacaoAprovacao[];
   profilesMap: Map<string, Profile>;
   valorMinimoAprovacao: number;
-  getRowAnimation: (index: number) => any;
+  getRowAnimation: (index: number) => Record<string, unknown>;
 }
 
 export function ContasPagarTableRow({

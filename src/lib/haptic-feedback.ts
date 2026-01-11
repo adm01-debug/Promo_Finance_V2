@@ -57,13 +57,13 @@ export function isHapticAvailable(): boolean {
 /**
  * Create a haptic-enabled click handler
  */
-export function withHaptic<T extends (...args: any[]) => any>(
+export function withHaptic<T extends (...args: unknown[]) => unknown>(
   handler: T,
   pattern: HapticPattern = 'light'
 ): (...args: Parameters<T>) => ReturnType<T> {
   return (...args: Parameters<T>) => {
     haptic(pattern);
-    return handler(...args);
+    return handler(...args) as ReturnType<T>;
   };
 }
 
