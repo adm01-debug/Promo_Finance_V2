@@ -162,7 +162,7 @@ export function ObrigacoesAcessorias() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Select value={filtroEsfera} onValueChange={(v: any) => setFiltroEsfera(v)}>
+          <Select value={filtroEsfera} onValueChange={(v: 'todas' | 'federal' | 'estadual' | 'municipal') => setFiltroEsfera(v)}>
             <SelectTrigger className="w-[120px]"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="todas">Todas</SelectItem>
