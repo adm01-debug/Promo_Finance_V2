@@ -96,10 +96,28 @@ export default function Conciliacao() {
   // Convert to LancamentoSistema format for matching
   const lancamentosSistema = useMemo((): LancamentoSistema[] => {
     const lancamentosPagar = contasPagar 
-      ? converterContasPagarParaLancamentos(contasPagar as any) 
+      ? converterContasPagarParaLancamentos(contasPagar.map(cp => ({
+          id: cp.id,
+          descricao: cp.descricao,
+          valor: cp.valor,
+          data_vencimento: cp.data_vencimento,
+          fornecedor_nome: cp.fornecedor_nome,
+          status: cp.status,
+          numero_documento: cp.numero_documento,
+          fornecedores: cp.fornecedores,
+        }))) 
       : [];
     const lancamentosReceber = contasReceber 
-      ? converterContasReceberParaLancamentos(contasReceber as any) 
+      ? converterContasReceberParaLancamentos(contasReceber.map(cr => ({
+          id: cr.id,
+          descricao: cr.descricao,
+          valor: cr.valor,
+          data_vencimento: cr.data_vencimento,
+          cliente_nome: cr.cliente_nome,
+          status: cr.status,
+          numero_documento: cr.numero_documento,
+          clientes: cr.clientes,
+        }))) 
       : [];
     return [...lancamentosPagar, ...lancamentosReceber];
   }, [contasPagar, contasReceber]);

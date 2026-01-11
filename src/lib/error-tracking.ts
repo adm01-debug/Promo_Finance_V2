@@ -4,15 +4,27 @@
 interface ErrorContext {
   userId?: string;
   email?: string;
-  extra?: Record<string, any>;
+  extra?: Record<string, unknown>;
   tags?: Record<string, string>;
 }
+
+// Type-safe window access for Sentry
+interface WindowWithSentry extends Window {
+  Sentry?: {
+    captureException: (error: Error, context?: unknown) => void;
+    captureMessage: (message: string, level?: string) => void;
+    setUser: (user: { id: string; email?: string; name?: string } | null) => void;
+    addBreadcrumb: (breadcrumb: { category: string; message: string; data?: Record<string, unknown>; level?: string }) => void;
+  };
+}
+
+declare const window: WindowWithSentry;
 
 interface ErrorTracker {
   captureException: (error: Error, context?: ErrorContext) => void;
   captureMessage: (message: string, level?: 'info' | 'warning' | 'error') => void;
   setUser: (user: { id: string; email?: string; name?: string } | null) => void;
-  addBreadcrumb: (breadcrumb: { category: string; message: string; data?: Record<string, any> }) => void;
+  addBreadcrumb: (breadcrumb: { category: string; message: string; data?: Record<string, unknown> }) => void;
 }
 
 // Console-based fallback tracker for development
@@ -42,8 +54,8 @@ const consoleTracker: ErrorTracker = {
 // Sentry tracker (to be initialized when key is available)
 const sentryTracker: ErrorTracker = {
   captureException: (error, context) => {
-    if ((window as any).Sentry) {
-      (window as any).Sentry.captureException(error, {
+    if (window.Sentry) {
+      window.Sentry.captureException(error, {
         user: context?.userId ? { id: context.userId, email: context.email } : undefined,
         extra: context?.extra,
         tags: context?.tags,
@@ -53,21 +65,21 @@ const sentryTracker: ErrorTracker = {
     }
   },
   captureMessage: (message, level = 'info') => {
-    if ((window as any).Sentry) {
-      (window as any).Sentry.captureMessage(message, level);
+    if (window.Sentry) {
+      window.Sentry.captureMessage(message, level);
     } else {
       consoleTracker.captureMessage(message, level);
     }
   },
   setUser: (user) => {
-    if ((window as any).Sentry) {
-      (window as any).Sentry.setUser(user);
+    if (window.Sentry) {
+      window.Sentry.setUser(user);
     }
     consoleTracker.setUser(user);
   },
   addBreadcrumb: (breadcrumb) => {
-    if ((window as any).Sentry) {
-      (window as any).Sentry.addBreadcrumb({
+    if (window.Sentry) {
+      window.Sentry.addBreadcrumb({
         category: breadcrumb.category,
         message: breadcrumb.message,
         data: breadcrumb.data,
@@ -80,16 +92,16 @@ const sentryTracker: ErrorTracker = {
 
 // Export the appropriate tracker
 export const errorTracker: ErrorTracker = 
-  typeof window !== 'undefined' && (window as any).Sentry 
+  typeof window !== 'undefined' && window.Sentry 
     ? sentryTracker 
     : consoleTracker;
 
 // Utility function to wrap async functions with error tracking
-export function withErrorTracking<T extends (...args: any[]) => Promise<any>>(
-  fn: T,
+export function withErrorTracking<TArgs extends unknown[], TResult>(
+  fn: (...args: TArgs) => Promise<TResult>,
   context?: Omit<ErrorContext, 'extra'>
-): T {
-  return (async (...args: Parameters<T>) => {
+): (...args: TArgs) => Promise<TResult> {
+  return async (...args: TArgs) => {
     try {
       return await fn(...args);
     } catch (error: unknown) {
@@ -99,7 +111,7 @@ export function withErrorTracking<T extends (...args: any[]) => Promise<any>>(
       });
       throw error;
     }
-  }) as T;
+  };
 }
 
 // React error boundary integration helper

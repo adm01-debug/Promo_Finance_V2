@@ -132,7 +132,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
         empresa_id: conta.empresa_id,
         centro_custo_id: conta.centro_custo_id || undefined,
         conta_bancaria_id: conta.conta_bancaria_id || undefined,
-        tipo_cobranca: conta.tipo_cobranca as any,
+        tipo_cobranca: conta.tipo_cobranca as ContaReceberFormData['tipo_cobranca'],
         numero_documento: conta.numero_documento || undefined,
         codigo_barras: conta.codigo_barras || undefined,
         chave_pix: conta.chave_pix || undefined,

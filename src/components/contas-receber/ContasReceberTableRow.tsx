@@ -26,6 +26,22 @@ import {
 import { TableCell } from '@/components/ui/table';
 import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
+import type { Database } from '@/integrations/supabase/types';
+
+type ContaReceberRow = Database['public']['Tables']['contas_receber']['Row'];
+
+interface ClienteData {
+  razao_social: string;
+  nome_fantasia: string | null;
+  score: number | null;
+}
+
+// Type that matches what's returned from the paginated query
+export interface ContaReceberWithRelations extends ContaReceberRow {
+  clientes: ClienteData | null;
+  centros_custo?: { nome: string; codigo: string } | null;
+  contas_bancarias?: { banco: string } | null;
+}
 
 type StatusPagamento = 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
 
@@ -52,13 +68,13 @@ const getScoreLabel = (score: number) => {
 };
 
 interface ContasReceberTableRowProps {
-  conta: any;
+  conta: ContaReceberWithRelations;
   index: number;
   isSelected: boolean;
   onToggleSelect: (id: string) => void;
-  onEdit: (conta: any) => void;
-  onDelete: (conta: any) => void;
-  onRegistrarRecebimento: (conta: any) => void;
+  onEdit: (conta: ContaReceberWithRelations) => void;
+  onDelete: (conta: ContaReceberWithRelations) => void;
+  onRegistrarRecebimento: (conta: ContaReceberWithRelations) => void;
   animate?: boolean;
 }
 
@@ -77,7 +93,7 @@ export function ContasReceberTableRow({
   const overdueDays = calculateOverdueDays(new Date(conta.data_vencimento));
   const saldo = conta.valor - (conta.valor_recebido || 0);
   const percentualRecebido = conta.valor_recebido ? (conta.valor_recebido / conta.valor) * 100 : 0;
-  const clienteData = conta.clientes as any;
+  const clienteData = conta.clientes;
 
   const RowComponent = animate ? motion.tr : 'tr';
   const animationProps = animate ? {

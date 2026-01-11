@@ -243,7 +243,7 @@ export function InadimplenciaSegmentada() {
                         </span>
                         <span className="font-medium">{ramo.ramo}</span>
                       </div>
-                      <Badge variant={getRiskColor(ramo.taxa_inadimplencia) as any}>
+                      <Badge variant={getRiskColor(ramo.taxa_inadimplencia) as "destructive" | "warning" | "success"}>
                         {formatPercentage(ramo.taxa_inadimplencia)}
                       </Badge>
                     </div>
@@ -355,7 +355,7 @@ export function InadimplenciaSegmentada() {
                         ) : (
                           <TrendingUp className="h-4 w-4 text-success" />
                         )}
-                        <Badge variant={getRiskColor(vendedor.taxa_inadimplencia) as any}>
+                        <Badge variant={getRiskColor(vendedor.taxa_inadimplencia) as "destructive" | "warning" | "success"}>
                           {formatPercentage(vendedor.taxa_inadimplencia)}
                         </Badge>
                       </div>
