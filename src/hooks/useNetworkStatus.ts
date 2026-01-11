@@ -1,6 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 
+// Network Information API type (experimental browser API)
+interface NetworkInformation extends EventTarget {
+  effectiveType?: string;
+  downlink?: number;
+  rtt?: number;
+  addEventListener(type: 'change', listener: () => void): void;
+  removeEventListener(type: 'change', listener: () => void): void;
+}
+
+interface NavigatorWithConnection extends Navigator {
+  connection?: NetworkInformation;
+  mozConnection?: NetworkInformation;
+  webkitConnection?: NetworkInformation;
+}
+
 interface NetworkStatus {
   isOnline: boolean;
   wasOffline: boolean;
@@ -15,10 +30,13 @@ export function useNetworkStatus() {
     wasOffline: false,
   });
 
+  const getConnection = useCallback((): NetworkInformation | undefined => {
+    const nav = navigator as NavigatorWithConnection;
+    return nav.connection || nav.mozConnection || nav.webkitConnection;
+  }, []);
+
   const updateNetworkInfo = useCallback(() => {
-    const connection = (navigator as any).connection || 
-                       (navigator as any).mozConnection || 
-                       (navigator as any).webkitConnection;
+    const connection = getConnection();
     
     if (connection) {
       setStatus(prev => ({
@@ -28,7 +46,7 @@ export function useNetworkStatus() {
         rtt: connection.rtt,
       }));
     }
-  }, []);
+  }, [getConnection]);
 
   useEffect(() => {
     const handleOnline = () => {
@@ -54,7 +72,7 @@ export function useNetworkStatus() {
     window.addEventListener('offline', handleOffline);
     
     // Listen for connection changes
-    const connection = (navigator as any).connection;
+    const connection = getConnection();
     if (connection) {
       connection.addEventListener('change', updateNetworkInfo);
     }
@@ -65,11 +83,12 @@ export function useNetworkStatus() {
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
-      if (connection) {
-        connection.removeEventListener('change', updateNetworkInfo);
+      const conn = getConnection();
+      if (conn) {
+        conn.removeEventListener('change', updateNetworkInfo);
       }
     };
-  }, [status.wasOffline, updateNetworkInfo]);
+  }, [status.wasOffline, updateNetworkInfo, getConnection]);
 
   return status;
 }

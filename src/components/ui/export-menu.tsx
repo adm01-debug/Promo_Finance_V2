@@ -8,14 +8,14 @@ import {
 } from './dropdown-menu';
 import { exportToCSV, exportToPDF, ExportColumn } from '@/lib/export-utils';
 
-interface ExportMenuProps<T extends Record<string, any>> {
+interface ExportMenuProps<T extends object> {
   data: T[];
   columns: ExportColumn<T>[];
   filename: string;
   title: string;
 }
 
-export function ExportMenu<T extends Record<string, any>>({ 
+export function ExportMenu<T extends object>({ 
   data, 
   columns, 
   filename, 

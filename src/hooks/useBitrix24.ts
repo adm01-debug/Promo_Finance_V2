@@ -103,7 +103,7 @@ export function useBitrix24() {
   });
 
   // Call edge function for sync actions
-  const callBitrixSync = useCallback(async (action: string, params?: Record<string, any>): Promise<SyncResult> => {
+  const callBitrixSync = useCallback(async (action: string, params?: Record<string, unknown>): Promise<SyncResult> => {
     const { data: { session } } = await supabase.auth.getSession();
     
     if (!session) {

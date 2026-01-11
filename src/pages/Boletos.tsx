@@ -234,6 +234,21 @@ const BoletoPreview = ({ boleto, onUpdateStatus }: {
   );
 };
 
+// Tipos para props tipadas
+interface EmpresaBoleto {
+  id: string;
+  razao_social: string;
+  cnpj: string | null;
+}
+
+interface ContaBancariaBoleto {
+  id: string;
+  banco: string;
+  agencia: string;
+  conta: string;
+  empresa_id: string;
+}
+
 // Form para novo boleto
 const NovoBoletoForm = ({ 
   onClose, 
@@ -243,8 +258,8 @@ const NovoBoletoForm = ({
   isCreating
 }: { 
   onClose: () => void;
-  empresas: any[] | undefined;
-  contasBancarias: any[] | undefined;
+  empresas: EmpresaBoleto[] | undefined;
+  contasBancarias: ContaBancariaBoleto[] | undefined;
   onSubmit: (data: NovoBoletoData) => void;
   isCreating: boolean;
 }) => {

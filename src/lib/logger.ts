@@ -7,32 +7,32 @@ class Logger {
     this.level = level;
   }
   
-  debug(...args: any[]) {
+  debug(...args: unknown[]) {
     if (this.shouldLog('debug')) {
       console.log('[DEBUG]', ...args);
     }
   }
   
-  info(...args: any[]) {
+  info(...args: unknown[]) {
     if (this.shouldLog('info')) {
       console.info('[INFO]', ...args);
     }
   }
   
-  warn(...args: any[]) {
+  warn(...args: unknown[]) {
     if (this.shouldLog('warn')) {
       console.warn('[WARN]', ...args);
     }
   }
   
-  error(...args: any[]) {
+  error(...args: unknown[]) {
     if (this.shouldLog('error')) {
       console.error('[ERROR]', ...args);
     }
   }
   
   private shouldLog(level: LogLevel): boolean {
-    const levels = ['debug', 'info', 'warn', 'error'];
+    const levels: LogLevel[] = ['debug', 'info', 'warn', 'error'];
     return levels.indexOf(level) >= levels.indexOf(this.level);
   }
 }

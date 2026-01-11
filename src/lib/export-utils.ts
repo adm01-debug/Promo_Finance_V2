@@ -9,7 +9,7 @@ export interface ExportColumn<T> {
 }
 
 // Exportar para CSV (Excel compatível)
-export function exportToCSV<T extends Record<string, any>>(
+export function exportToCSV<T extends object>(
   data: T[],
   columns: ExportColumn<T>[],
   filename: string
@@ -54,7 +54,7 @@ export function exportToCSV<T extends Record<string, any>>(
 }
 
 // Exportar para PDF (usando print do browser)
-export function exportToPDF<T extends Record<string, any>>(
+export function exportToPDF<T extends object>(
   data: T[],
   columns: ExportColumn<T>[],
   title: string
