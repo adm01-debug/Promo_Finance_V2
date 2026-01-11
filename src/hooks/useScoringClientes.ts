@@ -35,6 +35,16 @@ interface DadosHistorico {
   tempoRelacionamento: number; // em meses
 }
 
+interface ContaReceberScoring {
+  cliente_id?: string;
+  status: string;
+  data_vencimento: string;
+  data_recebimento?: string | null;
+  valor: number;
+  valor_recebido?: number | null;
+  created_at: string;
+}
+
 // Pesos do modelo de ML simplificado
 const PESOS_MODELO = {
   taxaPagamento: 0.25,
@@ -174,7 +184,7 @@ export function useScoringClientes() {
   };
 }
 
-function calcularHistorico(contas: any[]): DadosHistorico {
+function calcularHistorico(contas: ContaReceberScoring[]): DadosHistorico {
   const hoje = new Date();
   const totalTitulos = contas.length;
   const titulosPagos = contas.filter(c => c.status === 'pago').length;
@@ -323,7 +333,7 @@ function calcularScore(historico: DadosHistorico): {
   return { score, fatores, classificacao, risco };
 }
 
-function calcularTendencia(contas: any[]): 'subindo' | 'estavel' | 'descendo' {
+function calcularTendencia(contas: ContaReceberScoring[]): 'subindo' | 'estavel' | 'descendo' {
   const tresMesesAtras = subMonths(new Date(), 3);
   const contasRecentes = contas.filter(c => new Date(c.created_at) >= tresMesesAtras);
   const contasAntigas = contas.filter(c => new Date(c.created_at) < tresMesesAtras);
