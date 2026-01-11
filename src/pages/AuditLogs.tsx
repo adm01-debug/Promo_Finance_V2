@@ -201,12 +201,12 @@ export default function AuditLogs() {
 
   // Colunas para exportação
   const auditColumns: ExportColumn<AuditLog>[] = [
-    { key: 'created_at', header: 'Data/Hora', formatter: (v) => formatDate(v) + ' ' + format(new Date(v), 'HH:mm:ss') },
-    { key: 'user_email', header: 'Usuário', formatter: (v) => v || 'Sistema' },
-    { key: 'action', header: 'Ação', formatter: (v) => actionConfig[v as AuditAction]?.label || v },
-    { key: 'table_name', header: 'Tabela', formatter: (v) => tableNameLabels[v] || v || '-' },
-    { key: 'details', header: 'Detalhes', formatter: (v) => v || '-' },
-    { key: 'ip_address', header: 'IP', formatter: (v) => v || '-' },
+    { key: 'created_at', header: 'Data/Hora', formatter: (v) => typeof v === 'string' ? formatDate(v) + ' ' + format(new Date(v), 'HH:mm:ss') : '-' },
+    { key: 'user_email', header: 'Usuário', formatter: (v) => (typeof v === 'string' ? v : null) || 'Sistema' },
+    { key: 'action', header: 'Ação', formatter: (v) => typeof v === 'string' ? (actionConfig[v as AuditAction]?.label || v) : String(v) },
+    { key: 'table_name', header: 'Tabela', formatter: (v) => typeof v === 'string' ? (tableNameLabels[v] || v || '-') : '-' },
+    { key: 'details', header: 'Detalhes', formatter: (v) => typeof v === 'string' ? v : '-' },
+    { key: 'ip_address', header: 'IP', formatter: (v) => typeof v === 'string' ? v : '-' },
   ];
 
   const handleExportCSV = () => {

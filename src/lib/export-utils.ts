@@ -5,7 +5,7 @@ import { formatCurrency, formatDate } from './formatters';
 export interface ExportColumn<T> {
   key: keyof T | string;
   header: string;
-  formatter?: (value: any, row: T) => string;
+  formatter?: (value: unknown, row: T) => string;
 }
 
 // Exportar para CSV (Excel compatível)
@@ -24,9 +24,9 @@ export function exportToCSV<T extends Record<string, any>>(
   const rows = data.map(row => {
     return columns.map(col => {
       const keys = col.key.toString().split('.');
-      let value: any = row;
+      let value: unknown = row;
       for (const k of keys) {
-        value = value?.[k];
+        value = (value as Record<string, unknown>)?.[k];
       }
       
       if (col.formatter) {
@@ -69,9 +69,9 @@ export function exportToPDF<T extends Record<string, any>>(
   const tableRows = data.map(row => {
     const cells = columns.map(col => {
       const keys = col.key.toString().split('.');
-      let value: any = row;
+      let value: unknown = row;
       for (const k of keys) {
-        value = value?.[k];
+        value = (value as Record<string, unknown>)?.[k];
       }
       
       if (col.formatter) {
@@ -123,25 +123,25 @@ export function exportToPDF<T extends Record<string, any>>(
 }
 
 // Configurações de colunas pré-definidas para entidades comuns
-export const contasPagarColumns: ExportColumn<any>[] = [
+export const contasPagarColumns: ExportColumn<Record<string, unknown>>[] = [
   { key: 'fornecedor_nome', header: 'Fornecedor' },
   { key: 'descricao', header: 'Descrição' },
-  { key: 'valor', header: 'Valor', formatter: (v) => formatCurrency(v) },
-  { key: 'data_vencimento', header: 'Vencimento', formatter: (v) => formatDate(v) },
-  { key: 'status', header: 'Status', formatter: (v) => v?.toUpperCase() || '-' },
+  { key: 'valor', header: 'Valor', formatter: (v) => formatCurrency(typeof v === 'number' ? v : 0) },
+  { key: 'data_vencimento', header: 'Vencimento', formatter: (v) => formatDate(typeof v === 'string' ? v : '') },
+  { key: 'status', header: 'Status', formatter: (v) => typeof v === 'string' ? v.toUpperCase() : '-' },
   { key: 'centro_custo.nome', header: 'Centro de Custo' },
 ];
 
-export const contasReceberColumns: ExportColumn<any>[] = [
+export const contasReceberColumns: ExportColumn<Record<string, unknown>>[] = [
   { key: 'cliente_nome', header: 'Cliente' },
   { key: 'descricao', header: 'Descrição' },
-  { key: 'valor', header: 'Valor', formatter: (v) => formatCurrency(v) },
-  { key: 'data_vencimento', header: 'Vencimento', formatter: (v) => formatDate(v) },
-  { key: 'status', header: 'Status', formatter: (v) => v?.toUpperCase() || '-' },
-  { key: 'valor_recebido', header: 'Valor Recebido', formatter: (v) => formatCurrency(v || 0) },
+  { key: 'valor', header: 'Valor', formatter: (v) => formatCurrency(typeof v === 'number' ? v : 0) },
+  { key: 'data_vencimento', header: 'Vencimento', formatter: (v) => formatDate(typeof v === 'string' ? v : '') },
+  { key: 'status', header: 'Status', formatter: (v) => typeof v === 'string' ? v.toUpperCase() : '-' },
+  { key: 'valor_recebido', header: 'Valor Recebido', formatter: (v) => formatCurrency(typeof v === 'number' ? v : 0) },
 ];
 
-export const clientesColumns: ExportColumn<any>[] = [
+export const clientesColumns: ExportColumn<Record<string, unknown>>[] = [
   { key: 'razao_social', header: 'Razão Social' },
   { key: 'nome_fantasia', header: 'Nome Fantasia' },
   { key: 'cnpj_cpf', header: 'CNPJ/CPF' },
@@ -150,10 +150,10 @@ export const clientesColumns: ExportColumn<any>[] = [
   { key: 'cidade', header: 'Cidade' },
   { key: 'estado', header: 'UF' },
   { key: 'score', header: 'Score' },
-  { key: 'limite_credito', header: 'Limite de Crédito', formatter: (v) => formatCurrency(v || 0) },
+  { key: 'limite_credito', header: 'Limite de Crédito', formatter: (v) => formatCurrency(typeof v === 'number' ? v : 0) },
 ];
 
-export const fornecedoresColumns: ExportColumn<any>[] = [
+export const fornecedoresColumns: ExportColumn<Record<string, unknown>>[] = [
   { key: 'razao_social', header: 'Razão Social' },
   { key: 'nome_fantasia', header: 'Nome Fantasia' },
   { key: 'cnpj_cpf', header: 'CNPJ/CPF' },

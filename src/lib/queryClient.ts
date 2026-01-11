@@ -13,9 +13,10 @@ export const queryClient = new QueryClient({
       // Cache é mantido por 10 minutos após a última referência
       gcTime: 10 * 60 * 1000,
       // Retry com backoff exponencial
-      retry: (failureCount, error: any) => {
+      retry: (failureCount, error: unknown) => {
         // Não retry em erros 4xx
-        if (error?.status >= 400 && error?.status < 500) {
+        const httpError = error as { status?: number };
+        if (httpError?.status && httpError.status >= 400 && httpError.status < 500) {
           return false;
         }
         return failureCount < 3;

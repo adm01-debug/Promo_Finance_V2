@@ -13,11 +13,13 @@ interface ContaReceberComCliente {
   clientes: { ramo_atividade: string | null } | null;
 }
 
-interface VendedorData {
+export interface VendedorData {
   id: string;
   nome: string;
   meta_mensal: number | null;
 }
+
+export type Vendedor = VendedorData;
 
 export interface InadimplenciaPorRamo {
   ramo: string;

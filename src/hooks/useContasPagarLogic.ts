@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
-import { useContasPagar, useContasPagarPaginated, useCentrosCusto } from '@/hooks/useFinancialData';
+import { useContasPagar, useContasPagarPaginated, useCentrosCusto, ContaPagar } from '@/hooks/useFinancialData';
 import { useConfiguracaoAprovacao, useCriarSolicitacaoAprovacao } from '@/hooks/useAprovacoes';
 import { useAuth } from '@/hooks/useAuth';
 import { useTableOptimization } from '@/hooks/useTableOptimization';
@@ -11,6 +11,8 @@ import { useBulkActions } from '@/hooks/useBulkActions';
 import { useQuickDateFilter } from '@/components/ui/quick-date-filters';
 import { supabase } from '@/integrations/supabase/client';
 import { AdvancedFilters } from '@/components/ui/advanced-filters';
+
+type ContaPagarType = ContaPagar;
 
 export function useContasPagarLogic() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,15 +24,15 @@ export function useContasPagarLogic() {
   const [formOpen, setFormOpen] = useState(false);
   const [pagamentoDialogOpen, setPagamentoDialogOpen] = useState(false);
   const [aprovacaoDialogOpen, setAprovacaoDialogOpen] = useState(false);
-  const [contaParaAprovacao, setContaParaAprovacao] = useState<any>(null);
-  const [selectedConta, setSelectedConta] = useState<any>(null);
-  const [editingConta, setEditingConta] = useState<any>(null);
+  const [contaParaAprovacao, setContaParaAprovacao] = useState<ContaPagarType | null>(null);
+  const [selectedConta, setSelectedConta] = useState<ContaPagarType | null>(null);
+  const [editingConta, setEditingConta] = useState<ContaPagarType | null>(null);
   const [observacoesAprovacao, setObservacoesAprovacao] = useState('');
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [deletingConta, setDeletingConta] = useState<any>(null);
+  const [deletingConta, setDeletingConta] = useState<ContaPagarType | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { filterType, handleFilterChange, filterByDate } = useQuickDateFilter();
@@ -170,7 +172,7 @@ export function useContasPagarLogic() {
   });
 
   // Sorting
-  const calcularPrioridadeAprovacao = (conta: any) => {
+  const calcularPrioridadeAprovacao = (conta: ContaPagarType) => {
     const precisaAprovacao = requerAprovacao(conta.valor);
     const temSolicitacaoPendente = aprovacaoStatusMap.get(conta.id) === 'pendente';
     const naoAprovado = !conta.aprovado_por && precisaAprovacao;
@@ -238,7 +240,7 @@ export function useContasPagarLogic() {
     setCurrentPage(1);
   };
 
-  const handleOpenDeleteDialog = (conta: any) => {
+  const handleOpenDeleteDialog = (conta: ContaPagarType) => {
     setDeletingConta(conta);
     setDeleteDialogOpen(true);
   };
@@ -264,7 +266,7 @@ export function useContasPagarLogic() {
     });
   };
 
-  const abrirModalAprovacao = (conta: any) => {
+  const abrirModalAprovacao = (conta: ContaPagarType) => {
     setContaParaAprovacao(conta);
     setObservacoesAprovacao('');
     setAprovacaoDialogOpen(true);
@@ -314,7 +316,7 @@ export function useContasPagarLogic() {
     }, { showProgress: true });
   };
 
-  const getApprovalStatus = (conta: any) => {
+  const getApprovalStatus = (conta: ContaPagarType) => {
     const precisaAprovacao = requerAprovacao(conta.valor);
     const aprovacaoStatus = aprovacaoStatusMap.get(conta.id);
     const estaAprovado = !!conta.aprovado_por;
