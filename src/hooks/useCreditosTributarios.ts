@@ -111,7 +111,15 @@ export function useCreditosTributarios(empresaId?: string) {
         is: { total: 0, disponivel: 0, utilizado: 0 },
       };
 
-      (data || []).forEach((c: any) => {
+      interface CreditoData {
+        tipo_tributo: string;
+        valor_credito: number;
+        valor_utilizado: number | null;
+        saldo_disponivel: number | null;
+        status: string | null;
+      }
+
+      (data || []).forEach((c: CreditoData) => {
         const key = c.tipo_tributo.toLowerCase() as 'cbs' | 'ibs' | 'is';
         resumo[key].total += Number(c.valor_credito) || 0;
         resumo[key].utilizado += Number(c.valor_utilizado) || 0;

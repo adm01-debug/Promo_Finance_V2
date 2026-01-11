@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import type { Tables } from '@/integrations/supabase/types';
+import type { Tables, Database } from '@/integrations/supabase/types';
 
 export type Empresa = Tables<'empresas'>;
 export type CentroCusto = Tables<'centros_custo'>;
@@ -9,6 +9,7 @@ export type Cliente = Tables<'clientes'>;
 export type Fornecedor = Tables<'fornecedores'>;
 export type ContaPagar = Tables<'contas_pagar'>;
 export type ContaReceber = Tables<'contas_receber'>;
+export type StatusPagamento = Database['public']['Enums']['status_pagamento'];
 
 export function useEmpresas() {
   return useQuery({
@@ -132,8 +133,9 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
         dataQuery = dataQuery.or(searchFilter);
       }
       if (status && status !== 'all') {
-        countQuery = countQuery.eq('status', status as any);
-        dataQuery = dataQuery.eq('status', status as any);
+        const validStatus = status as StatusPagamento;
+        countQuery = countQuery.eq('status', validStatus);
+        dataQuery = dataQuery.eq('status', validStatus);
       }
       if (centroCustoId && centroCustoId !== 'all') {
         countQuery = countQuery.eq('centro_custo_id', centroCustoId);
@@ -200,8 +202,9 @@ export function useContasReceberPaginated(params: PaginatedContasReceberParams) 
         dataQuery = dataQuery.or(searchFilter);
       }
       if (status && status !== 'all') {
-        countQuery = countQuery.eq('status', status as any);
-        dataQuery = dataQuery.eq('status', status as any);
+        const validStatus = status as StatusPagamento;
+        countQuery = countQuery.eq('status', validStatus);
+        dataQuery = dataQuery.eq('status', validStatus);
       }
       if (centroCustoId && centroCustoId !== 'all') {
         countQuery = countQuery.eq('centro_custo_id', centroCustoId);

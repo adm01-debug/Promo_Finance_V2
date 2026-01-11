@@ -203,9 +203,15 @@ function useAnaliseInadimplencia() {
         const nivelRisco = determinarNivelRisco(probabilidade);
         const fatoresRisco = gerarFatoresRisco(cliente, contas, historico || []);
         
-        const totalPendente = contas.reduce((sum: number, c: any) => sum + c.valor - (c.valor_recebido || 0), 0);
+        interface ContaReceberData {
+          valor: number;
+          valor_recebido: number | null;
+          data_vencimento: string;
+        }
+        
+        const totalPendente = contas.reduce((sum: number, c: ContaReceberData) => sum + c.valor - (c.valor_recebido || 0), 0);
         const proximoVencimento = contas
-          .map((c: any) => new Date(c.data_vencimento))
+          .map((c: ContaReceberData) => new Date(c.data_vencimento))
           .sort((a: Date, b: Date) => a.getTime() - b.getTime())[0];
         
         clientesAnalise.push({

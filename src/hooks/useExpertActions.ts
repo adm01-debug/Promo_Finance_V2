@@ -5,6 +5,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import { generateFluxoCaixaPDF } from '@/lib/pdf-generator';
 import { formatCurrency } from '@/lib/formatters';
 import { logger } from '@/lib/logger';
+import type { Database } from '@/integrations/supabase/types';
+
+type TipoCobranca = Database['public']['Enums']['tipo_cobranca'];
+type EtapaCobranca = Database['public']['Enums']['etapa_cobranca'];
 
 export type ExpertActionType = 
   | 'criar_alerta'
@@ -427,7 +431,7 @@ async function criarContaPagar(
     valor: action.valor || 0,
     data_vencimento: action.data_vencimento || new Date().toISOString().split('T')[0],
     data_emissao: new Date().toISOString().split('T')[0],
-    tipo_cobranca: (action.tipo_cobranca as any) || 'boleto',
+    tipo_cobranca: (action.tipo_cobranca as TipoCobranca) || 'boleto',
     status: 'pendente',
     empresa_id: empresa.id,
     created_by: user?.id || '',
@@ -467,7 +471,7 @@ async function criarContaReceber(
     valor: action.valor || 0,
     data_vencimento: action.data_vencimento || new Date().toISOString().split('T')[0],
     data_emissao: new Date().toISOString().split('T')[0],
-    tipo_cobranca: (action.tipo_cobranca as any) || 'boleto',
+    tipo_cobranca: (action.tipo_cobranca as TipoCobranca) || 'boleto',
     status: 'pendente',
     empresa_id: empresa.id,
     created_by: user?.id || '',
@@ -643,8 +647,8 @@ async function agendarCobranca(contaId: string): Promise<ActionResult> {
 
   // Avançar para próxima etapa de cobrança
   const etapas = ['preventiva', 'lembrete', 'cobranca', 'negociacao', 'juridico'] as const;
-  const etapaAtual = conta.etapa_cobranca || 'preventiva';
-  const indiceAtual = etapas.indexOf(etapaAtual as any);
+  const etapaAtual: EtapaCobranca = conta.etapa_cobranca || 'preventiva';
+  const indiceAtual = etapas.indexOf(etapaAtual);
   const proximaEtapa = etapas[Math.min(indiceAtual + 1, etapas.length - 1)];
 
   const { error } = await supabase
