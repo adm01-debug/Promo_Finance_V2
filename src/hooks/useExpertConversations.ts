@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ExpertAction } from './useExpertActions';
+import type { Json } from '@/integrations/supabase/types';
 
 export interface ExpertMessage {
   id: string;
@@ -149,7 +150,7 @@ export function useSaveMessage() {
           conversation_id: message.conversation_id,
           role: message.role,
           content: message.content,
-          actions: message.actions as any,
+          actions: (message.actions ?? null) as unknown as Json,
           actions_executed: message.actions_executed || false,
         })
         .select()

@@ -227,7 +227,7 @@ export function SimuladorAntecipacao() {
           <>
             <Separator />
 
-            <Tabs value={modoComparacao} onValueChange={(v) => setModoComparacao(v as any)}>
+            <Tabs value={modoComparacao} onValueChange={(v) => setModoComparacao(v as 'instituicoes' | 'personalizado')}>
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="instituicoes">
                   <Building2 className="h-4 w-4 mr-2" />
