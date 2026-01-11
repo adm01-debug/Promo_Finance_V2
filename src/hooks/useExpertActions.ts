@@ -50,7 +50,7 @@ export interface ExpertAction {
 export interface ActionResult {
   success: boolean;
   message: string;
-  data?: any;
+  data?: unknown;
 }
 
 export function useExpertActions() {

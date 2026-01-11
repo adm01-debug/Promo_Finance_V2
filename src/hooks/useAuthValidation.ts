@@ -25,14 +25,17 @@ export function useAuthValidation() {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 3000);
         
-        const response = await fetch('http://ip-api.com/json/?fields=query,countryCode', {
+        // Use HTTPS API since ip-api free tier only supports HTTP
+        // which is blocked by mixed content policies on HTTPS sites
+        const response = await fetch('https://ipapi.co/json/', {
           signal: controller.signal
         });
         clearTimeout(timeout);
         
         if (response.ok) {
           const data = await response.json();
-          setGeoData({ ip: data.query, country: data.countryCode });
+          // ipapi.co returns 'ip' and 'country_code' fields
+          setGeoData({ ip: data.ip, country: data.country_code });
           return;
         }
       } catch {

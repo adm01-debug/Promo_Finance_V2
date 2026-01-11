@@ -54,8 +54,13 @@ export function usePermissions() {
           return;
         }
 
-        const permNames = rolePerms
-          ?.map((rp: any) => rp.permissions?.name)
+        interface RolePermissionResult {
+          permission_id: string;
+          permissions: { name: string } | null;
+        }
+        
+        const permNames = (rolePerms as RolePermissionResult[])
+          ?.map((rp) => rp.permissions?.name)
           .filter(Boolean) || [];
         
         setUserPermissions(permNames);

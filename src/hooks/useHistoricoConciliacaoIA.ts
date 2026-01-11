@@ -88,7 +88,19 @@ export function useHistoricoConciliacaoIA() {
 
   const registrarHistorico = useMutation({
     mutationFn: async (params: RegistrarHistoricoParams) => {
-      const insertData: any = {
+      interface InsertData {
+        tipo_lancamento: 'pagar' | 'receber';
+        score_ia: number;
+        confianca: 'alta' | 'media' | 'baixa';
+        motivos: Array<{ tipo: string; peso: number; detalhe: string }>;
+        analise_ia: string | null;
+        acao: 'aprovado' | 'rejeitado';
+        aprovado_por: string | null;
+        conta_pagar_id?: string;
+        conta_receber_id?: string;
+      }
+
+      const insertData: InsertData = {
         tipo_lancamento: params.tipoLancamento,
         score_ia: params.score,
         confianca: params.confianca,
