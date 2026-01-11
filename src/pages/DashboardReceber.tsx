@@ -163,41 +163,41 @@ export default function DashboardReceber() {
     const inicioMes = format(startOfMonth(hoje), "yyyy-MM-dd");
     const fimMes = format(endOfMonth(hoje), "yyyy-MM-dd");
 
-    const pendentes = filteredContas.filter((c: any) => 
+    const pendentes = filteredContas.filter((c) => 
       ["pendente", "vencido", "parcial"].includes(c.status)
     );
 
-    const totalReceber = pendentes.reduce((acc: number, c: any) => 
+    const totalReceber = pendentes.reduce((acc, c) => 
       acc + (c.valor - (c.valor_recebido || 0)), 0
     );
 
     const vencido = pendentes
-      .filter((c: any) => c.data_vencimento < hojeStr)
-      .reduce((acc: number, c: any) => acc + (c.valor - (c.valor_recebido || 0)), 0);
+      .filter((c) => c.data_vencimento < hojeStr)
+      .reduce((acc, c) => acc + (c.valor - (c.valor_recebido || 0)), 0);
 
     const venceHoje = pendentes
-      .filter((c: any) => c.data_vencimento === hojeStr)
-      .reduce((acc: number, c: any) => acc + (c.valor - (c.valor_recebido || 0)), 0);
+      .filter((c) => c.data_vencimento === hojeStr)
+      .reduce((acc, c) => acc + (c.valor - (c.valor_recebido || 0)), 0);
 
     const venceSemana = pendentes
-      .filter((c: any) => c.data_vencimento > hojeStr && c.data_vencimento <= em7dias)
-      .reduce((acc: number, c: any) => acc + (c.valor - (c.valor_recebido || 0)), 0);
+      .filter((c) => c.data_vencimento > hojeStr && c.data_vencimento <= em7dias)
+      .reduce((acc, c) => acc + (c.valor - (c.valor_recebido || 0)), 0);
 
     const venceMes = pendentes
-      .filter((c: any) => c.data_vencimento > hojeStr && c.data_vencimento <= em30dias)
-      .reduce((acc: number, c: any) => acc + (c.valor - (c.valor_recebido || 0)), 0);
+      .filter((c) => c.data_vencimento > hojeStr && c.data_vencimento <= em30dias)
+      .reduce((acc, c) => acc + (c.valor - (c.valor_recebido || 0)), 0);
 
     const recebidoMes = filteredContas
-      .filter((c: any) => 
+      .filter((c) => 
         c.status === "pago" && 
         c.data_recebimento >= inicioMes && 
         c.data_recebimento <= fimMes
       )
-      .reduce((acc: number, c: any) => acc + (c.valor_recebido || 0), 0);
+      .reduce((acc, c) => acc + (c.valor_recebido || 0), 0);
 
     const taxaInadimplencia = totalReceber > 0 ? (vencido / totalReceber) * 100 : 0;
 
-    const contasVencidas = pendentes.filter((c: any) => c.data_vencimento < hojeStr).length;
+    const contasVencidas = pendentes.filter((c) => c.data_vencimento < hojeStr).length;
     const contasPendentes = pendentes.length;
 
     return {
@@ -218,41 +218,41 @@ export default function DashboardReceber() {
     const hoje = new Date();
     const hojeStr = format(hoje, "yyyy-MM-dd");
     
-    const pendentes = filteredContas.filter((c: any) => 
+    const pendentes = filteredContas.filter((c) => 
       ["pendente", "vencido", "parcial"].includes(c.status)
     );
 
     const aVencer = pendentes
-      .filter((c: any) => c.data_vencimento >= hojeStr)
-      .reduce((acc: number, c: any) => acc + (c.valor - (c.valor_recebido || 0)), 0);
+      .filter((c) => c.data_vencimento >= hojeStr)
+      .reduce((acc, c) => acc + (c.valor - (c.valor_recebido || 0)), 0);
 
     const ate7 = pendentes
-      .filter((c: any) => {
+      .filter((c) => {
         const dias = differenceInDays(hoje, parseISO(c.data_vencimento));
         return dias > 0 && dias <= 7;
       })
-      .reduce((acc: number, c: any) => acc + (c.valor - (c.valor_recebido || 0)), 0);
+      .reduce((acc, c) => acc + (c.valor - (c.valor_recebido || 0)), 0);
 
     const ate15 = pendentes
-      .filter((c: any) => {
+      .filter((c) => {
         const dias = differenceInDays(hoje, parseISO(c.data_vencimento));
         return dias > 7 && dias <= 15;
       })
-      .reduce((acc: number, c: any) => acc + (c.valor - (c.valor_recebido || 0)), 0);
+      .reduce((acc, c) => acc + (c.valor - (c.valor_recebido || 0)), 0);
 
     const ate30 = pendentes
-      .filter((c: any) => {
+      .filter((c) => {
         const dias = differenceInDays(hoje, parseISO(c.data_vencimento));
         return dias > 15 && dias <= 30;
       })
-      .reduce((acc: number, c: any) => acc + (c.valor - (c.valor_recebido || 0)), 0);
+      .reduce((acc, c) => acc + (c.valor - (c.valor_recebido || 0)), 0);
 
     const mais30 = pendentes
-      .filter((c: any) => {
+      .filter((c) => {
         const dias = differenceInDays(hoje, parseISO(c.data_vencimento));
         return dias > 30;
       })
-      .reduce((acc: number, c: any) => acc + (c.valor - (c.valor_recebido || 0)), 0);
+      .reduce((acc, c) => acc + (c.valor - (c.valor_recebido || 0)), 0);
 
     return [
       { name: "A Vencer", value: aVencer, fill: AGING_COLORS.aVencer },
@@ -269,8 +269,8 @@ export default function DashboardReceber() {
     const hoje = format(new Date(), "yyyy-MM-dd");
 
     filteredContas
-      .filter((c: any) => ["pendente", "vencido", "parcial"].includes(c.status))
-      .forEach((c: any) => {
+      .filter((c) => ["pendente", "vencido", "parcial"].includes(c.status))
+      .forEach((c) => {
         const valor = c.valor - (c.valor_recebido || 0);
         const isVencido = c.data_vencimento < hoje;
 
@@ -298,7 +298,7 @@ export default function DashboardReceber() {
       meses[mesAno] = { recebido: 0, aReceber: 0, vencido: 0 };
     }
 
-    contasReceber.forEach((c: any) => {
+    contasReceber.forEach((c) => {
       const dataVenc = parseISO(c.data_vencimento);
       const mesAno = format(dataVenc, "MMM/yy", { locale: ptBR });
 
@@ -324,8 +324,8 @@ export default function DashboardReceber() {
   const contasVencidasDetalhes = useMemo(() => {
     const hoje = format(new Date(), "yyyy-MM-dd");
     return filteredContas
-      .filter((c: any) => c.data_vencimento < hoje && ["pendente", "vencido", "parcial"].includes(c.status))
-      .sort((a: any, b: any) => (b.valor - (b.valor_recebido || 0)) - (a.valor - (a.valor_recebido || 0)))
+      .filter((c) => c.data_vencimento < hoje && ["pendente", "vencido", "parcial"].includes(c.status))
+      .sort((a, b) => (b.valor - (b.valor_recebido || 0)) - (a.valor - (a.valor_recebido || 0)))
       .slice(0, 15);
   }, [filteredContas]);
 
@@ -429,7 +429,7 @@ export default function DashboardReceber() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="todas">Todas empresas</SelectItem>
-                  {empresas.map((e: any) => (
+                  {empresas.map((e) => (
                     <SelectItem key={e.id} value={e.id}>
                       {e.nome_fantasia || e.razao_social}
                     </SelectItem>
@@ -444,7 +444,7 @@ export default function DashboardReceber() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="todos">Todos vendedores</SelectItem>
-                  {vendedores.map((v: any) => (
+                  {vendedores.map((v) => (
                     <SelectItem key={v.id} value={v.id}>
                       {v.nome}
                     </SelectItem>
@@ -459,7 +459,7 @@ export default function DashboardReceber() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="todos">Todos ramos</SelectItem>
-                  {ramosAtividade.map((r: any) => (
+                  {ramosAtividade.map((r) => (
                     <SelectItem key={r} value={r}>
                       {r}
                     </SelectItem>
@@ -488,7 +488,7 @@ export default function DashboardReceber() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="todos">Todos clientes</SelectItem>
-                  {clientes.slice(0, 50).map((c: any) => (
+                  {clientes.slice(0, 50).map((c) => (
                     <SelectItem key={c.id} value={c.id}>
                       {c.nome_fantasia || c.razao_social}
                     </SelectItem>

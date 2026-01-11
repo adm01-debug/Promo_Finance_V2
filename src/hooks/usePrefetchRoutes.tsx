@@ -1,9 +1,14 @@
-import { useEffect, useCallback, useRef, ReactNode } from 'react';
+import { useEffect, useCallback, useRef, ReactNode, ComponentType } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 
+// Define a type for lazy-loaded React components
+interface LazyModule {
+  default: ComponentType<unknown>;
+}
+
 // Map of routes to their lazy imports
-const routeModules: Record<string, () => Promise<any>> = {
+const routeModules: Record<string, () => Promise<LazyModule>> = {
   '/': () => import('@/pages/Index'),
   '/dashboard': () => import('@/pages/Index'),
   '/contas-pagar': () => import('@/pages/ContasPagar'),
