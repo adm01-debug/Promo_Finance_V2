@@ -126,8 +126,8 @@ export function SimulacaoMonteCarlo({
   const [seed, setSeed] = useState(0);
 
   const resultado = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const _ = seed; // trigger recalculation
+    // seed é usado como dependência para forçar recálculo quando o usuário clica em "Re-simular"
+    void seed;
     return executarMonteCarlo(projecoes, saldoInicial, 1000);
   }, [projecoes, saldoInicial, seed]);
 
