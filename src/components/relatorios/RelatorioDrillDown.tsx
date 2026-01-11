@@ -155,14 +155,17 @@ export function RelatorioDrillDown() {
         .lte('data_vencimento', format(dataFim, 'yyyy-MM-dd'))
         .order('data_vencimento');
 
-      return data?.map(item => ({
-        id: item.id,
-        descricao: item.descricao,
-        entidade: (item as any)[nomeField],
-        valor: item.valor,
-        vencimento: item.data_vencimento,
-        status: item.status,
-      })) || [];
+      return data?.map(item => {
+        const itemRecord = item as Record<string, unknown>;
+        return {
+          id: item.id,
+          descricao: item.descricao,
+          entidade: itemRecord[nomeField] as string,
+          valor: item.valor,
+          vencimento: item.data_vencimento,
+          status: item.status,
+        };
+      }) || [];
     },
     enabled: drillState.level === 'detalhes' && !!drillState.empresaId,
   });

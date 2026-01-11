@@ -131,7 +131,8 @@ export function useDespesasPorCategoria() {
       // Aggregate by category
       const categorias: Record<string, number> = {};
       (data || []).forEach(c => {
-        const nome = (c.centros_custo as any)?.nome || 'Outros';
+        const centroCusto = c.centros_custo as { nome: string } | null;
+        const nome = centroCusto?.nome || 'Outros';
         categorias[nome] = (categorias[nome] || 0) + (c.valor_pago || 0);
       });
 

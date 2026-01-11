@@ -122,7 +122,7 @@ export function GeoRestrictionPanel() {
       setAddDialogOpen(false);
       setSelectedCountry('');
     },
-    onError: (error: any) => {
+    onError: (error: Error & { code?: string }) => {
       if (error.code === '23505') {
         toast.error('Este país já está na whitelist');
       } else {

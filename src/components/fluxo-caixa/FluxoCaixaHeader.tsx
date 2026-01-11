@@ -11,12 +11,19 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 
+interface FluxoCaixaDado {
+  data: string;
+  receitas: number;
+  despesas: number;
+  saldo: number;
+}
+
 interface FluxoCaixaHeaderProps {
   periodo: string;
   onPeriodoChange: (periodo: string) => void;
   onRefresh: () => void;
   isLoading: boolean;
-  dadosCenarioAtivo: any[];
+  dadosCenarioAtivo: FluxoCaixaDado[];
   cenarioAtivo: string;
 }
 
