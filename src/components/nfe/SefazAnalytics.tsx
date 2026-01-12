@@ -399,12 +399,12 @@ export const SefazAnalytics = () => {
                   <AreaChart data={dadosTemporais}>
                     <defs>
                       <linearGradient id="colorAutorizadas" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="hsl(150, 70%, 42%)" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="hsl(150, 70%, 42%)" stopOpacity={0}/>
                       </linearGradient>
                       <linearGradient id="colorRejeitadas" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="hsl(0, 78%, 55%)" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="hsl(0, 78%, 55%)" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
                     <XAxis 
@@ -424,7 +424,7 @@ export const SefazAnalytics = () => {
                       type="monotone"
                       dataKey="autorizadas"
                       name="Autorizadas"
-                      stroke="#10b981"
+                      stroke="hsl(150, 70%, 42%)"
                       fillOpacity={1}
                       fill="url(#colorAutorizadas)"
                     />
@@ -432,7 +432,7 @@ export const SefazAnalytics = () => {
                       type="monotone"
                       dataKey="rejeitadas"
                       name="Rejeitadas"
-                      stroke="#ef4444"
+                      stroke="hsl(0, 78%, 55%)"
                       fillOpacity={1}
                       fill="url(#colorRejeitadas)"
                     />
@@ -464,7 +464,7 @@ export const SefazAnalytics = () => {
                       <Bar 
                         dataKey="quantidade" 
                         name="Ocorrências"
-                        fill="#ef4444" 
+                        fill="hsl(0, 78%, 55%)" 
                         radius={[0, 4, 4, 0]}
                       />
                     </BarChart>
