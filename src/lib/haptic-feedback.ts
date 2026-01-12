@@ -28,9 +28,8 @@ export function haptic(pattern: HapticPattern = 'light'): void {
   
   try {
     navigator.vibrate(patterns[pattern]);
-  } catch (e) {
+  } catch (_error: unknown) {
     // Silently fail if vibration is not available
-    console.debug('Haptic feedback not available:', e);
   }
 }
 
@@ -42,7 +41,7 @@ export function stopHaptic(): void {
   
   try {
     navigator.vibrate(0);
-  } catch (e) {
+  } catch (_error: unknown) {
     // Silently fail
   }
 }

@@ -202,7 +202,7 @@ export function parseCSV(content: string, fileName: string): ResultadoImportacao
           valor,
           descricao: descricao.replace(/"/g, '').trim(),
         });
-      } catch (e) {
+      } catch (_error: unknown) {
         avisos.push(`Linha ${i + 1} ignorada: formato inválido`);
       }
     }
@@ -349,7 +349,7 @@ function extrairTransacoesOFX(content: string, avisos: string[]): TransacaoOFX[]
         checkNum,
         memo,
       });
-    } catch (e) {
+    } catch (_error: unknown) {
       avisos.push('Uma ou mais transações não puderam ser lidas');
     }
   }

@@ -25,8 +25,8 @@ const SYNC_DEBOUNCE = 2000;
 function saveQueue(mutations: PendingMutation[]) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(mutations));
-  } catch (e) {
-    logger.error('Failed to save offline queue:', e);
+  } catch (error: unknown) {
+    logger.error('Failed to save offline queue:', error);
   }
 }
 

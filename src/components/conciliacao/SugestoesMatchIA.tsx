@@ -452,18 +452,25 @@ export function SugestoesMatchIA({
       });
     }
 
+    // Confetti color palette (hex required by canvas-confetti library)
+    const successColors = ['#22c55e', '#10b981'];
+    const primaryColors = ['#3b82f6', '#6366f1'];
+    const warningColors = ['#f59e0b', '#eab308'];
+    const celebrationColors = ['#ec4899', '#f43f5e'];
+    const greenColors = ['#4ade80', '#86efac'];
+
     if (isFullCompletion) {
       // Grand celebration for 100% completion
-      fire(0.25, { spread: 26, startVelocity: 55, colors: ['#22c55e', '#10b981'] });
-      fire(0.2, { spread: 60, colors: ['#3b82f6', '#6366f1'] });
-      fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8, colors: ['#f59e0b', '#eab308'] });
-      fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2, colors: ['#ec4899', '#f43f5e'] });
-      fire(0.1, { spread: 120, startVelocity: 45, colors: ['#22c55e', '#3b82f6', '#f59e0b'] });
+      fire(0.25, { spread: 26, startVelocity: 55, colors: successColors });
+      fire(0.2, { spread: 60, colors: primaryColors });
+      fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8, colors: warningColors });
+      fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2, colors: celebrationColors });
+      fire(0.1, { spread: 120, startVelocity: 45, colors: [...successColors.slice(0, 1), ...primaryColors.slice(0, 1), ...warningColors.slice(0, 1)] });
     } else {
       // Regular celebration for batch approval
-      fire(0.25, { spread: 26, startVelocity: 55, colors: ['#22c55e', '#10b981'] });
+      fire(0.25, { spread: 26, startVelocity: 55, colors: successColors });
       fire(0.2, { spread: 60, colors: ['#22c55e', '#16a34a'] });
-      fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8, colors: ['#4ade80', '#86efac'] });
+      fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8, colors: greenColors });
     }
   }, []);
 

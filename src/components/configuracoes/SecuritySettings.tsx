@@ -184,9 +184,9 @@ export function SecuritySettings() {
       ipSchema.parse(newIp);
       setIpError('');
       addIpMutation.mutate();
-    } catch (e) {
-      if (e instanceof z.ZodError) {
-        setIpError(e.errors[0].message);
+    } catch (error: unknown) {
+      if (error instanceof z.ZodError) {
+        setIpError(error.errors[0].message);
       }
     }
   };

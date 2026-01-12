@@ -97,17 +97,17 @@ export default function Auth() {
 
     try {
       emailSchema.parse(email);
-    } catch (e) {
-      if (e instanceof z.ZodError) {
-        newErrors.email = e.errors[0].message;
+    } catch (error: unknown) {
+      if (error instanceof z.ZodError) {
+        newErrors.email = error.errors[0].message;
       }
     }
 
     try {
       passwordSchema.parse(password);
-    } catch (e) {
-      if (e instanceof z.ZodError) {
-        newErrors.password = e.errors[0].message;
+    } catch (error: unknown) {
+      if (error instanceof z.ZodError) {
+        newErrors.password = error.errors[0].message;
       }
     }
 
@@ -284,9 +284,9 @@ export default function Auth() {
     
     try {
       emailSchema.parse(email);
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        setErrors({ email: err.errors[0].message });
+    } catch (error: unknown) {
+      if (error instanceof z.ZodError) {
+        setErrors({ email: error.errors[0].message });
         return;
       }
     }
