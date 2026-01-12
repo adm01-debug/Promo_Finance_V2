@@ -99,7 +99,7 @@ const FloatingLabelInput = React.forwardRef<HTMLInputElement, FloatingLabelInput
             scale: isFloating ? 0.75 : 1,
             color: isFocused 
               ? error ? "hsl(var(--destructive))" 
-              : success ? "#22c55e" 
+              : success ? "hsl(142, 71%, 45%)" 
               : "hsl(var(--primary))"
               : "hsl(var(--muted-foreground))",
           }}

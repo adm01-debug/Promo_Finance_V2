@@ -24,7 +24,7 @@ export function CashbackSimuladorPanel() {
     value: c.totalCashback,
   }));
 
-  const COLORS = ['#10b981', '#f59e0b', '#3b82f6', '#8b5cf6', '#ef4444', '#ec4899'];
+  const COLORS = ['hsl(160, 84%, 39%)', 'hsl(38, 92%, 50%)', 'hsl(217, 91%, 60%)', 'hsl(258, 90%, 66%)', 'hsl(0, 84%, 60%)', 'hsl(330, 81%, 60%)'];
 
   return (
     <div className="space-y-6">

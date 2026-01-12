@@ -19,7 +19,7 @@ export function ComparativoRegimesPanel() {
   const chartData = resultado.resultados.map(r => ({
     name: r.nome,
     valor: r.totalTributos,
-    color: r.regime === 'lucro_real' ? '#3b82f6' : r.regime === 'lucro_presumido' ? '#8b5cf6' : '#10b981'
+    color: r.regime === 'lucro_real' ? 'hsl(217, 91%, 60%)' : r.regime === 'lucro_presumido' ? 'hsl(258, 90%, 66%)' : 'hsl(160, 84%, 39%)'
   }));
 
   return (
