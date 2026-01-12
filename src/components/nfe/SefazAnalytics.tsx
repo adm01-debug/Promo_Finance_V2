@@ -53,7 +53,7 @@ const COLORS = {
   muted: 'hsl(var(--muted-foreground))'
 };
 
-const PIE_COLORS = ['#10b981', '#ef4444', '#f59e0b', '#6366f1', '#8b5cf6'];
+const PIE_COLORS = ['hsl(160, 84%, 39%)', 'hsl(0, 84%, 60%)', 'hsl(38, 92%, 50%)', 'hsl(239, 84%, 67%)', 'hsl(258, 90%, 66%)'];
 
 type Periodo = '24h' | '7d' | '30d' | '90d';
 

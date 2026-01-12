@@ -542,7 +542,7 @@ export function SefazMonitor() {
                             cx={cx} 
                             cy={cy} 
                             r={4} 
-                            fill={payload.online ? '#22c55e' : '#ef4444'}
+                            fill={payload.online ? 'hsl(142, 71%, 45%)' : 'hsl(0, 84%, 60%)'}
                             stroke="none"
                           />
                         );
