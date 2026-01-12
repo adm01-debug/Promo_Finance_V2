@@ -31,12 +31,21 @@ interface ConfettiOptions {
   colors?: string[];
 }
 
+// Confetti color palette (hex required by canvas-confetti library)
+const CONFETTI_COLORS = {
+  success: ['#10b981', '#16a34a', '#22c55e', '#4ade80'],
+  primary: ['#3b82f6', '#6366f1', '#8b5cf6'],
+  warning: ['#fbbf24', '#f59e0b', '#d97706'],
+  celebration: ['#ec4899', '#f43f5e', '#a855f7'],
+  mixed: ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ec4899'],
+} as const;
+
 export function celebrateSuccess(options: ConfettiOptions = {}) {
   const defaults = {
     particleCount: 100,
     spread: 70,
     origin: { x: 0.5, y: 0.6 },
-    colors: ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ec4899'],
+    colors: CONFETTI_COLORS.mixed,
   };
   
   confetti({ ...defaults, ...options });
@@ -47,7 +56,7 @@ export function celebrateSuccess(options: ConfettiOptions = {}) {
 export function celebratePayment() {
   const duration = 2000;
   const end = Date.now() + duration;
-  const colors = ['#10b981', '#3b82f6'];
+  const colors = [CONFETTI_COLORS.success[0], CONFETTI_COLORS.primary[0]];
 
   (function frame() {
     confetti({ particleCount: 2, angle: 60, spread: 55, origin: { x: 0 }, colors });
@@ -64,7 +73,7 @@ export function celebrateGoal() {
     particleCount: 150,
     spread: 180,
     origin: { y: 0.2 },
-    colors: ['#fbbf24', '#f59e0b', '#d97706'],
+    colors: CONFETTI_COLORS.warning,
     shapes: ['star'],
     ticks: 200,
   });
@@ -74,7 +83,7 @@ export function celebrateGoal() {
       particleCount: 50,
       spread: 100,
       origin: { y: 0.3 },
-      colors: ['#10b981', '#34d399'],
+      colors: CONFETTI_COLORS.success.slice(0, 2),
     });
   }, 300);
 
@@ -403,7 +412,7 @@ export function InteractiveButton({
   const animations = {
     scale: { whileHover: { scale: 1.02 }, whileTap: { scale: 0.98 } },
     bounce: { whileHover: { y: -2 }, whileTap: { y: 1, scale: 0.98 } },
-    glow: { whileHover: { scale: 1.02, boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)' }, whileTap: { scale: 0.98 } },
+    glow: { whileHover: { scale: 1.02, boxShadow: '0 0 20px hsl(217 91% 60% / 0.5)' }, whileTap: { scale: 0.98 } },
   };
 
   return (

@@ -240,14 +240,14 @@ toast.promise = async <T,>(
     } as ToasterToast);
     addToRemoveQueue(toastInstance.id, 3000);
     return result;
-  } catch (err) {
+  } catch (caughtError: unknown) {
     toastInstance.update({
       id: toastInstance.id,
-      title: typeof error === "function" ? error(err as Error) : error,
+      title: typeof error === "function" ? error(caughtError as Error) : error,
       variant: "destructive",
     } as ToasterToast);
     addToRemoveQueue(toastInstance.id, 5000);
-    throw err;
+    throw caughtError;
   }
 };
 

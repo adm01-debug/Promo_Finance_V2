@@ -48,14 +48,14 @@ const confettiConfigs: Record<CelebrationLevel, ConfettiOptions> = {
   },
 };
 
-// Cores temáticas
+// Cores temáticas para confetti (hex required by canvas-confetti library)
 const colorThemes = {
   success: ['#22c55e', '#16a34a', '#4ade80', '#86efac'],
   gold: ['#fbbf24', '#f59e0b', '#eab308', '#facc15'],
   celebration: ['#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e'],
   money: ['#22c55e', '#10b981', '#34d399', '#fbbf24', '#f59e0b'],
   rainbow: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6'],
-};
+} as const;
 
 // Dispara o confetti
 function fireConfetti(level: CelebrationLevel, theme: keyof typeof colorThemes = 'success') {
