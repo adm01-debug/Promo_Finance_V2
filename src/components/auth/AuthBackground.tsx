@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { Building2, Shield, CheckCircle2 } from 'lucide-react';
 
@@ -158,9 +159,10 @@ export function AuthLeftPanel() {
   );
 }
 
-export function AuthMobileHeader() {
+export const AuthMobileHeader = forwardRef<HTMLDivElement>(function AuthMobileHeader(_, ref) {
   return (
     <motion.div 
+      ref={ref}
       className="text-center mb-8 lg:hidden"
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
@@ -191,7 +193,7 @@ export function AuthMobileHeader() {
       </motion.p>
     </motion.div>
   );
-}
+});
 
 export function AuthMobileBackground() {
   return (

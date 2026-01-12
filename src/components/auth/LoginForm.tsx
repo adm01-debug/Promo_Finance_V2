@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,7 +36,7 @@ interface LoginFormProps {
   onForgotPassword: () => void;
 }
 
-export function LoginForm({
+export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(function LoginForm({
   email,
   setEmail,
   password,
@@ -54,11 +54,11 @@ export function LoginForm({
   onSubmit,
   onBiometricLogin,
   onForgotPassword,
-}: LoginFormProps) {
+}, ref) {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <>
+    <div ref={ref}>
       {accountLocked && (
         <Alert variant="destructive" className="mb-4">
           <AlertTriangle className="h-4 w-4" />
@@ -202,6 +202,6 @@ export function LoginForm({
           </button>
         </div>
       </form>
-    </>
+    </div>
   );
-}
+});
