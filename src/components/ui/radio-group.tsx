@@ -1,36 +1,60 @@
-import * as React from "react";
-import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
-import { Circle } from "lucide-react";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
-import { cn } from "@/lib/utils";
+interface RadioOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+}
 
-const RadioGroup = React.forwardRef<
-  React.ElementRef<typeof RadioGroupPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root>
->(({ className, ...props }, ref) => {
-  return <RadioGroupPrimitive.Root className={cn("grid gap-2", className)} {...props} ref={ref} />;
-});
-RadioGroup.displayName = RadioGroupPrimitive.Root.displayName;
+interface RadioGroupProps {
+  name: string;
+  options: RadioOption[];
+  value?: string;
+  onChange?: (value: string) => void;
+  className?: string;
+  orientation?: 'horizontal' | 'vertical';
+}
 
-const RadioGroupItem = React.forwardRef<
-  React.ElementRef<typeof RadioGroupPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>
->(({ className, ...props }, ref) => {
+export function RadioGroup({
+  name,
+  options,
+  value,
+  onChange,
+  className,
+  orientation = 'vertical',
+}: RadioGroupProps) {
   return (
-    <RadioGroupPrimitive.Item
-      ref={ref}
-      className={cn(
-        "aspect-square h-4 w-4 rounded-full border border-primary text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-        className,
-      )}
-      {...props}
-    >
-      <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
-        <Circle className="h-2.5 w-2.5 fill-current text-current" />
-      </RadioGroupPrimitive.Indicator>
-    </RadioGroupPrimitive.Item>
+    <div className={cn(
+      'flex gap-4',
+      orientation === 'vertical' ? 'flex-col' : 'flex-row flex-wrap',
+      className
+    )}>
+      {options.map((option) => (
+        <label
+          key={option.value}
+          className={cn(
+            'flex items-center gap-2 cursor-pointer',
+            option.disabled && 'opacity-50 cursor-not-allowed'
+          )}
+        >
+          <input
+            type="radio"
+            name={name}
+            value={option.value}
+            checked={value === option.value}
+            onChange={(e) => onChange?.(e.target.value)}
+            disabled={option.disabled}
+            className={cn(
+              'h-4 w-4 border-gray-300 text-primary focus:ring-primary',
+              'disabled:cursor-not-allowed'
+            )}
+          />
+          <span className="text-sm text-gray-700 dark:text-gray-300">{option.label}</span>
+        </label>
+      ))}
+    </div>
   );
-});
-RadioGroupItem.displayName = RadioGroupPrimitive.Item.displayName;
+}
 
-export { RadioGroup, RadioGroupItem };
+export default RadioGroup;
