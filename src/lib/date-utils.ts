@@ -42,6 +42,22 @@ import {
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
+// Date range type for presets
+export type DateRangeType =
+  | 'today'
+  | 'yesterday'
+  | 'last7Days'
+  | 'last30Days'
+  | 'last90Days'
+  | 'thisWeek'
+  | 'lastWeek'
+  | 'thisMonth'
+  | 'lastMonth'
+  | 'thisQuarter'
+  | 'lastQuarter'
+  | 'thisYear'
+  | 'lastYear';
+
 export type DateInput = Date | string | number;
 
 /**
