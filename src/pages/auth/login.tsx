@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/forms/input';
+import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/forms/checkbox';
 import { Alert } from '@/components/ui/alert';
 import { useForm } from '@/hooks/useForm';
