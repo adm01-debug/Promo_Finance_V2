@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { formatCurrency, formatDate, formatPercent } from '@/lib/formatters';
+import { formatCurrency, formatDate, formatPercentage } from '@/lib/formatters';
 
 // Types
 export interface ReportColumn<T = any> {
@@ -43,7 +43,7 @@ function formatValue(value: any, format?: string): string {
     case 'date':
       return formatDate(value);
     case 'percent':
-      return formatPercent(Number(value));
+      return formatPercentage(Number(value));
     case 'number':
       return new Intl.NumberFormat('pt-BR').format(Number(value));
     default:
