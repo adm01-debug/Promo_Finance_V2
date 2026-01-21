@@ -1,120 +1,219 @@
-import * as React from 'react';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from './alert-dialog';
-import { Loader2, AlertTriangle, Trash2, CheckCircle2 } from 'lucide-react';
+import { ReactNode } from 'react';
+import { AlertTriangle, Info, CheckCircle, XCircle, Loader2, X } from 'lucide-react';
+import { Button } from './button';
 import { cn } from '@/lib/utils';
 
-type ConfirmVariant = 'danger' | 'warning' | 'success';
-
 interface ConfirmDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  title: string;
-  description: string;
-  confirmLabel?: string;
-  cancelLabel?: string;
-  variant?: ConfirmVariant;
-  isLoading?: boolean;
+  isOpen: boolean;
+  onClose: () => void;
   onConfirm: () => void | Promise<void>;
+  title: string;
+  description?: string;
+  children?: ReactNode;
+  confirmText?: string;
+  cancelText?: string;
+  variant?: 'default' | 'danger' | 'warning' | 'success' | 'info';
+  isLoading?: boolean;
+  icon?: ReactNode;
 }
 
-const variantConfig: Record<ConfirmVariant, { 
-  icon: typeof AlertTriangle; 
-  iconColor: string; 
-  buttonClass: string;
-}> = {
-  danger: { 
-    icon: Trash2, 
-    iconColor: 'text-destructive',
-    buttonClass: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+const variantConfig = {
+  default: {
+    icon: <Info className="w-6 h-6" />,
+    iconBg: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
+    button: 'primary' as const,
   },
-  warning: { 
-    icon: AlertTriangle, 
-    iconColor: 'text-warning',
-    buttonClass: 'bg-warning text-warning-foreground hover:bg-warning/90',
+  danger: {
+    icon: <XCircle className="w-6 h-6" />,
+    iconBg: 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400',
+    button: 'destructive' as const,
   },
-  success: { 
-    icon: CheckCircle2, 
-    iconColor: 'text-success',
-    buttonClass: 'bg-success text-success-foreground hover:bg-success/90',
+  warning: {
+    icon: <AlertTriangle className="w-6 h-6" />,
+    iconBg: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400',
+    button: 'warning' as const,
+  },
+  success: {
+    icon: <CheckCircle className="w-6 h-6" />,
+    iconBg: 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
+    button: 'success' as const,
+  },
+  info: {
+    icon: <Info className="w-6 h-6" />,
+    iconBg: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
+    button: 'primary' as const,
   },
 };
 
 export function ConfirmDialog({
-  open,
-  onOpenChange,
+  isOpen,
+  onClose,
+  onConfirm,
   title,
   description,
-  confirmLabel = 'Confirmar',
-  cancelLabel = 'Cancelar',
-  variant = 'danger',
+  children,
+  confirmText = 'Confirmar',
+  cancelText = 'Cancelar',
+  variant = 'default',
   isLoading = false,
-  onConfirm,
+  icon,
 }: ConfirmDialogProps) {
-  const [loading, setLoading] = React.useState(false);
+  if (!isOpen) return null;
+
   const config = variantConfig[variant];
-  const Icon = config.icon;
-  
+
   const handleConfirm = async () => {
-    setLoading(true);
-    try {
-      await onConfirm();
-    } finally {
-      setLoading(false);
-    }
+    await onConfirm();
   };
-  
-  const showLoading = isLoading || loading;
-  
+
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="animate-scale-in">
-        <AlertDialogHeader>
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50"
+        onClick={onClose}
+      />
+
+      {/* Dialog */}
+      <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4 animate-in fade-in-0 zoom-in-95">
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        {/* Content */}
+        <div className="p-6">
           <div className="flex items-start gap-4">
-            <div className={cn(
-              "h-12 w-12 rounded-full flex items-center justify-center shrink-0",
-              variant === 'danger' && "bg-destructive/10",
-              variant === 'warning' && "bg-warning/10",
-              variant === 'success' && "bg-success/10",
-            )}>
-              <Icon className={cn("h-6 w-6", config.iconColor)} />
+            {/* Icon */}
+            <div className={cn('p-3 rounded-full', config.iconBg)}>
+              {icon || config.icon}
             </div>
-            <div>
-              <AlertDialogTitle>{title}</AlertDialogTitle>
-              <AlertDialogDescription className="mt-2">
-                {description}
-              </AlertDialogDescription>
+
+            {/* Text */}
+            <div className="flex-1 pt-1">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {title}
+              </h3>
+              {description && (
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                  {description}
+                </p>
+              )}
+              {children && (
+                <div className="mt-4">
+                  {children}
+                </div>
+              )}
             </div>
           </div>
-        </AlertDialogHeader>
-        <AlertDialogFooter className="mt-4">
-          <AlertDialogCancel disabled={showLoading}>
-            {cancelLabel}
-          </AlertDialogCancel>
-          <AlertDialogAction 
-            onClick={handleConfirm}
-            disabled={showLoading}
-            className={cn(config.buttonClass, "gap-2")}
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center justify-end gap-3 px-6 py-4 bg-gray-50 dark:bg-gray-800/50 rounded-b-lg">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            disabled={isLoading}
           >
-            {showLoading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Processando...
-              </>
-            ) : (
-              confirmLabel
-            )}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+            {cancelText}
+          </Button>
+          <Button
+            variant={variant === 'danger' ? 'destructive' : 'default'}
+            onClick={handleConfirm}
+            disabled={isLoading}
+          >
+            {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+            {confirmText}
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }
+
+// Convenience components for common use cases
+export function DeleteConfirmDialog({
+  isOpen,
+  onClose,
+  onConfirm,
+  itemName = 'item',
+  isLoading,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void | Promise<void>;
+  itemName?: string;
+  isLoading?: boolean;
+}) {
+  return (
+    <ConfirmDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      onConfirm={onConfirm}
+      title={`Excluir ${itemName}`}
+      description={`Tem certeza que deseja excluir este ${itemName}? Esta ação não pode ser desfeita.`}
+      confirmText="Excluir"
+      variant="danger"
+      isLoading={isLoading}
+    />
+  );
+}
+
+export function BulkDeleteConfirmDialog({
+  isOpen,
+  onClose,
+  onConfirm,
+  count,
+  itemName = 'itens',
+  isLoading,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void | Promise<void>;
+  count: number;
+  itemName?: string;
+  isLoading?: boolean;
+}) {
+  return (
+    <ConfirmDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      onConfirm={onConfirm}
+      title={`Excluir ${count} ${itemName}`}
+      description={`Tem certeza que deseja excluir ${count} ${itemName}? Esta ação não pode ser desfeita.`}
+      confirmText={`Excluir ${count} ${itemName}`}
+      variant="danger"
+      isLoading={isLoading}
+    />
+  );
+}
+
+export function LogoutConfirmDialog({
+  isOpen,
+  onClose,
+  onConfirm,
+  isLoading,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void | Promise<void>;
+  isLoading?: boolean;
+}) {
+  return (
+    <ConfirmDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      onConfirm={onConfirm}
+      title="Sair da conta"
+      description="Tem certeza que deseja sair? Você precisará fazer login novamente para acessar o sistema."
+      confirmText="Sair"
+      variant="warning"
+      isLoading={isLoading}
+    />
+  );
+}
+
+export default ConfirmDialog;
