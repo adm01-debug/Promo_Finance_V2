@@ -181,3 +181,10 @@ export function FormDivider({ className }: { className?: string }) {
     <hr className={cn('border-gray-200 dark:border-gray-700 my-6', className)} />
   );
 }
+
+// Re-export common form components
+export { Input as TextInput } from '@/components/ui/input';
+export { Textarea as TextArea } from '@/components/ui/textarea';
+export { Select } from '@/components/ui/select';
+export { RadioGroup } from '@/components/ui/radio-group';
+export { Checkbox } from '@/components/ui/checkbox';
