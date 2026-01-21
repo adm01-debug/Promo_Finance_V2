@@ -234,3 +234,45 @@ export function AvatarWithName({
     </div>
   );
 }
+
+// Compatibilidade com shadcn/ui Avatar API
+import * as React from "react";
+
+interface AvatarImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+  src?: string;
+  alt?: string;
+}
+
+export function AvatarImage({ src, alt, className, ...props }: AvatarImageProps) {
+  if (!src) return null;
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={cn("aspect-square h-full w-full object-cover", className)}
+      {...props}
+    />
+  );
+}
+
+interface AvatarFallbackProps extends React.HTMLAttributes<HTMLSpanElement> {
+  children?: React.ReactNode;
+  delayMs?: number;
+}
+
+export function AvatarFallback({ children, className, ...props }: AvatarFallbackProps) {
+  return (
+    <span
+      className={cn(
+        "flex h-full w-full items-center justify-center bg-muted font-medium",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </span>
+  );
+}
+
+// Re-export for compatibility
+export { Avatar as AvatarRoot };
