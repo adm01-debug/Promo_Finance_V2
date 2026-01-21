@@ -36,7 +36,7 @@ type ActivityType =
   | 'payment'
   | 'permission';
 
-interface ActivityLog {
+interface ActivityLogEntry {
   id: string;
   type: ActivityType;
   action: string;
@@ -53,7 +53,7 @@ interface ActivityLog {
 }
 
 interface ActivityLogProps {
-  logs: ActivityLog[];
+  logs: ActivityLogEntry[];
   isLoading?: boolean;
   onLoadMore?: () => void;
   hasMore?: boolean;
@@ -309,7 +309,7 @@ export function ActivityLog({
 
 // Individual activity item
 interface ActivityItemProps {
-  log: ActivityLog;
+  log: ActivityLogEntry;
 }
 
 function ActivityItem({ log }: ActivityItemProps) {
@@ -406,7 +406,7 @@ function ActivityItem({ log }: ActivityItemProps) {
 }
 
 // Helper function to group logs by date
-function groupLogsByDate(logs: ActivityLog[]): Record<string, ActivityLog[]> {
+function groupLogsByDate(logs: ActivityLogEntry[]): Record<string, ActivityLog[]> {
   const grouped: Record<string, ActivityLog[]> = {};
 
   logs.forEach((log) => {
@@ -464,5 +464,5 @@ export const activityService = {
     }),
 };
 
-export type { ActivityLog, ActivityType, ActivityFilters };
+export type { ActivityLogEntry as ActivityLog, ActivityType, ActivityFilters };
 export default ActivityLog;
