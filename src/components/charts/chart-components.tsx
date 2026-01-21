@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { formatCurrency, formatPercent } from '@/lib/formatters';
+import { formatCurrency, formatPercentage } from '@/lib/formatters';
 
 // Types
 export interface ChartDataPoint {
@@ -45,7 +45,7 @@ function formatChartValue(value: number, format?: string): string {
     case 'currency':
       return formatCurrency(value);
     case 'percent':
-      return formatPercent(value);
+      return formatPercentage(value);
     default:
       return new Intl.NumberFormat('pt-BR').format(value);
   }
