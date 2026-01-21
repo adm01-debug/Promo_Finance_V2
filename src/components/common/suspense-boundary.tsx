@@ -297,7 +297,7 @@ export function lazyWithSuspense<T extends React.ComponentType<unknown>>(
   return function LazyWithSuspense(props: React.ComponentProps<T>) {
     return (
       <Suspense fallback={fallback || <DefaultSpinner />}>
-        <LazyComponent {...props} />
+        <LazyComponent {...(props as any)} />
       </Suspense>
     );
   };
