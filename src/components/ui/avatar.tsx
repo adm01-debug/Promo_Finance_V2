@@ -1,38 +1,236 @@
-import * as React from "react";
-import * as AvatarPrimitive from "@radix-ui/react-avatar";
+import { useState } from 'react';
+import { User } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-import { cn } from "@/lib/utils";
+interface AvatarProps {
+  src?: string | null;
+  alt?: string;
+  name?: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  shape?: 'circle' | 'square';
+  status?: 'online' | 'offline' | 'busy' | 'away';
+  className?: string;
+}
 
-const Avatar = React.forwardRef<
-  React.ElementRef<typeof AvatarPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Root
-    ref={ref}
-    className={cn("relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full", className)}
-    {...props}
-  />
-));
-Avatar.displayName = AvatarPrimitive.Root.displayName;
+const sizeClasses = {
+  xs: 'h-6 w-6 text-xs',
+  sm: 'h-8 w-8 text-sm',
+  md: 'h-10 w-10 text-base',
+  lg: 'h-12 w-12 text-lg',
+  xl: 'h-16 w-16 text-xl',
+  '2xl': 'h-20 w-20 text-2xl',
+};
 
-const AvatarImage = React.forwardRef<
-  React.ElementRef<typeof AvatarPrimitive.Image>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
->(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Image ref={ref} className={cn("aspect-square h-full w-full", className)} {...props} />
-));
-AvatarImage.displayName = AvatarPrimitive.Image.displayName;
+const statusClasses = {
+  online: 'bg-green-500',
+  offline: 'bg-gray-400',
+  busy: 'bg-red-500',
+  away: 'bg-yellow-500',
+};
 
-const AvatarFallback = React.forwardRef<
-  React.ElementRef<typeof AvatarPrimitive.Fallback>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>
->(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Fallback
-    ref={ref}
-    className={cn("flex h-full w-full items-center justify-center rounded-full bg-muted", className)}
-    {...props}
-  />
-));
-AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName;
+const statusSizeClasses = {
+  xs: 'h-1.5 w-1.5 -right-0 -bottom-0',
+  sm: 'h-2 w-2 -right-0 -bottom-0',
+  md: 'h-2.5 w-2.5 -right-0.5 -bottom-0.5',
+  lg: 'h-3 w-3 -right-0.5 -bottom-0.5',
+  xl: 'h-3.5 w-3.5 -right-0.5 -bottom-0.5',
+  '2xl': 'h-4 w-4 -right-1 -bottom-1',
+};
 
-export { Avatar, AvatarImage, AvatarFallback };
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .map((part) => part[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+}
+
+function getColorFromName(name: string): string {
+  const colors = [
+    'bg-red-500',
+    'bg-orange-500',
+    'bg-amber-500',
+    'bg-yellow-500',
+    'bg-lime-500',
+    'bg-green-500',
+    'bg-emerald-500',
+    'bg-teal-500',
+    'bg-cyan-500',
+    'bg-sky-500',
+    'bg-blue-500',
+    'bg-indigo-500',
+    'bg-violet-500',
+    'bg-purple-500',
+    'bg-fuchsia-500',
+    'bg-pink-500',
+    'bg-rose-500',
+  ];
+
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  return colors[Math.abs(hash) % colors.length];
+}
+
+export function Avatar({
+  src,
+  alt,
+  name,
+  size = 'md',
+  shape = 'circle',
+  status,
+  className,
+}: AvatarProps) {
+  const [imageError, setImageError] = useState(false);
+  const showImage = src && !imageError;
+  const showInitials = !showImage && name;
+
+  return (
+    <div className={cn('relative inline-flex', className)}>
+      <div
+        className={cn(
+          'flex items-center justify-center overflow-hidden',
+          'bg-gray-200 dark:bg-gray-700',
+          shape === 'circle' ? 'rounded-full' : 'rounded-lg',
+          sizeClasses[size],
+          showInitials && getColorFromName(name)
+        )}
+      >
+        {showImage ? (
+          <img
+            src={src}
+            alt={alt || name || 'Avatar'}
+            onError={() => setImageError(true)}
+            className="h-full w-full object-cover"
+          />
+        ) : showInitials ? (
+          <span className="font-medium text-white">{getInitials(name)}</span>
+        ) : (
+          <User className="h-1/2 w-1/2 text-gray-400 dark:text-gray-500" />
+        )}
+      </div>
+
+      {status && (
+        <span
+          className={cn(
+            'absolute rounded-full ring-2 ring-white dark:ring-gray-900',
+            statusClasses[status],
+            statusSizeClasses[size]
+          )}
+        />
+      )}
+    </div>
+  );
+}
+
+// Avatar Group
+interface AvatarGroupProps {
+  avatars: Array<{
+    src?: string;
+    name?: string;
+    alt?: string;
+  }>;
+  max?: number;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  className?: string;
+}
+
+export function AvatarGroup({
+  avatars,
+  max = 5,
+  size = 'md',
+  className,
+}: AvatarGroupProps) {
+  const visibleAvatars = avatars.slice(0, max);
+  const remainingCount = avatars.length - max;
+
+  const overlapClasses = {
+    xs: '-ml-1.5',
+    sm: '-ml-2',
+    md: '-ml-2.5',
+    lg: '-ml-3',
+    xl: '-ml-4',
+  };
+
+  return (
+    <div className={cn('flex items-center', className)}>
+      {visibleAvatars.map((avatar, index) => (
+        <div
+          key={index}
+          className={cn(
+            'ring-2 ring-white dark:ring-gray-900 rounded-full',
+            index > 0 && overlapClasses[size]
+          )}
+        >
+          <Avatar
+            src={avatar.src}
+            name={avatar.name}
+            alt={avatar.alt}
+            size={size}
+          />
+        </div>
+      ))}
+
+      {remainingCount > 0 && (
+        <div
+          className={cn(
+            'flex items-center justify-center',
+            'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300',
+            'font-medium rounded-full ring-2 ring-white dark:ring-gray-900',
+            sizeClasses[size],
+            overlapClasses[size]
+          )}
+        >
+          +{remainingCount}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Avatar with Name
+interface AvatarWithNameProps extends Omit<AvatarProps, 'size'> {
+  name: string;
+  subtitle?: string;
+  size?: 'sm' | 'md' | 'lg';
+  reverse?: boolean;
+}
+
+export function AvatarWithName({
+  name,
+  subtitle,
+  size = 'md',
+  reverse = false,
+  ...avatarProps
+}: AvatarWithNameProps) {
+  const textSizes = {
+    sm: { name: 'text-sm', subtitle: 'text-xs' },
+    md: { name: 'text-base', subtitle: 'text-sm' },
+    lg: { name: 'text-lg', subtitle: 'text-base' },
+  };
+
+  return (
+    <div
+      className={cn(
+        'flex items-center gap-3',
+        reverse && 'flex-row-reverse'
+      )}
+    >
+      <Avatar name={name} size={size} {...avatarProps} />
+      <div className={reverse ? 'text-right' : ''}>
+        <p className={cn('font-medium text-gray-900 dark:text-white', textSizes[size].name)}>
+          {name}
+        </p>
+        {subtitle && (
+          <p className={cn('text-gray-500 dark:text-gray-400', textSizes[size].subtitle)}>
+            {subtitle}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
