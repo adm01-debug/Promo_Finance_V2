@@ -63,10 +63,10 @@ function DefaultFallback({ error, errorId, onReset, onGoHome, showDetails }: Def
         )}
         
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Button onClick={onReset} icon={<RefreshCw className="h-4 w-4" />}>
+          <Button onClick={onReset}><RefreshCw className="h-4 w-4 mr-2" />
             Tentar novamente
           </Button>
-          <Button variant="outline" onClick={onGoHome} icon={<Home className="h-4 w-4" />}>
+          <Button variant="outline" onClick={onGoHome}><Home className="h-4 w-4 mr-2" />
             Voltar ao início
           </Button>
         </div>
