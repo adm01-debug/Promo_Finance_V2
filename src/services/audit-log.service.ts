@@ -237,13 +237,13 @@ class AuditLogService {
       query = query.eq('user_id', filter.user_id);
     }
     if (filter.action) {
-      query = query.eq('action', filter.action);
+      query = query.eq('action', filter.action as string);
     }
     if (filter.resource) {
-      query = query.eq('resource', filter.resource);
+      query = query.eq('table_name', filter.resource);
     }
     if (filter.resource_id) {
-      query = query.eq('resource_id', filter.resource_id);
+      query = query.eq('record_id', filter.resource_id);
     }
     if (filter.startDate) {
       query = query.gte('created_at', filter.startDate.toISOString());
@@ -265,7 +265,7 @@ class AuditLogService {
       return [];
     }
 
-    return data || [];
+    return (data as unknown as AuditLogEntry[]) || [];
   }
 
   /**

@@ -247,7 +247,8 @@ export function createLazyComponent<T extends ComponentType<Record<string, unkno
 
     return (
       <Suspense fallback={fallback || <DefaultFallback />}>
-        <LazyComponent {...(props as Record<string, unknown>)} />
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        <LazyComponent {...(props as any)} />
       </Suspense>
     );
   }
