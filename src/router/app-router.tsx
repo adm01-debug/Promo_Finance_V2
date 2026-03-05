@@ -6,12 +6,12 @@ import { MainLayout } from '@/components/layout/main-layout';
 
 // Lazy load pages for code splitting
 const Dashboard = lazy(() => import('@/pages/dashboard'));
-const ContasPagar = lazy(() => import('@/pages/contas-pagar'));
-const ContasReceber = lazy(() => import('@/pages/contas-receber'));
-const Clientes = lazy(() => import('@/pages/clientes'));
-const Fornecedores = lazy(() => import('@/pages/fornecedores'));
-const Relatorios = lazy(() => import('@/pages/relatorios'));
-const Configuracoes = lazy(() => import('@/pages/configuracoes'));
+const ContasPagar = lazy(() => import('@/pages/ContasPagar'));
+const ContasReceber = lazy(() => import('@/pages/ContasReceber'));
+const Clientes = lazy(() => import('@/pages/Clientes'));
+const Fornecedores = lazy(() => import('@/pages/Fornecedores'));
+const Relatorios = lazy(() => import('@/pages/Relatorios'));
+const Configuracoes = lazy(() => import('@/pages/Configuracoes'));
 
 // Auth pages
 const Login = lazy(() => import('@/pages/auth/login'));

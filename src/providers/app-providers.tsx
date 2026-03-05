@@ -7,7 +7,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { NotificationProvider } from '@/contexts/notification-context';
 import { SidebarProvider } from '@/contexts/sidebar-context';
 import { LoadingProvider } from '@/contexts/loading-context';
-import { ErrorBoundary, PageErrorBoundary } from '@/components/common/error-boundary';
+import { ErrorBoundary } from '@/components/common/error-boundary';
 
 interface AppProvidersProps {
   children: ReactNode;
