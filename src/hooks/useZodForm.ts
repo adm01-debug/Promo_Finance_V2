@@ -236,7 +236,7 @@ export function useZodForm<T extends z.ZodRawShape>(
     setFieldValue,
     setFieldTouched,
     setFieldError,
-    setValues,
+    setValues: ((v: unknown) => setValues(v as z.infer<T>)) as (values: Partial<z.infer<T>>) => void,
     setErrors,
     resetForm,
     handleChange,

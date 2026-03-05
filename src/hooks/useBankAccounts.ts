@@ -3,7 +3,7 @@
  * CRUD operations for bank accounts
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -11,205 +11,40 @@ import { toast } from 'sonner';
 // Types
 export interface BankAccount {
   id: string;
-  nome: string;
   banco: string;
   agencia: string;
   conta: string;
-  tipo: 'corrente' | 'poupanca' | 'investimento' | 'caixa';
-  saldoInicial: number;
-  saldoAtual: number;
+  tipo_conta: string;
+  saldo_atual: number;
+  saldo_disponivel: number;
   cor?: string;
-  icone?: string;
   ativo: boolean;
-  principal: boolean;
-  createdAt: string;
-  updatedAt: string;
+  codigo_banco: string;
+  empresa_id: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface BankAccountInput {
-  nome: string;
   banco: string;
   agencia: string;
   conta: string;
-  tipo: BankAccount['tipo'];
-  saldoInicial?: number;
+  tipo_conta?: string;
+  codigo_banco: string;
+  empresa_id: string;
+  saldo_atual?: number;
+  saldo_disponivel?: number;
   cor?: string;
-  icone?: string;
-  principal?: boolean;
 }
 
 export interface BankTransaction {
   id: string;
-  contaBancariaId: string;
-  tipo: 'entrada' | 'saida' | 'transferencia';
+  conta_bancaria_id: string;
+  tipo: string;
   valor: number;
-  saldoAnterior: number;
-  saldoPosterior: number;
   descricao: string;
   data: string;
-  contaDestinoId?: string;
-  contaPagarId?: string;
-  contaReceberId?: string;
-  createdAt: string;
-}
-
-// API functions
-const bankAccountApi = {
-  async getAll(): Promise<BankAccount[]> {
-    const { data, error } = await supabase
-      .from('contas_bancarias')
-      .select('*')
-      .order('principal', { ascending: false })
-      .order('nome');
-
-    if (error) throw error;
-    return (data || []).map(mapToAccount);
-  },
-
-  async getById(id: string): Promise<BankAccount> {
-    const { data, error } = await supabase
-      .from('contas_bancarias')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (error) throw error;
-    return mapToAccount(data);
-  },
-
-  async create(input: BankAccountInput): Promise<BankAccount> {
-    const { data, error } = await supabase
-      .from('contas_bancarias')
-      .insert({
-        nome: input.nome,
-        banco: input.banco,
-        agencia: input.agencia,
-        conta: input.conta,
-        tipo: input.tipo,
-        saldo_inicial: input.saldoInicial || 0,
-        saldo_atual: input.saldoInicial || 0,
-        cor: input.cor,
-        icone: input.icone,
-        principal: input.principal || false,
-        ativo: true,
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return mapToAccount(data);
-  },
-
-  async update(id: string, input: Partial<BankAccountInput>): Promise<BankAccount> {
-    const { data, error } = await supabase
-      .from('contas_bancarias')
-      .update({
-        nome: input.nome,
-        banco: input.banco,
-        agencia: input.agencia,
-        conta: input.conta,
-        tipo: input.tipo,
-        cor: input.cor,
-        icone: input.icone,
-        principal: input.principal,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return mapToAccount(data);
-  },
-
-  async delete(id: string): Promise<void> {
-    const { error } = await supabase
-      .from('contas_bancarias')
-      .update({ ativo: false })
-      .eq('id', id);
-
-    if (error) throw error;
-  },
-
-  async getTransactions(accountId: string, limit = 50): Promise<BankTransaction[]> {
-    const { data, error } = await supabase
-      .from('movimentacoes_bancarias')
-      .select('*')
-      .eq('conta_bancaria_id', accountId)
-      .order('data', { ascending: false })
-      .limit(limit);
-
-    if (error) throw error;
-    return (data || []).map(mapToTransaction);
-  },
-
-  async transfer(
-    fromAccountId: string,
-    toAccountId: string,
-    valor: number,
-    descricao: string
-  ): Promise<void> {
-    // Use a transaction for consistency
-    const { error } = await supabase.rpc('transferir_entre_contas', {
-      p_conta_origem_id: fromAccountId,
-      p_conta_destino_id: toAccountId,
-      p_valor: valor,
-      p_descricao: descricao,
-    });
-
-    if (error) throw error;
-  },
-
-  async adjustBalance(
-    accountId: string,
-    novoSaldo: number,
-    motivo: string
-  ): Promise<void> {
-    const { error } = await supabase.rpc('ajustar_saldo_conta', {
-      p_conta_id: accountId,
-      p_novo_saldo: novoSaldo,
-      p_motivo: motivo,
-    });
-
-    if (error) throw error;
-  },
-};
-
-// Mappers
-function mapToAccount(data: Record<string, unknown>): BankAccount {
-  return {
-    id: data.id as string,
-    nome: data.nome as string,
-    banco: data.banco as string,
-    agencia: data.agencia as string,
-    conta: data.conta as string,
-    tipo: data.tipo as BankAccount['tipo'],
-    saldoInicial: data.saldo_inicial as number,
-    saldoAtual: data.saldo_atual as number,
-    cor: data.cor as string | undefined,
-    icone: data.icone as string | undefined,
-    ativo: data.ativo as boolean,
-    principal: data.principal as boolean,
-    createdAt: data.created_at as string,
-    updatedAt: data.updated_at as string,
-  };
-}
-
-function mapToTransaction(data: Record<string, unknown>): BankTransaction {
-  return {
-    id: data.id as string,
-    contaBancariaId: data.conta_bancaria_id as string,
-    tipo: data.tipo as BankTransaction['tipo'],
-    valor: data.valor as number,
-    saldoAnterior: data.saldo_anterior as number,
-    saldoPosterior: data.saldo_posterior as number,
-    descricao: data.descricao as string,
-    data: data.data as string,
-    contaDestinoId: data.conta_destino_id as string | undefined,
-    contaPagarId: data.conta_pagar_id as string | undefined,
-    contaReceberId: data.conta_receber_id as string | undefined,
-    createdAt: data.created_at as string,
-  };
+  created_at: string;
 }
 
 // Query keys
@@ -225,7 +60,15 @@ const QUERY_KEYS = {
 export function useBankAccounts() {
   return useQuery({
     queryKey: QUERY_KEYS.all,
-    queryFn: bankAccountApi.getAll,
+    queryFn: async (): Promise<BankAccount[]> => {
+      const { data, error } = await supabase
+        .from('contas_bancarias')
+        .select('*')
+        .order('banco');
+
+      if (error) throw error;
+      return (data || []) as BankAccount[];
+    },
   });
 }
 
@@ -235,19 +78,17 @@ export function useBankAccounts() {
 export function useBankAccount(id: string) {
   return useQuery({
     queryKey: QUERY_KEYS.detail(id),
-    queryFn: () => bankAccountApi.getById(id),
-    enabled: !!id,
-  });
-}
+    queryFn: async (): Promise<BankAccount> => {
+      const { data, error } = await supabase
+        .from('contas_bancarias')
+        .select('*')
+        .eq('id', id)
+        .single();
 
-/**
- * Hook to fetch bank account transactions
- */
-export function useBankTransactions(accountId: string, limit = 50) {
-  return useQuery({
-    queryKey: QUERY_KEYS.transactions(accountId),
-    queryFn: () => bankAccountApi.getTransactions(accountId, limit),
-    enabled: !!accountId,
+      if (error) throw error;
+      return data as BankAccount;
+    },
+    enabled: !!id,
   });
 }
 
@@ -258,82 +99,62 @@ export function useBankAccountMutations() {
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
-    mutationFn: bankAccountApi.create,
+    mutationFn: async (input: BankAccountInput): Promise<BankAccount> => {
+      const { data, error } = await supabase
+        .from('contas_bancarias')
+        .insert(input)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as BankAccount;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.all });
       toast.success('Conta bancária criada com sucesso!');
     },
-    onError: (error) => {
+    onError: () => {
       toast.error('Erro ao criar conta bancária');
-      console.error(error);
     },
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<BankAccountInput> }) =>
-      bankAccountApi.update(id, data),
+    mutationFn: async ({ id, data: input }: { id: string; data: Partial<BankAccountInput> }): Promise<BankAccount> => {
+      const { data, error } = await supabase
+        .from('contas_bancarias')
+        .update({ ...input, updated_at: new Date().toISOString() })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as BankAccount;
+    },
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.all });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.detail(id) });
       toast.success('Conta bancária atualizada!');
     },
-    onError: (error) => {
+    onError: () => {
       toast.error('Erro ao atualizar conta bancária');
-      console.error(error);
     },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: bankAccountApi.delete,
+    mutationFn: async (id: string): Promise<void> => {
+      const { error } = await supabase
+        .from('contas_bancarias')
+        .update({ ativo: false })
+        .eq('id', id);
+
+      if (error) throw error;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.all });
       toast.success('Conta bancária desativada!');
     },
-    onError: (error) => {
+    onError: () => {
       toast.error('Erro ao desativar conta bancária');
-      console.error(error);
-    },
-  });
-
-  const transferMutation = useMutation({
-    mutationFn: ({
-      fromAccountId,
-      toAccountId,
-      valor,
-      descricao,
-    }: {
-      fromAccountId: string;
-      toAccountId: string;
-      valor: number;
-      descricao: string;
-    }) => bankAccountApi.transfer(fromAccountId, toAccountId, valor, descricao),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.all });
-      toast.success('Transferência realizada com sucesso!');
-    },
-    onError: (error) => {
-      toast.error('Erro ao realizar transferência');
-      console.error(error);
-    },
-  });
-
-  const adjustBalanceMutation = useMutation({
-    mutationFn: ({
-      accountId,
-      novoSaldo,
-      motivo,
-    }: {
-      accountId: string;
-      novoSaldo: number;
-      motivo: string;
-    }) => bankAccountApi.adjustBalance(accountId, novoSaldo, motivo),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.all });
-      toast.success('Saldo ajustado com sucesso!');
-    },
-    onError: (error) => {
-      toast.error('Erro ao ajustar saldo');
-      console.error(error);
     },
   });
 
@@ -341,14 +162,10 @@ export function useBankAccountMutations() {
     create: createMutation.mutateAsync,
     update: updateMutation.mutateAsync,
     delete: deleteMutation.mutateAsync,
-    transfer: transferMutation.mutateAsync,
-    adjustBalance: adjustBalanceMutation.mutateAsync,
     isLoading:
       createMutation.isPending ||
       updateMutation.isPending ||
-      deleteMutation.isPending ||
-      transferMutation.isPending ||
-      adjustBalanceMutation.isPending,
+      deleteMutation.isPending,
   };
 }
 
@@ -361,28 +178,11 @@ export function useBankAccountTotals() {
   const totals = accounts?.reduce(
     (acc, account) => {
       if (!account.ativo) return acc;
-
-      acc.total += account.saldoAtual;
-
-      switch (account.tipo) {
-        case 'corrente':
-          acc.corrente += account.saldoAtual;
-          break;
-        case 'poupanca':
-          acc.poupanca += account.saldoAtual;
-          break;
-        case 'investimento':
-          acc.investimento += account.saldoAtual;
-          break;
-        case 'caixa':
-          acc.caixa += account.saldoAtual;
-          break;
-      }
-
+      acc.total += account.saldo_atual;
       return acc;
     },
-    { total: 0, corrente: 0, poupanca: 0, investimento: 0, caixa: 0 }
-  ) || { total: 0, corrente: 0, poupanca: 0, investimento: 0, caixa: 0 };
+    { total: 0 }
+  ) || { total: 0 };
 
   return { totals, isLoading };
 }

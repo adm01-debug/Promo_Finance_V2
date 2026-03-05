@@ -1,13 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fornecedoresService, FornecedorFilters, FornecedorInsert, FornecedorUpdate } from '@/services/fornecedores.service';
+import { fornecedoresService, FornecedorFilters, FornecedorInput } from '@/services/fornecedores.service';
 import { queryKeys } from '@/lib/query-client';
 import { toast } from 'sonner';
 
 // List fornecedores
 export function useFornecedores(filters?: FornecedorFilters) {
   return useQuery({
-    queryKey: queryKeys.fornecedores.list(filters),
-    queryFn: () => fornecedoresService.list(filters),
+    queryKey: queryKeys.fornecedores.list(filters as Record<string, unknown>),
+    queryFn: () => fornecedoresService.getAll(filters),
   });
 }
 
@@ -21,10 +21,11 @@ export function useFornecedor(id: string) {
 }
 
 // Get stats
-export function useFornecedoresStats() {
+export function useFornecedoresStats(fornecedorId: string) {
   return useQuery({
     queryKey: queryKeys.fornecedores.stats(),
-    queryFn: () => fornecedoresService.getStats(),
+    queryFn: () => fornecedoresService.getStats(fornecedorId),
+    enabled: !!fornecedorId,
   });
 }
 
@@ -32,7 +33,7 @@ export function useFornecedoresStats() {
 export function useSearchFornecedores(query: string) {
   return useQuery({
     queryKey: queryKeys.fornecedores.search(query),
-    queryFn: () => fornecedoresService.searchByName(query),
+    queryFn: () => fornecedoresService.search(query),
     enabled: query.length >= 2,
   });
 }
@@ -41,7 +42,7 @@ export function useSearchFornecedores(query: string) {
 export function useFornecedoresAtivos() {
   return useQuery({
     queryKey: queryKeys.fornecedores.list({ ativo: true }),
-    queryFn: () => fornecedoresService.getActive(),
+    queryFn: () => fornecedoresService.getAll({ ativo: true }),
   });
 }
 
@@ -50,7 +51,7 @@ export function useCreateFornecedor() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (fornecedor: FornecedorInsert) => fornecedoresService.create(fornecedor),
+    mutationFn: (fornecedor: FornecedorInput) => fornecedoresService.create(fornecedor),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.fornecedores.all() });
       toast.success('Fornecedor criado com sucesso!');
@@ -66,7 +67,7 @@ export function useUpdateFornecedor() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: FornecedorUpdate }) =>
+    mutationFn: ({ id, data }: { id: string; data: Partial<FornecedorInput> }) =>
       fornecedoresService.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.fornecedores.all() });
@@ -101,7 +102,7 @@ export function useToggleFornecedorActive() {
 
   return useMutation({
     mutationFn: ({ id, ativo }: { id: string; ativo: boolean }) =>
-      fornecedoresService.toggleActive(id, ativo),
+      ativo ? fornecedoresService.activate(id) : fornecedoresService.deactivate(id),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.fornecedores.all() });
       toast.success(variables.ativo ? 'Fornecedor ativado!' : 'Fornecedor desativado!');
@@ -117,7 +118,7 @@ export function useCheckCnpjExists(cnpj: string) {
   return useQuery({
     queryKey: ['fornecedor-cnpj', cnpj],
     queryFn: () => fornecedoresService.getByCnpj(cnpj),
-    enabled: cnpj.length === 14 || cnpj.length === 18, // CNPJ com ou sem formatação
+    enabled: cnpj.length === 14 || cnpj.length === 18,
     staleTime: 0,
   });
 }

@@ -131,7 +131,7 @@ export function useDashboard(options: UseDashboardOptions = {}) {
           type: 'entrada' as const,
           description: c.descricao,
           value: c.valor,
-          date: c.data_recebimento || c.data_vencimento,
+          date: c.data_recebimento || c.vencimento,
           status: c.status,
         })),
         ...(pagar || []).map(c => ({
@@ -139,7 +139,7 @@ export function useDashboard(options: UseDashboardOptions = {}) {
           type: 'saida' as const,
           description: c.descricao,
           value: c.valor,
-          date: c.data_pagamento || c.data_vencimento,
+          date: c.data_pagamento || c.vencimento,
           status: c.status,
         })),
       ];
@@ -170,9 +170,9 @@ export function useDashboard(options: UseDashboardOptions = {}) {
         id: conta.id,
         description: conta.descricao,
         value: conta.valor,
-        dueDate: conta.data_vencimento,
+        dueDate: conta.vencimento,
         daysUntilDue: Math.ceil(
-          (new Date(conta.data_vencimento).getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+          (new Date(conta.vencimento).getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
         ),
       })).sort((a, b) => a.daysUntilDue - b.daysUntilDue);
     },
@@ -191,9 +191,9 @@ export function useDashboard(options: UseDashboardOptions = {}) {
         id: conta.id,
         description: conta.descricao,
         value: conta.valor,
-        dueDate: conta.data_vencimento,
+        dueDate: conta.vencimento,
         daysOverdue: Math.ceil(
-          (today.getTime() - new Date(conta.data_vencimento).getTime()) / (1000 * 60 * 60 * 24)
+          (today.getTime() - new Date(conta.vencimento).getTime()) / (1000 * 60 * 60 * 24)
         ),
       })).sort((a, b) => b.daysOverdue - a.daysOverdue);
     },

@@ -16,6 +16,8 @@ import { Button } from './button';
 
 type ConfirmationType = 'danger' | 'warning' | 'success' | 'info' | 'question';
 
+type ButtonVariant = 'default' | 'destructive' | 'ghost' | 'link' | 'outline' | 'premium' | 'secondary' | 'success' | 'warning';
+
 interface ConfirmationDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -50,38 +52,38 @@ const typeConfig: Record<
     icon: typeof AlertTriangle;
     iconBg: string;
     iconColor: string;
-    confirmVariant: 'danger' | 'primary' | 'secondary';
+    confirmVariant: ButtonVariant;
   }
 > = {
   danger: {
     icon: Trash2,
     iconBg: 'bg-red-100 dark:bg-red-900/30',
     iconColor: 'text-red-600 dark:text-red-400',
-    confirmVariant: 'destructive' as const,
+    confirmVariant: 'destructive',
   },
   warning: {
     icon: AlertTriangle,
     iconBg: 'bg-yellow-100 dark:bg-yellow-900/30',
     iconColor: 'text-yellow-600 dark:text-yellow-400',
-    confirmVariant: 'warning' as const,
+    confirmVariant: 'warning',
   },
   success: {
     icon: CheckCircle,
     iconBg: 'bg-green-100 dark:bg-green-900/30',
     iconColor: 'text-green-600 dark:text-green-400',
-    confirmVariant: 'default' as const,
+    confirmVariant: 'success',
   },
   info: {
     icon: Info,
     iconBg: 'bg-blue-100 dark:bg-blue-900/30',
     iconColor: 'text-blue-600 dark:text-blue-400',
-    confirmVariant: 'default' as const,
+    confirmVariant: 'default',
   },
   question: {
     icon: HelpCircle,
     iconBg: 'bg-purple-100 dark:bg-purple-900/30',
     iconColor: 'text-purple-600 dark:text-purple-400',
-    confirmVariant: 'default' as const,
+    confirmVariant: 'default',
   },
 };
 

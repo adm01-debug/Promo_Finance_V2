@@ -32,9 +32,9 @@ const routeModules: Record<string, () => Promise<LazyModule>> = {
 const relatedRoutes: Record<string, string[]> = {
   '/': ['/contas-pagar', '/contas-receber', '/fluxo-caixa', '/expert'],
   '/contas-pagar': ['/', '/fornecedores', '/conciliacao', '/aprovacoes'],
-  '/contas-receber': ['/', '/clientes', '/conciliacao', '/cobrancas'],
+  '/contas-receber': ['/', '/clientes', '/conciliacao'],
   '/fluxo-caixa': ['/', '/relatorios', '/bi'],
-  '/clientes': ['/contas-receber', '/cobrancas'],
+  '/clientes': ['/contas-receber'],
   '/fornecedores': ['/contas-pagar'],
   '/conciliacao': ['/contas-pagar', '/contas-receber'],
   '/relatorios': ['/', '/fluxo-caixa', '/bi'],
@@ -68,17 +68,13 @@ export function usePrefetchRoutes() {
     
     const moduleLoader = routeModules[route];
     if (moduleLoader) {
-      // Use requestIdleCallback for non-blocking prefetch
       if ('requestIdleCallback' in window) {
         window.requestIdleCallback(() => {
           moduleLoader().then(() => {
             prefetchedRoutes.add(route);
-          }).catch(() => {
-            // Silently fail - prefetch is optional
-          });
+          }).catch(() => {});
         }, { timeout: 2000 });
       } else {
-        // Fallback for browsers without requestIdleCallback
         setTimeout(() => {
           moduleLoader().then(() => {
             prefetchedRoutes.add(route);
@@ -88,7 +84,6 @@ export function usePrefetchRoutes() {
     }
   }, []);
 
-  // Prefetch data for a route
   const prefetchData = useCallback(async (route: string) => {
     const queryKeys = routeQueryKeys[route];
     if (!queryKeys) return;
@@ -98,20 +93,17 @@ export function usePrefetchRoutes() {
       if (prefetchedQueries.has(keyString)) continue;
 
       try {
-        // Check if data is already in cache and fresh
         const existingData = queryClient.getQueryData(queryKey);
         const queryState = queryClient.getQueryState(queryKey);
         
         if (existingData && queryState?.dataUpdatedAt) {
           const age = Date.now() - queryState.dataUpdatedAt;
-          // Skip if data is less than 2 minutes old
           if (age < 2 * 60 * 1000) {
             prefetchedQueries.add(keyString);
             continue;
           }
         }
 
-        // Prefetch in background
         if ('requestIdleCallback' in window) {
           window.requestIdleCallback(() => {
             queryClient.prefetchQuery({
@@ -139,12 +131,10 @@ export function usePrefetchRoutes() {
   }, [location.pathname, prefetchRoute, prefetchData]);
 
   useEffect(() => {
-    // Wait a bit before prefetching to not interfere with current page load
     const timer = setTimeout(prefetchRelatedRoutes, 1500);
     return () => clearTimeout(timer);
   }, [prefetchRelatedRoutes]);
 
-  // Clear prefetch cache on data invalidation
   useEffect(() => {
     const handleRefresh = () => {
       prefetchedQueries.clear();
@@ -154,7 +144,6 @@ export function usePrefetchRoutes() {
     return () => window.removeEventListener('refresh-data', handleRefresh);
   }, []);
 
-  // Expose manual prefetch function for hover events
   return { prefetchRoute, prefetchData };
 }
 

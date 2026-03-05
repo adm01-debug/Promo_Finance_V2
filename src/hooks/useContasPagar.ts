@@ -1,13 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { contasPagarService, ContaPagarFilters, ContaPagarInsert, ContaPagarUpdate } from '@/services/contas-pagar.service';
+import { contasPagarService, ContaPagarFilters, ContaPagarInput } from '@/services/contas-pagar.service';
 import { queryKeys } from '@/lib/query-client';
 import { toast } from 'sonner';
 
 // List contas a pagar
 export function useContasPagar(filters?: ContaPagarFilters) {
   return useQuery({
-    queryKey: queryKeys.contasPagar.list(filters),
-    queryFn: () => contasPagarService.list(filters),
+    queryKey: queryKeys.contasPagar.list(filters as Record<string, unknown>),
+    queryFn: () => contasPagarService.getAll(filters),
   });
 }
 
@@ -24,7 +24,7 @@ export function useContaPagar(id: string) {
 export function useContasPagarTotals() {
   return useQuery({
     queryKey: queryKeys.contasPagar.totals(),
-    queryFn: () => contasPagarService.getTotals(),
+    queryFn: () => contasPagarService.getTotalByStatus(),
   });
 }
 
@@ -40,7 +40,7 @@ export function useContasPagarOverdue() {
 export function useContasPagarUpcoming(days: number = 7) {
   return useQuery({
     queryKey: queryKeys.contasPagar.upcoming(days),
-    queryFn: () => contasPagarService.getUpcoming(days),
+    queryFn: () => contasPagarService.getDueThisWeek(),
   });
 }
 
@@ -49,7 +49,7 @@ export function useCreateContaPagar() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (conta: ContaPagarInsert) => contasPagarService.create(conta),
+    mutationFn: (conta: ContaPagarInput) => contasPagarService.create(conta),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contasPagar.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all() });
@@ -66,7 +66,7 @@ export function useUpdateContaPagar() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: ContaPagarUpdate }) =>
+    mutationFn: ({ id, data }: { id: string; data: Partial<ContaPagarInput> }) =>
       contasPagarService.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contasPagar.all() });
@@ -120,7 +120,7 @@ export function useMarkContaPagarAsCanceled() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => contasPagarService.markAsCanceled(id),
+    mutationFn: (id: string) => contasPagarService.cancel(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contasPagar.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all() });
