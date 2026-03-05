@@ -3,7 +3,7 @@
 // ============================================================================
 
 // Auth Context
-export { AuthProvider, useAuth } from './auth-context';
+export { AuthProvider, useAuth } from './AuthContext';
 
 // Theme Context
 export { ThemeProvider, useTheme } from './theme-context';
@@ -43,7 +43,7 @@ import { ReactNode } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/lib/query-client';
-import { AuthProvider } from './auth-context';
+import { AuthProvider } from './AuthContext';
 import { ThemeProvider } from './theme-context';
 import { NotificationProvider } from './notification-context';
 import { LoadingProvider } from './loading-context';
