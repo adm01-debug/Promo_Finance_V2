@@ -9,7 +9,7 @@ interface CurrencyInputProps extends Omit<React.InputHTMLAttributes<HTMLInputEle
   currency?: 'BRL' | 'USD' | 'EUR';
   showIcon?: boolean;
   allowNegative?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  inputSize?: 'sm' | 'md' | 'lg';
   error?: boolean;
 }
 

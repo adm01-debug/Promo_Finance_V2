@@ -169,7 +169,7 @@ export function ConfirmModal({
           <Button variant="outline" onClick={onClose} disabled={isLoading}>
             {cancelText}
           </Button>
-          <Button variant={confirmVariant} onClick={onConfirm} isLoading={isLoading}>
+          <Button variant={confirmVariant} onClick={onConfirm} disabled={isLoading}>{isLoading ? 'Processando...' : ''}
             {confirmText}
           </Button>
         </>

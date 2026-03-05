@@ -20,10 +20,9 @@ export function MainLayout() {
 
       {/* Sidebar */}
       <Sidebar
-        isOpen={sidebarOpen}
-        isCollapsed={sidebarCollapsed}
+        open={sidebarOpen}
+        collapsed={sidebarCollapsed}
         onClose={() => setSidebarOpen(false)}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
 
       {/* Main content area */}
