@@ -12,6 +12,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, nome?: string, empresa?: string) => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  updatePassword: (password: string) => Promise<{ error: Error | null }>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
@@ -123,6 +124,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const resetPassword = async (email: string) => {
     await authService.resetPassword(email);
+  };
+
+  const updatePassword = async (password: string): Promise<{ error: Error | null }> => {
+    try {
+      await authService.updatePassword(password);
+      return { error: null };
+    } catch (err: unknown) {
+      return { error: err instanceof Error ? err : new Error('Erro ao atualizar senha') };
+    }
   };
 
   const updateProfile = async (updates: Partial<UserProfile>) => {
