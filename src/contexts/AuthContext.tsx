@@ -158,6 +158,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     signUp,
     signOut,
     resetPassword,
+    updatePassword,
     updateProfile,
     refreshProfile,
   };
