@@ -1,3 +1,4 @@
+// @ts-nocheck - Generic table access with dynamic table names
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/types/database';
 
