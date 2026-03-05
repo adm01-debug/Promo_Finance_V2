@@ -134,7 +134,6 @@ export function RegisterPage() {
                   className="pl-10"
                   placeholder="Seu nome"
                 />
-                />
               </div>
             </div>
 
@@ -178,7 +177,6 @@ export function RegisterPage() {
                   className="pl-10"
                   placeholder="seu@email.com"
                 />
-                />
               </div>
             </div>
 
@@ -200,7 +198,6 @@ export function RegisterPage() {
                   onBlur={() => handleBlur('password' as keyof typeof values)}
                   className="pl-10 pr-10"
                   placeholder="••••••••"
-                />
                 />
                 <button
                   type="button"
@@ -251,7 +248,6 @@ export function RegisterPage() {
                   onBlur={() => handleBlur('confirmPassword' as keyof typeof values)}
                   className="pl-10"
                   placeholder="••••••••"
-                />
                 />
               </div>
             </div>

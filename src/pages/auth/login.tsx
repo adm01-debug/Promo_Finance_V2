@@ -122,7 +122,6 @@ export function LoginPage() {
                   className="pl-10 pr-10"
                   placeholder="••••••••"
                 />
-                />
                 <button
                   type="button"
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
