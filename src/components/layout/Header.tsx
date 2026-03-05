@@ -260,12 +260,11 @@ export const Header = ({ sidebarCollapsed }: HeaderProps) => {
                 variant="ghost"
                 className="h-10 gap-2 pl-2 pr-3 hover:bg-muted"
               >
-                <Avatar className="h-7 w-7">
-                  <AvatarImage src={profile?.avatar_url || undefined} />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">
-                    {getInitials()}
-                  </AvatarFallback>
-                </Avatar>
+                <Avatar
+                  src={profile?.avatar_url || undefined}
+                  name={profile?.full_name || user?.email?.split('@')[0] || 'U'}
+                  size="sm"
+                />
                 <div className="hidden sm:flex flex-col items-start">
                   <span className="text-sm font-medium leading-tight">
                     {profile?.full_name || user?.email?.split('@')[0] || 'Usuário'}

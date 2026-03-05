@@ -10,7 +10,7 @@ interface SearchInputProps extends Omit<React.InputHTMLAttributes<HTMLInputEleme
   debounceMs?: number;
   isLoading?: boolean;
   showClear?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  inputSize?: 'sm' | 'md' | 'lg';
 }
 
 const sizeClasses = {

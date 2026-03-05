@@ -57,31 +57,31 @@ const typeConfig: Record<
     icon: Trash2,
     iconBg: 'bg-red-100 dark:bg-red-900/30',
     iconColor: 'text-red-600 dark:text-red-400',
-    confirmVariant: 'danger',
+    confirmVariant: 'destructive' as const,
   },
   warning: {
     icon: AlertTriangle,
     iconBg: 'bg-yellow-100 dark:bg-yellow-900/30',
     iconColor: 'text-yellow-600 dark:text-yellow-400',
-    confirmVariant: 'primary',
+    confirmVariant: 'warning' as const,
   },
   success: {
     icon: CheckCircle,
     iconBg: 'bg-green-100 dark:bg-green-900/30',
     iconColor: 'text-green-600 dark:text-green-400',
-    confirmVariant: 'primary',
+    confirmVariant: 'default' as const,
   },
   info: {
     icon: Info,
     iconBg: 'bg-blue-100 dark:bg-blue-900/30',
     iconColor: 'text-blue-600 dark:text-blue-400',
-    confirmVariant: 'primary',
+    confirmVariant: 'default' as const,
   },
   question: {
     icon: HelpCircle,
     iconBg: 'bg-purple-100 dark:bg-purple-900/30',
     iconColor: 'text-purple-600 dark:text-purple-400',
-    confirmVariant: 'primary',
+    confirmVariant: 'default' as const,
   },
 };
 
@@ -199,10 +199,9 @@ export function ConfirmationDialog({
             variant={config.confirmVariant}
             onClick={handleConfirm}
             disabled={isProcessing}
-            isLoading={isProcessing}
             className="flex-1"
           >
-            {confirmText}
+            {isProcessing ? 'Processando...' : confirmText}
           </Button>
         </div>
       </div>

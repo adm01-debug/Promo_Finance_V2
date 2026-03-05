@@ -2,8 +2,11 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useZodForm } from '@/hooks/useZodForm';
 import { fornecedorSchema, FornecedorInput } from '@/lib/schemas';
-import { FormField, TextInput, TextArea, Select } from './form-field';
+import { FormField } from './form-field';
 import { MaskedInput } from './masked-input';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Building2, Mail, Phone, MapPin, User, Save, X, FileText } from 'lucide-react';
 
@@ -103,10 +106,9 @@ export function FornecedorForm({
           required
           error={form.getFieldState('razaoSocial').invalid ? form.errors.razaoSocial : undefined}
         >
-          <TextInput
+          <Input
             id="razaoSocial"
             placeholder="Razão social da empresa"
-            leftIcon={<Building2 className="h-4 w-4" />}
             error={form.getFieldState('razaoSocial').invalid}
             {...form.getFieldProps('razaoSocial')}
           />
@@ -115,12 +117,10 @@ export function FornecedorForm({
         <FormField
           label="Nome Fantasia"
           htmlFor="nomeFantasia"
-          optional
         >
-          <TextInput
+          <Input
             id="nomeFantasia"
             placeholder="Nome fantasia"
-            leftIcon={<FileText className="h-4 w-4" />}
             {...form.getFieldProps('nomeFantasia')}
           />
         </FormField>
@@ -131,27 +131,23 @@ export function FornecedorForm({
         <FormField
           label="CNPJ"
           htmlFor="cnpj"
-          optional
           error={form.getFieldState('cnpj').invalid ? form.errors.cnpj : undefined}
         >
           <MaskedInput
             id="cnpj"
-            mask="99.999.999/9999-99"
+            mask="cnpj"
             placeholder="00.000.000/0000-00"
-            leftIcon={<Building2 className="h-4 w-4" />}
             error={form.getFieldState('cnpj').invalid}
             value={form.values.cnpj || ''}
-            onChange={(e) => form.setFieldValue('cnpj', e.target.value)}
-            onBlur={form.handleBlur('cnpj')}
+            onChange={(value) => form.setFieldValue('cnpj', value)}
           />
         </FormField>
 
         <FormField
           label="Inscrição Estadual"
           htmlFor="inscricaoEstadual"
-          optional
         >
-          <TextInput
+          <Input
             id="inscricaoEstadual"
             placeholder="Inscrição estadual"
             {...form.getFieldProps('inscricaoEstadual')}
@@ -164,14 +160,12 @@ export function FornecedorForm({
         <FormField
           label="E-mail"
           htmlFor="email"
-          optional
           error={form.getFieldState('email').invalid ? form.errors.email : undefined}
         >
-          <TextInput
+          <Input
             id="email"
             type="email"
             placeholder="email@empresa.com"
-            leftIcon={<Mail className="h-4 w-4" />}
             error={form.getFieldState('email').invalid}
             {...form.getFieldProps('email')}
           />
@@ -180,18 +174,15 @@ export function FornecedorForm({
         <FormField
           label="Telefone"
           htmlFor="telefone"
-          optional
           error={form.getFieldState('telefone').invalid ? form.errors.telefone : undefined}
         >
           <MaskedInput
             id="telefone"
-            mask="(99) 99999-9999"
+            mask="phone"
             placeholder="(00) 00000-0000"
-            leftIcon={<Phone className="h-4 w-4" />}
             error={form.getFieldState('telefone').invalid}
             value={form.values.telefone || ''}
-            onChange={(e) => form.setFieldValue('telefone', e.target.value)}
-            onBlur={form.handleBlur('telefone')}
+            onChange={(value) => form.setFieldValue('telefone', value)}
           />
         </FormField>
       </div>
@@ -201,7 +192,7 @@ export function FornecedorForm({
         <button
           type="button"
           onClick={() => setShowAddress(!showAddress)}
-          className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium flex items-center gap-1"
+          className="text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1"
         >
           <MapPin className="h-4 w-4" />
           {showAddress ? 'Ocultar endereço' : 'Adicionar endereço'}
@@ -210,7 +201,7 @@ export function FornecedorForm({
         <button
           type="button"
           onClick={() => setShowContact(!showContact)}
-          className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium flex items-center gap-1"
+          className="text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1"
         >
           <User className="h-4 w-4" />
           {showContact ? 'Ocultar contato' : 'Adicionar contato'}
@@ -219,8 +210,8 @@ export function FornecedorForm({
 
       {/* Endereço */}
       {showAddress && (
-        <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg space-y-4">
-          <h3 className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
+        <div className="p-4 bg-muted/50 rounded-lg space-y-4">
+          <h3 className="font-medium text-foreground flex items-center gap-2">
             <MapPin className="h-4 w-4" />
             Endereço
           </h3>
@@ -229,13 +220,13 @@ export function FornecedorForm({
             <FormField label="CEP" htmlFor="fornecedor-cep" className="md:col-span-1">
               <MaskedInput
                 id="fornecedor-cep"
-                mask="99999-999"
+                mask="cep"
                 placeholder="00000-000"
                 value={form.values.endereco?.cep || ''}
-                onChange={(e) =>
+                onChange={(value) =>
                   form.setFieldValue('endereco', {
                     ...form.values.endereco,
-                    cep: e.target.value,
+                    cep: value,
                   })
                 }
               />
@@ -244,7 +235,7 @@ export function FornecedorForm({
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <FormField label="Logradouro" htmlFor="fornecedor-logradouro" className="md:col-span-3">
-              <TextInput
+              <Input
                 id="fornecedor-logradouro"
                 placeholder="Rua, Avenida, etc."
                 value={form.values.endereco?.logradouro || ''}
@@ -258,7 +249,7 @@ export function FornecedorForm({
             </FormField>
 
             <FormField label="Número" htmlFor="fornecedor-numero">
-              <TextInput
+              <Input
                 id="fornecedor-numero"
                 placeholder="Nº"
                 value={form.values.endereco?.numero || ''}
@@ -274,7 +265,7 @@ export function FornecedorForm({
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <FormField label="Complemento" htmlFor="fornecedor-complemento">
-              <TextInput
+              <Input
                 id="fornecedor-complemento"
                 placeholder="Sala, Andar, etc."
                 value={form.values.endereco?.complemento || ''}
@@ -288,7 +279,7 @@ export function FornecedorForm({
             </FormField>
 
             <FormField label="Bairro" htmlFor="fornecedor-bairro">
-              <TextInput
+              <Input
                 id="fornecedor-bairro"
                 placeholder="Bairro"
                 value={form.values.endereco?.bairro || ''}
@@ -302,7 +293,7 @@ export function FornecedorForm({
             </FormField>
 
             <FormField label="Cidade" htmlFor="fornecedor-cidade">
-              <TextInput
+              <Input
                 id="fornecedor-cidade"
                 placeholder="Cidade"
                 value={form.values.endereco?.cidade || ''}
@@ -319,17 +310,25 @@ export function FornecedorForm({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <FormField label="Estado" htmlFor="fornecedor-estado">
               <Select
-                id="fornecedor-estado"
-                placeholder="Selecione o estado"
-                options={ESTADOS_BR}
                 value={form.values.endereco?.estado || ''}
-                onChange={(e) =>
+                onValueChange={(value) =>
                   form.setFieldValue('endereco', {
                     ...form.values.endereco,
-                    estado: e.target.value,
+                    estado: value,
                   })
                 }
-              />
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ESTADOS_BR.map((estado) => (
+                    <SelectItem key={estado.value} value={estado.value}>
+                      {estado.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </FormField>
           </div>
         </div>
@@ -337,18 +336,17 @@ export function FornecedorForm({
 
       {/* Contato */}
       {showContact && (
-        <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg space-y-4">
-          <h3 className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
+        <div className="p-4 bg-muted/50 rounded-lg space-y-4">
+          <h3 className="font-medium text-foreground flex items-center gap-2">
             <User className="h-4 w-4" />
             Pessoa de Contato
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <FormField label="Nome do Contato" htmlFor="contato-nome">
-              <TextInput
+              <Input
                 id="contato-nome"
                 placeholder="Nome do responsável"
-                leftIcon={<User className="h-4 w-4" />}
                 value={form.values.contato?.nome || ''}
                 onChange={(e) =>
                   form.setFieldValue('contato', {
@@ -362,25 +360,23 @@ export function FornecedorForm({
             <FormField label="Telefone do Contato" htmlFor="contato-telefone">
               <MaskedInput
                 id="contato-telefone"
-                mask="(99) 99999-9999"
+                mask="phone"
                 placeholder="(00) 00000-0000"
-                leftIcon={<Phone className="h-4 w-4" />}
                 value={form.values.contato?.telefone || ''}
-                onChange={(e) =>
+                onChange={(value) =>
                   form.setFieldValue('contato', {
                     ...form.values.contato,
-                    telefone: e.target.value,
+                    telefone: value,
                   })
                 }
               />
             </FormField>
 
             <FormField label="E-mail do Contato" htmlFor="contato-email">
-              <TextInput
+              <Input
                 id="contato-email"
                 type="email"
                 placeholder="contato@empresa.com"
-                leftIcon={<Mail className="h-4 w-4" />}
                 value={form.values.contato?.email || ''}
                 onChange={(e) =>
                   form.setFieldValue('contato', {
@@ -395,8 +391,8 @@ export function FornecedorForm({
       )}
 
       {/* Observações */}
-      <FormField label="Observações" htmlFor="fornecedor-observacoes" optional>
-        <TextArea
+      <FormField label="Observações" htmlFor="fornecedor-observacoes">
+        <Textarea
           id="fornecedor-observacoes"
           placeholder="Observações adicionais sobre o fornecedor..."
           rows={3}
@@ -405,7 +401,7 @@ export function FornecedorForm({
       </FormField>
 
       {/* Ações */}
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
         {onCancel && (
           <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
             <X className="h-4 w-4 mr-2" />

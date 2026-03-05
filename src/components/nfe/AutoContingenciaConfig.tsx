@@ -579,7 +579,8 @@ export function AutoContingenciaConfig() {
                         <Checkbox
                           id={`day-${day.value}`}
                           checked={formData.config.scheduleDays?.includes(day.value)}
-                          onCheckedChange={(checked) => {
+                          onChange={(e) => {
+                            const checked = (e.target as HTMLInputElement).checked;
                             const days = formData.config.scheduleDays || [];
                             const newDays = checked
                               ? [...days, day.value]

@@ -430,7 +430,8 @@ export function RetencoesFonte() {
                         <TableCell>
                           <Checkbox
                             checked={selectedRetencoes.includes(retencao.id)}
-                            onCheckedChange={(checked) => {
+                            onChange={(e) => {
+                              const checked = (e.target as HTMLInputElement).checked;
                               if (checked) {
                                 setSelectedRetencoes(prev => [...prev, retencao.id]);
                               } else {

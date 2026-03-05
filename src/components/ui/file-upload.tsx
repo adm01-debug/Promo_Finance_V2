@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, DragEvent, ChangeEvent } from 'react';
 import { Upload, X, File, FileText, Image, Archive, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { formatFileSize } from '@/lib/formatters';
+import { formatFileSize } from '@/lib/file';
 import { Button } from '@/components/ui/button';
 
 interface FileUploadProps {

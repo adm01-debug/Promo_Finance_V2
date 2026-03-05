@@ -2,18 +2,18 @@ import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { CalendarIcon, DollarSign, Building2, FileText, Tag, X } from 'lucide-react';
+import { CalendarIcon, DollarSign, Building2, FileText, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Modal } from '@/components/ui/modal';
+import { Label } from '@/components/ui/label';
 import { useCreateContaPagar, useUpdateContaPagar } from '@/hooks/useContasPagar';
 import { useFornecedores } from '@/hooks/useFornecedores';
 import { cn } from '@/lib/utils';
 
-// Validation schema
 const contaPagarSchema = z.object({
   descricao: z.string().min(3, 'Descrição deve ter no mínimo 3 caracteres'),
   valor: z.number().positive('Valor deve ser maior que zero'),
@@ -101,14 +101,14 @@ export function ContaPagarForm({ isOpen, onClose, conta }: ContaPagarFormProps) 
       if (isEditing && conta) {
         await updateConta.mutateAsync({
           id: conta.id,
-          ...data,
+          data,
         });
       } else {
         await createConta.mutateAsync(data);
       }
       reset();
       onClose();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Erro ao salvar conta:', error);
     }
   };
@@ -118,10 +118,9 @@ export function ContaPagarForm({ isOpen, onClose, conta }: ContaPagarFormProps) 
     onClose();
   };
 
-  const fornecedorOptions = [
-    { value: '', label: 'Selecione um fornecedor' },
-    ...(fornecedores?.map((f) => ({ value: f.id, label: f.nome })) || []),
-  ];
+  const fornecedorOptions = fornecedores?.map((f) => ({ value: f.id, label: f.nome })) || [];
+
+  const isPending = isSubmitting || createConta.isPending || updateConta.isPending;
 
   return (
     <Modal
@@ -132,14 +131,17 @@ export function ContaPagarForm({ isOpen, onClose, conta }: ContaPagarFormProps) 
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Descrição */}
-        <div>
+        <div className="space-y-1.5">
+          <Label htmlFor="descricao">Descrição</Label>
           <Input
-            label="Descrição"
+            id="descricao"
             placeholder="Ex: Pagamento de aluguel"
-            leftElement={<FileText className="h-4 w-4" />}
-            error={errors.descricao?.message}
+            error={!!errors.descricao}
             {...register('descricao')}
           />
+          {errors.descricao && (
+            <p className="text-sm text-destructive">{errors.descricao.message}</p>
+          )}
         </div>
 
         {/* Valor e Vencimento */}
@@ -148,27 +150,37 @@ export function ContaPagarForm({ isOpen, onClose, conta }: ContaPagarFormProps) 
             name="valor"
             control={control}
             render={({ field }) => (
-              <Input
-                label="Valor"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="0,00"
-                leftElement={<DollarSign className="h-4 w-4" />}
-                error={errors.valor?.message}
-                value={field.value || ''}
-                onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-              />
+              <div className="space-y-1.5">
+                <Label htmlFor="valor">Valor</Label>
+                <Input
+                  id="valor"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="0,00"
+                  error={!!errors.valor}
+                  value={field.value || ''}
+                  onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                />
+                {errors.valor && (
+                  <p className="text-sm text-destructive">{errors.valor.message}</p>
+                )}
+              </div>
             )}
           />
 
-          <Input
-            label="Data de Vencimento"
-            type="date"
-            leftElement={<CalendarIcon className="h-4 w-4" />}
-            error={errors.vencimento?.message}
-            {...register('vencimento')}
-          />
+          <div className="space-y-1.5">
+            <Label htmlFor="vencimento">Data de Vencimento</Label>
+            <Input
+              id="vencimento"
+              type="date"
+              error={!!errors.vencimento}
+              {...register('vencimento')}
+            />
+            {errors.vencimento && (
+              <p className="text-sm text-destructive">{errors.vencimento.message}</p>
+            )}
+          </div>
         </div>
 
         {/* Fornecedor e Categoria */}
@@ -177,13 +189,21 @@ export function ContaPagarForm({ isOpen, onClose, conta }: ContaPagarFormProps) 
             name="fornecedor_id"
             control={control}
             render={({ field }) => (
-              <Select
-                label="Fornecedor"
-                options={fornecedorOptions}
-                leftElement={<Building2 className="h-4 w-4" />}
-                error={errors.fornecedor_id?.message}
-                {...field}
-              />
+              <div className="space-y-1.5">
+                <Label>Fornecedor</Label>
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione um fornecedor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {fornecedorOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             )}
           />
 
@@ -191,28 +211,39 @@ export function ContaPagarForm({ isOpen, onClose, conta }: ContaPagarFormProps) 
             name="categoria"
             control={control}
             render={({ field }) => (
-              <Select
-                label="Categoria"
-                options={[{ value: '', label: 'Selecione uma categoria' }, ...categorias]}
-                leftElement={<Tag className="h-4 w-4" />}
-                error={errors.categoria?.message}
-                {...field}
-              />
+              <div className="space-y-1.5">
+                <Label>Categoria</Label>
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione uma categoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categorias.map((cat) => (
+                      <SelectItem key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             )}
           />
         </div>
 
         {/* Observações */}
-        <Textarea
-          label="Observações"
-          placeholder="Observações adicionais..."
-          rows={3}
-          {...register('observacoes')}
-        />
+        <div className="space-y-1.5">
+          <Label htmlFor="observacoes">Observações</Label>
+          <Textarea
+            id="observacoes"
+            placeholder="Observações adicionais..."
+            rows={3}
+            {...register('observacoes')}
+          />
+        </div>
 
         {/* Opções de Recorrência */}
         {!isEditing && (
-          <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-4">
+          <div className="border border-border rounded-lg p-4 space-y-4">
             <Controller
               name="recorrente"
               control={control}
@@ -222,8 +253,9 @@ export function ContaPagarForm({ isOpen, onClose, conta }: ContaPagarFormProps) 
                   description="Criar múltiplas parcelas com vencimento mensal"
                   checked={field.value}
                   onChange={(e) => {
-                    field.onChange(e.target.checked);
-                    setShowParcelas(e.target.checked);
+                    const checked = (e.target as HTMLInputElement).checked;
+                    field.onChange(checked);
+                    setShowParcelas(checked);
                   }}
                 />
               )}
@@ -234,16 +266,19 @@ export function ContaPagarForm({ isOpen, onClose, conta }: ContaPagarFormProps) 
                 name="parcelas"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    label="Número de Parcelas"
-                    type="number"
-                    min="1"
-                    max="48"
-                    placeholder="1"
-                    helperText="Máximo de 48 parcelas"
-                    value={field.value || 1}
-                    onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
-                  />
+                  <div className="space-y-1.5">
+                    <Label htmlFor="parcelas">Número de Parcelas</Label>
+                    <Input
+                      id="parcelas"
+                      type="number"
+                      min="1"
+                      max="48"
+                      placeholder="1"
+                      value={field.value || 1}
+                      onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                    />
+                    <p className="text-xs text-muted-foreground">Máximo de 48 parcelas</p>
+                  </div>
                 )}
               />
             )}
@@ -251,15 +286,12 @@ export function ContaPagarForm({ isOpen, onClose, conta }: ContaPagarFormProps) 
         )}
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
           <Button type="button" variant="outline" onClick={handleClose}>
             Cancelar
           </Button>
-          <Button
-            type="submit"
-            isLoading={isSubmitting || createConta.isPending || updateConta.isPending}
-          >
-            {isEditing ? 'Salvar Alterações' : 'Criar Conta'}
+          <Button type="submit" disabled={isPending}>
+            {isPending ? 'Salvando...' : isEditing ? 'Salvar Alterações' : 'Criar Conta'}
           </Button>
         </div>
       </form>
