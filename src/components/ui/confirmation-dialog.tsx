@@ -199,10 +199,9 @@ export function ConfirmationDialog({
             variant={config.confirmVariant}
             onClick={handleConfirm}
             disabled={isProcessing}
-            isLoading={isProcessing}
             className="flex-1"
           >
-            {confirmText}
+            {isProcessing ? 'Processando...' : confirmText}
           </Button>
         </div>
       </div>

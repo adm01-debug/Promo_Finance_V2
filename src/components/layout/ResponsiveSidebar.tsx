@@ -25,7 +25,7 @@ export const ResponsiveSidebar = ({ onCollapseChange }: ResponsiveSidebarProps) 
       <>
         <MobileBottomNav onMenuClick={() => setMobileDrawerOpen(true)} />
         <MobileSidebarDrawer
-          isOpen={mobileDrawerOpen}
+          open={mobileDrawerOpen}
           onClose={() => setMobileDrawerOpen(false)}
         />
       </>
