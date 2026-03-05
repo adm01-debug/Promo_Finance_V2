@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { X, Keyboard } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useKeyboardShortcut, getRegisteredShortcuts, APP_SHORTCUTS } from '@/hooks/useKeyboardShortcuts';
+// Shortcuts are defined locally as DEFAULT_SHORTCUTS below
 
 interface ShortcutsHelpModalProps {
   isOpen: boolean;

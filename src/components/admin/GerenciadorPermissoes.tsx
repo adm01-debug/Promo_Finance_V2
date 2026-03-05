@@ -337,7 +337,7 @@ export function GerenciadorPermissoes() {
                                 >
                                   <Checkbox
                                     checked={isChecked}
-                                    onCheckedChange={() => togglePermission(role, permission.id)}
+                                    onChange={() => togglePermission(role, permission.id)}
                                     disabled={role === 'admin'}
                                   />
                                   <div className="flex-1 min-w-0">
