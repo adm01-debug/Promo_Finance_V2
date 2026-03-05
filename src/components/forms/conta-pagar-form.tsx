@@ -104,7 +104,7 @@ export function ContaPagarForm({ isOpen, onClose, conta }: ContaPagarFormProps) 
           data,
         });
       } else {
-        await createConta.mutateAsync(data as ContaPagarInput);
+        await createConta.mutateAsync(data as unknown as Parameters<typeof createConta.mutateAsync>[0]);
       }
       reset();
       onClose();

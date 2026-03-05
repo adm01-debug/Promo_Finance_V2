@@ -27,7 +27,7 @@ interface ToastOptions {
   };
   cancel?: {
     label: string;
-    onClick?: () => void;
+    onClick: () => void;
   };
   onDismiss?: () => void;
   onAutoClose?: () => void;

@@ -231,7 +231,7 @@ export function createLazyComponent<T extends ComponentType<unknown>>(
   }
 
   // Wrapper component
-  function LazyWrapper(props: Record<string, unknown>) {
+  function LazyWrapper(props: unknown) {
     const [shouldRender, setShouldRender] = useState(delay === 0);
 
     useEffect(() => {
