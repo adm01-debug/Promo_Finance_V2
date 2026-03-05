@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { X, Loader2, Building, Mail, Phone, MapPin, CreditCard, Landmark } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useFornecedores, useFornecedor } from '@/hooks/useFornecedores';
+import { useFornecedores, useFornecedor, useCreateFornecedor, useUpdateFornecedor } from '@/hooks/useFornecedores';
 import { formatCNPJ, validateCNPJ } from '@/lib/brazilian-validators';
 import { cn } from '@/lib/utils';
 
@@ -69,8 +69,13 @@ const bancos = [
 ];
 
 export function FornecedorModal({ isOpen, onClose, fornecedorId }: FornecedorModalProps) {
-  const { create, update, isCreating, isUpdating } = useFornecedores();
-  const { fornecedor, isLoading: isLoadingFornecedor } = useFornecedor(fornecedorId || undefined);
+  const createMutation = useCreateFornecedor();
+  const updateMutation = useUpdateFornecedor();
+  const create = createMutation.mutateAsync;
+  const update = updateMutation.mutateAsync;
+  const isCreating = createMutation.isPending;
+  const isUpdating = updateMutation.isPending;
+  const { data: fornecedor, isLoading: isLoadingFornecedor } = useFornecedor(fornecedorId || '');
   
   const [cnpjError, setCnpjError] = useState('');
 

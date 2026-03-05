@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { X, Loader2, CalendarDays, DollarSign, FileText, Building } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useContasPagar, useContaPagar } from '@/hooks/useContasPagar';
+import { useContasPagar, useContaPagar, useCreateContaPagar, useUpdateContaPagar } from '@/hooks/useContasPagar';
 import { useFornecedores } from '@/hooks/useFornecedores';
 import { formatCurrency, parseCurrency } from '@/lib/currency';
 import { cn } from '@/lib/utils';
@@ -60,9 +60,14 @@ const formasPagamento = [
 ];
 
 export function ContaPagarModal({ isOpen, onClose, contaId }: ContaPagarModalProps) {
-  const { create, update, isCreating, isUpdating } = useContasPagar();
-  const { conta, isLoading: isLoadingConta } = useContaPagar(contaId || undefined);
-  const { fornecedores } = useFornecedores();
+  const createMutation = useCreateContaPagar();
+  const updateMutation = useUpdateContaPagar();
+  const create = createMutation.mutateAsync;
+  const update = updateMutation.mutateAsync;
+  const isCreating = createMutation.isPending;
+  const isUpdating = updateMutation.isPending;
+  const { data: conta, isLoading: isLoadingConta } = useContaPagar(contaId || '');
+  const { data: fornecedores } = useFornecedores();
   
   const [valorDisplay, setValorDisplay] = useState('');
 

@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { X, Loader2, CalendarDays, DollarSign, FileText, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useContasReceber, useContaReceber } from '@/hooks/useContasReceber';
+import { useContasReceber, useContaReceber, useCreateContaReceber, useUpdateContaReceber } from '@/hooks/useContasReceber';
 import { useClientes } from '@/hooks/useClientes';
 import { formatCurrency, parseCurrency } from '@/lib/currency';
 import { cn } from '@/lib/utils';
@@ -51,9 +51,14 @@ const formasRecebimento = [
 ];
 
 export function ContaReceberModal({ isOpen, onClose, contaId }: ContaReceberModalProps) {
-  const { create, update, isCreating, isUpdating } = useContasReceber();
-  const { conta, isLoading: isLoadingConta } = useContaReceber(contaId || undefined);
-  const { clientes } = useClientes();
+  const createMutation = useCreateContaReceber();
+  const updateMutation = useUpdateContaReceber();
+  const create = createMutation.mutateAsync;
+  const update = updateMutation.mutateAsync;
+  const isCreating = createMutation.isPending;
+  const isUpdating = updateMutation.isPending;
+  const { data: conta, isLoading: isLoadingConta } = useContaReceber(contaId || '');
+  const { data: clientes } = useClientes();
   
   const [valorDisplay, setValorDisplay] = useState('');
 

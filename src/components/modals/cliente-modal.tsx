@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { X, Loader2, User, Mail, Phone, MapPin, Building, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useClientes, useCliente } from '@/hooks/useClientes';
+import { useClientes, useCliente, useCreateCliente, useUpdateCliente } from '@/hooks/useClientes';
 import { formatCPF, formatCNPJ, validateCPF, validateCNPJ } from '@/lib/brazilian-validators';
 import { formatCurrency, parseCurrency } from '@/lib/currency';
 import { cn } from '@/lib/utils';
@@ -41,8 +41,13 @@ const estados = [
 ];
 
 export function ClienteModal({ isOpen, onClose, clienteId }: ClienteModalProps) {
-  const { create, update, isCreating, isUpdating } = useClientes();
-  const { cliente, isLoading: isLoadingCliente } = useCliente(clienteId || undefined);
+  const createMutation = useCreateCliente();
+  const updateMutation = useUpdateCliente();
+  const create = createMutation.mutateAsync;
+  const update = updateMutation.mutateAsync;
+  const isCreating = createMutation.isPending;
+  const isUpdating = updateMutation.isPending;
+  const { data: cliente, isLoading: isLoadingCliente } = useCliente(clienteId || '');
   
   const [limiteDisplay, setLimiteDisplay] = useState('');
   const [cpfCnpjError, setCpfCnpjError] = useState('');
