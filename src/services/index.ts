@@ -21,4 +21,4 @@ export { exportService } from './export.service';
 export { importService } from './import.service';
 export { notificationService } from './notification.service';
 export { storageService } from './storage.service';
-export { databaseService } from './database.service';
+export { createDatabaseService } from './database.service';

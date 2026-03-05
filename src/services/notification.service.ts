@@ -1,4 +1,5 @@
 import { toast, ExternalToast } from 'sonner';
+import React from 'react';
 
 export interface NotificationOptions extends ExternalToast {
   title?: string;
@@ -29,13 +30,10 @@ class NotificationService {
 
   private mergeOptions(options?: NotificationOptions): ExternalToast {
     const merged = { ...this.defaultOptions, ...options };
-    
-    // Map our options to sonner's expected format
     if (merged.title) {
       merged.description = merged.title;
       delete merged.title;
     }
-
     return merged as ExternalToast;
   }
 
@@ -44,10 +42,7 @@ class NotificationService {
   }
 
   error(message: string, options?: NotificationOptions): string | number {
-    return toast.error(message, this.mergeOptions({
-      duration: 6000, // Longer duration for errors
-      ...options,
-    }));
+    return toast.error(message, this.mergeOptions({ duration: 6000, ...options }));
   }
 
   warning(message: string, options?: NotificationOptions): string | number {
@@ -59,23 +54,21 @@ class NotificationService {
   }
 
   loading(message: string, options?: NotificationOptions): string | number {
-    return toast.loading(message, this.mergeOptions({
-      duration: Infinity, // Loading toasts don't auto-dismiss
-      ...options,
-    }));
+    return toast.loading(message, this.mergeOptions({ duration: Infinity, ...options }));
   }
 
-  promise<T>(
+  async promise<T>(
     promise: Promise<T>,
     messages: PromiseMessages<T>,
     options?: NotificationOptions
   ): Promise<T> {
-    return toast.promise(promise, {
+    const result = toast.promise(promise, {
       loading: messages.loading,
       success: messages.success,
       error: messages.error,
       ...this.mergeOptions(options),
     });
+    return result as unknown as Promise<T>;
   }
 
   dismiss(toastId?: string | number): void {
@@ -87,10 +80,9 @@ class NotificationService {
   }
 
   custom(render: (t: string | number) => React.ReactNode, options?: NotificationOptions): string | number {
-    return toast.custom(render, this.mergeOptions(options));
+    return toast.custom((t) => render(t) as React.ReactElement, this.mergeOptions(options));
   }
 
-  // Shorthand methods for common operations
   saved(itemName?: string): string | number {
     return this.success(itemName ? `${itemName} salvo com sucesso!` : 'Registro salvo com sucesso!');
   }
@@ -107,7 +99,6 @@ class NotificationService {
     return this.success(itemName ? `${itemName} criado com sucesso!` : 'Registro criado com sucesso!');
   }
 
-  // Error shorthand methods
   saveError(details?: string): string | number {
     return this.error(details ? `Erro ao salvar: ${details}` : 'Erro ao salvar registro');
   }
@@ -148,23 +139,12 @@ class NotificationService {
     return this.error(item ? `${item} não encontrado.` : 'Registro não encontrado.');
   }
 
-  // Async operation helpers
   async withLoading<T>(
     operation: () => Promise<T>,
-    messages: {
-      loading?: string;
-      success?: string;
-      error?: string;
-    } = {}
+    messages: { loading?: string; success?: string; error?: string } = {}
   ): Promise<T> {
-    const {
-      loading = 'Processando...',
-      success = 'Operação concluída!',
-      error = 'Erro na operação',
-    } = messages;
-
+    const { loading = 'Processando...', success = 'Operação concluída!', error = 'Erro na operação' } = messages;
     const toastId = this.loading(loading);
-
     try {
       const result = await operation();
       this.dismiss(toastId);
@@ -177,7 +157,6 @@ class NotificationService {
     }
   }
 
-  // Bulk operation helpers
   bulkSuccess(count: number, action: 'criados' | 'atualizados' | 'excluídos'): string | number {
     return this.success(`${count} registro${count > 1 ? 's' : ''} ${action} com sucesso!`);
   }
@@ -186,21 +165,13 @@ class NotificationService {
     return this.error(`Erro ao ${action} ${count} registro${count > 1 ? 's' : ''}.`);
   }
 
-  // Confirmation notifications
   confirmDelete(onConfirm: () => void, itemName?: string): string | number {
     return this.warning(
       itemName ? `Deseja excluir ${itemName}?` : 'Deseja excluir este registro?',
-      {
-        action: {
-          label: 'Excluir',
-          onClick: onConfirm,
-        },
-        duration: 10000,
-      }
+      { action: { label: 'Excluir', onClick: onConfirm }, duration: 10000 }
     );
   }
 
-  // File operations
   uploadSuccess(fileName?: string): string | number {
     return this.success(fileName ? `${fileName} enviado com sucesso!` : 'Arquivo enviado com sucesso!');
   }
@@ -231,7 +202,6 @@ class NotificationService {
     return this.error('Erro ao importar dados');
   }
 
-  // Payment/Financial specific
   paymentSuccess(amount?: string): string | number {
     return this.success(amount ? `Pagamento de ${amount} registrado!` : 'Pagamento registrado com sucesso!');
   }
@@ -245,17 +215,11 @@ class NotificationService {
   }
 
   overdueWarning(count: number): string | number {
-    return this.warning(
-      `Você tem ${count} conta${count > 1 ? 's' : ''} em atraso.`,
-      { duration: 8000 }
-    );
+    return this.warning(`Você tem ${count} conta${count > 1 ? 's' : ''} em atraso.`, { duration: 8000 });
   }
 
   dueTodayInfo(count: number): string | number {
-    return this.info(
-      `${count} conta${count > 1 ? 's' : ''} vence${count > 1 ? 'm' : ''} hoje.`,
-      { duration: 8000 }
-    );
+    return this.info(`${count} conta${count > 1 ? 's' : ''} vence${count > 1 ? 'm' : ''} hoje.`, { duration: 8000 });
   }
 }
 
