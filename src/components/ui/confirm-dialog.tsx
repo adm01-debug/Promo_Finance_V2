@@ -4,14 +4,19 @@ import { Button } from './button';
 import { cn } from '@/lib/utils';
 
 interface ConfirmDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
+  // Support both naming conventions
+  isOpen?: boolean;
+  open?: boolean;
+  onClose?: () => void;
+  onOpenChange?: (open: boolean) => void;
   onConfirm: () => void | Promise<void>;
   title: string;
   description?: string;
+  confirmLabel?: string;
   children?: ReactNode;
   confirmText?: string;
   cancelText?: string;
+  cancelLabel?: string;
   variant?: 'default' | 'danger' | 'warning' | 'success' | 'info';
   isLoading?: boolean;
   icon?: ReactNode;
@@ -46,19 +51,30 @@ const variantConfig = {
 };
 
 export function ConfirmDialog({
-  isOpen,
+  isOpen: isOpenProp,
+  open,
   onClose,
+  onOpenChange,
   onConfirm,
   title,
   description,
   children,
-  confirmText = 'Confirmar',
-  cancelText = 'Cancelar',
+  confirmText,
+  confirmLabel,
+  cancelText,
+  cancelLabel,
   variant = 'default',
   isLoading = false,
   icon,
 }: ConfirmDialogProps) {
-  if (!isOpen) return null;
+  const isOpen = open ?? isOpenProp ?? false;
+  const handleClose = () => {
+    onClose?.();
+    onOpenChange?.(false);
+  };
+  const resolvedConfirmText = confirmText ?? confirmLabel ?? 'Confirmar';
+  const resolvedCancelText = cancelText ?? cancelLabel ?? 'Cancelar';
+  // isOpen is now resolved above
 
   const config = variantConfig[variant];
 
