@@ -7,7 +7,7 @@ import { LoadingPage } from '@/pages/loading';
 import { ErrorPage } from '@/pages/error';
 
 // Lazy loaded pages
-const Dashboard = lazy(() => import('@/pages/dashboard'));
+const Dashboard = lazy(() => import('@/pages/Index'));
 const ContasPagar = lazy(() => import('@/pages/ContasPagar'));
 const ContasReceber = lazy(() => import('@/pages/ContasReceber'));
 const Fornecedores = lazy(() => import('@/pages/Fornecedores'));

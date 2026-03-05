@@ -28,9 +28,9 @@ export function AppProviders({ children }: AppProvidersProps): JSX.Element {
               <NotificationProvider>
                 <LoadingProvider>
                   <SidebarProvider>
-                    <PageErrorBoundary>
+                    <ErrorBoundary>
                       {children}
-                    </PageErrorBoundary>
+                    </ErrorBoundary>
                     
                     {/* Toast notifications */}
                     <Toaster

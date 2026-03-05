@@ -5,7 +5,7 @@ import { PageLoader } from '@/components/common/suspense-boundary';
 import { MainLayout } from '@/components/layout/main-layout';
 
 // Lazy load pages for code splitting
-const Dashboard = lazy(() => import('@/pages/dashboard'));
+const Dashboard = lazy(() => import('@/pages/Index'));
 const ContasPagar = lazy(() => import('@/pages/ContasPagar'));
 const ContasReceber = lazy(() => import('@/pages/ContasReceber'));
 const Clientes = lazy(() => import('@/pages/Clientes'));

@@ -203,10 +203,10 @@ export function LazyImage({
 }
 
 // Create lazy component with retry logic
-export function createLazyComponent<T extends ComponentType<unknown>>(
+export function createLazyComponent<T extends ComponentType<Record<string, unknown>>>(
   importFn: () => Promise<{ default: T }>,
   options: LazyComponentOptions = {}
-): ComponentType<unknown> {
+): ComponentType<Record<string, unknown>> {
   const { fallback, delay = 0, preload = false, retry = 3 } = options;
 
   let retryCount = 0;
