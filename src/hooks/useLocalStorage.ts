@@ -62,7 +62,7 @@ export function useLocalStorage<T>(
   // Sincronizar entre tabs/windows
   useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === key || (event as CustomEvent).detail?.key === key) {
+      if (event.key === key || (event as unknown as CustomEvent).detail?.key === key) {
         setStoredValue(readValue());
       }
     };

@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { PAGINATION } from '@/constants';
+import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@/constants';
 
 interface UsePaginationOptions {
   totalItems: number;
@@ -49,8 +49,8 @@ interface UsePaginationReturn {
 export function usePagination({
   totalItems,
   initialPage = 1,
-  initialPageSize = PAGINATION.DEFAULT_PAGE_SIZE,
-  pageSizeOptions = PAGINATION.PAGE_SIZE_OPTIONS,
+  initialPageSize = DEFAULT_PAGE_SIZE,
+  pageSizeOptions = PAGE_SIZE_OPTIONS as unknown as number[],
 }: UsePaginationOptions): UsePaginationReturn {
   const [page, setPage] = useState(initialPage);
   const [pageSize, setPageSizeState] = useState(initialPageSize);
