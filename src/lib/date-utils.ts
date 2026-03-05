@@ -279,7 +279,7 @@ export function getDaysOverdue(date: DateInput): number {
  * @returns Object with start and end dates
  */
 export function getDateRange(
-  period: 'today' | 'yesterday' | 'thisWeek' | 'lastWeek' | 'thisMonth' | 'lastMonth' | 'thisYear' | 'lastYear' | 'last7Days' | 'last30Days' | 'last90Days' | 'last365Days',
+  period: DateRangeType,
   referenceDate: DateInput = new Date()
 ): { start: Date; end: Date } {
   const ref = toDate(referenceDate);
@@ -324,6 +324,20 @@ export function getDateRange(
     
     case 'last365Days':
       return { start: startOfDay(subDays(ref, 364)), end: endOfDay(ref) };
+    
+    case 'thisQuarter': {
+      const qMonth = Math.floor(ref.getMonth() / 3) * 3;
+      const qStart = new Date(ref.getFullYear(), qMonth, 1);
+      const qEnd = new Date(ref.getFullYear(), qMonth + 3, 0);
+      return { start: startOfDay(qStart), end: endOfDay(qEnd) };
+    }
+    
+    case 'lastQuarter': {
+      const lqMonth = Math.floor(ref.getMonth() / 3) * 3 - 3;
+      const lqStart = new Date(ref.getFullYear(), lqMonth, 1);
+      const lqEnd = new Date(ref.getFullYear(), lqMonth + 3, 0);
+      return { start: startOfDay(lqStart), end: endOfDay(lqEnd) };
+    }
     
     default:
       return { start: startOfDay(ref), end: endOfDay(ref) };
