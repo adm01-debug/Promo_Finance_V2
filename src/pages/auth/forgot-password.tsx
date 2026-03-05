@@ -18,19 +18,20 @@ export function ForgotPasswordPage() {
       email: '',
     },
     validate: {
-      email: (value) => {
+      email: (value: unknown) => {
         if (!value) return 'Email é obrigatório';
-        if (!validateEmail(value)) return 'Email inválido';
+        if (!validateEmail(value as string)) return 'Email inválido';
         return undefined;
       },
     },
     onSubmit: async (formValues) => {
       setError(null);
       try {
-        await resetPassword(formValues.email);
+        await resetPassword(formValues.email as string);
         setSuccess(true);
-      } catch (err: any) {
-        setError(err.message || 'Erro ao enviar email. Tente novamente.');
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Erro ao enviar email. Tente novamente.';
+        setError(message);
       }
     },
   });
@@ -81,7 +82,7 @@ export function ForgotPasswordPage() {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <Alert variant="error" dismissible onDismiss={() => setError(null)}>
+            <Alert variant="error" onClose={() => setError(null)}>
               {error}
             </Alert>
           )}
@@ -99,13 +100,15 @@ export function ForgotPasswordPage() {
                 name="email"
                 type="email"
                 autoComplete="email"
-                value={values.email}
-                onChange={(e) => handleChange('email', e.target.value)}
-                onBlur={() => handleBlur('email')}
+                value={values.email as string}
+                onChange={(e) => handleChange('email' as keyof typeof values, e.target.value as (typeof values)[keyof typeof values])}
+                onBlur={() => handleBlur('email' as keyof typeof values)}
                 className="pl-10"
                 placeholder="seu@email.com"
-                error={touched.email && errors.email ? errors.email : undefined}
               />
+              {touched.email && errors.email && (
+                <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+              )}
             </div>
           </div>
 

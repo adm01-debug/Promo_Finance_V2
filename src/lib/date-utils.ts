@@ -49,6 +49,7 @@ export type DateRangeType =
   | 'last7Days'
   | 'last30Days'
   | 'last90Days'
+  | 'last365Days'
   | 'thisWeek'
   | 'lastWeek'
   | 'thisMonth'

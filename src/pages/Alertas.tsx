@@ -264,7 +264,7 @@ export default function Alertas() {
           <div className="flex items-center gap-2">
             <Checkbox 
               checked={isAllSelected}
-              onCheckedChange={selectAll}
+              onChange={selectAll}
             />
             <span className="text-sm text-muted-foreground">Selecionar todos</span>
           </div>
@@ -305,7 +305,7 @@ export default function Alertas() {
                           <div className="flex items-start gap-4">
                             <Checkbox 
                               checked={isSelected(alerta.id)}
-                              onCheckedChange={() => toggleSelect(alerta.id)}
+                              onChange={() => toggleSelect(alerta.id)}
                             />
                             
                             <div className={cn("p-2 rounded-lg", prioridadeInfo.bgColor)}>

@@ -96,7 +96,7 @@ export const toast = {
 
   // Custom toast
   custom(content: React.ReactNode, options?: ToastOptions) {
-    return sonnerToast.custom(() => content, options);
+    return sonnerToast.custom(() => content as React.ReactElement, options);
   },
 
   // Dismiss specific toast

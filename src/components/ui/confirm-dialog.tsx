@@ -82,19 +82,21 @@ export function ConfirmDialog({
     await onConfirm();
   };
 
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50"
-        onClick={onClose}
+        onClick={handleClose}
       />
 
       {/* Dialog */}
       <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4 animate-in fade-in-0 zoom-in-95">
         {/* Close button */}
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
         >
           <X className="w-5 h-5" />
@@ -131,18 +133,18 @@ export function ConfirmDialog({
         <div className="flex items-center justify-end gap-3 px-6 py-4 bg-gray-50 dark:bg-gray-800/50 rounded-b-lg">
           <Button
             variant="outline"
-            onClick={onClose}
+            onClick={handleClose}
             disabled={isLoading}
           >
-            {cancelText}
+            {resolvedCancelText}
           </Button>
           <Button
-            variant={variant === 'danger' ? 'destructive' : 'default'}
+            variant={variant === 'danger' ? 'destructive' : variant === 'warning' ? 'warning' : variant === 'success' ? 'success' : 'default'}
             onClick={handleConfirm}
             disabled={isLoading}
           >
             {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-            {confirmText}
+            {resolvedConfirmText}
           </Button>
         </div>
       </div>
