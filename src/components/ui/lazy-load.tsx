@@ -247,7 +247,7 @@ export function createLazyComponent<T extends ComponentType<unknown>>(
 
     return (
       <Suspense fallback={fallback || <DefaultFallback />}>
-        <LazyComponent {...(props as Record<string, unknown>)} />
+        <LazyComponent {...props} />
       </Suspense>
     );
   }
