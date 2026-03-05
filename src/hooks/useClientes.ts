@@ -1,13 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { clientesService, ClienteFilters, ClienteInsert, ClienteUpdate } from '@/services/clientes.service';
+import { clientesService, ClienteFilters, ClienteInput } from '@/services/clientes.service';
 import { queryKeys } from '@/lib/query-client';
 import { toast } from 'sonner';
 
 // List clientes
 export function useClientes(filters?: ClienteFilters) {
   return useQuery({
-    queryKey: queryKeys.clientes.list(filters),
-    queryFn: () => clientesService.list(filters),
+    queryKey: queryKeys.clientes.list(filters as Record<string, unknown>),
+    queryFn: () => clientesService.getAll(filters),
   });
 }
 
@@ -21,10 +21,11 @@ export function useCliente(id: string) {
 }
 
 // Get stats
-export function useClientesStats() {
+export function useClientesStats(clienteId: string) {
   return useQuery({
     queryKey: queryKeys.clientes.stats(),
-    queryFn: () => clientesService.getStats(),
+    queryFn: () => clientesService.getStats(clienteId),
+    enabled: !!clienteId,
   });
 }
 
@@ -32,7 +33,7 @@ export function useClientesStats() {
 export function useSearchClientes(query: string) {
   return useQuery({
     queryKey: queryKeys.clientes.search(query),
-    queryFn: () => clientesService.searchByName(query),
+    queryFn: () => clientesService.search(query),
     enabled: query.length >= 2,
   });
 }
@@ -41,7 +42,7 @@ export function useSearchClientes(query: string) {
 export function useClientesAtivos() {
   return useQuery({
     queryKey: queryKeys.clientes.list({ ativo: true }),
-    queryFn: () => clientesService.getActive(),
+    queryFn: () => clientesService.getAll({ ativo: true }),
   });
 }
 
@@ -50,7 +51,7 @@ export function useCreateCliente() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (cliente: ClienteInsert) => clientesService.create(cliente),
+    mutationFn: (cliente: ClienteInput) => clientesService.create(cliente),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.clientes.all() });
       toast.success('Cliente criado com sucesso!');
@@ -66,7 +67,7 @@ export function useUpdateCliente() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: ClienteUpdate }) =>
+    mutationFn: ({ id, data }: { id: string; data: Partial<ClienteInput> }) =>
       clientesService.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.clientes.all() });
@@ -101,7 +102,7 @@ export function useToggleClienteActive() {
 
   return useMutation({
     mutationFn: ({ id, ativo }: { id: string; ativo: boolean }) =>
-      clientesService.toggleActive(id, ativo),
+      ativo ? clientesService.activate(id) : clientesService.deactivate(id),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.clientes.all() });
       toast.success(variables.ativo ? 'Cliente ativado!' : 'Cliente desativado!');
@@ -117,7 +118,7 @@ export function useCheckCpfCnpjExists(cpfCnpj: string) {
   return useQuery({
     queryKey: ['cliente-cpf-cnpj', cpfCnpj],
     queryFn: () => clientesService.getByCpfCnpj(cpfCnpj),
-    enabled: cpfCnpj.length >= 11, // CPF ou CNPJ
+    enabled: cpfCnpj.length >= 11,
     staleTime: 0,
   });
 }

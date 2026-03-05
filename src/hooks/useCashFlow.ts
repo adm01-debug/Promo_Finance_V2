@@ -54,6 +54,20 @@ interface Transaction {
   tipo: 'receita' | 'despesa';
 }
 
+interface ReceberRow {
+  id: string;
+  valor: number;
+  data_vencimento: string;
+  status: string;
+}
+
+interface PagarRow {
+  id: string;
+  valor: number;
+  data_vencimento: string;
+  status: string;
+}
+
 // API functions
 async function fetchTransactions(
   startDate: Date,
@@ -62,30 +76,36 @@ async function fetchTransactions(
   const [receitasRes, despesasRes] = await Promise.all([
     supabase
       .from('contas_receber')
-      .select('id, valor, vencimento, status')
-      .gte('vencimento', startDate.toISOString())
-      .lte('vencimento', endDate.toISOString()),
+      .select('id, valor, data_vencimento, status')
+      .gte('data_vencimento', startDate.toISOString())
+      .lte('data_vencimento', endDate.toISOString()),
     supabase
       .from('contas_pagar')
-      .select('id, valor, vencimento, status')
-      .gte('vencimento', startDate.toISOString())
-      .lte('vencimento', endDate.toISOString()),
+      .select('id, valor, data_vencimento, status')
+      .gte('data_vencimento', startDate.toISOString())
+      .lte('data_vencimento', endDate.toISOString()),
   ]);
 
-  const receitas: Transaction[] = (receitasRes.data || []).map((r) => ({
-    ...r,
+  const receitas: Transaction[] = ((receitasRes.data || []) as ReceberRow[]).map((r) => ({
+    id: r.id,
+    valor: r.valor,
+    vencimento: r.data_vencimento,
+    status: r.status,
     tipo: 'receita' as const,
   }));
 
-  const despesas: Transaction[] = (despesasRes.data || []).map((d) => ({
-    ...d,
+  const despesas: Transaction[] = ((despesasRes.data || []) as PagarRow[]).map((d) => ({
+    id: d.id,
+    valor: d.valor,
+    vencimento: d.data_vencimento,
+    status: d.status,
     tipo: 'despesa' as const,
   }));
 
   return [...receitas, ...despesas];
 }
 
-async function fetchSaldoInicial(date: Date): Promise<number> {
+async function fetchSaldoInicial(_date: Date): Promise<number> {
   const { data } = await supabase
     .from('contas_bancarias')
     .select('saldo_atual')
@@ -214,7 +234,6 @@ export function projectCashFlow(
   monthsToProject: number,
   saldoAtual: number
 ): CashFlowProjection[] {
-  // Calculate average monthly values
   const avgReceitas = historicalItems.reduce((sum, i) => sum + i.receitas, 0) / 
     (historicalItems.length || 1);
   const avgDespesas = historicalItems.reduce((sum, i) => sum + i.despesas, 0) / 

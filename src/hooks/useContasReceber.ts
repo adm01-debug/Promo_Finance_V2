@@ -1,13 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { contasReceberService, ContaReceberFilters, ContaReceberInsert, ContaReceberUpdate } from '@/services/contas-receber.service';
+import { contasReceberService, ContaReceberFilters, ContaReceberInput } from '@/services/contas-receber.service';
 import { queryKeys } from '@/lib/query-client';
 import { toast } from 'sonner';
 
 // List contas a receber
 export function useContasReceber(filters?: ContaReceberFilters) {
   return useQuery({
-    queryKey: queryKeys.contasReceber.list(filters),
-    queryFn: () => contasReceberService.list(filters),
+    queryKey: queryKeys.contasReceber.list(filters as Record<string, unknown>),
+    queryFn: () => contasReceberService.getAll(filters),
   });
 }
 
@@ -24,7 +24,7 @@ export function useContaReceber(id: string) {
 export function useContasReceberTotals() {
   return useQuery({
     queryKey: queryKeys.contasReceber.totals(),
-    queryFn: () => contasReceberService.getTotals(),
+    queryFn: () => contasReceberService.getTotalByStatus(),
   });
 }
 
@@ -40,7 +40,7 @@ export function useContasReceberOverdue() {
 export function useContasReceberUpcoming(days: number = 7) {
   return useQuery({
     queryKey: queryKeys.contasReceber.upcoming(days),
-    queryFn: () => contasReceberService.getUpcoming(days),
+    queryFn: () => contasReceberService.getDueThisWeek(),
   });
 }
 
@@ -49,7 +49,7 @@ export function useCreateContaReceber() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (conta: ContaReceberInsert) => contasReceberService.create(conta),
+    mutationFn: (conta: ContaReceberInput) => contasReceberService.create(conta),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contasReceber.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all() });
@@ -66,7 +66,7 @@ export function useUpdateContaReceber() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: ContaReceberUpdate }) =>
+    mutationFn: ({ id, data }: { id: string; data: Partial<ContaReceberInput> }) =>
       contasReceberService.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contasReceber.all() });
@@ -120,7 +120,7 @@ export function useMarkContaReceberAsCanceled() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => contasReceberService.markAsCanceled(id),
+    mutationFn: (id: string) => contasReceberService.cancel(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contasReceber.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all() });
