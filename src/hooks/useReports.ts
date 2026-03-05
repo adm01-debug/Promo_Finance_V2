@@ -92,25 +92,25 @@ export function useReports(
 
   const exportSummaryToCSV = useCallback(() => {
     if (summaryQuery.data) {
-      reportService.exportToCSV([summaryQuery.data], 'relatorio-resumo');
+      reportService.exportToCSV([summaryQuery.data] as unknown as Record<string, unknown>[], 'relatorio-resumo');
     }
   }, [summaryQuery.data]);
 
   const exportCashFlowToCSV = useCallback(() => {
     if (cashFlowQuery.data) {
-      reportService.exportToCSV(cashFlowQuery.data, 'fluxo-caixa');
+      reportService.exportToCSV(cashFlowQuery.data as unknown as Record<string, unknown>[], 'fluxo-caixa');
     }
   }, [cashFlowQuery.data]);
 
   const exportDespesasToCSV = useCallback(() => {
     if (despesasCategoriaQuery.data) {
-      reportService.exportToCSV(despesasCategoriaQuery.data, 'despesas-categoria');
+      reportService.exportToCSV(despesasCategoriaQuery.data as unknown as Record<string, unknown>[], 'despesas-categoria');
     }
   }, [despesasCategoriaQuery.data]);
 
   const exportReceitasToCSV = useCallback(() => {
     if (receitasCategoriaQuery.data) {
-      reportService.exportToCSV(receitasCategoriaQuery.data, 'receitas-categoria');
+      reportService.exportToCSV(receitasCategoriaQuery.data as unknown as Record<string, unknown>[], 'receitas-categoria');
     }
   }, [receitasCategoriaQuery.data]);
 
