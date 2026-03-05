@@ -277,7 +277,7 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
                 </AlertDescription>
               </Alert>
             ) : solicitacaoRejeitada ? (
-              <Alert variant="destructive">
+              <Alert variant="error">
                 <ShieldAlert className="h-4 w-4" />
                 <AlertTitle>Aprovação Rejeitada</AlertTitle>
                 <AlertDescription>
@@ -285,7 +285,7 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
                 </AlertDescription>
               </Alert>
             ) : (
-              <Alert variant="destructive">
+              <Alert variant="error">
                 <ShieldAlert className="h-4 w-4" />
                 <AlertTitle>Aprovação Necessária</AlertTitle>
                 <AlertDescription>

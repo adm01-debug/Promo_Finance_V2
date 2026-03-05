@@ -464,5 +464,5 @@ export const activityService = {
     }),
 };
 
-export type { ActivityLogEntry as ActivityLog, ActivityType, ActivityFilters };
+export type { ActivityLogEntry, ActivityType, ActivityFilters };
 export default ActivityLog;

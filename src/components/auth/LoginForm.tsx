@@ -60,14 +60,14 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(function Log
   return (
     <div ref={ref}>
       {accountLocked && (
-        <Alert variant="destructive" className="mb-4">
+        <Alert variant="error" className="mb-4">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>{lockoutMessage}</AlertDescription>
         </Alert>
       )}
       
       {ipBlocked && (
-        <Alert variant="destructive" className="mb-4">
+        <Alert variant="error" className="mb-4">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
             Seu IP ({userIp}) não está autorizado para acessar o sistema.
@@ -77,7 +77,7 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(function Log
       )}
       
       {geoBlocked && (
-        <Alert variant="destructive" className="mb-4">
+        <Alert variant="error" className="mb-4">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
             Acesso não permitido do seu país ({userCountry}).
