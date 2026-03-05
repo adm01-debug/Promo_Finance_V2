@@ -16,7 +16,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useKeyboardShortcut } from '@/hooks/useKeyboardShortcuts';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useTheme } from '@/contexts/theme-context';
 
 interface CommandItem {
@@ -401,9 +401,16 @@ export function useCommandPalette() {
   const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
 
   // Register global shortcut
-  useKeyboardShortcut('ctrl+k', toggle, {
-    description: 'Abrir paleta de comandos',
-  });
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        toggle();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [toggle]);
 
   return {
     isOpen,

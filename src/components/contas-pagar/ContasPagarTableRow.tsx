@@ -222,7 +222,7 @@ export function ContasPagarTableRow({
       <TableCell>
         <Checkbox 
           checked={isSelected}
-          onCheckedChange={onToggleSelect}
+          onChange={onToggleSelect}
           aria-label={`Selecionar ${conta.descricao}`}
         />
       </TableCell>

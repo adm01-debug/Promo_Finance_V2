@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { X, Keyboard } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useKeyboardShortcut, getRegisteredShortcuts, APP_SHORTCUTS } from '@/hooks/useKeyboardShortcuts';
+// Shortcuts are defined locally as DEFAULT_SHORTCUTS below
 
 interface ShortcutsHelpModalProps {
   isOpen: boolean;
@@ -59,14 +59,14 @@ export function ShortcutsHelpModal({ isOpen, onClose }: ShortcutsHelpModalProps)
   const [registeredShortcuts, setRegisteredShortcuts] = useState<Array<{ shortcut: string; description: string }>>([]);
 
   // Close on escape
-  useKeyboardShortcut('escape', onClose, { enabled: isOpen });
-
-  // Get registered shortcuts on mount
   useEffect(() => {
-    if (isOpen) {
-      setRegisteredShortcuts(getRegisteredShortcuts());
-    }
-  }, [isOpen]);
+    if (!isOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -189,9 +189,16 @@ export function useShortcutsHelp() {
   const toggle = () => setIsOpen((prev) => !prev);
 
   // Register global shortcut
-  useKeyboardShortcut('shift+?', toggle, {
-    description: 'Mostrar atalhos de teclado',
-  });
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.shiftKey && e.key === '?') {
+        e.preventDefault();
+        toggle();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [toggle]);
 
   return {
     isOpen,

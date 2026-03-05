@@ -406,8 +406,8 @@ function ActivityItem({ log }: ActivityItemProps) {
 }
 
 // Helper function to group logs by date
-function groupLogsByDate(logs: ActivityLogEntry[]): Record<string, ActivityLog[]> {
-  const grouped: Record<string, ActivityLog[]> = {};
+function groupLogsByDate(logs: ActivityLogEntry[]): Record<string, ActivityLogEntry[]> {
+  const grouped: Record<string, ActivityLogEntry[]> = {};
 
   logs.forEach((log) => {
     const dateKey = format(log.createdAt, "EEEE, dd 'de' MMMM", { locale: ptBR });
@@ -422,7 +422,7 @@ function groupLogsByDate(logs: ActivityLogEntry[]): Record<string, ActivityLog[]
 
 // Service for logging activities
 export const activityService = {
-  log: async (data: Omit<ActivityLog, 'id' | 'createdAt'>): Promise<void> => {
+  log: async (data: Omit<ActivityLogEntry, 'id' | 'createdAt'>): Promise<void> => {
     // In a real app, this would send to an API
     console.log('[Activity Log]', data);
   },
@@ -464,5 +464,5 @@ export const activityService = {
     }),
 };
 
-export type { ActivityLogEntry as ActivityLog, ActivityType, ActivityFilters };
+export type { ActivityLogEntry, ActivityType, ActivityFilters };
 export default ActivityLog;

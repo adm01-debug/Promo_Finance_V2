@@ -34,12 +34,13 @@ const presetLabels: Record<DateRangeType, string> = {
   lastWeek: 'Semana passada',
   thisMonth: 'Este mês',
   lastMonth: 'Mês passado',
+  thisQuarter: 'Este trimestre',
+  lastQuarter: 'Trimestre passado',
   thisYear: 'Este ano',
   lastYear: 'Ano passado',
   last7Days: 'Últimos 7 dias',
   last30Days: 'Últimos 30 dias',
   last90Days: 'Últimos 90 dias',
-  last365Days: 'Últimos 365 dias',
 };
 
 export function DateRangeSelector({

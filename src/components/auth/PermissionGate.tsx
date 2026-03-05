@@ -54,7 +54,7 @@ export function PermissionGate({
   // Show fallback if provided and enabled
   if (showFallback) {
     return fallback || (
-      <Alert variant="destructive" className="my-4">
+      <Alert variant="error" className="my-4">
         <ShieldX className="h-4 w-4" />
         <AlertDescription>
           Você não tem permissão para acessar este recurso.
