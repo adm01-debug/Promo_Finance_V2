@@ -389,7 +389,7 @@ export default function AuditLogs() {
                     selected={dateRange}
                     onSelect={setDateRange}
                     numberOfMonths={2}
-                    locale={ptBR}
+                    locale={ptBR as unknown as Record<string, unknown>}
                   />
                 </PopoverContent>
               </Popover>
@@ -406,7 +406,7 @@ export default function AuditLogs() {
         {securityAlerts.length > 0 && (
           <div className="space-y-3">
             {securityAlerts.map((alert) => (
-              <Alert key={alert.id} variant={alert.type === 'critical' ? 'destructive' : 'default'} className="relative">
+              <Alert key={alert.id} variant={alert.type === 'critical' ? 'error' : 'default'} className="relative">
                 <div className="flex items-start gap-3">
                   {alert.type === 'critical' ? (
                     <ShieldAlert className="h-5 w-5" />

@@ -129,7 +129,7 @@ export default function ContasPagar() {
                       <TableHead className="w-[40px]">
                         <Checkbox 
                           checked={logic.isAllSelected}
-                          onCheckedChange={logic.selectAll}
+                          onChange={logic.selectAll}
                           aria-label="Selecionar todos"
                         />
                       </TableHead>

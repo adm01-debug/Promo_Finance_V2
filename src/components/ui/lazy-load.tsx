@@ -203,10 +203,10 @@ export function LazyImage({
 }
 
 // Create lazy component with retry logic
-export function createLazyComponent<T extends ComponentType<unknown>>(
+export function createLazyComponent<T extends ComponentType<Record<string, unknown>>>(
   importFn: () => Promise<{ default: T }>,
   options: LazyComponentOptions = {}
-): ComponentType<unknown> {
+): ComponentType<Record<string, unknown>> {
   const { fallback, delay = 0, preload = false, retry = 3 } = options;
 
   let retryCount = 0;
@@ -231,7 +231,7 @@ export function createLazyComponent<T extends ComponentType<unknown>>(
   }
 
   // Wrapper component
-  function LazyWrapper(props: unknown) {
+  function LazyWrapper(props: Record<string, unknown>) {
     const [shouldRender, setShouldRender] = useState(delay === 0);
 
     useEffect(() => {
@@ -247,7 +247,8 @@ export function createLazyComponent<T extends ComponentType<unknown>>(
 
     return (
       <Suspense fallback={fallback || <DefaultFallback />}>
-        <LazyComponent {...props} />
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        <LazyComponent {...(props as any)} />
       </Suspense>
     );
   }

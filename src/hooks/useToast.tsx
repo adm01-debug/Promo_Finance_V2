@@ -159,11 +159,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       error: string | ((error: Error) => string);
     }
   ): Promise<T> => {
-    return sonnerToast.promise(promiseOrFn, {
+    const result = sonnerToast.promise(promiseOrFn, {
       loading: options.loading,
       success: options.success,
       error: options.error,
     });
+    return result as unknown as Promise<T>;
   }, []);
 
   const dismiss = useCallback((id?: string | number) => {

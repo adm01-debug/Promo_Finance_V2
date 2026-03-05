@@ -20,6 +20,10 @@ type TouchedFields<T> = {
 interface UseFormOptions<T> {
   initialValues: T;
   validationRules?: ValidationRules<T>;
+  /** Shorthand: per-field validator functions returning error string or undefined */
+  validate?: {
+    [K in keyof T]?: (value: T[K], allValues: T) => string | undefined;
+  };
   onSubmit?: (values: T) => void | Promise<void>;
   validateOnChange?: boolean;
   validateOnBlur?: boolean;
@@ -34,8 +38,8 @@ interface UseFormReturn<T> {
   isDirty: boolean;
   
   // Handlers
-  handleChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
-  handleBlur: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  handleChange: ((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void) & (<K extends keyof T>(field: K, value: T[K]) => void);
+  handleBlur: ((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void) & ((field: keyof T) => void);
   handleSubmit: (e?: FormEvent) => Promise<void>;
   
   // Setters
@@ -68,6 +72,7 @@ interface UseFormReturn<T> {
 export function useForm<T extends Record<string, unknown>>({
   initialValues,
   validationRules = {},
+  validate: validateFns,
   onSubmit,
   validateOnChange = false,
   validateOnBlur = true,
@@ -80,6 +85,11 @@ export function useForm<T extends Record<string, unknown>>({
   // Validar um campo
   const validateField = useCallback(
     (field: keyof T): string | undefined => {
+      // Check shorthand validate functions first
+      if (validateFns && validateFns[field]) {
+        return validateFns[field]!(values[field] as T[typeof field], values);
+      }
+      // Then check validationRules
       const rules = validationRules[field];
       if (!rules) return undefined;
 
@@ -91,25 +101,39 @@ export function useForm<T extends Record<string, unknown>>({
 
       return undefined;
     },
-    [values, validationRules]
+    [values, validationRules, validateFns]
   );
 
   // Validar todos os campos
   const validate = useCallback((): boolean => {
     const newErrors: FormErrors<T> = {};
-    let isValid = true;
+    let isFormValid = true;
 
+    // Check validationRules
     for (const field of Object.keys(validationRules) as Array<keyof T>) {
       const error = validateField(field);
       if (error) {
         newErrors[field] = error;
-        isValid = false;
+        isFormValid = false;
+      }
+    }
+
+    // Check shorthand validate functions
+    if (validateFns) {
+      for (const field of Object.keys(validateFns) as Array<keyof T>) {
+        if (!newErrors[field]) {
+          const error = validateField(field);
+          if (error) {
+            newErrors[field] = error;
+            isFormValid = false;
+          }
+        }
       }
     }
 
     setErrorsState(newErrors);
-    return isValid;
-  }, [validateField, validationRules]);
+    return isFormValid;
+  }, [validateField, validationRules, validateFns]);
 
   // Verificar se o formulário é válido
   const isValid = useMemo(() => {
@@ -123,48 +147,55 @@ export function useForm<T extends Record<string, unknown>>({
 
   // Handler de change
   const handleChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    (...args: unknown[]) => {
+      // Support both (event) and (field, value) signatures
+      if (args.length === 2 && typeof args[0] === 'string') {
+        const field = args[0] as keyof T;
+        const value = args[1] as T[keyof T];
+        setValuesState((prev) => ({ ...prev, [field]: value }));
+        if (validateOnChange) {
+          const error = validateField(field);
+          setErrorsState((prev) => ({ ...prev, [field]: error }));
+        }
+        return;
+      }
+      const e = args[0] as ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>;
       const { name, value, type } = e.target;
       const newValue = type === 'checkbox' 
         ? (e.target as HTMLInputElement).checked 
         : value;
 
-      setValuesState((prev) => ({
-        ...prev,
-        [name]: newValue,
-      }));
+      setValuesState((prev) => ({ ...prev, [name]: newValue }));
 
       if (validateOnChange) {
         const error = validateField(name as keyof T);
-        setErrorsState((prev) => ({
-          ...prev,
-          [name]: error,
-        }));
+        setErrorsState((prev) => ({ ...prev, [name]: error }));
       }
     },
     [validateOnChange, validateField]
-  );
+  ) as UseFormReturn<T>['handleChange'];
 
   // Handler de blur
   const handleBlur = useCallback(
-    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-      const { name } = e.target;
+    (...args: unknown[]) => {
+      // Support both (event) and (field) signatures
+      let fieldName: keyof T;
+      if (args.length === 1 && typeof args[0] === 'string') {
+        fieldName = args[0] as keyof T;
+      } else {
+        const e = args[0] as ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>;
+        fieldName = e.target.name as keyof T;
+      }
 
-      setTouchedState((prev) => ({
-        ...prev,
-        [name]: true,
-      }));
+      setTouchedState((prev) => ({ ...prev, [fieldName]: true }));
 
       if (validateOnBlur) {
-        const error = validateField(name as keyof T);
-        setErrorsState((prev) => ({
-          ...prev,
-          [name]: error,
-        }));
+        const error = validateField(fieldName);
+        setErrorsState((prev) => ({ ...prev, [fieldName]: error }));
       }
     },
     [validateOnBlur, validateField]
-  );
+  ) as UseFormReturn<T>['handleBlur'];
 
   // Handler de submit
   const handleSubmit = useCallback(

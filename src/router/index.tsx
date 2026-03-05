@@ -7,13 +7,13 @@ import { LoadingPage } from '@/pages/loading';
 import { ErrorPage } from '@/pages/error';
 
 // Lazy loaded pages
-const Dashboard = lazy(() => import('@/pages/dashboard'));
-const ContasPagar = lazy(() => import('@/pages/contas-pagar'));
-const ContasReceber = lazy(() => import('@/pages/contas-receber'));
-const Fornecedores = lazy(() => import('@/pages/fornecedores'));
-const Clientes = lazy(() => import('@/pages/clientes'));
-const Relatorios = lazy(() => import('@/pages/relatorios'));
-const Configuracoes = lazy(() => import('@/pages/configuracoes'));
+const Dashboard = lazy(() => import('@/pages/Index'));
+const ContasPagar = lazy(() => import('@/pages/ContasPagar'));
+const ContasReceber = lazy(() => import('@/pages/ContasReceber'));
+const Fornecedores = lazy(() => import('@/pages/Fornecedores'));
+const Clientes = lazy(() => import('@/pages/Clientes'));
+const Relatorios = lazy(() => import('@/pages/Relatorios'));
+const Configuracoes = lazy(() => import('@/pages/Configuracoes'));
 const Login = lazy(() => import('@/pages/auth/login'));
 const Register = lazy(() => import('@/pages/auth/register'));
 const ForgotPassword = lazy(() => import('@/pages/auth/forgot-password'));

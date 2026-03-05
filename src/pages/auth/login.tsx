@@ -25,31 +25,32 @@ export function LoginPage() {
       password: '',
     },
     validate: {
-      email: (value) => {
+      email: (value: unknown) => {
         if (!value) return 'Email é obrigatório';
-        if (!validateEmail(value)) return 'Email inválido';
+        if (!validateEmail(value as string)) return 'Email inválido';
         return undefined;
       },
-      password: (value) => {
+      password: (value: unknown) => {
         if (!value) return 'Senha é obrigatória';
-        if (value.length < 6) return 'Senha deve ter no mínimo 6 caracteres';
+        if ((value as string).length < 6) return 'Senha deve ter no mínimo 6 caracteres';
         return undefined;
       },
     },
     onSubmit: async (formValues) => {
       setError(null);
       try {
-        await signIn(formValues.email, formValues.password);
+        await signIn(formValues.email as string, formValues.password as string);
         
         if (rememberMe) {
-          localStorage.setItem('rememberedEmail', formValues.email);
+          localStorage.setItem('rememberedEmail', formValues.email as string);
         } else {
           localStorage.removeItem('rememberedEmail');
         }
         
         navigate(from, { replace: true });
-      } catch (err: any) {
-        setError(err.message || 'Credenciais inválidas. Verifique seu email e senha.');
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Credenciais inválidas. Verifique seu email e senha.';
+        setError(message);
       }
     },
   });
@@ -74,7 +75,7 @@ export function LoginPage() {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <Alert variant="error" dismissible onDismiss={() => setError(null)}>
+            <Alert variant="error" onClose={() => setError(null)}>
               {error}
             </Alert>
           )}
@@ -93,12 +94,11 @@ export function LoginPage() {
                   name="email"
                   type="email"
                   autoComplete="email"
-                  value={values.email}
-                  onChange={(e) => handleChange('email', e.target.value)}
-                  onBlur={() => handleBlur('email')}
+                  value={values.email as string}
+                  onChange={(e) => handleChange('email' as keyof typeof values, e.target.value as (typeof values)[keyof typeof values])}
+                  onBlur={() => handleBlur('email' as keyof typeof values)}
                   className="pl-10"
                   placeholder="seu@email.com"
-                  error={touched.email && errors.email ? errors.email : undefined}
                 />
               </div>
             </div>
@@ -116,12 +116,11 @@ export function LoginPage() {
                   name="password"
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
-                  value={values.password}
-                  onChange={(e) => handleChange('password', e.target.value)}
-                  onBlur={() => handleBlur('password')}
+                  value={values.password as string}
+                  onChange={(e) => handleChange('password' as keyof typeof values, e.target.value as (typeof values)[keyof typeof values])}
+                  onBlur={() => handleBlur('password' as keyof typeof values)}
                   className="pl-10 pr-10"
                   placeholder="••••••••"
-                  error={touched.password && errors.password ? errors.password : undefined}
                 />
                 <button
                   type="button"

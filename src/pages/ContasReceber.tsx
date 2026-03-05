@@ -100,7 +100,7 @@ export default function ContasReceber() {
                 <Table>
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">
-                      <TableHead className="w-[40px]"><Checkbox checked={isAllSelected} onCheckedChange={selectAll} /></TableHead>
+                      <TableHead className="w-[40px]"><Checkbox checked={isAllSelected} onChange={selectAll} /></TableHead>
                       <TableHead className="w-[250px]"><SortableHeader label="Cliente" sortKey="cliente_nome" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></TableHead>
                       <TableHead>Descrição</TableHead>
                       <TableHead><SortableHeader label="Valor" sortKey="valor" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></TableHead>

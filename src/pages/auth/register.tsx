@@ -24,25 +24,25 @@ export function RegisterPage() {
       confirmPassword: '',
     },
     validate: {
-      nome: (value) => {
+      nome: (value: unknown) => {
         if (!value) return 'Nome é obrigatório';
-        if (value.length < 3) return 'Nome deve ter no mínimo 3 caracteres';
+        if ((value as string).length < 3) return 'Nome deve ter no mínimo 3 caracteres';
         return undefined;
       },
-      email: (value) => {
+      email: (value: unknown) => {
         if (!value) return 'Email é obrigatório';
-        if (!validateEmail(value)) return 'Email inválido';
+        if (!validateEmail(value as string)) return 'Email inválido';
         return undefined;
       },
-      password: (value) => {
+      password: (value: unknown) => {
         if (!value) return 'Senha é obrigatória';
-        if (value.length < 8) return 'Senha deve ter no mínimo 8 caracteres';
-        if (!/[A-Z]/.test(value)) return 'Senha deve conter letra maiúscula';
-        if (!/[a-z]/.test(value)) return 'Senha deve conter letra minúscula';
-        if (!/[0-9]/.test(value)) return 'Senha deve conter número';
+        if ((value as string).length < 8) return 'Senha deve ter no mínimo 8 caracteres';
+        if (!/[A-Z]/.test(value as string)) return 'Senha deve conter letra maiúscula';
+        if (!/[a-z]/.test(value as string)) return 'Senha deve conter letra minúscula';
+        if (!/[0-9]/.test(value as string)) return 'Senha deve conter número';
         return undefined;
       },
-      confirmPassword: (value, allValues) => {
+      confirmPassword: (value: unknown, allValues: Record<string, unknown>) => {
         if (!value) return 'Confirme sua senha';
         if (value !== allValues.password) return 'Senhas não conferem';
         return undefined;
@@ -51,19 +51,20 @@ export function RegisterPage() {
     onSubmit: async (formValues) => {
       setError(null);
       try {
-        await signUp(formValues.email, formValues.password, formValues.nome, formValues.empresa);
+        await signUp(formValues.email as string, formValues.password as string, formValues.nome as string, formValues.empresa as string);
         setSuccess(true);
-      } catch (err: any) {
-        setError(err.message || 'Erro ao criar conta. Tente novamente.');
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Erro ao criar conta. Tente novamente.';
+        setError(message);
       }
     },
   });
 
   const passwordStrength = {
-    hasLength: values.password.length >= 8,
-    hasUpper: /[A-Z]/.test(values.password),
-    hasLower: /[a-z]/.test(values.password),
-    hasNumber: /[0-9]/.test(values.password),
+    hasLength: (values.password as string).length >= 8,
+    hasUpper: /[A-Z]/.test(values.password as string),
+    hasLower: /[a-z]/.test(values.password as string),
+    hasNumber: /[0-9]/.test(values.password as string),
   };
 
   if (success) {
@@ -108,7 +109,7 @@ export function RegisterPage() {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <Alert variant="error" dismissible onDismiss={() => setError(null)}>
+            <Alert variant="error" onClose={() => setError(null)}>
               {error}
             </Alert>
           )}
@@ -127,12 +128,11 @@ export function RegisterPage() {
                   name="nome"
                   type="text"
                   autoComplete="name"
-                  value={values.nome}
-                  onChange={(e) => handleChange('nome', e.target.value)}
-                  onBlur={() => handleBlur('nome')}
+                  value={values.nome as string}
+                  onChange={(e) => handleChange('nome' as keyof typeof values, e.target.value as (typeof values)[keyof typeof values])}
+                  onBlur={() => handleBlur('nome' as keyof typeof values)}
                   className="pl-10"
                   placeholder="Seu nome"
-                  error={touched.nome && errors.nome ? errors.nome : undefined}
                 />
               </div>
             </div>
@@ -150,8 +150,8 @@ export function RegisterPage() {
                   name="empresa"
                   type="text"
                   autoComplete="organization"
-                  value={values.empresa}
-                  onChange={(e) => handleChange('empresa', e.target.value)}
+                  value={values.empresa as string}
+                  onChange={(e) => handleChange('empresa' as keyof typeof values, e.target.value as (typeof values)[keyof typeof values])}
                   className="pl-10"
                   placeholder="Nome da empresa"
                 />
@@ -171,12 +171,11 @@ export function RegisterPage() {
                   name="email"
                   type="email"
                   autoComplete="email"
-                  value={values.email}
-                  onChange={(e) => handleChange('email', e.target.value)}
-                  onBlur={() => handleBlur('email')}
+                  value={values.email as string}
+                  onChange={(e) => handleChange('email' as keyof typeof values, e.target.value as (typeof values)[keyof typeof values])}
+                  onBlur={() => handleBlur('email' as keyof typeof values)}
                   className="pl-10"
                   placeholder="seu@email.com"
-                  error={touched.email && errors.email ? errors.email : undefined}
                 />
               </div>
             </div>
@@ -194,12 +193,11 @@ export function RegisterPage() {
                   name="password"
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="new-password"
-                  value={values.password}
-                  onChange={(e) => handleChange('password', e.target.value)}
-                  onBlur={() => handleBlur('password')}
+                  value={values.password as string}
+                  onChange={(e) => handleChange('password' as keyof typeof values, e.target.value as (typeof values)[keyof typeof values])}
+                  onBlur={() => handleBlur('password' as keyof typeof values)}
                   className="pl-10 pr-10"
                   placeholder="••••••••"
-                  error={touched.password && errors.password ? errors.password : undefined}
                 />
                 <button
                   type="button"
@@ -214,7 +212,7 @@ export function RegisterPage() {
                 </button>
               </div>
               
-              {values.password && (
+              {(values.password as string) && (
                 <div className="mt-2 space-y-1 text-xs">
                   <div className={`flex items-center gap-1 ${passwordStrength.hasLength ? 'text-green-600' : 'text-gray-400'}`}>
                     <Check className="h-3 w-3" /> Mínimo 8 caracteres
@@ -245,12 +243,11 @@ export function RegisterPage() {
                   name="confirmPassword"
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="new-password"
-                  value={values.confirmPassword}
-                  onChange={(e) => handleChange('confirmPassword', e.target.value)}
-                  onBlur={() => handleBlur('confirmPassword')}
+                  value={values.confirmPassword as string}
+                  onChange={(e) => handleChange('confirmPassword' as keyof typeof values, e.target.value as (typeof values)[keyof typeof values])}
+                  onBlur={() => handleBlur('confirmPassword' as keyof typeof values)}
                   className="pl-10"
                   placeholder="••••••••"
-                  error={touched.confirmPassword && errors.confirmPassword ? errors.confirmPassword : undefined}
                 />
               </div>
             </div>

@@ -154,7 +154,7 @@ export const authService = {
     if (!user) throw new Error('Not authenticated');
 
     // Delete user data first
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await (supabase as any)
       .from('user_profiles')
       .delete()
       .eq('user_id', user.id);

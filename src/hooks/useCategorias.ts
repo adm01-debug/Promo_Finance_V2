@@ -103,8 +103,8 @@ export function useCategorias(tipo?: 'despesa' | 'receita') {
 }
 
 export function useCategoria(id: string | undefined) {
-  const { data: allCategorias = [] } = useCategorias();
-  const categoria = allCategorias.find(c => c.id === id);
+  const { categorias } = useCategorias();
+  const categoria = categorias.find(c => c.id === id);
 
   return {
     categoria,
