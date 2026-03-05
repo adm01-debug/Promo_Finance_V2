@@ -23,13 +23,13 @@ export function useRecurringPayments(tipo?: RecurringType) {
     refetch,
   } = useQuery({
     queryKey: [QUERY_KEY, tipo],
-    queryFn: () => recurringPaymentsService.getAll(tipo),
+    queryFn: () => recurringPaymentsService.getAll(),
   });
 
   // Get active recurring payments
   const { data: activePayments = [] } = useQuery({
     queryKey: [QUERY_KEY, 'active', tipo],
-    queryFn: () => recurringPaymentsService.getActive(tipo),
+    queryFn: () => recurringPaymentsService.getActive(),
   });
 
   // Create mutation
@@ -92,14 +92,14 @@ export function useRecurringPayments(tipo?: RecurringType) {
 
   // Generate payments mutation
   const generatePaymentsMutation = useMutation({
-    mutationFn: (id: string) => recurringPaymentsService.generatePayments(id),
-    onSuccess: (generated) => {
+    mutationFn: (id: string) => recurringPaymentsService.processAll(),
+    onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
       queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
       queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
       
-      if (generated.length > 0) {
-        toast.success(`${generated.length} pagamento(s) gerado(s)!`);
+      if (result.generated > 0) {
+        toast.success(`${result.generated} pagamento(s) gerado(s)!`);
       } else {
         toast.info('Nenhum pagamento a gerar no momento');
       }

@@ -20,43 +20,25 @@ export interface ExportOptions<T> {
 }
 
 class ExportService {
-  /**
-   * Export data to CSV format
-   */
   toCSV<T extends Record<string, unknown>>(
     data: T[],
     options: ExportOptions<T> = {}
   ): string {
-    const {
-      columns,
-      includeHeaders = true,
-      delimiter = ',',
-    } = options;
-
+    const { columns, includeHeaders = true, delimiter = ',' } = options;
     if (data.length === 0) return '';
 
-    const headers = columns
-      ? columns.map((col) => col.header)
-      : Object.keys(data[0]);
-
-    const keys = columns
-      ? columns.map((col) => col.key as string)
-      : Object.keys(data[0]);
+    const headers = columns ? columns.map((col) => col.header) : Object.keys(data[0]);
+    const keys = columns ? columns.map((col) => col.key as string) : Object.keys(data[0]);
 
     const formatValue = (value: unknown, row: T, column?: ExportColumn<T>): string => {
-      if (column?.formatter) {
-        return column.formatter(value, row);
-      }
-
+      if (column?.formatter) return column.formatter(value, row);
       if (value === null || value === undefined) return '';
       if (typeof value === 'boolean') return value ? 'Sim' : 'Não';
       if (value instanceof Date) return formatDate(value);
       if (typeof value === 'number' && column?.key.toString().includes('valor')) {
         return formatCurrency(value);
       }
-
       const stringValue = String(value);
-      // Escape quotes and wrap in quotes if contains delimiter or newline
       if (stringValue.includes(delimiter) || stringValue.includes('\n') || stringValue.includes('"')) {
         return `"${stringValue.replace(/"/g, '""')}"`;
       }
@@ -64,10 +46,7 @@ class ExportService {
     };
 
     const rows: string[] = [];
-
-    if (includeHeaders) {
-      rows.push(headers.join(delimiter));
-    }
+    if (includeHeaders) rows.push(headers.join(delimiter));
 
     data.forEach((row) => {
       const values = keys.map((key, index) => {
@@ -81,23 +60,15 @@ class ExportService {
     return rows.join('\n');
   }
 
-  /**
-   * Export data to JSON format
-   */
   toJSON<T>(data: T[], options: ExportOptions<T> = {}): string {
     const { columns } = options;
-
-    if (!columns) {
-      return JSON.stringify(data, null, 2);
-    }
+    if (!columns) return JSON.stringify(data, null, 2);
 
     const transformedData = data.map((row) => {
       const transformed: Record<string, unknown> = {};
       columns.forEach((col) => {
         const value = this.getNestedValue(row as Record<string, unknown>, col.key as string);
-        transformed[col.header] = col.formatter
-          ? col.formatter(value, row)
-          : value;
+        transformed[col.header] = col.formatter ? col.formatter(value, row) : value;
       });
       return transformed;
     });
@@ -105,17 +76,11 @@ class ExportService {
     return JSON.stringify(transformedData, null, 2);
   }
 
-  /**
-   * Download data as a file
-   */
   download<T extends Record<string, unknown>>(
     data: T[],
     options: ExportOptions<T> = {}
   ): void {
-    const {
-      filename = 'export',
-      format = 'csv',
-    } = options;
+    const { filename = 'export', format = 'csv' } = options;
 
     let content: string;
     let mimeType: string;
@@ -138,7 +103,6 @@ class ExportService {
     const blob = new Blob(['\ufeff' + content], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-
     link.href = url;
     link.download = `${filename}_${this.getTimestamp()}.${extension}`;
     document.body.appendChild(link);
@@ -147,18 +111,12 @@ class ExportService {
     URL.revokeObjectURL(url);
   }
 
-  /**
-   * Get nested object value by dot notation key
-   */
   private getNestedValue(obj: Record<string, unknown>, key: string): unknown {
     return key.split('.').reduce((value, part) => {
       return value && typeof value === 'object' ? (value as Record<string, unknown>)[part] : undefined;
     }, obj as unknown);
   }
 
-  /**
-   * Get timestamp for filename
-   */
   private getTimestamp(): string {
     const now = new Date();
     return [
@@ -170,11 +128,8 @@ class ExportService {
     ].join('');
   }
 
-  /**
-   * Export contas a pagar
-   */
-  exportContasPagar(data: ContaPagar[]): void {
-    this.download(data, {
+  exportContasPagar(data: ExportContaPagar[]): void {
+    this.download(data as unknown as Record<string, unknown>[], {
       filename: 'contas_pagar',
       columns: [
         { key: 'id', header: 'ID' },
@@ -185,15 +140,12 @@ class ExportService {
         { key: 'status', header: 'Status' },
         { key: 'fornecedor.nome', header: 'Fornecedor' },
         { key: 'categoria', header: 'Categoria' },
-      ],
+      ] as ExportColumn<Record<string, unknown>>[],
     });
   }
 
-  /**
-   * Export contas a receber
-   */
-  exportContasReceber(data: ContaReceber[]): void {
-    this.download(data, {
+  exportContasReceber(data: ExportContaReceber[]): void {
+    this.download(data as unknown as Record<string, unknown>[], {
       filename: 'contas_receber',
       columns: [
         { key: 'id', header: 'ID' },
@@ -204,15 +156,12 @@ class ExportService {
         { key: 'status', header: 'Status' },
         { key: 'cliente.nome', header: 'Cliente' },
         { key: 'categoria', header: 'Categoria' },
-      ],
+      ] as ExportColumn<Record<string, unknown>>[],
     });
   }
 
-  /**
-   * Export fornecedores
-   */
-  exportFornecedores(data: Fornecedor[]): void {
-    this.download(data, {
+  exportFornecedores(data: ExportFornecedor[]): void {
+    this.download(data as unknown as Record<string, unknown>[], {
       filename: 'fornecedores',
       columns: [
         { key: 'id', header: 'ID' },
@@ -223,15 +172,12 @@ class ExportService {
         { key: 'endereco', header: 'Endereço' },
         { key: 'categoria', header: 'Categoria' },
         { key: 'ativo', header: 'Ativo', formatter: (v) => v ? 'Sim' : 'Não' },
-      ],
+      ] as ExportColumn<Record<string, unknown>>[],
     });
   }
 
-  /**
-   * Export clientes
-   */
-  exportClientes(data: Cliente[]): void {
-    this.download(data, {
+  exportClientes(data: ExportCliente[]): void {
+    this.download(data as unknown as Record<string, unknown>[], {
       filename: 'clientes',
       columns: [
         { key: 'id', header: 'ID' },
@@ -241,13 +187,10 @@ class ExportService {
         { key: 'telefone', header: 'Telefone' },
         { key: 'endereco', header: 'Endereço' },
         { key: 'ativo', header: 'Ativo', formatter: (v) => v ? 'Sim' : 'Não' },
-      ],
+      ] as ExportColumn<Record<string, unknown>>[],
     });
   }
 
-  /**
-   * Export report summary
-   */
   exportReportSummary(data: ReportSummary): void {
     const rows = [
       { label: 'Total Receitas', value: formatCurrency(data.totalReceitas) },
@@ -263,15 +206,12 @@ class ExportService {
       columns: [
         { key: 'label', header: 'Indicador' },
         { key: 'value', header: 'Valor' },
-      ],
+      ] as ExportColumn<Record<string, unknown>>[],
     });
   }
 
-  /**
-   * Export cash flow
-   */
   exportCashFlow(data: CashFlowItem[]): void {
-    this.download(data, {
+    this.download(data as unknown as Record<string, unknown>[], {
       filename: 'fluxo_caixa',
       columns: [
         { key: 'date', header: 'Data', formatter: (v) => formatDate(v as string) },
@@ -279,13 +219,13 @@ class ExportService {
         { key: 'saidas', header: 'Saídas', formatter: (v) => formatCurrency(v as number) },
         { key: 'saldo', header: 'Saldo', formatter: (v) => formatCurrency(v as number) },
         { key: 'saldoAcumulado', header: 'Saldo Acumulado', formatter: (v) => formatCurrency(v as number) },
-      ],
+      ] as ExportColumn<Record<string, unknown>>[],
     });
   }
 }
 
 // Types for export
-interface ContaPagar {
+interface ExportContaPagar {
   id: string;
   descricao: string;
   valor: number;
@@ -296,7 +236,7 @@ interface ContaPagar {
   categoria?: string;
 }
 
-interface ContaReceber {
+interface ExportContaReceber {
   id: string;
   descricao: string;
   valor: number;
@@ -307,7 +247,7 @@ interface ContaReceber {
   categoria?: string;
 }
 
-interface Fornecedor {
+interface ExportFornecedor {
   id: string;
   nome: string;
   cnpj?: string;
@@ -318,7 +258,7 @@ interface Fornecedor {
   ativo: boolean;
 }
 
-interface Cliente {
+interface ExportCliente {
   id: string;
   nome: string;
   cpfCnpj?: string;

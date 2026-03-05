@@ -207,7 +207,7 @@ export async function subscribeToPush(publicKey: string): Promise<PushSubscripti
     
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(publicKey) as BufferSource,
+      applicationServerKey: urlBase64ToUint8Array(publicKey) as unknown as BufferSource,
     });
 
     console.log('[PWA] Push subscription:', subscription);
