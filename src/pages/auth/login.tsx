@@ -100,7 +100,6 @@ export function LoginPage() {
                   className="pl-10"
                   placeholder="seu@email.com"
                 />
-                />
               </div>
             </div>
 
