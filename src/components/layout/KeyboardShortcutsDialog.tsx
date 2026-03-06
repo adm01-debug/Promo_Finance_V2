@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Keyboard, X } from 'lucide-react';
+import { forwardRef, useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Keyboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -11,7 +11,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { getShortcutsList } from '@/hooks/useKeyboardShortcuts';
 
-export const KeyboardShortcutsDialog = () => {
+export const KeyboardShortcutsDialog = forwardRef<HTMLButtonElement>(function KeyboardShortcutsDialog(_, ref) {
   const [open, setOpen] = useState(false);
   const shortcutsList = getShortcutsList();
 
@@ -31,6 +31,7 @@ export const KeyboardShortcutsDialog = () => {
   return (
     <>
       <Button
+        ref={ref}
         variant="ghost"
         size="icon"
         className="h-10 w-10 hidden md:flex"
@@ -90,11 +91,13 @@ export const KeyboardShortcutsDialog = () => {
           </div>
 
           <div className="text-xs text-muted-foreground text-center pt-2 border-t">
-            Pressione <Badge variant="outline" className="mx-1 px-1.5 py-0 text-[10px]">Alt</Badge> + 
+            Pressione <Badge variant="outline" className="mx-1 px-1.5 py-0 text-[10px]">Alt</Badge> +
             <Badge variant="outline" className="mx-1 px-1.5 py-0 text-[10px]">?</Badge> para abrir este menu
           </div>
         </DialogContent>
       </Dialog>
     </>
   );
-};
+});
+
+KeyboardShortcutsDialog.displayName = 'KeyboardShortcutsDialog';
