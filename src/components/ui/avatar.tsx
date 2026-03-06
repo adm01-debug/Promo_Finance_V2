@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useState } from 'react';
 import { User } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -76,21 +77,24 @@ function getColorFromName(name: string): string {
   return colors[Math.abs(hash) % colors.length];
 }
 
-export function Avatar({
-  src,
-  alt,
-  name,
-  size = 'md',
-  shape = 'circle',
-  status,
-  className,
-}: AvatarProps) {
+export const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
+  {
+    src,
+    alt,
+    name,
+    size = 'md',
+    shape = 'circle',
+    status,
+    className,
+  },
+  ref
+) {
   const [imageError, setImageError] = useState(false);
   const showImage = src && !imageError;
   const showInitials = !showImage && name;
 
   return (
-    <div className={cn('relative inline-flex', className)}>
+    <div ref={ref} className={cn('relative inline-flex', className)}>
       <div
         className={cn(
           'flex items-center justify-center overflow-hidden',
@@ -125,7 +129,9 @@ export function Avatar({
       )}
     </div>
   );
-}
+});
+
+Avatar.displayName = 'Avatar';
 
 // Avatar Group
 interface AvatarGroupProps {
@@ -236,8 +242,6 @@ export function AvatarWithName({
 }
 
 // Compatibilidade com shadcn/ui Avatar API
-import * as React from "react";
-
 interface AvatarImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src?: string;
   alt?: string;
@@ -249,7 +253,7 @@ export function AvatarImage({ src, alt, className, ...props }: AvatarImageProps)
     <img
       src={src}
       alt={alt}
-      className={cn("aspect-square h-full w-full object-cover", className)}
+      className={cn('aspect-square h-full w-full object-cover', className)}
       {...props}
     />
   );
@@ -264,7 +268,7 @@ export function AvatarFallback({ children, className, ...props }: AvatarFallback
   return (
     <span
       className={cn(
-        "flex h-full w-full items-center justify-center bg-muted font-medium",
+        'flex h-full w-full items-center justify-center bg-muted font-medium',
         className
       )}
       {...props}
