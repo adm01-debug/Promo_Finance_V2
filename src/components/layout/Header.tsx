@@ -46,7 +46,7 @@ const roleLabels: Record<string, { label: string; color: string }> = {
   visualizador: { label: 'Visualizador', color: 'bg-muted text-muted-foreground' },
 };
 
-export const Header = ({ sidebarCollapsed }: HeaderProps) => {
+export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }, ref) => {
   const { theme, setTheme, isDark } = useTheme();
   const { user, profile, role, signOut } = useAuth();
   const navigate = useNavigate();
