@@ -2,7 +2,7 @@ import { ReactElement, ReactNode } from 'react';
 import { render, RenderOptions, RenderResult } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ThemeProvider } from '@/contexts/theme-context';
+import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { vi } from 'vitest';
 
 // Create a fresh QueryClient for each test
