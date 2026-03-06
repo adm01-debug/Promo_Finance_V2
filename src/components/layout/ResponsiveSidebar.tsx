@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { forwardRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CreditCard, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -10,7 +10,7 @@ interface ResponsiveSidebarProps {
   onCollapseChange?: (collapsed: boolean) => void;
 }
 
-export const ResponsiveSidebar = ({ onCollapseChange }: ResponsiveSidebarProps) => {
+export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>(function ResponsiveSidebar({ onCollapseChange }, ref) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const isMobile = useIsMobile();
@@ -36,6 +36,7 @@ export const ResponsiveSidebar = ({ onCollapseChange }: ResponsiveSidebarProps) 
   // Desktop: Show full sidebar
   return (
     <motion.aside
+      ref={ref}
       initial={false}
       animate={{ width: collapsed ? 72 : 280 }}
       transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
@@ -98,4 +99,5 @@ export const ResponsiveSidebar = ({ onCollapseChange }: ResponsiveSidebarProps) 
       </button>
     </motion.aside>
   );
-};
+});
+ResponsiveSidebar.displayName = 'ResponsiveSidebar';
