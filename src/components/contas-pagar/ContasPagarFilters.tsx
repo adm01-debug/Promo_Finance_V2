@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { Search, ShieldAlert } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -38,7 +39,7 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
 } as const;
 
-export function ContasPagarFilters({
+export const ContasPagarFilters = forwardRef<HTMLDivElement, ContasPagarFiltersProps>(function ContasPagarFilters({
   searchTerm,
   onSearchChange,
   statusFilter,
@@ -53,9 +54,9 @@ export function ContasPagarFilters({
   onAdvancedFiltersChange,
   centrosCusto,
   countPendentesAprovacao,
-}: ContasPagarFiltersProps) {
+}, ref) {
   return (
-    <motion.div variants={itemVariants}>
+    <motion.div ref={ref} variants={itemVariants}>
       <Card className="card-base">
         <CardContent className="p-3 sm:p-4">
           {/* Search bar - always full width */}
@@ -145,4 +146,6 @@ export function ContasPagarFilters({
       </Card>
     </motion.div>
   );
-}
+});
+
+ContasPagarFilters.displayName = 'ContasPagarFilters';
