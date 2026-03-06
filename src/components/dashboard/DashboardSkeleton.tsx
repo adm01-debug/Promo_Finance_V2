@@ -4,7 +4,7 @@
  * Provides a beautiful loading experience for the dashboard
  */
 
-import { motion } from 'framer-motion';
+import { forwardRef } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
