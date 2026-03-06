@@ -249,8 +249,11 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
                 </DropdownMenuItem>
               ))}
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild className="text-center text-primary font-medium cursor-pointer justify-center">
-                <Link to="/alertas">Ver todas as notificações</Link>
+              <DropdownMenuItem
+                className="text-center text-primary font-medium cursor-pointer justify-center"
+                onClick={() => navigate('/alertas')}
+              >
+                Ver todas as notificações
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -300,11 +303,12 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
                 <User className="h-4 w-4 mr-2" />
                 Meu Perfil
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className="cursor-pointer">
-                <Link to="/configuracoes">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Configurações
-                </Link>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => navigate('/configuracoes')}
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                Configurações
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem 
