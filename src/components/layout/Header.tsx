@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Bell,
@@ -45,7 +46,7 @@ const roleLabels: Record<string, { label: string; color: string }> = {
   visualizador: { label: 'Visualizador', color: 'bg-muted text-muted-foreground' },
 };
 
-export const Header = ({ sidebarCollapsed }: HeaderProps) => {
+export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }, ref) => {
   const { theme, setTheme, isDark } = useTheme();
   const { user, profile, role, signOut } = useAuth();
   const navigate = useNavigate();
@@ -92,6 +93,7 @@ export const Header = ({ sidebarCollapsed }: HeaderProps) => {
 
   return (
     <header
+      ref={ref}
       className={cn(
         'fixed top-0 right-0 z-30 h-16 bg-card/80 backdrop-blur-xl border-b border-border transition-all duration-300',
         sidebarCollapsed ? 'left-[72px]' : 'left-[260px]'
@@ -318,4 +320,5 @@ export const Header = ({ sidebarCollapsed }: HeaderProps) => {
       </div>
     </header>
   );
-};
+});
+Header.displayName = 'Header';
