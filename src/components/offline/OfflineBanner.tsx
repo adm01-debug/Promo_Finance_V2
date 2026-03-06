@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { WifiOff, RefreshCw, CloudOff, Database, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,12 +15,12 @@ interface OfflineBannerProps {
   pendingChanges?: number;
 }
 
-export function OfflineBanner({ 
+export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(function OfflineBanner({
   className,
   position = 'top',
   showPendingCount = true,
   pendingChanges = 0,
-}: OfflineBannerProps) {
+}: OfflineBannerProps, ref) {
   const { isOnline } = useNetworkStatus();
   const [wasOffline, setWasOffline] = useState(false);
   const [showReconnected, setShowReconnected] = useState(false);
@@ -182,7 +183,8 @@ export function OfflineBanner({
       )}
     </AnimatePresence>
   );
-}
+});
+OfflineBanner.displayName = 'OfflineBanner';
 
 // Compact offline indicator for header/sidebar
 export function OfflineIndicator({ className }: { className?: string }) {
