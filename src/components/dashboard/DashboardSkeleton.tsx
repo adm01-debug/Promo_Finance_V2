@@ -34,22 +34,25 @@ const itemVariants = {
 } as const;
 
 // Shimmer effect component
-function ShimmerBar({ className }: { className?: string }) {
-  return (
-    <div className={cn('relative overflow-hidden bg-muted rounded', className)}>
-      <motion.div
-        initial={{ x: '-100%' }}
-        animate={{ x: '100%' }}
-        transition={{
-          repeat: Infinity,
-          duration: 1.5,
-          ease: 'easeInOut',
-        }}
-        className="absolute inset-0 bg-gradient-to-r from-transparent via-background/50 to-transparent"
-      />
-    </div>
-  );
-}
+const ShimmerBar = forwardRef<HTMLDivElement, { className?: string }>(
+  ({ className }, ref) => {
+    return (
+      <div ref={ref} className={cn('relative overflow-hidden bg-muted rounded', className)}>
+        <motion.div
+          initial={{ x: '-100%' }}
+          animate={{ x: '100%' }}
+          transition={{
+            repeat: Infinity,
+            duration: 1.5,
+            ease: 'easeInOut',
+          }}
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-background/50 to-transparent"
+        />
+      </div>
+    );
+  }
+);
+ShimmerBar.displayName = 'ShimmerBar';
 
 // KPI Card Skeleton
 function KPICardSkeleton({ index = 0, variant = 'primary' }: { index?: number; variant?: 'hero' | 'primary' | 'secondary' }) {
