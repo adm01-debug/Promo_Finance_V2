@@ -1,13 +1,16 @@
-import { ReactNode } from 'react';
+import { forwardRef, ReactNode } from 'react';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 
 interface KeyboardShortcutsProviderProps {
   children: ReactNode;
 }
 
-export const KeyboardShortcutsProvider = ({ children }: KeyboardShortcutsProviderProps) => {
-  // Initialize keyboard shortcuts
-  useKeyboardShortcuts();
-  
-  return <>{children}</>;
-};
+export const KeyboardShortcutsProvider = forwardRef<HTMLDivElement, KeyboardShortcutsProviderProps>(
+  ({ children }, _ref) => {
+    // Initialize keyboard shortcuts
+    useKeyboardShortcuts();
+    
+    return <>{children}</>;
+  }
+);
+KeyboardShortcutsProvider.displayName = 'KeyboardShortcutsProvider';
