@@ -152,7 +152,7 @@ export default function ResetPassword() {
             transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
             className="mx-auto w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center"
           >
-            <CheckCircle2 className="h-8 w-8 text-green-500" />
+            <CheckCircle2 className="h-8 w-8 text-primary" />
           </motion.div>
           <h3 className="text-xl font-semibold">Senha Redefinida!</h3>
           <p className="text-muted-foreground text-sm">
