@@ -284,7 +284,7 @@ export function PrevisaoInadimplencia() {
       case 'alto':
         return { color: 'text-destructive', bg: 'bg-destructive/10', icon: AlertTriangle, label: 'Alto Risco' };
       case 'medio':
-        return { color: 'text-amber-500', bg: 'bg-amber-500/10', icon: Target, label: 'Médio Risco' };
+        return { color: 'text-warning', bg: 'bg-warning/10', icon: Target, label: 'Médio Risco' };
       case 'baixo':
         return { color: 'text-success', bg: 'bg-success/10', icon: Shield, label: 'Baixo Risco' };
     }
