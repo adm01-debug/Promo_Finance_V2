@@ -198,7 +198,7 @@ export function DashboardReformaTributaria() {
 
             {/* Cards de Alíquotas */}
             <div className="grid gap-3 sm:gap-4 grid-cols-3">
-              <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20 hover:scale-[1.02] transition-transform">
+              <Card className="border-primary/20 bg-primary/5 hover:scale-[1.02] transition-transform">
                 <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
                   <CardTitle className="text-[10px] sm:text-sm flex items-center gap-1 sm:gap-2">
                     <Receipt className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
@@ -207,14 +207,14 @@ export function DashboardReformaTributaria() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-3 sm:p-6 pt-0">
-                  <div className="text-lg sm:text-2xl md:text-3xl font-bold text-blue-600">{aliquotasAtuais.cbs}%</div>
+                  <div className="text-lg sm:text-2xl md:text-3xl font-bold text-primary">{aliquotasAtuais.cbs}%</div>
                   <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 sm:mt-2 hidden sm:block">
                     Substitui PIS e COFINS
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="border-emerald-200 bg-emerald-50/50 dark:bg-emerald-950/20 hover:scale-[1.02] transition-transform">
+              <Card className="border-success/20 bg-success/5 hover:scale-[1.02] transition-transform">
                 <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
                   <CardTitle className="text-[10px] sm:text-sm flex items-center gap-1 sm:gap-2">
                     <Landmark className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
@@ -223,14 +223,14 @@ export function DashboardReformaTributaria() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-3 sm:p-6 pt-0">
-                  <div className="text-lg sm:text-2xl md:text-3xl font-bold text-emerald-600">{aliquotasAtuais.ibs}%</div>
+                  <div className="text-lg sm:text-2xl md:text-3xl font-bold text-success">{aliquotasAtuais.ibs}%</div>
                   <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 sm:mt-2 hidden sm:block">
                     Substitui ICMS e ISS
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="border-orange-200 bg-orange-50/50 dark:bg-orange-950/20 hover:scale-[1.02] transition-transform">
+              <Card className="border-warning/20 bg-warning/5 hover:scale-[1.02] transition-transform">
                 <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
                   <CardTitle className="text-[10px] sm:text-sm flex items-center gap-1 sm:gap-2">
                     <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
@@ -239,7 +239,7 @@ export function DashboardReformaTributaria() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-3 sm:p-6 pt-0">
-                  <div className="text-lg sm:text-2xl md:text-3xl font-bold text-orange-600">Var.</div>
+                  <div className="text-lg sm:text-2xl md:text-3xl font-bold text-warning">Var.</div>
                   <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 sm:mt-2 hidden sm:block">
                     Produtos nocivos
                   </p>
