@@ -328,7 +328,7 @@ export function AutoContingenciaConfig() {
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="text-lg flex items-center gap-2">
-                <Zap className="h-5 w-5 text-amber-500" />
+                <Zap className="h-5 w-5 text-warning" />
                 Regras de Ativação
               </CardTitle>
               <CardDescription>
