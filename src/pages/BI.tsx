@@ -471,15 +471,15 @@ export default function BI() {
           </Card>
 
           <Card className="relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-br from-success/10 to-transparent" />
             <CardContent className="pt-6 relative">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Receita do Mês</p>
-                  <p className="text-2xl font-bold text-green-600">{formatCurrency(kpis.receitaMes)}</p>
+                  <p className="text-2xl font-bold text-success">{formatCurrency(kpis.receitaMes)}</p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-success" />
                 </div>
               </div>
               <div className="mt-2 flex items-center gap-1 text-sm">
