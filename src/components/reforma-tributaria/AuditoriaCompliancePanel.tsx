@@ -21,8 +21,8 @@ export function AuditoriaCompliancePanel({ empresaId }: Props) {
   const getSeverityBadge = (severity: string) => {
     switch (severity) {
       case 'critico': return <Badge variant="destructive">Crítico</Badge>;
-      case 'erro': return <Badge className="bg-orange-500">Erro</Badge>;
-      case 'aviso': return <Badge className="bg-amber-500">Aviso</Badge>;
+      case 'erro': return <Badge className="bg-warning text-warning-foreground">Erro</Badge>;
+      case 'aviso': return <Badge className="bg-warning/70 text-warning-foreground">Aviso</Badge>;
       default: return <Badge variant="secondary">Info</Badge>;
     }
   };
