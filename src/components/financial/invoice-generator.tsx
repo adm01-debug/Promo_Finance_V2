@@ -495,7 +495,7 @@ export function InvoiceGenerator({
             onChange={(e) => setInvoice(prev => ({ ...prev, paymentInfo: e.target.value }))}
             rows={2}
             placeholder="PIX, dados bancários, formas de pagamento..."
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent resize-none"
+            className="w-full px-3 py-2 border border-border rounded-lg bg-transparent resize-none"
           />
         </div>
       </div>
