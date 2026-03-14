@@ -242,7 +242,7 @@ export function ProactiveSuggestions({ onSuggestionClick }: ProactiveSuggestions
     const variants: Record<string, string> = {
       baixa: 'bg-muted text-muted-foreground',
       media: 'bg-warning/20 text-warning',
-      alta: 'bg-orange-500/20 text-orange-600',
+      alta: 'bg-warning/20 text-warning',
       critica: 'bg-destructive/20 text-destructive',
     };
     return variants[priority] || variants.media;

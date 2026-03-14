@@ -236,7 +236,7 @@ toast.promise = async <T,>(
     toastInstance.update({
       id: toastInstance.id,
       title: typeof success === "function" ? success(result) : success,
-      className: "border-green-500/50 bg-green-50 dark:bg-green-950/50",
+      className: "border-success/50 bg-success/10",
     } as ToasterToast);
     addToRemoveQueue(toastInstance.id, 3000);
     return result;

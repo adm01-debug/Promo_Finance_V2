@@ -119,7 +119,7 @@ export function useHighlight(text: string, search: string): string[] {
 export function HighlightMatch({
   text,
   search,
-  highlightClass = 'bg-yellow-200 dark:bg-yellow-900',
+  highlightClass = 'bg-warning/30',
 }: {
   text: string;
   search: string;

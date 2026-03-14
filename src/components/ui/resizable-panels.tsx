@@ -284,7 +284,7 @@ export function ResizeHandle({ className, disabled = false }: ResizeHandleProps)
       >
         <div
           className={cn(
-            'rounded-full bg-gray-400 dark:bg-gray-500',
+            'rounded-full bg-muted-foreground/50',
             direction === 'horizontal' ? 'w-0.5 h-4' : 'w-4 h-0.5'
           )}
         />

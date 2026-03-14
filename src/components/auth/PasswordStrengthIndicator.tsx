@@ -195,8 +195,8 @@ export function PasswordStrengthIndicator({ password, onStrengthChange }: Passwo
       <div className={cn(
         'flex items-center gap-1.5 text-xs',
         leakCheck.checking && 'text-muted-foreground',
-        !leakCheck.checking && !leakCheck.leaked && password.length >= 8 && 'text-green-600 dark:text-green-400',
-        leakCheck.leaked && 'text-red-500'
+        !leakCheck.checking && !leakCheck.leaked && password.length >= 8 && 'text-success',
+        leakCheck.leaked && 'text-destructive'
       )}>
         {leakCheck.checking ? (
           <>

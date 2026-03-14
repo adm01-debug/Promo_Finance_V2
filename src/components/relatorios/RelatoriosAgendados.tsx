@@ -222,11 +222,11 @@ export function RelatoriosAgendados() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'gerado':
-        return <Badge className="bg-green-500/10 text-green-600 border-green-500/20"><CheckCircle className="h-3 w-3 mr-1" />Gerado</Badge>;
+        return <Badge className="bg-success/10 text-success border-success/20"><CheckCircle className="h-3 w-3 mr-1" />Gerado</Badge>;
       case 'enviado':
-        return <Badge className="bg-blue-500/10 text-blue-600 border-blue-500/20"><CheckCircle className="h-3 w-3 mr-1" />Enviado</Badge>;
+        return <Badge className="bg-primary/10 text-primary border-primary/20"><CheckCircle className="h-3 w-3 mr-1" />Enviado</Badge>;
       case 'erro':
-        return <Badge className="bg-red-500/10 text-red-600 border-red-500/20"><XCircle className="h-3 w-3 mr-1" />Erro</Badge>;
+        return <Badge className="bg-destructive/10 text-destructive border-destructive/20"><XCircle className="h-3 w-3 mr-1" />Erro</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }

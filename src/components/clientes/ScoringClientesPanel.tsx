@@ -246,9 +246,9 @@ export function ScoringClientesPanel() {
                           <div className="space-y-1">
                             <div className="flex items-center justify-between text-sm">
                               <span className="flex items-center gap-1">
-                                {fator.impacto === 'positivo' && <TrendingUp className="h-3 w-3 text-emerald-500" />}
-                                {fator.impacto === 'negativo' && <TrendingDown className="h-3 w-3 text-red-500" />}
-                                {fator.impacto === 'neutro' && <Minus className="h-3 w-3 text-gray-400" />}
+                                {fator.impacto === 'positivo' && <TrendingUp className="h-3 w-3 text-success" />}
+                                {fator.impacto === 'negativo' && <TrendingDown className="h-3 w-3 text-destructive" />}
+                                {fator.impacto === 'neutro' && <Minus className="h-3 w-3 text-muted-foreground" />}
                                 {fator.nome}
                               </span>
                               <span className="font-semibold">{fator.valor}</span>
@@ -256,8 +256,8 @@ export function ScoringClientesPanel() {
                             <Progress 
                               value={(fator.valor / 250) * 100} 
                               className={`h-1.5 ${
-                                fator.impacto === 'positivo' ? '[&>div]:bg-emerald-500' :
-                                fator.impacto === 'negativo' ? '[&>div]:bg-red-500' : ''
+                                fator.impacto === 'positivo' ? '[&>div]:bg-success' :
+                                fator.impacto === 'negativo' ? '[&>div]:bg-destructive' : ''
                               }`}
                             />
                           </div>

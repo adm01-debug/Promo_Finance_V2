@@ -25,27 +25,27 @@ interface ConfirmDialogProps {
 const variantConfig = {
   default: {
     icon: <Info className="w-6 h-6" />,
-    iconBg: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
+    iconBg: 'bg-primary/10 text-primary',
     button: 'primary' as const,
   },
   danger: {
     icon: <XCircle className="w-6 h-6" />,
-    iconBg: 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400',
+    iconBg: 'bg-destructive/10 text-destructive',
     button: 'destructive' as const,
   },
   warning: {
     icon: <AlertTriangle className="w-6 h-6" />,
-    iconBg: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400',
+    iconBg: 'bg-warning/10 text-warning',
     button: 'warning' as const,
   },
   success: {
     icon: <CheckCircle className="w-6 h-6" />,
-    iconBg: 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
+    iconBg: 'bg-success/10 text-success',
     button: 'success' as const,
   },
   info: {
     icon: <Info className="w-6 h-6" />,
-    iconBg: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
+    iconBg: 'bg-primary/10 text-primary',
     button: 'primary' as const,
   },
 };

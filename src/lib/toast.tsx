@@ -71,7 +71,7 @@ export const toast = {
   loading(message: string, options?: Omit<ToastOptions, 'action' | 'cancel'>) {
     return sonnerToast.loading(message, {
       ...options,
-      icon: <Loader2 className="h-5 w-5 animate-spin text-blue-500" />,
+      icon: <Loader2 className="h-5 w-5 animate-spin text-primary" />,
       duration: Infinity, // Loading toasts don't auto-dismiss
     });
   },

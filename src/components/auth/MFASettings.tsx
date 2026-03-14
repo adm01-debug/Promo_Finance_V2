@@ -129,7 +129,7 @@ export function MFASettings() {
                   className="bg-muted/50 rounded-lg p-4 space-y-4"
                 >
                   <div className="flex items-start gap-3">
-                    <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5" />
+                    <AlertTriangle className="h-5 w-5 text-warning mt-0.5" />
                     <div>
                       <p className="font-medium">Recomendação de Segurança</p>
                       <p className="text-sm text-muted-foreground">

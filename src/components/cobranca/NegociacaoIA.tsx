@@ -275,7 +275,7 @@ Pergunta do usuário: ${mensagemUsuario}
                           <span className="text-sm text-muted-foreground line-through">
                             {formatCurrency(proposta.valorOriginal)}
                           </span>
-                          <span className="text-lg font-bold text-emerald-600">
+                          <span className="text-lg font-bold text-success">
                             {formatCurrency(proposta.valorProposto)}
                           </span>
                         </div>

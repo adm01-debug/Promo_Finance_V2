@@ -14,7 +14,7 @@ export function Navbar({ onMenuClick, className }: NavbarProps) {
           <Button variant="ghost" size="sm" onClick={onMenuClick}>
             <Menu className="h-5 w-5" />
           </Button>
-          <span className="text-lg font-semibold text-gray-900 dark:text-white">
+          <span className="text-lg font-semibold text-foreground">
             Finance Hub
           </span>
         </div>

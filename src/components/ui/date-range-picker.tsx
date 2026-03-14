@@ -170,18 +170,18 @@ export function DateRangePicker({
         disabled={disabled}
         className={cn(
           'w-full flex items-center justify-between gap-2 px-4 py-2',
-          'border border-gray-300 dark:border-gray-600 rounded-lg',
-          'bg-white dark:bg-gray-700 text-gray-900 dark:text-white',
-          'hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors',
+          'border border-input rounded-lg',
+          'bg-background text-foreground',
+          'hover:bg-muted transition-colors',
           'disabled:opacity-50 disabled:cursor-not-allowed',
-          isOpen && 'ring-2 ring-primary-500 border-transparent'
+          isOpen && 'ring-2 ring-ring border-transparent'
         )}
       >
         <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-gray-400" />
+          <Calendar className="w-4 h-4 text-muted-foreground" />
           <span className={cn(
             'text-sm',
-            !value?.start && !value?.end && 'text-gray-400'
+            !value?.start && !value?.end && 'text-muted-foreground'
           )}>
             {formatDateRange()}
           </span>
@@ -194,13 +194,13 @@ export function DateRangePicker({
                 e.stopPropagation();
                 handleClear();
               }}
-              className="p-1 hover:bg-gray-100 dark:hover:bg-gray-600 rounded"
+              className="p-1 hover:bg-muted rounded"
             >
-              <X className="w-4 h-4 text-gray-400" />
+              <X className="w-4 h-4 text-muted-foreground" />
             </button>
           )}
           <ChevronDown className={cn(
-            'w-4 h-4 text-gray-400 transition-transform',
+            'w-4 h-4 text-muted-foreground transition-transform',
             isOpen && 'rotate-180'
           )} />
         </div>
@@ -208,12 +208,12 @@ export function DateRangePicker({
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-full min-w-[320px] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+        <div className="absolute top-full left-0 mt-2 w-full min-w-[320px] bg-popover rounded-lg shadow-lg border border-border z-50">
           <div className="flex">
             {/* Presets */}
             {presets && (
-              <div className="w-40 border-r border-gray-200 dark:border-gray-700 p-2">
-                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase px-2 mb-2">
+              <div className="w-40 border-r border-border p-2">
+                <p className="text-xs font-semibold text-muted-foreground uppercase px-2 mb-2">
                   Atalhos
                 </p>
                 <div className="space-y-1">
@@ -222,7 +222,7 @@ export function DateRangePicker({
                       key={preset.label}
                       type="button"
                       onClick={() => handlePresetSelect(preset)}
-                      className="w-full text-left px-2 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                      className="w-full text-left px-2 py-1.5 text-sm text-foreground hover:bg-muted rounded transition-colors"
                     >
                       {preset.label}
                     </button>
@@ -235,7 +235,7 @@ export function DateRangePicker({
             <div className="flex-1 p-4">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Data inicial
                   </label>
                   <input
@@ -244,12 +244,12 @@ export function DateRangePicker({
                     onChange={handleStartDateChange}
                     min={minDate ? format(minDate, 'yyyy-MM-dd') : undefined}
                     max={maxDate ? format(maxDate, 'yyyy-MM-dd') : undefined}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                    className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground text-sm"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Data final
                   </label>
                   <input
@@ -258,12 +258,12 @@ export function DateRangePicker({
                     onChange={handleEndDateChange}
                     min={tempRange.start ? format(tempRange.start, 'yyyy-MM-dd') : minDate ? format(minDate, 'yyyy-MM-dd') : undefined}
                     max={maxDate ? format(maxDate, 'yyyy-MM-dd') : undefined}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                    className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground text-sm"
                   />
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-border">
                 <Button
                   variant="outline"
                   size="sm"

@@ -165,7 +165,7 @@ export function DateRangeInput({
       </div>
       <div className="flex-1 space-y-1">
         {labels.end && (
-          <label className="text-sm text-gray-600 dark:text-gray-400">
+          <label className="text-sm text-muted-foreground">
             {labels.end}
           </label>
         )}
