@@ -587,8 +587,8 @@ export default function Relatorios() {
                       contentStyle={{ backgroundColor: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
                     />
                     <Legend />
-                    <Bar dataKey="atual" name="Período Atual" fill="hsl(24, 95%, 46%)" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="anterior" name="Período Anterior" fill="hsl(215, 90%, 52%)" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="atual" name="Período Atual" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="anterior" name="Período Anterior" fill="hsl(var(--secondary))" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
