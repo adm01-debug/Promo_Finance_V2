@@ -456,9 +456,9 @@ export default function Boletos() {
         className="space-y-6"
       >
         {/* Header */}
-        <motion.div variants={itemVariants} className="flex items-center justify-between">
+        <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Emissão de Boletos</h1>
+            <h1 className="text-display-md text-foreground">Emissão de Boletos</h1>
             <p className="text-muted-foreground mt-1">
               Gere e gerencie boletos bancários com código de barras
             </p>
