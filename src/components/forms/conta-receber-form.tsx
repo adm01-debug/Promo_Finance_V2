@@ -302,9 +302,9 @@ export function ContaReceberForm({
             </FormField>
 
             {form.values.parcelas > 1 && form.values.valor > 0 && (
-              <div className="col-span-2 text-sm text-gray-600 dark:text-gray-400">
+              <div className="col-span-2 text-sm text-muted-foreground">
                 Valor por parcela:{' '}
-                <span className="font-medium text-green-600 dark:text-green-400">
+                <span className="font-medium text-success">
                   {new Intl.NumberFormat('pt-BR', {
                     style: 'currency',
                     currency: 'BRL',
