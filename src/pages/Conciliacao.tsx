@@ -47,6 +47,9 @@ import { useConciliacao } from '@/hooks/useConciliacao';
 import { ImportarExtratoDialog } from '@/components/conciliacao/ImportarExtratoDialog';
 import { SugestoesMatchIA } from '@/components/conciliacao/SugestoesMatchIA';
 import { ConciliacaoManualDialog } from '@/components/conciliacao/ConciliacaoManualDialog';
+import { ConciliacaoSplitDialog } from '@/components/conciliacao/ConciliacaoSplitDialog';
+import { ConciliacaoDashboard } from '@/components/conciliacao/ConciliacaoDashboard';
+import { RegrasConciliacaoPanel } from '@/components/conciliacao/RegrasConciliacaoPanel';
 import { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
 import { 
   LancamentoSistema, 
