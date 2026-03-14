@@ -241,8 +241,8 @@ export default function Bitrix24() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                  <Clock className="h-5 w-5 text-blue-600" />
+                <div className="p-2 rounded-lg bg-secondary/10">
+                  <Clock className="h-5 w-5 text-secondary" />
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Última Sync</p>
