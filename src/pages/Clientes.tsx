@@ -380,7 +380,7 @@ export default function Clientes() {
                     </SelectItem>
                     <SelectItem value="regular">
                       <span className="flex items-center gap-2">
-                        <span className="h-2 w-2 rounded-full bg-orange-500" />
+                        <span className="h-2 w-2 rounded-full bg-streak" />
                         Regular (400-599)
                       </span>
                     </SelectItem>

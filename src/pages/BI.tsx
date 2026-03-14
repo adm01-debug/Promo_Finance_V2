@@ -1025,7 +1025,7 @@ export default function BI() {
                             </div>
                           </td>
                           {comparativoEmpresas.map((emp) => (
-                            <td key={emp.id} className={`text-right py-3 px-4 border-b font-medium ${emp.saldoProjetado >= 0 ? 'text-green-600' : 'text-destructive'}`}>
+                            <td key={emp.id} className={`text-right py-3 px-4 border-b font-medium ${emp.saldoProjetado >= 0 ? 'text-success' : 'text-destructive'}`}>
                               {formatCurrency(emp.saldoProjetado)}
                             </td>
                           ))}
