@@ -328,7 +328,7 @@ class Bitrix24Service {
   }
 
   /**
-   * Convert Finance-Hub conta a pagar to Bitrix deal
+   * Convert Promo Finance conta a pagar to Bitrix deal
    */
   contaPagarToBitrixDeal(conta: {
     descricao: string;
