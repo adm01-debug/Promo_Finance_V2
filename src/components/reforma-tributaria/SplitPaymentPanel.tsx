@@ -29,10 +29,10 @@ import useSplitPayment from '@/hooks/useSplitPayment';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 
 const STATUS_COLORS = {
-  pendente: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-  processado: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-  repassado: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-  erro: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+  pendente: 'bg-warning/10 text-warning border-warning/20',
+  processado: 'bg-primary/10 text-primary border-primary/20',
+  repassado: 'bg-success/10 text-success border-success/20',
+  erro: 'bg-destructive/10 text-destructive border-destructive/20',
 };
 
 export function SplitPaymentPanel() {
@@ -50,22 +50,16 @@ export function SplitPaymentPanel() {
     confirmarProcessamento,
   } = useSplitPayment(empresaId || undefined);
 
-  // Simulação em tempo real
   const simulacao = calcularSplit(valorSimulacao);
 
   const handleRegistrar = () => {
     if (!empresaId) return;
-    
-    registrarTransacao.mutate({
-      empresaId,
-      valorTotal: valorSimulacao,
-    });
+    registrarTransacao.mutate({ empresaId, valorTotal: valorSimulacao });
     setDialogOpen(false);
   };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -129,22 +123,22 @@ export function SplitPaymentPanel() {
                     <Separator />
                     <div className="flex justify-between text-sm">
                       <span>CBS Retido ({(simulacao.aliquotas.cbs * 100).toFixed(2)}%):</span>
-                      <span className="text-blue-600">{formatCurrency(simulacao.cbsRetido)}</span>
+                      <span className="text-primary">{formatCurrency(simulacao.cbsRetido)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span>IBS Retido ({(simulacao.aliquotas.ibs * 100).toFixed(2)}%):</span>
-                      <span className="text-green-600">{formatCurrency(simulacao.ibsRetido)}</span>
+                      <span className="text-success">{formatCurrency(simulacao.ibsRetido)}</span>
                     </div>
                     {simulacao.isRetido > 0 && (
                       <div className="flex justify-between text-sm">
                         <span>IS Retido:</span>
-                        <span className="text-orange-600">{formatCurrency(simulacao.isRetido)}</span>
+                        <span className="text-warning">{formatCurrency(simulacao.isRetido)}</span>
                       </div>
                     )}
                     <Separator />
                     <div className="flex justify-between font-medium">
                       <span>Total Retido:</span>
-                      <span className="text-red-600">{formatCurrency(simulacao.totalRetido)}</span>
+                      <span className="text-destructive">{formatCurrency(simulacao.totalRetido)}</span>
                     </div>
                     <div className="flex justify-between font-bold text-lg">
                       <span>Valor Líquido Vendedor:</span>
@@ -152,7 +146,7 @@ export function SplitPaymentPanel() {
                     </div>
                   </div>
 
-                  <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg text-sm">
+                  <div className="p-3 bg-primary/5 rounded-lg text-sm">
                     <p className="font-medium">Como funciona:</p>
                     <ul className="mt-2 space-y-1 text-muted-foreground">
                       <li>• O adquirente (pagador) retém os tributos</li>
@@ -177,7 +171,6 @@ export function SplitPaymentPanel() {
         </CardContent>
       </Card>
 
-      {/* Estatísticas */}
       {empresaId && (
         <>
           <div className="grid gap-4 md:grid-cols-4">
@@ -196,7 +189,7 @@ export function SplitPaymentPanel() {
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3">
-                  <DollarSign className="h-8 w-8 text-green-500" />
+                  <DollarSign className="h-8 w-8 text-success" />
                   <div>
                     <p className="text-sm text-muted-foreground">Volume Operado</p>
                     <p className="text-2xl font-bold">{formatCurrency(estatisticas.valorTotalOperacoes)}</p>
@@ -208,7 +201,7 @@ export function SplitPaymentPanel() {
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3">
-                  <Calculator className="h-8 w-8 text-red-500" />
+                  <Calculator className="h-8 w-8 text-destructive" />
                   <div>
                     <p className="text-sm text-muted-foreground">Tributos Retidos</p>
                     <p className="text-2xl font-bold">{formatCurrency(estatisticas.totalTributosRetidos)}</p>
@@ -220,7 +213,7 @@ export function SplitPaymentPanel() {
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3">
-                  <Clock className="h-8 w-8 text-yellow-500" />
+                  <Clock className="h-8 w-8 text-warning" />
                   <div>
                     <p className="text-sm text-muted-foreground">Pendentes</p>
                     <p className="text-2xl font-bold">{estatisticas.pendentes}</p>
@@ -230,7 +223,6 @@ export function SplitPaymentPanel() {
             </Card>
           </div>
 
-          {/* Transações */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Transações Split Payment</CardTitle>
@@ -264,10 +256,10 @@ export function SplitPaymentPanel() {
                         <TableCell className="text-right">
                           {formatCurrency(transacao.valor_operacao)}
                         </TableCell>
-                        <TableCell className="text-right text-blue-600">
+                        <TableCell className="text-right text-primary">
                           {formatCurrency(transacao.cbs_retido)}
                         </TableCell>
-                        <TableCell className="text-right text-green-600">
+                        <TableCell className="text-right text-success">
                           {formatCurrency(transacao.ibs_retido)}
                         </TableCell>
                         <TableCell className="text-right font-medium">

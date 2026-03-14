@@ -4,10 +4,6 @@ import { Eye, EyeOff, Search, X, Check, AlertCircle, Loader2 } from "lucide-reac
 
 import { cn } from "@/lib/utils";
 
-// ============================================================================
-// INPUT BASE MELHORADO
-// ============================================================================
-
 export interface InputProps extends React.ComponentProps<"input"> {
   variant?: "default" | "filled" | "underline";
   inputSize?: "sm" | "md" | "lg";
@@ -41,7 +37,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           variants[variant],
           sizes[inputSize],
           error && "border-destructive focus-visible:ring-destructive",
-          success && "border-green-500 focus-visible:ring-green-500",
+          success && "border-success focus-visible:ring-success",
           className,
         )}
         ref={ref}
@@ -99,7 +95,7 @@ const FloatingLabelInput = React.forwardRef<HTMLInputElement, FloatingLabelInput
             scale: isFloating ? 0.75 : 1,
             color: isFocused 
               ? error ? "hsl(var(--destructive))" 
-              : success ? "hsl(142, 71%, 45%)" 
+              : success ? "hsl(var(--success))" 
               : "hsl(var(--primary))"
               : "hsl(var(--muted-foreground))",
           }}
@@ -147,7 +143,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
       props.onChange?.(e);
     };
 
-    const strengthColors = ["bg-destructive", "bg-orange-500", "bg-yellow-500", "bg-lime-500", "bg-green-500"];
+    const strengthColors = ["bg-destructive", "bg-warning", "bg-warning", "bg-success/70", "bg-success"];
     const strengthLabels = ["Muito fraca", "Fraca", "Média", "Forte", "Muito forte"];
 
     return (
@@ -271,7 +267,7 @@ const ValidatedInput = React.forwardRef<HTMLInputElement, ValidatedInputProps>(
     const icons = {
       idle: null,
       validating: <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />,
-      valid: <Check className="h-4 w-4 text-green-500" />,
+      valid: <Check className="h-4 w-4 text-success" />,
       invalid: <AlertCircle className="h-4 w-4 text-destructive" />,
     };
 
@@ -308,7 +304,7 @@ const ValidatedInput = React.forwardRef<HTMLInputElement, ValidatedInputProps>(
               className={cn(
                 "text-xs",
                 validationState === "invalid" && "text-destructive",
-                validationState === "valid" && "text-green-500",
+                validationState === "valid" && "text-success",
               )}
             >
               {validationMessage}
@@ -335,10 +331,8 @@ const InputGroup = ({ children, className }: InputGroupProps) => {
     <div className={cn("flex", className)}>
       {React.Children.map(children, (child, index) => {
         if (!React.isValidElement(child)) return child;
-        
         const isFirst = index === 0;
         const isLast = index === React.Children.count(children) - 1;
-        
         return React.cloneElement(child as React.ReactElement<{ className?: string }>, {
           className: cn(
             (child as React.ReactElement<{ className?: string }>).props.className,

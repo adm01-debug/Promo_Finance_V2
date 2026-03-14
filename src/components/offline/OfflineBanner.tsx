@@ -26,7 +26,6 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
   const [showReconnected, setShowReconnected] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   
-  // Track when we come back online
   useEffect(() => {
     if (!isOnline) {
       setWasOffline(true);
@@ -37,7 +36,6 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
       sounds.success();
       triggerHaptic('success');
       
-      // Auto-hide the reconnected message after 3 seconds
       const timer = setTimeout(() => {
         setShowReconnected(false);
         setWasOffline(false);
@@ -50,23 +48,18 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
   const handleSync = async () => {
     setIsSyncing(true);
     sounds.click();
-    
-    // Simulate sync - in real app, this would trigger actual sync
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
     setIsSyncing(false);
     sounds.success();
     triggerHaptic('success');
   };
   
-  // Don't render anything if online and no reconnection message
   if (isOnline && !showReconnected) {
     return null;
   }
   
   return (
     <AnimatePresence>
-      {/* Offline Banner */}
       {!isOnline && (
         <motion.div
           initial={{ opacity: 0, y: position === 'top' ? -50 : 50 }}
@@ -79,7 +72,7 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
           )}
         >
           <div className="max-w-4xl mx-auto">
-            <div className="bg-amber-500 dark:bg-amber-600 text-white rounded-b-lg shadow-lg px-4 py-3">
+            <div className="bg-warning text-warning-foreground rounded-b-lg shadow-lg px-4 py-3">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <motion.div
@@ -94,7 +87,7 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
                   
                   <div>
                     <p className="font-medium text-sm">Você está offline</p>
-                    <p className="text-xs text-white/80">
+                    <p className="text-xs opacity-80">
                       Suas alterações serão sincronizadas quando a conexão for restaurada
                     </p>
                   </div>
@@ -102,7 +95,7 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
                 
                 <div className="flex items-center gap-2">
                   {showPendingCount && pendingChanges > 0 && (
-                    <div className="flex items-center gap-1.5 bg-white/20 rounded-full px-3 py-1">
+                    <div className="flex items-center gap-1.5 bg-background/20 rounded-full px-3 py-1">
                       <Database className="h-3.5 w-3.5" />
                       <span className="text-xs font-medium">
                         {pendingChanges} pendente{pendingChanges > 1 ? 's' : ''}
@@ -113,7 +106,7 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
                   <Button
                     variant="secondary"
                     size="sm"
-                    className="bg-white/20 hover:bg-white/30 text-white border-0"
+                    className="bg-background/20 hover:bg-background/30 border-0"
                     onClick={handleSync}
                     disabled={isSyncing}
                   >
@@ -123,13 +116,12 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
                 </div>
               </div>
               
-              {/* Progress bar animation */}
               <motion.div 
-                className="absolute bottom-0 left-0 h-1 bg-white/30 rounded-full overflow-hidden"
+                className="absolute bottom-0 left-0 h-1 bg-background/30 rounded-full overflow-hidden"
                 style={{ width: '100%' }}
               >
                 <motion.div
-                  className="h-full bg-white/50"
+                  className="h-full bg-background/50"
                   animate={{ x: ['0%', '100%'] }}
                   transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
                   style={{ width: '30%' }}
@@ -140,7 +132,6 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
         </motion.div>
       )}
       
-      {/* Reconnected Toast */}
       {showReconnected && (
         <motion.div
           initial={{ opacity: 0, y: position === 'top' ? -50 : 50, scale: 0.9 }}
@@ -153,7 +144,7 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
           )}
         >
           <div className="max-w-md mx-auto">
-            <div className="bg-emerald-500 dark:bg-emerald-600 text-white rounded-b-lg shadow-lg px-4 py-3">
+            <div className="bg-success text-success-foreground rounded-b-lg shadow-lg px-4 py-3">
               <div className="flex items-center gap-3">
                 <motion.div
                   initial={{ scale: 0 }}
@@ -165,7 +156,7 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
                 
                 <div className="flex-1">
                   <p className="font-medium text-sm">Conexão restaurada!</p>
-                  <p className="text-xs text-white/80">
+                  <p className="text-xs opacity-80">
                     Sincronizando suas alterações...
                   </p>
                 </div>
@@ -186,7 +177,6 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
 });
 OfflineBanner.displayName = 'OfflineBanner';
 
-// Compact offline indicator for header/sidebar
 export function OfflineIndicator({ className }: { className?: string }) {
   const { isOnline } = useNetworkStatus();
   
@@ -198,8 +188,8 @@ export function OfflineIndicator({ className }: { className?: string }) {
       animate={{ opacity: 1, scale: 1 }}
       className={cn(
         "flex items-center gap-1.5 px-2 py-1 rounded-full",
-        "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-        "border border-amber-500/20",
+        "bg-warning/10 text-warning",
+        "border border-warning/20",
         className
       )}
     >

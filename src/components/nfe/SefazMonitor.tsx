@@ -92,24 +92,24 @@ const pulseVariants = {
 };
 
 const getStatusColor = (online: boolean, latency: number) => {
-  if (!online) return 'text-red-500';
-  if (latency > 3000) return 'text-amber-500';
-  if (latency > 1500) return 'text-yellow-500';
-  return 'text-emerald-500';
+  if (!online) return 'text-destructive';
+  if (latency > 3000) return 'text-warning';
+  if (latency > 1500) return 'text-warning';
+  return 'text-success';
 };
 
 const getStatusBg = (online: boolean, latency: number) => {
-  if (!online) return 'bg-red-500/10 border-red-500/30';
-  if (latency > 3000) return 'bg-amber-500/10 border-amber-500/30';
-  if (latency > 1500) return 'bg-yellow-500/10 border-yellow-500/30';
-  return 'bg-emerald-500/10 border-emerald-500/30';
+  if (!online) return 'bg-destructive/10 border-destructive/30';
+  if (latency > 3000) return 'bg-warning/10 border-warning/30';
+  if (latency > 1500) return 'bg-warning/10 border-warning/30';
+  return 'bg-success/10 border-success/30';
 };
 
 const getUptimeColor = (uptime: number) => {
-  if (uptime >= 99) return 'text-emerald-500';
-  if (uptime >= 95) return 'text-yellow-500';
-  if (uptime >= 90) return 'text-amber-500';
-  return 'text-red-500';
+  if (uptime >= 99) return 'text-success';
+  if (uptime >= 95) return 'text-warning';
+  if (uptime >= 90) return 'text-warning';
+  return 'text-destructive';
 };
 
 export function SefazMonitor() {
@@ -126,10 +126,8 @@ export function SefazMonitor() {
 
   const autoConfig = getAutoContingencyConfig();
 
-  // Calculate uptime percentage
   const uptime = checkCount > 0 ? (successCount / checkCount) * 100 : 100;
 
-  // Add alert
   const addAlert = useCallback((type: AlertItem['type'], message: string) => {
     const newAlert: AlertItem = {
       id: `alert_${Date.now()}`,
@@ -138,10 +136,9 @@ export function SefazMonitor() {
       timestamp: new Date(),
       dismissed: false,
     };
-    setAlerts(prev => [newAlert, ...prev].slice(0, 20)); // Keep last 20 alerts
+    setAlerts(prev => [newAlert, ...prev].slice(0, 20));
     setLastAlertTime(new Date());
 
-    // Show toast for important alerts
     if (showAlerts) {
       if (type === 'error') toast.error(message);
       else if (type === 'warning') toast.warning(message);
@@ -149,7 +146,6 @@ export function SefazMonitor() {
     }
   }, [showAlerts]);
 
-  // Perform health check
   const performHealthCheck = useCallback(async () => {
     setIsChecking(true);
     const prevHealth = health;
@@ -164,7 +160,6 @@ export function SefazMonitor() {
         setSuccessCount(prev => prev + 1);
       }
 
-      // Add to history
       const now = new Date();
       const historyPoint: HealthHistoryPoint = {
         time: now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
@@ -173,9 +168,8 @@ export function SefazMonitor() {
         online: newHealth.online,
         status: newHealth.online ? 100 : 0,
       };
-      setHealthHistory(prev => [...prev, historyPoint].slice(-30)); // Keep last 30 points
+      setHealthHistory(prev => [...prev, historyPoint].slice(-30));
 
-      // Generate alerts based on status changes
       if (prevHealth.online && !newHealth.online) {
         addAlert('error', 'SEFAZ ficou indisponível');
       } else if (!prevHealth.online && newHealth.online) {
@@ -184,7 +178,6 @@ export function SefazMonitor() {
         addAlert('warning', `Latência alta detectada: ${newHealth.latency}ms`);
       }
 
-      // Alert for consecutive failures
       if (newHealth.consecutiveFailures >= 3) {
         addAlert('error', `${newHealth.consecutiveFailures} falhas consecutivas de comunicação`);
       }
@@ -196,17 +189,12 @@ export function SefazMonitor() {
     }
   }, [health, addAlert]);
 
-  // Auto monitoring
   useEffect(() => {
     if (!autoMonitor) return;
-
-    // Initial check
     performHealthCheck();
-
     const interval = setInterval(() => {
       performHealthCheck();
     }, autoConfig.checkIntervalSeconds * 1000);
-
     return () => clearInterval(interval);
   }, [autoMonitor, autoConfig.checkIntervalSeconds, performHealthCheck]);
 
@@ -221,12 +209,10 @@ export function SefazMonitor() {
   const activeAlerts = alerts.filter(a => !a.dismissed);
   const isContingencyActive = contingencyState.mode !== 'normal';
 
-  // Calculate average latency
   const avgLatency = healthHistory.length > 0 
     ? Math.round(healthHistory.reduce((sum, h) => sum + h.latency, 0) / healthHistory.length)
     : 0;
 
-  // Calculate min/max latency
   const minLatency = healthHistory.length > 0 
     ? Math.min(...healthHistory.map(h => h.latency))
     : 0;
@@ -247,26 +233,24 @@ export function SefazMonitor() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-6">
-                {/* Status Indicator with Pulse */}
                 <motion.div
                   variants={pulseVariants}
                   animate={health.online ? "pulse" : undefined}
                   className={`relative p-4 rounded-2xl ${
                     health.online 
-                      ? 'bg-emerald-500/20' 
-                      : 'bg-red-500/20'
+                      ? 'bg-success/20' 
+                      : 'bg-destructive/20'
                   }`}
                 >
                   {health.online ? (
-                    <Wifi className="h-10 w-10 text-emerald-500" />
+                    <Wifi className="h-10 w-10 text-success" />
                   ) : (
-                    <WifiOff className="h-10 w-10 text-red-500" />
+                    <WifiOff className="h-10 w-10 text-destructive" />
                   )}
                   
-                  {/* Animated ring */}
                   {health.online && (
                     <motion.div
-                      className="absolute inset-0 rounded-2xl border-2 border-emerald-500/50"
+                      className="absolute inset-0 rounded-2xl border-2 border-success/50"
                       animate={{
                         scale: [1, 1.2, 1],
                         opacity: [0.5, 0, 0.5],
@@ -335,7 +319,6 @@ export function SefazMonitor() {
 
       {/* Key Metrics */}
       <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {/* Latency */}
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -346,8 +329,8 @@ export function SefazMonitor() {
                   <span className="text-sm font-normal text-muted-foreground ml-1">ms</span>
                 </p>
               </div>
-              <div className={`p-3 rounded-xl ${health.latency > 2000 ? 'bg-amber-500/10' : 'bg-emerald-500/10'}`}>
-                <Timer className={`h-6 w-6 ${health.latency > 2000 ? 'text-amber-500' : 'text-emerald-500'}`} />
+              <div className={`p-3 rounded-xl ${health.latency > 2000 ? 'bg-warning/10' : 'bg-success/10'}`}>
+                <Timer className={`h-6 w-6 ${health.latency > 2000 ? 'text-warning' : 'text-success'}`} />
               </div>
             </div>
             <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
@@ -358,7 +341,6 @@ export function SefazMonitor() {
           </CardContent>
         </Card>
 
-        {/* Uptime */}
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -377,21 +359,20 @@ export function SefazMonitor() {
           </CardContent>
         </Card>
 
-        {/* Consecutive Failures */}
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Falhas Consecutivas</p>
-                <p className={`text-3xl font-bold ${health.consecutiveFailures > 0 ? 'text-red-500' : 'text-emerald-500'}`}>
+                <p className={`text-3xl font-bold ${health.consecutiveFailures > 0 ? 'text-destructive' : 'text-success'}`}>
                   {health.consecutiveFailures}
                 </p>
               </div>
-              <div className={`p-3 rounded-xl ${health.consecutiveFailures > 0 ? 'bg-red-500/10' : 'bg-emerald-500/10'}`}>
+              <div className={`p-3 rounded-xl ${health.consecutiveFailures > 0 ? 'bg-destructive/10' : 'bg-success/10'}`}>
                 {health.consecutiveFailures > 0 ? (
-                  <XCircle className="h-6 w-6 text-red-500" />
+                  <XCircle className="h-6 w-6 text-destructive" />
                 ) : (
-                  <CheckCircle2 className="h-6 w-6 text-emerald-500" />
+                  <CheckCircle2 className="h-6 w-6 text-success" />
                 )}
               </div>
             </div>
@@ -401,7 +382,6 @@ export function SefazMonitor() {
           </CardContent>
         </Card>
 
-        {/* Average Response Time */}
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -412,20 +392,20 @@ export function SefazMonitor() {
                   <span className="text-sm font-normal text-muted-foreground ml-1">ms</span>
                 </p>
               </div>
-              <div className="p-3 rounded-xl bg-blue-500/10">
-                <BarChart3 className="h-6 w-6 text-blue-500" />
+              <div className="p-3 rounded-xl bg-primary/10">
+                <BarChart3 className="h-6 w-6 text-primary" />
               </div>
             </div>
             <div className="mt-2 flex items-center gap-1 text-xs">
               {avgLatency < health.averageResponseTime ? (
                 <>
-                  <TrendingDown className="h-3 w-3 text-emerald-500" />
-                  <span className="text-emerald-500">Melhorando</span>
+                  <TrendingDown className="h-3 w-3 text-success" />
+                  <span className="text-success">Melhorando</span>
                 </>
               ) : (
                 <>
-                  <TrendingUp className="h-3 w-3 text-amber-500" />
-                  <span className="text-amber-500">Aumentando</span>
+                  <TrendingUp className="h-3 w-3 text-warning" />
+                  <span className="text-warning">Aumentando</span>
                 </>
               )}
             </div>
@@ -435,7 +415,6 @@ export function SefazMonitor() {
 
       {/* Charts Row */}
       <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Latency Chart */}
         <Card>
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
@@ -494,26 +473,32 @@ export function SefazMonitor() {
           </CardContent>
         </Card>
 
-        {/* Status Timeline */}
+        {/* Status History */}
         <Card>
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <Server className="h-5 w-5 text-primary" />
-              Timeline de Disponibilidade
+              <Shield className="h-5 w-5 text-primary" />
+              Status em Tempo Real
             </CardTitle>
             <CardDescription>
-              Status ao longo do tempo
+              Disponibilidade recente
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[200px]">
               {healthHistory.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={healthHistory}>
+                  <AreaChart data={healthHistory}>
+                    <defs>
+                      <linearGradient id="statusGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" />
                     <XAxis 
                       dataKey="time" 
-                      tick={{ fontSize: 10 }} 
+                      tick={{ fontSize: 10 }}
                       stroke="hsl(var(--muted-foreground))"
                     />
                     <YAxis 
@@ -530,25 +515,14 @@ export function SefazMonitor() {
                       }}
                       formatter={(value: number) => [value === 100 ? 'Online' : 'Offline', 'Status']}
                     />
-                    <Line 
+                    <Area 
                       type="stepAfter" 
                       dataKey="status" 
-                      stroke="hsl(var(--primary))"
+                      stroke="hsl(var(--success))" 
+                      fill="url(#statusGradient)"
                       strokeWidth={2}
-                      dot={(props) => {
-                        const { cx, cy, payload } = props;
-                        return (
-                          <circle 
-                            cx={cx} 
-                            cy={cy} 
-                            r={4} 
-                            fill={payload.online ? 'hsl(142, 71%, 45%)' : 'hsl(0, 84%, 60%)'}
-                            stroke="none"
-                          />
-                        );
-                      }}
                     />
-                  </LineChart>
+                  </AreaChart>
                 </ResponsiveContainer>
               ) : (
                 <div className="h-full flex items-center justify-center text-muted-foreground">
@@ -560,13 +534,61 @@ export function SefazMonitor() {
         </Card>
       </motion.div>
 
-      {/* Alerts Panel */}
-      <motion.div variants={itemVariants}>
+      {/* Contingency & Alerts */}
+      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Contingency State */}
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Server className="h-5 w-5 text-primary" />
+              Estado da Contingência
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+              <div>
+                <p className="font-medium">Modo Atual</p>
+                <p className="text-sm text-muted-foreground">
+                  {contingencyState.mode === 'normal' ? 'Operação Normal' :
+                   contingencyState.mode === 'svc-an' ? 'SVC-AN' :
+                   contingencyState.mode === 'svc-rs' ? 'SVC-RS' :
+                   contingencyState.mode === 'epec' ? 'EPEC' : 'Offline'}
+                </p>
+              </div>
+              <Badge variant={contingencyState.mode === 'normal' ? 'default' : 'destructive'}>
+                {contingencyState.mode === 'normal' ? (
+                  <><CheckCircle2 className="h-3 w-3 mr-1" /> Normal</>
+                ) : (
+                  <><AlertTriangle className="h-3 w-3 mr-1" /> Contingência</>
+                )}
+              </Badge>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Ativação automática</span>
+                <Badge variant="outline">
+                  {autoConfig.enabled ? 'Habilitada' : 'Desabilitada'}
+                </Badge>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Intervalo de verificação</span>
+                <span>{autoConfig.checkIntervalSeconds}s</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Regras configuradas</span>
+                <span>{autoConfig.rules.length}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Alerts Panel */}
+        <Card>
+          <CardHeader>
             <div>
               <CardTitle className="text-lg flex items-center gap-2">
-                <Bell className="h-5 w-5 text-amber-500" />
+                <Bell className="h-5 w-5 text-warning" />
                 Alertas em Tempo Real
                 {activeAlerts.length > 0 && (
                   <Badge variant="destructive" className="ml-2">
@@ -574,118 +596,106 @@ export function SefazMonitor() {
                   </Badge>
                 )}
               </CardTitle>
-              <CardDescription>
-                Notificações de eventos importantes
-              </CardDescription>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <Switch 
-                  id="show-alerts"
-                  checked={showAlerts} 
-                  onCheckedChange={setShowAlerts} 
-                />
-                <Label htmlFor="show-alerts" className="text-sm">
-                  {showAlerts ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
-                </Label>
-              </div>
+            <div className="flex items-center gap-2">
+              <Switch
+                id="show-alerts"
+                checked={showAlerts}
+                onCheckedChange={setShowAlerts}
+              />
+              <Label htmlFor="show-alerts" className="text-xs">
+                {showAlerts ? <Bell className="h-3 w-3" /> : <BellOff className="h-3 w-3" />}
+              </Label>
               {alerts.length > 0 && (
                 <Button variant="ghost" size="sm" onClick={clearAllAlerts}>
-                  Limpar Todos
+                  Limpar
                 </Button>
               )}
             </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2 max-h-[300px] overflow-y-auto">
-              <AnimatePresence>
-                {activeAlerts.length > 0 ? (
-                  activeAlerts.map((alert) => (
+            <div className="space-y-2 max-h-[250px] overflow-y-auto">
+              {alerts.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Bell className="h-8 w-8 mx-auto mb-2 opacity-40" />
+                  <p className="text-sm">Nenhum alerta registrado</p>
+                </div>
+              ) : (
+                <AnimatePresence>
+                  {alerts.map((alert) => (
                     <motion.div
                       key={alert.id}
-                      initial={{ opacity: 0, x: -20, height: 0 }}
-                      animate={{ opacity: 1, x: 0, height: 'auto' }}
-                      exit={{ opacity: 0, x: 20, height: 0 }}
-                      className={`flex items-center justify-between p-3 rounded-lg border ${
-                        alert.type === 'error' ? 'bg-red-500/10 border-red-500/20' :
-                        alert.type === 'warning' ? 'bg-amber-500/10 border-amber-500/20' :
-                        alert.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20' :
-                        'bg-blue-500/10 border-blue-500/20'
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: alert.dismissed ? 0.5 : 1, x: 0 }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className={`flex items-start gap-3 p-3 rounded-lg ${
+                        alert.type === 'error' ? 'bg-destructive/10' :
+                        alert.type === 'warning' ? 'bg-warning/10' :
+                        alert.type === 'success' ? 'bg-success/10' :
+                        'bg-primary/10'
                       }`}
                     >
-                      <div className="flex items-center gap-3">
-                        <div className={`p-1.5 rounded-full ${
-                          alert.type === 'error' ? 'bg-red-500/20' :
-                          alert.type === 'warning' ? 'bg-amber-500/20' :
-                          alert.type === 'success' ? 'bg-emerald-500/20' :
-                          'bg-blue-500/20'
-                        }`}>
-                          {alert.type === 'error' && <XCircle className="h-4 w-4 text-red-500" />}
-                          {alert.type === 'warning' && <AlertTriangle className="h-4 w-4 text-amber-500" />}
-                          {alert.type === 'success' && <CheckCircle2 className="h-4 w-4 text-emerald-500" />}
-                          {alert.type === 'info' && <AlertCircle className="h-4 w-4 text-blue-500" />}
-                        </div>
-                        <div>
-                          <p className="font-medium text-sm">{alert.message}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {formatDateTime(alert.timestamp.toISOString())}
-                          </p>
-                        </div>
+                      <div className={`p-1 rounded-full ${
+                        alert.type === 'error' ? 'bg-destructive/20' :
+                        alert.type === 'warning' ? 'bg-warning/20' :
+                        alert.type === 'success' ? 'bg-success/20' :
+                        'bg-primary/20'
+                      }`}>
+                        {alert.type === 'error' && <XCircle className="h-4 w-4 text-destructive" />}
+                        {alert.type === 'warning' && <AlertTriangle className="h-4 w-4 text-warning" />}
+                        {alert.type === 'success' && <CheckCircle2 className="h-4 w-4 text-success" />}
+                        {alert.type === 'info' && <AlertCircle className="h-4 w-4 text-primary" />}
                       </div>
-                      <Button 
-                        variant="ghost" 
-                        size="icon"
-                        className="h-6 w-6"
-                        onClick={() => dismissAlert(alert.id)}
-                      >
-                        <XCircle className="h-4 w-4" />
-                      </Button>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm">{alert.message}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {alert.timestamp.toLocaleTimeString('pt-BR')}
+                        </p>
+                      </div>
+                      {!alert.dismissed && (
+                        <button
+                          onClick={() => dismissAlert(alert.id)}
+                          className="text-muted-foreground hover:text-foreground"
+                        >
+                          <XCircle className="h-4 w-4" />
+                        </button>
+                      )}
                     </motion.div>
-                  ))
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Shield className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                    <p>Nenhum alerta ativo</p>
-                    <p className="text-sm">O sistema está funcionando normalmente</p>
-                  </div>
-                )}
-              </AnimatePresence>
+                  ))}
+                </AnimatePresence>
+              )}
             </div>
           </CardContent>
         </Card>
       </motion.div>
 
-      {/* System Info */}
+      {/* Auto Monitoring Status Bar */}
       <motion.div variants={itemVariants}>
         <Card>
-          <CardContent className="p-4">
-            <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-6">
+          <CardContent className="py-3 px-6">
+            <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  <span>Intervalo: {autoConfig.checkIntervalSeconds}s</span>
+                  {autoMonitor ? (
+                    <Badge variant="outline" className="bg-success/10 text-success border-success/20">
+                      <Activity className="h-3 w-3 mr-1 animate-pulse" />
+                      Monitorando
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-muted-foreground">
+                      <Clock className="h-3 w-3 mr-1" />
+                      Pausado
+                    </Badge>
+                  )}
                 </div>
-                <Separator orientation="vertical" className="h-4" />
-                <div className="flex items-center gap-2">
-                  <Activity className="h-4 w-4" />
-                  <span>Verificações: {checkCount}</span>
-                </div>
-                <Separator orientation="vertical" className="h-4" />
-                <div className="flex items-center gap-2">
-                  <Zap className="h-4 w-4" />
-                  <span>Regras ativas: {autoConfig.rules.filter(r => r.enabled).length}</span>
-                </div>
+                <span className="text-muted-foreground">
+                  {checkCount} verificações realizadas
+                </span>
               </div>
-              <div className="flex items-center gap-2">
-                {autoMonitor ? (
-                  <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
-                    <Activity className="h-3 w-3 mr-1 animate-pulse" />
-                    Monitorando
-                  </Badge>
-                ) : (
-                  <Badge variant="outline" className="bg-muted">
-                    Pausado
-                  </Badge>
+              <div className="flex items-center gap-4 text-muted-foreground">
+                <span>Alertas: {alerts.length}</span>
+                {lastAlertTime && (
+                  <span>Último: {lastAlertTime.toLocaleTimeString('pt-BR')}</span>
                 )}
               </div>
             </div>

@@ -44,7 +44,7 @@ function DefaultFallback({ minHeight }: { minHeight?: number | string }) {
       className="flex items-center justify-center p-8"
       style={{ minHeight }}
     >
-      <Loader2 className="w-8 h-8 animate-spin text-primary-600" />
+      <Loader2 className="w-8 h-8 animate-spin text-primary" />
     </div>
   );
 }
@@ -69,16 +69,9 @@ export function LazyLoad({
           observer.disconnect();
         }
       },
-      {
-        rootMargin: '100px', // Start loading 100px before visible
-        threshold: 0,
-      }
+      { rootMargin: '100px', threshold: 0 }
     );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
+    if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
   }, []);
 
@@ -129,30 +122,15 @@ export function LazyImage({
           observer.disconnect();
         }
       },
-      {
-        rootMargin: '50px',
-        threshold: 0,
-      }
+      { rootMargin: '50px', threshold: 0 }
     );
-
-    if (imgRef.current) {
-      observer.observe(imgRef.current);
-    }
-
+    if (imgRef.current) observer.observe(imgRef.current);
     return () => observer.disconnect();
   }, []);
 
-  const handleLoad = () => {
-    setIsLoaded(true);
-    onLoad?.();
-  };
+  const handleLoad = () => { setIsLoaded(true); onLoad?.(); };
+  const handleError = () => { setHasError(true); onError?.(); };
 
-  const handleError = () => {
-    setHasError(true);
-    onError?.();
-  };
-
-  // Default placeholder (blur effect)
   const defaultPlaceholder = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${width || 400} ${height || 300}'%3E%3Crect fill='%23e5e7eb' width='100%25' height='100%25'/%3E%3C/svg%3E`;
 
   return (
@@ -161,7 +139,6 @@ export function LazyImage({
       className={cn('relative overflow-hidden', className)}
       style={{ width, height }}
     >
-      {/* Placeholder */}
       {!isLoaded && !hasError && (
         <img
           src={placeholder || defaultPlaceholder}
@@ -171,14 +148,12 @@ export function LazyImage({
         />
       )}
 
-      {/* Error state */}
       {hasError && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-          <span className="text-gray-400 text-sm">Erro ao carregar</span>
+        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+          <span className="text-muted-foreground text-sm">Erro ao carregar</span>
         </div>
       )}
 
-      {/* Actual image */}
       {isVisible && !hasError && (
         <img
           src={src}
@@ -192,10 +167,9 @@ export function LazyImage({
         />
       )}
 
-      {/* Loading indicator */}
       {isVisible && !isLoaded && !hasError && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
         </div>
       )}
     </div>
@@ -215,7 +189,6 @@ export function createLazyComponent<T extends ComponentType<Record<string, unkno
     importFn().catch((error) => {
       if (retryCount < retry) {
         retryCount++;
-        // Exponential backoff
         return new Promise<{ default: T }>((resolve) =>
           setTimeout(() => resolve(lazyImport()), 1000 * Math.pow(2, retryCount - 1))
         );
@@ -225,12 +198,8 @@ export function createLazyComponent<T extends ComponentType<Record<string, unkno
 
   const LazyComponent = lazy(lazyImport);
 
-  // Preload if requested
-  if (preload) {
-    lazyImport();
-  }
+  if (preload) lazyImport();
 
-  // Wrapper component
   function LazyWrapper(props: Record<string, unknown>) {
     const [shouldRender, setShouldRender] = useState(delay === 0);
 
@@ -241,9 +210,7 @@ export function createLazyComponent<T extends ComponentType<Record<string, unkno
       }
     }, []);
 
-    if (!shouldRender) {
-      return fallback || <DefaultFallback />;
-    }
+    if (!shouldRender) return fallback || <DefaultFallback />;
 
     return (
       <Suspense fallback={fallback || <DefaultFallback />}>
@@ -291,11 +258,7 @@ export function useLazyData<T>({
       },
       { rootMargin: '100px' }
     );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
+    if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
   }, []);
 
@@ -322,13 +285,7 @@ export function useLazyData<T>({
     loadData();
   }, [enabled, isVisible, fetchFn, delay]);
 
-  return {
-    data,
-    isLoading,
-    error,
-    ref,
-    isVisible,
-  };
+  return { data, isLoading, error, ref, isVisible };
 }
 
 // Skeleton component for loading states
@@ -363,7 +320,7 @@ export function Skeleton({
   return (
     <div
       className={cn(
-        'bg-gray-200 dark:bg-gray-700',
+        'bg-muted',
         variantStyles[variant],
         animationStyles[animation],
         className
@@ -394,9 +351,7 @@ export function ContentPlaceholder({
     <div className={cn('space-y-3', className)}>
       {(showAvatar || showTitle) && (
         <div className="flex items-center gap-3">
-          {showAvatar && (
-            <Skeleton variant="circular" width={40} height={40} />
-          )}
+          {showAvatar && <Skeleton variant="circular" width={40} height={40} />}
           {showTitle && (
             <div className="flex-1 space-y-2">
               <Skeleton width="60%" height={16} />
@@ -407,11 +362,7 @@ export function ContentPlaceholder({
       )}
       <div className="space-y-2">
         {Array.from({ length: lines }).map((_, i) => (
-          <Skeleton
-            key={i}
-            width={i === lines - 1 ? '80%' : '100%'}
-            height={12}
-          />
+          <Skeleton key={i} width={i === lines - 1 ? '80%' : '100%'} height={12} />
         ))}
       </div>
     </div>
