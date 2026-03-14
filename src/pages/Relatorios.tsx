@@ -537,7 +537,7 @@ export default function Relatorios() {
                       formatter={(v: number) => formatCurrency(v)}
                       contentStyle={{ backgroundColor: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
                     />
-                    <Bar dataKey="valor" fill="hsl(24, 95%, 46%)" radius={[0, 4, 4, 0]} />
+                    <Bar dataKey="valor" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
