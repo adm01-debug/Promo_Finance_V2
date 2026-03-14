@@ -794,7 +794,7 @@ export default function BI() {
                         <div className="flex items-center justify-between">
                           <PositionBadge position={index + 1} size="lg" />
                           {index === 0 && (
-                            <Crown className="w-6 h-6 text-yellow-500 animate-wiggle" />
+                            <Crown className="w-6 h-6 text-coins animate-wiggle" />
                           )}
                         </div>
                         <CardTitle className="text-lg mt-2 truncate" title={emp.nome}>
