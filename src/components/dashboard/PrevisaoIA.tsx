@@ -629,7 +629,7 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
                       <CardContent className="py-4 space-y-2">
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-muted-foreground">Entradas:</span>
-                          <span className="font-medium text-green-600">{dados.entradas_previstas}</span>
+                          <span className="font-medium text-success">{dados.entradas_previstas}</span>
                         </div>
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-muted-foreground">Saídas:</span>
