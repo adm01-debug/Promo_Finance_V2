@@ -174,7 +174,7 @@ export function CurrencyDisplay({
   colorBySign = false,
 }: CurrencyDisplayProps) {
   if (value === null || value === undefined) {
-    return <span className={cn('text-gray-400', className)}>—</span>;
+    return <span className={cn('text-muted-foreground', className)}>—</span>;
   }
 
   const formatted = formatCurrency(Math.abs(value), currency, locale);
