@@ -271,9 +271,9 @@ export function FAQAccordion({
           key={item.id}
           id={item.id}
           title={item.question}
-          className="border-none border-b border-gray-200 dark:border-gray-700 rounded-none last:border-b-0"
+          className="border-none border-b border-border rounded-none last:border-b-0"
         >
-          <div className="text-gray-600 dark:text-gray-400">{item.answer}</div>
+          <div className="text-muted-foreground">{item.answer}</div>
         </AccordionItem>
       ))}
     </Accordion>
