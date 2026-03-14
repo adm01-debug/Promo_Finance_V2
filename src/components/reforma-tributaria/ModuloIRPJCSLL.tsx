@@ -420,7 +420,7 @@ export function ModuloIRPJCSLL() {
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="p-4 border rounded-lg">
                   <h4 className="font-semibold mb-4 flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    <CheckCircle2 className="h-4 w-4 text-success" />
                     Parte A - Ajustes do Lucro Líquido
                   </h4>
                   <ul className="text-sm space-y-2 text-muted-foreground">
