@@ -3,7 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CreditCard, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { SidebarNavGroups, MobileSidebarDrawer, RecentAndFavorites, QuickCreateButton } from './sidebar';
+import { SidebarNavGroups } from './sidebar/SidebarNavGroups';
+import { MobileSidebarDrawer } from './sidebar/MobileSidebarDrawer';
+import { RecentAndFavorites } from './sidebar/RecentAndFavorites';
+import { QuickCreateButton } from './sidebar/QuickCreateButton';
 import { MobileBottomNav } from './sidebar/MobileBottomNav';
 
 interface ResponsiveSidebarProps {
@@ -26,7 +29,7 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
       <>
         <MobileBottomNav onMenuClick={() => setMobileDrawerOpen(true)} />
         <MobileSidebarDrawer
-          open={mobileDrawerOpen}
+          isOpen={mobileDrawerOpen}
           onClose={() => setMobileDrawerOpen(false)}
         />
       </>
