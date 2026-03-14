@@ -95,7 +95,7 @@ const AlertaDetalhe = ({ alerta }: { alerta: AlertaRejeicao }) => {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-amber-500">
+            <div className="text-2xl font-bold text-warning">
               {alerta.ultimasRejeicoes.length}
             </div>
             <p className="text-sm text-muted-foreground">Eventos registrados</p>
