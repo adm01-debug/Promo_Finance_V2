@@ -78,8 +78,8 @@ const EMPTY_STATES: Record<EmptyStateType, EmptyStateConfig> = {
   },
   alertas: {
     icon: Shield,
-    iconColor: 'text-emerald-500',
-    iconBg: 'bg-emerald-100 dark:bg-emerald-900/30',
+    iconColor: 'text-success',
+    iconBg: 'bg-success/10',
     title: 'Tudo em dia! 🎉',
     description: 'Não há alertas pendentes. Continue mantendo suas obrigações em dia.',
     primaryAction: { label: 'Ver Cronograma', icon: Target },
