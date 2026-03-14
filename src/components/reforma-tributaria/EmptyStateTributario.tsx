@@ -90,8 +90,8 @@ const EMPTY_STATES: Record<EmptyStateType, EmptyStateConfig> = {
   },
   conciliacao: {
     icon: Shield,
-    iconColor: 'text-amber-500',
-    iconBg: 'bg-amber-100 dark:bg-amber-900/30',
+    iconColor: 'text-warning',
+    iconBg: 'bg-warning/10',
     title: 'Conciliação não executada',
     description: 'Execute a conciliação para verificar se os valores calculados estão corretos em relação às NF-e emitidas.',
     primaryAction: { label: 'Executar Conciliação', icon: Zap },
