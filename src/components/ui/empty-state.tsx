@@ -89,8 +89,8 @@ function EmptyIllustration({ type }: { type: string }) {
           animate={{ rotate: [0, -5, 5, 0] }}
           transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
         >
-          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-red-100 to-red-50 dark:from-red-950 dark:to-red-900/50 flex items-center justify-center">
-            <AlertCircle className="h-8 w-8 text-red-500" />
+          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-destructive/20 to-destructive/5 flex items-center justify-center">
+            <AlertCircle className="h-8 w-8 text-destructive" />
           </div>
         </motion.div>
       </motion.div>
