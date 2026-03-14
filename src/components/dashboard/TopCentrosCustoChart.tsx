@@ -1,34 +1,35 @@
 import { motion } from 'framer-motion';
-import { BarChart3, Layers } from 'lucide-react';
+import { Layers } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/formatters';
-import { 
-  XAxis, 
-  YAxis, 
-  Tooltip, 
-  ResponsiveContainer, 
-  BarChart, 
-  Bar, 
-  Legend,
-} from 'recharts';
+import { XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } },
 } as const;
 
-interface CentroCustoData {
-  nome: string;
-  pagar: number;
-  receber: number;
-  saldo: number;
+interface CentroCustoData { nome: string; pagar: number; receber: number; saldo: number }
+
+function CustomTooltip({ active, payload, label }: any) {
+  if (!active || !payload) return null;
+  return (
+    <div className="bg-popover border border-border rounded-xl p-3 shadow-lg text-xs space-y-1.5">
+      <p className="font-semibold text-foreground text-sm">{label}</p>
+      {payload.map((entry: any, i: number) => (
+        <div key={i} className="flex items-center gap-2 justify-between">
+          <div className="flex items-center gap-1.5">
+            <div className="h-2.5 w-2.5 rounded-full" style={{ background: entry.color }} />
+            <span className="text-muted-foreground">{entry.name}</span>
+          </div>
+          <span className="font-bold text-foreground tabular-nums">{formatCurrency(entry.value)}</span>
+        </div>
+      ))}
+    </div>
+  );
 }
 
-interface TopCentrosCustoChartProps {
-  dadosPorCentroCusto: CentroCustoData[];
-}
-
-export function TopCentrosCustoChart({ dadosPorCentroCusto }: TopCentrosCustoChartProps) {
+export function TopCentrosCustoChart({ dadosPorCentroCusto }: { dadosPorCentroCusto: CentroCustoData[] }) {
   return (
     <motion.div variants={itemVariants}>
       <Card className="h-[450px] overflow-hidden">
@@ -44,9 +45,19 @@ export function TopCentrosCustoChart({ dadosPorCentroCusto }: TopCentrosCustoCha
         <CardContent className="h-[360px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={dadosPorCentroCusto.slice(0, 5)} layout="vertical">
+              <defs>
+                <linearGradient id="gradReceber" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="hsl(var(--success))" stopOpacity={0.8} />
+                  <stop offset="100%" stopColor="hsl(var(--success))" stopOpacity={1} />
+                </linearGradient>
+                <linearGradient id="gradPagar" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="hsl(var(--destructive))" stopOpacity={0.8} />
+                  <stop offset="100%" stopColor="hsl(var(--destructive))" stopOpacity={1} />
+                </linearGradient>
+              </defs>
               <XAxis
                 type="number"
-                tickFormatter={(v) => `${(v/1000).toFixed(0)}K`}
+                tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`}
                 fontSize={10}
                 stroke="hsl(var(--muted-foreground))"
                 tickLine={false}
@@ -61,19 +72,13 @@ export function TopCentrosCustoChart({ dadosPorCentroCusto }: TopCentrosCustoCha
                 tickLine={false}
                 axisLine={false}
               />
-              <Tooltip
-                formatter={(v: number) => formatCurrency(v)}
-                contentStyle={{
-                  backgroundColor: 'hsl(var(--popover))',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: '12px',
-                  fontSize: '11px',
-                  boxShadow: 'var(--shadow-md)',
-                }}
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--muted)/0.3)' }} />
+              <Legend
+                wrapperStyle={{ fontSize: '11px' }}
+                formatter={(value: string) => <span className="text-muted-foreground text-xs">{value}</span>}
               />
-              <Legend wrapperStyle={{ fontSize: '11px' }} />
-              <Bar dataKey="receber" name="A Receber" fill="hsl(var(--success))" radius={[0, 6, 6, 0]} />
-              <Bar dataKey="pagar" name="A Pagar" fill="hsl(var(--destructive))" radius={[0, 6, 6, 0]} />
+              <Bar dataKey="receber" name="A Receber" fill="url(#gradReceber)" radius={[0, 6, 6, 0]} />
+              <Bar dataKey="pagar" name="A Pagar" fill="url(#gradPagar)" radius={[0, 6, 6, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

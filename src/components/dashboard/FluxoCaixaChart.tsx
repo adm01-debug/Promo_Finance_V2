@@ -1,17 +1,10 @@
 import { motion } from 'framer-motion';
-import { Activity, TrendingUp } from 'lucide-react';
+import { Activity } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { formatCurrency } from '@/lib/formatters';
 import { 
-  XAxis, 
-  YAxis, 
-  Tooltip, 
-  ResponsiveContainer, 
-  ComposedChart,
-  Legend,
-  Line,
-  Area,
+  XAxis, YAxis, Tooltip, ResponsiveContainer, ComposedChart, Legend, Line, Area,
 } from 'recharts';
 
 const itemVariants = {
@@ -20,14 +13,27 @@ const itemVariants = {
 } as const;
 
 interface FluxoCaixaChartProps {
-  data: Array<{
-    data: string;
-    receitas: number;
-    despesas: number;
-    saldo: number;
-  }>;
+  data: Array<{ data: string; receitas: number; despesas: number; saldo: number }>;
   periodoFluxo: string;
   setPeriodoFluxo: (value: string) => void;
+}
+
+function CustomTooltip({ active, payload, label }: any) {
+  if (!active || !payload) return null;
+  return (
+    <div className="bg-popover border border-border rounded-xl p-3 shadow-lg text-xs space-y-1.5">
+      <p className="font-semibold text-foreground text-sm">{label}</p>
+      {payload.map((entry: any, i: number) => (
+        <div key={i} className="flex items-center gap-2 justify-between">
+          <div className="flex items-center gap-1.5">
+            <div className="h-2.5 w-2.5 rounded-full" style={{ background: entry.color }} />
+            <span className="text-muted-foreground">{entry.name}</span>
+          </div>
+          <span className="font-bold text-foreground tabular-nums">{formatCurrency(entry.value)}</span>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export function FluxoCaixaChart({ data, periodoFluxo, setPeriodoFluxo }: FluxoCaixaChartProps) {
@@ -47,9 +53,11 @@ export function FluxoCaixaChart({ data, periodoFluxo, setPeriodoFluxo }: FluxoCa
             </div>
             <Tabs value={periodoFluxo} onValueChange={setPeriodoFluxo}>
               <TabsList className="h-8 bg-muted/60">
-                <TabsTrigger value="7" className="text-[10px] sm:text-xs px-2.5 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">7d</TabsTrigger>
-                <TabsTrigger value="15" className="text-[10px] sm:text-xs px-2.5 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">15d</TabsTrigger>
-                <TabsTrigger value="30" className="text-[10px] sm:text-xs px-2.5 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">30d</TabsTrigger>
+                {['7', '15', '30'].map(v => (
+                  <TabsTrigger key={v} value={v} className="text-[10px] sm:text-xs px-2.5 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                    {v}d
+                  </TabsTrigger>
+                ))}
               </TabsList>
             </Tabs>
           </div>
@@ -58,45 +66,39 @@ export function FluxoCaixaChart({ data, periodoFluxo, setPeriodoFluxo }: FluxoCa
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={data} margin={{ left: -15, right: 5, top: 5, bottom: 5 }}>
               <defs>
-                <linearGradient id="colorReceitas" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0}/>
+                <linearGradient id="gradReceitas" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="hsl(var(--success))" stopOpacity={0.35} />
+                  <stop offset="100%" stopColor="hsl(var(--success))" stopOpacity={0.02} />
                 </linearGradient>
-                <linearGradient id="colorDespesas" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--destructive))" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="hsl(var(--destructive))" stopOpacity={0}/>
+                <linearGradient id="gradDespesas" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="hsl(var(--destructive))" stopOpacity={0.35} />
+                  <stop offset="100%" stopColor="hsl(var(--destructive))" stopOpacity={0.02} />
                 </linearGradient>
               </defs>
-              <XAxis 
-                dataKey="data" 
-                tickFormatter={(v) => v.slice(8)} 
-                stroke="hsl(var(--muted-foreground))" 
-                fontSize={9} 
+              <XAxis
+                dataKey="data"
+                tickFormatter={(v) => v.slice(8)}
+                stroke="hsl(var(--muted-foreground))"
+                fontSize={9}
                 tickLine={false}
+                axisLine={false}
                 interval="preserveStartEnd"
               />
-              <YAxis 
-                tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} 
-                stroke="hsl(var(--muted-foreground))" 
+              <YAxis
+                tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`}
+                stroke="hsl(var(--muted-foreground))"
                 fontSize={9}
                 width={35}
                 tickLine={false}
                 axisLine={false}
               />
-              <Tooltip 
-                formatter={(v: number) => formatCurrency(v)} 
-                labelFormatter={(l) => `Data: ${l}`}
-                contentStyle={{ 
-                  backgroundColor: 'hsl(var(--popover))', 
-                  border: '1px solid hsl(var(--border))', 
-                  borderRadius: '12px', 
-                  fontSize: '11px',
-                  boxShadow: 'var(--shadow-md)',
-                }}
+              <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'hsl(var(--border))', strokeDasharray: '4 4' }} />
+              <Legend
+                wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }}
+                formatter={(value: string) => <span className="text-muted-foreground">{value}</span>}
               />
-              <Legend wrapperStyle={{ fontSize: '10px', paddingTop: '8px' }} />
-              <Area type="monotone" dataKey="receitas" name="Receitas" stroke="hsl(var(--success))" fill="url(#colorReceitas)" strokeWidth={2} />
-              <Area type="monotone" dataKey="despesas" name="Despesas" stroke="hsl(var(--destructive))" fill="url(#colorDespesas)" strokeWidth={2} />
+              <Area type="monotone" dataKey="receitas" name="Receitas" stroke="hsl(var(--success))" fill="url(#gradReceitas)" strokeWidth={2} />
+              <Area type="monotone" dataKey="despesas" name="Despesas" stroke="hsl(var(--destructive))" fill="url(#gradDespesas)" strokeWidth={2} />
               <Line type="monotone" dataKey="saldo" name="Saldo" stroke="hsl(var(--secondary))" strokeWidth={2.5} dot={false} strokeDasharray="6 3" />
             </ComposedChart>
           </ResponsiveContainer>

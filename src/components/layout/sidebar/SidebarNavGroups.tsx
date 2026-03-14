@@ -174,7 +174,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
         className={cn(
           'flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group relative',
           isActive
-            ? 'bg-primary text-primary-foreground shadow-glow-primary'
+            ? 'bg-primary/10 text-primary font-semibold shadow-[inset_3px_0_0_hsl(var(--primary))]'
             : item.highlight
               ? 'bg-gradient-to-r from-accent/10 to-primary/10 text-foreground hover:from-accent/20 hover:to-primary/20 border border-accent/20'
               : 'text-muted-foreground hover:bg-muted hover:text-foreground'
