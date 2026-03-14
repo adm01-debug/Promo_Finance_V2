@@ -28,9 +28,9 @@ export function CronogramaTransicao() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'concluido':
-        return 'bg-green-500';
+        return 'bg-success';
       case 'em_andamento':
-        return 'bg-blue-500 animate-pulse';
+        return 'bg-primary animate-pulse';
       default:
         return 'bg-muted';
     }
