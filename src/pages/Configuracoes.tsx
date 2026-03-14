@@ -417,9 +417,9 @@ export default function Configuracoes() {
                 <div className="grid gap-4">
                   {templates.map((template) => {
                     const tipoConfig = {
-                      email: { icon: Mail, color: 'text-blue-500', bg: 'bg-blue-100 dark:bg-blue-900/30' },
-                      sms: { icon: MessageSquare, color: 'text-green-500', bg: 'bg-green-100 dark:bg-green-900/30' },
-                      whatsapp: { icon: Phone, color: 'text-emerald-500', bg: 'bg-emerald-100 dark:bg-emerald-900/30' },
+                      email: { icon: Mail, color: 'text-secondary', bg: 'bg-secondary/10' },
+                      sms: { icon: MessageSquare, color: 'text-success', bg: 'bg-success/10' },
+                      whatsapp: { icon: Phone, color: 'text-success', bg: 'bg-success/10' },
                     }[template.tipo];
                     const Icon = tipoConfig.icon;
 
