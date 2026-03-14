@@ -147,7 +147,7 @@ export default function Bitrix24() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
+          <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg">
             <Zap className="h-6 w-6 text-white" />
           </div>
           <div>
