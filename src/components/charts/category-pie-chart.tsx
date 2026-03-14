@@ -30,20 +30,20 @@ const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="bg-white dark:bg-gray-800 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+      <div className="bg-popover p-3 border border-border rounded-lg shadow-lg">
         <div className="flex items-center gap-2 mb-1">
           <div
             className="w-3 h-3 rounded-full"
             style={{ backgroundColor: data.cor }}
           />
-          <span className="font-medium text-gray-900 dark:text-white">
+          <span className="font-medium text-foreground">
             {data.nome}
           </span>
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-sm text-muted-foreground">
           {formatCurrency(data.valor)}
         </p>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-muted-foreground/70">
           {data.percentual?.toFixed(1)}% do total
         </p>
       </div>
