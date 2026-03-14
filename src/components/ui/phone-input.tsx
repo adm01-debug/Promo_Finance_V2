@@ -2,7 +2,6 @@ import { useState, useCallback, useRef, useEffect, forwardRef } from 'react';
 import { Phone, ChevronDown, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// Country data
 interface Country {
   code: string;
   name: string;
@@ -24,15 +23,12 @@ const countries: Country[] = [
   { code: 'MX', name: 'México', dialCode: '+52', mask: '## #### ####', flag: '🇲🇽' },
 ];
 
-// Apply mask to value
 function applyMask(value: string, mask: string): string {
   const digits = value.replace(/\D/g, '');
   let result = '';
   let digitIndex = 0;
-
   for (const char of mask) {
     if (digitIndex >= digits.length) break;
-
     if (char === '#') {
       result += digits[digitIndex];
       digitIndex++;
@@ -40,16 +36,13 @@ function applyMask(value: string, mask: string): string {
       result += char;
     }
   }
-
   return result;
 }
 
-// Remove mask from value
 function removeMask(value: string): string {
   return value.replace(/\D/g, '');
 }
 
-// Phone Input Props
 interface PhoneInputProps {
   value?: string;
   onChange?: (value: string, formattedValue: string, country: Country) => void;
@@ -92,10 +85,8 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
     const containerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    // Parse initial value
     useEffect(() => {
       if (value) {
-        // Try to extract country code
         for (const country of countries) {
           if (value.startsWith(country.dialCode)) {
             const phoneNumber = value.slice(country.dialCode.length);
@@ -104,78 +95,55 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
             return;
           }
         }
-        // No country code found, just mask the value
         setInputValue(applyMask(value, selectedCountry.mask));
       }
     }, [value]);
 
-    // Close dropdown on click outside
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
           setIsCountryOpen(false);
         }
       };
-
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Handle input change
     const handleInputChange = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
         const rawValue = removeMask(e.target.value);
         const maskedValue = applyMask(rawValue, selectedCountry.mask);
         setInputValue(maskedValue);
-
         const fullNumber = `${selectedCountry.dialCode}${rawValue}`;
         onChange?.(rawValue, fullNumber, selectedCountry);
       },
       [selectedCountry, onChange]
     );
 
-    // Handle country change
     const handleCountryChange = useCallback(
       (country: Country) => {
         setSelectedCountry(country);
         setIsCountryOpen(false);
-
         const rawValue = removeMask(inputValue);
         const maskedValue = applyMask(rawValue, country.mask);
         setInputValue(maskedValue);
-
         const fullNumber = `${country.dialCode}${rawValue}`;
         onChange?.(rawValue, fullNumber, country);
-
         inputRef.current?.focus();
       },
       [inputValue, onChange]
     );
 
-    // Handle clear
     const handleClear = useCallback(() => {
       setInputValue('');
       onChange?.('', '', selectedCountry);
       inputRef.current?.focus();
     }, [selectedCountry, onChange]);
 
-    // Size styles
     const sizeStyles = {
-      sm: {
-        input: 'h-8 text-sm',
-        button: 'h-8 text-sm px-2',
-        icon: 'w-4 h-4',
-      },
-      md: {
-        input: 'h-10 text-sm',
-        button: 'h-10 text-sm px-3',
-        icon: 'w-5 h-5',
-      },
-      lg: {
-        input: 'h-12 text-base',
-        button: 'h-12 text-base px-4',
-        icon: 'w-6 h-6',
-      },
+      sm: { input: 'h-8 text-sm', button: 'h-8 text-sm px-2', icon: 'w-4 h-4' },
+      md: { input: 'h-10 text-sm', button: 'h-10 text-sm px-3', icon: 'w-5 h-5' },
+      lg: { input: 'h-12 text-base', button: 'h-12 text-base px-4', icon: 'w-6 h-6' },
     };
 
     const styles = sizeStyles[size];
@@ -186,48 +154,45 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
           className={cn(
             'flex rounded-lg border transition-colors',
             isFocused && !error
-              ? 'border-primary-500 ring-1 ring-primary-500'
+              ? 'border-primary ring-1 ring-primary'
               : error
-              ? 'border-red-500'
-              : 'border-gray-300 dark:border-gray-600',
-            disabled && 'opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-800'
+              ? 'border-destructive'
+              : 'border-input',
+            disabled && 'opacity-50 cursor-not-allowed bg-muted'
           )}
         >
-          {/* Country selector */}
           {showCountrySelect && (
             <button
               type="button"
               onClick={() => !disabled && setIsCountryOpen(!isCountryOpen)}
               disabled={disabled}
               className={cn(
-                'flex items-center gap-1 border-r border-gray-300 dark:border-gray-600',
-                'bg-gray-50 dark:bg-gray-800 rounded-l-lg',
-                'hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors',
+                'flex items-center gap-1 border-r border-input',
+                'bg-muted rounded-l-lg',
+                'hover:bg-accent transition-colors',
                 disabled && 'cursor-not-allowed',
                 styles.button
               )}
             >
               <span className="text-lg">{selectedCountry.flag}</span>
-              <span className="text-gray-600 dark:text-gray-400">
+              <span className="text-muted-foreground">
                 {selectedCountry.dialCode}
               </span>
               <ChevronDown
                 className={cn(
-                  'w-4 h-4 text-gray-400 transition-transform',
+                  'w-4 h-4 text-muted-foreground transition-transform',
                   isCountryOpen && 'rotate-180'
                 )}
               />
             </button>
           )}
 
-          {/* Phone icon (if no country select) */}
           {!showCountrySelect && (
             <div className="flex items-center pl-3">
-              <Phone className={cn('text-gray-400', styles.icon)} />
+              <Phone className={cn('text-muted-foreground', styles.icon)} />
             </div>
           )}
 
-          {/* Input */}
           <input
             ref={(node) => {
               inputRef.current = node;
@@ -249,26 +214,24 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
             disabled={disabled}
             className={cn(
               'flex-1 bg-transparent border-none outline-none px-3',
-              'placeholder:text-gray-400',
+              'placeholder:text-muted-foreground',
               styles.input
             )}
           />
 
-          {/* Clear button */}
           {inputValue && !disabled && (
             <button
               type="button"
               onClick={handleClear}
-              className="flex items-center px-2 text-gray-400 hover:text-gray-600"
+              className="flex items-center px-2 text-muted-foreground hover:text-foreground"
             >
               <X className="w-4 h-4" />
             </button>
           )}
         </div>
 
-        {/* Country dropdown */}
         {isCountryOpen && (
-          <div className="absolute top-full left-0 mt-1 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50 max-h-60 overflow-y-auto">
+          <div className="absolute top-full left-0 mt-1 w-64 bg-popover rounded-lg shadow-lg border border-border py-1 z-50 max-h-60 overflow-y-auto">
             {countries.map((country) => (
               <button
                 key={country.code}
@@ -277,26 +240,25 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
                 className={cn(
                   'w-full flex items-center gap-3 px-3 py-2 text-left transition-colors',
                   country.code === selectedCountry.code
-                    ? 'bg-primary-50 dark:bg-primary-900/20'
-                    : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+                    ? 'bg-primary/10'
+                    : 'hover:bg-accent'
                 )}
               >
                 <span className="text-xl">{country.flag}</span>
-                <span className="flex-1 text-gray-900 dark:text-white">
+                <span className="flex-1 text-foreground">
                   {country.name}
                 </span>
-                <span className="text-sm text-gray-500">{country.dialCode}</span>
+                <span className="text-sm text-muted-foreground">{country.dialCode}</span>
               </button>
             ))}
           </div>
         )}
 
-        {/* Helper text */}
         {helperText && (
           <p
             className={cn(
               'mt-1 text-sm',
-              error ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'
+              error ? 'text-destructive' : 'text-muted-foreground'
             )}
           >
             {helperText}
@@ -309,7 +271,6 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
 
 PhoneInput.displayName = 'PhoneInput';
 
-// Simple phone mask input (Brazil only)
 interface BrazilPhoneInputProps {
   value?: string;
   onChange?: (value: string) => void;
@@ -334,7 +295,7 @@ export function BrazilPhoneInput({
 
   return (
     <div className={cn('relative', className)}>
-      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
       <input
         type="tel"
         value={applyMask(value, '(##) #####-####')}
@@ -343,11 +304,11 @@ export function BrazilPhoneInput({
         disabled={disabled}
         className={cn(
           'w-full pl-10 pr-4 py-2 border rounded-lg',
-          'bg-white dark:bg-gray-800',
-          'focus:outline-none focus:ring-2 focus:ring-primary-500',
+          'bg-background',
+          'focus:outline-none focus:ring-2 focus:ring-ring',
           error
-            ? 'border-red-500'
-            : 'border-gray-300 dark:border-gray-600',
+            ? 'border-destructive'
+            : 'border-input',
           disabled && 'opacity-50 cursor-not-allowed'
         )}
       />
@@ -355,10 +316,8 @@ export function BrazilPhoneInput({
   );
 }
 
-// Validate phone
 export function validatePhone(phone: string, countryCode: string = 'BR'): boolean {
   const digits = phone.replace(/\D/g, '');
-  
   const validations: Record<string, (d: string) => boolean> = {
     BR: (d) => d.length === 10 || d.length === 11,
     US: (d) => d.length === 10,
@@ -371,15 +330,12 @@ export function validatePhone(phone: string, countryCode: string = 'BR'): boolea
     AR: (d) => d.length === 10,
     MX: (d) => d.length === 10,
   };
-
   return validations[countryCode]?.(digits) ?? digits.length >= 8;
 }
 
-// Format phone for display
 export function formatPhone(phone: string, countryCode: string = 'BR'): string {
   const country = countries.find((c) => c.code === countryCode);
   if (!country) return phone;
-
   const digits = phone.replace(/\D/g, '');
   return `${country.dialCode} ${applyMask(digits, country.mask)}`;
 }

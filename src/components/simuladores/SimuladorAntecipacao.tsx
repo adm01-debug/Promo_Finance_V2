@@ -46,7 +46,6 @@ interface SimulacaoResultado {
   taxaEfetiva: number;
 }
 
-// Instituições parceiras simuladas
 const INSTITUICOES: InstituicaoFinanceira[] = [
   { id: '1', nome: 'Banco Digital', logo: '🏦', taxaMensal: 1.89, prazoAprovacao: '2h', limiteMin: 1000, limiteMax: 500000, rating: 4.8, destaque: true },
   { id: '2', nome: 'FinTech Capital', logo: '💳', taxaMensal: 2.15, prazoAprovacao: '4h', limiteMin: 500, limiteMax: 200000, rating: 4.6 },
@@ -62,7 +61,6 @@ export function SimuladorAntecipacao() {
   const [instituicaoSelecionada, setInstituicaoSelecionada] = useState<string | null>(null);
   const [modoComparacao, setModoComparacao] = useState<'instituicoes' | 'personalizado'>('instituicoes');
 
-  // Buscar recebíveis pendentes
   const { data: recebiveis = [] } = useQuery({
     queryKey: ['recebiveis-para-antecipacao'],
     queryFn: async () => {
@@ -167,7 +165,6 @@ export function SimuladorAntecipacao() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Configurações */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
@@ -190,7 +187,6 @@ export function SimuladorAntecipacao() {
           </div>
         </div>
 
-        {/* Lista de Recebíveis */}
         {recebiveis.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <DollarSign className="h-12 w-12 mx-auto mb-2 opacity-50" />
@@ -244,17 +240,17 @@ export function SimuladorAntecipacao() {
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-4 rounded-lg bg-gradient-to-r from-emerald-500/10 to-primary/10 border border-emerald-500/30"
+                    className="p-4 rounded-lg bg-gradient-to-r from-success/10 to-primary/10 border border-success/30"
                   >
                     <div className="flex items-center gap-2 mb-2">
-                      <Sparkles className="h-5 w-5 text-emerald-500" />
-                      <span className="font-semibold text-emerald-700">Melhor Opção</span>
+                      <Sparkles className="h-5 w-5 text-success" />
+                      <span className="font-semibold text-success">Melhor Opção</span>
                       <Badge variant="secondary">{melhorOpcao.instituicao.nome}</Badge>
                     </div>
                     <div className="grid grid-cols-3 gap-4 text-center">
                       <div>
                         <p className="text-xs text-muted-foreground">Valor Líquido</p>
-                        <p className="text-xl font-bold text-emerald-600">{formatCurrency(melhorOpcao.valorLiquido)}</p>
+                        <p className="text-xl font-bold text-success">{formatCurrency(melhorOpcao.valorLiquido)}</p>
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground">Taxa Mensal</p>
@@ -279,7 +275,7 @@ export function SimuladorAntecipacao() {
                         instituicaoSelecionada === sim.instituicao.id 
                           ? 'border-primary bg-primary/5 ring-2 ring-primary/20' 
                           : 'hover:border-primary/50'
-                      } ${sim.instituicao.destaque ? 'ring-1 ring-yellow-400/50' : ''}`}
+                      } ${sim.instituicao.destaque ? 'ring-1 ring-warning/50' : ''}`}
                       onClick={() => setInstituicaoSelecionada(sim.instituicao.id)}
                     >
                       <div className="flex items-center justify-between">
@@ -290,12 +286,12 @@ export function SimuladorAntecipacao() {
                               <p className="font-semibold">{sim.instituicao.nome}</p>
                               {sim.instituicao.destaque && (
                                 <Badge variant="secondary" className="text-xs">
-                                  <Star className="h-3 w-3 mr-1 fill-yellow-400 text-yellow-400" />
+                                  <Star className="h-3 w-3 mr-1 fill-warning text-warning" />
                                   Destaque
                                 </Badge>
                               )}
                               {idx === 0 && (
-                                <Badge className="text-xs bg-emerald-500">Melhor</Badge>
+                                <Badge className="text-xs bg-success">Melhor</Badge>
                               )}
                             </div>
                             <div className="flex items-center gap-3 text-sm text-muted-foreground">
@@ -306,14 +302,14 @@ export function SimuladorAntecipacao() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-lg font-bold text-emerald-600">{formatCurrency(sim.valorLiquido)}</p>
+                          <p className="text-lg font-bold text-success">{formatCurrency(sim.valorLiquido)}</p>
                           <p className="text-xs text-muted-foreground">
                             -{formatCurrency(sim.taxaTotal)} ({sim.taxaEfetiva.toFixed(2)}%)
                           </p>
                         </div>
                       </div>
                     </motion.div>
-                  ))}
+                  ))
                 </div>
 
                 {instituicaoSelecionada && (
@@ -356,21 +352,21 @@ export function SimuladorAntecipacao() {
                       <p className="text-xs text-muted-foreground">Desconto</p>
                       <p className="text-lg font-bold text-destructive">-{formatCurrency(simulacaoPersonalizada.taxaTotal)}</p>
                     </div>
-                    <div className="p-3 rounded-lg bg-emerald-500/10">
+                    <div className="p-3 rounded-lg bg-success/10">
                       <p className="text-xs text-muted-foreground">Valor Líquido</p>
-                      <p className="text-lg font-bold text-emerald-600">{formatCurrency(simulacaoPersonalizada.valorLiquido)}</p>
+                      <p className="text-lg font-bold text-success">{formatCurrency(simulacaoPersonalizada.valorLiquido)}</p>
                     </div>
-                    <div className="p-3 rounded-lg bg-blue-500/10">
+                    <div className="p-3 rounded-lg bg-primary/10">
                       <p className="text-xs text-muted-foreground">Prazo Médio</p>
-                      <p className="text-lg font-bold text-blue-600">{simulacaoPersonalizada.diasMedio} dias</p>
+                      <p className="text-lg font-bold text-primary">{simulacaoPersonalizada.diasMedio} dias</p>
                     </div>
                   </motion.div>
                 )}
 
                 {simulacaoPersonalizada && simulacaoPersonalizada.economia > 0 && (
-                  <div className="p-4 rounded-lg bg-gradient-to-r from-emerald-500/10 to-blue-500/10 border">
+                  <div className="p-4 rounded-lg bg-gradient-to-r from-success/10 to-primary/10 border">
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                      <CheckCircle2 className="h-5 w-5 text-success" />
                       <span className="font-medium">Economia vs Empréstimo: {formatCurrency(simulacaoPersonalizada.economia)}</span>
                     </div>
                   </div>
