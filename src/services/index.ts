@@ -2,8 +2,7 @@
 // PROMO FINANCE SERVICES INDEX
 // ============================================
 
-// Auth
-export { authService } from './auth.service';
+// Auth (via useAuth hook directly)
 
 // CRUD Services
 export { clientesService } from './clientes.service';
