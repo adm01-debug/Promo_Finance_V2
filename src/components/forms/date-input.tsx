@@ -151,7 +151,7 @@ export function DateRangeInput({
     <div className={cn('flex flex-col sm:flex-row gap-2 sm:gap-4', className)}>
       <div className="flex-1 space-y-1">
         {labels.start && (
-          <label className="text-sm text-gray-600 dark:text-gray-400">
+          <label className="text-sm text-muted-foreground">
             {labels.start}
           </label>
         )}
