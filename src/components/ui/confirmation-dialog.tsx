@@ -57,32 +57,32 @@ const typeConfig: Record<
 > = {
   danger: {
     icon: Trash2,
-    iconBg: 'bg-red-100 dark:bg-red-900/30',
-    iconColor: 'text-red-600 dark:text-red-400',
+    iconBg: 'bg-destructive/10',
+    iconColor: 'text-destructive',
     confirmVariant: 'destructive',
   },
   warning: {
     icon: AlertTriangle,
-    iconBg: 'bg-yellow-100 dark:bg-yellow-900/30',
-    iconColor: 'text-yellow-600 dark:text-yellow-400',
+    iconBg: 'bg-warning/10',
+    iconColor: 'text-warning',
     confirmVariant: 'warning',
   },
   success: {
     icon: CheckCircle,
-    iconBg: 'bg-green-100 dark:bg-green-900/30',
-    iconColor: 'text-green-600 dark:text-green-400',
+    iconBg: 'bg-success/10',
+    iconColor: 'text-success',
     confirmVariant: 'success',
   },
   info: {
     icon: Info,
-    iconBg: 'bg-blue-100 dark:bg-blue-900/30',
-    iconColor: 'text-blue-600 dark:text-blue-400',
+    iconBg: 'bg-primary/10',
+    iconColor: 'text-primary',
     confirmVariant: 'default',
   },
   question: {
     icon: HelpCircle,
-    iconBg: 'bg-purple-100 dark:bg-purple-900/30',
-    iconColor: 'text-purple-600 dark:text-purple-400',
+    iconBg: 'bg-accent',
+    iconColor: 'text-accent-foreground',
     confirmVariant: 'default',
   },
 };
