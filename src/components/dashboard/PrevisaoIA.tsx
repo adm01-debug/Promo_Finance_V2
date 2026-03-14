@@ -169,7 +169,7 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
 
   const getTendenciaIcon = (tendencia: string) => {
     if (tendencia?.toLowerCase().includes('cresc')) {
-      return <TrendingUp className="h-4 w-4 text-green-500" />;
+      return <TrendingUp className="h-4 w-4 text-success" />;
     } else if (tendencia?.toLowerCase().includes('decresc')) {
       return <TrendingDown className="h-4 w-4 text-destructive" />;
     }
