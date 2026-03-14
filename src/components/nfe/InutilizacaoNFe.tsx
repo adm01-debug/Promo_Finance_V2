@@ -305,7 +305,7 @@ export function InutilizacaoNFe() {
                           <div 
                             key={step.id}
                             className={`text-center transition-colors ${
-                              isActive ? 'text-primary' : isDone ? 'text-emerald-500' : 'text-muted-foreground'
+                              isActive ? 'text-primary' : isDone ? 'text-success' : 'text-muted-foreground'
                             }`}
                           >
                             <StepIcon className={`h-4 w-4 mx-auto mb-1 ${isActive ? 'animate-pulse' : ''}`} />
