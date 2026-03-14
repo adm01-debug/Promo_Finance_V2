@@ -45,10 +45,10 @@ const TIPO_LABELS: Record<TipoRetencao, string> = {
 };
 
 const STATUS_COLORS = {
-  pendente: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-  recolhido: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-  compensado: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-  cancelado: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400',
+  pendente: 'bg-warning/10 text-warning',
+  recolhido: 'bg-success/10 text-success',
+  compensado: 'bg-primary/10 text-primary',
+  cancelado: 'bg-muted text-muted-foreground',
 };
 
 export function RetencoesFonte() {
