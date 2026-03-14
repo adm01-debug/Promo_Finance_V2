@@ -10,7 +10,7 @@ export function Toaster() {
       richColors
       closeButton
       toastOptions={{
-        className: 'dark:bg-gray-800 dark:text-white',
+        className: 'dark:bg-card dark:text-foreground',
         duration: 4000,
       }}
     />
