@@ -52,8 +52,8 @@ const EMPTY_STATES: Record<EmptyStateType, EmptyStateConfig> = {
   },
   creditos: {
     icon: TrendingUp,
-    iconColor: 'text-green-500',
-    iconBg: 'bg-green-100 dark:bg-green-900/30',
+    iconColor: 'text-success',
+    iconBg: 'bg-success/10',
     title: 'Nenhum crédito tributário',
     description: 'Os créditos são gerados automaticamente quando você importa NF-e de compras ou registra operações de entrada.',
     primaryAction: { label: 'Importar XML', icon: Plus },
