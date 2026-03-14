@@ -217,8 +217,7 @@ export function useIsTouchDevice(): boolean {
       setIsTouch(
         'ontouchstart' in window ||
         navigator.maxTouchPoints > 0 ||
-        // @ts-ignore - msMaxTouchPoints is IE-specific
-        (navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 0)
+        ((navigator as Record<string, unknown>).msMaxTouchPoints as number) > 0
       );
     };
 
