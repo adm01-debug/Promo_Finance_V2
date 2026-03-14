@@ -530,7 +530,7 @@ const SefazStatusPanel = ({
           {response.errors && response.errors.length > 0 && (
             <div className="mt-2 space-y-1">
               {response.errors.map((err, idx) => (
-                <p key={idx} className="text-sm text-red-500 flex items-center gap-1">
+                <p key={idx} className="text-sm text-destructive flex items-center gap-1">
                   <AlertCircle className="h-3 w-3" />
                   {err}
                 </p>
