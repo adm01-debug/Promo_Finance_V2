@@ -159,9 +159,9 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
       case 'critico':
         return <Badge variant="destructive" className="gap-1"><AlertTriangle className="h-3 w-3" /> Crítico</Badge>;
       case 'alto':
-        return <Badge className="gap-1 bg-orange-500"><AlertTriangle className="h-3 w-3" /> Alto</Badge>;
+        return <Badge className="gap-1 bg-streak text-streak-foreground"><AlertTriangle className="h-3 w-3" /> Alto</Badge>;
       case 'medio':
-        return <Badge className="gap-1 bg-yellow-500 text-yellow-950"><AlertTriangle className="h-3 w-3" /> Médio</Badge>;
+        return <Badge className="gap-1 bg-warning text-warning-foreground"><AlertTriangle className="h-3 w-3" /> Médio</Badge>;
       default:
         return <Badge variant="secondary" className="gap-1"><CheckCircle2 className="h-3 w-3" /> Baixo</Badge>;
     }
