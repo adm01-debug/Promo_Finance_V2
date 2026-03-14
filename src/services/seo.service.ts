@@ -283,7 +283,7 @@ export const PAGE_META = {
   },
   register: {
     title: 'Cadastro',
-    description: 'Crie sua conta no Finance Hub e comece a organizar suas finanças.',
+    description: 'Crie sua conta no Promo Finance e comece a organizar suas finanças.',
   },
 };
 

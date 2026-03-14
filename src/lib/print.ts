@@ -497,7 +497,7 @@ export function printFinancialReport(data: {
     title: data.title,
     orientation: 'portrait',
     styles,
-    footer: `Finance Hub - Relatório gerado em ${new Date().toLocaleString('pt-BR')}`,
+    footer: `Promo Finance - Relatório gerado em ${new Date().toLocaleString('pt-BR')}`,
   });
 }
 
