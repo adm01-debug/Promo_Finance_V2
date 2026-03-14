@@ -141,7 +141,7 @@ export function AuthLeftPanel() {
           transition={{ delay: 0.4 }}
           className="text-4xl font-display font-bold gradient-text mb-4"
         >
-          Promo Brindes
+          Promo Finance
         </motion.h1>
         
         <motion.p
