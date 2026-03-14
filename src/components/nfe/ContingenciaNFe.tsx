@@ -478,19 +478,19 @@ export function ContingenciaNFe() {
                     >
                       <div className="flex items-center gap-4">
                         <div className={`p-2 rounded-lg ${
-                          nfe.status === 'pendente' ? 'bg-amber-500/10' :
-                          nfe.status === 'transmitindo' ? 'bg-blue-500/10' :
-                          nfe.status === 'autorizada' ? 'bg-emerald-500/10' :
-                          'bg-red-500/10'
+                          nfe.status === 'pendente' ? 'bg-warning/10' :
+                          nfe.status === 'transmitindo' ? 'bg-primary/10' :
+                          nfe.status === 'autorizada' ? 'bg-success/10' :
+                          'bg-destructive/10'
                         }`}>
                           {nfe.status === 'transmitindo' ? (
-                            <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />
+                            <Loader2 className="h-5 w-5 text-primary animate-spin" />
                           ) : nfe.status === 'autorizada' ? (
-                            <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                            <CheckCircle2 className="h-5 w-5 text-success" />
                           ) : nfe.status === 'rejeitada' ? (
-                            <XCircle className="h-5 w-5 text-red-500" />
+                            <XCircle className="h-5 w-5 text-destructive" />
                           ) : (
-                            <Clock className="h-5 w-5 text-amber-500" />
+                            <Clock className="h-5 w-5 text-warning" />
                           )}
                         </div>
                         <div>
