@@ -616,13 +616,13 @@ export default function Relatorios() {
                         <TableCell className="text-right">{formatCurrency(item.anterior)}</TableCell>
                         <TableCell className={cn(
                           "text-right font-medium",
-                          variacao >= 0 ? "text-green-600" : "text-red-500"
+                          variacao >= 0 ? "text-success" : "text-destructive"
                         )}>
                           {variacao >= 0 ? '+' : ''}{formatCurrency(variacao)}
                         </TableCell>
                         <TableCell className={cn(
                           "text-right font-medium",
-                          percentual >= 0 ? "text-green-600" : "text-red-500"
+                          percentual >= 0 ? "text-success" : "text-destructive"
                         )}>
                           {percentual >= 0 ? '+' : ''}{percentual.toFixed(1)}%
                         </TableCell>
