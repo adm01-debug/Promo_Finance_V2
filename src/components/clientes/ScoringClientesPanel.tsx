@@ -129,10 +129,10 @@ export function ScoringClientesPanel() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Melhorando</p>
-                <p className="text-3xl font-bold text-emerald-600">{estatisticas.clientesMelhorando}</p>
+                <p className="text-3xl font-bold text-success">{estatisticas.clientesMelhorando}</p>
               </div>
-              <div className="p-3 rounded-full bg-emerald-500/10">
-                <TrendingUp className="h-6 w-6 text-emerald-500" />
+              <div className="p-3 rounded-full bg-success/10">
+                <TrendingUp className="h-6 w-6 text-success" />
               </div>
             </div>
             <p className="text-xs text-muted-foreground mt-2">Score subindo nos últimos 3 meses</p>
