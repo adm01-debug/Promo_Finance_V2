@@ -193,7 +193,7 @@ function FluxoCaixaView({ data }: { data: Record<string, unknown> }) {
             </div>
             <div className="flex justify-between text-sm">
               <span>Realizado:</span>
-              <span className="font-medium text-green-600">{formatCurrency(receitas?.realizado || 0)}</span>
+              <span className="font-medium text-success">{formatCurrency(receitas?.realizado || 0)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span>Pendente:</span>
