@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   Search,
+  SplitSquareHorizontal,
   Filter,
   Link2,
   Unlink,
