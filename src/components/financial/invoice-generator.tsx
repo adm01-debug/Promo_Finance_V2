@@ -351,7 +351,7 @@ export function InvoiceGenerator({
                       value={item.quantity}
                       onChange={(e) => updateItem(item.id, { quantity: Number(e.target.value) })}
                       min={1}
-                      className="w-full px-2 py-1 text-center border border-gray-200 dark:border-gray-700 rounded bg-transparent text-sm"
+                      className="w-full px-2 py-1 text-center border border-border rounded bg-transparent text-sm"
                     />
                   </div>
                   <div className="col-span-2">
