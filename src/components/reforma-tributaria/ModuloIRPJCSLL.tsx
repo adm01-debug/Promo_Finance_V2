@@ -469,7 +469,7 @@ export function ModuloIRPJCSLL() {
                           <TableCell>{p.trimestre_origem ? `${p.trimestre_origem}T/${p.ano_origem}` : p.ano_origem}</TableCell>
                           <TableCell className="text-right">{formatCurrency(p.valor_original)}</TableCell>
                           <TableCell className="text-right text-muted-foreground">{formatCurrency(p.valor_compensado)}</TableCell>
-                          <TableCell className="text-right font-medium text-orange-600">{formatCurrency(p.saldo_disponivel)}</TableCell>
+                          <TableCell className="text-right font-medium text-warning">{formatCurrency(p.saldo_disponivel)}</TableCell>
                           <TableCell><Badge variant="secondary">{p.status}</Badge></TableCell>
                         </TableRow>
                       ))}

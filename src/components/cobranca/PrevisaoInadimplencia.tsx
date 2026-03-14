@@ -388,7 +388,7 @@ export function PrevisaoInadimplencia() {
                   <TabsTrigger value="alto" className="text-destructive">
                     Alto ({data?.resumo.clientesAltoRisco || 0})
                   </TabsTrigger>
-                  <TabsTrigger value="medio" className="text-amber-500">
+                  <TabsTrigger value="medio" className="text-warning">
                     Médio ({data?.resumo.clientesMedioRisco || 0})
                   </TabsTrigger>
                   <TabsTrigger value="baixo" className="text-success">
