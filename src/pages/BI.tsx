@@ -963,7 +963,7 @@ export default function BI() {
                             </div>
                           </td>
                           {comparativoEmpresas.map((emp) => (
-                            <td key={emp.id} className={`text-right py-3 px-4 border-b font-bold ${emp.lucro >= 0 ? 'text-green-600' : 'text-destructive'}`}>
+                            <td key={emp.id} className={`text-right py-3 px-4 border-b font-bold ${emp.lucro >= 0 ? 'text-success' : 'text-destructive'}`}>
                               {formatCurrency(emp.lucro)}
                             </td>
                           ))}
