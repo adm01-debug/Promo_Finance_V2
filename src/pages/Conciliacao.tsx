@@ -423,7 +423,7 @@ export default function Conciliacao() {
                               {!transacao.conciliada && (
                                 <Checkbox
                                   checked={isSelected}
-                                  onCheckedChange={() => toggleSelect(transacao.id)}
+                                  onChange={() => toggleSelect(transacao.id)}
                                   className="flex-shrink-0"
                                 />
                               )}
