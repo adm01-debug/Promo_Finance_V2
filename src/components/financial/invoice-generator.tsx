@@ -272,7 +272,7 @@ export function InvoiceGenerator({
                 client: { ...prev.client, email: e.target.value },
               }))}
               placeholder="Email"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent"
+               className="w-full px-3 py-2 border border-border rounded-lg bg-transparent"
             />
           </div>
 
