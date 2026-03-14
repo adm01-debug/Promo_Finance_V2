@@ -24,7 +24,7 @@ interface PrintOptions {
  */
 export function printHTML(content: string, options: PrintOptions = {}): void {
   const {
-    title = 'Finance Hub',
+    title = 'Promo Finance',
     pageSize = 'A4',
     orientation = 'portrait',
     margins = { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' },
@@ -497,7 +497,7 @@ export function printFinancialReport(data: {
     title: data.title,
     orientation: 'portrait',
     styles,
-    footer: `Finance Hub - Relatório gerado em ${new Date().toLocaleString('pt-BR')}`,
+    footer: `Promo Finance - Relatório gerado em ${new Date().toLocaleString('pt-BR')}`,
   });
 }
 

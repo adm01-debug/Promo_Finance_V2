@@ -13,7 +13,7 @@ interface MetaProps {
   noIndex?: boolean;
 }
 
-const DEFAULT_TITLE = 'Finance Hub';
+const DEFAULT_TITLE = 'Promo Finance';
 const DEFAULT_DESCRIPTION = 'Sistema de gestão financeira completo para controle de contas a pagar e receber';
 const DEFAULT_KEYWORDS = 'gestão financeira, contas a pagar, contas a receber, controle financeiro, finanças';
 

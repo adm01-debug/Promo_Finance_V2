@@ -1,5 +1,5 @@
 // App Constants
-export const APP_NAME = 'Finance Hub';
+export const APP_NAME = 'Promo Finance';
 export const APP_VERSION = '2.0.0';
 export const APP_DESCRIPTION = 'Sistema de Gestão Financeira Empresarial';
 

@@ -141,7 +141,7 @@ export function AuthLeftPanel() {
           transition={{ delay: 0.4 }}
           className="text-4xl font-display font-bold gradient-text mb-4"
         >
-          Promo Brindes
+          Promo Finance
         </motion.h1>
         
         <motion.p
@@ -181,7 +181,7 @@ export const AuthMobileHeader = forwardRef<HTMLDivElement>(function AuthMobileHe
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2 }}
       >
-        Promo Brindes
+        Promo Finance
       </motion.h1>
       <motion.p 
         className="text-muted-foreground mt-2"

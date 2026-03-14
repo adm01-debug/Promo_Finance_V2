@@ -128,7 +128,7 @@ export function Sidebar({ open, collapsed, onClose, onToggleCollapse, className 
             </div>
             <div className="leading-none min-w-0">
               <span className="text-sm font-bold text-sidebar-foreground tracking-tight block">Promo</span>
-              <span className="text-[10px] text-sidebar-foreground/50 font-medium uppercase tracking-widest">Financeiro</span>
+              <span className="text-[10px] text-sidebar-foreground/50 font-medium uppercase tracking-widest">Finance</span>
             </div>
           </>
         )}

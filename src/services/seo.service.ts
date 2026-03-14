@@ -23,7 +23,7 @@ interface MetaData {
 }
 
 const DEFAULT_META: MetaData = {
-  siteName: 'Finance Hub',
+  siteName: 'Promo Finance',
   locale: 'pt_BR',
   type: 'website',
   twitterCard: 'summary_large_image',
@@ -278,12 +278,12 @@ export const PAGE_META = {
   },
   login: {
     title: 'Entrar',
-    description: 'Faça login no Finance Hub para gerenciar suas finanças.',
+    description: 'Faça login no Promo Finance para gerenciar suas finanças.',
     robots: 'noindex, nofollow',
   },
   register: {
     title: 'Cadastro',
-    description: 'Crie sua conta no Finance Hub e comece a organizar suas finanças.',
+    description: 'Crie sua conta no Promo Finance e comece a organizar suas finanças.',
   },
 };
 

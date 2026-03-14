@@ -217,7 +217,7 @@ export const GuidedTour = () => {
                 </motion.div>
                 
                 <h2 className="text-2xl font-display font-bold">
-                  Bem-vindo ao Promo Financeiro!
+                  Bem-vindo ao Promo Finance!
                 </h2>
                 
                 <p className="text-muted-foreground">

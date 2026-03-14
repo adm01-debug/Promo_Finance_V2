@@ -205,7 +205,7 @@ self.addEventListener('push', (event) => {
   };
 
   event.waitUntil(
-    self.registration.showNotification(data.title || 'Finance Hub', options)
+    self.registration.showNotification(data.title || 'Promo Finance', options)
   );
 });
 
