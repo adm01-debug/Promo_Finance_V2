@@ -101,7 +101,7 @@ export function LineChart({
     return (
       <div
         className={cn(
-          'flex items-center justify-center text-gray-400 dark:text-gray-600',
+          'flex items-center justify-center text-muted-foreground',
           className
         )}
         style={{ width, height }}
