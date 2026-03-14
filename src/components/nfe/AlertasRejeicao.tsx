@@ -219,7 +219,7 @@ export const AlertasRejeicao = () => {
       case 'aumentando':
         return <TrendingUp className="h-4 w-4 text-destructive" />;
       case 'diminuindo':
-        return <TrendingDown className="h-4 w-4 text-emerald-500" />;
+        return <TrendingDown className="h-4 w-4 text-success" />;
       default:
         return <Minus className="h-4 w-4 text-muted-foreground" />;
     }
