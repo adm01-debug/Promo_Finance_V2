@@ -46,7 +46,7 @@ const NAV_GROUPS: NavGroup[] = [
     id: 'operacional',
     label: 'Operacional',
     icon: Calculator,
-    color: 'text-blue-500',
+    color: 'text-secondary',
     items: [
       { id: 'apuracao', label: 'Apuração IBS/CBS', icon: Calculator },
       { id: 'operacoes', label: 'Operações', icon: FileText },
@@ -59,7 +59,7 @@ const NAV_GROUPS: NavGroup[] = [
     id: 'compliance',
     label: 'Compliance',
     icon: Shield,
-    color: 'text-emerald-500',
+    color: 'text-success',
     items: [
       { id: 'obrigacoes', label: 'Obrigações', icon: Clock, badge: '3', badgeVariant: 'destructive' },
       { id: 'auditoria', label: 'Auditoria', icon: Shield },
@@ -71,7 +71,7 @@ const NAV_GROUPS: NavGroup[] = [
     id: 'simuladores',
     label: 'Simuladores',
     icon: Zap,
-    color: 'text-amber-500',
+    color: 'text-warning',
     items: [
       { id: 'calculadora', label: 'Calculadora', icon: Calculator },
       { id: 'simulador', label: 'Cenários', icon: Zap },
@@ -83,7 +83,7 @@ const NAV_GROUPS: NavGroup[] = [
     id: 'exportacao',
     label: 'Exportação',
     icon: Download,
-    color: 'text-purple-500',
+    color: 'text-accent',
     items: [
       { id: 'exportacao', label: 'SPED', icon: Download },
       { id: 'per-dcomp', label: 'PER/DCOMP', icon: FileText },

@@ -366,7 +366,7 @@ const StatsCard = ({ title, value, description, icon, trend, className }: StatsC
               animate={{ opacity: 1, x: 0 }}
               className={cn(
                 "inline-flex items-center gap-1 text-xs font-medium",
-                trend.isPositive ? "text-green-500" : "text-destructive",
+                trend.isPositive ? "text-success" : "text-destructive",
               )}
             >
               <span>{trend.isPositive ? "↑" : "↓"}</span>

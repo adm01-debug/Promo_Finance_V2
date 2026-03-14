@@ -177,10 +177,10 @@ export function DashboardMetricasTributarias() {
   }, [criticos, metricas]);
 
   const getScoreCor = (score: number) => {
-    if (score >= 80) return 'text-green-500';
-    if (score >= 60) return 'text-yellow-500';
-    if (score >= 40) return 'text-orange-500';
-    return 'text-red-500';
+    if (score >= 80) return 'text-success';
+    if (score >= 60) return 'text-warning';
+    if (score >= 40) return 'text-streak';
+    return 'text-destructive';
   };
 
   const getScoreLabel = (score: number) => {
@@ -276,7 +276,7 @@ export function DashboardMetricasTributarias() {
                     <p className="text-sm text-muted-foreground">Aproveitamento Créditos</p>
                     <p className="text-2xl font-bold">{metricas.taxaAproveitamentoCreditos.toFixed(1)}%</p>
                   </div>
-                  <Target className="h-5 w-5 text-green-500" />
+                  <Target className="h-5 w-5 text-success" />
                 </div>
                 <Progress value={metricas.taxaAproveitamentoCreditos} className="mt-3" />
                 <p className="text-xs text-muted-foreground mt-1">
@@ -292,7 +292,7 @@ export function DashboardMetricasTributarias() {
                     <p className="text-sm text-muted-foreground">Migração IBS/CBS</p>
                     <p className="text-2xl font-bold">{metricas.percentualMigracao.toFixed(0)}%</p>
                   </div>
-                  <TrendingUp className="h-5 w-5 text-blue-500" />
+                  <TrendingUp className="h-5 w-5 text-secondary" />
                 </div>
                 <Progress value={metricas.percentualMigracao} className="mt-3" />
                 <p className="text-xs text-muted-foreground mt-1">
@@ -309,9 +309,9 @@ export function DashboardMetricasTributarias() {
                     <p className="text-2xl font-bold">{criticos}</p>
                   </div>
                   {criticos > 0 ? (
-                    <AlertTriangle className="h-5 w-5 text-red-500" />
+                    <AlertTriangle className="h-5 w-5 text-destructive" />
                   ) : (
-                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    <CheckCircle2 className="h-5 w-5 text-success" />
                   )}
                 </div>
                 <div className="mt-3">
@@ -398,17 +398,17 @@ export function DashboardMetricasTributarias() {
               </CardContent>
             </Card>
 
-            <Card className="border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-950/20">
+            <Card className="border-destructive/20 bg-destructive/5">
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3">
-                  <TrendingDown className="h-8 w-8 text-red-500" />
+                  <TrendingDown className="h-8 w-8 text-destructive" />
                   <div>
                     <p className="text-sm text-muted-foreground">Total Tributos</p>
                     <p className="text-xl font-bold">
                       {formatCurrency(metricas.totalTributosNovos + metricas.totalTributosResiduais)}
                     </p>
                     {metricas.variacaoTributos !== 0 && (
-                      <div className={`flex items-center text-xs ${metricas.variacaoTributos > 0 ? 'text-red-500' : 'text-green-500'}`}>
+                      <div className={`flex items-center text-xs ${metricas.variacaoTributos > 0 ? 'text-destructive' : 'text-success'}`}>
                         {metricas.variacaoTributos > 0 ? (
                           <ArrowUpRight className="h-3 w-3" />
                         ) : (
@@ -422,10 +422,10 @@ export function DashboardMetricasTributarias() {
               </CardContent>
             </Card>
 
-            <Card className="border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20">
+            <Card className="border-success/20 bg-success/5">
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3">
-                  <TrendingUp className="h-8 w-8 text-green-500" />
+                  <TrendingUp className="h-8 w-8 text-success" />
                   <div>
                     <p className="text-sm text-muted-foreground">Créditos Utilizados</p>
                     <p className="text-xl font-bold">{formatCurrency(metricas.totalCreditos)}</p>
@@ -434,10 +434,10 @@ export function DashboardMetricasTributarias() {
               </CardContent>
             </Card>
 
-            <Card className="border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/20">
+            <Card className="border-secondary/20 bg-secondary/5">
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3">
-                  <Clock className="h-8 w-8 text-blue-500" />
+                  <Clock className="h-8 w-8 text-secondary" />
                   <div>
                     <p className="text-sm text-muted-foreground">Créditos Disponíveis</p>
                     <p className="text-xl font-bold">{formatCurrency(metricas.creditosDisponiveis)}</p>
@@ -458,9 +458,9 @@ export function DashboardMetricasTributarias() {
             <CardContent>
               <div className="grid gap-3 md:grid-cols-2">
                 {metricas.taxaAproveitamentoCreditos < 80 && (
-                  <div className="p-4 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                  <div className="p-4 bg-warning/10 border border-warning/20 rounded-lg">
                     <div className="flex items-start gap-3">
-                      <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
+                      <AlertTriangle className="h-5 w-5 text-warning mt-0.5" />
                       <div>
                         <p className="font-medium">Baixo aproveitamento de créditos</p>
                         <p className="text-sm text-muted-foreground">
@@ -473,9 +473,9 @@ export function DashboardMetricasTributarias() {
                 )}
 
                 {metricas.creditosDisponiveis > 50000 && (
-                  <div className="p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <div className="p-4 bg-secondary/10 border border-secondary/20 rounded-lg">
                     <div className="flex items-start gap-3">
-                      <DollarSign className="h-5 w-5 text-blue-600 mt-0.5" />
+                      <DollarSign className="h-5 w-5 text-secondary mt-0.5" />
                       <div>
                         <p className="font-medium">Créditos acumulados disponíveis</p>
                         <p className="text-sm text-muted-foreground">
@@ -488,9 +488,9 @@ export function DashboardMetricasTributarias() {
                 )}
 
                 {metricas.percentualMigracao > 50 && (
-                  <div className="p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                  <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
                     <div className="flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
+                      <CheckCircle2 className="h-5 w-5 text-success mt-0.5" />
                       <div>
                         <p className="font-medium">Boa aderência à reforma</p>
                         <p className="text-sm text-muted-foreground">
@@ -503,9 +503,9 @@ export function DashboardMetricasTributarias() {
                 )}
 
                 {criticos === 0 && (
-                  <div className="p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                  <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
                     <div className="flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
+                      <CheckCircle2 className="h-5 w-5 text-success mt-0.5" />
                       <div>
                         <p className="font-medium">Compliance em dia</p>
                         <p className="text-sm text-muted-foreground">

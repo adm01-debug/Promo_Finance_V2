@@ -105,12 +105,12 @@ interface Template {
 }
 
 const etapasIniciais: EtapaConfig[] = [
-  { id: '1', etapa: 'preventiva', nome: 'Lembrete Preventivo', diasAposVencimento: -3, canais: ['email', 'whatsapp'], templateId: '1', ativo: true, cor: 'bg-blue-500' },
-  { id: '2', etapa: 'lembrete', nome: 'Lembrete de Vencimento', diasAposVencimento: 0, canais: ['email', 'sms', 'whatsapp'], templateId: '2', ativo: true, cor: 'bg-yellow-500' },
-  { id: '3', etapa: 'cobranca', nome: '1ª Cobrança', diasAposVencimento: 5, canais: ['email', 'whatsapp', 'telefone'], templateId: '3', ativo: true, cor: 'bg-orange-500' },
-  { id: '4', etapa: 'cobranca', nome: '2ª Cobrança', diasAposVencimento: 15, canais: ['email', 'whatsapp', 'telefone'], templateId: '4', ativo: true, cor: 'bg-red-500' },
-  { id: '5', etapa: 'negociacao', nome: 'Negociação', diasAposVencimento: 30, canais: ['telefone', 'whatsapp'], templateId: '5', ativo: true, cor: 'bg-purple-500' },
-  { id: '6', etapa: 'juridico', nome: 'Aviso Jurídico', diasAposVencimento: 60, canais: ['email'], templateId: '6', ativo: false, cor: 'bg-gray-700' },
+  { id: '1', etapa: 'preventiva', nome: 'Lembrete Preventivo', diasAposVencimento: -3, canais: ['email', 'whatsapp'], templateId: '1', ativo: true, cor: 'bg-secondary' },
+  { id: '2', etapa: 'lembrete', nome: 'Lembrete de Vencimento', diasAposVencimento: 0, canais: ['email', 'sms', 'whatsapp'], templateId: '2', ativo: true, cor: 'bg-warning' },
+  { id: '3', etapa: 'cobranca', nome: '1ª Cobrança', diasAposVencimento: 5, canais: ['email', 'whatsapp', 'telefone'], templateId: '3', ativo: true, cor: 'bg-streak' },
+  { id: '4', etapa: 'cobranca', nome: '2ª Cobrança', diasAposVencimento: 15, canais: ['email', 'whatsapp', 'telefone'], templateId: '4', ativo: true, cor: 'bg-destructive' },
+  { id: '5', etapa: 'negociacao', nome: 'Negociação', diasAposVencimento: 30, canais: ['telefone', 'whatsapp'], templateId: '5', ativo: true, cor: 'bg-accent' },
+  { id: '6', etapa: 'juridico', nome: 'Aviso Jurídico', diasAposVencimento: 60, canais: ['email'], templateId: '6', ativo: false, cor: 'bg-muted-foreground' },
 ];
 
 const templatesIniciais: Template[] = [
@@ -140,10 +140,10 @@ const templatesIniciais: Template[] = [
 ];
 
 const canaisConfig = {
-  email: { label: 'E-mail', icon: Mail, color: 'bg-blue-500' },
-  sms: { label: 'SMS', icon: MessageSquare, color: 'bg-green-500' },
-  whatsapp: { label: 'WhatsApp', icon: Phone, color: 'bg-emerald-500' },
-  telefone: { label: 'Telefone', icon: Phone, color: 'bg-purple-500' },
+  email: { label: 'E-mail', icon: Mail, color: 'bg-secondary' },
+  sms: { label: 'SMS', icon: MessageSquare, color: 'bg-success' },
+  whatsapp: { label: 'WhatsApp', icon: Phone, color: 'bg-success' },
+  telefone: { label: 'Telefone', icon: Phone, color: 'bg-accent' },
 };
 
 export default function Configuracoes() {
