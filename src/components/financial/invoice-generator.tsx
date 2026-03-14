@@ -481,7 +481,7 @@ export function InvoiceGenerator({
             onChange={(e) => setInvoice(prev => ({ ...prev, notes: e.target.value }))}
             rows={3}
             placeholder="Observações, termos e condições..."
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent resize-none"
+            className="w-full px-3 py-2 border border-border rounded-lg bg-transparent resize-none"
           />
         </div>
 
