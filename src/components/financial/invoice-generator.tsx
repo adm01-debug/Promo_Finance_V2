@@ -313,7 +313,7 @@ export function InvoiceGenerator({
         {/* Items Table */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <h3 className="text-sm font-medium text-foreground">
               Itens
             </h3>
             <Button variant="outline" size="sm" onClick={addItem}>
