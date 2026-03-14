@@ -370,18 +370,18 @@ export function InvoiceGenerator({
                   <div className="col-span-1 flex justify-end gap-1">
                     <button
                       onClick={() => duplicateItem(item.id)}
-                      className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                      className="p-1 hover:bg-muted rounded"
                       title="Duplicar"
                     >
-                      <Copy className="w-3.5 h-3.5 text-gray-400" />
+                      <Copy className="w-3.5 h-3.5 text-muted-foreground" />
                     </button>
                     <button
                       onClick={() => removeItem(item.id)}
-                      className="p-1 hover:bg-red-100 dark:hover:bg-red-900/20 rounded"
+                      className="p-1 hover:bg-destructive/10 rounded"
                       title="Remover"
                       disabled={(invoice.items?.length || 0) <= 1}
                     >
-                      <Trash2 className="w-3.5 h-3.5 text-gray-400 hover:text-red-500" />
+                      <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
                     </button>
                   </div>
                 </div>
