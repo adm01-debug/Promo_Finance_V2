@@ -582,7 +582,7 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
                       <Card>
                         <CardHeader className="pb-3">
                           <CardTitle className="flex items-center gap-2 text-base">
-                            <PieChart className="h-4 w-4 text-purple-500" />
+                            <PieChart className="h-4 w-4 text-accent-foreground" />
                             Margem Líquida
                           </CardTitle>
                         </CardHeader>
