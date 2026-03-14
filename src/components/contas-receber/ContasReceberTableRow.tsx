@@ -56,7 +56,7 @@ const statusConfig: Record<StatusPagamento, { label: string; color: string; icon
 const getScoreColor = (score: number) => {
   if (score >= 800) return 'text-success';
   if (score >= 600) return 'text-warning';
-  if (score >= 400) return 'text-orange-500';
+  if (score >= 400) return 'text-streak';
   return 'text-destructive';
 };
 

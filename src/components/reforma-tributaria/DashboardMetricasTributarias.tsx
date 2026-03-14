@@ -503,9 +503,9 @@ export function DashboardMetricasTributarias() {
                 )}
 
                 {criticos === 0 && (
-                  <div className="p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                  <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
                     <div className="flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
+                      <CheckCircle2 className="h-5 w-5 text-success mt-0.5" />
                       <div>
                         <p className="font-medium">Compliance em dia</p>
                         <p className="text-sm text-muted-foreground">

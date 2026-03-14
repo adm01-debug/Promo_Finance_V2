@@ -83,7 +83,7 @@ const NAV_GROUPS: NavGroup[] = [
     id: 'exportacao',
     label: 'Exportação',
     icon: Download,
-    color: 'text-purple-500',
+    color: 'text-accent',
     items: [
       { id: 'exportacao', label: 'SPED', icon: Download },
       { id: 'per-dcomp', label: 'PER/DCOMP', icon: FileText },

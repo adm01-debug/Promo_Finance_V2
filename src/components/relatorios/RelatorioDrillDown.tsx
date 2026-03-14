@@ -283,19 +283,19 @@ export function RelatorioDrillDown() {
 
                   {/* Card Despesas */}
                   <Card 
-                    className="cursor-pointer hover:border-red-500 transition-colors group"
+                    className="cursor-pointer hover:border-destructive transition-colors group"
                     onClick={() => handleDrill({ level: 'empresa', categoria: 'despesas' })}
                   >
                     <CardContent className="pt-6">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
-                          <TrendingDown className="h-5 w-5 text-red-500" />
+                          <TrendingDown className="h-5 w-5 text-destructive" />
                           <span className="font-semibold">Despesas</span>
                         </div>
-                        <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-red-500 transition-colors" />
+                        <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-destructive transition-colors" />
                       </div>
                       <div className="space-y-3">
-                        <div className="text-3xl font-bold text-red-600">
+                        <div className="text-3xl font-bold text-destructive">
                           {formatCurrency(resumoData?.despesas.total || 0)}
                         </div>
                         <Progress value={resumoData?.despesas.percentual || 0} className="h-2" />

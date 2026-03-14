@@ -15,13 +15,13 @@ export function ErrorPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex items-center justify-center min-h-screen bg-background">
       <div className="text-center p-8">
-        <AlertTriangle className="h-16 w-16 text-yellow-500 mx-auto mb-4" />
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+        <AlertTriangle className="h-16 w-16 text-warning mx-auto mb-4" />
+        <h1 className="text-4xl font-bold text-foreground mb-2">
           {errorStatus}
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-8">{errorMessage}</p>
+        <p className="text-muted-foreground mb-8">{errorMessage}</p>
         <div className="flex gap-4 justify-center">
           <Button onClick={() => window.location.reload()}>
             <RefreshCw className="h-4 w-4 mr-2" />

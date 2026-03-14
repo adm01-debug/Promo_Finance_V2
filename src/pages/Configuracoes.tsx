@@ -140,10 +140,10 @@ const templatesIniciais: Template[] = [
 ];
 
 const canaisConfig = {
-  email: { label: 'E-mail', icon: Mail, color: 'bg-blue-500' },
-  sms: { label: 'SMS', icon: MessageSquare, color: 'bg-green-500' },
-  whatsapp: { label: 'WhatsApp', icon: Phone, color: 'bg-emerald-500' },
-  telefone: { label: 'Telefone', icon: Phone, color: 'bg-purple-500' },
+  email: { label: 'E-mail', icon: Mail, color: 'bg-secondary' },
+  sms: { label: 'SMS', icon: MessageSquare, color: 'bg-success' },
+  whatsapp: { label: 'WhatsApp', icon: Phone, color: 'bg-success' },
+  telefone: { label: 'Telefone', icon: Phone, color: 'bg-accent' },
 };
 
 export default function Configuracoes() {

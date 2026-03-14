@@ -76,7 +76,7 @@ export default function NotFound() {
             >
               Contas a Receber
             </Link>
-            <span className="text-gray-300 dark:text-gray-700">•</span>
+            <span className="text-muted-foreground/50">•</span>
             <Link
               to="/relatorios"
               className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
