@@ -73,7 +73,7 @@ export const FluxoCaixaHeader = memo(function FluxoCaixaHeader({
                 toast.success('PDF gerado com sucesso!');
               });
             }}>
-              <FileText className="h-4 w-4 mr-2 text-red-500" />
+              <FileText className="h-4 w-4 mr-2 text-destructive" />
               Exportar PDF
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => {
@@ -82,7 +82,7 @@ export const FluxoCaixaHeader = memo(function FluxoCaixaHeader({
                 toast.success('Excel exportado com sucesso!');
               });
             }}>
-              <FileSpreadsheet className="h-4 w-4 mr-2 text-green-600" />
+              <FileSpreadsheet className="h-4 w-4 mr-2 text-success" />
               Exportar Excel
             </DropdownMenuItem>
           </DropdownMenuContent>

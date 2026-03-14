@@ -417,9 +417,9 @@ export default function Configuracoes() {
                 <div className="grid gap-4">
                   {templates.map((template) => {
                     const tipoConfig = {
-                      email: { icon: Mail, color: 'text-blue-500', bg: 'bg-blue-100 dark:bg-blue-900/30' },
-                      sms: { icon: MessageSquare, color: 'text-green-500', bg: 'bg-green-100 dark:bg-green-900/30' },
-                      whatsapp: { icon: Phone, color: 'text-emerald-500', bg: 'bg-emerald-100 dark:bg-emerald-900/30' },
+                      email: { icon: Mail, color: 'text-secondary', bg: 'bg-secondary/10' },
+                      sms: { icon: MessageSquare, color: 'text-success', bg: 'bg-success/10' },
+                      whatsapp: { icon: Phone, color: 'text-success', bg: 'bg-success/10' },
                     }[template.tipo];
                     const Icon = tipoConfig.icon;
 
@@ -489,8 +489,8 @@ export default function Configuracoes() {
               <CardContent className="space-y-6">
                 <motion.div variants={itemVariants} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                      <Mail className="h-5 w-5 text-blue-500" />
+                    <div className="p-2 rounded-lg bg-secondary/10">
+                      <Mail className="h-5 w-5 text-secondary" />
                     </div>
                     <div>
                       <p className="font-medium">Notificações por E-mail</p>
@@ -507,8 +507,8 @@ export default function Configuracoes() {
 
                 <motion.div variants={itemVariants} className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30">
-                      <AlertTriangle className="h-5 w-5 text-orange-500" />
+                    <div className="p-2 rounded-lg bg-warning/10">
+                      <AlertTriangle className="h-5 w-5 text-warning" />
                     </div>
                     <div>
                       <p className="font-medium">Alertas de Vencimento</p>
@@ -532,8 +532,8 @@ export default function Configuracoes() {
 
                 <motion.div variants={itemVariants} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30">
-                      <CreditCard className="h-5 w-5 text-red-500" />
+                    <div className="p-2 rounded-lg bg-destructive/10">
+                      <CreditCard className="h-5 w-5 text-destructive" />
                     </div>
                     <div>
                       <p className="font-medium">Alertas de Fluxo de Caixa</p>
@@ -694,20 +694,20 @@ export default function Configuracoes() {
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                        <Zap className="h-4 w-4 text-blue-500" />
+                      <div className="p-2 rounded-lg bg-secondary/10">
+                        <Zap className="h-4 w-4 text-secondary" />
                       </div>
                       <div>
                         <p className="font-medium text-sm">Bitrix24</p>
                         <p className="text-xs text-muted-foreground">Sincronização de deals</p>
                       </div>
                     </div>
-                    <Badge variant="default" className="bg-green-500">Conectado</Badge>
+                    <Badge variant="default" className="bg-success">Conectado</Badge>
                   </div>
                   <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
-                        <CreditCard className="h-4 w-4 text-purple-500" />
+                      <div className="p-2 rounded-lg bg-accent/10">
+                        <CreditCard className="h-4 w-4 text-accent" />
                       </div>
                       <div>
                         <p className="font-medium text-sm">Open Banking</p>

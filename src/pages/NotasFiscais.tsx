@@ -225,10 +225,10 @@ const mockNotasFiscais: NotaFiscal[] = [
 ];
 
 const statusConfig = {
-  autorizada: { label: 'Autorizada', color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20', icon: CheckCircle2 },
-  pendente: { label: 'Pendente', color: 'bg-amber-500/10 text-amber-500 border-amber-500/20', icon: Clock },
-  cancelada: { label: 'Cancelada', color: 'bg-red-500/10 text-red-500 border-red-500/20', icon: XCircle },
-  denegada: { label: 'Denegada', color: 'bg-red-500/10 text-red-500 border-red-500/20', icon: AlertCircle },
+  autorizada: { label: 'Autorizada', color: 'bg-success/10 text-success border-success/20', icon: CheckCircle2 },
+  pendente: { label: 'Pendente', color: 'bg-warning/10 text-warning border-warning/20', icon: Clock },
+  cancelada: { label: 'Cancelada', color: 'bg-destructive/10 text-destructive border-destructive/20', icon: XCircle },
+  denegada: { label: 'Denegada', color: 'bg-destructive/10 text-destructive border-destructive/20', icon: AlertCircle },
   inutilizada: { label: 'Inutilizada', color: 'bg-muted text-muted-foreground border-muted', icon: FileXIcon }
 };
 
@@ -390,7 +390,7 @@ const NFePreview = ({ nfe }: { nfe: NotaFiscal }) => {
           </div>
           <div>
             <span className="text-muted-foreground">Desconto</span>
-            <p className="font-medium text-red-500">-{formatCurrency(nfe.valorDesconto)}</p>
+            <p className="font-medium text-destructive">-{formatCurrency(nfe.valorDesconto)}</p>
           </div>
           <div>
             <span className="text-muted-foreground">ICMS</span>
@@ -405,8 +405,8 @@ const NFePreview = ({ nfe }: { nfe: NotaFiscal }) => {
       </div>
 
       {nfe.status === 'cancelada' && nfe.motivoCancelamento && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
-          <div className="flex items-center gap-2 text-red-500 mb-2">
+        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+          <div className="flex items-center gap-2 text-destructive mb-2">
             <AlertTriangle className="h-4 w-4" />
             <span className="font-medium">Nota Fiscal Cancelada</span>
           </div>
@@ -471,9 +471,9 @@ const SefazStatusPanel = ({
         {isProcessing ? (
           <Loader2 className="h-5 w-5 text-primary animate-spin" />
         ) : response?.success ? (
-          <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+          <CheckCircle2 className="h-5 w-5 text-success" />
         ) : (
-          <XCircle className="h-5 w-5 text-red-500" />
+          <XCircle className="h-5 w-5 text-destructive" />
         )}
         <span className="font-medium">
           {isProcessing ? 'Comunicando com SEFAZ...' : 
@@ -506,9 +506,9 @@ const SefazStatusPanel = ({
       )}
 
       {response && (
-        <div className={`rounded-lg p-3 ${response.success ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-red-500/10 border border-red-500/20'}`}>
+        <div className={`rounded-lg p-3 ${response.success ? 'bg-success/10 border border-success/20' : 'bg-destructive/10 border border-destructive/20'}`}>
           <div className="flex items-center gap-2 mb-2">
-            <Badge variant="outline" className={response.success ? 'bg-emerald-500/20 text-emerald-500' : 'bg-red-500/20 text-red-500'}>
+            <Badge variant="outline" className={response.success ? 'bg-success/20 text-success' : 'bg-destructive/20 text-destructive'}>
               cStat: {response.cStat}
             </Badge>
             <span className="text-sm font-medium">{response.xMotivo}</span>
@@ -530,7 +530,7 @@ const SefazStatusPanel = ({
           {response.errors && response.errors.length > 0 && (
             <div className="mt-2 space-y-1">
               {response.errors.map((err, idx) => (
-                <p key={idx} className="text-sm text-red-500 flex items-center gap-1">
+                <p key={idx} className="text-sm text-destructive flex items-center gap-1">
                   <AlertCircle className="h-3 w-3" />
                   {err}
                 </p>
@@ -986,9 +986,9 @@ export default function NotasFiscais() {
   });
 
   const kpis = [
-    { label: 'Total Emitido', value: totalEmitido, count: notasAutorizadas, icon: CheckCircle2, color: 'text-emerald-500' },
-    { label: 'Pendente Autorização', value: totalPendente, count: notas.filter(n => n.status === 'pendente').length, icon: Clock, color: 'text-amber-500' },
-    { label: 'Canceladas', value: totalCancelado, count: notas.filter(n => n.status === 'cancelada').length, icon: XCircle, color: 'text-red-500' },
+    { label: 'Total Emitido', value: totalEmitido, count: notasAutorizadas, icon: CheckCircle2, color: 'text-success' },
+    { label: 'Pendente Autorização', value: totalPendente, count: notas.filter(n => n.status === 'pendente').length, icon: Clock, color: 'text-warning' },
+    { label: 'Canceladas', value: totalCancelado, count: notas.filter(n => n.status === 'cancelada').length, icon: XCircle, color: 'text-destructive' },
     { label: 'Notas Este Mês', value: notas.length, isCount: true, icon: FileText, color: 'text-primary' }
   ];
 
@@ -1282,8 +1282,8 @@ export default function NotasFiscais() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-full bg-blue-500/10">
-                    <DollarSign className="h-6 w-6 text-blue-500" />
+                  <div className="p-3 rounded-full bg-secondary/10">
+                    <DollarSign className="h-6 w-6 text-secondary" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Ticket Médio</p>

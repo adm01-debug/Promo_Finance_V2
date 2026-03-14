@@ -310,26 +310,26 @@ export function SimuladorCenariosTributarios() {
             {/* Indicador de Impacto */}
             <div className={`p-4 rounded-lg border-2 ${
               resultadoAtual.impacto === 'economia' 
-                ? 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800' 
+                ? 'bg-success/5 border-success/20' 
                 : resultadoAtual.impacto === 'aumento'
-                  ? 'bg-red-50 border-red-200 dark:bg-red-950/20 dark:border-red-800'
-                  : 'bg-gray-50 border-gray-200 dark:bg-gray-950/20 dark:border-gray-800'
+                  ? 'bg-destructive/5 border-destructive/20'
+                  : 'bg-muted border-border'
             }`}>
               <div className="flex items-center gap-3">
                 {resultadoAtual.impacto === 'economia' ? (
-                  <TrendingDown className="h-8 w-8 text-green-600" />
+                  <TrendingDown className="h-8 w-8 text-success" />
                 ) : resultadoAtual.impacto === 'aumento' ? (
-                  <TrendingUp className="h-8 w-8 text-red-600" />
+                  <TrendingUp className="h-8 w-8 text-destructive" />
                 ) : (
-                  <Minus className="h-8 w-8 text-gray-600" />
+                  <Minus className="h-8 w-8 text-muted-foreground" />
                 )}
                 <div>
                   <p className={`font-semibold ${
                     resultadoAtual.impacto === 'economia' 
-                      ? 'text-green-700 dark:text-green-400' 
+                      ? 'text-success' 
                       : resultadoAtual.impacto === 'aumento'
-                        ? 'text-red-700 dark:text-red-400'
-                        : 'text-gray-700 dark:text-gray-400'
+                        ? 'text-destructive'
+                        : 'text-muted-foreground'
                   }`}>
                     {resultadoAtual.impacto === 'economia' 
                       ? `Economia de ${formatCurrency(Math.abs(resultadoAtual.diferencaAbsoluta))}`
@@ -346,7 +346,7 @@ export function SimuladorCenariosTributarios() {
             </div>
 
             {/* Créditos */}
-            <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+            <div className="p-4 bg-secondary/10 rounded-lg">
               <h4 className="font-medium text-sm mb-2">Créditos Recuperáveis (Não-Cumulatividade Plena)</h4>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="flex justify-between">
@@ -361,7 +361,7 @@ export function SimuladorCenariosTributarios() {
               <Separator className="my-2" />
               <div className="flex justify-between font-medium">
                 <span>Total Créditos</span>
-                <span className="text-blue-600">{formatCurrency(resultadoAtual.creditosTotalRecuperaveis)}</span>
+                <span className="text-secondary">{formatCurrency(resultadoAtual.creditosTotalRecuperaveis)}</span>
               </div>
             </div>
 
@@ -371,7 +371,7 @@ export function SimuladorCenariosTributarios() {
               <ul className="space-y-1 text-sm text-muted-foreground">
                 {resultadoAtual.observacoes.map((obs, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                    <CheckCircle2 className="h-4 w-4 text-success mt-0.5 shrink-0" />
                     <span>{obs}</span>
                   </li>
                 ))}

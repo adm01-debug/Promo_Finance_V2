@@ -126,19 +126,19 @@ export default function Bitrix24() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'sucesso': return 'bg-green-100 dark:bg-green-900/30';
-      case 'erro': return 'bg-red-100 dark:bg-red-900/30';
-      case 'parcial': return 'bg-yellow-100 dark:bg-yellow-900/30';
-      default: return 'bg-blue-100 dark:bg-blue-900/30';
+      case 'sucesso': return 'bg-success/10';
+      case 'erro': return 'bg-destructive/10';
+      case 'parcial': return 'bg-warning/10';
+      default: return 'bg-secondary/10';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'sucesso': return <CheckCircle2 className="h-5 w-5 text-green-600" />;
-      case 'erro': return <XCircle className="h-5 w-5 text-red-500" />;
-      case 'parcial': return <AlertTriangle className="h-5 w-5 text-yellow-600" />;
-      default: return <Clock className="h-5 w-5 text-blue-600" />;
+      case 'sucesso': return <CheckCircle2 className="h-5 w-5 text-success" />;
+      case 'erro': return <XCircle className="h-5 w-5 text-destructive" />;
+      case 'parcial': return <AlertTriangle className="h-5 w-5 text-warning" />;
+      default: return <Clock className="h-5 w-5 text-secondary" />;
     }
   };
 
@@ -147,7 +147,7 @@ export default function Bitrix24() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
+          <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg">
             <Zap className="h-6 w-6 text-white" />
           </div>
           <div>
@@ -162,7 +162,7 @@ export default function Bitrix24() {
             variant="outline" 
             onClick={handleTestConnection}
             className={cn(
-              isConnected ? "border-green-500 text-green-600" : "border-destructive text-destructive"
+              isConnected ? "border-success text-success" : "border-destructive text-destructive"
             )}
           >
             {isConnected ? (
@@ -215,19 +215,19 @@ export default function Bitrix24() {
               <div className="flex items-center gap-3">
                 <div className={cn(
                   "p-2 rounded-lg",
-                  isConnected ? "bg-green-100 dark:bg-green-900/30" : "bg-red-100 dark:bg-red-900/30"
+                  isConnected ? "bg-success/10" : "bg-destructive/10"
                 )}>
                   {isConnected ? (
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    <CheckCircle2 className="h-5 w-5 text-success" />
                   ) : (
-                    <XCircle className="h-5 w-5 text-red-500" />
+                    <XCircle className="h-5 w-5 text-destructive" />
                   )}
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Status</p>
                   <p className={cn(
                     "font-semibold",
-                    isConnected ? "text-green-600" : "text-red-500"
+                    isConnected ? "text-success" : "text-destructive"
                   )}>
                     {isConnected ? 'Online' : 'Offline'}
                   </p>
@@ -241,8 +241,8 @@ export default function Bitrix24() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                  <Clock className="h-5 w-5 text-blue-600" />
+                <div className="p-2 rounded-lg bg-secondary/10">
+                  <Clock className="h-5 w-5 text-secondary" />
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Última Sync</p>
@@ -257,8 +257,8 @@ export default function Bitrix24() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
-                  <Database className="h-5 w-5 text-purple-600" />
+                <div className="p-2 rounded-lg bg-accent/10">
+                  <Database className="h-5 w-5 text-accent" />
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Sincronizados</p>
@@ -273,8 +273,8 @@ export default function Bitrix24() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30">
-                  <DollarSign className="h-5 w-5 text-orange-500" />
+                <div className="p-2 rounded-lg bg-streak/10">
+                  <DollarSign className="h-5 w-5 text-streak" />
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Deals</p>
@@ -289,8 +289,8 @@ export default function Bitrix24() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30">
-                  <XCircle className="h-5 w-5 text-red-500" />
+                <div className="p-2 rounded-lg bg-destructive/10">
+                  <XCircle className="h-5 w-5 text-destructive" />
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Erros Hoje</p>
@@ -381,7 +381,7 @@ export default function Bitrix24() {
                         <TableCell>
                           <Badge 
                             variant={deal.status === 'pago' ? 'default' : 'secondary'}
-                            className={deal.status === 'pago' ? 'bg-green-500' : ''}
+                            className={deal.status === 'pago' ? 'bg-success' : ''}
                           >
                             {deal.status}
                           </Badge>
@@ -523,7 +523,7 @@ export default function Bitrix24() {
                             )}
                           >
                             <div className="flex-1 grid grid-cols-3 gap-4 items-center">
-                              <div className="p-3 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+                              <div className="p-3 rounded-lg bg-secondary/10">
                                 <p className="text-xs text-muted-foreground mb-1">Bitrix24</p>
                                 <code className="font-mono text-sm font-medium">{mapping.campo_bitrix}</code>
                               </div>
@@ -542,7 +542,7 @@ export default function Bitrix24() {
                                 </div>
                               </div>
 
-                              <div className="p-3 rounded-lg bg-green-100 dark:bg-green-900/30">
+                              <div className="p-3 rounded-lg bg-success/10">
                                 <p className="text-xs text-muted-foreground mb-1">Sistema</p>
                                 <code className="font-mono text-sm font-medium">{mapping.campo_sistema}</code>
                               </div>
@@ -619,9 +619,9 @@ export default function Bitrix24() {
                             <p className="text-sm text-muted-foreground">{log.mensagem_erro}</p>
                           )}
                           <div className="flex items-center gap-4 mt-2 text-xs">
-                            <span className="text-green-600">{log.registros_processados} registros</span>
+                            <span className="text-success">{log.registros_processados} registros</span>
                             {log.registros_com_erro > 0 && (
-                              <span className="text-red-500">{log.registros_com_erro} erros</span>
+                              <span className="text-destructive">{log.registros_com_erro} erros</span>
                             )}
                           </div>
                         </div>
@@ -652,12 +652,12 @@ export default function Bitrix24() {
               <CardContent className="space-y-4">
                 <div className={cn(
                   "p-4 rounded-lg border flex items-center gap-4",
-                  isConnected ? "border-green-500 bg-green-50 dark:bg-green-900/20" : "border-red-500 bg-red-50 dark:bg-red-900/20"
+                  isConnected ? "border-success bg-success/5" : "border-destructive bg-destructive/5"
                 )}>
                   {isConnected ? (
-                    <CheckCircle2 className="h-8 w-8 text-green-600" />
+                    <CheckCircle2 className="h-8 w-8 text-success" />
                   ) : (
-                    <XCircle className="h-8 w-8 text-red-500" />
+                    <XCircle className="h-8 w-8 text-destructive" />
                   )}
                   <div>
                     <p className="font-semibold">

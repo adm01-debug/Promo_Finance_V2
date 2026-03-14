@@ -48,15 +48,15 @@ export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(
           <Label
             htmlFor={fieldId}
             className={cn(
-              'block text-sm font-medium text-gray-700 dark:text-gray-300',
+              'block text-sm font-medium text-foreground',
               horizontal && 'sm:w-1/3 sm:pt-2',
-              error && 'text-red-600 dark:text-red-400',
+              error && 'text-destructive',
               labelClassName
             )}
           >
             {label}
             {required && (
-              <span className="ml-1 text-red-500" aria-hidden="true">
+              <span className="ml-1 text-destructive" aria-hidden="true">
                 *
               </span>
             )}
@@ -68,14 +68,14 @@ export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(
 
           {/* Hint */}
           {hint && !error && (
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            <p className="mt-1 text-sm text-muted-foreground">
               {hint}
             </p>
           )}
 
           {/* Error */}
           {error && (
-            <p className="mt-1 text-sm text-red-600 dark:text-red-400" role="alert">
+            <p className="mt-1 text-sm text-destructive" role="alert">
               {error}
             </p>
           )}
@@ -103,12 +103,12 @@ export function FormGroup({ title, description, children, className }: FormGroup
       {(title || description) && (
         <div className="mb-4">
           {title && (
-            <legend className="text-lg font-medium text-gray-900 dark:text-gray-100">
+            <legend className="text-lg font-medium text-foreground">
               {title}
             </legend>
           )}
           {description && (
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            <p className="mt-1 text-sm text-muted-foreground">
               {description}
             </p>
           )}
@@ -163,7 +163,7 @@ export function FormActions({ children, className, align = 'right' }: FormAction
   return (
     <div
       className={cn(
-        'flex flex-wrap items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700',
+        'flex flex-wrap items-center gap-3 pt-4 border-t border-border',
         alignClasses[align],
         className
       )}
@@ -178,7 +178,7 @@ export function FormActions({ children, className, align = 'right' }: FormAction
  */
 export function FormDivider({ className }: { className?: string }) {
   return (
-    <hr className={cn('border-gray-200 dark:border-gray-700 my-6', className)} />
+    <hr className={cn('border-border my-6', className)} />
   );
 }
 

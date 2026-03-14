@@ -13,9 +13,9 @@ const badgeVariants = cva(
         secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
         destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
         outline: "text-foreground",
-        success: "border-transparent bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100",
-        warning: "border-transparent bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100",
-        info: "border-transparent bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100",
+        success: "border-transparent bg-success/15 text-success",
+        warning: "border-transparent bg-warning/15 text-warning",
+        info: "border-transparent bg-secondary/15 text-secondary",
       },
     },
     defaultVariants: {
@@ -79,7 +79,7 @@ function NotificationBadge({
     default: 'bg-muted text-muted-foreground',
     primary: 'bg-primary text-primary-foreground',
     destructive: 'bg-destructive text-destructive-foreground',
-    success: 'bg-green-500 text-white',
+    success: 'bg-success text-success-foreground',
   };
 
   const positionStyles = {
@@ -139,11 +139,11 @@ interface StatusBadgeProps {
 
 function StatusBadge({ status, label, showDot = true, className }: StatusBadgeProps) {
   const statusConfig = {
-    online: { color: 'bg-green-500', label: 'Online', dotPulse: true },
-    offline: { color: 'bg-gray-400', label: 'Offline', dotPulse: false },
-    away: { color: 'bg-yellow-500', label: 'Ausente', dotPulse: false },
-    busy: { color: 'bg-red-500', label: 'Ocupado', dotPulse: false },
-    pending: { color: 'bg-blue-500', label: 'Pendente', dotPulse: true },
+    online: { color: 'bg-success', label: 'Online', dotPulse: true },
+    offline: { color: 'bg-muted-foreground', label: 'Offline', dotPulse: false },
+    away: { color: 'bg-warning', label: 'Ausente', dotPulse: false },
+    busy: { color: 'bg-destructive', label: 'Ocupado', dotPulse: false },
+    pending: { color: 'bg-secondary', label: 'Pendente', dotPulse: true },
   };
 
   const config = statusConfig[status];

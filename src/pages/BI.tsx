@@ -471,20 +471,20 @@ export default function BI() {
           </Card>
 
           <Card className="relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-br from-success/10 to-transparent" />
             <CardContent className="pt-6 relative">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Receita do Mês</p>
-                  <p className="text-2xl font-bold text-green-600">{formatCurrency(kpis.receitaMes)}</p>
+                  <p className="text-2xl font-bold text-success">{formatCurrency(kpis.receitaMes)}</p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-success" />
                 </div>
               </div>
               <div className="mt-2 flex items-center gap-1 text-sm">
                 {kpis.variacaoReceita >= 0 ? (
-                  <span className="flex items-center text-green-600">
+                  <span className="flex items-center text-success">
                     <ArrowUpRight className="w-4 h-4" />
                     {kpis.variacaoReceita.toFixed(1)}% vs mês anterior
                   </span>
@@ -499,17 +499,17 @@ export default function BI() {
           </Card>
 
           <Card className="relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 to-transparent" />
             <CardContent className="pt-6 relative">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Lucro do Mês</p>
-                  <p className={`text-2xl font-bold ${kpis.lucroMes >= 0 ? 'text-green-600' : 'text-destructive'}`}>
+                  <p className={`text-2xl font-bold ${kpis.lucroMes >= 0 ? 'text-success' : 'text-destructive'}`}>
                     {formatCurrency(kpis.lucroMes)}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                  <Target className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 rounded-xl bg-secondary/20 flex items-center justify-center">
+                  <Target className="w-6 h-6 text-secondary" />
                 </div>
               </div>
               <div className="mt-2">
@@ -546,11 +546,11 @@ export default function BI() {
         {/* Secondary KPIs */}
         <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {[
-            { label: 'A Receber', value: formatCurrency(kpis.totalReceber), icon: TrendingUp, color: 'text-green-600' },
+            { label: 'A Receber', value: formatCurrency(kpis.totalReceber), icon: TrendingUp, color: 'text-success' },
             { label: 'A Pagar', value: formatCurrency(kpis.totalPagar), icon: TrendingDown, color: 'text-destructive' },
-            { label: 'Despesas Mês', value: formatCurrency(kpis.despesaMes), icon: BarChart3, color: 'text-orange-600' },
-            { label: 'Clientes Ativos', value: kpis.clientesAtivos.toString(), icon: Users, color: 'text-blue-600' },
-            { label: 'Contas Bancárias', value: kpis.contasAtivas.toString(), icon: Building2, color: 'text-purple-600' }
+            { label: 'Despesas Mês', value: formatCurrency(kpis.despesaMes), icon: BarChart3, color: 'text-streak' },
+            { label: 'Clientes Ativos', value: kpis.clientesAtivos.toString(), icon: Users, color: 'text-secondary' },
+            { label: 'Contas Bancárias', value: kpis.contasAtivas.toString(), icon: Building2, color: 'text-accent' }
           ].map((item, idx) => (
             <Card key={idx} className="bg-card/50">
               <CardContent className="pt-4 pb-3">
@@ -794,7 +794,7 @@ export default function BI() {
                         <div className="flex items-center justify-between">
                           <PositionBadge position={index + 1} size="lg" />
                           {index === 0 && (
-                            <Crown className="w-6 h-6 text-yellow-500 animate-wiggle" />
+                            <Crown className="w-6 h-6 text-coins animate-wiggle" />
                           )}
                         </div>
                         <CardTitle className="text-lg mt-2 truncate" title={emp.nome}>
@@ -928,12 +928,12 @@ export default function BI() {
                         <tr className="hover:bg-muted/30 transition-colors">
                           <td className="py-3 px-4 border-b font-medium sticky left-0 bg-background">
                             <div className="flex items-center gap-2">
-                              <ArrowUpRight className="w-4 h-4 text-green-500" />
+                              <ArrowUpRight className="w-4 h-4 text-success" />
                               Receitas (Pagas)
                             </div>
                           </td>
                           {comparativoEmpresas.map((emp) => (
-                            <td key={emp.id} className="text-right py-3 px-4 border-b text-green-600">
+                            <td key={emp.id} className="text-right py-3 px-4 border-b text-success">
                               {formatCurrency(emp.receitas)}
                             </td>
                           ))}
@@ -963,7 +963,7 @@ export default function BI() {
                             </div>
                           </td>
                           {comparativoEmpresas.map((emp) => (
-                            <td key={emp.id} className={`text-right py-3 px-4 border-b font-bold ${emp.lucro >= 0 ? 'text-green-600' : 'text-destructive'}`}>
+                            <td key={emp.id} className={`text-right py-3 px-4 border-b font-bold ${emp.lucro >= 0 ? 'text-success' : 'text-destructive'}`}>
                               {formatCurrency(emp.lucro)}
                             </td>
                           ))}
@@ -1025,7 +1025,7 @@ export default function BI() {
                             </div>
                           </td>
                           {comparativoEmpresas.map((emp) => (
-                            <td key={emp.id} className={`text-right py-3 px-4 border-b font-medium ${emp.saldoProjetado >= 0 ? 'text-green-600' : 'text-destructive'}`}>
+                            <td key={emp.id} className={`text-right py-3 px-4 border-b font-medium ${emp.saldoProjetado >= 0 ? 'text-success' : 'text-destructive'}`}>
                               {formatCurrency(emp.saldoProjetado)}
                             </td>
                           ))}

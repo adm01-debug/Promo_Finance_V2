@@ -67,14 +67,14 @@ const itemVariants = {
 };
 
 const bancoLogos: Record<string, { icon: typeof Landmark; color: string }> = {
-  'Itaú': { icon: Landmark, color: 'bg-orange-500' },
-  'Bradesco': { icon: Building2, color: 'bg-red-600' },
-  'Banco do Brasil': { icon: Landmark, color: 'bg-yellow-500' },
-  'Santander': { icon: Building2, color: 'bg-red-500' },
-  'Caixa': { icon: PiggyBank, color: 'bg-blue-600' },
-  'Nubank': { icon: CreditCard, color: 'bg-purple-600' },
-  'Inter': { icon: Wallet, color: 'bg-orange-600' },
-  'C6 Bank': { icon: CreditCard, color: 'bg-gray-800' },
+  'Itaú': { icon: Landmark, color: 'bg-streak' },
+  'Bradesco': { icon: Building2, color: 'bg-destructive' },
+  'Banco do Brasil': { icon: Landmark, color: 'bg-warning' },
+  'Santander': { icon: Building2, color: 'bg-destructive' },
+  'Caixa': { icon: PiggyBank, color: 'bg-secondary' },
+  'Nubank': { icon: CreditCard, color: 'bg-accent' },
+  'Inter': { icon: Wallet, color: 'bg-streak' },
+  'C6 Bank': { icon: CreditCard, color: 'bg-foreground' },
 };
 
 export default function ContasBancarias() {
@@ -103,7 +103,7 @@ export default function ContasBancarias() {
   };
 
   const getBancoInfo = (banco: string) => {
-    return bancoLogos[banco] || { icon: Landmark, color: 'bg-gray-500' };
+    return bancoLogos[banco] || { icon: Landmark, color: 'bg-muted-foreground' };
   };
 
   const handleOpenDeleteDialog = (conta: ContaBancaria) => {
@@ -298,8 +298,8 @@ export default function ContasBancarias() {
                       {saldoTotal > 0 ? ((saldoDisponivel / saldoTotal) * 100).toFixed(1) : 0}% do total
                     </p>
                   </div>
-                  <div className="p-3 rounded-full bg-green-100 dark:bg-green-900/30">
-                    <Wallet className="h-6 w-6 text-green-600" />
+                  <div className="p-3 rounded-full bg-success/10">
+                    <Wallet className="h-6 w-6 text-success" />
                   </div>
                 </div>
               </CardContent>
@@ -317,8 +317,8 @@ export default function ContasBancarias() {
                       de {contasFiltradas.length} cadastradas
                     </p>
                   </div>
-                  <div className="p-3 rounded-full bg-blue-100 dark:bg-blue-900/30">
-                    <Building2 className="h-6 w-6 text-blue-600" />
+                  <div className="p-3 rounded-full bg-secondary/10">
+                    <Building2 className="h-6 w-6 text-secondary" />
                   </div>
                 </div>
               </CardContent>
