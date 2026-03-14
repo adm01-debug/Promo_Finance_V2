@@ -160,7 +160,7 @@ const BoletoPreview = ({ boleto, onUpdateStatus }: {
               onClick={handleCopyLinhaDigitavel}
               className="shrink-0"
             >
-              {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+              {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
             </Button>
           </div>
         </div>
