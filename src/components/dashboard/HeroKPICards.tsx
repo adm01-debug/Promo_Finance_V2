@@ -256,17 +256,32 @@ interface HeroKPIGridProps {
 }
 
 export function HeroKPIGrid({ children, layout = 'default' }: HeroKPIGridProps) {
+  if (layout === 'hero-first') {
+    const childArray = Array.isArray(children) ? children : [children];
+    const heroChild = childArray[0];
+    const otherChildren = childArray.slice(1);
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        className="grid grid-cols-1 lg:grid-cols-5 gap-3 sm:gap-4"
+      >
+        {/* Hero card - spans 2 of 5 cols */}
+        <div className="lg:col-span-2">
+          {heroChild}
+        </div>
+        {/* Remaining cards - 3 of 5 cols, stacked in a sub-grid */}
+        <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+          {otherChildren}
+        </div>
+      </motion.div>
+    );
+  }
+
   const gridClasses = {
     default: 'grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4',
-    'hero-first': cn(
-      'grid gap-3 sm:gap-4',
-      'grid-cols-1',
-      'sm:grid-cols-2 [&>*:first-child]:sm:col-span-2',
-      // Desktop: 4 cols bento — hero=2col+2row, last card spans remaining 2 cols
-      'lg:grid-cols-4',
-      '[&>*:first-child]:lg:col-span-2 [&>*:first-child]:lg:row-span-2',
-      '[&>*:nth-child(4)]:lg:col-span-2',
-    ),
     balanced: 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4',
   };
 
@@ -275,7 +290,7 @@ export function HeroKPIGrid({ children, layout = 'default' }: HeroKPIGridProps) 
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className={gridClasses[layout]}
+      className={gridClasses[layout] || gridClasses.default}
     >
       {children}
     </motion.div>
