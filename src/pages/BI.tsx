@@ -484,7 +484,7 @@ export default function BI() {
               </div>
               <div className="mt-2 flex items-center gap-1 text-sm">
                 {kpis.variacaoReceita >= 0 ? (
-                  <span className="flex items-center text-green-600">
+                  <span className="flex items-center text-success">
                     <ArrowUpRight className="w-4 h-4" />
                     {kpis.variacaoReceita.toFixed(1)}% vs mês anterior
                   </span>
