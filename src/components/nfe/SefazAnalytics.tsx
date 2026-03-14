@@ -287,16 +287,16 @@ export const SefazAnalytics = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Taxa de Sucesso</p>
-                  <p className="text-2xl font-bold text-emerald-500">
+                  <p className="text-2xl font-bold text-success">
                     {stats.taxaSucesso.toFixed(1)}%
                   </p>
                 </div>
-                <div className="p-2 rounded-full bg-emerald-500/10">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                <div className="p-2 rounded-full bg-success/10">
+                  <CheckCircle2 className="h-5 w-5 text-success" />
                 </div>
               </div>
               <div className="flex items-center gap-1 mt-2 text-xs">
-                <TrendingUp className="h-3 w-3 text-emerald-500" />
+                <TrendingUp className="h-3 w-3 text-success" />
                 <span className="text-muted-foreground">{stats.autorizadas} autorizadas</span>
               </div>
             </CardContent>
