@@ -56,7 +56,7 @@ interface LoginAttempt {
 }
 
 interface SecuritySettingsData {
-  id: string;
+  id?: string;
   require_2fa: boolean;
   restrict_by_ip: boolean;
   allowed_global_ips: string[];
@@ -77,10 +77,14 @@ export function SecuritySettings() {
       const { data, error } = await supabase
         .from('security_settings')
         .select('*')
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
-      return data as SecuritySettingsData;
+      return (data as SecuritySettingsData | null) ?? {
+        require_2fa: false,
+        restrict_by_ip: false,
+        allowed_global_ips: [],
+      };
     }
   });
 
@@ -118,14 +122,28 @@ export function SecuritySettings() {
   // Atualizar configurações
   const updateSettingsMutation = useMutation({
     mutationFn: async (updates: Partial<SecuritySettingsData>) => {
+      if (settings?.id) {
+        const { error } = await supabase
+          .from('security_settings')
+          .update({
+            ...updates,
+            updated_at: new Date().toISOString(),
+            updated_by: user?.id,
+          })
+          .eq('id', settings.id);
+
+        if (error) throw error;
+        return;
+      }
+
       const { error } = await supabase
         .from('security_settings')
-        .update({
-          ...updates,
-          updated_at: new Date().toISOString(),
-          updated_by: user?.id
-        })
-        .eq('id', settings?.id);
+        .insert({
+          require_2fa: updates.require_2fa ?? false,
+          restrict_by_ip: updates.restrict_by_ip ?? false,
+          allowed_global_ips: updates.allowed_global_ips ?? [],
+          updated_by: user?.id,
+        });
 
       if (error) throw error;
     },

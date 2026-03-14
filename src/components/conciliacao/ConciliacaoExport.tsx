@@ -6,7 +6,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { toast } from 'sonner';
-import * as XLSX from 'xlsx';
+
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -36,34 +36,48 @@ export function ConciliacaoExport({ transacoes, stats }: ConciliacaoExportProps)
   const exportExcel = () => {
     setIsExporting(true);
     try {
-      const data = transacoes.map(t => ({
-        'Descrição': t.descricao,
-        'Data': formatDate(t.data),
-        'Valor': t.valor,
-        'Tipo': t.tipo === 'credito' ? 'Crédito' : 'Débito',
-        'Status': t.status === 'conciliada' ? 'Conciliada' : 'Pendente',
-      }));
+      const headers = ['Descrição', 'Data', 'Valor', 'Tipo', 'Status'];
+      const rows = transacoes.map((t) => [
+        t.descricao,
+        formatDate(t.data),
+        String(t.valor),
+        t.tipo === 'credito' ? 'Crédito' : 'Débito',
+        t.status === 'conciliada' ? 'Conciliada' : 'Pendente',
+      ]);
 
-      const ws = XLSX.utils.json_to_sheet(data);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Conciliação');
-
-      // Summary sheet
-      const summaryData = [
-        { 'Métrica': 'Total de Transações', 'Valor': stats.total },
-        { 'Métrica': 'Conciliadas', 'Valor': stats.conciliadas },
-        { 'Métrica': 'Pendentes', 'Valor': stats.pendentes },
-        { 'Métrica': '% Conciliado', 'Valor': `${stats.percentual.toFixed(1)}%` },
-        { 'Métrica': 'Valor Conciliado', 'Valor': formatCurrency(stats.valorConciliado) },
-        { 'Métrica': 'Valor Pendente', 'Valor': formatCurrency(stats.valorPendente) },
+      const summaryRows = [
+        ['Métrica', 'Valor'],
+        ['Total de Transações', String(stats.total)],
+        ['Conciliadas', String(stats.conciliadas)],
+        ['Pendentes', String(stats.pendentes)],
+        ['% Conciliado', `${stats.percentual.toFixed(1)}%`],
+        ['Valor Conciliado', formatCurrency(stats.valorConciliado)],
+        ['Valor Pendente', formatCurrency(stats.valorPendente)],
       ];
-      const wsSummary = XLSX.utils.json_to_sheet(summaryData);
-      XLSX.utils.book_append_sheet(wb, wsSummary, 'Resumo');
 
-      XLSX.writeFile(wb, `conciliacao_${new Date().toISOString().slice(0, 10)}.xlsx`);
-      toast.success('Relatório Excel exportado');
+      const csvSections = [
+        'Resumo',
+        ...summaryRows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')),
+        '',
+        'Transações',
+        headers.map((h) => `"${h}"`).join(','),
+        ...rows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')),
+      ];
+
+      const csvContent = `\uFEFF${csvSections.join('\n')}`;
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `conciliacao_${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast.success('Relatório CSV exportado');
     } catch {
-      toast.error('Erro ao exportar Excel');
+      toast.error('Erro ao exportar CSV');
     } finally {
       setIsExporting(false);
     }
@@ -137,7 +151,7 @@ export function ConciliacaoExport({ transacoes, stats }: ConciliacaoExportProps)
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={exportExcel} className="gap-2">
           <FileSpreadsheet className="h-4 w-4 text-success" />
-          Excel (.xlsx)
+          Planilha (.csv)
         </DropdownMenuItem>
         <DropdownMenuItem onClick={exportPDF} className="gap-2">
           <FileText className="h-4 w-4 text-destructive" />
