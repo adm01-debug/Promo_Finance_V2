@@ -72,20 +72,20 @@ export function PasswordStrengthIndicator({ password, onStrengthChange }: Passwo
 
     let level: 'weak' | 'fair' | 'good' | 'strong' = 'weak';
     let label = 'Fraca';
-    let color = 'bg-red-500';
+    let color = 'bg-destructive';
 
     if (strength >= 80 && requiredMet) {
       level = 'strong';
       label = 'Forte';
-      color = 'bg-green-500';
+      color = 'bg-success';
     } else if (strength >= 60 && requiredMet) {
       level = 'good';
       label = 'Boa';
-      color = 'bg-blue-500';
+      color = 'bg-primary';
     } else if (strength >= 40) {
       level = 'fair';
       label = 'Média';
-      color = 'bg-yellow-500';
+      color = 'bg-warning';
     }
 
     return { criteria, strength, level, label, color, requiredMet };
