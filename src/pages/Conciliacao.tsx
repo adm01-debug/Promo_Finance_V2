@@ -388,7 +388,7 @@ export default function Conciliacao() {
                 <div className="flex items-center gap-3 px-1">
                   <Checkbox
                     checked={selectedIds.size > 0 && selectedIds.size === filteredTransacoes.filter(t => !t.conciliada).length}
-                    onCheckedChange={toggleSelectAll}
+                    onChange={toggleSelectAll}
                   />
                   <span className="text-sm text-muted-foreground">
                     {selectedIds.size > 0 ? `${selectedIds.size} selecionadas` : 'Selecionar todas'}
