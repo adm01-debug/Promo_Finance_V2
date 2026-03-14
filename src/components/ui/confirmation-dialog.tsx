@@ -150,8 +150,8 @@ export function ConfirmationDialog({
           onClick={onClose}
           disabled={isProcessing}
           className={cn(
-            'absolute top-4 right-4 text-gray-400 hover:text-gray-600',
-            'dark:hover:text-gray-300 transition-colors',
+            'absolute top-4 right-4 text-muted-foreground hover:text-foreground',
+            'transition-colors',
             isProcessing && 'opacity-50 cursor-not-allowed'
           )}
           aria-label="Fechar"
