@@ -1,4 +1,4 @@
-
+/* Utility Styles */
   /* Scrollbar Styling */
   .scrollbar-thin::-webkit-scrollbar {
     width: 8px;
@@ -41,4 +41,4 @@
   }
   .glow-streak {
     box-shadow: var(--shadow-glow-streak);
-}
+  }
