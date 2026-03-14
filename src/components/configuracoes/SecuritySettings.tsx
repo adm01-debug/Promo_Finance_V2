@@ -56,7 +56,7 @@ interface LoginAttempt {
 }
 
 interface SecuritySettingsData {
-  id: string;
+  id?: string;
   require_2fa: boolean;
   restrict_by_ip: boolean;
   allowed_global_ips: string[];

@@ -6,7 +6,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { toast } from 'sonner';
-import * as XLSX from 'xlsx';
+
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
