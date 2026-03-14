@@ -729,7 +729,7 @@ async function gerarBoleto(contaId: string): Promise<ActionResult> {
     .from('contas_receber')
     .select('*, clientes(razao_social, cnpj_cpf)')
     .eq('id', contaId)
-    .single();
+    .maybeSingle();
 
   if (error || !conta) {
     return { success: false, message: `Conta ${contaId} não encontrada.` };
