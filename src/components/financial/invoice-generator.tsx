@@ -425,7 +425,7 @@ export function InvoiceGenerator({
               />
             </div>
             {calculations.discountAmount > 0 && (
-              <div className="flex justify-between text-sm text-red-600">
+              <div className="flex justify-between text-sm text-destructive">
                 <span></span>
                 <span>-{formatCurrency(calculations.discountAmount)}</span>
               </div>
