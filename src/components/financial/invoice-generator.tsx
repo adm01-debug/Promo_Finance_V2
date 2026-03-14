@@ -241,7 +241,7 @@ export function InvoiceGenerator({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Client Info */}
           <div className="space-y-4">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <h3 className="text-sm font-medium text-foreground">
               Cliente
             </h3>
             <input
