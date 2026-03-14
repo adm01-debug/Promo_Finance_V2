@@ -100,7 +100,7 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 }
 };
 
-const COLORS = ['hsl(24, 95%, 46%)', 'hsl(215, 90%, 42%)', 'hsl(150, 70%, 32%)', 'hsl(275, 75%, 48%)', 'hsl(42, 95%, 48%)', 'hsl(0, 78%, 55%)'];
+const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--success))', 'hsl(var(--accent))', 'hsl(var(--warning))', 'hsl(var(--destructive))'];
 
 const relatoriosDisponiveis = [
   { id: '1', nome: 'DRE - Demonstrativo de Resultados', categoria: 'Contábil', icon: FileText },
@@ -208,8 +208,8 @@ export default function Relatorios() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Relatórios</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-display-md text-foreground">Relatórios</h1>
+          <p className="text-muted-foreground mt-1">
             Análises financeiras e exportação de dados
           </p>
         </div>
@@ -228,11 +228,11 @@ export default function Relatorios() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-popover">
               <DropdownMenuItem onClick={() => handleExport('pdf')} className="cursor-pointer gap-2">
-                <FileText className="h-4 w-4 text-red-500" />
+                <FileText className="h-4 w-4 text-destructive" />
                 Exportar PDF
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleExport('excel')} className="cursor-pointer gap-2">
-                <FileSpreadsheet className="h-4 w-4 text-green-600" />
+                <FileSpreadsheet className="h-4 w-4 text-success" />
                 Exportar Excel
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -537,7 +537,7 @@ export default function Relatorios() {
                       formatter={(v: number) => formatCurrency(v)}
                       contentStyle={{ backgroundColor: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
                     />
-                    <Bar dataKey="valor" fill="hsl(24, 95%, 46%)" radius={[0, 4, 4, 0]} />
+                    <Bar dataKey="valor" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -560,8 +560,8 @@ export default function Relatorios() {
                       contentStyle={{ backgroundColor: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
                     />
                     <Legend />
-                    <Bar yAxisId="right" dataKey="valor" name="Valor em Atraso" fill="hsl(0, 78%, 55%)" radius={[4, 4, 0, 0]} />
-                    <Line yAxisId="left" type="monotone" dataKey="taxa" name="Taxa (%)" stroke="hsl(42, 95%, 48%)" strokeWidth={3} dot={{ r: 4 }} />
+                    <Bar yAxisId="right" dataKey="valor" name="Valor em Atraso" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
+                    <Line yAxisId="left" type="monotone" dataKey="taxa" name="Taxa (%)" stroke="hsl(var(--warning))" strokeWidth={3} dot={{ r: 4 }} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -587,8 +587,8 @@ export default function Relatorios() {
                       contentStyle={{ backgroundColor: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
                     />
                     <Legend />
-                    <Bar dataKey="atual" name="Período Atual" fill="hsl(24, 95%, 46%)" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="anterior" name="Período Anterior" fill="hsl(215, 90%, 52%)" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="atual" name="Período Atual" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="anterior" name="Período Anterior" fill="hsl(var(--secondary))" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -616,13 +616,13 @@ export default function Relatorios() {
                         <TableCell className="text-right">{formatCurrency(item.anterior)}</TableCell>
                         <TableCell className={cn(
                           "text-right font-medium",
-                          variacao >= 0 ? "text-green-600" : "text-red-500"
+                          variacao >= 0 ? "text-success" : "text-destructive"
                         )}>
                           {variacao >= 0 ? '+' : ''}{formatCurrency(variacao)}
                         </TableCell>
                         <TableCell className={cn(
                           "text-right font-medium",
-                          percentual >= 0 ? "text-green-600" : "text-red-500"
+                          percentual >= 0 ? "text-success" : "text-destructive"
                         )}>
                           {percentual >= 0 ? '+' : ''}{percentual.toFixed(1)}%
                         </TableCell>
@@ -675,13 +675,13 @@ export default function Relatorios() {
                         <Badge variant="outline">{item.categoria}</Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={item.tipo === 'Receita' ? 'default' : 'secondary'} className={item.tipo === 'Receita' ? 'bg-green-500' : 'bg-red-500'}>
+                        <Badge variant={item.tipo === 'Receita' ? 'default' : 'secondary'} className={item.tipo === 'Receita' ? 'bg-success' : 'bg-destructive'}>
                           {item.tipo}
                         </Badge>
                       </TableCell>
                       <TableCell className={cn(
                         "text-right font-medium",
-                        item.tipo === 'Receita' ? "text-green-600" : "text-red-500"
+                        item.tipo === 'Receita' ? "text-success" : "text-destructive"
                       )}>
                         {item.tipo === 'Receita' ? '+' : '-'}{formatCurrency(item.valor)}
                       </TableCell>

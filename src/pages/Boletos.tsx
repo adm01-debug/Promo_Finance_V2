@@ -51,10 +51,10 @@ const itemVariants = {
 };
 
 const statusConfig = {
-  gerado: { label: 'Gerado', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20', icon: FileText },
-  enviado: { label: 'Enviado', color: 'bg-amber-500/10 text-amber-500 border-amber-500/20', icon: Mail },
-  pago: { label: 'Pago', color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20', icon: CheckCircle2 },
-  vencido: { label: 'Vencido', color: 'bg-red-500/10 text-red-500 border-red-500/20', icon: XCircle },
+  gerado: { label: 'Gerado', color: 'bg-secondary/10 text-secondary border-secondary/20', icon: FileText },
+  enviado: { label: 'Enviado', color: 'bg-warning/10 text-warning border-warning/20', icon: Mail },
+  pago: { label: 'Pago', color: 'bg-success/10 text-success border-success/20', icon: CheckCircle2 },
+  vencido: { label: 'Vencido', color: 'bg-destructive/10 text-destructive border-destructive/20', icon: XCircle },
   cancelado: { label: 'Cancelado', color: 'bg-muted text-muted-foreground border-muted', icon: AlertCircle }
 };
 
@@ -160,7 +160,7 @@ const BoletoPreview = ({ boleto, onUpdateStatus }: {
               onClick={handleCopyLinhaDigitavel}
               className="shrink-0"
             >
-              {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+              {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
             </Button>
           </div>
         </div>
@@ -224,7 +224,7 @@ const BoletoPreview = ({ boleto, onUpdateStatus }: {
           Enviar
         </Button>
         {boleto.status !== 'pago' && boleto.status !== 'cancelado' && (
-          <Button variant="outline" onClick={handleMarkAsPaid} className="gap-2 text-emerald-600">
+          <Button variant="outline" onClick={handleMarkAsPaid} className="gap-2 text-success">
             <CheckCircle2 className="h-4 w-4" />
             Marcar Pago
           </Button>
@@ -441,10 +441,10 @@ export default function Boletos() {
   }) || [];
 
   const kpis = [
-    { label: 'Total Gerado', value: stats.totalGerado, icon: FileText, color: 'text-primary' },
-    { label: 'Total Pago', value: stats.totalPago, icon: CheckCircle2, color: 'text-emerald-500' },
-    { label: 'Total Vencido', value: stats.totalVencido, icon: XCircle, color: 'text-red-500' },
-    { label: 'Pendente', value: stats.totalPendente, icon: Clock, color: 'text-amber-500' }
+    { label: 'Total Gerado', value: stats.totalGerado, icon: FileText, color: 'text-primary', bg: 'bg-primary/10' },
+    { label: 'Total Pago', value: stats.totalPago, icon: CheckCircle2, color: 'text-success', bg: 'bg-success/10' },
+    { label: 'Total Vencido', value: stats.totalVencido, icon: XCircle, color: 'text-destructive', bg: 'bg-destructive/10' },
+    { label: 'Pendente', value: stats.totalPendente, icon: Clock, color: 'text-warning', bg: 'bg-warning/10' }
   ];
 
   return (
@@ -456,16 +456,16 @@ export default function Boletos() {
         className="space-y-6"
       >
         {/* Header */}
-        <motion.div variants={itemVariants} className="flex items-center justify-between">
+        <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Emissão de Boletos</h1>
+            <h1 className="text-display-md text-foreground">Emissão de Boletos</h1>
             <p className="text-muted-foreground mt-1">
               Gere e gerencie boletos bancários com código de barras
             </p>
           </div>
           <Dialog open={showNovoBoleto} onOpenChange={setShowNovoBoleto}>
             <DialogTrigger asChild>
-              <Button className="gap-2">
+              <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25" size="sm">
                 <Plus className="h-4 w-4" />
                 Novo Boleto
               </Button>
@@ -493,19 +493,26 @@ export default function Boletos() {
           {kpis.map((kpi, index) => {
             const Icon = kpi.icon;
             return (
-              <Card key={index}>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className={cn("p-2 rounded-lg bg-muted", kpi.color)}>
-                      <Icon className="h-5 w-5" />
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05, type: 'spring', stiffness: 300, damping: 24 }}
+              >
+                <Card className="stat-card group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 h-full">
+                  <CardContent className="p-3 sm:p-5">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs sm:text-sm font-medium text-muted-foreground">{kpi.label}</p>
+                        <p className="text-lg sm:text-2xl font-bold font-display mt-1 tabular-nums">{formatCurrency(kpi.value)}</p>
+                      </div>
+                      <div className={cn("h-10 w-10 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 shrink-0", kpi.bg, kpi.color)}>
+                        <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">{kpi.label}</p>
-                      <p className="text-xl font-bold">{formatCurrency(kpi.value)}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </motion.div>
             );
           })}
         </motion.div>
@@ -665,25 +672,25 @@ export default function Boletos() {
         <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
             <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-blue-500">{stats.countGerado}</p>
+              <p className="text-3xl font-bold text-secondary">{stats.countGerado}</p>
               <p className="text-sm text-muted-foreground">Boletos Gerados</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-amber-500">{stats.countEnviado}</p>
+              <p className="text-3xl font-bold text-warning">{stats.countEnviado}</p>
               <p className="text-sm text-muted-foreground">Enviados</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-emerald-500">{stats.countPago}</p>
+              <p className="text-3xl font-bold text-success">{stats.countPago}</p>
               <p className="text-sm text-muted-foreground">Pagos</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-red-500">{stats.countVencido}</p>
+              <p className="text-3xl font-bold text-destructive">{stats.countVencido}</p>
               <p className="text-sm text-muted-foreground">Vencidos</p>
             </CardContent>
           </Card>

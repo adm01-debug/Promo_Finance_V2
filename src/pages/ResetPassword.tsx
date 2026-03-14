@@ -244,10 +244,10 @@ export default function ResetPassword() {
               <div className="text-xs text-muted-foreground space-y-1">
                 <p>A senha deve conter:</p>
                 <ul className="list-disc list-inside space-y-0.5">
-                  <li className={password.length >= 8 ? 'text-green-500' : ''}>Mínimo 8 caracteres</li>
-                  <li className={/[A-Z]/.test(password) ? 'text-green-500' : ''}>Uma letra maiúscula</li>
-                  <li className={/[0-9]/.test(password) ? 'text-green-500' : ''}>Um número</li>
-                  <li className={/[!@#$%^&*(),.?":{}|<>]/.test(password) ? 'text-green-500' : ''}>Um caractere especial</li>
+                  <li className={password.length >= 8 ? 'text-success' : ''}>Mínimo 8 caracteres</li>
+                  <li className={/[A-Z]/.test(password) ? 'text-success' : ''}>Uma letra maiúscula</li>
+                  <li className={/[0-9]/.test(password) ? 'text-success' : ''}>Um número</li>
+                  <li className={/[!@#$%^&*(),.?":{}|<>]/.test(password) ? 'text-success' : ''}>Um caractere especial</li>
                 </ul>
               </div>
 

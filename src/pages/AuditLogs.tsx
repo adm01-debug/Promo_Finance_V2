@@ -46,7 +46,7 @@ const actionConfig: Record<AuditAction, { label: string; color: string }> = {
   DELETE: { label: 'Exclusão', color: 'bg-destructive/10 text-destructive border-destructive/20' },
   LOGIN: { label: 'Login', color: 'bg-primary/10 text-primary border-primary/20' },
   LOGOUT: { label: 'Logout', color: 'bg-muted text-muted-foreground border-border' },
-  EXPORT: { label: 'Exportação', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
+  EXPORT: { label: 'Exportação', color: 'bg-secondary/10 text-secondary border-secondary/20' },
   APPROVE: { label: 'Aprovação', color: 'bg-success/10 text-success border-success/20' },
   REJECT: { label: 'Rejeição', color: 'bg-destructive/10 text-destructive border-destructive/20' },
 };

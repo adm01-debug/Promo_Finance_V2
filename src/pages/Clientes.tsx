@@ -87,7 +87,7 @@ const getScoreColor = (score: number | null) => {
   if (!score) return 'text-muted-foreground';
   if (score >= 800) return 'text-success';
   if (score >= 600) return 'text-warning';
-  if (score >= 400) return 'text-orange-500';
+  if (score >= 400) return 'text-streak';
   return 'text-destructive';
 };
 

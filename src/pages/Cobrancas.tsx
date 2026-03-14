@@ -335,7 +335,7 @@ export default function Cobrancas() {
                           borderRadius: '8px',
                         }}
                       />
-                      <Bar dataKey="valor" fill="hsl(0, 78%, 45%)" radius={[4, 4, 0, 0]} name="Valor" />
+                      <Bar dataKey="valor" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} name="Valor" />
                     </BarChart>
                   </ResponsiveContainer>
                 )}
