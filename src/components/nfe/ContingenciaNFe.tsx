@@ -362,11 +362,11 @@ export function ContingenciaNFe() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${health.online ? 'bg-emerald-500/10' : 'bg-red-500/10'}`}>
+                <div className={`p-2 rounded-lg ${health.online ? 'bg-success/10' : 'bg-destructive/10'}`}>
                   {health.online ? (
-                    <Wifi className="h-5 w-5 text-emerald-500" />
+                    <Wifi className="h-5 w-5 text-success" />
                   ) : (
-                    <WifiOff className="h-5 w-5 text-red-500" />
+                    <WifiOff className="h-5 w-5 text-destructive" />
                   )}
                 </div>
                 <div>
