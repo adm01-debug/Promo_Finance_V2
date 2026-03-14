@@ -499,7 +499,7 @@ export default function BI() {
           </Card>
 
           <Card className="relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 to-transparent" />
             <CardContent className="pt-6 relative">
               <div className="flex items-center justify-between">
                 <div>
