@@ -523,9 +523,9 @@ function InadimplenciaView({ data }: { data: Record<string, unknown> }) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-red-500/5 border-red-500/20">
+        <Card className="bg-destructive/5 border-destructive/20">
           <CardContent className="pt-4 text-center">
-            <p className="text-2xl font-bold text-red-500">{formatCurrency(resumo?.total_vencido || 0)}</p>
+            <p className="text-2xl font-bold text-destructive">{formatCurrency(resumo?.total_vencido || 0)}</p>
             <p className="text-sm text-muted-foreground">Total Vencido</p>
           </CardContent>
         </Card>
