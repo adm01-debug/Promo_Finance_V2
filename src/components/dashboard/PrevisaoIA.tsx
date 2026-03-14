@@ -356,22 +356,22 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
                       <p className="text-lg font-bold">{analise.indicadores_chave.prazo_medio_recebimento}</p>
                     </Card>
                     <Card className="text-center p-4">
-                      <Clock className="h-5 w-5 text-orange-500 mx-auto mb-2" />
+                      <Clock className="h-5 w-5 text-streak mx-auto mb-2" />
                       <p className="text-xs text-muted-foreground">PMP</p>
                       <p className="text-lg font-bold">{analise.indicadores_chave.prazo_medio_pagamento}</p>
                     </Card>
                     <Card className="text-center p-4">
-                      <Activity className="h-5 w-5 text-blue-500 mx-auto mb-2" />
+                      <Activity className="h-5 w-5 text-secondary mx-auto mb-2" />
                       <p className="text-xs text-muted-foreground">Ciclo Financeiro</p>
                       <p className="text-lg font-bold">{analise.indicadores_chave.ciclo_financeiro}</p>
                     </Card>
                     <Card className="text-center p-4">
-                      <Wallet className="h-5 w-5 text-green-500 mx-auto mb-2" />
+                      <Wallet className="h-5 w-5 text-success mx-auto mb-2" />
                       <p className="text-xs text-muted-foreground">Liquidez</p>
                       <p className="text-lg font-bold">{analise.indicadores_chave.liquidez_corrente}</p>
                     </Card>
                     <Card className="text-center p-4">
-                      <DollarSign className="h-5 w-5 text-purple-500 mx-auto mb-2" />
+                      <DollarSign className="h-5 w-5 text-accent-foreground mx-auto mb-2" />
                       <p className="text-xs text-muted-foreground">Cobertura</p>
                       <p className="text-lg font-bold">{analise.indicadores_chave.cobertura_despesas}</p>
                     </Card>
