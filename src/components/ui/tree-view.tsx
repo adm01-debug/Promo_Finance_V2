@@ -63,12 +63,12 @@ export function TreeView({
 
 function TreeNodeComponent({ node, level }: { node: TreeNode; level: number }) {
   const context = useContext(TreeViewContext);
-  if (!context) return null;
-  const { selectedIds, expandedIds, onSelect, onToggle, onNodeAction, showActions, showCheckboxes, editable } = context;
-
   const [showMenu, setShowMenu] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(node.label);
+
+  if (!context) return null;
+  const { selectedIds, expandedIds, onSelect, onToggle, onNodeAction, showActions, showCheckboxes, editable } = context;
 
   const isSelected = selectedIds.includes(node.id);
   const isExpanded = expandedIds.includes(node.id);
