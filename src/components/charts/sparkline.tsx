@@ -216,7 +216,7 @@ export function BarSparkline({
   if (data.length === 0) {
     return (
       <div 
-        className={cn('flex items-center justify-center text-gray-400', className)}
+        className={cn('flex items-center justify-center text-muted-foreground', className)}
         style={{ width, height }}
       >
         —
