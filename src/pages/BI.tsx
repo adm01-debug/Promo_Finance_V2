@@ -528,12 +528,12 @@ export default function BI() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Inadimplência</p>
-                  <p className={`text-2xl font-bold ${kpis.inadimplencia > 10 ? 'text-destructive' : 'text-amber-600'}`}>
+                  <p className={`text-2xl font-bold ${kpis.inadimplencia > 10 ? 'text-destructive' : 'text-warning'}`}>
                     {kpis.inadimplencia.toFixed(1)}%
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                  <AlertTriangle className="w-6 h-6 text-amber-600" />
+                <div className="w-12 h-12 rounded-xl bg-warning/20 flex items-center justify-center">
+                  <AlertTriangle className="w-6 h-6 text-warning" />
                 </div>
               </div>
               <div className="mt-2 text-sm text-muted-foreground">

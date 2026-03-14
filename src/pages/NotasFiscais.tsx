@@ -287,7 +287,7 @@ const NFePreview = ({ nfe }: { nfe: NotaFiscal }) => {
               {nfe.chaveAcesso}
             </code>
             <Button variant="ghost" size="sm" onClick={handleCopyChave}>
-              {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+              {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
             </Button>
           </div>
         </div>
@@ -493,7 +493,7 @@ const SefazStatusPanel = ({
                 <div 
                   key={step.id}
                   className={`text-center transition-colors ${
-                    isActive ? 'text-primary' : isDone ? 'text-emerald-500' : 'text-muted-foreground'
+                    isActive ? 'text-primary' : isDone ? 'text-success' : 'text-muted-foreground'
                   }`}
                 >
                   <StepIcon className={`h-4 w-4 mx-auto mb-1 ${isActive ? 'animate-pulse' : ''}`} />
@@ -1267,8 +1267,8 @@ export default function NotasFiscais() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-full bg-emerald-500/10">
-                    <TrendingUp className="h-6 w-6 text-emerald-500" />
+                  <div className="p-3 rounded-full bg-success/10">
+                    <TrendingUp className="h-6 w-6 text-success" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Taxa de Autorização</p>

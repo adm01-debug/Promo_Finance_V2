@@ -179,10 +179,10 @@ function FluxoCaixaView({ data }: { data: Record<string, unknown> }) {
       )}
       
       <div className="grid grid-cols-2 gap-4">
-        <Card className="bg-green-500/5 border-green-500/20">
+        <Card className="bg-success/5 border-success/20">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-green-600" />
+              <TrendingUp className="h-4 w-4 text-success" />
               Receitas
             </CardTitle>
           </CardHeader>
@@ -193,7 +193,7 @@ function FluxoCaixaView({ data }: { data: Record<string, unknown> }) {
             </div>
             <div className="flex justify-between text-sm">
               <span>Realizado:</span>
-              <span className="font-medium text-green-600">{formatCurrency(receitas?.realizado || 0)}</span>
+              <span className="font-medium text-success">{formatCurrency(receitas?.realizado || 0)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span>Pendente:</span>
@@ -202,10 +202,10 @@ function FluxoCaixaView({ data }: { data: Record<string, unknown> }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-red-500/5 border-red-500/20">
+        <Card className="bg-destructive/5 border-destructive/20">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center gap-2">
-              <TrendingDown className="h-4 w-4 text-red-500" />
+              <TrendingDown className="h-4 w-4 text-destructive" />
               Despesas
             </CardTitle>
           </CardHeader>
@@ -216,7 +216,7 @@ function FluxoCaixaView({ data }: { data: Record<string, unknown> }) {
             </div>
             <div className="flex justify-between text-sm">
               <span>Realizado:</span>
-              <span className="font-medium text-red-500">{formatCurrency(despesas?.realizado || 0)}</span>
+              <span className="font-medium text-destructive">{formatCurrency(despesas?.realizado || 0)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span>Pendente:</span>
@@ -226,10 +226,10 @@ function FluxoCaixaView({ data }: { data: Record<string, unknown> }) {
         </Card>
       </div>
       
-      <Card className="bg-blue-500/5 border-blue-500/20">
+      <Card className="bg-primary/5 border-primary/20">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
-            <DollarSign className="h-4 w-4 text-blue-600" />
+            <DollarSign className="h-4 w-4 text-primary" />
             Saldo
           </CardTitle>
         </CardHeader>
@@ -237,7 +237,7 @@ function FluxoCaixaView({ data }: { data: Record<string, unknown> }) {
           <div className="grid grid-cols-2 gap-4">
             <div className="text-center">
               <p className="text-sm text-muted-foreground">Previsto</p>
-              <p className="text-2xl font-bold text-blue-600">{formatCurrency(saldo?.previsto || 0)}</p>
+              <p className="text-2xl font-bold text-primary">{formatCurrency(saldo?.previsto || 0)}</p>
             </div>
             <div className="text-center">
               <p className="text-sm text-muted-foreground">Realizado</p>
@@ -266,13 +266,13 @@ function ContasPagarView({ data }: { data: Record<string, unknown> }) {
         </Card>
         <Card>
           <CardContent className="pt-4 text-center">
-            <p className="text-2xl font-bold text-red-500">{formatCurrency(resumo?.valor_total || 0)}</p>
+            <p className="text-2xl font-bold text-destructive">{formatCurrency(resumo?.valor_total || 0)}</p>
             <p className="text-sm text-muted-foreground">Valor Total</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4 text-center">
-            <p className="text-2xl font-bold text-green-600">{formatCurrency(resumo?.valor_pago || 0)}</p>
+            <p className="text-2xl font-bold text-success">{formatCurrency(resumo?.valor_pago || 0)}</p>
             <p className="text-sm text-muted-foreground">Valor Pago</p>
           </CardContent>
         </Card>
@@ -334,13 +334,13 @@ function ContasReceberView({ data }: { data: Record<string, unknown> }) {
         </Card>
         <Card>
           <CardContent className="pt-4 text-center">
-            <p className="text-2xl font-bold text-blue-600">{formatCurrency(resumo?.valor_total || 0)}</p>
+            <p className="text-2xl font-bold text-primary">{formatCurrency(resumo?.valor_total || 0)}</p>
             <p className="text-sm text-muted-foreground">Valor Total</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4 text-center">
-            <p className="text-2xl font-bold text-green-600">{formatCurrency(resumo?.valor_recebido || 0)}</p>
+            <p className="text-2xl font-bold text-success">{formatCurrency(resumo?.valor_recebido || 0)}</p>
             <p className="text-sm text-muted-foreground">Valor Recebido</p>
           </CardContent>
         </Card>
@@ -475,7 +475,7 @@ function BalancoView({ data }: { data: Record<string, unknown> }) {
           <Separator />
           <div className="flex justify-between font-bold text-lg pt-2">
             <span>TOTAL ATIVO</span>
-            <span className="text-blue-600">{formatCurrency(ativo?.total || 0)}</span>
+            <span className="text-primary">{formatCurrency(ativo?.total || 0)}</span>
           </div>
         </div>
       </div>
@@ -507,7 +507,7 @@ function BalancoView({ data }: { data: Record<string, unknown> }) {
           </div>
           <div className="flex justify-between font-bold text-lg pt-2 border-t">
             <span>Patrimônio Líquido</span>
-            <span className={pl >= 0 ? 'text-green-600' : 'text-red-500'}>{formatCurrency(pl)}</span>
+            <span className={pl >= 0 ? 'text-success' : 'text-destructive'}>{formatCurrency(pl)}</span>
           </div>
         </div>
       </div>
@@ -523,9 +523,9 @@ function InadimplenciaView({ data }: { data: Record<string, unknown> }) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-red-500/5 border-red-500/20">
+        <Card className="bg-destructive/5 border-destructive/20">
           <CardContent className="pt-4 text-center">
-            <p className="text-2xl font-bold text-red-500">{formatCurrency(resumo?.total_vencido || 0)}</p>
+            <p className="text-2xl font-bold text-destructive">{formatCurrency(resumo?.total_vencido || 0)}</p>
             <p className="text-sm text-muted-foreground">Total Vencido</p>
           </CardContent>
         </Card>
@@ -535,9 +535,9 @@ function InadimplenciaView({ data }: { data: Record<string, unknown> }) {
             <p className="text-sm text-muted-foreground">Títulos Vencidos</p>
           </CardContent>
         </Card>
-        <Card className="bg-orange-500/5 border-orange-500/20">
+        <Card className="bg-warning/5 border-warning/20">
           <CardContent className="pt-4 text-center">
-            <p className="text-2xl font-bold text-orange-500">{(resumo?.taxa_inadimplencia || 0).toFixed(1)}%</p>
+            <p className="text-2xl font-bold text-warning">{(resumo?.taxa_inadimplencia || 0).toFixed(1)}%</p>
             <p className="text-sm text-muted-foreground">Taxa Inadimplência</p>
           </CardContent>
         </Card>
@@ -567,11 +567,11 @@ function InadimplenciaView({ data }: { data: Record<string, unknown> }) {
               {clientes.map((cliente, index) => (
                 <TableRow key={index}>
                   <TableCell className="font-medium flex items-center gap-2">
-                    <AlertTriangle className="h-4 w-4 text-orange-500" />
+                    <AlertTriangle className="h-4 w-4 text-warning" />
                     {cliente.nome}
                   </TableCell>
                   <TableCell className="text-center">{cliente.quantidade}</TableCell>
-                  <TableCell className="text-right text-red-500 font-medium">
+                  <TableCell className="text-right text-destructive font-medium">
                     {formatCurrency(cliente.valor)}
                   </TableCell>
                 </TableRow>

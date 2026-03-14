@@ -140,15 +140,15 @@ export function GestorCreditosTributarios() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'disponivel':
-        return <Badge variant="default" className="bg-green-500">Disponível</Badge>;
+        return <Badge variant="default" className="bg-success">Disponível</Badge>;
       case 'utilizado':
         return <Badge variant="secondary">Utilizado</Badge>;
       case 'expirado':
         return <Badge variant="destructive">Expirado</Badge>;
       case 'estornado':
-        return <Badge variant="outline" className="border-orange-500 text-orange-500">Estornado</Badge>;
+        return <Badge variant="outline" className="border-warning text-warning">Estornado</Badge>;
       case 'compensado':
-        return <Badge variant="outline" className="border-blue-500 text-blue-500">Compensado</Badge>;
+        return <Badge variant="outline" className="border-primary text-primary">Compensado</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -193,10 +193,10 @@ export function GestorCreditosTributarios() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Disponíveis</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-500" />
+            <TrendingUp className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-success">
               {formatCurrency(resumo.totalDisponivel)}
             </div>
             <Progress 
@@ -206,13 +206,13 @@ export function GestorCreditosTributarios() {
           </CardContent>
         </Card>
 
-        <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20">
+        <Card className="border-primary/20 bg-primary/5">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">CBS Disponível</CardTitle>
-            <Receipt className="h-4 w-4 text-blue-500" />
+            <Receipt className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-2xl font-bold text-primary">
               {formatCurrency(resumo.cbsDisponivel)}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -221,13 +221,13 @@ export function GestorCreditosTributarios() {
           </CardContent>
         </Card>
 
-        <Card className="border-emerald-200 bg-emerald-50/50 dark:bg-emerald-950/20">
+        <Card className="border-success/20 bg-success/5">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">IBS Disponível</CardTitle>
-            <Receipt className="h-4 w-4 text-emerald-500" />
+            <Receipt className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">
+            <div className="text-2xl font-bold text-success">
               {formatCurrency(resumo.ibsDisponivel)}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -360,7 +360,7 @@ export function GestorCreditosTributarios() {
                     <TableCell className="text-right text-muted-foreground">
                       {formatCurrency(credito.valor_utilizado)}
                     </TableCell>
-                    <TableCell className="text-right font-medium text-green-600">
+                    <TableCell className="text-right font-medium text-success">
                       {formatCurrency(Number(credito.valor_credito) - Number(credito.valor_utilizado))}
                     </TableCell>
                     <TableCell>{getStatusBadge(credito.status)}</TableCell>
@@ -386,7 +386,7 @@ export function GestorCreditosTributarios() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <CheckCircle2 className="h-5 w-5 text-green-500" />
+            <CheckCircle2 className="h-5 w-5 text-success" />
             Não-Cumulatividade Plena
           </CardTitle>
         </CardHeader>

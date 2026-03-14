@@ -45,10 +45,10 @@ const TIPO_LABELS: Record<TipoRetencao, string> = {
 };
 
 const STATUS_COLORS = {
-  pendente: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-  recolhido: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-  compensado: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-  cancelado: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400',
+  pendente: 'bg-warning/10 text-warning',
+  recolhido: 'bg-success/10 text-success',
+  compensado: 'bg-primary/10 text-primary',
+  cancelado: 'bg-muted text-muted-foreground',
 };
 
 export function RetencoesFonte() {
@@ -335,8 +335,8 @@ export function RetencoesFonte() {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
-                  <AlertTriangle className="h-5 w-5 text-yellow-600" />
+              <div className="p-2 bg-warning/10 rounded-lg">
+                  <AlertTriangle className="h-5 w-5 text-warning" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Pendente</p>
@@ -349,8 +349,8 @@ export function RetencoesFonte() {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+              <div className="p-2 bg-success/10 rounded-lg">
+                  <CheckCircle2 className="h-5 w-5 text-success" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Recolhido</p>
@@ -363,8 +363,8 @@ export function RetencoesFonte() {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                  <FileText className="h-5 w-5 text-blue-600" />
+              <div className="p-2 bg-primary/10 rounded-lg">
+                  <FileText className="h-5 w-5 text-primary" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">DARFs Gerados</p>
@@ -377,8 +377,8 @@ export function RetencoesFonte() {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
-                  <Calendar className="h-5 w-5 text-red-600" />
+              <div className="p-2 bg-destructive/10 rounded-lg">
+                  <Calendar className="h-5 w-5 text-destructive" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Críticas (5 dias)</p>
@@ -522,7 +522,7 @@ export function RetencoesFonte() {
                         <TableCell>
                           <Badge className={
                             darf.status === 'pago' ? STATUS_COLORS.recolhido :
-                            darf.status === 'vencido' ? 'bg-red-100 text-red-800' :
+                            darf.status === 'vencido' ? 'bg-destructive/10 text-destructive' :
                             STATUS_COLORS.pendente
                           }>
                             {darf.status}
@@ -568,11 +568,11 @@ export function RetencoesFonte() {
                     <span className="font-bold">{formatCurrency(dados.total)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-yellow-600">Pendente:</span>
+                    <span className="text-warning">Pendente:</span>
                     <span>{formatCurrency(dados.pendente)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-green-600">Recolhido:</span>
+                    <span className="text-success">Recolhido:</span>
                     <span>{formatCurrency(dados.recolhido)}</span>
                   </div>
                   <Separator />

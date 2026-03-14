@@ -14,22 +14,6 @@ import { Progress } from '@/components/ui/progress';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 
-interface HeroMetric {
-  label: string;
-  value: string | number;
-  subValue?: string;
-  icon: React.ElementType;
-  color: 'primary' | 'blue' | 'emerald' | 'amber' | 'green' | 'red';
-  trend?: {
-    value: number;
-    direction: 'up' | 'down';
-    isGood?: boolean;
-  };
-  progress?: number;
-  badge?: string;
-  size?: 'hero' | 'normal';
-}
-
 interface Props {
   cargaTributaria: number;
   cbsSaldo: number;
@@ -51,48 +35,40 @@ const colorClasses = {
     glow: 'shadow-[0_0_30px_hsl(var(--primary)/0.15)]',
   },
   blue: {
-    text: 'text-blue-600 dark:text-blue-400',
-    bg: 'bg-blue-50 dark:bg-blue-950/30',
-    border: 'border-blue-200 dark:border-blue-800',
-    glow: 'shadow-[0_0_30px_hsl(210_100%_50%/0.15)]',
+    text: 'text-primary',
+    bg: 'bg-primary/5',
+    border: 'border-primary/20',
+    glow: 'shadow-[0_0_30px_hsl(var(--primary)/0.15)]',
   },
   emerald: {
-    text: 'text-emerald-600 dark:text-emerald-400',
-    bg: 'bg-emerald-50 dark:bg-emerald-950/30',
-    border: 'border-emerald-200 dark:border-emerald-800',
-    glow: 'shadow-[0_0_30px_hsl(150_70%_40%/0.15)]',
+    text: 'text-success',
+    bg: 'bg-success/5',
+    border: 'border-success/20',
+    glow: 'shadow-[0_0_30px_hsl(var(--success)/0.15)]',
   },
   amber: {
-    text: 'text-amber-600 dark:text-amber-400',
-    bg: 'bg-amber-50 dark:bg-amber-950/30',
-    border: 'border-amber-200 dark:border-amber-800',
-    glow: 'shadow-[0_0_30px_hsl(45_100%_50%/0.15)]',
+    text: 'text-warning',
+    bg: 'bg-warning/5',
+    border: 'border-warning/20',
+    glow: 'shadow-[0_0_30px_hsl(var(--warning)/0.15)]',
   },
   green: {
-    text: 'text-green-600 dark:text-green-400',
-    bg: 'bg-green-50 dark:bg-green-950/30',
-    border: 'border-green-200 dark:border-green-800',
-    glow: 'shadow-[0_0_30px_hsl(140_70%_40%/0.15)]',
+    text: 'text-success',
+    bg: 'bg-success/5',
+    border: 'border-success/20',
+    glow: 'shadow-[0_0_30px_hsl(var(--success)/0.15)]',
   },
   red: {
-    text: 'text-red-600 dark:text-red-400',
-    bg: 'bg-red-50 dark:bg-red-950/30',
-    border: 'border-red-200 dark:border-red-800',
-    glow: 'shadow-[0_0_30px_hsl(0_70%_50%/0.15)]',
+    text: 'text-destructive',
+    bg: 'bg-destructive/5',
+    border: 'border-destructive/20',
+    glow: 'shadow-[0_0_30px_hsl(var(--destructive)/0.15)]',
   },
 };
 
 export function HeroKPIs({
-  cargaTributaria,
-  cbsSaldo,
-  ibsSaldo,
-  creditosDisponiveis,
-  creditosUtilizados,
-  creditosAcumulados,
-  percentualMigracao,
-  aliquotaCbs,
-  aliquotaIbs,
-  alertasCriticos = 0,
+  cargaTributaria, cbsSaldo, ibsSaldo, creditosDisponiveis, creditosUtilizados,
+  creditosAcumulados, percentualMigracao, aliquotaCbs, aliquotaIbs, alertasCriticos = 0,
 }: Props) {
   const percentualCreditos = creditosAcumulados > 0 
     ? (creditosUtilizados / creditosAcumulados) * 100 
@@ -103,17 +79,8 @@ export function HeroKPIs({
       {/* Hero Cards - 2 grandes */}
       <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
         {/* Carga Tributária - Hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <Card className={cn(
-            "relative overflow-hidden transition-all duration-300 hover:scale-[1.02]",
-            colorClasses.primary.border,
-            colorClasses.primary.bg,
-            colorClasses.primary.glow
-          )}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+          <Card className={cn("relative overflow-hidden transition-all duration-300 hover:scale-[1.02]", colorClasses.primary.border, colorClasses.primary.bg, colorClasses.primary.glow)}>
             <div className="absolute top-0 right-0 w-20 sm:w-32 h-20 sm:h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-bl-full" />
             <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
               <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground flex items-center gap-1.5 sm:gap-2">
@@ -132,10 +99,10 @@ export function HeroKPIs({
                 Alíquota efetiva sobre faturamento
               </p>
               <div className="mt-2 sm:mt-4 flex gap-1.5 sm:gap-2 flex-wrap">
-                <Badge variant="secondary" className="text-[10px] sm:text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 px-1.5 sm:px-2">
+                <Badge variant="secondary" className="text-[10px] sm:text-xs bg-primary/10 text-primary px-1.5 sm:px-2">
                   CBS: {aliquotaCbs}%
                 </Badge>
-                <Badge variant="secondary" className="text-[10px] sm:text-xs bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300 px-1.5 sm:px-2">
+                <Badge variant="secondary" className="text-[10px] sm:text-xs bg-success/10 text-success px-1.5 sm:px-2">
                   IBS: {aliquotaIbs}%
                 </Badge>
               </div>
@@ -144,18 +111,9 @@ export function HeroKPIs({
         </motion.div>
 
         {/* Créditos Disponíveis - Hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-        >
-          <Card className={cn(
-            "relative overflow-hidden transition-all duration-300 hover:scale-[1.02]",
-            colorClasses.green.border,
-            colorClasses.green.bg,
-            colorClasses.green.glow
-          )}>
-            <div className="absolute top-0 right-0 w-20 sm:w-32 h-20 sm:h-32 bg-gradient-to-br from-green-500/10 to-transparent rounded-bl-full" />
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
+          <Card className={cn("relative overflow-hidden transition-all duration-300 hover:scale-[1.02]", colorClasses.green.border, colorClasses.green.bg, colorClasses.green.glow)}>
+            <div className="absolute top-0 right-0 w-20 sm:w-32 h-20 sm:h-32 bg-gradient-to-br from-success/10 to-transparent rounded-bl-full" />
             <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
               <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground flex items-center gap-1.5 sm:gap-2">
                 <DollarSign className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -184,18 +142,11 @@ export function HeroKPIs({
       {/* Cards Secundários */}
       <div className="grid gap-2 sm:gap-4 grid-cols-2 lg:grid-cols-4">
         {/* CBS a Recolher */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
-        >
-          <Card className={cn(
-            "transition-all duration-200 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700",
-            colorClasses.blue.border
-          )}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.2 }}>
+          <Card className={cn("transition-all duration-200 hover:shadow-md hover:border-primary/30", colorClasses.blue.border)}>
             <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
               <CardTitle className="text-[10px] sm:text-sm font-medium text-muted-foreground">CBS</CardTitle>
-              <Receipt className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
+              <Receipt className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
             </CardHeader>
             <CardContent className="p-2 sm:p-6 pt-0">
               <div className={cn("text-base sm:text-xl md:text-2xl font-bold truncate", colorClasses.blue.text)}>
@@ -207,18 +158,11 @@ export function HeroKPIs({
         </motion.div>
 
         {/* IBS a Recolher */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.25 }}
-        >
-          <Card className={cn(
-            "transition-all duration-200 hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-700",
-            colorClasses.emerald.border
-          )}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.25 }}>
+          <Card className={cn("transition-all duration-200 hover:shadow-md hover:border-success/30", colorClasses.emerald.border)}>
             <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
               <CardTitle className="text-[10px] sm:text-sm font-medium text-muted-foreground">IBS</CardTitle>
-              <Landmark className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-500" />
+              <Landmark className="h-3 w-3 sm:h-4 sm:w-4 text-success" />
             </CardHeader>
             <CardContent className="p-2 sm:p-6 pt-0">
               <div className={cn("text-base sm:text-xl md:text-2xl font-bold truncate", colorClasses.emerald.text)}>
@@ -230,18 +174,11 @@ export function HeroKPIs({
         </motion.div>
 
         {/* Migração */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
-        >
-          <Card className={cn(
-            "transition-all duration-200 hover:shadow-md hover:border-amber-300 dark:hover:border-amber-700",
-            colorClasses.amber.border
-          )}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.3 }}>
+          <Card className={cn("transition-all duration-200 hover:shadow-md hover:border-warning/30", colorClasses.amber.border)}>
             <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
               <CardTitle className="text-[10px] sm:text-sm font-medium text-muted-foreground">Migração</CardTitle>
-              <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-amber-500" />
+              <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-warning" />
             </CardHeader>
             <CardContent className="p-2 sm:p-6 pt-0">
               <div className={cn("text-base sm:text-xl md:text-2xl font-bold", colorClasses.amber.text)}>
@@ -253,29 +190,17 @@ export function HeroKPIs({
         </motion.div>
 
         {/* Alertas */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.35 }}
-        >
-          <Card className={cn(
-            "transition-all duration-200 hover:shadow-md",
-            alertasCriticos > 0 
-              ? `${colorClasses.red.border} animate-pulse` 
-              : colorClasses.green.border
-          )}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.35 }}>
+          <Card className={cn("transition-all duration-200 hover:shadow-md", alertasCriticos > 0 ? `${colorClasses.red.border} animate-pulse` : colorClasses.green.border)}>
             <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
               <CardTitle className="text-[10px] sm:text-sm font-medium text-muted-foreground">Alertas</CardTitle>
               {alertasCriticos > 0 
-                ? <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
-                : <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
+                ? <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-destructive" />
+                : <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-success" />
               }
             </CardHeader>
             <CardContent className="p-2 sm:p-6 pt-0">
-              <div className={cn(
-                "text-base sm:text-xl md:text-2xl font-bold",
-                alertasCriticos > 0 ? colorClasses.red.text : colorClasses.green.text
-              )}>
+              <div className={cn("text-base sm:text-xl md:text-2xl font-bold", alertasCriticos > 0 ? colorClasses.red.text : colorClasses.green.text)}>
                 {alertasCriticos > 0 ? alertasCriticos : '✓'}
               </div>
               <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">
