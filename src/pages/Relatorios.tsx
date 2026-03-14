@@ -232,7 +232,7 @@ export default function Relatorios() {
                 Exportar PDF
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleExport('excel')} className="cursor-pointer gap-2">
-                <FileSpreadsheet className="h-4 w-4 text-green-600" />
+                <FileSpreadsheet className="h-4 w-4 text-success" />
                 Exportar Excel
               </DropdownMenuItem>
             </DropdownMenuContent>
