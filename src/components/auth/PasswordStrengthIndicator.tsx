@@ -122,13 +122,13 @@ export function PasswordStrengthIndicator({ password, onStrengthChange }: Passwo
     <div className="space-y-3 mt-2">
       {/* Leaked password warning */}
       {leakCheck.leaked && (
-        <div className="flex items-start gap-2 p-3 rounded-lg border border-red-500/50 bg-red-500/10">
-          <ShieldAlert className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+        <div className="flex items-start gap-2 p-3 rounded-lg border border-destructive/50 bg-destructive/10">
+          <ShieldAlert className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
           <div className="text-sm">
-            <p className="font-medium text-red-600 dark:text-red-400">
+            <p className="font-medium text-destructive">
               Senha comprometida!
             </p>
-            <p className="text-red-500/80 text-xs">
+            <p className="text-destructive/80 text-xs">
               Esta senha foi encontrada em {leakCheck.count.toLocaleString()} vazamentos de dados. 
               Escolha uma senha diferente.
             </p>
