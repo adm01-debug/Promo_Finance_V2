@@ -103,7 +103,7 @@ export function FormGroup({ title, description, children, className }: FormGroup
       {(title || description) && (
         <div className="mb-4">
           {title && (
-            <legend className="text-lg font-medium text-gray-900 dark:text-gray-100">
+            <legend className="text-lg font-medium text-foreground">
               {title}
             </legend>
           )}
