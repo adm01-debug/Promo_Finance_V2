@@ -398,17 +398,17 @@ export function DashboardMetricasTributarias() {
               </CardContent>
             </Card>
 
-            <Card className="border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-950/20">
+            <Card className="border-destructive/20 bg-destructive/5">
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3">
-                  <TrendingDown className="h-8 w-8 text-red-500" />
+                  <TrendingDown className="h-8 w-8 text-destructive" />
                   <div>
                     <p className="text-sm text-muted-foreground">Total Tributos</p>
                     <p className="text-xl font-bold">
                       {formatCurrency(metricas.totalTributosNovos + metricas.totalTributosResiduais)}
                     </p>
                     {metricas.variacaoTributos !== 0 && (
-                      <div className={`flex items-center text-xs ${metricas.variacaoTributos > 0 ? 'text-red-500' : 'text-green-500'}`}>
+                      <div className={`flex items-center text-xs ${metricas.variacaoTributos > 0 ? 'text-destructive' : 'text-success'}`}>
                         {metricas.variacaoTributos > 0 ? (
                           <ArrowUpRight className="h-3 w-3" />
                         ) : (
