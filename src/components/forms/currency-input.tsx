@@ -141,7 +141,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
           placeholder={placeholder}
           className={cn(
             'text-right',
-            error && 'border-red-500 focus:border-red-500 focus:ring-red-500',
+            error && 'border-destructive focus:border-destructive focus:ring-destructive',
             className
           )}
           {...props}
