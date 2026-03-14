@@ -196,7 +196,7 @@ export function CalendarHeatMap({
                     fill={getColor(day.value)}
                     className={cn(
                       'transition-colors',
-                      onDayClick && 'cursor-pointer hover:stroke-gray-400 hover:stroke-1'
+                      onDayClick && 'cursor-pointer hover:stroke-muted-foreground hover:stroke-1'
                     )}
                     onClick={() => onDayClick?.(dateStr, day.value)}
                   >
