@@ -202,10 +202,10 @@ function FluxoCaixaView({ data }: { data: Record<string, unknown> }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-red-500/5 border-red-500/20">
+        <Card className="bg-destructive/5 border-destructive/20">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center gap-2">
-              <TrendingDown className="h-4 w-4 text-red-500" />
+              <TrendingDown className="h-4 w-4 text-destructive" />
               Despesas
             </CardTitle>
           </CardHeader>
