@@ -46,7 +46,7 @@ export const toast = {
   error(message: string, options?: ToastOptions) {
     return sonnerToast.error(message, {
       ...options,
-      icon: <XCircle className="h-5 w-5 text-red-500" />,
+      icon: <XCircle className="h-5 w-5 text-destructive" />,
       duration: options?.duration || 5000, // Errors stay longer
     });
   },
