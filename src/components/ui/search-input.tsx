@@ -109,7 +109,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
         {/* Search icon */}
         <div
           className={cn(
-            'absolute top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none',
+            'absolute top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none',
             classes.icon
           )}
         >
