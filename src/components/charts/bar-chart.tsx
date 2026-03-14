@@ -160,7 +160,7 @@ export function BarChart({
                     y2={height - padding.bottom}
                     stroke={gridColor}
                     strokeDasharray="2,2"
-                    className="dark:stroke-gray-700"
+                    className="dark:stroke-border"
                   />
                   <text
                     x={line.position}
