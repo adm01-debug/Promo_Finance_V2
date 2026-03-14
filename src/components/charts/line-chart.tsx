@@ -137,7 +137,7 @@ export function LineChart({
                 y={line.y}
                 textAnchor="end"
                 dominantBaseline="middle"
-                className="fill-gray-500 dark:fill-gray-400 text-xs"
+                className="fill-muted-foreground text-xs"
               >
                 {line.label}
               </text>
