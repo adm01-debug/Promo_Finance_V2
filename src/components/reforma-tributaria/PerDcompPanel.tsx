@@ -359,7 +359,7 @@ export function PerDcompPanel() {
 
           {/* Créditos Disponíveis */}
           {creditosDisponiveis.length > 0 && (
-            <Card className="border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20">
+            <Card className="border-success/20 bg-success/5">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Créditos Disponíveis para Compensação</CardTitle>
               </CardHeader>
