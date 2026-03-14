@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { contasReceberService, ContaReceberFilters, ContaReceberInput } from '@/services/contas-receber.service';
-import { queryKeys } from '@/lib/query-client';
+import { queryKeys } from '@/lib/queryClient';
 import { toast } from 'sonner';
 
 // List contas a receber

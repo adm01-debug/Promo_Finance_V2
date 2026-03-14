@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fornecedoresService, FornecedorFilters, FornecedorInput } from '@/services/fornecedores.service';
-import { queryKeys } from '@/lib/query-client';
+import { queryKeys } from '@/lib/queryClient';
 import { toast } from 'sonner';
 
 // List fornecedores
