@@ -147,11 +147,11 @@ export function PasswordStrengthIndicator({ password, onStrengthChange }: Passwo
           </span>
           <span className={cn(
             'font-medium',
-            leakCheck.leaked && 'text-red-500',
-            !leakCheck.leaked && analysis.level === 'weak' && 'text-red-500',
-            !leakCheck.leaked && analysis.level === 'fair' && 'text-yellow-500',
-            !leakCheck.leaked && analysis.level === 'good' && 'text-blue-500',
-            !leakCheck.leaked && analysis.level === 'strong' && 'text-green-500'
+            leakCheck.leaked && 'text-destructive',
+            !leakCheck.leaked && analysis.level === 'weak' && 'text-destructive',
+            !leakCheck.leaked && analysis.level === 'fair' && 'text-warning',
+            !leakCheck.leaked && analysis.level === 'good' && 'text-primary',
+            !leakCheck.leaked && analysis.level === 'strong' && 'text-success'
           )}>
             {leakCheck.leaked ? 'Comprometida' : analysis.label}
           </span>
