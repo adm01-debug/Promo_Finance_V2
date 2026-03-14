@@ -433,7 +433,7 @@ export function InvoiceGenerator({
 
             {/* Tax */}
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600 dark:text-gray-400 flex-1">Impostos</span>
+              <span className="text-sm text-muted-foreground flex-1">Impostos</span>
               <select
                 value={invoice.taxType || 'percentage'}
                 onChange={(e) => setInvoice(prev => ({
