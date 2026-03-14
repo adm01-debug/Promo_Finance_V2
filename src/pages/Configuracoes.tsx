@@ -489,8 +489,8 @@ export default function Configuracoes() {
               <CardContent className="space-y-6">
                 <motion.div variants={itemVariants} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                      <Mail className="h-5 w-5 text-blue-500" />
+                    <div className="p-2 rounded-lg bg-secondary/10">
+                      <Mail className="h-5 w-5 text-secondary" />
                     </div>
                     <div>
                       <p className="font-medium">Notificações por E-mail</p>
