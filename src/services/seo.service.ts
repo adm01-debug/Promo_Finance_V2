@@ -278,7 +278,7 @@ export const PAGE_META = {
   },
   login: {
     title: 'Entrar',
-    description: 'Faça login no Finance Hub para gerenciar suas finanças.',
+    description: 'Faça login no Promo Finance para gerenciar suas finanças.',
     robots: 'noindex, nofollow',
   },
   register: {
