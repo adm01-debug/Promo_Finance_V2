@@ -273,8 +273,8 @@ export default function Bitrix24() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30">
-                  <DollarSign className="h-5 w-5 text-orange-500" />
+                <div className="p-2 rounded-lg bg-streak/10">
+                  <DollarSign className="h-5 w-5 text-streak" />
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Deals</p>
