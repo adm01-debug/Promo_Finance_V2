@@ -101,9 +101,9 @@ export function ModuloIRPJCSLL() {
     const badges: Record<string, JSX.Element> = {
       rascunho: <Badge variant="outline">Rascunho</Badge>,
       calculado: <Badge variant="secondary">Calculado</Badge>,
-      revisado: <Badge className="bg-blue-500">Revisado</Badge>,
-      transmitido: <Badge className="bg-green-500">Transmitido</Badge>,
-      retificado: <Badge className="bg-orange-500">Retificado</Badge>,
+      revisado: <Badge className="bg-primary">Revisado</Badge>,
+      transmitido: <Badge className="bg-success">Transmitido</Badge>,
+      retificado: <Badge className="bg-warning text-warning-foreground">Retificado</Badge>,
     };
     return badges[status] || <Badge variant="outline">{status}</Badge>;
   };
