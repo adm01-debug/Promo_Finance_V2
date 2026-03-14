@@ -334,7 +334,7 @@ function ContasReceberView({ data }: { data: Record<string, unknown> }) {
         </Card>
         <Card>
           <CardContent className="pt-4 text-center">
-            <p className="text-2xl font-bold text-blue-600">{formatCurrency(resumo?.valor_total || 0)}</p>
+            <p className="text-2xl font-bold text-primary">{formatCurrency(resumo?.valor_total || 0)}</p>
             <p className="text-sm text-muted-foreground">Valor Total</p>
           </CardContent>
         </Card>
