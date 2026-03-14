@@ -459,7 +459,7 @@ async function criarContaReceber(
     .select('id')
     .eq('ativo', true)
     .limit(1)
-    .single();
+    .maybeSingle();
 
   if (!empresa) {
     return { success: false, message: 'Nenhuma empresa ativa encontrada.' };
