@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { contasPagarService, ContaPagarFilters, ContaPagarInput } from '@/services/contas-pagar.service';
-import { queryKeys } from '@/lib/query-client';
+import { queryKeys } from '@/lib/queryClient';
 import { toast } from 'sonner';
 
 // List contas a pagar

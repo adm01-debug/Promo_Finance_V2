@@ -86,7 +86,7 @@ const handler = async (req: Request): Promise<Response> => {
               Este é um email automático de segurança. Por favor, não responda.
             </p>
             <p style="color: #9ca3af; font-size: 11px; margin: 8px 0 0 0;">
-              Promo Brindes - Sistema de Gestão Financeira
+              Promo Finance - Sistema de Gestão Financeira
             </p>
           </div>
         </div>

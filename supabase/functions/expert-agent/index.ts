@@ -5,7 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const SYSTEM_PROMPT = `Você é o EXPERT, um assistente de IA especializado em finanças corporativas para a empresa Promo Brindes.
+const SYSTEM_PROMPT = `Você é o EXPERT, um assistente de IA especializado em finanças corporativas para a empresa Promo Finance.
 
 ## Suas Responsabilidades:
 1. **Assessoria em Decisões Financeiras**: Ajude os colaboradores a tomar decisões mais assertivas sobre contas a pagar, contas a receber, fluxo de caixa e investimentos.

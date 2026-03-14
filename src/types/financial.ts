@@ -1,5 +1,5 @@
 // ============================================
-// TIPOS DO SISTEMA FINANCEIRO - PROMO BRINDES
+// TIPOS DO SISTEMA FINANCEIRO - PROMO FINANCE
 // ============================================
 
 // Enums

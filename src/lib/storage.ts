@@ -35,7 +35,7 @@ function simpleDecrypt(data: string, key: string): string {
 
 // Get encryption key (in production, this should be more secure)
 function getEncryptionKey(): string {
-  return import.meta.env.VITE_STORAGE_KEY || 'finance-hub-default-key';
+  return import.meta.env.VITE_STORAGE_KEY || 'promo-finance-default-key';
 }
 
 // Storage class

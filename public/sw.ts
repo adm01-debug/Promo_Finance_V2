@@ -2,9 +2,9 @@
 
 declare const self: ServiceWorkerGlobalScope;
 
-const CACHE_NAME = 'finance-hub-v1';
-const STATIC_CACHE = 'finance-hub-static-v1';
-const DYNAMIC_CACHE = 'finance-hub-dynamic-v1';
+const CACHE_NAME = 'promo-finance-v1';
+const STATIC_CACHE = 'promo-finance-static-v1';
+const DYNAMIC_CACHE = 'promo-finance-dynamic-v1';
 
 // Assets to precache
 const PRECACHE_ASSETS = [

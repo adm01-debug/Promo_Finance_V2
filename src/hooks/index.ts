@@ -1,5 +1,5 @@
 // ============================================
-// FINANCE-HUB HOOKS INDEX
+// PROMO FINANCE HOOKS INDEX
 // Exportação centralizada de todos os hooks
 // ============================================
 

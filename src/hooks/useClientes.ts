@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { clientesService, ClienteFilters, ClienteInput } from '@/services/clientes.service';
-import { queryKeys } from '@/lib/query-client';
+import { queryKeys } from '@/lib/queryClient';
 import { toast } from 'sonner';
 
 // List clientes

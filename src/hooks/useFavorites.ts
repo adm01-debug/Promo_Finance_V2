@@ -21,7 +21,7 @@ interface UseFavoritesOptions {
  */
 export function useFavorites(options: UseFavoritesOptions = {}) {
   const {
-    storageKey = 'finance-hub-favorites',
+    storageKey = 'promo-finance-favorites',
     maxItems = 50,
     onAdd,
     onRemove,
@@ -149,7 +149,7 @@ export function useRecentItems(options: {
   storageKey?: string;
   maxItems?: number;
 } = {}) {
-  const { storageKey = 'finance-hub-recent', maxItems = 10 } = options;
+  const { storageKey = 'promo-finance-recent', maxItems = 10 } = options;
 
   const [recentItems, setRecentItems] = useState<FavoriteItem[]>(() => {
     if (typeof window === 'undefined') return [];
@@ -218,7 +218,7 @@ export function usePinnedItems(options: {
   storageKey?: string;
   maxPins?: number;
 } = {}) {
-  const { storageKey = 'finance-hub-pinned', maxPins = 10 } = options;
+  const { storageKey = 'promo-finance-pinned', maxPins = 10 } = options;
 
   const [pinnedItems, setPinnedItems] = useState<FavoriteItem[]>(() => {
     if (typeof window === 'undefined') return [];

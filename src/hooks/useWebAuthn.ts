@@ -128,7 +128,7 @@ export function useWebAuthn() {
       const publicKeyCredentialCreationOptions: PublicKeyCredentialCreationOptions = {
         challenge: base64UrlDecode(challenge),
         rp: {
-          name: 'Promo Brindes',
+          name: 'Promo Finance',
           id: window.location.hostname,
         },
         user: {
