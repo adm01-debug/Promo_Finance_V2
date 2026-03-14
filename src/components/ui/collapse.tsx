@@ -382,7 +382,7 @@ export function ShowMore({
       >
         {children}
         {!isExpanded && needsExpansion && (
-          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white dark:from-gray-800 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-card to-transparent" />
         )}
       </div>
       {needsExpansion && (

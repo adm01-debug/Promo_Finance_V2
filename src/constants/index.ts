@@ -40,11 +40,11 @@ export const CONTA_STATUS_LABELS: Record<string, string> = {
 };
 
 export const CONTA_STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  pendente: { bg: 'bg-yellow-100 dark:bg-yellow-900/30', text: 'text-yellow-800 dark:text-yellow-200' },
-  paga: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-800 dark:text-green-200' },
-  vencida: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-800 dark:text-red-200' },
-  cancelada: { bg: 'bg-gray-100 dark:bg-gray-700', text: 'text-gray-800 dark:text-gray-300' },
-  parcial: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-800 dark:text-blue-200' },
+  pendente: { bg: 'bg-warning/10', text: 'text-warning' },
+  paga: { bg: 'bg-success/10', text: 'text-success' },
+  vencida: { bg: 'bg-destructive/10', text: 'text-destructive' },
+  cancelada: { bg: 'bg-muted', text: 'text-muted-foreground' },
+  parcial: { bg: 'bg-primary/10', text: 'text-primary' },
 };
 
 // Categories

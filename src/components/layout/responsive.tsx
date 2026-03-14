@@ -322,31 +322,14 @@ const shadowSizes: Record<string, string> = {
 };
 
 const bgColors: Record<string, string> = {
-  white: 'bg-white dark:bg-gray-800',
-  gray: 'bg-gray-100 dark:bg-gray-900',
-  primary: 'bg-primary-50 dark:bg-primary-900/20',
+  white: 'bg-card',
+  gray: 'bg-muted',
+  primary: 'bg-primary/5',
   transparent: 'bg-transparent',
 };
-
-export function Box({
-  children,
-  padding = 'md',
-  margin = 'none',
-  rounded = 'lg',
-  shadow = 'none',
-  border = false,
-  bg = 'white',
-  className,
-}: BoxProps) {
-  return (
-    <div
-      className={cn(
-        paddingSizes[padding],
-        marginSizes[margin],
-        roundedSizes[rounded],
-        shadowSizes[shadow],
+...
         bgColors[bg],
-        border && 'border border-gray-200 dark:border-gray-700',
+        border && 'border border-border',
         className
       )}
     >

@@ -193,7 +193,7 @@ export function CategoryPieChartCompact({
     return (
       <div
         className={cn(
-          'flex items-center justify-center text-gray-400 text-sm',
+          'flex items-center justify-center text-muted-foreground text-sm',
           className
         )}
         style={{ width: size, height: size }}

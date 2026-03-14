@@ -127,17 +127,17 @@ export function getEstatisticas() {
 
 // Cores por tipo de evento
 export const eventTypeConfig: Record<EventoTipo, { label: string; color: string; bgColor: string }> = {
-  'ENVIO_LOTE': { label: 'Envio de Lote', color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
-  'RETORNO_LOTE': { label: 'Retorno de Lote', color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
-  'AUTORIZACAO': { label: 'Autorização', color: 'text-emerald-500', bgColor: 'bg-emerald-500/10' },
-  'REJEICAO': { label: 'Rejeição', color: 'text-red-500', bgColor: 'bg-red-500/10' },
-  'CONSULTA': { label: 'Consulta', color: 'text-purple-500', bgColor: 'bg-purple-500/10' },
-  'CANCELAMENTO': { label: 'Cancelamento', color: 'text-orange-500', bgColor: 'bg-orange-500/10' },
-  'INUTILIZACAO': { label: 'Inutilização', color: 'text-gray-500', bgColor: 'bg-gray-500/10' },
-  'CONTINGENCIA': { label: 'Contingência', color: 'text-amber-500', bgColor: 'bg-amber-500/10' },
-  'ERRO_CONEXAO': { label: 'Erro de Conexão', color: 'text-red-500', bgColor: 'bg-red-500/10' },
-  'TIMEOUT': { label: 'Timeout', color: 'text-red-500', bgColor: 'bg-red-500/10' },
-  'VALIDACAO': { label: 'Validação', color: 'text-cyan-500', bgColor: 'bg-cyan-500/10' }
+  'ENVIO_LOTE': { label: 'Envio de Lote', color: 'text-primary', bgColor: 'bg-primary/10' },
+  'RETORNO_LOTE': { label: 'Retorno de Lote', color: 'text-primary', bgColor: 'bg-primary/10' },
+  'AUTORIZACAO': { label: 'Autorização', color: 'text-success', bgColor: 'bg-success/10' },
+  'REJEICAO': { label: 'Rejeição', color: 'text-destructive', bgColor: 'bg-destructive/10' },
+  'CONSULTA': { label: 'Consulta', color: 'text-accent-foreground', bgColor: 'bg-accent/10' },
+  'CANCELAMENTO': { label: 'Cancelamento', color: 'text-warning', bgColor: 'bg-warning/10' },
+  'INUTILIZACAO': { label: 'Inutilização', color: 'text-muted-foreground', bgColor: 'bg-muted/50' },
+  'CONTINGENCIA': { label: 'Contingência', color: 'text-warning', bgColor: 'bg-warning/10' },
+  'ERRO_CONEXAO': { label: 'Erro de Conexão', color: 'text-destructive', bgColor: 'bg-destructive/10' },
+  'TIMEOUT': { label: 'Timeout', color: 'text-destructive', bgColor: 'bg-destructive/10' },
+  'VALIDACAO': { label: 'Validação', color: 'text-primary', bgColor: 'bg-primary/10' }
 };
 
 // Inicializa com alguns eventos de exemplo

@@ -69,14 +69,14 @@ function BarChart({ data, format, showValues, colors = defaultColors }: {
         return (
           <div key={item.label} className="space-y-1">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-700 dark:text-gray-300">{item.label}</span>
+              <span className="text-muted-foreground">{item.label}</span>
               {showValues && (
-                <span className="font-medium text-gray-900 dark:text-white">
+                <span className="font-medium text-foreground">
                   {formatChartValue(item.value, format)}
                 </span>
               )}
             </div>
-            <div className="w-full h-4 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+            <div className="w-full h-4 bg-muted rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-500"
                 style={{
@@ -167,8 +167,8 @@ function DonutChart({ data, format, showValues, colors = defaultColors, isDonut 
         {isDonut && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
-              <p className="text-sm font-bold text-gray-900 dark:text-white">
+              <p className="text-xs text-muted-foreground">Total</p>
+              <p className="text-sm font-bold text-foreground">
                 {formatChartValue(total, format)}
               </p>
             </div>
@@ -184,15 +184,15 @@ function DonutChart({ data, format, showValues, colors = defaultColors, isDonut 
               className="w-3 h-3 rounded-full flex-shrink-0"
               style={{ backgroundColor: segment.color }}
             />
-            <span className="text-sm text-gray-700 dark:text-gray-300 flex-1 truncate">
+            <span className="text-sm text-muted-foreground flex-1 truncate">
               {segment.label}
             </span>
             {showValues && (
-              <span className="text-sm font-medium text-gray-900 dark:text-white">
+              <span className="text-sm font-medium text-foreground">
                 {formatChartValue(segment.value, format)}
               </span>
             )}
-            <span className="text-xs text-gray-500 dark:text-gray-400">
+            <span className="text-xs text-muted-foreground/70">
               {segment.percentage.toFixed(1)}%
             </span>
           </div>
@@ -218,7 +218,7 @@ function ProgressChart({ data, format, showValues, colors = defaultColors }: {
         return (
           <div key={item.label} className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-700 dark:text-gray-300">{item.label}</span>
+              <span className="text-muted-foreground">{item.label}</span>
               {showValues && (
                 <span className="font-medium" style={{ color }}>
                   {format === 'percent' ? `${percentage.toFixed(0)}%` : formatChartValue(item.value, format)}
@@ -233,7 +233,7 @@ function ProgressChart({ data, format, showValues, colors = defaultColors }: {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="3"
-                  className="text-gray-200 dark:text-gray-700"
+                  className="text-muted"
                 />
                 {/* Progress circle */}
                 <path
@@ -247,7 +247,7 @@ function ProgressChart({ data, format, showValues, colors = defaultColors }: {
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-sm font-bold text-gray-900 dark:text-white">
+                <span className="text-sm font-bold text-foreground">
                   {percentage.toFixed(0)}%
                 </span>
               </div>
@@ -296,7 +296,7 @@ function LineChart({ data, format, showValues, colors = defaultColors, height = 
             y2={y}
             stroke="currentColor"
             strokeWidth="0.2"
-            className="text-gray-200 dark:text-gray-700"
+            className="text-muted"
           />
         ))}
         
@@ -334,7 +334,7 @@ function LineChart({ data, format, showValues, colors = defaultColors, height = 
       </svg>
       
       {/* X-axis labels */}
-      <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+      <div className="flex justify-between text-xs text-muted-foreground">
         {data.map((item, index) => (
           <span key={index} className="truncate max-w-[60px]">{item.label}</span>
         ))}
@@ -375,16 +375,16 @@ export function ChartContainer({ config, className }: ChartContainerProps) {
   };
 
   return (
-    <div className={cn('bg-white dark:bg-gray-900 rounded-lg p-4', className)}>
+    <div className={cn('bg-card rounded-lg p-4', className)}>
       {(title || subtitle) && (
         <div className="mb-4">
           {title && (
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-lg font-semibold text-foreground">
               {title}
             </h3>
           )}
           {subtitle && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-muted-foreground">
               {subtitle}
             </p>
           )}

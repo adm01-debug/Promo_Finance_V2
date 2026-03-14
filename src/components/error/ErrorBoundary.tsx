@@ -131,7 +131,7 @@ Component Stack: ${this.state.errorInfo?.componentStack || 'N/A'}
                       className="h-8 px-2"
                     >
                       {this.state.copied ? (
-                        <Check className="h-4 w-4 text-emerald-500" />
+                        <Check className="h-4 w-4 text-success" />
                       ) : (
                         <Copy className="h-4 w-4" />
                       )}

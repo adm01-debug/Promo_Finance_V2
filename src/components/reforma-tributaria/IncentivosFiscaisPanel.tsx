@@ -387,7 +387,7 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
                         </TableCell>
                         <TableCell>
                           {incentivo.ativo ? (
-                            <Badge className="bg-green-500">
+                            <Badge className="bg-success text-success-foreground">
                               <CheckCircle className="h-3 w-3 mr-1" />
                               Ativo
                             </Badge>

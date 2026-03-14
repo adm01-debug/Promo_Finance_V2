@@ -258,7 +258,7 @@ export function DashboardReformaTributaria() {
                 <Card key={i} className="hover:shadow-md transition-all">
                   <CardContent className="pt-6">
                     <div className="flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
+                      <CheckCircle2 className="h-5 w-5 text-success mt-0.5" />
                       <div>
                         <p className="font-medium text-sm">{item.label}</p>
                         <p className="text-xs text-muted-foreground">{item.desc}</p>
