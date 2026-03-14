@@ -560,8 +560,8 @@ export default function Relatorios() {
                       contentStyle={{ backgroundColor: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
                     />
                     <Legend />
-                    <Bar yAxisId="right" dataKey="valor" name="Valor em Atraso" fill="hsl(0, 78%, 55%)" radius={[4, 4, 0, 0]} />
-                    <Line yAxisId="left" type="monotone" dataKey="taxa" name="Taxa (%)" stroke="hsl(42, 95%, 48%)" strokeWidth={3} dot={{ r: 4 }} />
+                    <Bar yAxisId="right" dataKey="valor" name="Valor em Atraso" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
+                    <Line yAxisId="left" type="monotone" dataKey="taxa" name="Taxa (%)" stroke="hsl(var(--warning))" strokeWidth={3} dot={{ r: 4 }} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </CardContent>
