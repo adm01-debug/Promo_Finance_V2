@@ -3,7 +3,7 @@
 ## Início Rápido
 
 ### 1. Acesse o App
-https://app.finance-hub.com
+https://app.promo-finance.com
 
 ### 2. Crie sua Conta
 - Email

@@ -1,4 +1,4 @@
-# ♿ Guia de Acessibilidade - Finance-Hub
+# ♿ Guia de Acessibilidade - Promo Finance
 ## WCAG 2.1 Nível AA Compliance
 
 ## Princípios WCAG

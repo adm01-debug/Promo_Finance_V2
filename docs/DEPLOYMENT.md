@@ -1,4 +1,4 @@
-# 🚀 Guia de Deploy - Finance-Hub
+# 🚀 Guia de Deploy - Promo Finance
 
 ## Ambientes
 

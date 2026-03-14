@@ -1,4 +1,4 @@
-# ⚡ Guia de Performance - Finance-Hub
+# ⚡ Guia de Performance - Promo Finance
 
 ## Objetivos
 

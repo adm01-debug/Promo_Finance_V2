@@ -33,7 +33,7 @@ cd promo-finance
 ### 3. Configure o Upstream
 
 ```bash
-git remote add upstream https://github.com/original/finance-hub.git
+git remote add upstream https://github.com/original/promo-finance.git
 ```
 
 ### 4. Crie uma Branch
