@@ -41,5 +41,5 @@ Dashboard mostra visão geral financeira
 
 ## Suporte
 
-📧 suporte@finance-hub.com
+📧 suporte@promo-finance.com
 💬 Chat (canto inferior direito)

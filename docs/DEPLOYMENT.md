@@ -110,7 +110,7 @@ git push origin main
 
 ### Health Check
 ```bash
-curl https://finance-hub.app/health
+curl https://promo-finance.app/health
 ```
 
 Expected: `200 OK`
