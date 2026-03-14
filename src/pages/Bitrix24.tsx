@@ -381,7 +381,7 @@ export default function Bitrix24() {
                         <TableCell>
                           <Badge 
                             variant={deal.status === 'pago' ? 'default' : 'secondary'}
-                            className={deal.status === 'pago' ? 'bg-green-500' : ''}
+                            className={deal.status === 'pago' ? 'bg-success' : ''}
                           >
                             {deal.status}
                           </Badge>
