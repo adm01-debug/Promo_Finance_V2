@@ -309,9 +309,9 @@ export function DashboardMetricasTributarias() {
                     <p className="text-2xl font-bold">{criticos}</p>
                   </div>
                   {criticos > 0 ? (
-                    <AlertTriangle className="h-5 w-5 text-red-500" />
+                    <AlertTriangle className="h-5 w-5 text-destructive" />
                   ) : (
-                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    <CheckCircle2 className="h-5 w-5 text-success" />
                   )}
                 </div>
                 <div className="mt-3">
