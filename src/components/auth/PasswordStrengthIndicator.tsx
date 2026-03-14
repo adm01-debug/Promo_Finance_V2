@@ -160,7 +160,7 @@ export function PasswordStrengthIndicator({ password, onStrengthChange }: Passwo
           <div
             className={cn(
               'h-full transition-all duration-300 ease-out rounded-full',
-              leakCheck.leaked ? 'bg-red-500' : analysis.color
+              leakCheck.leaked ? 'bg-destructive' : analysis.color
             )}
             style={{ width: `${leakCheck.leaked ? 100 : analysis.strength}%` }}
           />
