@@ -175,7 +175,7 @@ export function ConfirmModal({
         </>
       }
     >
-      <p className="text-gray-600 dark:text-gray-300">{message}</p>
+      <p className="text-muted-foreground">{message}</p>
     </Modal>
   );
 }

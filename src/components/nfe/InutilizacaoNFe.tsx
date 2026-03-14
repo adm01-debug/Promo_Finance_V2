@@ -375,12 +375,12 @@ export function InutilizacaoNFe() {
       </Card>
 
       {/* Informações Importantes */}
-      <Card className="border-amber-500/20 bg-amber-500/5">
+      <Card className="border-warning/20 bg-warning/5">
         <CardContent className="p-4">
           <div className="flex gap-3">
-            <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+            <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
             <div className="space-y-2 text-sm">
-              <p className="font-medium text-amber-500">Informações Importantes</p>
+              <p className="font-medium text-warning">Informações Importantes</p>
               <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                 <li>A inutilização é <strong>irreversível</strong> e deve ser usada apenas para números que não serão utilizados.</li>
                 <li>Utilize quando houver quebra de sequência na numeração das NF-e.</li>
