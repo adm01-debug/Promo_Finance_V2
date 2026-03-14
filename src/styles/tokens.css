@@ -1,4 +1,4 @@
-@layer base {
+
   :root {
     /* Base Colors - Clean White */
     --background: 0 0% 98%;
@@ -315,5 +315,4 @@
     --sidebar-accent-foreground: 220 22% 95%;
     --sidebar-border: 228 22% 12%;
     --sidebar-ring: 24 95% 54%;
-  }
 }
