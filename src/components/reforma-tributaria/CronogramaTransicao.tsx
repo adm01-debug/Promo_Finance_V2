@@ -271,7 +271,7 @@ export function CronogramaTransicao() {
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
-              <AlertCircle className="h-5 w-5 text-orange-500 mt-0.5" />
+              <AlertCircle className="h-5 w-5 text-warning mt-0.5" />
               <div>
                 <p className="font-medium">Período de Adaptação</p>
                 <p className="text-sm text-muted-foreground">
