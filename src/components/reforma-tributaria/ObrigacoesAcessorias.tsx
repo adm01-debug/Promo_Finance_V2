@@ -214,35 +214,35 @@ export function ObrigacoesAcessorias() {
           </CardContent>
         </Card>
 
-        <Card className="border-orange-200 bg-orange-50/50 dark:bg-orange-950/20">
+        <Card className="border-warning/20 bg-warning/5">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Urgentes</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-orange-500" />
+            <AlertTriangle className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{stats.emAndamento}</div>
+            <div className="text-2xl font-bold text-warning">{stats.emAndamento}</div>
             <p className="text-xs text-muted-foreground">Menos de 5 dias</p>
           </CardContent>
         </Card>
 
-        <Card className="border-red-200 bg-red-50/50 dark:bg-red-950/20">
+        <Card className="border-destructive/20 bg-destructive/5">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Atrasadas</CardTitle>
-            <XCircle className="h-4 w-4 text-red-500" />
+            <XCircle className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{stats.atrasadas}</div>
+            <div className="text-2xl font-bold text-destructive">{stats.atrasadas}</div>
             <p className="text-xs text-muted-foreground">Requer ação imediata</p>
           </CardContent>
         </Card>
 
-        <Card className="border-green-200 bg-green-50/50 dark:bg-green-950/20">
+        <Card className="border-success/20 bg-success/5">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Transmitidas</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-green-500" />
+            <CheckCircle2 className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{stats.transmitidas}</div>
+            <div className="text-2xl font-bold text-success">{stats.transmitidas}</div>
             <p className="text-xs text-muted-foreground">{stats.percentualConcluido.toFixed(0)}% concluído</p>
           </CardContent>
         </Card>
