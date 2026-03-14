@@ -122,11 +122,11 @@ export function ObrigacoesAcessorias() {
   const getStatusBadge = (status: StatusObrigacao, diasRestantes: number) => {
     switch (status) {
       case 'transmitida':
-        return <Badge className="bg-green-500"><CheckCircle2 className="h-3 w-3 mr-1" />Transmitida</Badge>;
+        return <Badge className="bg-success"><CheckCircle2 className="h-3 w-3 mr-1" />Transmitida</Badge>;
       case 'atrasada':
         return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" />Atrasada</Badge>;
       case 'em_andamento':
-        return <Badge className="bg-orange-500"><Clock className="h-3 w-3 mr-1" />{diasRestantes}d restantes</Badge>;
+        return <Badge className="bg-warning text-warning-foreground"><Clock className="h-3 w-3 mr-1" />{diasRestantes}d restantes</Badge>;
       case 'pendente':
         return <Badge variant="outline"><Clock className="h-3 w-3 mr-1" />Pendente</Badge>;
       default:
