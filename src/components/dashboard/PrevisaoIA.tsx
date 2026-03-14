@@ -666,7 +666,7 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
                           transition={{ delay: i * 0.05 }}
                           className="flex items-start gap-2 text-sm"
                         >
-                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
                           <span>{rec}</span>
                         </motion.li>
                       ))}
