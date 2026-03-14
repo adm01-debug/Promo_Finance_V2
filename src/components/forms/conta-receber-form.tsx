@@ -221,7 +221,7 @@ export function ContaReceberForm({
 
       {/* Pagamento */}
       <div className="space-y-4">
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+        <h3 className="text-lg font-medium text-foreground">
           Pagamento
         </h3>
 
