@@ -71,8 +71,8 @@ export default function ServerError() {
         </div>
 
         {/* Report */}
-        <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
-          <p className="text-sm text-gray-500 dark:text-gray-500 mb-4">
+        <div className="mt-8 pt-8 border-t border-border">
+          <p className="text-sm text-muted-foreground mb-4">
             O problema persiste?
           </p>
           <Button
