@@ -508,8 +508,8 @@ export default function BI() {
                     {formatCurrency(kpis.lucroMes)}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                  <Target className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 rounded-xl bg-secondary/20 flex items-center justify-center">
+                  <Target className="w-6 h-6 text-secondary" />
                 </div>
               </div>
               <div className="mt-2">

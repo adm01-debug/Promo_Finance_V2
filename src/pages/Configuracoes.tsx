@@ -706,8 +706,8 @@ export default function Configuracoes() {
                   </div>
                   <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
-                        <CreditCard className="h-4 w-4 text-purple-500" />
+                      <div className="p-2 rounded-lg bg-accent/10">
+                        <CreditCard className="h-4 w-4 text-accent" />
                       </div>
                       <div>
                         <p className="font-medium text-sm">Open Banking</p>

@@ -1282,8 +1282,8 @@ export default function NotasFiscais() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-full bg-blue-500/10">
-                    <DollarSign className="h-6 w-6 text-blue-500" />
+                  <div className="p-3 rounded-full bg-secondary/10">
+                    <DollarSign className="h-6 w-6 text-secondary" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Ticket Médio</p>
