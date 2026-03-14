@@ -40,7 +40,7 @@ VITE_SENTRY_DSN
 3. **Deploy manual**
 ```bash
 npm run build:prod
-npx wrangler pages deploy dist --project-name=finance-hub
+npx wrangler pages deploy dist --project-name=promo-finance
 ```
 
 ### Deploy Automático
