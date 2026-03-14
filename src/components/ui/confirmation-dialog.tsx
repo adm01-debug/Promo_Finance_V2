@@ -57,32 +57,32 @@ const typeConfig: Record<
 > = {
   danger: {
     icon: Trash2,
-    iconBg: 'bg-red-100 dark:bg-red-900/30',
-    iconColor: 'text-red-600 dark:text-red-400',
+    iconBg: 'bg-destructive/10',
+    iconColor: 'text-destructive',
     confirmVariant: 'destructive',
   },
   warning: {
     icon: AlertTriangle,
-    iconBg: 'bg-yellow-100 dark:bg-yellow-900/30',
-    iconColor: 'text-yellow-600 dark:text-yellow-400',
+    iconBg: 'bg-warning/10',
+    iconColor: 'text-warning',
     confirmVariant: 'warning',
   },
   success: {
     icon: CheckCircle,
-    iconBg: 'bg-green-100 dark:bg-green-900/30',
-    iconColor: 'text-green-600 dark:text-green-400',
+    iconBg: 'bg-success/10',
+    iconColor: 'text-success',
     confirmVariant: 'success',
   },
   info: {
     icon: Info,
-    iconBg: 'bg-blue-100 dark:bg-blue-900/30',
-    iconColor: 'text-blue-600 dark:text-blue-400',
+    iconBg: 'bg-primary/10',
+    iconColor: 'text-primary',
     confirmVariant: 'default',
   },
   question: {
     icon: HelpCircle,
-    iconBg: 'bg-purple-100 dark:bg-purple-900/30',
-    iconColor: 'text-purple-600 dark:text-purple-400',
+    iconBg: 'bg-accent',
+    iconColor: 'text-accent-foreground',
     confirmVariant: 'default',
   },
 };
@@ -137,7 +137,7 @@ export function ConfirmationDialog({
       <div
         className={cn(
           'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50',
-          'w-full max-w-md p-6 bg-white dark:bg-gray-800 rounded-lg shadow-xl',
+          'w-full max-w-md p-6 bg-card rounded-lg shadow-xl',
           className
         )}
         role="dialog"
@@ -150,8 +150,8 @@ export function ConfirmationDialog({
           onClick={onClose}
           disabled={isProcessing}
           className={cn(
-            'absolute top-4 right-4 text-gray-400 hover:text-gray-600',
-            'dark:hover:text-gray-300 transition-colors',
+            'absolute top-4 right-4 text-muted-foreground hover:text-foreground',
+            'transition-colors',
             isProcessing && 'opacity-50 cursor-not-allowed'
           )}
           aria-label="Fechar"
@@ -175,13 +175,13 @@ export function ConfirmationDialog({
         <div className="text-center">
           <h3
             id="confirmation-title"
-            className="text-lg font-semibold text-gray-900 dark:text-white mb-2"
+            className="text-lg font-semibold text-foreground mb-2"
           >
             {title}
           </h3>
           <div
             id="confirmation-message"
-            className="text-sm text-gray-500 dark:text-gray-400"
+            className="text-sm text-muted-foreground"
           >
             {message}
           </div>

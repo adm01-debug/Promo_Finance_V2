@@ -39,7 +39,7 @@ export function Sidebar({ open, collapsed, onClose, className }: SidebarProps) {
   return (
     <aside 
       className={cn(
-        'bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700',
+        'bg-card border-r border-border',
         'fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-200',
         'lg:relative lg:translate-x-0',
         open ? 'translate-x-0' : '-translate-x-full',
@@ -62,7 +62,7 @@ export function Sidebar({ open, collapsed, onClose, className }: SidebarProps) {
             className={({ isActive }) =>
               cn(
                 'flex items-center gap-3 px-3 py-2 rounded-lg transition-colors',
-                'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700',
+                'text-muted-foreground hover:bg-muted',
                 isActive && 'bg-primary/10 text-primary'
               )
             }
@@ -109,7 +109,7 @@ export function MobileBottomNav() {
   const mobileNavItems = navItems.slice(0, 5);
   
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-50 lg:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50 lg:hidden">
       <div className="flex items-center justify-around py-2">
         {mobileNavItems.map((item) => (
           <NavLink
@@ -118,7 +118,7 @@ export function MobileBottomNav() {
             className={({ isActive }) =>
               cn(
                 'flex flex-col items-center gap-1 px-3 py-1 rounded-lg',
-                'text-gray-600 dark:text-gray-400',
+                'text-muted-foreground',
                 isActive && 'text-primary'
               )
             }
@@ -143,7 +143,7 @@ export function MobileSidebarDrawer({ open, onClose }: MobileSidebarDrawerProps)
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
-      <aside className="fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-xl">
+      <aside className="fixed inset-y-0 left-0 w-64 bg-card shadow-xl">
         <div className="flex items-center justify-between p-4 border-b">
           <span className="text-lg font-semibold">Menu</span>
           <Button variant="ghost" size="sm" onClick={onClose}>

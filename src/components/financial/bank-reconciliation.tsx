@@ -42,7 +42,7 @@ interface SystemTransaction {
 interface ReconciliationMatch {
   bankTransaction: BankTransaction;
   systemTransaction: SystemTransaction;
-  confidence: number; // 0-100
+  confidence: number;
   matchType: 'exact' | 'amount' | 'date' | 'manual';
 }
 
@@ -118,15 +118,12 @@ export function BankReconciliation({
       filteredSystem.forEach(sys => {
         if (sys.reconciled) return;
         
-        // Check amount match
         const bankAmount = bank.type === 'credit' ? bank.amount : -bank.amount;
         const sysAmount = sys.type === 'receita' ? sys.amount : -sys.amount;
         
         if (Math.abs(bankAmount - sysAmount) < 0.01) {
-          // Calculate confidence
-          let confidence = 50; // Base for amount match
+          let confidence = 50;
           
-          // Date proximity bonus
           const daysDiff = Math.abs(
             (bank.date.getTime() - sys.date.getTime()) / (1000 * 60 * 60 * 24)
           );
@@ -134,7 +131,6 @@ export function BankReconciliation({
           else if (daysDiff <= 3) confidence += 20;
           else if (daysDiff <= 7) confidence += 10;
           
-          // Reference match bonus
           if (bank.reference && sys.reference && 
               bank.reference.toLowerCase() === sys.reference.toLowerCase()) {
             confidence += 20;
@@ -150,11 +146,9 @@ export function BankReconciliation({
       });
     });
     
-    // Sort by confidence
     return matches.sort((a, b) => b.confidence - a.confidence);
   }, [filteredBank, filteredSystem]);
 
-  // Handle reconciliation
   const handleReconcile = useCallback(() => {
     if (selectedBank && selectedSystem) {
       onReconcile(selectedBank, selectedSystem);
@@ -163,7 +157,6 @@ export function BankReconciliation({
     }
   }, [selectedBank, selectedSystem, onReconcile]);
 
-  // Apply suggestion
   const applySuggestion = useCallback((match: ReconciliationMatch) => {
     onReconcile(match.bankTransaction.id, match.systemTransaction.id);
   }, [onReconcile]);
@@ -198,8 +191,8 @@ export function BankReconciliation({
 
       {/* Suggestions */}
       {suggestions.length > 0 && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-          <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-3 flex items-center gap-2">
+        <div className="bg-primary/5 rounded-lg p-4">
+          <h3 className="font-medium text-primary mb-3 flex items-center gap-2">
             <HelpCircle className="w-5 h-5" />
             Sugestões de Conciliação ({suggestions.length})
           </h3>
@@ -207,18 +200,18 @@ export function BankReconciliation({
             {suggestions.slice(0, 5).map((match, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-lg p-3"
+                className="flex items-center justify-between bg-card rounded-lg p-3"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-medium truncate">
                       {match.bankTransaction.description}
                     </span>
-                    <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded">
+                    <span className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded">
                       {match.confidence}% match
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {formatCurrency(match.bankTransaction.amount)} → {match.systemTransaction.description}
                   </p>
                 </div>
@@ -237,12 +230,12 @@ export function BankReconciliation({
 
       {/* Filters */}
       <div className="flex items-center gap-4">
-        <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+        <label className="flex items-center gap-2 text-sm text-muted-foreground">
           <input
             type="checkbox"
             checked={showOnlyUnreconciled}
             onChange={(e) => setShowOnlyUnreconciled(e.target.checked)}
-            className="rounded border-gray-300"
+            className="rounded border-input"
           />
           Apenas não conciliados
         </label>
@@ -251,23 +244,23 @@ export function BankReconciliation({
       {/* Two Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Bank Transactions */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-          <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="font-semibold text-gray-900 dark:text-white">
+        <div className="bg-card rounded-xl shadow-sm border border-border">
+          <div className="px-4 py-3 border-b border-border">
+            <h3 className="font-semibold text-foreground">
               Extrato Bancário
             </h3>
             <div className="mt-2 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="text"
                 value={searchBank}
                 onChange={(e) => setSearchBank(e.target.value)}
                 placeholder="Buscar..."
-                className="w-full pl-9 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-transparent"
+                className="w-full pl-9 pr-4 py-2 border border-border rounded-lg text-sm bg-transparent"
               />
             </div>
           </div>
-          <div className="divide-y divide-gray-100 dark:divide-gray-700 max-h-96 overflow-y-auto">
+          <div className="divide-y divide-border max-h-96 overflow-y-auto">
             {filteredBank.map((transaction) => (
               <TransactionRow
                 key={transaction.id}
@@ -281,7 +274,7 @@ export function BankReconciliation({
               />
             ))}
             {filteredBank.length === 0 && (
-              <div className="p-8 text-center text-gray-500">
+              <div className="p-8 text-center text-muted-foreground">
                 Nenhuma transação encontrada
               </div>
             )}
@@ -289,23 +282,23 @@ export function BankReconciliation({
         </div>
 
         {/* System Transactions */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-          <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="font-semibold text-gray-900 dark:text-white">
+        <div className="bg-card rounded-xl shadow-sm border border-border">
+          <div className="px-4 py-3 border-b border-border">
+            <h3 className="font-semibold text-foreground">
               Lançamentos do Sistema
             </h3>
             <div className="mt-2 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="text"
                 value={searchSystem}
                 onChange={(e) => setSearchSystem(e.target.value)}
                 placeholder="Buscar..."
-                className="w-full pl-9 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-transparent"
+                className="w-full pl-9 pr-4 py-2 border border-border rounded-lg text-sm bg-transparent"
               />
             </div>
           </div>
-          <div className="divide-y divide-gray-100 dark:divide-gray-700 max-h-96 overflow-y-auto">
+          <div className="divide-y divide-border max-h-96 overflow-y-auto">
             {filteredSystem.map((transaction) => (
               <TransactionRow
                 key={transaction.id}
@@ -318,7 +311,7 @@ export function BankReconciliation({
               />
             ))}
             {filteredSystem.length === 0 && (
-              <div className="p-8 text-center text-gray-500">
+              <div className="p-8 text-center text-muted-foreground">
                 Nenhuma transação encontrada
               </div>
             )}
@@ -328,10 +321,10 @@ export function BankReconciliation({
 
       {/* Action Bar */}
       {(selectedBank || selectedSystem) && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 flex items-center gap-4">
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-card rounded-lg shadow-lg border border-border p-4 flex items-center gap-4">
           {selectedBank && selectedSystem ? (
             <>
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-muted-foreground">
                 Vincular transações selecionadas?
               </span>
               <Button onClick={handleReconcile}>
@@ -340,7 +333,7 @@ export function BankReconciliation({
               </Button>
             </>
           ) : (
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="text-sm text-muted-foreground">
               Selecione uma transação em cada coluna para conciliar
             </span>
           )}
@@ -378,8 +371,8 @@ function TransactionRow({ transaction, selected, onSelect, onUnreconcile, type }
       onClick={!transaction.reconciled ? onSelect : undefined}
       className={cn(
         'px-4 py-3 flex items-center gap-3 transition-colors',
-        !transaction.reconciled && 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50',
-        selected && 'bg-primary-50 dark:bg-primary-900/20',
+        !transaction.reconciled && 'cursor-pointer hover:bg-muted/50',
+        selected && 'bg-primary/5',
         transaction.reconciled && 'opacity-60'
       )}
     >
@@ -387,26 +380,26 @@ function TransactionRow({ transaction, selected, onSelect, onUnreconcile, type }
       <div className={cn(
         'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0',
         transaction.reconciled 
-          ? 'bg-green-100 dark:bg-green-900/30'
+          ? 'bg-success/10'
           : selected
-          ? 'bg-primary-100 dark:bg-primary-900/30'
-          : 'bg-gray-100 dark:bg-gray-700'
+          ? 'bg-primary/10'
+          : 'bg-muted'
       )}>
         {transaction.reconciled ? (
-          <CheckCircle className="w-4 h-4 text-green-600" />
+          <CheckCircle className="w-4 h-4 text-success" />
         ) : selected ? (
-          <Check className="w-4 h-4 text-primary-600" />
+          <Check className="w-4 h-4 text-primary" />
         ) : (
-          <Clock className="w-4 h-4 text-gray-400" />
+          <Clock className="w-4 h-4 text-muted-foreground" />
         )}
       </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+        <p className="text-sm font-medium text-foreground truncate">
           {transaction.description}
         </p>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-muted-foreground">
           {transaction.date.toLocaleDateString('pt-BR')}
           {transaction.reference && ` • ${transaction.reference}`}
         </p>
@@ -415,7 +408,7 @@ function TransactionRow({ transaction, selected, onSelect, onUnreconcile, type }
       {/* Amount */}
       <div className={cn(
         'text-sm font-medium',
-        isCredit ? 'text-green-600' : 'text-red-600'
+        isCredit ? 'text-success' : 'text-destructive'
       )}>
         {isCredit ? '+' : '-'}{formatCurrency(transaction.amount)}
       </div>
@@ -427,10 +420,10 @@ function TransactionRow({ transaction, selected, onSelect, onUnreconcile, type }
             e.stopPropagation();
             onUnreconcile();
           }}
-          className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
+          className="p-1.5 hover:bg-muted rounded"
           title="Desfazer conciliação"
         >
-          <Unlink className="w-4 h-4 text-gray-400" />
+          <Unlink className="w-4 h-4 text-muted-foreground" />
         </button>
       )}
     </div>
@@ -449,20 +442,20 @@ interface StatCardProps {
 function StatCard({ label, value, icon, highlight = false, isCurrency = true }: StatCardProps) {
   return (
     <div className={cn(
-      'bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border',
+      'bg-card rounded-lg p-4 shadow-sm border',
       highlight && value !== 0
-        ? 'border-yellow-300 dark:border-yellow-700'
-        : 'border-gray-200 dark:border-gray-700'
+        ? 'border-warning'
+        : 'border-border'
     )}>
-      <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+      <div className="flex items-center gap-2 text-muted-foreground">
         {icon}
         <span className="text-sm">{label}</span>
       </div>
       <p className={cn(
         'text-xl font-bold mt-1',
         highlight && value !== 0
-          ? 'text-yellow-600'
-          : 'text-gray-900 dark:text-white'
+          ? 'text-warning'
+          : 'text-foreground'
       )}>
         {isCurrency ? formatCurrency(value) : value}
       </p>

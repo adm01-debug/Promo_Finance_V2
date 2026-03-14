@@ -9,7 +9,7 @@ export function MainLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
@@ -41,17 +41,17 @@ export function MainLayout() {
         </main>
 
         {/* Footer */}
-        <footer className="border-t border-gray-200 bg-white px-4 py-4 dark:border-gray-700 dark:bg-gray-800">
-          <div className="flex flex-col items-center justify-between gap-2 text-sm text-gray-500 dark:text-gray-400 sm:flex-row">
+        <footer className="border-t border-border bg-card px-4 py-4">
+          <div className="flex flex-col items-center justify-between gap-2 text-sm text-muted-foreground sm:flex-row">
             <p>© 2026 Finance Hub. Todos os direitos reservados.</p>
             <div className="flex gap-4">
-              <a href="#" className="hover:text-gray-700 dark:hover:text-gray-300">
+              <a href="#" className="hover:text-foreground">
                 Termos
               </a>
-              <a href="#" className="hover:text-gray-700 dark:hover:text-gray-300">
+              <a href="#" className="hover:text-foreground">
                 Privacidade
               </a>
-              <a href="#" className="hover:text-gray-700 dark:hover:text-gray-300">
+              <a href="#" className="hover:text-foreground">
                 Suporte
               </a>
             </div>

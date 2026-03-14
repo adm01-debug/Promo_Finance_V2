@@ -89,8 +89,8 @@ function EmptyIllustration({ type }: { type: string }) {
           animate={{ rotate: [0, -5, 5, 0] }}
           transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
         >
-          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-red-100 to-red-50 dark:from-red-950 dark:to-red-900/50 flex items-center justify-center">
-            <AlertCircle className="h-8 w-8 text-red-500" />
+          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-destructive/20 to-destructive/5 flex items-center justify-center">
+            <AlertCircle className="h-8 w-8 text-destructive" />
           </div>
         </motion.div>
       </motion.div>
@@ -105,8 +105,8 @@ function EmptyIllustration({ type }: { type: string }) {
           transition={{ repeat: Infinity, duration: 3 }}
           style={{ perspective: 100 }}
         >
-          <div className="h-16 w-16 rounded-xl bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-950 dark:to-amber-900/50 flex items-center justify-center">
-            <FolderOpen className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+          <div className="h-16 w-16 rounded-xl bg-gradient-to-br from-warning/20 to-warning/5 flex items-center justify-center">
+            <FolderOpen className="h-8 w-8 text-warning" />
           </div>
         </motion.div>
       </motion.div>
@@ -120,8 +120,8 @@ function EmptyIllustration({ type }: { type: string }) {
           animate={{ y: [0, -5, 0] }}
           transition={{ repeat: Infinity, duration: 2 }}
         >
-          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-950 dark:to-blue-900/50 flex items-center justify-center">
-            <Inbox className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+            <Inbox className="h-8 w-8 text-primary" />
           </div>
         </motion.div>
       </motion.div>

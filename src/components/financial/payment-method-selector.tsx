@@ -170,44 +170,44 @@ export function PaymentMethodSelector({
               className={cn(
                 'p-4 rounded-xl border-2 text-left transition-all',
                 isSelected
-                  ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                  : 'border-gray-200 dark:border-gray-700 hover:border-primary-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  ? 'border-primary bg-primary/5'
+                  : 'border-border hover:border-primary/50 hover:bg-muted/50'
               )}
             >
               <div className="flex items-start gap-3">
                 <div className={cn(
                   'p-2 rounded-lg',
                   isSelected
-                    ? 'bg-primary-100 dark:bg-primary-900/30'
-                    : 'bg-gray-100 dark:bg-gray-700'
+                    ? 'bg-primary/10'
+                    : 'bg-muted'
                 )}>
                   <Icon className={cn(
                     'w-5 h-5',
-                    isSelected ? 'text-primary-600' : 'text-gray-500'
+                    isSelected ? 'text-primary' : 'text-muted-foreground'
                   )} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className={cn(
                     'font-medium',
                     isSelected
-                      ? 'text-primary-700 dark:text-primary-300'
-                      : 'text-gray-900 dark:text-white'
+                      ? 'text-primary'
+                      : 'text-foreground'
                   )}>
                     {method.label}
                   </p>
                   {method.description && (
-                    <p className="text-xs text-gray-500 mt-0.5">
+                    <p className="text-xs text-muted-foreground mt-0.5">
                       {method.description}
                     </p>
                   )}
                   {showFees && method.fee !== undefined && method.fee > 0 && (
-                    <p className="text-xs text-amber-600 mt-1">
+                    <p className="text-xs text-warning mt-1">
                       +{method.fee}% taxa ({formatCurrency(feeAmount)})
                     </p>
                   )}
                 </div>
                 {isSelected && (
-                  <Check className="w-5 h-5 text-primary-600 flex-shrink-0" />
+                  <Check className="w-5 h-5 text-primary flex-shrink-0" />
                 )}
               </div>
             </button>
@@ -217,8 +217,8 @@ export function PaymentMethodSelector({
 
       {/* Installments Selection (for credit card) */}
       {showInstallments && currentMethod?.installments && currentMethod.installments.length > 1 && (
-        <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4">
-          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+        <div className="bg-muted/50 rounded-xl p-4">
+          <h4 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
             <CreditCard className="w-4 h-4" />
             Parcelamento
           </h4>
@@ -235,24 +235,24 @@ export function PaymentMethodSelector({
                   className={cn(
                     'p-3 rounded-lg border text-center transition-all',
                     isSelected
-                      ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                      : 'border-gray-200 dark:border-gray-700 hover:border-primary-300'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border hover:border-primary/50'
                   )}
                 >
                   <p className={cn(
                     'text-lg font-bold',
-                    isSelected ? 'text-primary-600' : 'text-gray-900 dark:text-white'
+                    isSelected ? 'text-primary' : 'text-foreground'
                   )}>
                     {n}x
                   </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     {formatCurrency(installmentValue)}
                   </p>
                   {hasInterest && (
-                    <p className="text-xs text-amber-600 mt-1">com juros</p>
+                    <p className="text-xs text-warning mt-1">com juros</p>
                   )}
                   {n === 1 && (
-                    <p className="text-xs text-green-600 mt-1">à vista</p>
+                    <p className="text-xs text-success mt-1">à vista</p>
                   )}
                 </button>
               );
@@ -263,37 +263,37 @@ export function PaymentMethodSelector({
 
       {/* Summary */}
       {selectedMethod && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+        <div className="bg-card rounded-xl border border-border p-4">
+          <h4 className="text-sm font-medium text-muted-foreground mb-3">
             Resumo do Pagamento
           </h4>
           
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600 dark:text-gray-400">Valor original</span>
+              <span className="text-muted-foreground">Valor original</span>
               <span className="font-medium">{formatCurrency(amount)}</span>
             </div>
             
             {currentMethod?.fee && currentMethod.fee > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600 dark:text-gray-400">
+                <span className="text-muted-foreground">
                   Taxa ({currentMethod.fee}%)
                 </span>
-                <span className="text-amber-600">
+                <span className="text-warning">
                   +{formatCurrency(calculateFee(currentMethod.fee))}
                 </span>
               </div>
             )}
             
-            <div className="flex justify-between text-lg font-bold pt-2 border-t border-gray-100 dark:border-gray-700">
+            <div className="flex justify-between text-lg font-bold pt-2 border-t border-border">
               <span>Total</span>
-              <span className="text-primary-600">
+              <span className="text-primary">
                 {formatCurrency(amount + calculateFee(currentMethod?.fee))}
               </span>
             </div>
 
             {currentMethod?.installments && selectedInstallments > 1 && (
-              <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex justify-between text-sm text-muted-foreground">
                 <span>Parcelas</span>
                 <span>
                   {selectedInstallments}x de {formatCurrency(
@@ -304,7 +304,7 @@ export function PaymentMethodSelector({
             )}
 
             {currentMethod?.processingDays !== undefined && (
-              <div className="flex items-center gap-2 mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm text-blue-700 dark:text-blue-300">
+              <div className="flex items-center gap-2 mt-3 p-2 bg-primary/5 rounded-lg text-sm text-primary">
                 <Clock className="w-4 h-4" />
                 <span>
                   {currentMethod.processingDays === 0
@@ -335,7 +335,7 @@ export function PaymentBadge({ method, className }: PaymentBadgeProps) {
   return (
     <span className={cn(
       'inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium',
-      'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300',
+      'bg-muted text-muted-foreground',
       className
     )}>
       <Icon className="w-3 h-3" />
@@ -362,7 +362,7 @@ export function PaymentIcon({ method, size = 'md', className }: PaymentIconProps
     lg: 'w-6 h-6',
   };
 
-  return <Icon className={cn(sizeClasses[size], 'text-gray-500', className)} />;
+  return <Icon className={cn(sizeClasses[size], 'text-muted-foreground', className)} />;
 }
 
 export type { PaymentMethod, PaymentMethodType };

@@ -39,8 +39,8 @@ interface EmptyStateConfig {
 const EMPTY_STATES: Record<EmptyStateType, EmptyStateConfig> = {
   apuracoes: {
     icon: Calculator,
-    iconColor: 'text-blue-500',
-    iconBg: 'bg-blue-100 dark:bg-blue-900/30',
+    iconColor: 'text-primary',
+    iconBg: 'bg-primary/10',
     title: 'Nenhuma apuração encontrada',
     description: 'Crie sua primeira apuração tributária para começar a calcular CBS, IBS e tributos residuais.',
     primaryAction: { label: 'Criar Apuração', icon: Plus },
@@ -52,8 +52,8 @@ const EMPTY_STATES: Record<EmptyStateType, EmptyStateConfig> = {
   },
   creditos: {
     icon: TrendingUp,
-    iconColor: 'text-green-500',
-    iconBg: 'bg-green-100 dark:bg-green-900/30',
+    iconColor: 'text-success',
+    iconBg: 'bg-success/10',
     title: 'Nenhum crédito tributário',
     description: 'Os créditos são gerados automaticamente quando você importa NF-e de compras ou registra operações de entrada.',
     primaryAction: { label: 'Importar XML', icon: Plus },
@@ -65,8 +65,8 @@ const EMPTY_STATES: Record<EmptyStateType, EmptyStateConfig> = {
   },
   operacoes: {
     icon: FileText,
-    iconColor: 'text-purple-500',
-    iconBg: 'bg-purple-100 dark:bg-purple-900/30',
+    iconColor: 'text-accent-foreground',
+    iconBg: 'bg-accent',
     title: 'Nenhuma operação registrada',
     description: 'Registre operações de compra, venda, serviços ou importação para calcular os tributos automaticamente.',
     primaryAction: { label: 'Nova Operação', icon: Plus },
@@ -78,8 +78,8 @@ const EMPTY_STATES: Record<EmptyStateType, EmptyStateConfig> = {
   },
   alertas: {
     icon: Shield,
-    iconColor: 'text-emerald-500',
-    iconBg: 'bg-emerald-100 dark:bg-emerald-900/30',
+    iconColor: 'text-success',
+    iconBg: 'bg-success/10',
     title: 'Tudo em dia! 🎉',
     description: 'Não há alertas pendentes. Continue mantendo suas obrigações em dia.',
     primaryAction: { label: 'Ver Cronograma', icon: Target },
@@ -90,8 +90,8 @@ const EMPTY_STATES: Record<EmptyStateType, EmptyStateConfig> = {
   },
   conciliacao: {
     icon: Shield,
-    iconColor: 'text-amber-500',
-    iconBg: 'bg-amber-100 dark:bg-amber-900/30',
+    iconColor: 'text-warning',
+    iconBg: 'bg-warning/10',
     title: 'Conciliação não executada',
     description: 'Execute a conciliação para verificar se os valores calculados estão corretos em relação às NF-e emitidas.',
     primaryAction: { label: 'Executar Conciliação', icon: Zap },
@@ -185,7 +185,7 @@ export function EmptyStateTributario({ type, onPrimaryAction, onSecondaryAction 
                 className="w-full p-4 rounded-lg bg-muted/50"
               >
                 <div className="flex items-start gap-2 text-left">
-                  <Lightbulb className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+                  <Lightbulb className="h-4 w-4 text-warning mt-0.5 shrink-0" />
                   <div className="space-y-1">
                     <p className="text-sm font-medium text-foreground">Dicas:</p>
                     <ul className="text-sm text-muted-foreground space-y-1">
