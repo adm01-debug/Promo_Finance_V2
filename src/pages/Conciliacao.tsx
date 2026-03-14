@@ -85,7 +85,9 @@ export default function Conciliacao() {
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [showManualDialog, setShowManualDialog] = useState(false);
+  const [showSplitDialog, setShowSplitDialog] = useState(false);
   const [selectedTransacaoManual, setSelectedTransacaoManual] = useState<TransacaoExtrato | null>(null);
+  const [selectedTransacaoSplit, setSelectedTransacaoSplit] = useState<TransacaoExtrato | null>(null);
   const [transacoes, setTransacoes] = useState<TransacaoExtrato[]>([]);
   const [extratoImportado, setExtratoImportado] = useState<ExtratoOFX | null>(null);
   const [transacoesImportadas, setTransacoesImportadas] = useState<TransacaoOFX[]>([]);
