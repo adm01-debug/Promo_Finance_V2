@@ -309,7 +309,7 @@ export function SimuladorAntecipacao() {
                         </div>
                       </div>
                     </motion.div>
-                  ))
+                  ))}
                 </div>
 
                 {instituicaoSelecionada && (
