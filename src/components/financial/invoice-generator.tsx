@@ -421,7 +421,7 @@ export function InvoiceGenerator({
                   discount: Number(e.target.value),
                 }))}
                 min={0}
-                className="w-20 px-2 py-1 text-right border border-gray-200 dark:border-gray-700 rounded text-sm bg-transparent"
+                 className="w-20 px-2 py-1 text-right border border-border rounded text-sm bg-transparent"
               />
             </div>
             {calculations.discountAmount > 0 && (
