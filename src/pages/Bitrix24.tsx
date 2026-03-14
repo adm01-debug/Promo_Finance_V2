@@ -542,7 +542,7 @@ export default function Bitrix24() {
                                 </div>
                               </div>
 
-                              <div className="p-3 rounded-lg bg-green-100 dark:bg-green-900/30">
+                              <div className="p-3 rounded-lg bg-success/10">
                                 <p className="text-xs text-muted-foreground mb-1">Sistema</p>
                                 <code className="font-mono text-sm font-medium">{mapping.campo_sistema}</code>
                               </div>
