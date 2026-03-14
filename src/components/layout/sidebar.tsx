@@ -118,7 +118,7 @@ export function MobileBottomNav() {
             className={({ isActive }) =>
               cn(
                 'flex flex-col items-center gap-1 px-3 py-1 rounded-lg',
-                'text-gray-600 dark:text-gray-400',
+                'text-muted-foreground',
                 isActive && 'text-primary'
               )
             }
