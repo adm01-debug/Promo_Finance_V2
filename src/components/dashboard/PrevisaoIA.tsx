@@ -637,7 +637,7 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
                         </div>
                         <div className="border-t pt-2 flex items-center justify-between">
                           <span className="text-sm font-medium">Saldo:</span>
-                          <span className={`font-bold ${parseValor(dados.saldo_projetado) >= 0 ? 'text-green-600' : 'text-destructive'}`}>
+                          <span className={`font-bold ${parseValor(dados.saldo_projetado) >= 0 ? 'text-success' : 'text-destructive'}`}>
                             {dados.saldo_projetado}
                           </span>
                         </div>
