@@ -546,11 +546,11 @@ export default function BI() {
         {/* Secondary KPIs */}
         <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {[
-            { label: 'A Receber', value: formatCurrency(kpis.totalReceber), icon: TrendingUp, color: 'text-green-600' },
+            { label: 'A Receber', value: formatCurrency(kpis.totalReceber), icon: TrendingUp, color: 'text-success' },
             { label: 'A Pagar', value: formatCurrency(kpis.totalPagar), icon: TrendingDown, color: 'text-destructive' },
-            { label: 'Despesas Mês', value: formatCurrency(kpis.despesaMes), icon: BarChart3, color: 'text-orange-600' },
-            { label: 'Clientes Ativos', value: kpis.clientesAtivos.toString(), icon: Users, color: 'text-blue-600' },
-            { label: 'Contas Bancárias', value: kpis.contasAtivas.toString(), icon: Building2, color: 'text-purple-600' }
+            { label: 'Despesas Mês', value: formatCurrency(kpis.despesaMes), icon: BarChart3, color: 'text-streak' },
+            { label: 'Clientes Ativos', value: kpis.clientesAtivos.toString(), icon: Users, color: 'text-secondary' },
+            { label: 'Contas Bancárias', value: kpis.contasAtivas.toString(), icon: Building2, color: 'text-accent' }
           ].map((item, idx) => (
             <Card key={idx} className="bg-card/50">
               <CardContent className="pt-4 pb-3">
