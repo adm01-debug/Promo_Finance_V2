@@ -360,7 +360,7 @@ export function GestorCreditosTributarios() {
                     <TableCell className="text-right text-muted-foreground">
                       {formatCurrency(credito.valor_utilizado)}
                     </TableCell>
-                    <TableCell className="text-right font-medium text-green-600">
+                    <TableCell className="text-right font-medium text-success">
                       {formatCurrency(Number(credito.valor_credito) - Number(credito.valor_utilizado))}
                     </TableCell>
                     <TableCell>{getStatusBadge(credito.status)}</TableCell>
