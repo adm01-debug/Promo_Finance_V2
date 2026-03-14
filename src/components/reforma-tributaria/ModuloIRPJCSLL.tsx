@@ -339,8 +339,8 @@ export function ModuloIRPJCSLL() {
                   />
                 </div>
 
-                <div className="p-4 border rounded-lg border-green-200 bg-green-50/50">
-                  <h4 className="font-medium mb-3 text-green-700">Adições</h4>
+                <div className="p-4 border rounded-lg border-success/20 bg-success/5">
+                  <h4 className="font-medium mb-3 text-success">Adições</h4>
                   <div className="space-y-2">
                     <div>
                       <Label className="text-xs">Permanentes</Label>
