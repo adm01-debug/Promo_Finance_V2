@@ -38,7 +38,7 @@ class ErrorTrackingService {
       Sentry.init({
         dsn: this.dsn,
         environment: this.environment,
-        release: `finance-hub@${import.meta.env.VITE_APP_VERSION || '1.0.0'}`,
+        release: `promo-finance@${import.meta.env.VITE_APP_VERSION || '1.0.0'}`,
         tracesSampleRate: this.debug ? 1.0 : 0.2,
         replaysSessionSampleRate: 0.1,
         replaysOnErrorSampleRate: 1.0,

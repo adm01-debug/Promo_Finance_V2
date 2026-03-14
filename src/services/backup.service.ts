@@ -159,7 +159,7 @@ class BackupRestoreService {
 
     try {
       const encrypted = await this.encrypt(JSON.stringify(backup), password);
-      const filename = `finance-hub-backup-${formatDate(new Date(), 'yyyy-MM-dd-HHmm')}.enc`;
+      const filename = `promo-finance-backup-${formatDate(new Date(), 'yyyy-MM-dd-HHmm')}.enc`;
       
       downloadFile(encrypted, filename, 'application/octet-stream');
       return true;

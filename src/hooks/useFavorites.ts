@@ -218,7 +218,7 @@ export function usePinnedItems(options: {
   storageKey?: string;
   maxPins?: number;
 } = {}) {
-  const { storageKey = 'finance-hub-pinned', maxPins = 10 } = options;
+  const { storageKey = 'promo-finance-pinned', maxPins = 10 } = options;
 
   const [pinnedItems, setPinnedItems] = useState<FavoriteItem[]>(() => {
     if (typeof window === 'undefined') return [];
