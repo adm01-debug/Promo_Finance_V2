@@ -169,13 +169,13 @@ const EventoDetalhes = ({ evento }: { evento: EventoSefaz }) => {
             <Timer className="h-4 w-4 text-muted-foreground" />
             <span className="font-medium">{evento.tempoResposta}ms</span>
             {evento.tempoResposta < 1000 && (
-              <Badge variant="outline" className="text-emerald-500 border-emerald-500/20">Rápido</Badge>
+              <Badge variant="outline" className="text-success border-success/20">Rápido</Badge>
             )}
             {evento.tempoResposta >= 1000 && evento.tempoResposta < 3000 && (
-              <Badge variant="outline" className="text-amber-500 border-amber-500/20">Normal</Badge>
+              <Badge variant="outline" className="text-warning border-warning/20">Normal</Badge>
             )}
             {evento.tempoResposta >= 3000 && (
-              <Badge variant="outline" className="text-red-500 border-red-500/20">Lento</Badge>
+              <Badge variant="outline" className="text-destructive border-destructive/20">Lento</Badge>
             )}
           </div>
         </div>
