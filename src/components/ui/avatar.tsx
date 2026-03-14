@@ -23,10 +23,10 @@ const sizeClasses = {
 };
 
 const statusClasses = {
-  online: 'bg-green-500',
-  offline: 'bg-gray-400',
-  busy: 'bg-red-500',
-  away: 'bg-yellow-500',
+  online: 'bg-success',
+  offline: 'bg-muted-foreground',
+  busy: 'bg-destructive',
+  away: 'bg-warning',
 };
 
 const statusSizeClasses = {
@@ -50,23 +50,23 @@ function getInitials(name: string): string {
 
 function getColorFromName(name: string): string {
   const colors = [
-    'bg-red-500',
-    'bg-orange-500',
-    'bg-amber-500',
-    'bg-yellow-500',
-    'bg-lime-500',
-    'bg-green-500',
-    'bg-emerald-500',
-    'bg-teal-500',
-    'bg-cyan-500',
-    'bg-sky-500',
-    'bg-blue-500',
-    'bg-indigo-500',
-    'bg-violet-500',
-    'bg-purple-500',
-    'bg-fuchsia-500',
-    'bg-pink-500',
-    'bg-rose-500',
+    'bg-destructive',
+    'bg-warning',
+    'bg-warning',
+    'bg-warning',
+    'bg-success',
+    'bg-success',
+    'bg-success',
+    'bg-accent',
+    'bg-accent',
+    'bg-primary',
+    'bg-primary',
+    'bg-secondary',
+    'bg-secondary',
+    'bg-streak',
+    'bg-streak',
+    'bg-xp',
+    'bg-coins',
   ];
 
   let hash = 0;
@@ -98,7 +98,7 @@ export const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(function Ava
       <div
         className={cn(
           'flex items-center justify-center overflow-hidden',
-          'bg-gray-200 dark:bg-gray-700',
+          'bg-muted',
           shape === 'circle' ? 'rounded-full' : 'rounded-lg',
           sizeClasses[size],
           showInitials && getColorFromName(name)
@@ -112,16 +112,16 @@ export const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(function Ava
             className="h-full w-full object-cover"
           />
         ) : showInitials ? (
-          <span className="font-medium text-white">{getInitials(name)}</span>
+          <span className="font-medium text-primary-foreground">{getInitials(name)}</span>
         ) : (
-          <User className="h-1/2 w-1/2 text-gray-400 dark:text-gray-500" />
+          <User className="h-1/2 w-1/2 text-muted-foreground" />
         )}
       </div>
 
       {status && (
         <span
           className={cn(
-            'absolute rounded-full ring-2 ring-white dark:ring-gray-900',
+            'absolute rounded-full ring-2 ring-background',
             statusClasses[status],
             statusSizeClasses[size]
           )}
@@ -168,7 +168,7 @@ export function AvatarGroup({
         <div
           key={index}
           className={cn(
-            'ring-2 ring-white dark:ring-gray-900 rounded-full',
+            'ring-2 ring-background rounded-full',
             index > 0 && overlapClasses[size]
           )}
         >
@@ -185,8 +185,8 @@ export function AvatarGroup({
         <div
           className={cn(
             'flex items-center justify-center',
-            'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300',
-            'font-medium rounded-full ring-2 ring-white dark:ring-gray-900',
+            'bg-muted text-muted-foreground',
+            'font-medium rounded-full ring-2 ring-background',
             sizeClasses[size],
             overlapClasses[size]
           )}
@@ -228,11 +228,11 @@ export function AvatarWithName({
     >
       <Avatar name={name} size={size} {...avatarProps} />
       <div className={reverse ? 'text-right' : ''}>
-        <p className={cn('font-medium text-gray-900 dark:text-white', textSizes[size].name)}>
+        <p className={cn('font-medium text-foreground', textSizes[size].name)}>
           {name}
         </p>
         {subtitle && (
-          <p className={cn('text-gray-500 dark:text-gray-400', textSizes[size].subtitle)}>
+          <p className={cn('text-muted-foreground', textSizes[size].subtitle)}>
             {subtitle}
           </p>
         )}

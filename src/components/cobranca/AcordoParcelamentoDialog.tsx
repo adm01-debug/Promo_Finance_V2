@@ -4,16 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import {
-  Calculator,
-  CalendarIcon,
-  FileText,
-  Loader2,
-  Percent,
-  User,
-  DollarSign,
-  Hash,
-} from 'lucide-react';
+import { Calculator, CalendarIcon, FileText, Loader2, Percent, User, DollarSign, Hash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -21,27 +12,9 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Separator } from '@/components/ui/separator';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { useAcordosParcelamento, simularParcelamento } from '@/hooks/useAcordosParcelamento';
@@ -101,7 +74,6 @@ export function AcordoParcelamentoDialog({
     },
   });
 
-  // Atualizar form quando props mudam
   useMemo(() => {
     if (open) {
       form.reset({
@@ -304,13 +276,13 @@ export function AcordoParcelamentoDialog({
                     <span>{formatCurrency(simulacao.valorOriginal)}</span>
                   </div>
                   {simulacao.desconto > 0 && (
-                    <div className="flex justify-between text-green-600">
+                    <div className="flex justify-between text-success">
                       <span>Desconto ({descontoPercentual}%):</span>
                       <span>-{formatCurrency(simulacao.desconto)}</span>
                     </div>
                   )}
                   {simulacao.juros > 0 && (
-                    <div className="flex justify-between text-amber-600">
+                    <div className="flex justify-between text-warning">
                       <span>Juros ({jurosPercentual}%):</span>
                       <span>+{formatCurrency(simulacao.juros)}</span>
                     </div>

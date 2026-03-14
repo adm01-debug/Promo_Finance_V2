@@ -3,11 +3,11 @@ import { cn } from '@/lib/utils';
 import { AlertCircle, CheckCircle, Info, XCircle, X } from 'lucide-react';
 
 const alertVariants = {
-  default: 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100',
-  info: 'bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 border-blue-200 dark:border-blue-800',
-  success: 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 border-green-200 dark:border-green-800',
-  warning: 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 border-yellow-200 dark:border-yellow-800',
-  error: 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 border-red-200 dark:border-red-800',
+  default: 'bg-muted text-foreground',
+  info: 'bg-primary/10 text-primary border-primary/30',
+  success: 'bg-success/10 text-success border-success/30',
+  warning: 'bg-warning/10 text-warning border-warning/30',
+  error: 'bg-destructive/10 text-destructive border-destructive/30',
 };
 
 const alertIcons = {
@@ -25,22 +25,13 @@ interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function Alert({ 
-  className, 
-  variant = 'default', 
-  title, 
-  children, 
-  onClose,
-  ...props 
+  className, variant = 'default', title, children, onClose, ...props 
 }: AlertProps) {
   const Icon = alertIcons[variant];
   return (
     <div
       role="alert"
-      className={cn(
-        'relative flex gap-3 rounded-lg border p-4',
-        alertVariants[variant],
-        className
-      )}
+      className={cn('relative flex gap-3 rounded-lg border p-4', alertVariants[variant], className)}
       {...props}
     >
       <Icon className="h-5 w-5 shrink-0 mt-0.5" />

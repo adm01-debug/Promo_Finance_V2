@@ -209,10 +209,10 @@ export function WizardHeader({ className }: { className?: string }) {
                 disabled={!isClickable}
                 className={cn(
                   'relative flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all',
-                  isActive && 'border-primary-500 bg-primary-500 text-white',
-                  isComplete && !isActive && 'border-green-500 bg-green-500 text-white',
-                  !isActive && !isComplete && 'border-gray-300 dark:border-gray-600 text-gray-400',
-                  isClickable && !isActive && 'cursor-pointer hover:border-primary-400',
+                  isActive && 'border-primary bg-primary text-primary-foreground',
+                  isComplete && !isActive && 'border-success bg-success text-success-foreground',
+                  !isActive && !isComplete && 'border-border text-muted-foreground',
+                  isClickable && !isActive && 'cursor-pointer hover:border-primary/70',
                   !isClickable && 'cursor-not-allowed'
                 )}
               >
@@ -227,12 +227,12 @@ export function WizardHeader({ className }: { className?: string }) {
               <div className="ml-3 hidden sm:block">
                 <p className={cn(
                   'text-sm font-medium',
-                  isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-900 dark:text-white'
+                  isActive ? 'text-primary' : 'text-foreground'
                 )}>
                   {step.title}
                 </p>
                 {step.description && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-muted-foreground">
                     {step.description}
                   </p>
                 )}
@@ -240,11 +240,11 @@ export function WizardHeader({ className }: { className?: string }) {
 
               {/* Connector line */}
               {index < steps.length - 1 && (
-                <div className="flex-1 mx-4 h-0.5 bg-gray-200 dark:bg-gray-700">
+                <div className="flex-1 mx-4 h-0.5 bg-border">
                   <div
                     className={cn(
                       'h-full transition-all duration-300',
-                      isComplete ? 'bg-green-500' : 'bg-transparent'
+                      isComplete ? 'bg-success' : 'bg-transparent'
                     )}
                     style={{ width: isComplete ? '100%' : '0%' }}
                   />
@@ -276,16 +276,16 @@ export function WizardVerticalHeader({ className }: { className?: string }) {
             disabled={!isClickable}
             className={cn(
               'w-full flex items-start gap-3 p-3 rounded-lg text-left transition-all',
-              isActive && 'bg-primary-50 dark:bg-primary-900/20',
-              !isActive && isClickable && 'hover:bg-gray-50 dark:hover:bg-gray-800',
+              isActive && 'bg-primary/10',
+              !isActive && isClickable && 'hover:bg-muted',
               !isClickable && 'opacity-50 cursor-not-allowed'
             )}
           >
             <div className={cn(
               'flex items-center justify-center w-8 h-8 rounded-full border-2 flex-shrink-0',
-              isActive && 'border-primary-500 bg-primary-500 text-white',
-              isComplete && !isActive && 'border-green-500 bg-green-500 text-white',
-              !isActive && !isComplete && 'border-gray-300 dark:border-gray-600 text-gray-400'
+              isActive && 'border-primary bg-primary text-primary-foreground',
+              isComplete && !isActive && 'border-success bg-success text-success-foreground',
+              !isActive && !isComplete && 'border-border text-muted-foreground'
             )}>
               {isComplete && !isActive ? (
                 <Check className="w-4 h-4" />
@@ -296,12 +296,12 @@ export function WizardVerticalHeader({ className }: { className?: string }) {
             <div>
               <p className={cn(
                 'text-sm font-medium',
-                isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-900 dark:text-white'
+                isActive ? 'text-primary' : 'text-foreground'
               )}>
                 {step.title}
               </p>
               {step.description && (
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                <p className="text-xs text-muted-foreground mt-0.5">
                   {step.description}
                 </p>
               )}
@@ -352,7 +352,7 @@ export function WizardNavigation({
   };
 
   return (
-    <div className={cn('flex items-center justify-between mt-8 pt-6 border-t border-gray-200 dark:border-gray-700', className)}>
+    <div className={cn('flex items-center justify-between mt-8 pt-6 border-t border-border', className)}>
       <Button
         variant="outline"
         onClick={prevStep}
@@ -363,7 +363,7 @@ export function WizardNavigation({
       </Button>
 
       {showStepIndicator && (
-        <span className="text-sm text-gray-500 dark:text-gray-400">
+        <span className="text-sm text-muted-foreground">
           Passo {currentStep + 1} de {steps.length}
         </span>
       )}
@@ -394,13 +394,13 @@ export function WizardProgress({ className }: { className?: string }) {
 
   return (
     <div className={cn('w-full', className)}>
-      <div className="flex justify-between text-xs text-gray-500 mb-1">
+      <div className="flex justify-between text-xs text-muted-foreground mb-1">
         <span>Passo {currentStep + 1} de {steps.length}</span>
         <span>{Math.round(progress)}%</span>
       </div>
-      <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+      <div className="h-2 bg-muted rounded-full overflow-hidden">
         <div
-          className="h-full bg-primary-500 transition-all duration-300"
+          className="h-full bg-primary transition-all duration-300"
           style={{ width: `${progress}%` }}
         />
       </div>
