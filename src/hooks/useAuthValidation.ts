@@ -72,7 +72,7 @@ export function useAuthValidation() {
       const { data: settings } = await supabase
         .from('security_settings')
         .select('restrict_by_ip, allowed_global_ips')
-        .single();
+        .maybeSingle();
 
       if (!settings?.restrict_by_ip) {
         return { allowed: true };

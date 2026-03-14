@@ -755,7 +755,7 @@ async function atualizarScoreCliente(
     .from('clientes')
     .select('razao_social, score')
     .eq('id', clienteId)
-    .single();
+    .maybeSingle();
 
   if (findError || !cliente) {
     return { success: false, message: `Cliente ${clienteId} não encontrado.` };
