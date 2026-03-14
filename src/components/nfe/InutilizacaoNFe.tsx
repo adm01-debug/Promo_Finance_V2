@@ -334,7 +334,7 @@ export function InutilizacaoNFe() {
                     {sefazResponse.errors && sefazResponse.errors.length > 0 && (
                       <div className="mt-2 space-y-1">
                         {sefazResponse.errors.map((err, idx) => (
-                          <p key={idx} className="text-sm text-red-500 flex items-center gap-1">
+                          <p key={idx} className="text-sm text-destructive flex items-center gap-1">
                             <AlertTriangle className="h-3 w-3" />
                             {err}
                           </p>
