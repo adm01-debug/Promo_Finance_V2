@@ -48,7 +48,7 @@ export function AuditoriaCompliancePanel({ empresaId }: Props) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className={`text-3xl font-bold ${resumo.scoreCompliance >= 80 ? 'text-green-600' : resumo.scoreCompliance >= 60 ? 'text-amber-600' : 'text-red-600'}`}>
+            <div className={`text-3xl font-bold ${resumo.scoreCompliance >= 80 ? 'text-success' : resumo.scoreCompliance >= 60 ? 'text-warning' : 'text-destructive'}`}>
               {resumo.scoreCompliance}%
             </div>
             <Progress value={resumo.scoreCompliance} className="h-2 mt-2" />
