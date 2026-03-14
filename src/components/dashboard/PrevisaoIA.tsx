@@ -507,7 +507,7 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm text-muted-foreground">Previsão:</span>
-                            <span className="font-semibold text-green-600">{analise.analise_tendencias.receitas?.previsao_proximo_mes}</span>
+                            <span className="font-semibold text-success">{analise.analise_tendencias.receitas?.previsao_proximo_mes}</span>
                           </div>
                           <p className="text-xs text-muted-foreground border-t pt-3">
                             {analise.analise_tendencias.receitas?.observacao}
