@@ -355,8 +355,8 @@ export const SefazAnalytics = () => {
                   <p className="text-sm text-muted-foreground">Total de Eventos</p>
                   <p className="text-2xl font-bold">{stats.total}</p>
                 </div>
-                <div className="p-2 rounded-full bg-blue-500/10">
-                  <Activity className="h-5 w-5 text-blue-500" />
+                <div className="p-2 rounded-full bg-primary/10">
+                  <Activity className="h-5 w-5 text-primary" />
                 </div>
               </div>
               <div className="flex items-center gap-1 mt-2 text-xs">
