@@ -178,7 +178,7 @@ export function FormActions({ children, className, align = 'right' }: FormAction
  */
 export function FormDivider({ className }: { className?: string }) {
   return (
-    <hr className={cn('border-gray-200 dark:border-gray-700 my-6', className)} />
+    <hr className={cn('border-border my-6', className)} />
   );
 }
 

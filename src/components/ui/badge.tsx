@@ -139,11 +139,11 @@ interface StatusBadgeProps {
 
 function StatusBadge({ status, label, showDot = true, className }: StatusBadgeProps) {
   const statusConfig = {
-    online: { color: 'bg-green-500', label: 'Online', dotPulse: true },
-    offline: { color: 'bg-gray-400', label: 'Offline', dotPulse: false },
-    away: { color: 'bg-yellow-500', label: 'Ausente', dotPulse: false },
-    busy: { color: 'bg-red-500', label: 'Ocupado', dotPulse: false },
-    pending: { color: 'bg-blue-500', label: 'Pendente', dotPulse: true },
+    online: { color: 'bg-success', label: 'Online', dotPulse: true },
+    offline: { color: 'bg-muted-foreground', label: 'Offline', dotPulse: false },
+    away: { color: 'bg-warning', label: 'Ausente', dotPulse: false },
+    busy: { color: 'bg-destructive', label: 'Ocupado', dotPulse: false },
+    pending: { color: 'bg-secondary', label: 'Pendente', dotPulse: true },
   };
 
   const config = statusConfig[status];

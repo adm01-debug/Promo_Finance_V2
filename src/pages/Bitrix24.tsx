@@ -289,8 +289,8 @@ export default function Bitrix24() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30">
-                  <XCircle className="h-5 w-5 text-red-500" />
+                <div className="p-2 rounded-lg bg-destructive/10">
+                  <XCircle className="h-5 w-5 text-destructive" />
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Erros Hoje</p>

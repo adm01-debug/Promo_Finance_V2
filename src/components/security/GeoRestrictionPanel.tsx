@@ -198,13 +198,13 @@ export function GeoRestrictionPanel() {
 
         {/* Aviso quando ativado */}
         {isEnabled && (
-          <div className="flex items-start gap-3 p-4 rounded-lg border border-yellow-500/50 bg-yellow-500/10">
-            <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
+          <div className="flex items-start gap-3 p-4 rounded-lg border border-warning/50 bg-warning/10">
+            <AlertTriangle className="h-5 w-5 text-warning mt-0.5" />
             <div className="text-sm">
-              <p className="font-medium text-yellow-700 dark:text-yellow-500">
+              <p className="font-medium text-warning">
                 Bloqueio geográfico ativo
               </p>
-              <p className="text-yellow-600 dark:text-yellow-400">
+              <p className="text-warning/80">
                 Usuários fora dos países listados abaixo não conseguirão fazer login.
               </p>
             </div>
