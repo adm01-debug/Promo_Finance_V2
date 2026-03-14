@@ -108,7 +108,7 @@ export function BarChart({
     return (
       <div
         className={cn(
-          'flex items-center justify-center text-gray-400 dark:text-gray-600',
+          'flex items-center justify-center text-muted-foreground',
           className
         )}
         style={{ width, height }}
@@ -139,14 +139,14 @@ export function BarChart({
                     y2={line.position}
                     stroke={gridColor}
                     strokeDasharray="2,2"
-                    className="dark:stroke-gray-700"
+                    className="dark:stroke-border"
                   />
                   <text
                     x={padding.left - 8}
                     y={line.position}
                     textAnchor="end"
                     dominantBaseline="middle"
-                    className="fill-gray-500 dark:fill-gray-400 text-xs"
+                    className="fill-muted-foreground text-xs"
                   >
                     {line.label}
                   </text>
@@ -160,13 +160,13 @@ export function BarChart({
                     y2={height - padding.bottom}
                     stroke={gridColor}
                     strokeDasharray="2,2"
-                    className="dark:stroke-gray-700"
+                    className="dark:stroke-border"
                   />
                   <text
                     x={line.position}
                     y={height - padding.bottom + 15}
                     textAnchor="middle"
-                    className="fill-gray-500 dark:fill-gray-400 text-xs"
+                    className="fill-muted-foreground text-xs"
                   >
                     {line.label}
                   </text>
@@ -209,7 +209,7 @@ export function BarChart({
               y={isVertical ? bar.y - 8 : bar.y + bar.height / 2}
               textAnchor={isVertical ? 'middle' : 'start'}
               dominantBaseline={isVertical ? 'auto' : 'middle'}
-              className="fill-gray-700 dark:fill-gray-300 text-xs font-medium"
+              className="fill-foreground text-xs font-medium"
             >
               {formatValue(bar.value)}
             </text>
@@ -222,7 +222,7 @@ export function BarChart({
               y={isVertical ? height - padding.bottom + 15 : bar.y + bar.height / 2}
               textAnchor={isVertical ? 'middle' : 'end'}
               dominantBaseline={isVertical ? 'auto' : 'middle'}
-              className="fill-gray-600 dark:fill-gray-400 text-xs"
+              className="fill-muted-foreground text-xs"
               transform={isVertical ? `rotate(-45, ${bar.x + bar.width / 2}, ${height - padding.bottom + 15})` : undefined}
             >
               {bar.label.length > 10 ? `${bar.label.slice(0, 10)}...` : bar.label}
@@ -276,7 +276,7 @@ export function StackedBarChart({
                 className="w-3 h-3 rounded"
                 style={{ backgroundColor: item.color }}
               />
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-muted-foreground">
                 {item.name}
               </span>
             </div>
@@ -340,7 +340,7 @@ export function GroupedBarChart({
                 className="w-3 h-3 rounded"
                 style={{ backgroundColor: item.color }}
               />
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-muted-foreground">
                 {item.name}
               </span>
             </div>

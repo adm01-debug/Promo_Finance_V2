@@ -159,9 +159,9 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
       case 'critico':
         return <Badge variant="destructive" className="gap-1"><AlertTriangle className="h-3 w-3" /> Crítico</Badge>;
       case 'alto':
-        return <Badge className="gap-1 bg-orange-500"><AlertTriangle className="h-3 w-3" /> Alto</Badge>;
+        return <Badge className="gap-1 bg-streak text-streak-foreground"><AlertTriangle className="h-3 w-3" /> Alto</Badge>;
       case 'medio':
-        return <Badge className="gap-1 bg-yellow-500 text-yellow-950"><AlertTriangle className="h-3 w-3" /> Médio</Badge>;
+        return <Badge className="gap-1 bg-warning text-warning-foreground"><AlertTriangle className="h-3 w-3" /> Médio</Badge>;
       default:
         return <Badge variant="secondary" className="gap-1"><CheckCircle2 className="h-3 w-3" /> Baixo</Badge>;
     }
@@ -169,7 +169,7 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
 
   const getTendenciaIcon = (tendencia: string) => {
     if (tendencia?.toLowerCase().includes('cresc')) {
-      return <TrendingUp className="h-4 w-4 text-green-500" />;
+      return <TrendingUp className="h-4 w-4 text-success" />;
     } else if (tendencia?.toLowerCase().includes('decresc')) {
       return <TrendingDown className="h-4 w-4 text-destructive" />;
     }
@@ -182,9 +182,9 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
     
     if (inverted) {
       if (isUp) return 'text-destructive';
-      if (isDown) return 'text-green-500';
+      if (isDown) return 'text-success';
     } else {
-      if (isUp) return 'text-green-500';
+      if (isUp) return 'text-success';
       if (isDown) return 'text-destructive';
     }
     return 'text-muted-foreground';
@@ -198,16 +198,16 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
 
   const getScoreColor = (score: string): string => {
     const scoreNum = parseInt(score) || 0;
-    if (scoreNum >= 80) return 'text-green-500';
-    if (scoreNum >= 60) return 'text-yellow-500';
-    if (scoreNum >= 40) return 'text-orange-500';
+    if (scoreNum >= 80) return 'text-success';
+    if (scoreNum >= 60) return 'text-warning';
+    if (scoreNum >= 40) return 'text-streak';
     return 'text-destructive';
   };
 
   if (!analise && !loading) {
     return (
       <Card className={`${className} relative overflow-hidden`}>
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
         <CardContent className="relative flex flex-col items-center justify-center py-16 text-center">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -356,22 +356,22 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
                       <p className="text-lg font-bold">{analise.indicadores_chave.prazo_medio_recebimento}</p>
                     </Card>
                     <Card className="text-center p-4">
-                      <Clock className="h-5 w-5 text-orange-500 mx-auto mb-2" />
+                      <Clock className="h-5 w-5 text-streak mx-auto mb-2" />
                       <p className="text-xs text-muted-foreground">PMP</p>
                       <p className="text-lg font-bold">{analise.indicadores_chave.prazo_medio_pagamento}</p>
                     </Card>
                     <Card className="text-center p-4">
-                      <Activity className="h-5 w-5 text-blue-500 mx-auto mb-2" />
+                      <Activity className="h-5 w-5 text-secondary mx-auto mb-2" />
                       <p className="text-xs text-muted-foreground">Ciclo Financeiro</p>
                       <p className="text-lg font-bold">{analise.indicadores_chave.ciclo_financeiro}</p>
                     </Card>
                     <Card className="text-center p-4">
-                      <Wallet className="h-5 w-5 text-green-500 mx-auto mb-2" />
+                      <Wallet className="h-5 w-5 text-success mx-auto mb-2" />
                       <p className="text-xs text-muted-foreground">Liquidez</p>
                       <p className="text-lg font-bold">{analise.indicadores_chave.liquidez_corrente}</p>
                     </Card>
                     <Card className="text-center p-4">
-                      <DollarSign className="h-5 w-5 text-purple-500 mx-auto mb-2" />
+                      <DollarSign className="h-5 w-5 text-accent-foreground mx-auto mb-2" />
                       <p className="text-xs text-muted-foreground">Cobertura</p>
                       <p className="text-lg font-bold">{analise.indicadores_chave.cobertura_despesas}</p>
                     </Card>
@@ -489,7 +489,7 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
                       <Card>
                         <CardHeader className="pb-3">
                           <CardTitle className="flex items-center gap-2 text-base">
-                            <TrendingUp className="h-4 w-4 text-green-500" />
+                            <TrendingUp className="h-4 w-4 text-success" />
                             Tendência de Receitas
                           </CardTitle>
                         </CardHeader>
@@ -507,7 +507,7 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm text-muted-foreground">Previsão:</span>
-                            <span className="font-semibold text-green-600">{analise.analise_tendencias.receitas?.previsao_proximo_mes}</span>
+                            <span className="font-semibold text-success">{analise.analise_tendencias.receitas?.previsao_proximo_mes}</span>
                           </div>
                           <p className="text-xs text-muted-foreground border-t pt-3">
                             {analise.analise_tendencias.receitas?.observacao}
@@ -520,7 +520,7 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
                       <Card>
                         <CardHeader className="pb-3">
                           <CardTitle className="flex items-center gap-2 text-base">
-                            <TrendingDown className="h-4 w-4 text-orange-500" />
+                            <TrendingDown className="h-4 w-4 text-streak" />
                             Tendência de Despesas
                           </CardTitle>
                         </CardHeader>
@@ -538,7 +538,7 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm text-muted-foreground">Previsão:</span>
-                            <span className="font-semibold text-orange-600">{analise.analise_tendencias.despesas?.previsao_proximo_mes}</span>
+                            <span className="font-semibold text-streak">{analise.analise_tendencias.despesas?.previsao_proximo_mes}</span>
                           </div>
                           <p className="text-xs text-muted-foreground border-t pt-3">
                             {analise.analise_tendencias.despesas?.observacao}
@@ -582,7 +582,7 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
                       <Card>
                         <CardHeader className="pb-3">
                           <CardTitle className="flex items-center gap-2 text-base">
-                            <PieChart className="h-4 w-4 text-purple-500" />
+                            <PieChart className="h-4 w-4 text-accent-foreground" />
                             Margem Líquida
                           </CardTitle>
                         </CardHeader>
@@ -629,7 +629,7 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
                       <CardContent className="py-4 space-y-2">
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-muted-foreground">Entradas:</span>
-                          <span className="font-medium text-green-600">{dados.entradas_previstas}</span>
+                          <span className="font-medium text-success">{dados.entradas_previstas}</span>
                         </div>
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-muted-foreground">Saídas:</span>
@@ -637,7 +637,7 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
                         </div>
                         <div className="border-t pt-2 flex items-center justify-between">
                           <span className="text-sm font-medium">Saldo:</span>
-                          <span className={`font-bold ${parseValor(dados.saldo_projetado) >= 0 ? 'text-green-600' : 'text-destructive'}`}>
+                          <span className={`font-bold ${parseValor(dados.saldo_projetado) >= 0 ? 'text-success' : 'text-destructive'}`}>
                             {dados.saldo_projetado}
                           </span>
                         </div>
@@ -666,7 +666,7 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
                           transition={{ delay: i * 0.05 }}
                           className="flex items-start gap-2 text-sm"
                         >
-                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
                           <span>{rec}</span>
                         </motion.li>
                       ))}

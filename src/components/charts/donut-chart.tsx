@@ -136,14 +136,14 @@ export function DonutChart({
         {/* Center content */}
         {showTotal && (
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-sm text-gray-500 dark:text-gray-400">
+            <span className="text-sm text-muted-foreground">
               {hoveredSegment ? hoveredSegment.label : totalLabel}
             </span>
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">
+            <span className="text-2xl font-bold text-foreground">
               {formatValue(hoveredSegment ? hoveredSegment.value : total)}
             </span>
             {hoveredSegment && (
-              <span className="text-sm text-gray-500 dark:text-gray-400">
+              <span className="text-sm text-muted-foreground">
                 {(hoveredSegment.percentage * 100).toFixed(1)}%
               </span>
             )}
@@ -163,7 +163,7 @@ export function DonutChart({
                 x={segment.labelX + 50}
                 y={segment.labelY + 50}
                 textAnchor="middle"
-                className="text-xs fill-gray-600 dark:fill-gray-400"
+                className="text-xs fill-muted-foreground"
               >
                 {segment.label}
               </text>
@@ -180,7 +180,7 @@ export function DonutChart({
               key={segment.id}
               className={cn(
                 'flex items-center gap-3 px-3 py-2 rounded-lg transition-colors cursor-pointer',
-                hoveredId === segment.id && 'bg-gray-100 dark:bg-gray-700'
+                hoveredId === segment.id && 'bg-muted'
               )}
               onMouseEnter={() => setHoveredId(segment.id)}
               onMouseLeave={() => setHoveredId(null)}
@@ -190,14 +190,14 @@ export function DonutChart({
                 style={{ backgroundColor: segment.color }}
               />
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                <div className="text-sm font-medium text-foreground truncate">
                   {segment.label}
                 </div>
               </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
+              <div className="text-sm text-muted-foreground">
                 {formatValue(segment.value)}
               </div>
-              <div className="text-xs text-gray-400 w-12 text-right">
+              <div className="text-xs text-muted-foreground w-12 text-right">
                 {(segment.percentage * 100).toFixed(1)}%
               </div>
             </div>
@@ -305,7 +305,7 @@ export function PieChart({
                 className="w-3 h-3 rounded-sm"
                 style={{ backgroundColor: segment.color }}
               />
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-muted-foreground">
                 {segment.label}: {formatValue(segment.value)} ({(segment.percentage * 100).toFixed(1)}%)
               </span>
             </div>
@@ -388,11 +388,11 @@ export function GaugeChart({
       </svg>
 
       <div className="text-center -mt-8">
-        <div className="text-3xl font-bold text-gray-900 dark:text-white">
+        <div className="text-3xl font-bold text-foreground">
           {formatValue(value)}
         </div>
         {label && (
-          <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <div className="text-sm text-muted-foreground mt-1">
             {label}
           </div>
         )}

@@ -73,7 +73,7 @@ export function Sparkline({
   if (data.length < 2) {
     return (
       <div 
-        className={cn('flex items-center justify-center text-gray-400', className)}
+        className={cn('flex items-center justify-center text-muted-foreground', className)}
         style={{ width, height }}
       >
         —
@@ -216,7 +216,7 @@ export function BarSparkline({
   if (data.length === 0) {
     return (
       <div 
-        className={cn('flex items-center justify-center text-gray-400', className)}
+        className={cn('flex items-center justify-center text-muted-foreground', className)}
         style={{ width, height }}
       >
         —
@@ -341,12 +341,12 @@ export function TrendSparkline({
       {(label || value) && (
         <div className="flex flex-col">
           {label && (
-            <span className="text-xs text-gray-500 dark:text-gray-400">
+            <span className="text-xs text-muted-foreground">
               {label}
             </span>
           )}
           {value && (
-            <span className="text-sm font-semibold text-gray-900 dark:text-white">
+            <span className="text-sm font-semibold text-foreground">
               {value}
             </span>
           )}

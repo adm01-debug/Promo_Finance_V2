@@ -101,7 +101,7 @@ export function LineChart({
     return (
       <div
         className={cn(
-          'flex items-center justify-center text-gray-400 dark:text-gray-600',
+          'flex items-center justify-center text-muted-foreground',
           className
         )}
         style={{ width, height }}
@@ -130,14 +130,14 @@ export function LineChart({
                 y2={line.y}
                 stroke={gridColor}
                 strokeDasharray="2,2"
-                className="dark:stroke-gray-700"
+                className="dark:stroke-border"
               />
               <text
                 x={padding.left - 8}
                 y={line.y}
                 textAnchor="end"
                 dominantBaseline="middle"
-                className="fill-gray-500 dark:fill-gray-400 text-xs"
+                className="fill-muted-foreground text-xs"
               >
                 {line.label}
               </text>
@@ -192,7 +192,7 @@ export function LineChart({
               x={point.x}
               y={point.y - 10}
               textAnchor="middle"
-              className="fill-gray-700 dark:fill-gray-300 text-xs font-medium"
+              className="fill-foreground text-xs font-medium"
             >
               {formatValue(point.value)}
             </text>
@@ -207,7 +207,7 @@ export function LineChart({
           x={point.x}
           y={height - 10}
           textAnchor="middle"
-          className="fill-gray-500 dark:fill-gray-400 text-xs"
+          className="fill-muted-foreground text-xs"
         >
           {point.label}
         </text>
@@ -250,7 +250,7 @@ export function MultiLineChart({
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: s.color }}
               />
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-muted-foreground">
                 {s.name}
               </span>
             </div>

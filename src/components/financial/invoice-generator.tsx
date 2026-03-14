@@ -208,16 +208,16 @@ export function InvoiceGenerator({
   const handlePrint = () => onPrint?.(buildInvoice());
 
   return (
-    <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+    <div className="max-w-4xl mx-auto bg-card rounded-xl shadow-lg border border-border">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+      <div className="px-6 py-4 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <FileText className="w-6 h-6 text-primary-600" />
+          <FileText className="w-6 h-6 text-primary" />
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-lg font-semibold text-foreground">
               {invoice.id ? 'Editar Fatura' : 'Nova Fatura'}
             </h2>
-            <p className="text-sm text-gray-500">#{invoice.number}</p>
+            <p className="text-sm text-muted-foreground">#{invoice.number}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -241,7 +241,7 @@ export function InvoiceGenerator({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Client Info */}
           <div className="space-y-4">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <h3 className="text-sm font-medium text-foreground">
               Cliente
             </h3>
             <input
@@ -252,7 +252,7 @@ export function InvoiceGenerator({
                 client: { ...prev.client, name: e.target.value },
               }))}
               placeholder="Nome do cliente"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent"
+               className="w-full px-3 py-2 border border-border rounded-lg bg-transparent"
             />
             <input
               type="text"
@@ -262,7 +262,7 @@ export function InvoiceGenerator({
                 client: { ...prev.client, document: e.target.value },
               }))}
               placeholder="CPF/CNPJ"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent"
+               className="w-full px-3 py-2 border border-border rounded-lg bg-transparent"
             />
             <input
               type="email"
@@ -272,18 +272,18 @@ export function InvoiceGenerator({
                 client: { ...prev.client, email: e.target.value },
               }))}
               placeholder="Email"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent"
+               className="w-full px-3 py-2 border border-border rounded-lg bg-transparent"
             />
           </div>
 
           {/* Invoice Info */}
           <div className="space-y-4">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <h3 className="text-sm font-medium text-foreground">
               Informações da Fatura
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Data Emissão</label>
+                <label className="block text-xs text-muted-foreground mb-1">Data Emissão</label>
                 <input
                   type="date"
                   value={invoice.issueDate?.toISOString().split('T')[0]}
@@ -291,11 +291,11 @@ export function InvoiceGenerator({
                     ...prev,
                     issueDate: new Date(e.target.value),
                   }))}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent"
+                  className="w-full px-3 py-2 border border-border rounded-lg bg-transparent"
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Vencimento</label>
+                <label className="block text-xs text-muted-foreground mb-1">Vencimento</label>
                 <input
                   type="date"
                   value={invoice.dueDate?.toISOString().split('T')[0]}
@@ -303,7 +303,7 @@ export function InvoiceGenerator({
                     ...prev,
                     dueDate: new Date(e.target.value),
                   }))}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent"
+                  className="w-full px-3 py-2 border border-border rounded-lg bg-transparent"
                 />
               </div>
             </div>
@@ -313,7 +313,7 @@ export function InvoiceGenerator({
         {/* Items Table */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <h3 className="text-sm font-medium text-foreground">
               Itens
             </h3>
             <Button variant="outline" size="sm" onClick={addItem}>
@@ -322,9 +322,9 @@ export function InvoiceGenerator({
             </Button>
           </div>
 
-          <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+          <div className="border border-border rounded-lg overflow-hidden">
             {/* Table Header */}
-            <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-gray-50 dark:bg-gray-900/50 text-xs font-medium text-gray-500 uppercase">
+            <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-muted/50 text-xs font-medium text-muted-foreground uppercase">
               <div className="col-span-5">Descrição</div>
               <div className="col-span-2 text-center">Qtd</div>
               <div className="col-span-2 text-right">Preço Unit.</div>
@@ -333,7 +333,7 @@ export function InvoiceGenerator({
             </div>
 
             {/* Items */}
-            <div className="divide-y divide-gray-100 dark:divide-gray-700">
+            <div className="divide-y divide-border">
               {calculations.items.map((item) => (
                 <div key={item.id} className="grid grid-cols-12 gap-2 px-4 py-3 items-center">
                   <div className="col-span-5">
@@ -342,7 +342,7 @@ export function InvoiceGenerator({
                       value={item.description}
                       onChange={(e) => updateItem(item.id, { description: e.target.value })}
                       placeholder="Descrição do item"
-                      className="w-full px-2 py-1 border-0 border-b border-transparent hover:border-gray-300 focus:border-primary-500 bg-transparent text-sm"
+                      className="w-full px-2 py-1 border-0 border-b border-transparent hover:border-border focus:border-primary bg-transparent text-sm"
                     />
                   </div>
                   <div className="col-span-2">
@@ -351,7 +351,7 @@ export function InvoiceGenerator({
                       value={item.quantity}
                       onChange={(e) => updateItem(item.id, { quantity: Number(e.target.value) })}
                       min={1}
-                      className="w-full px-2 py-1 text-center border border-gray-200 dark:border-gray-700 rounded bg-transparent text-sm"
+                      className="w-full px-2 py-1 text-center border border-border rounded bg-transparent text-sm"
                     />
                   </div>
                   <div className="col-span-2">
@@ -361,7 +361,7 @@ export function InvoiceGenerator({
                       onChange={(e) => updateItem(item.id, { unitPrice: Number(e.target.value) })}
                       min={0}
                       step={0.01}
-                      className="w-full px-2 py-1 text-right border border-gray-200 dark:border-gray-700 rounded bg-transparent text-sm"
+                      className="w-full px-2 py-1 text-right border border-border rounded bg-transparent text-sm"
                     />
                   </div>
                   <div className="col-span-2 text-right text-sm font-medium">
@@ -370,18 +370,18 @@ export function InvoiceGenerator({
                   <div className="col-span-1 flex justify-end gap-1">
                     <button
                       onClick={() => duplicateItem(item.id)}
-                      className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                      className="p-1 hover:bg-muted rounded"
                       title="Duplicar"
                     >
-                      <Copy className="w-3.5 h-3.5 text-gray-400" />
+                      <Copy className="w-3.5 h-3.5 text-muted-foreground" />
                     </button>
                     <button
                       onClick={() => removeItem(item.id)}
-                      className="p-1 hover:bg-red-100 dark:hover:bg-red-900/20 rounded"
+                      className="p-1 hover:bg-destructive/10 rounded"
                       title="Remover"
                       disabled={(invoice.items?.length || 0) <= 1}
                     >
-                      <Trash2 className="w-3.5 h-3.5 text-gray-400 hover:text-red-500" />
+                      <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
                     </button>
                   </div>
                 </div>
@@ -395,20 +395,20 @@ export function InvoiceGenerator({
           <div className="w-full max-w-sm space-y-3">
             {/* Subtotal */}
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
+              <span className="text-muted-foreground">Subtotal</span>
               <span className="font-medium">{formatCurrency(calculations.subtotal)}</span>
             </div>
 
             {/* Discount */}
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600 dark:text-gray-400 flex-1">Desconto</span>
+              <span className="text-sm text-muted-foreground flex-1">Desconto</span>
               <select
                 value={invoice.discountType || 'percentage'}
                 onChange={(e) => setInvoice(prev => ({
                   ...prev,
                   discountType: e.target.value as 'percentage' | 'fixed',
                 }))}
-                className="px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-sm bg-transparent"
+                 className="px-2 py-1 border border-border rounded text-sm bg-transparent"
               >
                 <option value="percentage">%</option>
                 <option value="fixed">R$</option>
@@ -421,11 +421,11 @@ export function InvoiceGenerator({
                   discount: Number(e.target.value),
                 }))}
                 min={0}
-                className="w-20 px-2 py-1 text-right border border-gray-200 dark:border-gray-700 rounded text-sm bg-transparent"
+                 className="w-20 px-2 py-1 text-right border border-border rounded text-sm bg-transparent"
               />
             </div>
             {calculations.discountAmount > 0 && (
-              <div className="flex justify-between text-sm text-red-600">
+              <div className="flex justify-between text-sm text-destructive">
                 <span></span>
                 <span>-{formatCurrency(calculations.discountAmount)}</span>
               </div>
@@ -433,14 +433,14 @@ export function InvoiceGenerator({
 
             {/* Tax */}
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600 dark:text-gray-400 flex-1">Impostos</span>
+              <span className="text-sm text-muted-foreground flex-1">Impostos</span>
               <select
                 value={invoice.taxType || 'percentage'}
                 onChange={(e) => setInvoice(prev => ({
                   ...prev,
                   taxType: e.target.value as 'percentage' | 'fixed',
                 }))}
-                className="px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-sm bg-transparent"
+                className="px-2 py-1 border border-border rounded text-sm bg-transparent"
               >
                 <option value="percentage">%</option>
                 <option value="fixed">R$</option>
@@ -453,27 +453,27 @@ export function InvoiceGenerator({
                   tax: Number(e.target.value),
                 }))}
                 min={0}
-                className="w-20 px-2 py-1 text-right border border-gray-200 dark:border-gray-700 rounded text-sm bg-transparent"
+                className="w-20 px-2 py-1 text-right border border-border rounded text-sm bg-transparent"
               />
             </div>
             {calculations.taxAmount > 0 && (
-              <div className="flex justify-between text-sm text-gray-600">
+              <div className="flex justify-between text-sm text-muted-foreground">
                 <span></span>
                 <span>+{formatCurrency(calculations.taxAmount)}</span>
               </div>
             )}
 
             {/* Total */}
-            <div className="flex justify-between text-lg font-bold pt-3 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex justify-between text-lg font-bold pt-3 border-t border-border">
               <span>Total</span>
-              <span className="text-primary-600">{formatCurrency(calculations.total)}</span>
+              <span className="text-primary">{formatCurrency(calculations.total)}</span>
             </div>
           </div>
         </div>
 
         {/* Notes */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-foreground mb-2">
             Observações
           </label>
           <textarea
@@ -481,13 +481,13 @@ export function InvoiceGenerator({
             onChange={(e) => setInvoice(prev => ({ ...prev, notes: e.target.value }))}
             rows={3}
             placeholder="Observações, termos e condições..."
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent resize-none"
+            className="w-full px-3 py-2 border border-border rounded-lg bg-transparent resize-none"
           />
         </div>
 
         {/* Payment Info */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-foreground mb-2">
             Informações de Pagamento
           </label>
           <textarea
@@ -495,13 +495,13 @@ export function InvoiceGenerator({
             onChange={(e) => setInvoice(prev => ({ ...prev, paymentInfo: e.target.value }))}
             rows={2}
             placeholder="PIX, dados bancários, formas de pagamento..."
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent resize-none"
+            className="w-full px-3 py-2 border border-border rounded-lg bg-transparent resize-none"
           />
         </div>
       </div>
 
       {/* Footer Actions */}
-      <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+      <div className="px-6 py-4 border-t border-border flex justify-end gap-3">
         <Button variant="outline" onClick={handleSave}>
           Salvar Rascunho
         </Button>

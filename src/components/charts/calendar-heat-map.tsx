@@ -138,7 +138,7 @@ export function CalendarHeatMap({
   return (
     <div className="inline-block">
       {title && (
-        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+        <h3 className="text-sm font-medium text-foreground mb-3">
           {title}
         </h3>
       )}
@@ -152,7 +152,7 @@ export function CalendarHeatMap({
                 key={`${month}-${position}`}
                 x={position * (cellSize + cellGap)}
                 y={12}
-                className="text-[10px] fill-gray-400"
+                className="text-[10px] fill-muted-foreground"
               >
                 {MONTH_LABELS[month]}
               </text>
@@ -168,7 +168,7 @@ export function CalendarHeatMap({
                 key={day}
                 x={0}
                 y={day * (cellSize + cellGap) + cellSize / 2 + 4}
-                className="text-[10px] fill-gray-400"
+                className="text-[10px] fill-muted-foreground"
               >
                 {WEEKDAY_LABELS[day]}
               </text>
@@ -196,7 +196,7 @@ export function CalendarHeatMap({
                     fill={getColor(day.value)}
                     className={cn(
                       'transition-colors',
-                      onDayClick && 'cursor-pointer hover:stroke-gray-400 hover:stroke-1'
+                      onDayClick && 'cursor-pointer hover:stroke-muted-foreground hover:stroke-1'
                     )}
                     onClick={() => onDayClick?.(dateStr, day.value)}
                   >
@@ -213,7 +213,7 @@ export function CalendarHeatMap({
       
       {/* Legend */}
       {legend && (
-        <div className="flex items-center justify-end gap-2 mt-3 text-xs text-gray-500">
+        <div className="flex items-center justify-end gap-2 mt-3 text-xs text-muted-foreground">
           <span>Menos</span>
           <div className="flex gap-1">
             {colorScale.map((color, index) => (

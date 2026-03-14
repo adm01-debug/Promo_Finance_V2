@@ -32,7 +32,7 @@ export function TrendLine({
   data,
   width = 400,
   height = 200,
-  color = '#3b82f6',
+  color = 'hsl(var(--primary))',
   strokeWidth = 2,
   showArea = true,
   areaOpacity = 0.1,
@@ -64,7 +64,6 @@ export function TrendLine({
     const maxY = Math.max(...values);
     const rangeY = maxY - minY || 1;
 
-    // Add some padding to Y range
     const paddedMinY = minY - rangeY * 0.1;
     const paddedMaxY = maxY + rangeY * 0.1;
     const paddedRangeY = paddedMaxY - paddedMinY;
@@ -75,10 +74,8 @@ export function TrendLine({
       data: d,
     }));
 
-    // Generate path
     let path: string;
     if (curved && points.length > 2) {
-      // Catmull-Rom spline to Bezier
       path = points.reduce((acc, point, i, arr) => {
         if (i === 0) return `M ${point.x} ${point.y}`;
         
@@ -98,12 +95,10 @@ export function TrendLine({
       path = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
     }
 
-    // Area path
     const areaPath = showArea
       ? `${path} L ${points[points.length - 1].x} ${padding.top + chartHeight} L ${points[0].x} ${padding.top + chartHeight} Z`
       : '';
 
-    // Y-axis ticks
     const yTickCount = 5;
     const yTicks = Array.from({ length: yTickCount }, (_, i) => {
       const value = paddedMinY + (paddedRangeY * i) / (yTickCount - 1);
@@ -111,7 +106,6 @@ export function TrendLine({
       return { value, y };
     });
 
-    // X-axis ticks
     const xTickCount = Math.min(data.length, 6);
     const step = Math.floor(data.length / (xTickCount - 1));
     const xTicks = Array.from({ length: xTickCount }, (_, i) => {
@@ -132,7 +126,7 @@ export function TrendLine({
       <svg width={width} height={height}>
         {/* Grid lines */}
         {showGrid && (
-          <g className="text-gray-200 dark:text-gray-700">
+          <g className="text-border">
             {yTicks.map((tick, i) => (
               <line
                 key={`grid-y-${i}`}
@@ -195,7 +189,7 @@ export function TrendLine({
               y1={padding.top}
               x2={padding.left}
               y2={padding.top + chartHeight}
-              stroke="#e5e7eb"
+              stroke="hsl(var(--border))"
               strokeWidth={1}
             />
             {yTicks.map((tick, i) => (
@@ -204,7 +198,7 @@ export function TrendLine({
                 x={padding.left - 8}
                 y={tick.y + 4}
                 textAnchor="end"
-                className="text-xs fill-gray-500 dark:fill-gray-400"
+                className="text-xs fill-muted-foreground"
               >
                 {formatY(tick.value)}
               </text>
@@ -220,7 +214,7 @@ export function TrendLine({
               y1={padding.top + chartHeight}
               x2={width - padding.right}
               y2={padding.top + chartHeight}
-              stroke="#e5e7eb"
+              stroke="hsl(var(--border))"
               strokeWidth={1}
             />
             {xTicks.map((tick, i) => (
@@ -229,7 +223,7 @@ export function TrendLine({
                 x={tick.x}
                 y={padding.top + chartHeight + 20}
                 textAnchor="middle"
-                className="text-xs fill-gray-500 dark:fill-gray-400"
+                className="text-xs fill-muted-foreground"
               >
                 {formatX(tick.value)}
               </text>
@@ -267,7 +261,7 @@ export function TrendLine({
               cx={hoveredPoint.x}
               cy={hoveredPoint.y}
               r={6}
-              fill="white"
+              fill="hsl(var(--card))"
               stroke={color}
               strokeWidth={2}
             />
@@ -278,7 +272,7 @@ export function TrendLine({
       {/* Tooltip */}
       {showTooltip && hoveredPoint && (
         <div
-          className="absolute z-10 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded-lg shadow-lg pointer-events-none"
+          className="absolute z-10 px-3 py-2 bg-popover text-popover-foreground text-sm rounded-lg shadow-lg pointer-events-none border border-border"
           style={{
             left: hoveredPoint.x,
             top: hoveredPoint.y - 40,
@@ -286,7 +280,7 @@ export function TrendLine({
           }}
         >
           <div className="font-medium">{formatY(hoveredPoint.data.y)}</div>
-          <div className="text-gray-400 text-xs">{formatX(hoveredPoint.data.x)}</div>
+          <div className="text-muted-foreground text-xs">{formatX(hoveredPoint.data.x)}</div>
         </div>
       )}
     </div>
@@ -372,7 +366,6 @@ export function MultiTrendLine({
       return { id: s.id, color: s.color, path };
     });
 
-    // Y-axis ticks
     const yTickCount = 5;
     const yTicks = Array.from({ length: yTickCount }, (_, i) => {
       const value = paddedMinY + (paddedRangeY * i) / (yTickCount - 1);
@@ -380,7 +373,6 @@ export function MultiTrendLine({
       return { value, y };
     });
 
-    // X-axis ticks (using first series)
     const firstSeries = activeData[0];
     const xTickCount = Math.min(firstSeries?.data.length || 0, 6);
     const step = Math.floor((firstSeries?.data.length || 1) / (xTickCount - 1));
@@ -408,8 +400,8 @@ export function MultiTrendLine({
               className={cn(
                 'flex items-center gap-2 px-3 py-1.5 rounded-full text-sm transition-colors',
                 activeSeries.has(s.id)
-                  ? 'bg-gray-100 dark:bg-gray-700'
-                  : 'bg-gray-50 dark:bg-gray-800 opacity-50'
+                  ? 'bg-muted'
+                  : 'bg-muted/50 opacity-50'
               )}
             >
               <div
@@ -434,7 +426,7 @@ export function MultiTrendLine({
                 y1={tick.y}
                 x2={width - padding.right}
                 y2={tick.y}
-                stroke="#e5e7eb"
+                stroke="hsl(var(--border))"
                 strokeDasharray="4"
               />
             ))}
@@ -461,7 +453,7 @@ export function MultiTrendLine({
             x={padding.left - 8}
             y={tick.y + 4}
             textAnchor="end"
-            className="text-xs fill-gray-500"
+            className="text-xs fill-muted-foreground"
           >
             {formatY(tick.value)}
           </text>
@@ -473,7 +465,7 @@ export function MultiTrendLine({
             x={tick.x}
             y={padding.top + chartHeight + 20}
             textAnchor="middle"
-            className="text-xs fill-gray-500"
+            className="text-xs fill-muted-foreground"
           >
             {formatX(tick.value)}
           </text>

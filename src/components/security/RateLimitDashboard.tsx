@@ -189,8 +189,8 @@ export function RateLimitDashboard() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
-                <Bell className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+              <div className="p-2 bg-warning/10 rounded-lg">
+                <Bell className="h-5 w-5 text-warning" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Alertas Pendentes</p>
@@ -435,8 +435,8 @@ export function RateLimitDashboard() {
                           : alert.severity === 'critical'
                           ? 'bg-destructive/10 border-destructive/50'
                           : alert.severity === 'high'
-                          ? 'bg-orange-100 dark:bg-orange-900/30 border-orange-500/50'
-                          : 'bg-yellow-100 dark:bg-yellow-900/30 border-yellow-500/50'
+                          ? 'bg-streak/10 border-streak/50'
+                          : 'bg-warning/10 border-warning/50'
                       }`}
                     >
                       <div className="flex items-start justify-between">
@@ -446,8 +446,8 @@ export function RateLimitDashboard() {
                               alert.severity === 'critical'
                                 ? 'text-destructive'
                                 : alert.severity === 'high'
-                                ? 'text-orange-500'
-                                : 'text-yellow-500'
+                                ? 'text-streak'
+                                : 'text-warning'
                             }`}
                           />
                           <div>
@@ -462,7 +462,7 @@ export function RateLimitDashboard() {
                                 {alert.severity}
                               </Badge>
                               {alert.resolved && (
-                                <Badge variant="outline" className="text-green-600">
+                                <Badge variant="outline" className="text-success">
                                   Resolvido
                                 </Badge>
                               )}

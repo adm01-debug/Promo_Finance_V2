@@ -40,9 +40,9 @@ interface HeaderProps {
 }
 
 const roleLabels: Record<string, { label: string; color: string }> = {
-  admin: { label: 'Administrador', color: 'bg-red-500/10 text-red-500 border-red-500/20' },
-  financeiro: { label: 'Financeiro', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
-  operacional: { label: 'Operacional', color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' },
+  admin: { label: 'Administrador', color: 'bg-destructive/10 text-destructive border-destructive/20' },
+  financeiro: { label: 'Financeiro', color: 'bg-secondary/10 text-secondary border-secondary/20' },
+  operacional: { label: 'Operacional', color: 'bg-success/10 text-success border-success/20' },
   visualizador: { label: 'Visualizador', color: 'bg-muted text-muted-foreground' },
 };
 
@@ -234,8 +234,8 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
                       className={cn(
                         'h-2 w-2 rounded-full',
                         alerta.prioridade === 'critica' && 'bg-destructive',
-                        alerta.prioridade === 'alta' && 'bg-orange-500',
-                        alerta.prioridade === 'media' && 'bg-yellow-500',
+                        alerta.prioridade === 'alta' && 'bg-streak',
+                        alerta.prioridade === 'media' && 'bg-warning',
                         alerta.prioridade === 'baixa' && 'bg-muted-foreground'
                       )}
                     />
