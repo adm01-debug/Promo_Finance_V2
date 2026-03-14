@@ -34,13 +34,13 @@ import { useCreditosTributarios } from '@/hooks/useCreditosTributarios';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 
 const STATUS_CONFIG: Record<StatusPedido, { cor: string; icone: React.ReactNode }> = {
-  rascunho: { cor: 'bg-gray-100 text-gray-800', icone: <FileText className="h-4 w-4" /> },
-  aguardando_transmissao: { cor: 'bg-yellow-100 text-yellow-800', icone: <Clock className="h-4 w-4" /> },
-  transmitido: { cor: 'bg-blue-100 text-blue-800', icone: <Send className="h-4 w-4" /> },
-  em_analise: { cor: 'bg-purple-100 text-purple-800', icone: <Clock className="h-4 w-4" /> },
-  deferido: { cor: 'bg-green-100 text-green-800', icone: <CheckCircle2 className="h-4 w-4" /> },
-  indeferido: { cor: 'bg-red-100 text-red-800', icone: <XCircle className="h-4 w-4" /> },
-  cancelado: { cor: 'bg-gray-100 text-gray-800', icone: <XCircle className="h-4 w-4" /> },
+  rascunho: { cor: 'bg-muted text-muted-foreground', icone: <FileText className="h-4 w-4" /> },
+  aguardando_transmissao: { cor: 'bg-warning/10 text-warning', icone: <Clock className="h-4 w-4" /> },
+  transmitido: { cor: 'bg-primary/10 text-primary', icone: <Send className="h-4 w-4" /> },
+  em_analise: { cor: 'bg-secondary text-secondary-foreground', icone: <Clock className="h-4 w-4" /> },
+  deferido: { cor: 'bg-success/10 text-success', icone: <CheckCircle2 className="h-4 w-4" /> },
+  indeferido: { cor: 'bg-destructive/10 text-destructive', icone: <XCircle className="h-4 w-4" /> },
+  cancelado: { cor: 'bg-muted text-muted-foreground', icone: <XCircle className="h-4 w-4" /> },
 };
 
 export function PerDcompPanel() {
