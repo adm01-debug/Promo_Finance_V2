@@ -287,7 +287,7 @@ export function ContingenciaNFe() {
         >
       {/* Status Header */}
       <motion.div variants={itemVariants}>
-        <Card className={isContingencyActive ? 'border-amber-500/50 bg-amber-500/5' : ''}>
+        <Card className={isContingencyActive ? 'border-warning/50 bg-warning/5' : ''}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
