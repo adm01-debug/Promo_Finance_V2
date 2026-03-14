@@ -434,10 +434,10 @@ export function DashboardMetricasTributarias() {
               </CardContent>
             </Card>
 
-            <Card className="border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/20">
+            <Card className="border-secondary/20 bg-secondary/5">
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3">
-                  <Clock className="h-8 w-8 text-blue-500" />
+                  <Clock className="h-8 w-8 text-secondary" />
                   <div>
                     <p className="text-sm text-muted-foreground">Créditos Disponíveis</p>
                     <p className="text-xl font-bold">{formatCurrency(metricas.creditosDisponiveis)}</p>
