@@ -401,7 +401,7 @@ export function InvoiceGenerator({
 
             {/* Discount */}
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600 dark:text-gray-400 flex-1">Desconto</span>
+              <span className="text-sm text-muted-foreground flex-1">Desconto</span>
               <select
                 value={invoice.discountType || 'percentage'}
                 onChange={(e) => setInvoice(prev => ({
