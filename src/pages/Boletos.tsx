@@ -465,7 +465,7 @@ export default function Boletos() {
           </div>
           <Dialog open={showNovoBoleto} onOpenChange={setShowNovoBoleto}>
             <DialogTrigger asChild>
-              <Button className="gap-2">
+              <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25" size="sm">
                 <Plus className="h-4 w-4" />
                 Novo Boleto
               </Button>
