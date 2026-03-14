@@ -25,7 +25,7 @@
 
 1. **Criar projeto Cloudflare Pages**
 ```bash
-npx wrangler pages project create finance-hub
+npx wrangler pages project create promo-finance
 ```
 
 2. **Configurar variáveis de ambiente**
