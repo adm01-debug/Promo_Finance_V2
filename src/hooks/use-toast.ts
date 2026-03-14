@@ -197,7 +197,7 @@ toast.warning = (title: string, description?: string) => {
   return toast({
     title,
     description,
-    className: "border-yellow-500/50 bg-yellow-50 dark:bg-yellow-950/50",
+    className: "border-warning/50 bg-warning/10",
   });
 };
 
