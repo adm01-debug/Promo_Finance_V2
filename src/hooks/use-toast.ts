@@ -181,7 +181,7 @@ toast.success = (title: string, description?: string) => {
   return toast({
     title,
     description,
-    className: "border-green-500/50 bg-green-50 dark:bg-green-950/50",
+    className: "border-success/50 bg-success/10",
   });
 };
 
