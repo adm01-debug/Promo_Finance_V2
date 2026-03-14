@@ -273,8 +273,8 @@ export function CalculadoraTributos() {
           </CardHeader>
           <CardContent className="space-y-4">
             {resultado.detalhamento.some(d => d.includes('isenta')) ? (
-              <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200">
-                <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
+              <div className="p-4 bg-success/10 rounded-lg border border-success/20">
+                <div className="flex items-center gap-2 text-success">
                   <CheckCircle2 className="h-5 w-5" />
                   <span className="font-medium">Operação Isenta</span>
                 </div>
