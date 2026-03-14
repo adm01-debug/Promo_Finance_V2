@@ -446,8 +446,8 @@ export function RateLimitDashboard() {
                               alert.severity === 'critical'
                                 ? 'text-destructive'
                                 : alert.severity === 'high'
-                                ? 'text-orange-500'
-                                : 'text-yellow-500'
+                                ? 'text-streak'
+                                : 'text-warning'
                             }`}
                           />
                           <div>
