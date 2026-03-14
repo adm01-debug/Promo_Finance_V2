@@ -123,7 +123,7 @@ export function CategoryPieChart({
   return (
     <div className={cn('w-full', className)}>
       {title && (
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <h3 className="text-lg font-semibold text-foreground mb-4">
           {title}
         </h3>
       )}
