@@ -166,7 +166,7 @@ export function BarChart({
                     x={line.position}
                     y={height - padding.bottom + 15}
                     textAnchor="middle"
-                    className="fill-gray-500 dark:fill-gray-400 text-xs"
+                    className="fill-muted-foreground text-xs"
                   >
                     {line.label}
                   </text>
