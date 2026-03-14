@@ -140,7 +140,7 @@ class BackupRestoreService {
     const backup = await this.createBackup(options);
     if (!backup) return false;
 
-    const filename = `finance-hub-backup-${formatDate(new Date(), 'yyyy-MM-dd-HHmm')}.json`;
+    const filename = `promo-finance-backup-${formatDate(new Date(), 'yyyy-MM-dd-HHmm')}.json`;
     const content = JSON.stringify(backup, null, 2);
     
     downloadFile(content, filename, 'application/json');
