@@ -675,13 +675,13 @@ export default function Relatorios() {
                         <Badge variant="outline">{item.categoria}</Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={item.tipo === 'Receita' ? 'default' : 'secondary'} className={item.tipo === 'Receita' ? 'bg-green-500' : 'bg-red-500'}>
+                        <Badge variant={item.tipo === 'Receita' ? 'default' : 'secondary'} className={item.tipo === 'Receita' ? 'bg-success' : 'bg-destructive'}>
                           {item.tipo}
                         </Badge>
                       </TableCell>
                       <TableCell className={cn(
                         "text-right font-medium",
-                        item.tipo === 'Receita' ? "text-green-600" : "text-red-500"
+                        item.tipo === 'Receita' ? "text-success" : "text-destructive"
                       )}>
                         {item.tipo === 'Receita' ? '+' : '-'}{formatCurrency(item.valor)}
                       </TableCell>
