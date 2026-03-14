@@ -66,6 +66,7 @@ function AppRoutes() {
             
             {/* Protected Routes */}
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+            <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/dashboard-receber" element={<ProtectedRoute><DashboardReceber /></ProtectedRoute>} />
             <Route path="/dashboard-empresa" element={<ProtectedRoute><DashboardEmpresa /></ProtectedRoute>} />
             <Route path="/bi" element={<ProtectedRoute><BI /></ProtectedRoute>} />
