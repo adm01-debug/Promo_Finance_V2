@@ -18,13 +18,22 @@ interface StatusContasPieChartProps {
 function CustomTooltip({ active, payload }: any) {
   if (!active || !payload?.[0]) return null;
   const data = payload[0];
+  const total = data.payload?.total || 0;
+  const percentage = total > 0 ? ((data.value / total) * 100).toFixed(1) : '0';
   return (
-    <div className="bg-popover border border-border rounded-xl p-3 shadow-lg text-xs space-y-1">
+    <div className="bg-popover/95 backdrop-blur-md border border-border/60 rounded-xl p-3.5 shadow-xl text-xs space-y-1.5 min-w-[160px]">
       <div className="flex items-center gap-2">
-        <div className="h-3 w-3 rounded-full" style={{ background: data.payload.fill }} />
+        <div className="h-3 w-3 rounded-full ring-1 ring-white/10" style={{ background: data.payload.fill }} />
         <span className="font-semibold text-foreground">{data.name}</span>
       </div>
-      <p className="text-muted-foreground">Quantidade: <span className="font-bold text-foreground">{data.value}</span></p>
+      <div className="flex justify-between items-center pt-1 border-t border-border/40">
+        <span className="text-muted-foreground">Quantidade</span>
+        <span className="font-bold text-foreground tabular-nums">{data.value}</span>
+      </div>
+      <div className="flex justify-between items-center">
+        <span className="text-muted-foreground">Percentual</span>
+        <span className="font-bold text-foreground tabular-nums">{percentage}%</span>
+      </div>
     </div>
   );
 }

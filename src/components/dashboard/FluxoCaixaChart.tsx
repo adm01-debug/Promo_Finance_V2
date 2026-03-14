@@ -21,12 +21,12 @@ interface FluxoCaixaChartProps {
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload) return null;
   return (
-    <div className="bg-popover border border-border rounded-xl p-3 shadow-lg text-xs space-y-1.5">
-      <p className="font-semibold text-foreground text-sm">{label}</p>
+    <div className="bg-popover/95 backdrop-blur-md border border-border/60 rounded-xl p-3.5 shadow-xl text-xs space-y-2 min-w-[180px]">
+      <p className="font-semibold text-foreground text-sm border-b border-border/40 pb-1.5">{label}</p>
       {payload.map((entry: any, i: number) => (
         <div key={i} className="flex items-center gap-2 justify-between">
-          <div className="flex items-center gap-1.5">
-            <div className="h-2.5 w-2.5 rounded-full" style={{ background: entry.color }} />
+          <div className="flex items-center gap-2">
+            <div className="h-2.5 w-2.5 rounded-full ring-1 ring-white/10" style={{ background: entry.color }} />
             <span className="text-muted-foreground">{entry.name}</span>
           </div>
           <span className="font-bold text-foreground tabular-nums">{formatCurrency(entry.value)}</span>
