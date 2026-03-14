@@ -348,13 +348,13 @@ export function PrevisaoInadimplencia() {
               </CardContent>
             </Card>
 
-            <Card className="border-amber-500/30">
+            <Card className="border-warning/30">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Target className="h-4 w-4 text-amber-500" />
+                  <Target className="h-4 w-4 text-warning" />
                   <span className="text-xs text-muted-foreground">Médio Risco</span>
                 </div>
-                <p className="text-2xl font-bold text-amber-500">{data?.resumo.clientesMedioRisco || 0}</p>
+                <p className="text-2xl font-bold text-warning">{data?.resumo.clientesMedioRisco || 0}</p>
                 <p className="text-xs text-muted-foreground">monitorar de perto</p>
               </CardContent>
             </Card>
