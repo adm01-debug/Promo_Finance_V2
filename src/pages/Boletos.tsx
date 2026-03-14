@@ -51,10 +51,10 @@ const itemVariants = {
 };
 
 const statusConfig = {
-  gerado: { label: 'Gerado', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20', icon: FileText },
-  enviado: { label: 'Enviado', color: 'bg-amber-500/10 text-amber-500 border-amber-500/20', icon: Mail },
-  pago: { label: 'Pago', color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20', icon: CheckCircle2 },
-  vencido: { label: 'Vencido', color: 'bg-red-500/10 text-red-500 border-red-500/20', icon: XCircle },
+  gerado: { label: 'Gerado', color: 'bg-secondary/10 text-secondary border-secondary/20', icon: FileText },
+  enviado: { label: 'Enviado', color: 'bg-warning/10 text-warning border-warning/20', icon: Mail },
+  pago: { label: 'Pago', color: 'bg-success/10 text-success border-success/20', icon: CheckCircle2 },
+  vencido: { label: 'Vencido', color: 'bg-destructive/10 text-destructive border-destructive/20', icon: XCircle },
   cancelado: { label: 'Cancelado', color: 'bg-muted text-muted-foreground border-muted', icon: AlertCircle }
 };
 
