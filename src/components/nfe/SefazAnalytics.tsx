@@ -601,7 +601,7 @@ export const SefazAnalytics = () => {
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground mb-1">Tempo Mínimo</p>
-                  <p className="text-2xl font-bold text-emerald-500">
+                  <p className="text-2xl font-bold text-success">
                     {eventosFiltrados.length > 0 
                       ? ((Math.min(...eventosFiltrados.filter(e => e.tempoResposta).map(e => e.tempoResposta!)) || 0) / 1000).toFixed(2)
                       : '0'}s
