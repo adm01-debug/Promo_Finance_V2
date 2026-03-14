@@ -168,7 +168,7 @@ export function CalendarHeatMap({
                 key={day}
                 x={0}
                 y={day * (cellSize + cellGap) + cellSize / 2 + 4}
-                className="text-[10px] fill-gray-400"
+                className="text-[10px] fill-muted-foreground"
               >
                 {WEEKDAY_LABELS[day]}
               </text>
