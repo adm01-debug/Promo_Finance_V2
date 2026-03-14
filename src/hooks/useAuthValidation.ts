@@ -69,32 +69,17 @@ export function useAuthValidation() {
     }
 
     try {
-      const { data: settings } = await supabase
-        .from('security_settings')
-        .select('restrict_by_ip, allowed_global_ips')
-        .maybeSingle();
+      const { data, error } = await supabase.rpc('is_ip_allowed_for_login', {
+        _ip: geoData.ip,
+      });
 
-      if (!settings?.restrict_by_ip) {
-        return { allowed: true };
-      }
+      if (error) throw error;
 
-      const globalIps = settings.allowed_global_ips || [];
-      if (globalIps.includes(geoData.ip)) {
-        return { allowed: true };
-      }
-
-      const { data: allowedIps } = await supabase
-        .from('allowed_ips')
-        .select('ip_address')
-        .eq('ativo', true);
-
-      const isAllowed = allowedIps?.some(ip => ip.ip_address === geoData.ip);
-      
-      if (!isAllowed) {
+      if (!data) {
         setIpBlocked(true);
-        return { 
-          allowed: false, 
-          reason: `IP ${geoData.ip} não autorizado para acesso` 
+        return {
+          allowed: false,
+          reason: `IP ${geoData.ip} não autorizado para acesso`,
         };
       }
 
