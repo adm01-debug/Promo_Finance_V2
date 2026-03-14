@@ -292,7 +292,7 @@ export function DashboardMetricasTributarias() {
                     <p className="text-sm text-muted-foreground">Migração IBS/CBS</p>
                     <p className="text-2xl font-bold">{metricas.percentualMigracao.toFixed(0)}%</p>
                   </div>
-                  <TrendingUp className="h-5 w-5 text-blue-500" />
+                  <TrendingUp className="h-5 w-5 text-secondary" />
                 </div>
                 <Progress value={metricas.percentualMigracao} className="mt-3" />
                 <p className="text-xs text-muted-foreground mt-1">
