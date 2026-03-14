@@ -206,13 +206,13 @@ export function GestorCreditosTributarios() {
           </CardContent>
         </Card>
 
-        <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20">
+        <Card className="border-primary/20 bg-primary/5">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">CBS Disponível</CardTitle>
-            <Receipt className="h-4 w-4 text-blue-500" />
+            <Receipt className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-2xl font-bold text-primary">
               {formatCurrency(resumo.cbsDisponivel)}
             </div>
             <p className="text-xs text-muted-foreground">
