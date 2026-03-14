@@ -59,7 +59,7 @@ export function AuditoriaCompliancePanel({ empresaId }: Props) {
             <CardTitle className="text-sm text-muted-foreground">Críticos</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{resumo.criticos}</div>
+            <div className="text-2xl font-bold text-destructive">{resumo.criticos}</div>
           </CardContent>
         </Card>
         <Card>
