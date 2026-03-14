@@ -474,9 +474,13 @@ export default function Conciliacao() {
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuItem className="gap-2">
+                                  <DropdownMenuItem className="gap-2" onClick={() => handleConciliarManual(transacao.id)}>
                                     <Link2 className="h-4 w-4" />
                                     Vincular manualmente
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem className="gap-2" onClick={() => handleConciliarSplit(transacao.id)}>
+                                    <SplitSquareHorizontal className="h-4 w-4" />
+                                    Conciliação parcial (split)
                                   </DropdownMenuItem>
                                   <DropdownMenuItem className="gap-2">
                                     <Eye className="h-4 w-4" />
