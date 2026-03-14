@@ -174,8 +174,8 @@ export function PasswordStrengthIndicator({ password, onStrengthChange }: Passwo
             key={index}
             className={cn(
               'flex items-center gap-1.5 text-xs transition-colors',
-              criterion.met ? 'text-green-600 dark:text-green-400' : 
-                criterion.required ? 'text-red-500' : 'text-muted-foreground'
+              criterion.met ? 'text-success' : 
+                criterion.required ? 'text-destructive' : 'text-muted-foreground'
             )}
           >
             {criterion.met ? (
