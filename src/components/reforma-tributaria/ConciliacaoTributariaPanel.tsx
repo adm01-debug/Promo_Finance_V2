@@ -93,7 +93,7 @@ export function ConciliacaoTributariaPanel({ empresaId }: Props) {
             <CardTitle className="text-sm text-muted-foreground">Acurácia</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{resumo.percentualAcuracia.toFixed(0)}%</div>
+            <div className="text-2xl font-bold text-success">{resumo.percentualAcuracia.toFixed(0)}%</div>
             <Progress value={resumo.percentualAcuracia} className="h-2 mt-2" />
           </CardContent>
         </Card>
