@@ -17,18 +17,18 @@ import { formatCurrency } from '@/lib/formatters';
 import { motion } from 'framer-motion';
 
 const CORES_CLASSIFICACAO: Record<string, string> = {
-  A: 'bg-emerald-500',
-  B: 'bg-blue-500',
-  C: 'bg-yellow-500',
-  D: 'bg-orange-500',
-  E: 'bg-red-500',
+  A: 'bg-success',
+  B: 'bg-primary',
+  C: 'bg-warning',
+  D: 'bg-warning/70',
+  E: 'bg-destructive',
 };
 
 const CORES_RISCO: Record<string, string> = {
-  baixo: 'text-emerald-600 bg-emerald-100',
-  medio: 'text-yellow-600 bg-yellow-100',
-  alto: 'text-orange-600 bg-orange-100',
-  critico: 'text-red-600 bg-red-100',
+  baixo: 'text-success bg-success/10',
+  medio: 'text-warning bg-warning/10',
+  alto: 'text-warning bg-warning/20',
+  critico: 'text-destructive bg-destructive/10',
 };
 
 export function ScoringClientesPanel() {
