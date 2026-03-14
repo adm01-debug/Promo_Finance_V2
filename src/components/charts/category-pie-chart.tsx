@@ -110,7 +110,7 @@ export function CategoryPieChart({
     return (
       <div
         className={cn(
-          'flex items-center justify-center text-gray-500 dark:text-gray-400',
+          'flex items-center justify-center text-muted-foreground',
           className
         )}
         style={{ height }}
