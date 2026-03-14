@@ -434,7 +434,7 @@ export function ModuloIRPJCSLL() {
 
                 <div className="p-4 border rounded-lg">
                   <h4 className="font-semibold mb-4 flex items-center gap-2">
-                    <AlertTriangle className="h-4 w-4 text-orange-500" />
+                    <AlertTriangle className="h-4 w-4 text-warning" />
                     Parte B - Controle de Valores
                   </h4>
                   <ul className="text-sm space-y-2 text-muted-foreground">
