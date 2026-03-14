@@ -48,7 +48,7 @@
   "redirects": [
     {
       "source": "/docs",
-      "destination": "https://docs.finance-hub.com",
+      "destination": "https://docs.promo-finance.com",
       "permanent": false
     }
   ],

@@ -21,7 +21,7 @@
 
 ## Vulnerabilidades
 
-Reportar: security@finance-hub.com
+Reportar: security@promo-finance.com
 PGP Key: [link]
 
 ## Boas Práticas

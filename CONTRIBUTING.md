@@ -1,6 +1,6 @@
 # 🤝 Guia de Contribuição
 
-Obrigado por considerar contribuir com o **Finance-Hub**! Este documento fornece diretrizes para contribuir com o projeto.
+Obrigado por considerar contribuir com o **Promo Finance**! Este documento fornece diretrizes para contribuir com o projeto.
 
 ## 📋 Índice
 
@@ -26,14 +26,14 @@ Clique no botão "Fork" no GitHub para criar sua cópia do repositório.
 ### 2. Clone seu Fork
 
 ```bash
-git clone https://github.com/seu-usuario/finance-hub.git
-cd finance-hub
+git clone https://github.com/seu-usuario/promo-finance.git
+cd promo-finance
 ```
 
 ### 3. Configure o Upstream
 
 ```bash
-git remote add upstream https://github.com/original/finance-hub.git
+git remote add upstream https://github.com/original/promo-finance.git
 ```
 
 ### 4. Crie uma Branch

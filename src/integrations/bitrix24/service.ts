@@ -278,7 +278,7 @@ class Bitrix24Service {
   // ============================================
 
   /**
-   * Convert Finance-Hub cliente to Bitrix contact
+   * Convert Promo Finance cliente to Bitrix contact
    */
   clienteToBitrixContact(cliente: {
     nome: string;
@@ -300,7 +300,7 @@ class Bitrix24Service {
   }
 
   /**
-   * Convert Finance-Hub fornecedor to Bitrix company
+   * Convert Promo Finance fornecedor to Bitrix company
    */
   fornecedorToBitrixCompany(fornecedor: {
     razao_social: string;
@@ -328,7 +328,7 @@ class Bitrix24Service {
   }
 
   /**
-   * Convert Finance-Hub conta a pagar to Bitrix deal
+   * Convert Promo Finance conta a pagar to Bitrix deal
    */
   contaPagarToBitrixDeal(conta: {
     descricao: string;

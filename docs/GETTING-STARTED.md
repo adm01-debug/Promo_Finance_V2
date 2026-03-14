@@ -1,9 +1,9 @@
-# Getting Started - Finance Hub
+# Getting Started - Promo Finance
 
 ## Início Rápido
 
 ### 1. Acesse o App
-https://app.finance-hub.com
+https://app.promo-finance.com
 
 ### 2. Crie sua Conta
 - Email
@@ -41,5 +41,5 @@ Dashboard mostra visão geral financeira
 
 ## Suporte
 
-📧 suporte@finance-hub.com
+📧 suporte@promo-finance.com
 💬 Chat (canto inferior direito)

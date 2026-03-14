@@ -1,4 +1,4 @@
-# 🚀 Guia de Deploy - Finance-Hub
+# 🚀 Guia de Deploy - Promo Finance
 
 ## Ambientes
 
@@ -8,12 +8,12 @@
 - **Deploy:** Automático via Git hooks
 
 ### Staging
-- **URL:** https://staging.finance-hub.app
+- **URL:** https://staging.promo-finance.app
 - **Branch:** staging
 - **Deploy:** Automático via GitHub Actions
 
 ### Production
-- **URL:** https://finance-hub.app
+- **URL:** https://promo-finance.app
 - **Branch:** main
 - **Deploy:** Automático via GitHub Actions
 
@@ -25,7 +25,7 @@
 
 1. **Criar projeto Cloudflare Pages**
 ```bash
-npx wrangler pages project create finance-hub
+npx wrangler pages project create promo-finance
 ```
 
 2. **Configurar variáveis de ambiente**
@@ -40,7 +40,7 @@ VITE_SENTRY_DSN
 3. **Deploy manual**
 ```bash
 npm run build:prod
-npx wrangler pages deploy dist --project-name=finance-hub
+npx wrangler pages deploy dist --project-name=promo-finance
 ```
 
 ### Deploy Automático
@@ -110,7 +110,7 @@ git push origin main
 
 ### Health Check
 ```bash
-curl https://finance-hub.app/health
+curl https://promo-finance.app/health
 ```
 
 Expected: `200 OK`

@@ -1,6 +1,6 @@
 # 📋 Inventário Completo de Funcionalidades e Ferramentas
 
-## Sistema: Finance-Hub (ERP Financeiro)
+## Sistema: Promo Finance (ERP Financeiro)
 **Stack Principal:** React 18 + TypeScript + Vite + Tailwind CSS + Supabase (Lovable Cloud)
 
 ---
