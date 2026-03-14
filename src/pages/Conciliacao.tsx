@@ -532,6 +532,21 @@ export default function Conciliacao() {
           lancamentos={lancamentosSistema}
           onSuccess={handleManualSuccess}
         />
+
+        {/* Dialog de Conciliação Parcial (Split) */}
+        <ConciliacaoSplitDialog
+          open={showSplitDialog}
+          onOpenChange={setShowSplitDialog}
+          transacao={selectedTransacaoSplit}
+          lancamentos={lancamentosSistema}
+          onSuccess={() => {
+            if (selectedTransacaoSplit) {
+              setTransacoes(prev => prev.map(t => 
+                t.id === selectedTransacaoSplit.id ? { ...t, conciliada: true } : t
+              ));
+            }
+          }}
+        />
       </motion.div>
     </MainLayout>
   );
