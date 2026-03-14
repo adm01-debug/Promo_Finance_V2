@@ -305,7 +305,7 @@ export function PieChart({
                 className="w-3 h-3 rounded-sm"
                 style={{ backgroundColor: segment.color }}
               />
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-muted-foreground">
                 {segment.label}: {formatValue(segment.value)} ({(segment.percentage * 100).toFixed(1)}%)
               </span>
             </div>
