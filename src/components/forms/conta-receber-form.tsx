@@ -274,7 +274,7 @@ export function ContaReceberForm({
         </div>
 
         {showParcelas && (
-          <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+          <div className="grid grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
             <FormField
               label="Total de Parcelas"
               error={form.errors.parcelas}
