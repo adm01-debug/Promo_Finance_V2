@@ -77,7 +77,7 @@ export function ConciliacaoTributariaPanel({ empresaId }: Props) {
             <CardTitle className="text-sm text-muted-foreground">Divergências</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-amber-600">{resumo.divergenciasEncontradas}</div>
+            <div className="text-2xl font-bold text-warning">{resumo.divergenciasEncontradas}</div>
           </CardContent>
         </Card>
         <Card>
