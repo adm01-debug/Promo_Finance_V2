@@ -233,13 +233,13 @@ export function ModuloIRPJCSLL() {
           </CardContent>
         </Card>
 
-        <Card className="border-orange-200 bg-orange-50/50 dark:bg-orange-950/20">
+        <Card className="border-warning/20 bg-warning/5">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Prejuízos Fiscais</CardTitle>
-            <TrendingDown className="h-4 w-4 text-orange-500" />
+            <TrendingDown className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">
+            <div className="text-2xl font-bold text-warning">
               {formatCurrency(saldoPrejuizos.irpj + saldoPrejuizos.csll)}
             </div>
             <p className="text-xs text-muted-foreground">
