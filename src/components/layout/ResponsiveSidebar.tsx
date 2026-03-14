@@ -26,7 +26,7 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
       <>
         <MobileBottomNav onMenuClick={() => setMobileDrawerOpen(true)} />
         <MobileSidebarDrawer
-          isOpen={mobileDrawerOpen}
+          open={mobileDrawerOpen}
           onClose={() => setMobileDrawerOpen(false)}
         />
       </>
