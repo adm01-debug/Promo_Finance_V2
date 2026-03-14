@@ -151,7 +151,7 @@ export function CategoryPieChart({
               verticalAlign="middle"
               align="right"
               formatter={(value, entry: any) => (
-                <span className="text-sm text-gray-600 dark:text-gray-400">
+                <span className="text-sm text-muted-foreground">
                   {value}
                 </span>
               )}
