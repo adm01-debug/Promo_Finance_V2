@@ -162,7 +162,7 @@ export default function Bitrix24() {
             variant="outline" 
             onClick={handleTestConnection}
             className={cn(
-              isConnected ? "border-green-500 text-green-600" : "border-destructive text-destructive"
+              isConnected ? "border-success text-success" : "border-destructive text-destructive"
             )}
           >
             {isConnected ? (
