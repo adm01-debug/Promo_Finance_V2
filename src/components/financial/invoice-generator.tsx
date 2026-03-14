@@ -464,9 +464,9 @@ export function InvoiceGenerator({
             )}
 
             {/* Total */}
-            <div className="flex justify-between text-lg font-bold pt-3 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex justify-between text-lg font-bold pt-3 border-t border-border">
               <span>Total</span>
-              <span className="text-primary-600">{formatCurrency(calculations.total)}</span>
+              <span className="text-primary">{formatCurrency(calculations.total)}</span>
             </div>
           </div>
         </div>
