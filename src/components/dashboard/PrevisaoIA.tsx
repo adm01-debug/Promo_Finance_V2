@@ -489,7 +489,7 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
                       <Card>
                         <CardHeader className="pb-3">
                           <CardTitle className="flex items-center gap-2 text-base">
-                            <TrendingUp className="h-4 w-4 text-green-500" />
+                            <TrendingUp className="h-4 w-4 text-success" />
                             Tendência de Receitas
                           </CardTitle>
                         </CardHeader>
