@@ -79,13 +79,13 @@ const itemVariants = {
 };
 
 const modeConfig: Record<ContingencyMode, { color: string; icon: typeof Wifi; description: string }> = {
-  normal: { color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20', icon: Wifi, description: 'Operação normal' },
-  SCAN: { color: 'bg-blue-500/10 text-blue-500 border-blue-500/20', icon: Server, description: 'SCAN - Ambiente Nacional' },
-  DPEC: { color: 'bg-amber-500/10 text-amber-500 border-amber-500/20', icon: FileText, description: 'DPEC - Declaração Prévia' },
-  FSDA: { color: 'bg-purple-500/10 text-purple-500 border-purple-500/20', icon: FileText, description: 'FS-DA - Formulário de Segurança' },
-  SVCAN: { color: 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20', icon: Server, description: 'SVC-AN - SEFAZ Virtual Nacional' },
-  SVCRS: { color: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20', icon: Server, description: 'SVC-RS - SEFAZ Virtual RS' },
-  offline: { color: 'bg-red-500/10 text-red-500 border-red-500/20', icon: WifiOff, description: 'Modo Offline' },
+  normal: { color: 'bg-success/10 text-success border-success/20', icon: Wifi, description: 'Operação normal' },
+  SCAN: { color: 'bg-primary/10 text-primary border-primary/20', icon: Server, description: 'SCAN - Ambiente Nacional' },
+  DPEC: { color: 'bg-warning/10 text-warning border-warning/20', icon: FileText, description: 'DPEC - Declaração Prévia' },
+  FSDA: { color: 'bg-accent text-accent-foreground border-accent', icon: FileText, description: 'FS-DA - Formulário de Segurança' },
+  SVCAN: { color: 'bg-secondary text-secondary-foreground border-secondary', icon: Server, description: 'SVC-AN - SEFAZ Virtual Nacional' },
+  SVCRS: { color: 'bg-muted text-muted-foreground border-border', icon: Server, description: 'SVC-RS - SEFAZ Virtual RS' },
+  offline: { color: 'bg-destructive/10 text-destructive border-destructive/20', icon: WifiOff, description: 'Modo Offline' },
 };
 
 export function ContingenciaNFe() {
