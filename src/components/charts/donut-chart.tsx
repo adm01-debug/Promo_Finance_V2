@@ -388,11 +388,11 @@ export function GaugeChart({
       </svg>
 
       <div className="text-center -mt-8">
-        <div className="text-3xl font-bold text-gray-900 dark:text-white">
+        <div className="text-3xl font-bold text-foreground">
           {formatValue(value)}
         </div>
         {label && (
-          <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <div className="text-sm text-muted-foreground mt-1">
             {label}
           </div>
         )}
