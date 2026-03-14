@@ -13,7 +13,7 @@
 - **Deploy:** Automático via GitHub Actions
 
 ### Production
-- **URL:** https://finance-hub.app
+- **URL:** https://promo-finance.app
 - **Branch:** main
 - **Deploy:** Automático via GitHub Actions
 
