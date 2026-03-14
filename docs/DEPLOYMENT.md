@@ -8,7 +8,7 @@
 - **Deploy:** Automático via Git hooks
 
 ### Staging
-- **URL:** https://staging.finance-hub.app
+- **URL:** https://staging.promo-finance.app
 - **Branch:** staging
 - **Deploy:** Automático via GitHub Actions
 
