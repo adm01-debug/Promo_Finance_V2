@@ -215,19 +215,19 @@ export default function Bitrix24() {
               <div className="flex items-center gap-3">
                 <div className={cn(
                   "p-2 rounded-lg",
-                  isConnected ? "bg-green-100 dark:bg-green-900/30" : "bg-red-100 dark:bg-red-900/30"
+                  isConnected ? "bg-success/10" : "bg-destructive/10"
                 )}>
                   {isConnected ? (
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    <CheckCircle2 className="h-5 w-5 text-success" />
                   ) : (
-                    <XCircle className="h-5 w-5 text-red-500" />
+                    <XCircle className="h-5 w-5 text-destructive" />
                   )}
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Status</p>
                   <p className={cn(
                     "font-semibold",
-                    isConnected ? "text-green-600" : "text-red-500"
+                    isConnected ? "text-success" : "text-destructive"
                   )}>
                     {isConnected ? 'Online' : 'Offline'}
                   </p>
