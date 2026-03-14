@@ -163,7 +163,7 @@ export function FormActions({ children, className, align = 'right' }: FormAction
   return (
     <div
       className={cn(
-        'flex flex-wrap items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700',
+        'flex flex-wrap items-center gap-3 pt-4 border-t border-border',
         alignClasses[align],
         className
       )}
