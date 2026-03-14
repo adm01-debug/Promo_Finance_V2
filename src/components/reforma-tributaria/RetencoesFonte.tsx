@@ -522,7 +522,7 @@ export function RetencoesFonte() {
                         <TableCell>
                           <Badge className={
                             darf.status === 'pago' ? STATUS_COLORS.recolhido :
-                            darf.status === 'vencido' ? 'bg-red-100 text-red-800' :
+                            darf.status === 'vencido' ? 'bg-destructive/10 text-destructive' :
                             STATUS_COLORS.pendente
                           }>
                             {darf.status}
