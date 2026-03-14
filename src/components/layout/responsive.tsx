@@ -327,7 +327,24 @@ const bgColors: Record<string, string> = {
   primary: 'bg-primary/5',
   transparent: 'bg-transparent',
 };
-...
+
+export function Box({
+  children,
+  padding = 'md',
+  margin = 'none',
+  rounded = 'lg',
+  shadow = 'none',
+  border = false,
+  bg = 'white',
+  className,
+}: BoxProps) {
+  return (
+    <div
+      className={cn(
+        paddingSizes[padding],
+        marginSizes[margin],
+        roundedSizes[rounded],
+        shadowSizes[shadow],
         bgColors[bg],
         border && 'border border-border',
         className
