@@ -269,7 +269,7 @@ export function ObrigacoesAcessorias() {
               </TableHeader>
               <TableBody>
                 {obrigacoesStatus.map((ob) => (
-                  <TableRow key={ob.codigo} className={ob.status === 'atrasada' ? 'bg-red-50 dark:bg-red-950/10' : ''}>
+                  <TableRow key={ob.codigo} className={ob.status === 'atrasada' ? 'bg-destructive/5' : ''}>
                     <TableCell>
                       <div>
                         <span className="font-medium">{ob.nome}</span>
