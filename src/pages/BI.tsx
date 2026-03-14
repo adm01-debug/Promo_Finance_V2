@@ -928,7 +928,7 @@ export default function BI() {
                         <tr className="hover:bg-muted/30 transition-colors">
                           <td className="py-3 px-4 border-b font-medium sticky left-0 bg-background">
                             <div className="flex items-center gap-2">
-                              <ArrowUpRight className="w-4 h-4 text-green-500" />
+                              <ArrowUpRight className="w-4 h-4 text-success" />
                               Receitas (Pagas)
                             </div>
                           </td>
