@@ -180,7 +180,7 @@ export function DonutChart({
               key={segment.id}
               className={cn(
                 'flex items-center gap-3 px-3 py-2 rounded-lg transition-colors cursor-pointer',
-                hoveredId === segment.id && 'bg-gray-100 dark:bg-gray-700'
+                hoveredId === segment.id && 'bg-muted'
               )}
               onMouseEnter={() => setHoveredId(segment.id)}
               onMouseLeave={() => setHoveredId(null)}
