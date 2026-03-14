@@ -152,7 +152,7 @@ export function useDeviceDetection() {
         .from('profiles')
         .select('email')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
       
       // Send email notification in background
       if (profile?.email) {

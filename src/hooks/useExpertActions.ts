@@ -340,7 +340,7 @@ async function aprovarPagamento(
     .select('*, contas_pagar(*)')
     .or(`id.ilike.${id}%,id.eq.${id}`)
     .eq('status', 'pendente')
-    .single();
+    .maybeSingle();
 
   if (findError || !solicitacao) {
     return { success: false, message: `Solicitação ${id} não encontrada ou já processada` };
@@ -419,7 +419,7 @@ async function criarContaPagar(
     .select('id')
     .eq('ativo', true)
     .limit(1)
-    .single();
+    .maybeSingle();
 
   if (!empresa) {
     return { success: false, message: 'Nenhuma empresa ativa encontrada.' };
@@ -459,7 +459,7 @@ async function criarContaReceber(
     .select('id')
     .eq('ativo', true)
     .limit(1)
-    .single();
+    .maybeSingle();
 
   if (!empresa) {
     return { success: false, message: 'Nenhuma empresa ativa encontrada.' };
@@ -639,7 +639,7 @@ async function agendarCobranca(contaId: string): Promise<ActionResult> {
     .from('contas_receber')
     .select('*, clientes(razao_social, email, telefone)')
     .eq('id', contaId)
-    .single();
+    .maybeSingle();
 
   if (findError || !conta) {
     return { success: false, message: `Conta ${contaId} não encontrada.` };
@@ -729,7 +729,7 @@ async function gerarBoleto(contaId: string): Promise<ActionResult> {
     .from('contas_receber')
     .select('*, clientes(razao_social, cnpj_cpf)')
     .eq('id', contaId)
-    .single();
+    .maybeSingle();
 
   if (error || !conta) {
     return { success: false, message: `Conta ${contaId} não encontrada.` };
@@ -755,7 +755,7 @@ async function atualizarScoreCliente(
     .from('clientes')
     .select('razao_social, score')
     .eq('id', clienteId)
-    .single();
+    .maybeSingle();
 
   if (findError || !cliente) {
     return { success: false, message: `Cliente ${clienteId} não encontrado.` };
