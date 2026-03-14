@@ -234,8 +234,8 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
                       className={cn(
                         'h-2 w-2 rounded-full',
                         alerta.prioridade === 'critica' && 'bg-destructive',
-                        alerta.prioridade === 'alta' && 'bg-orange-500',
-                        alerta.prioridade === 'media' && 'bg-yellow-500',
+                        alerta.prioridade === 'alta' && 'bg-streak',
+                        alerta.prioridade === 'media' && 'bg-warning',
                         alerta.prioridade === 'baixa' && 'bg-muted-foreground'
                       )}
                     />

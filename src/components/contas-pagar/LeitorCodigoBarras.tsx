@@ -242,12 +242,12 @@ export function LeitorCodigoBarras({ open, onOpenChange, onBoletoDetected }: Lei
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
             >
-              <Card className={dadosBoleto.valido ? 'border-green-500' : 'border-destructive'}>
+              <Card className={dadosBoleto.valido ? 'border-success' : 'border-destructive'}>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg flex items-center gap-2">
                       {dadosBoleto.valido ? (
-                        <Check className="h-5 w-5 text-green-500" />
+                        <Check className="h-5 w-5 text-success" />
                       ) : (
                         <AlertCircle className="h-5 w-5 text-destructive" />
                       )}

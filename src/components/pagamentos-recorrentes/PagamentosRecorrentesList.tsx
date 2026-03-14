@@ -97,7 +97,7 @@ export function PagamentosRecorrentesList() {
         <Card>
           <CardHeader className="p-3 sm:p-6 pb-2">
             <CardDescription className="text-xs sm:text-sm">Pausados</CardDescription>
-            <CardTitle className="text-lg sm:text-2xl text-yellow-600">{stats.pausados}</CardTitle>
+            <CardTitle className="text-lg sm:text-2xl text-warning">{stats.pausados}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
