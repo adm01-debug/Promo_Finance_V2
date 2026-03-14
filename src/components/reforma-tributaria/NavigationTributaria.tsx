@@ -59,7 +59,7 @@ const NAV_GROUPS: NavGroup[] = [
     id: 'compliance',
     label: 'Compliance',
     icon: Shield,
-    color: 'text-emerald-500',
+    color: 'text-success',
     items: [
       { id: 'obrigacoes', label: 'Obrigações', icon: Clock, badge: '3', badgeVariant: 'destructive' },
       { id: 'auditoria', label: 'Auditoria', icon: Shield },
