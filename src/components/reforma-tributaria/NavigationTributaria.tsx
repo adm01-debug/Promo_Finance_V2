@@ -46,7 +46,7 @@ const NAV_GROUPS: NavGroup[] = [
     id: 'operacional',
     label: 'Operacional',
     icon: Calculator,
-    color: 'text-blue-500',
+    color: 'text-secondary',
     items: [
       { id: 'apuracao', label: 'Apuração IBS/CBS', icon: Calculator },
       { id: 'operacoes', label: 'Operações', icon: FileText },
