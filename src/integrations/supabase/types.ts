@@ -1062,6 +1062,61 @@ export type Database = {
           },
         ]
       }
+      conciliacoes_parciais: {
+        Row: {
+          conta_pagar_id: string | null
+          conta_receber_id: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          observacoes: string | null
+          transacao_bancaria_id: string
+          valor_parcial: number
+        }
+        Insert: {
+          conta_pagar_id?: string | null
+          conta_receber_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          observacoes?: string | null
+          transacao_bancaria_id: string
+          valor_parcial: number
+        }
+        Update: {
+          conta_pagar_id?: string | null
+          conta_receber_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          observacoes?: string | null
+          transacao_bancaria_id?: string
+          valor_parcial?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conciliacoes_parciais_conta_pagar_id_fkey"
+            columns: ["conta_pagar_id"]
+            isOneToOne: false
+            referencedRelation: "contas_pagar"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conciliacoes_parciais_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conciliacoes_parciais_transacao_bancaria_id_fkey"
+            columns: ["transacao_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "transacoes_bancarias"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       configuracoes_aprovacao: {
         Row: {
           aprovadores_obrigatorios: number
@@ -3467,6 +3522,48 @@ export type Database = {
           },
         ]
       }
+      regras_conciliacao: {
+        Row: {
+          ativo: boolean | null
+          categoria: string | null
+          created_at: string | null
+          created_by: string | null
+          entidade_id: string | null
+          entidade_nome: string
+          id: string
+          lancamento_tipo: string
+          padrao_descricao: string
+          updated_at: string | null
+          vezes_aplicada: number | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          categoria?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          entidade_id?: string | null
+          entidade_nome: string
+          id?: string
+          lancamento_tipo: string
+          padrao_descricao: string
+          updated_at?: string | null
+          vezes_aplicada?: number | null
+        }
+        Update: {
+          ativo?: boolean | null
+          categoria?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          entidade_id?: string | null
+          entidade_nome?: string
+          id?: string
+          lancamento_tipo?: string
+          padrao_descricao?: string
+          updated_at?: string | null
+          vezes_aplicada?: number | null
+        }
+        Relationships: []
+      }
       regua_cobranca: {
         Row: {
           ativo: boolean | null
@@ -3919,6 +4016,7 @@ export type Database = {
       }
       transacoes_bancarias: {
         Row: {
+          conciliacao_parcial: boolean | null
           conciliada: boolean
           conciliada_em: string | null
           conciliada_por: string | null
@@ -3932,8 +4030,10 @@ export type Database = {
           saldo: number
           tipo: Database["public"]["Enums"]["tipo_transacao"]
           valor: number
+          valor_conciliado: number | null
         }
         Insert: {
+          conciliacao_parcial?: boolean | null
           conciliada?: boolean
           conciliada_em?: string | null
           conciliada_por?: string | null
@@ -3947,8 +4047,10 @@ export type Database = {
           saldo: number
           tipo: Database["public"]["Enums"]["tipo_transacao"]
           valor: number
+          valor_conciliado?: number | null
         }
         Update: {
+          conciliacao_parcial?: boolean | null
           conciliada?: boolean
           conciliada_em?: string | null
           conciliada_por?: string | null
@@ -3962,6 +4064,7 @@ export type Database = {
           saldo?: number
           tipo?: Database["public"]["Enums"]["tipo_transacao"]
           valor?: number
+          valor_conciliado?: number | null
         }
         Relationships: [
           {
