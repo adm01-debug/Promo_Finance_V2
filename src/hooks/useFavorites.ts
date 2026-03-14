@@ -149,7 +149,7 @@ export function useRecentItems(options: {
   storageKey?: string;
   maxItems?: number;
 } = {}) {
-  const { storageKey = 'finance-hub-recent', maxItems = 10 } = options;
+  const { storageKey = 'promo-finance-recent', maxItems = 10 } = options;
 
   const [recentItems, setRecentItems] = useState<FavoriteItem[]>(() => {
     if (typeof window === 'undefined') return [];
