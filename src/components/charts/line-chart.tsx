@@ -207,7 +207,7 @@ export function LineChart({
           x={point.x}
           y={height - 10}
           textAnchor="middle"
-          className="fill-gray-500 dark:fill-gray-400 text-xs"
+          className="fill-muted-foreground text-xs"
         >
           {point.label}
         </text>
