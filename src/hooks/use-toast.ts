@@ -205,7 +205,7 @@ toast.info = (title: string, description?: string) => {
   return toast({
     title,
     description,
-    className: "border-blue-500/50 bg-blue-50 dark:bg-blue-950/50",
+    className: "border-primary/50 bg-primary/10",
   });
 };
 
