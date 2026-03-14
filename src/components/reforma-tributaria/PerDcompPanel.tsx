@@ -335,7 +335,7 @@ export function PerDcompPanel() {
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3">
-                  <CheckCircle2 className="h-8 w-8 text-green-500" />
+                  <CheckCircle2 className="h-8 w-8 text-success" />
                   <div>
                     <p className="text-sm text-muted-foreground">Deferidos</p>
                     <p className="text-2xl font-bold">{estatisticas.deferidos}</p>
