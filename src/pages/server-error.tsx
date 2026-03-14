@@ -16,23 +16,23 @@ export default function ServerError() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
       <div className="max-w-md w-full text-center">
         {/* Error Icon */}
         <div className="mb-8 flex justify-center">
-          <div className="w-24 h-24 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
-            <AlertTriangle className="w-12 h-12 text-red-600 dark:text-red-400" />
+          <div className="w-24 h-24 bg-destructive/10 rounded-full flex items-center justify-center">
+            <AlertTriangle className="w-12 h-12 text-destructive" />
           </div>
         </div>
 
         {/* Error Code */}
-        <h1 className="text-6xl font-bold text-gray-200 dark:text-gray-800 mb-4">500</h1>
+        <h1 className="text-6xl font-bold text-muted/50 mb-4">500</h1>
 
         {/* Message */}
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+        <h2 className="text-2xl font-bold text-foreground mb-4">
           Erro interno do servidor
         </h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-8">
+        <p className="text-muted-foreground mb-8">
           Ocorreu um erro inesperado em nossos servidores. Nossa equipe técnica já foi
           notificada e está trabalhando para resolver o problema.
         </p>
