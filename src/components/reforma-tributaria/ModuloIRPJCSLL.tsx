@@ -361,8 +361,8 @@ export function ModuloIRPJCSLL() {
                   </div>
                 </div>
 
-                <div className="p-4 border rounded-lg border-red-200 bg-red-50/50">
-                  <h4 className="font-medium mb-3 text-red-700">Exclusões</h4>
+                <div className="p-4 border rounded-lg border-destructive/20 bg-destructive/5">
+                  <h4 className="font-medium mb-3 text-destructive">Exclusões</h4>
                   <div className="space-y-2">
                     <div>
                       <Label className="text-xs">Permanentes</Label>
