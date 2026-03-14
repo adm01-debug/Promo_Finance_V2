@@ -507,7 +507,7 @@ function BalancoView({ data }: { data: Record<string, unknown> }) {
           </div>
           <div className="flex justify-between font-bold text-lg pt-2 border-t">
             <span>Patrimônio Líquido</span>
-            <span className={pl >= 0 ? 'text-green-600' : 'text-red-500'}>{formatCurrency(pl)}</span>
+            <span className={pl >= 0 ? 'text-success' : 'text-destructive'}>{formatCurrency(pl)}</span>
           </div>
         </div>
       </div>
