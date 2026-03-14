@@ -194,7 +194,7 @@ export function DonutChart({
                   {segment.label}
                 </div>
               </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
+              <div className="text-sm text-muted-foreground">
                 {formatValue(segment.value)}
               </div>
               <div className="text-xs text-gray-400 w-12 text-right">
