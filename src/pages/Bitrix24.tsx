@@ -652,12 +652,12 @@ export default function Bitrix24() {
               <CardContent className="space-y-4">
                 <div className={cn(
                   "p-4 rounded-lg border flex items-center gap-4",
-                  isConnected ? "border-green-500 bg-green-50 dark:bg-green-900/20" : "border-red-500 bg-red-50 dark:bg-red-900/20"
+                  isConnected ? "border-success bg-success/5" : "border-destructive bg-destructive/5"
                 )}>
                   {isConnected ? (
-                    <CheckCircle2 className="h-8 w-8 text-green-600" />
+                    <CheckCircle2 className="h-8 w-8 text-success" />
                   ) : (
-                    <XCircle className="h-8 w-8 text-red-500" />
+                    <XCircle className="h-8 w-8 text-destructive" />
                   )}
                   <div>
                     <p className="font-semibold">

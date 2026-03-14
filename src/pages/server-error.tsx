@@ -86,11 +86,11 @@ export default function ServerError() {
         </div>
 
         {/* Tips */}
-        <div className="mt-8 text-left p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
-          <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+        <div className="mt-8 text-left p-4 bg-muted rounded-lg">
+          <h3 className="text-sm font-medium text-foreground mb-2">
             Enquanto isso, você pode tentar:
           </h3>
-          <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+          <ul className="text-sm text-muted-foreground space-y-1">
             <li>• Atualizar a página</li>
             <li>• Limpar o cache do navegador</li>
             <li>• Verificar sua conexão com a internet</li>

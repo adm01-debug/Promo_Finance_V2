@@ -317,8 +317,8 @@ export default function ContasBancarias() {
                       de {contasFiltradas.length} cadastradas
                     </p>
                   </div>
-                  <div className="p-3 rounded-full bg-blue-100 dark:bg-blue-900/30">
-                    <Building2 className="h-6 w-6 text-blue-600" />
+                  <div className="p-3 rounded-full bg-secondary/10">
+                    <Building2 className="h-6 w-6 text-secondary" />
                   </div>
                 </div>
               </CardContent>
