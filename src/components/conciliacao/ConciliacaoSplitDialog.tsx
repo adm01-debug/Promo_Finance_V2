@@ -89,12 +89,13 @@ export function ConciliacaoSplitDialog({
     setIsLoading(true);
     try {
       // Insert partial reconciliation records
+      const { data: { user } } = await supabase.auth.getUser();
       const records = splits.map(s => ({
         transacao_bancaria_id: transacao.id,
         conta_pagar_id: s.lancamento.tipo === 'pagar' ? s.lancamentoId : null,
         conta_receber_id: s.lancamento.tipo === 'receber' ? s.lancamentoId : null,
         valor_parcial: s.valorParcial,
-        created_by: (await supabase.auth.getUser()).data.user?.id,
+        created_by: user?.id,
       }));
 
       const { error: insertError } = await supabase
