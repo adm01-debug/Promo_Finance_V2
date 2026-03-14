@@ -151,7 +151,7 @@ export function ConciliacaoExport({ transacoes, stats }: ConciliacaoExportProps)
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={exportExcel} className="gap-2">
           <FileSpreadsheet className="h-4 w-4 text-success" />
-          Excel (.xlsx)
+          Planilha (.csv)
         </DropdownMenuItem>
         <DropdownMenuItem onClick={exportPDF} className="gap-2">
           <FileText className="h-4 w-4 text-destructive" />
