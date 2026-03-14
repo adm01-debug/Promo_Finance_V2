@@ -177,7 +177,7 @@ export function BenchmarkingSetorial() {
   const getStatusIcon = (status: 'melhor' | 'pior' | 'igual') => {
     switch (status) {
       case 'melhor':
-        return <TrendingUp className="h-4 w-4 text-emerald-500" />;
+        return <TrendingUp className="h-4 w-4 text-success" />;
       case 'pior':
         return <TrendingDown className="h-4 w-4 text-destructive" />;
       case 'igual':
@@ -188,7 +188,7 @@ export function BenchmarkingSetorial() {
   const getStatusColor = (status: 'melhor' | 'pior' | 'igual') => {
     switch (status) {
       case 'melhor':
-        return 'bg-emerald-500';
+        return 'bg-success';
       case 'pior':
         return 'bg-destructive';
       case 'igual':
