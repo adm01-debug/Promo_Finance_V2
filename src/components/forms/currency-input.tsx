@@ -184,8 +184,8 @@ export function CurrencyDisplay({
   return (
     <span
       className={cn(
-        colorBySign && value > 0 && 'text-green-600 dark:text-green-400',
-        colorBySign && value < 0 && 'text-red-600 dark:text-red-400',
+        colorBySign && value > 0 && 'text-success',
+        colorBySign && value < 0 && 'text-destructive',
         className
       )}
     >

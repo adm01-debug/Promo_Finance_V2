@@ -78,8 +78,8 @@ export function OperacoesLista() {
                   <TableCell>{op.nome_contraparte || '-'}</TableCell>
                   <TableCell>{format(parseISO(op.data_operacao), 'dd/MM/yy')}</TableCell>
                   <TableCell className="text-right">{formatCurrency(op.valor_operacao)}</TableCell>
-                  <TableCell className="text-right text-blue-600">{formatCurrency(op.cbs_valor)}</TableCell>
-                  <TableCell className="text-right text-emerald-600">{formatCurrency(op.ibs_valor)}</TableCell>
+                  <TableCell className="text-right text-primary">{formatCurrency(op.cbs_valor)}</TableCell>
+                  <TableCell className="text-right text-success">{formatCurrency(op.ibs_valor)}</TableCell>
                   <TableCell>
                     <Badge variant={op.status === 'processado' ? 'outline' : 'destructive'}>
                       {op.status}

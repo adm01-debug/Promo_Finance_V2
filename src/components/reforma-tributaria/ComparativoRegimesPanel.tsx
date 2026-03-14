@@ -70,13 +70,13 @@ export function ComparativoRegimesPanel() {
         </Card>
 
         <div className="lg:col-span-2 space-y-4">
-          <Card className="border-green-200 bg-green-50 dark:bg-green-950/20">
+          <Card className="border-success/20 bg-success/5">
             <CardContent className="pt-6 flex items-center gap-4">
-              <Award className="h-10 w-10 text-green-500" />
+              <Award className="h-10 w-10 text-success" />
               <div>
                 <p className="text-sm text-muted-foreground">Regime Mais Vantajoso</p>
-                <p className="text-2xl font-bold text-green-700">{resultado.melhorOpcao.nome}</p>
-                <p className="text-sm text-green-600">Economia: {formatCurrency(resultado.economiaMelhorOpcao)}/ano</p>
+                <p className="text-2xl font-bold text-success">{resultado.melhorOpcao.nome}</p>
+                <p className="text-sm text-success/80">Economia: {formatCurrency(resultado.economiaMelhorOpcao)}/ano</p>
               </div>
             </CardContent>
           </Card>

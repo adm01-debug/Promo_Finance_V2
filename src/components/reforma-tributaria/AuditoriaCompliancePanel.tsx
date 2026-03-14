@@ -121,12 +121,12 @@ export function AuditoriaCompliancePanel({ empresaId }: Props) {
           </CardContent>
         </Card>
       ) : (
-        <Card className="border-green-200 bg-green-50 dark:bg-green-950/20">
+        <Card className="border-success/20 bg-success/5">
           <CardContent className="pt-6 flex items-center gap-4">
-            <CheckCircle className="h-12 w-12 text-green-500" />
+            <CheckCircle className="h-12 w-12 text-success" />
             <div>
-              <h3 className="text-lg font-semibold text-green-700">Compliance 100%!</h3>
-              <p className="text-green-600">Nenhuma inconsistência detectada.</p>
+              <h3 className="text-lg font-semibold text-success">Compliance 100%!</h3>
+              <p className="text-success/80">Nenhuma inconsistência detectada.</p>
             </div>
           </CardContent>
         </Card>

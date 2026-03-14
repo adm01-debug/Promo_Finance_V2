@@ -623,7 +623,7 @@ export const SefazAnalytics = () => {
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground mb-1">Tempo Máximo</p>
-                  <p className="text-2xl font-bold text-amber-500">
+                  <p className="text-2xl font-bold text-warning">
                     {eventosFiltrados.length > 0 
                       ? ((Math.max(...eventosFiltrados.filter(e => e.tempoResposta).map(e => e.tempoResposta!)) || 0) / 1000).toFixed(2)
                       : '0'}s

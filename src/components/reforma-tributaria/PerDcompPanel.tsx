@@ -372,7 +372,7 @@ export function PerDcompPanel() {
                     >
                       <p className="font-medium">{credito.tipo_tributo}</p>
                       <p className="text-sm text-muted-foreground">{credito.competencia_origem}</p>
-                      <p className="text-lg font-bold text-green-600">
+                      <p className="text-lg font-bold text-success">
                         {formatCurrency(credito.saldo_disponivel || 0)}
                       </p>
                     </div>
