@@ -175,6 +175,14 @@ export default function Conciliacao() {
     }
   }, [transacoes]);
 
+  const handleConciliarSplit = useCallback((transacaoId: string) => {
+    const transacao = transacoes.find(t => t.id === transacaoId);
+    if (transacao) {
+      setSelectedTransacaoSplit(transacao);
+      setShowSplitDialog(true);
+    }
+  }, [transacoes]);
+
   const handleManualSuccess = useCallback((transacaoId: string, lancamentoId: string, tipo: 'pagar' | 'receber') => {
     setTransacoes(prev => prev.map(t => 
       t.id === transacaoId ? { ...t, conciliada: true } : t
