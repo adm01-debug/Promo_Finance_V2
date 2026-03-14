@@ -152,7 +152,7 @@ export function CalendarHeatMap({
                 key={`${month}-${position}`}
                 x={position * (cellSize + cellGap)}
                 y={12}
-                className="text-[10px] fill-gray-400"
+                className="text-[10px] fill-muted-foreground"
               >
                 {MONTH_LABELS[month]}
               </text>
