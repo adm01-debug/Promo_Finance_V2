@@ -1,3 +1,7 @@
+// ============================================
+// PROMO FINANCE SERVICES INDEX
+// ============================================
+
 // Auth
 export { authService } from './auth.service';
 
@@ -17,8 +21,3 @@ export type { ContaReceber, ContaReceberInput, ContaReceberFilters } from './con
 // Feature Services
 export { dashboardService } from './dashboard.service';
 export { reportService } from './report.service';
-export { exportService } from './export.service';
-export { importService } from './import.service';
-export { notificationService } from './notification.service';
-export { storageService } from './storage.service';
-export { createDatabaseService } from './database.service';
