@@ -241,9 +241,9 @@ export function CronogramaTransicao() {
                         {info.marcos.map((marco, i) => (
                           <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                             {etapa.status === 'concluido' ? (
-                              <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                              <CheckCircle2 className="h-4 w-4 text-success mt-0.5 shrink-0" />
                             ) : etapa.status === 'em_andamento' ? (
-                              <Clock className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+                              <Clock className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                             ) : (
                               <ArrowRight className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
                             )}
