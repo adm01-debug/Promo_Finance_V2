@@ -163,7 +163,7 @@ export function DonutChart({
                 x={segment.labelX + 50}
                 y={segment.labelY + 50}
                 textAnchor="middle"
-                className="text-xs fill-gray-600 dark:fill-gray-400"
+                className="text-xs fill-muted-foreground"
               >
                 {segment.label}
               </text>
