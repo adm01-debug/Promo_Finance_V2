@@ -55,7 +55,7 @@ export const toast = {
   warning(message: string, options?: ToastOptions) {
     return sonnerToast.warning(message, {
       ...options,
-      icon: <AlertTriangle className="h-5 w-5 text-yellow-500" />,
+      icon: <AlertTriangle className="h-5 w-5 text-warning" />,
     });
   },
 
