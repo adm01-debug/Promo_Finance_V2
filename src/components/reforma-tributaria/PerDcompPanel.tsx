@@ -368,7 +368,7 @@ export function PerDcompPanel() {
                   {creditosDisponiveis.slice(0, 5).map((credito) => (
                     <div 
                       key={credito.id}
-                      className="p-3 bg-white dark:bg-background rounded-lg border"
+                      className="p-3 bg-card rounded-lg border"
                     >
                       <p className="font-medium">{credito.tipo_tributo}</p>
                       <p className="text-sm text-muted-foreground">{credito.competencia_origem}</p>
