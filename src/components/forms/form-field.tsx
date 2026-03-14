@@ -75,7 +75,7 @@ export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(
 
           {/* Error */}
           {error && (
-            <p className="mt-1 text-sm text-red-600 dark:text-red-400" role="alert">
+            <p className="mt-1 text-sm text-destructive" role="alert">
               {error}
             </p>
           )}
