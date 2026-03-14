@@ -20,6 +20,7 @@ import { useConciliacao } from '@/hooks/useConciliacao';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 import { LancamentoSistema } from '@/lib/transaction-matcher';
 import { logger } from '@/lib/logger';
+import { aprenderRegra } from '@/hooks/useRegrasConciliacao';
 
 interface TransacaoExtrato {
   id: string;
