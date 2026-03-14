@@ -237,7 +237,7 @@ function FluxoCaixaView({ data }: { data: Record<string, unknown> }) {
           <div className="grid grid-cols-2 gap-4">
             <div className="text-center">
               <p className="text-sm text-muted-foreground">Previsto</p>
-              <p className="text-2xl font-bold text-blue-600">{formatCurrency(saldo?.previsto || 0)}</p>
+              <p className="text-2xl font-bold text-primary">{formatCurrency(saldo?.previsto || 0)}</p>
             </div>
             <div className="text-center">
               <p className="text-sm text-muted-foreground">Realizado</p>
