@@ -136,14 +136,14 @@ export function DonutChart({
         {/* Center content */}
         {showTotal && (
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-sm text-gray-500 dark:text-gray-400">
+            <span className="text-sm text-muted-foreground">
               {hoveredSegment ? hoveredSegment.label : totalLabel}
             </span>
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">
+            <span className="text-2xl font-bold text-foreground">
               {formatValue(hoveredSegment ? hoveredSegment.value : total)}
             </span>
             {hoveredSegment && (
-              <span className="text-sm text-gray-500 dark:text-gray-400">
+              <span className="text-sm text-muted-foreground">
                 {(hoveredSegment.percentage * 100).toFixed(1)}%
               </span>
             )}
