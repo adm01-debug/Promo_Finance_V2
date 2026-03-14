@@ -278,7 +278,7 @@ class Bitrix24Service {
   // ============================================
 
   /**
-   * Convert Finance-Hub cliente to Bitrix contact
+   * Convert Promo Finance cliente to Bitrix contact
    */
   clienteToBitrixContact(cliente: {
     nome: string;
