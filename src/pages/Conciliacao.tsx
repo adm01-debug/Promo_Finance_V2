@@ -600,18 +600,21 @@ export default function Conciliacao() {
           <BulkActionsBar
             selectedCount={selectedIds.size}
             onClear={() => setSelectedIds(new Set())}
-            actions={
-              <div className="flex items-center gap-2">
-                <Button size="sm" onClick={handleBulkConciliar} className="gap-1.5">
-                  <Check className="h-4 w-4" />
-                  Conciliar ({selectedIds.size})
-                </Button>
-                <Button size="sm" variant="destructive" onClick={handleBulkIgnorar} className="gap-1.5">
-                  <Unlink className="h-4 w-4" />
-                  Ignorar
-                </Button>
-              </div>
-            }
+            actions={[
+              {
+                id: 'conciliar',
+                label: `Conciliar (${selectedIds.size})`,
+                icon: <Check className="h-4 w-4" />,
+                onClick: handleBulkConciliar,
+              },
+              {
+                id: 'ignorar',
+                label: 'Ignorar',
+                icon: <Unlink className="h-4 w-4" />,
+                variant: 'destructive' as const,
+                onClick: handleBulkIgnorar,
+              },
+            ]}
           />
         )}
 
