@@ -361,7 +361,7 @@ export function InvoiceGenerator({
                       onChange={(e) => updateItem(item.id, { unitPrice: Number(e.target.value) })}
                       min={0}
                       step={0.01}
-                      className="w-full px-2 py-1 text-right border border-gray-200 dark:border-gray-700 rounded bg-transparent text-sm"
+                      className="w-full px-2 py-1 text-right border border-border rounded bg-transparent text-sm"
                     />
                   </div>
                   <div className="col-span-2 text-right text-sm font-medium">
