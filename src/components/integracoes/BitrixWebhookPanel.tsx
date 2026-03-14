@@ -69,19 +69,19 @@ export const BitrixWebhookPanel = () => {
 
   const getEventTypeBadge = (eventType: string) => {
     if (eventType.includes('deal')) {
-      return <Badge className="bg-blue-500/10 text-blue-500 border-blue-500/20">Deal</Badge>;
+      return <Badge className="bg-primary/10 text-primary border-primary/20">Deal</Badge>;
     }
     if (eventType.includes('contact')) {
-      return <Badge className="bg-green-500/10 text-green-500 border-green-500/20">Contato</Badge>;
+      return <Badge className="bg-success/10 text-success border-success/20">Contato</Badge>;
     }
     if (eventType.includes('company')) {
-      return <Badge className="bg-purple-500/10 text-purple-500 border-purple-500/20">Empresa</Badge>;
+      return <Badge className="bg-accent text-accent-foreground border-accent">Empresa</Badge>;
     }
     if (eventType.includes('invoice')) {
-      return <Badge className="bg-orange-500/10 text-orange-500 border-orange-500/20">Fatura</Badge>;
+      return <Badge className="bg-warning/10 text-warning border-warning/20">Fatura</Badge>;
     }
     if (eventType.includes('lead')) {
-      return <Badge className="bg-cyan-500/10 text-cyan-500 border-cyan-500/20">Lead</Badge>;
+      return <Badge className="bg-secondary text-secondary-foreground border-secondary">Lead</Badge>;
     }
     return <Badge variant="secondary">{eventType}</Badge>;
   };
