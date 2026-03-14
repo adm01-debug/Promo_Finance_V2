@@ -342,7 +342,7 @@ export function InvoiceGenerator({
                       value={item.description}
                       onChange={(e) => updateItem(item.id, { description: e.target.value })}
                       placeholder="Descrição do item"
-                      className="w-full px-2 py-1 border-0 border-b border-transparent hover:border-gray-300 focus:border-primary-500 bg-transparent text-sm"
+                      className="w-full px-2 py-1 border-0 border-b border-transparent hover:border-border focus:border-primary bg-transparent text-sm"
                     />
                   </div>
                   <div className="col-span-2">
