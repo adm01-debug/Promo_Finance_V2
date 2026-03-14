@@ -506,9 +506,9 @@ const SefazStatusPanel = ({
       )}
 
       {response && (
-        <div className={`rounded-lg p-3 ${response.success ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-red-500/10 border border-red-500/20'}`}>
+        <div className={`rounded-lg p-3 ${response.success ? 'bg-success/10 border border-success/20' : 'bg-destructive/10 border border-destructive/20'}`}>
           <div className="flex items-center gap-2 mb-2">
-            <Badge variant="outline" className={response.success ? 'bg-emerald-500/20 text-emerald-500' : 'bg-red-500/20 text-red-500'}>
+            <Badge variant="outline" className={response.success ? 'bg-success/20 text-success' : 'bg-destructive/20 text-destructive'}>
               cStat: {response.cStat}
             </Badge>
             <span className="text-sm font-medium">{response.xMotivo}</span>
