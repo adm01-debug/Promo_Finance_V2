@@ -190,7 +190,7 @@ export function DonutChart({
                 style={{ backgroundColor: segment.color }}
               />
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                <div className="text-sm font-medium text-foreground truncate">
                   {segment.label}
                 </div>
               </div>
