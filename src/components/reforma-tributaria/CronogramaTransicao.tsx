@@ -205,13 +205,13 @@ export function CronogramaTransicao() {
                   <CardContent className="space-y-4">
                     {/* Alíquotas */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="text-center p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                      <div className="text-center p-3 bg-primary/10 rounded-lg">
                         <p className="text-xs text-muted-foreground mb-1">CBS</p>
-                        <p className="text-lg font-bold text-blue-600">{etapa.cbs}%</p>
+                        <p className="text-lg font-bold text-primary">{etapa.cbs}%</p>
                       </div>
-                      <div className="text-center p-3 bg-emerald-50 dark:bg-emerald-950/20 rounded-lg">
+                      <div className="text-center p-3 bg-success/10 rounded-lg">
                         <p className="text-xs text-muted-foreground mb-1">IBS</p>
-                        <p className="text-lg font-bold text-emerald-600">{etapa.ibs}%</p>
+                        <p className="text-lg font-bold text-success">{etapa.ibs}%</p>
                       </div>
                       <div className="text-center p-3 bg-muted/50 rounded-lg">
                         <p className="text-xs text-muted-foreground mb-1">ICMS Residual</p>
