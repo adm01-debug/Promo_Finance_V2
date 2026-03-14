@@ -325,7 +325,7 @@ export function ContaReceberForm({
           {...form.getFieldProps('observacoes')}
           rows={3}
           placeholder="Observações adicionais..."
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white resize-none"
+          className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground resize-none"
         />
       </FormField>
 
