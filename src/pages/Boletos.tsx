@@ -224,7 +224,7 @@ const BoletoPreview = ({ boleto, onUpdateStatus }: {
           Enviar
         </Button>
         {boleto.status !== 'pago' && boleto.status !== 'cancelado' && (
-          <Button variant="outline" onClick={handleMarkAsPaid} className="gap-2 text-emerald-600">
+          <Button variant="outline" onClick={handleMarkAsPaid} className="gap-2 text-success">
             <CheckCircle2 className="h-4 w-4" />
             Marcar Pago
           </Button>
