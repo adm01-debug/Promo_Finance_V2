@@ -393,8 +393,8 @@ export function ContingenciaNFe() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg ${stats.totalPending > 0 ? 'bg-amber-500/10' : 'bg-muted'}`}>
-                <FileText className={`h-5 w-5 ${stats.totalPending > 0 ? 'text-amber-500' : 'text-muted-foreground'}`} />
+              <div className={`p-2 rounded-lg ${stats.totalPending > 0 ? 'bg-warning/10' : 'bg-muted'}`}>
+                <FileText className={`h-5 w-5 ${stats.totalPending > 0 ? 'text-warning' : 'text-muted-foreground'}`} />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">NF-e Pendentes</p>
