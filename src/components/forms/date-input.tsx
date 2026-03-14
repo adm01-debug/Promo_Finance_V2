@@ -88,7 +88,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(
           max={maxDate ? formatDateForInput(maxDate, format) : undefined}
           className={cn(
             showIcon && 'pr-10',
-            error && 'border-red-500 focus:border-red-500 focus:ring-red-500',
+            error && 'border-destructive focus:border-destructive focus:ring-destructive',
             className
           )}
           {...props}
