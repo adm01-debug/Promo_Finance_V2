@@ -262,7 +262,7 @@ export function InvoiceGenerator({
                 client: { ...prev.client, document: e.target.value },
               }))}
               placeholder="CPF/CNPJ"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent"
+               className="w-full px-3 py-2 border border-border rounded-lg bg-transparent"
             />
             <input
               type="email"
