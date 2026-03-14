@@ -393,7 +393,7 @@ export function AutoContingenciaConfig() {
                                 <span>{rule.config.downtimeMinutes} minutos offline</span>
                               )}
                               {rule.lastTriggered && (
-                                <span className="text-amber-500">
+                                <span className="text-warning">
                                   Último disparo: {formatDateTime(rule.lastTriggered.toISOString())}
                                 </span>
                               )}
