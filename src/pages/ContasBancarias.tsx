@@ -67,14 +67,14 @@ const itemVariants = {
 };
 
 const bancoLogos: Record<string, { icon: typeof Landmark; color: string }> = {
-  'Itaú': { icon: Landmark, color: 'bg-orange-500' },
-  'Bradesco': { icon: Building2, color: 'bg-red-600' },
-  'Banco do Brasil': { icon: Landmark, color: 'bg-yellow-500' },
-  'Santander': { icon: Building2, color: 'bg-red-500' },
-  'Caixa': { icon: PiggyBank, color: 'bg-blue-600' },
-  'Nubank': { icon: CreditCard, color: 'bg-purple-600' },
-  'Inter': { icon: Wallet, color: 'bg-orange-600' },
-  'C6 Bank': { icon: CreditCard, color: 'bg-gray-800' },
+  'Itaú': { icon: Landmark, color: 'bg-streak' },
+  'Bradesco': { icon: Building2, color: 'bg-destructive' },
+  'Banco do Brasil': { icon: Landmark, color: 'bg-warning' },
+  'Santander': { icon: Building2, color: 'bg-destructive' },
+  'Caixa': { icon: PiggyBank, color: 'bg-secondary' },
+  'Nubank': { icon: CreditCard, color: 'bg-accent' },
+  'Inter': { icon: Wallet, color: 'bg-streak' },
+  'C6 Bank': { icon: CreditCard, color: 'bg-foreground' },
 };
 
 export default function ContasBancarias() {
