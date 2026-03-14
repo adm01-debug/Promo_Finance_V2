@@ -401,7 +401,7 @@ export function CalculadoraTributos() {
                 {resultado.valorTotalSplitPayment > 0 && (
                   <>
                     <Separator />
-                    <div className="p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+                    <div className="p-3 bg-accent/10 rounded-lg">
                       <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
                         <ArrowRight className="h-4 w-4" />
                         Split Payment (Retenção Automática)
@@ -418,7 +418,7 @@ export function CalculadoraTributos() {
                       </div>
                       <div className="flex justify-between mt-2 pt-2 border-t">
                         <span className="font-medium">Valor Líquido a Receber</span>
-                        <span className="font-bold text-purple-600">
+                        <span className="font-bold text-accent">
                           {formatCurrency(resultado.valorBase - resultado.valorTotalSplitPayment)}
                         </span>
                       </div>
