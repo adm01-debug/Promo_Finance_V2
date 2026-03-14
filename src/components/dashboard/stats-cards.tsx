@@ -35,113 +35,66 @@ interface StatCardProps {
 
 const variantStyles = {
   default: {
-    bg: 'bg-white dark:bg-gray-800',
-    icon: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300',
+    bg: 'bg-card',
+    icon: 'bg-muted text-muted-foreground',
   },
   success: {
-    bg: 'bg-white dark:bg-gray-800',
-    icon: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
+    bg: 'bg-card',
+    icon: 'bg-success/10 text-success',
   },
   warning: {
-    bg: 'bg-white dark:bg-gray-800',
-    icon: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
+    bg: 'bg-card',
+    icon: 'bg-warning/10 text-warning',
   },
   danger: {
-    bg: 'bg-white dark:bg-gray-800',
-    icon: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
+    bg: 'bg-card',
+    icon: 'bg-destructive/10 text-destructive',
   },
   info: {
-    bg: 'bg-white dark:bg-gray-800',
-    icon: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
+    bg: 'bg-card',
+    icon: 'bg-secondary/10 text-secondary',
   },
 };
 
 const sizeStyles = {
-  sm: {
-    padding: 'p-4',
-    iconSize: 'h-8 w-8',
-    titleSize: 'text-xs',
-    valueSize: 'text-lg',
-    iconWrapper: 'p-2',
-  },
-  md: {
-    padding: 'p-5',
-    iconSize: 'h-10 w-10',
-    titleSize: 'text-sm',
-    valueSize: 'text-2xl',
-    iconWrapper: 'p-2.5',
-  },
-  lg: {
-    padding: 'p-6',
-    iconSize: 'h-12 w-12',
-    titleSize: 'text-sm',
-    valueSize: 'text-3xl',
-    iconWrapper: 'p-3',
-  },
+  sm: { padding: 'p-4', iconSize: 'h-8 w-8', titleSize: 'text-xs', valueSize: 'text-lg', iconWrapper: 'p-2' },
+  md: { padding: 'p-5', iconSize: 'h-10 w-10', titleSize: 'text-sm', valueSize: 'text-2xl', iconWrapper: 'p-2.5' },
+  lg: { padding: 'p-6', iconSize: 'h-12 w-12', titleSize: 'text-sm', valueSize: 'text-3xl', iconWrapper: 'p-3' },
 };
 
-export function StatCard({
-  title,
-  value,
-  icon,
-  trend,
-  variant = 'default',
-  size = 'md',
-  className,
-}: StatCardProps) {
+export function StatCard({ title, value, icon, trend, variant = 'default', size = 'md', className }: StatCardProps) {
   const styles = variantStyles[variant];
   const sizes = sizeStyles[size];
 
   return (
-    <div
-      className={cn(
-        'rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm',
-        styles.bg,
-        sizes.padding,
-        className
-      )}
-    >
+    <div className={cn('rounded-xl border border-border shadow-sm', styles.bg, sizes.padding, className)}>
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className={cn('font-medium text-gray-500 dark:text-gray-400', sizes.titleSize)}>
-            {title}
-          </p>
-          <p className={cn('font-bold text-gray-900 dark:text-white mt-1', sizes.valueSize)}>
+          <p className={cn('font-medium text-muted-foreground', sizes.titleSize)}>{title}</p>
+          <p className={cn('font-bold text-foreground mt-1', sizes.valueSize)}>
             {typeof value === 'number' ? value.toLocaleString('pt-BR') : value}
           </p>
           {trend && (
             <div className="flex items-center gap-1 mt-2">
               {trend.value > 0 ? (
-                <ArrowUp className="h-3 w-3 text-green-500" />
+                <ArrowUp className="h-3 w-3 text-success" />
               ) : trend.value < 0 ? (
-                <ArrowDown className="h-3 w-3 text-red-500" />
+                <ArrowDown className="h-3 w-3 text-destructive" />
               ) : (
-                <Minus className="h-3 w-3 text-gray-400" />
+                <Minus className="h-3 w-3 text-muted-foreground" />
               )}
-              <span
-                className={cn(
-                  'text-xs font-medium',
-                  trend.value > 0
-                    ? 'text-green-600 dark:text-green-400'
-                    : trend.value < 0
-                    ? 'text-red-600 dark:text-red-400'
-                    : 'text-gray-500'
-                )}
-              >
+              <span className={cn(
+                'text-xs font-medium',
+                trend.value > 0 ? 'text-success' : trend.value < 0 ? 'text-destructive' : 'text-muted-foreground'
+              )}>
                 {Math.abs(trend.value)}%
               </span>
-              {trend.label && (
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {trend.label}
-                </span>
-              )}
+              {trend.label && <span className="text-xs text-muted-foreground">{trend.label}</span>}
             </div>
           )}
         </div>
         {icon && (
-          <div className={cn('rounded-lg', styles.icon, sizes.iconWrapper)}>
-            {icon}
-          </div>
+          <div className={cn('rounded-lg', styles.icon, sizes.iconWrapper)}>{icon}</div>
         )}
       </div>
     </div>
@@ -149,15 +102,7 @@ export function StatCard({
 }
 
 // Presets para cards financeiros
-export function TotalReceitasCard({
-  value,
-  trend,
-  className,
-}: {
-  value: number;
-  trend?: number;
-  className?: string;
-}) {
+export function TotalReceitasCard({ value, trend, className }: { value: number; trend?: number; className?: string }) {
   return (
     <StatCard
       title="Total Receitas"
@@ -170,15 +115,7 @@ export function TotalReceitasCard({
   );
 }
 
-export function TotalDespesasCard({
-  value,
-  trend,
-  className,
-}: {
-  value: number;
-  trend?: number;
-  className?: string;
-}) {
+export function TotalDespesasCard({ value, trend, className }: { value: number; trend?: number; className?: string }) {
   return (
     <StatCard
       title="Total Despesas"
@@ -191,13 +128,7 @@ export function TotalDespesasCard({
   );
 }
 
-export function SaldoCard({
-  value,
-  className,
-}: {
-  value: number;
-  className?: string;
-}) {
+export function SaldoCard({ value, className }: { value: number; className?: string }) {
   return (
     <StatCard
       title="Saldo Atual"
@@ -209,15 +140,7 @@ export function SaldoCard({
   );
 }
 
-export function ContasPagarCard({
-  total,
-  vencidas,
-  className,
-}: {
-  total: number;
-  vencidas?: number;
-  className?: string;
-}) {
+export function ContasPagarCard({ total, vencidas, className }: { total: number; vencidas?: number; className?: string }) {
   return (
     <StatCard
       title="Contas a Pagar"
@@ -230,15 +153,7 @@ export function ContasPagarCard({
   );
 }
 
-export function ContasReceberCard({
-  total,
-  vencidas,
-  className,
-}: {
-  total: number;
-  vencidas?: number;
-  className?: string;
-}) {
+export function ContasReceberCard({ total, vencidas, className }: { total: number; vencidas?: number; className?: string }) {
   return (
     <StatCard
       title="Contas a Receber"
@@ -251,68 +166,27 @@ export function ContasReceberCard({
   );
 }
 
-export function ClientesCard({
-  total,
-  novos,
-  className,
-}: {
-  total: number;
-  novos?: number;
-  className?: string;
-}) {
+export function ClientesCard({ total, novos, className }: { total: number; novos?: number; className?: string }) {
   return (
-    <StatCard
-      title="Clientes"
-      value={total}
-      icon={<Users className="h-5 w-5" />}
-      variant="info"
-      trend={novos ? { value: novos, label: 'novos este mês' } : undefined}
-      className={className}
-    />
+    <StatCard title="Clientes" value={total} icon={<Users className="h-5 w-5" />} variant="info"
+      trend={novos ? { value: novos, label: 'novos este mês' } : undefined} className={className} />
   );
 }
 
-export function FornecedoresCard({
-  total,
-  className,
-}: {
-  total: number;
-  className?: string;
-}) {
-  return (
-    <StatCard
-      title="Fornecedores"
-      value={total}
-      icon={<Building2 className="h-5 w-5" />}
-      variant="default"
-      className={className}
-    />
-  );
+export function FornecedoresCard({ total, className }: { total: number; className?: string }) {
+  return <StatCard title="Fornecedores" value={total} icon={<Building2 className="h-5 w-5" />} variant="default" className={className} />;
 }
 
 // Grid de stats
-interface DashboardStatsProps {
-  children: ReactNode;
-  columns?: 2 | 3 | 4;
-  className?: string;
-}
+interface DashboardStatsProps { children: ReactNode; columns?: 2 | 3 | 4; className?: string; }
 
-export function DashboardStats({
-  children,
-  columns = 4,
-  className,
-}: DashboardStatsProps) {
+export function DashboardStats({ children, columns = 4, className }: DashboardStatsProps) {
   const gridCols = {
     2: 'grid-cols-1 sm:grid-cols-2',
     3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
     4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
   };
-
-  return (
-    <div className={cn('grid gap-4', gridCols[columns], className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn('grid gap-4', gridCols[columns], className)}>{children}</div>;
 }
 
 export default StatCard;

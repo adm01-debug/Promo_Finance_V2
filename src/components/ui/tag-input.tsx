@@ -45,17 +45,14 @@ export function TagInput({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Filter suggestions based on input
   const filteredSuggestions = suggestions.filter(
     (s) =>
       !tags.some((t) => t.id === s.id) &&
       s.label.toLowerCase().includes(inputValue.toLowerCase())
   );
 
-  // Get random color
   const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
 
-  // Add tag
   const addTag = useCallback(
     (tag: Tag | string) => {
       if (maxTags && tags.length >= maxTags) return;
@@ -83,7 +80,6 @@ export function TagInput({
     [tags, onChange, maxTags, getRandomColor]
   );
 
-  // Remove tag
   const removeTag = useCallback(
     (tagId: string) => {
       onChange(tags.filter((t) => t.id !== tagId));
@@ -91,7 +87,6 @@ export function TagInput({
     [tags, onChange]
   );
 
-  // Handle keyboard navigation
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -115,23 +110,10 @@ export function TagInput({
     }
   };
 
-  // Size styles
   const sizeStyles = {
-    sm: {
-      container: 'min-h-[32px] text-sm',
-      tag: 'px-2 py-0.5 text-xs',
-      input: 'text-sm',
-    },
-    md: {
-      container: 'min-h-[40px] text-sm',
-      tag: 'px-2.5 py-1 text-sm',
-      input: 'text-sm',
-    },
-    lg: {
-      container: 'min-h-[48px] text-base',
-      tag: 'px-3 py-1.5 text-base',
-      input: 'text-base',
-    },
+    sm: { container: 'min-h-[32px] text-sm', tag: 'px-2 py-0.5 text-xs', input: 'text-sm' },
+    md: { container: 'min-h-[40px] text-sm', tag: 'px-2.5 py-1 text-sm', input: 'text-sm' },
+    lg: { container: 'min-h-[48px] text-base', tag: 'px-3 py-1.5 text-base', input: 'text-base' },
   };
 
   const styles = sizeStyles[size];
@@ -141,43 +123,33 @@ export function TagInput({
       <div
         className={cn(
           'flex flex-wrap items-center gap-2 p-2 rounded-lg border transition-colors',
-          variant === 'default' && 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800',
-          variant === 'outline' && 'border-gray-300 dark:border-gray-600 bg-transparent',
-          variant === 'filled' && 'border-transparent bg-gray-100 dark:bg-gray-700',
-          'focus-within:border-primary-500 focus-within:ring-1 focus-within:ring-primary-500',
-          disabled && 'opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-900',
+          variant === 'default' && 'border-border bg-background',
+          variant === 'outline' && 'border-border bg-transparent',
+          variant === 'filled' && 'border-transparent bg-muted',
+          'focus-within:border-primary focus-within:ring-1 focus-within:ring-primary',
+          disabled && 'opacity-50 cursor-not-allowed bg-muted',
           styles.container
         )}
         onClick={() => inputRef.current?.focus()}
       >
-        {/* Tags */}
         {tags.map((tag) => (
           <span
             key={tag.id}
-            className={cn(
-              'inline-flex items-center gap-1 rounded-full font-medium',
-              styles.tag
-            )}
+            className={cn('inline-flex items-center gap-1 rounded-full font-medium', styles.tag)}
             style={{
-              backgroundColor: tag.color ? `${tag.color}20` : '#e5e7eb',
-              color: tag.color || '#374151',
+              backgroundColor: tag.color ? `${tag.color}20` : 'hsl(var(--muted))',
+              color: tag.color || 'hsl(var(--foreground))',
             }}
           >
             {tag.color && (
-              <span
-                className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: tag.color }}
-              />
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: tag.color }} />
             )}
             <span>{tag.label}</span>
             {!disabled && (
               <button
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removeTag(tag.id);
-                }}
-                className="ml-0.5 hover:bg-black/10 rounded-full p-0.5 transition-colors"
+                onClick={(e) => { e.stopPropagation(); removeTag(tag.id); }}
+                className="ml-0.5 hover:bg-foreground/10 rounded-full p-0.5 transition-colors"
               >
                 <X className="w-3 h-3" />
               </button>
@@ -185,33 +157,27 @@ export function TagInput({
           </span>
         ))}
 
-        {/* Input */}
         {(!maxTags || tags.length < maxTags) && !disabled && (
           <input
             ref={inputRef}
             type="text"
             value={inputValue}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-              setShowSuggestions(true);
-              setSelectedIndex(0);
-            }}
+            onChange={(e) => { setInputValue(e.target.value); setShowSuggestions(true); setSelectedIndex(0); }}
             onFocus={() => setShowSuggestions(true)}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
             onKeyDown={handleKeyDown}
             placeholder={tags.length === 0 ? placeholder : ''}
             className={cn(
               'flex-1 min-w-[100px] bg-transparent border-none outline-none',
-              'placeholder:text-gray-400',
+              'placeholder:text-muted-foreground',
               styles.input
             )}
           />
         )}
       </div>
 
-      {/* Suggestions dropdown */}
       {showSuggestions && filteredSuggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50 max-h-48 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-popover rounded-lg shadow-lg border border-border py-1 z-50 max-h-48 overflow-y-auto">
           {filteredSuggestions.map((suggestion, index) => (
             <button
               key={suggestion.id}
@@ -220,25 +186,21 @@ export function TagInput({
               className={cn(
                 'w-full flex items-center gap-2 px-3 py-2 text-left transition-colors',
                 index === selectedIndex
-                  ? 'bg-primary-50 dark:bg-primary-900/20'
-                  : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+                  ? 'bg-accent'
+                  : 'hover:bg-muted'
               )}
             >
               {suggestion.color && (
-                <span
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: suggestion.color }}
-                />
+                <span className="w-3 h-3 rounded-full" style={{ backgroundColor: suggestion.color }} />
               )}
-              <span className="text-gray-900 dark:text-white">{suggestion.label}</span>
+              <span className="text-foreground">{suggestion.label}</span>
             </button>
           ))}
         </div>
       )}
 
-      {/* Helper text */}
       {maxTags && (
-        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+        <p className="mt-1 text-xs text-muted-foreground">
           {tags.length}/{maxTags} tags
         </p>
       )}
@@ -265,9 +227,7 @@ export function TagsDisplay({ tags, size = 'md', maxVisible, className }: TagsDi
   };
 
   if (tags.length === 0) {
-    return (
-      <span className="text-gray-400 text-sm">Sem tags</span>
-    );
+    return <span className="text-muted-foreground text-sm">Sem tags</span>;
   }
 
   return (
@@ -275,28 +235,18 @@ export function TagsDisplay({ tags, size = 'md', maxVisible, className }: TagsDi
       {visibleTags.map((tag) => (
         <span
           key={tag.id}
-          className={cn(
-            'inline-flex items-center gap-1 rounded-full font-medium',
-            sizeStyles[size]
-          )}
+          className={cn('inline-flex items-center gap-1 rounded-full font-medium', sizeStyles[size])}
           style={{
-            backgroundColor: tag.color ? `${tag.color}20` : '#e5e7eb',
-            color: tag.color || '#374151',
+            backgroundColor: tag.color ? `${tag.color}20` : 'hsl(var(--muted))',
+            color: tag.color || 'hsl(var(--foreground))',
           }}
         >
-          {tag.color && (
-            <span
-              className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: tag.color }}
-            />
-          )}
+          {tag.color && <span className="w-2 h-2 rounded-full" style={{ backgroundColor: tag.color }} />}
           <span>{tag.label}</span>
         </span>
       ))}
       {hiddenCount > 0 && (
-        <span className={cn('text-gray-500', sizeStyles[size])}>
-          +{hiddenCount}
-        </span>
+        <span className={cn('text-muted-foreground', sizeStyles[size])}>+{hiddenCount}</span>
       )}
     </div>
   );
@@ -323,28 +273,21 @@ export function TagButton({ tag, selected, onClick, size = 'md' }: TagButtonProp
       onClick={onClick}
       className={cn(
         'inline-flex items-center gap-1.5 rounded-full font-medium transition-all',
-        selected
-          ? 'ring-2 ring-offset-2 ring-primary-500'
-          : 'hover:shadow-md',
+        selected ? 'ring-2 ring-offset-2 ring-primary' : 'hover:shadow-md',
         sizeStyles[size]
       )}
       style={{
-        backgroundColor: tag.color ? `${tag.color}${selected ? '40' : '20'}` : '#e5e7eb',
-        color: tag.color || '#374151',
+        backgroundColor: tag.color ? `${tag.color}${selected ? '40' : '20'}` : 'hsl(var(--muted))',
+        color: tag.color || 'hsl(var(--foreground))',
       }}
     >
-      {tag.color && (
-        <span
-          className="w-2 h-2 rounded-full"
-          style={{ backgroundColor: tag.color }}
-        />
-      )}
+      {tag.color && <span className="w-2 h-2 rounded-full" style={{ backgroundColor: tag.color }} />}
       <span>{tag.label}</span>
     </button>
   );
 }
 
-// Tag filter (for filtering lists by tags)
+// Tag filter
 interface TagFilterProps {
   tags: Tag[];
   selectedTags: string[];
@@ -353,13 +296,7 @@ interface TagFilterProps {
   className?: string;
 }
 
-export function TagFilter({
-  tags,
-  selectedTags,
-  onChange,
-  multiSelect = true,
-  className,
-}: TagFilterProps) {
+export function TagFilter({ tags, selectedTags, onChange, multiSelect = true, className }: TagFilterProps) {
   const handleToggle = (tagId: string) => {
     if (multiSelect) {
       if (selectedTags.includes(tagId)) {
@@ -368,11 +305,7 @@ export function TagFilter({
         onChange([...selectedTags, tagId]);
       }
     } else {
-      if (selectedTags.includes(tagId)) {
-        onChange([]);
-      } else {
-        onChange([tagId]);
-      }
+      onChange(selectedTags.includes(tagId) ? [] : [tagId]);
     }
   };
 
