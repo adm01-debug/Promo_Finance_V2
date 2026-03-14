@@ -105,8 +105,8 @@ function EmptyIllustration({ type }: { type: string }) {
           transition={{ repeat: Infinity, duration: 3 }}
           style={{ perspective: 100 }}
         >
-          <div className="h-16 w-16 rounded-xl bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-950 dark:to-amber-900/50 flex items-center justify-center">
-            <FolderOpen className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+          <div className="h-16 w-16 rounded-xl bg-gradient-to-br from-warning/20 to-warning/5 flex items-center justify-center">
+            <FolderOpen className="h-8 w-8 text-warning" />
           </div>
         </motion.div>
       </motion.div>
