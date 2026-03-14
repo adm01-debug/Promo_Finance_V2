@@ -493,19 +493,26 @@ export default function Boletos() {
           {kpis.map((kpi, index) => {
             const Icon = kpi.icon;
             return (
-              <Card key={index}>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className={cn("p-2 rounded-lg bg-muted", kpi.color)}>
-                      <Icon className="h-5 w-5" />
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05, type: 'spring', stiffness: 300, damping: 24 }}
+              >
+                <Card className="stat-card group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 h-full">
+                  <CardContent className="p-3 sm:p-5">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs sm:text-sm font-medium text-muted-foreground">{kpi.label}</p>
+                        <p className="text-lg sm:text-2xl font-bold font-display mt-1 tabular-nums">{formatCurrency(kpi.value)}</p>
+                      </div>
+                      <div className={cn("h-10 w-10 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 shrink-0", kpi.bg, kpi.color)}>
+                        <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">{kpi.label}</p>
-                      <p className="text-xl font-bold">{formatCurrency(kpi.value)}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </motion.div>
             );
           })}
         </motion.div>
