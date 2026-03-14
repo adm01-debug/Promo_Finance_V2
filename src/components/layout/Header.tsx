@@ -40,9 +40,9 @@ interface HeaderProps {
 }
 
 const roleLabels: Record<string, { label: string; color: string }> = {
-  admin: { label: 'Administrador', color: 'bg-red-500/10 text-red-500 border-red-500/20' },
-  financeiro: { label: 'Financeiro', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
-  operacional: { label: 'Operacional', color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' },
+  admin: { label: 'Administrador', color: 'bg-destructive/10 text-destructive border-destructive/20' },
+  financeiro: { label: 'Financeiro', color: 'bg-secondary/10 text-secondary border-secondary/20' },
+  operacional: { label: 'Operacional', color: 'bg-success/10 text-success border-success/20' },
   visualizador: { label: 'Visualizador', color: 'bg-muted text-muted-foreground' },
 };
 
