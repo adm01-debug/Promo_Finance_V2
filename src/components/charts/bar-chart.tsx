@@ -222,7 +222,7 @@ export function BarChart({
               y={isVertical ? height - padding.bottom + 15 : bar.y + bar.height / 2}
               textAnchor={isVertical ? 'middle' : 'end'}
               dominantBaseline={isVertical ? 'auto' : 'middle'}
-              className="fill-gray-600 dark:fill-gray-400 text-xs"
+              className="fill-muted-foreground text-xs"
               transform={isVertical ? `rotate(-45, ${bar.x + bar.width / 2}, ${height - padding.bottom + 15})` : undefined}
             >
               {bar.label.length > 10 ? `${bar.label.slice(0, 10)}...` : bar.label}
