@@ -138,7 +138,7 @@ export function CalendarHeatMap({
   return (
     <div className="inline-block">
       {title && (
-        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+        <h3 className="text-sm font-medium text-foreground mb-3">
           {title}
         </h3>
       )}
