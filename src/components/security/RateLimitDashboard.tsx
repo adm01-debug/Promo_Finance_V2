@@ -435,8 +435,8 @@ export function RateLimitDashboard() {
                           : alert.severity === 'critical'
                           ? 'bg-destructive/10 border-destructive/50'
                           : alert.severity === 'high'
-                          ? 'bg-orange-100 dark:bg-orange-900/30 border-orange-500/50'
-                          : 'bg-yellow-100 dark:bg-yellow-900/30 border-yellow-500/50'
+                          ? 'bg-streak/10 border-streak/50'
+                          : 'bg-warning/10 border-warning/50'
                       }`}
                     >
                       <div className="flex items-start justify-between">
