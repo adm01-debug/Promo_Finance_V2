@@ -276,7 +276,7 @@ export function DashboardMetricasTributarias() {
                     <p className="text-sm text-muted-foreground">Aproveitamento Créditos</p>
                     <p className="text-2xl font-bold">{metricas.taxaAproveitamentoCreditos.toFixed(1)}%</p>
                   </div>
-                  <Target className="h-5 w-5 text-green-500" />
+                  <Target className="h-5 w-5 text-success" />
                 </div>
                 <Progress value={metricas.taxaAproveitamentoCreditos} className="mt-3" />
                 <p className="text-xs text-muted-foreground mt-1">
