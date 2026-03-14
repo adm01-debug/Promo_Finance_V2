@@ -339,14 +339,14 @@ export const AlertasRejeicao = () => {
                       !alerta.lido 
                         ? alerta.tipo === 'critico'
                           ? 'bg-destructive/5 border-destructive/20'
-                          : 'bg-amber-500/5 border-amber-500/20'
+                          : 'bg-warning/5 border-warning/20'
                         : 'bg-muted/30 border-border/50'
                     }`}
                     onClick={() => handleVerDetalhes(alerta)}
                   >
                     <div className="flex items-start gap-3">
                       <div className={`mt-0.5 ${
-                        alerta.tipo === 'critico' ? 'text-destructive' : 'text-amber-500'
+                        alerta.tipo === 'critico' ? 'text-destructive' : 'text-warning'
                       }`}>
                         {alerta.tipo === 'critico' ? (
                           <XCircle className="h-5 w-5" />

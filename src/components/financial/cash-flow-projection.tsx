@@ -93,7 +93,6 @@ export function CashFlowProjection({
               status: nextDate.getTime() === entry.date.getTime() ? entry.status : 'projected',
             });
           }
-          // Move to next occurrence
           switch (entry.recurrence) {
             case 'weekly':
               nextDate.setDate(nextDate.getDate() + 7);
@@ -180,12 +179,10 @@ export function CashFlowProjection({
       const date = new Date(day.date);
       
       if (viewMode === 'weekly') {
-        // Get week start (Sunday)
         const weekStart = new Date(date);
         weekStart.setDate(date.getDate() - date.getDay());
         groupKey = weekStart.toISOString().split('T')[0];
       } else {
-        // Monthly
         groupKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
       }
 
@@ -212,6 +209,13 @@ export function CashFlowProjection({
 
     return Array.from(groups.values());
   }, [displayData, viewMode]);
+
+  const summaryColorMap = {
+    green: 'bg-success/10 text-success',
+    red: 'bg-destructive/10 text-destructive',
+    blue: 'bg-info/10 text-info',
+    yellow: 'bg-warning/10 text-warning',
+  };
 
   return (
     <div className={cn('space-y-6', className)}>
@@ -247,21 +251,21 @@ export function CashFlowProjection({
       </div>
 
       {/* Balance Range */}
-      <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4">
+      <div className="bg-muted/30 rounded-lg p-4">
         <div className="flex items-center justify-between text-sm">
           <div>
-            <span className="text-gray-500">Saldo Mínimo</span>
+            <span className="text-muted-foreground">Saldo Mínimo</span>
             <p className={cn(
               'text-lg font-bold',
-              summary.lowestBalance < 0 ? 'text-red-600' : 'text-gray-900 dark:text-white'
+              summary.lowestBalance < 0 ? 'text-destructive' : 'text-foreground'
             )}>
               {formatCurrency(summary.lowestBalance)}
             </p>
           </div>
-          <ArrowRight className="w-5 h-5 text-gray-400" />
+          <ArrowRight className="w-5 h-5 text-muted-foreground" />
           <div className="text-right">
-            <span className="text-gray-500">Saldo Máximo</span>
-            <p className="text-lg font-bold text-green-600">
+            <span className="text-muted-foreground">Saldo Máximo</span>
+            <p className="text-lg font-bold text-success">
               {formatCurrency(summary.highestBalance)}
             </p>
           </div>
@@ -276,8 +280,8 @@ export function CashFlowProjection({
             className={cn(
               'px-3 py-1.5 text-sm rounded-lg transition-colors',
               viewMode === 'daily'
-                ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
-                : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
+                ? 'bg-primary/10 text-primary'
+                : 'hover:bg-muted text-muted-foreground'
             )}
           >
             Diário
@@ -287,8 +291,8 @@ export function CashFlowProjection({
             className={cn(
               'px-3 py-1.5 text-sm rounded-lg transition-colors',
               viewMode === 'weekly'
-                ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
-                : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
+                ? 'bg-primary/10 text-primary'
+                : 'hover:bg-muted text-muted-foreground'
             )}
           >
             Semanal
@@ -298,49 +302,49 @@ export function CashFlowProjection({
             className={cn(
               'px-3 py-1.5 text-sm rounded-lg transition-colors',
               viewMode === 'monthly'
-                ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
-                : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
+                ? 'bg-primary/10 text-primary'
+                : 'hover:bg-muted text-muted-foreground'
             )}
           >
             Mensal
           </button>
         </div>
         
-        <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+        <label className="flex items-center gap-2 text-sm text-muted-foreground">
           <input
             type="checkbox"
             checked={showOnlyNegative}
             onChange={(e) => setShowOnlyNegative(e.target.checked)}
-            className="rounded border-gray-300"
+            className="rounded border-border"
           />
           Apenas dias no vermelho
         </label>
       </div>
 
       {/* Projection Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="bg-card rounded-xl border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-gray-50 dark:bg-gray-900/50">
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+              <tr className="bg-muted/30">
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                   Data
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase">
                   Entradas
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase">
                   Saídas
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase">
                   Saldo Dia
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase">
                   Saldo Acumulado
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+            <tbody className="divide-y divide-border">
               {groupedData.map((day, index) => (
                 <TableRow
                   key={index}
@@ -369,19 +373,19 @@ interface SummaryCardProps {
 
 function SummaryCard({ label, value, icon, color, isCurrency = true }: SummaryCardProps) {
   const colors = {
-    green: 'bg-green-50 dark:bg-green-900/20 text-green-600',
-    red: 'bg-red-50 dark:bg-red-900/20 text-red-600',
-    blue: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600',
-    yellow: 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600',
+    green: 'bg-success/10 text-success',
+    red: 'bg-destructive/10 text-destructive',
+    blue: 'bg-info/10 text-info',
+    yellow: 'bg-warning/10 text-warning',
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+    <div className="bg-card rounded-xl p-4 border border-border">
       <div className={cn('inline-flex p-2 rounded-lg mb-2', colors[color])}>
         {icon}
       </div>
-      <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
-      <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">
+      <p className="text-sm text-muted-foreground">{label}</p>
+      <p className="text-xl font-bold text-foreground mt-1">
         {isCurrency ? formatCurrency(value) : value}
       </p>
     </div>
@@ -415,35 +419,35 @@ function TableRow({ day, viewMode, showDetails, onEntryClick }: TableRowProps) {
     <>
       <tr
         className={cn(
-          'hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors',
-          day.isNegative && 'bg-red-50/50 dark:bg-red-900/10',
+          'hover:bg-muted/30 transition-colors',
+          day.isNegative && 'bg-destructive/5',
           showDetails && day.entries.length > 0 && 'cursor-pointer'
         )}
         onClick={() => showDetails && day.entries.length > 0 && setExpanded(!expanded)}
       >
-        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
+        <td className="px-4 py-3 text-sm font-medium text-foreground">
           {formatDate(day.date)}
           {showDetails && day.entries.length > 0 && (
-            <span className="ml-2 text-xs text-gray-400">
+            <span className="ml-2 text-xs text-muted-foreground">
               ({day.entries.length})
             </span>
           )}
         </td>
-        <td className="px-4 py-3 text-sm text-right text-green-600 font-medium">
+        <td className="px-4 py-3 text-sm text-right text-success font-medium">
           {day.income > 0 ? formatCurrency(day.income) : '-'}
         </td>
-        <td className="px-4 py-3 text-sm text-right text-red-600 font-medium">
+        <td className="px-4 py-3 text-sm text-right text-destructive font-medium">
           {day.expenses > 0 ? formatCurrency(day.expenses) : '-'}
         </td>
         <td className={cn(
           'px-4 py-3 text-sm text-right font-medium',
-          day.balance >= 0 ? 'text-green-600' : 'text-red-600'
+          day.balance >= 0 ? 'text-success' : 'text-destructive'
         )}>
           {formatCurrency(day.balance)}
         </td>
         <td className={cn(
           'px-4 py-3 text-sm text-right font-bold',
-          day.runningBalance >= 0 ? 'text-gray-900 dark:text-white' : 'text-red-600'
+          day.runningBalance >= 0 ? 'text-foreground' : 'text-destructive'
         )}>
           {formatCurrency(day.runningBalance)}
         </td>
@@ -451,27 +455,27 @@ function TableRow({ day, viewMode, showDetails, onEntryClick }: TableRowProps) {
       {expanded && day.entries.map((entry) => (
         <tr
           key={entry.id}
-          className="bg-gray-50/50 dark:bg-gray-900/30"
+          className="bg-muted/20"
           onClick={(e) => {
             e.stopPropagation();
             onEntryClick?.(entry);
           }}
         >
-          <td className="px-4 py-2 pl-8 text-xs text-gray-600 dark:text-gray-400">
+          <td className="px-4 py-2 pl-8 text-xs text-muted-foreground">
             {entry.description}
             <span className={cn(
               'ml-2 px-1.5 py-0.5 rounded text-[10px]',
-              entry.status === 'confirmed' && 'bg-green-100 text-green-700',
-              entry.status === 'pending' && 'bg-yellow-100 text-yellow-700',
-              entry.status === 'projected' && 'bg-gray-100 text-gray-600'
+              entry.status === 'confirmed' && 'bg-success/10 text-success',
+              entry.status === 'pending' && 'bg-warning/10 text-warning',
+              entry.status === 'projected' && 'bg-muted text-muted-foreground'
             )}>
               {entry.status === 'confirmed' ? 'Confirmado' : entry.status === 'pending' ? 'Pendente' : 'Projetado'}
             </span>
           </td>
-          <td className="px-4 py-2 text-xs text-right text-green-600">
+          <td className="px-4 py-2 text-xs text-right text-success">
             {entry.type === 'income' ? formatCurrency(entry.amount) : ''}
           </td>
-          <td className="px-4 py-2 text-xs text-right text-red-600">
+          <td className="px-4 py-2 text-xs text-right text-destructive">
             {entry.type === 'expense' ? formatCurrency(entry.amount) : ''}
           </td>
           <td colSpan={2}></td>

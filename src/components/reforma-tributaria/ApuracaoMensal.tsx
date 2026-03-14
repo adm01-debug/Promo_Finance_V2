@@ -101,11 +101,11 @@ export function ApuracaoMensal() {
       case 'calculado':
         return <Badge variant="secondary"><Calculator className="h-3 w-3 mr-1" />Calculado</Badge>;
       case 'revisado':
-        return <Badge className="bg-blue-500"><CheckCircle2 className="h-3 w-3 mr-1" />Revisado</Badge>;
+        return <Badge className="bg-info text-info-foreground"><CheckCircle2 className="h-3 w-3 mr-1" />Revisado</Badge>;
       case 'transmitido':
-        return <Badge className="bg-green-500"><Send className="h-3 w-3 mr-1" />Transmitido</Badge>;
+        return <Badge className="bg-success text-success-foreground"><Send className="h-3 w-3 mr-1" />Transmitido</Badge>;
       case 'retificado':
-        return <Badge className="bg-orange-500"><RefreshCw className="h-3 w-3 mr-1" />Retificado</Badge>;
+        return <Badge className="bg-warning text-warning-foreground"><RefreshCw className="h-3 w-3 mr-1" />Retificado</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -233,10 +233,10 @@ export function ApuracaoMensal() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">CBS Total</CardTitle>
-            <FileText className="h-4 w-4 text-blue-500" />
+            <FileText className="h-4 w-4 text-cbs" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{formatCurrency(totaisAno.cbs)}</div>
+            <div className="text-2xl font-bold text-cbs">{formatCurrency(totaisAno.cbs)}</div>
             <p className="text-xs text-muted-foreground">Ano {anoSelecionado}</p>
           </CardContent>
         </Card>
@@ -244,10 +244,10 @@ export function ApuracaoMensal() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">IBS Total</CardTitle>
-            <FileText className="h-4 w-4 text-emerald-500" />
+            <FileText className="h-4 w-4 text-ibs" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">{formatCurrency(totaisAno.ibs)}</div>
+            <div className="text-2xl font-bold text-ibs">{formatCurrency(totaisAno.ibs)}</div>
             <p className="text-xs text-muted-foreground">Ano {anoSelecionado}</p>
           </CardContent>
         </Card>
@@ -255,10 +255,10 @@ export function ApuracaoMensal() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Imposto Seletivo</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-orange-500" />
+            <AlertTriangle className="h-4 w-4 text-imposto-seletivo" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{formatCurrency(totaisAno.is)}</div>
+            <div className="text-2xl font-bold text-imposto-seletivo">{formatCurrency(totaisAno.is)}</div>
             <p className="text-xs text-muted-foreground">Ano {anoSelecionado}</p>
           </CardContent>
         </Card>
@@ -266,10 +266,10 @@ export function ApuracaoMensal() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Tributos Residuais</CardTitle>
-            <TrendingDown className="h-4 w-4 text-gray-500" />
+            <TrendingDown className="h-4 w-4 text-residual" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-600">{formatCurrency(totaisAno.residuais)}</div>
+            <div className="text-2xl font-bold text-residual">{formatCurrency(totaisAno.residuais)}</div>
             <p className="text-xs text-muted-foreground">ICMS/ISS/PIS/COFINS</p>
           </CardContent>
         </Card>
@@ -320,16 +320,16 @@ export function ApuracaoMensal() {
                         {meses[ap.mes - 1]}/{ap.ano}
                       </div>
                     </TableCell>
-                    <TableCell className="text-right text-blue-600">
+                    <TableCell className="text-right text-cbs">
                       {formatCurrency(ap.cbs_a_pagar)}
                     </TableCell>
-                    <TableCell className="text-right text-emerald-600">
+                    <TableCell className="text-right text-ibs">
                       {formatCurrency(ap.ibs_a_pagar)}
                     </TableCell>
-                    <TableCell className="text-right text-orange-600">
+                    <TableCell className="text-right text-imposto-seletivo">
                       {formatCurrency(ap.is_a_pagar)}
                     </TableCell>
-                    <TableCell className="text-right text-gray-600">
+                    <TableCell className="text-right text-residual">
                       {formatCurrency(
                         Number(ap.icms_residual) + Number(ap.iss_residual) +
                         Number(ap.pis_residual) + Number(ap.cofins_residual)
@@ -405,26 +405,26 @@ export function ApuracaoMensal() {
             <div className="grid gap-6 md:grid-cols-2">
               {/* CBS */}
               <div className="p-4 border rounded-lg">
-                <h4 className="font-semibold text-blue-600 mb-3">CBS - Contribuição sobre Bens e Serviços</h4>
+                <h4 className="font-semibold text-cbs mb-3">CBS - Contribuição sobre Bens e Serviços</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span>Débitos</span>
                     <span className="font-medium">{formatCurrency(apuracaoAtual.cbs_debitos)}</span>
                   </div>
-                  <div className="flex justify-between text-green-600">
+                  <div className="flex justify-between text-success">
                     <span>(-) Créditos</span>
                     <span className="font-medium">{formatCurrency(apuracaoAtual.cbs_creditos)}</span>
                   </div>
-                  <div className="flex justify-between text-green-600">
+                  <div className="flex justify-between text-success">
                     <span>(-) Saldo Anterior</span>
                     <span className="font-medium">{formatCurrency(apuracaoAtual.cbs_saldo_anterior)}</span>
                   </div>
                   <div className="border-t pt-2 flex justify-between font-bold">
                     <span>= A Pagar</span>
-                    <span className="text-blue-600">{formatCurrency(apuracaoAtual.cbs_a_pagar)}</span>
+                    <span className="text-cbs">{formatCurrency(apuracaoAtual.cbs_a_pagar)}</span>
                   </div>
                   {Number(apuracaoAtual.cbs_a_compensar) > 0 && (
-                    <div className="flex justify-between text-green-600">
+                    <div className="flex justify-between text-success">
                       <span>Saldo Credor</span>
                       <span className="font-medium">{formatCurrency(apuracaoAtual.cbs_a_compensar)}</span>
                     </div>
@@ -434,26 +434,26 @@ export function ApuracaoMensal() {
 
               {/* IBS */}
               <div className="p-4 border rounded-lg">
-                <h4 className="font-semibold text-emerald-600 mb-3">IBS - Imposto sobre Bens e Serviços</h4>
+                <h4 className="font-semibold text-ibs mb-3">IBS - Imposto sobre Bens e Serviços</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span>Débitos</span>
                     <span className="font-medium">{formatCurrency(apuracaoAtual.ibs_debitos)}</span>
                   </div>
-                  <div className="flex justify-between text-green-600">
+                  <div className="flex justify-between text-success">
                     <span>(-) Créditos</span>
                     <span className="font-medium">{formatCurrency(apuracaoAtual.ibs_creditos)}</span>
                   </div>
-                  <div className="flex justify-between text-green-600">
+                  <div className="flex justify-between text-success">
                     <span>(-) Saldo Anterior</span>
                     <span className="font-medium">{formatCurrency(apuracaoAtual.ibs_saldo_anterior)}</span>
                   </div>
                   <div className="border-t pt-2 flex justify-between font-bold">
                     <span>= A Pagar</span>
-                    <span className="text-emerald-600">{formatCurrency(apuracaoAtual.ibs_a_pagar)}</span>
+                    <span className="text-ibs">{formatCurrency(apuracaoAtual.ibs_a_pagar)}</span>
                   </div>
                   {Number(apuracaoAtual.ibs_a_compensar) > 0 && (
-                    <div className="flex justify-between text-green-600">
+                    <div className="flex justify-between text-success">
                       <span>Saldo Credor</span>
                       <span className="font-medium">{formatCurrency(apuracaoAtual.ibs_a_compensar)}</span>
                     </div>
@@ -463,7 +463,7 @@ export function ApuracaoMensal() {
 
               {/* Imposto Seletivo */}
               <div className="p-4 border rounded-lg">
-                <h4 className="font-semibold text-orange-600 mb-3">IS - Imposto Seletivo</h4>
+                <h4 className="font-semibold text-imposto-seletivo mb-3">IS - Imposto Seletivo</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span>Débitos</span>
@@ -471,14 +471,14 @@ export function ApuracaoMensal() {
                   </div>
                   <div className="border-t pt-2 flex justify-between font-bold">
                     <span>= A Pagar</span>
-                    <span className="text-orange-600">{formatCurrency(apuracaoAtual.is_a_pagar)}</span>
+                    <span className="text-imposto-seletivo">{formatCurrency(apuracaoAtual.is_a_pagar)}</span>
                   </div>
                 </div>
               </div>
 
               {/* Tributos Residuais */}
               <div className="p-4 border rounded-lg bg-muted/30">
-                <h4 className="font-semibold text-gray-600 mb-3">Tributos Residuais (Transição)</h4>
+                <h4 className="font-semibold text-residual mb-3">Tributos Residuais (Transição)</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span>ICMS Residual</span>
