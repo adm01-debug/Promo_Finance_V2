@@ -473,9 +473,9 @@ export function DashboardMetricasTributarias() {
                 )}
 
                 {metricas.creditosDisponiveis > 50000 && (
-                  <div className="p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <div className="p-4 bg-secondary/10 border border-secondary/20 rounded-lg">
                     <div className="flex items-start gap-3">
-                      <DollarSign className="h-5 w-5 text-blue-600 mt-0.5" />
+                      <DollarSign className="h-5 w-5 text-secondary mt-0.5" />
                       <div>
                         <p className="font-medium">Créditos acumulados disponíveis</p>
                         <p className="text-sm text-muted-foreground">
