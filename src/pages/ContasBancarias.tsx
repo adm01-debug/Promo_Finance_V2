@@ -103,7 +103,7 @@ export default function ContasBancarias() {
   };
 
   const getBancoInfo = (banco: string) => {
-    return bancoLogos[banco] || { icon: Landmark, color: 'bg-gray-500' };
+    return bancoLogos[banco] || { icon: Landmark, color: 'bg-muted-foreground' };
   };
 
   const handleOpenDeleteDialog = (conta: ContaBancaria) => {
