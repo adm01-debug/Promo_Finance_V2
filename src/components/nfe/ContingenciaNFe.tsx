@@ -497,7 +497,7 @@ export function ContingenciaNFe() {
                           <p className="font-medium">NF-e #{nfe.numero}</p>
                           <p className="text-sm text-muted-foreground">{nfe.destinatario}</p>
                           {nfe.erro && (
-                            <p className="text-xs text-red-500 mt-1">{nfe.erro}</p>
+                            <p className="text-xs text-destructive mt-1">{nfe.erro}</p>
                           )}
                         </div>
                       </div>
