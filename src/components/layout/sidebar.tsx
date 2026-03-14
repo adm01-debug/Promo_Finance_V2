@@ -39,7 +39,7 @@ export function Sidebar({ open, collapsed, onClose, className }: SidebarProps) {
   return (
     <aside 
       className={cn(
-        'bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700',
+        'bg-card border-r border-border',
         'fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-200',
         'lg:relative lg:translate-x-0',
         open ? 'translate-x-0' : '-translate-x-full',
