@@ -111,7 +111,7 @@ export function ContaReceberForm({
             type="text"
             {...form.getFieldProps('descricao')}
             placeholder="Ex: Venda de produtos, Serviço prestado..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+            className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
           />
         </FormField>
 
