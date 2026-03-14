@@ -1,4 +1,4 @@
-@layer components {
+/* Component Styles */
   /* Typography */
   .text-display-xl {
     @apply text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight;
