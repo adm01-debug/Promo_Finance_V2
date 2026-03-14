@@ -422,10 +422,10 @@ export function DashboardMetricasTributarias() {
               </CardContent>
             </Card>
 
-            <Card className="border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20">
+            <Card className="border-success/20 bg-success/5">
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3">
-                  <TrendingUp className="h-8 w-8 text-green-500" />
+                  <TrendingUp className="h-8 w-8 text-success" />
                   <div>
                     <p className="text-sm text-muted-foreground">Créditos Utilizados</p>
                     <p className="text-xl font-bold">{formatCurrency(metricas.totalCreditos)}</p>
