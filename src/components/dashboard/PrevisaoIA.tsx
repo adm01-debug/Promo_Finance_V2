@@ -207,7 +207,7 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
   if (!analise && !loading) {
     return (
       <Card className={`${className} relative overflow-hidden`}>
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
         <CardContent className="relative flex flex-col items-center justify-center py-16 text-center">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
