@@ -310,10 +310,10 @@ export function ObrigacoesAcessorias() {
 
       {/* Alerta sobre Reforma Tributária */}
       {anoSelecionado >= 2026 && (
-        <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20">
+        <Card className="border-primary/20 bg-primary/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Bell className="h-5 w-5 text-blue-500" />
+              <Bell className="h-5 w-5 text-primary" />
               Novas Obrigações - Reforma Tributária
             </CardTitle>
           </CardHeader>
