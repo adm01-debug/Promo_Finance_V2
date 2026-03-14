@@ -197,7 +197,7 @@ export function DonutChart({
               <div className="text-sm text-muted-foreground">
                 {formatValue(segment.value)}
               </div>
-              <div className="text-xs text-gray-400 w-12 text-right">
+              <div className="text-xs text-muted-foreground w-12 text-right">
                 {(segment.percentage * 100).toFixed(1)}%
               </div>
             </div>
