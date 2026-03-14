@@ -111,7 +111,7 @@ export function Pagination({
               return (
                 <span
                   key={`ellipsis-${index}`}
-                  className="px-2 text-gray-400 dark:text-gray-500"
+                  className="px-2 text-muted-foreground"
                 >
                   ...
                 </span>
