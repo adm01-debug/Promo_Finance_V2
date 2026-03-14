@@ -140,15 +140,15 @@ export function GestorCreditosTributarios() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'disponivel':
-        return <Badge variant="default" className="bg-green-500">Disponível</Badge>;
+        return <Badge variant="default" className="bg-success">Disponível</Badge>;
       case 'utilizado':
         return <Badge variant="secondary">Utilizado</Badge>;
       case 'expirado':
         return <Badge variant="destructive">Expirado</Badge>;
       case 'estornado':
-        return <Badge variant="outline" className="border-orange-500 text-orange-500">Estornado</Badge>;
+        return <Badge variant="outline" className="border-warning text-warning">Estornado</Badge>;
       case 'compensado':
-        return <Badge variant="outline" className="border-blue-500 text-blue-500">Compensado</Badge>;
+        return <Badge variant="outline" className="border-primary text-primary">Compensado</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
