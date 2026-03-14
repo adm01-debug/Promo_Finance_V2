@@ -371,7 +371,7 @@ export function SimuladorCenariosTributarios() {
               <ul className="space-y-1 text-sm text-muted-foreground">
                 {resultadoAtual.observacoes.map((obs, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                    <CheckCircle2 className="h-4 w-4 text-success mt-0.5 shrink-0" />
                     <span>{obs}</span>
                   </li>
                 ))}

@@ -619,9 +619,9 @@ export default function Bitrix24() {
                             <p className="text-sm text-muted-foreground">{log.mensagem_erro}</p>
                           )}
                           <div className="flex items-center gap-4 mt-2 text-xs">
-                            <span className="text-green-600">{log.registros_processados} registros</span>
+                            <span className="text-success">{log.registros_processados} registros</span>
                             {log.registros_com_erro > 0 && (
-                              <span className="text-red-500">{log.registros_com_erro} erros</span>
+                              <span className="text-destructive">{log.registros_com_erro} erros</span>
                             )}
                           </div>
                         </div>

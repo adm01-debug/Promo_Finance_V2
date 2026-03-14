@@ -532,8 +532,8 @@ export default function Configuracoes() {
 
                 <motion.div variants={itemVariants} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30">
-                      <CreditCard className="h-5 w-5 text-red-500" />
+                    <div className="p-2 rounded-lg bg-destructive/10">
+                      <CreditCard className="h-5 w-5 text-destructive" />
                     </div>
                     <div>
                       <p className="font-medium">Alertas de Fluxo de Caixa</p>
