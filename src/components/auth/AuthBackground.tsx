@@ -181,7 +181,7 @@ export const AuthMobileHeader = forwardRef<HTMLDivElement>(function AuthMobileHe
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2 }}
       >
-        Promo Brindes
+        Promo Finance
       </motion.h1>
       <motion.p 
         className="text-muted-foreground mt-2"

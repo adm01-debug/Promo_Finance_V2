@@ -79,7 +79,7 @@ const NotFound = () => {
           transition={{ delay: 0.6 }}
           className="text-xs text-muted-foreground mt-8"
         >
-          Sistema de Gestão Financeira • Promo Brindes
+          Sistema de Gestão Financeira • Promo Finance
         </motion.p>
       </motion.div>
     </div>

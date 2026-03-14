@@ -45,7 +45,7 @@ export const MobileSidebarDrawer = ({ isOpen, onClose }: MobileSidebarDrawerProp
                     Promo
                   </span>
                   <span className="text-[10px] text-muted-foreground leading-tight uppercase tracking-wider">
-                    Financeiro
+                    Finance
                   </span>
                 </div>
               </div>

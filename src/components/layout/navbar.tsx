@@ -54,7 +54,7 @@ export function Navbar({ onMenuClick, className }: NavbarProps) {
           </div>
           <div className="leading-none">
             <span className="text-sm font-bold text-foreground tracking-tight">Promo</span>
-            <span className="text-[10px] block text-muted-foreground font-medium uppercase tracking-widest">Financeiro</span>
+            <span className="text-[10px] block text-muted-foreground font-medium uppercase tracking-widest">Finance</span>
           </div>
         </div>
 

@@ -66,7 +66,7 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
                   Promo
                 </span>
                 <span className="text-[10px] text-muted-foreground leading-tight uppercase tracking-wider">
-                  Financeiro
+                  Finance
                 </span>
               </div>
             </motion.div>
