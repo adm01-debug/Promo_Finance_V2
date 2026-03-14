@@ -96,28 +96,17 @@ export function useAuthValidation() {
     }
 
     try {
-      const { data: settings } = await supabase
-        .from('security_settings')
-        .select('enable_geo_restriction')
-        .limit(1)
-        .maybeSingle();
+      const { data, error } = await supabase.rpc('is_country_allowed_for_login', {
+        _country: geoData.country,
+      });
 
-      if (!settings?.enable_geo_restriction) {
-        return { allowed: true };
-      }
+      if (error) throw error;
 
-      const { data: allowedCountries } = await supabase
-        .from('allowed_countries')
-        .select('country_code')
-        .eq('ativo', true);
-
-      const isAllowed = allowedCountries?.some(c => c.country_code === geoData.country);
-      
-      if (!isAllowed) {
+      if (!data) {
         setGeoBlocked(true);
-        return { 
-          allowed: false, 
-          reason: `Acesso não permitido do país: ${geoData.country}` 
+        return {
+          allowed: false,
+          reason: `Acesso não permitido do país: ${geoData.country}`,
         };
       }
 
