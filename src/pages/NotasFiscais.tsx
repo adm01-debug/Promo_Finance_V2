@@ -225,10 +225,10 @@ const mockNotasFiscais: NotaFiscal[] = [
 ];
 
 const statusConfig = {
-  autorizada: { label: 'Autorizada', color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20', icon: CheckCircle2 },
-  pendente: { label: 'Pendente', color: 'bg-amber-500/10 text-amber-500 border-amber-500/20', icon: Clock },
-  cancelada: { label: 'Cancelada', color: 'bg-red-500/10 text-red-500 border-red-500/20', icon: XCircle },
-  denegada: { label: 'Denegada', color: 'bg-red-500/10 text-red-500 border-red-500/20', icon: AlertCircle },
+  autorizada: { label: 'Autorizada', color: 'bg-success/10 text-success border-success/20', icon: CheckCircle2 },
+  pendente: { label: 'Pendente', color: 'bg-warning/10 text-warning border-warning/20', icon: Clock },
+  cancelada: { label: 'Cancelada', color: 'bg-destructive/10 text-destructive border-destructive/20', icon: XCircle },
+  denegada: { label: 'Denegada', color: 'bg-destructive/10 text-destructive border-destructive/20', icon: AlertCircle },
   inutilizada: { label: 'Inutilizada', color: 'bg-muted text-muted-foreground border-muted', icon: FileXIcon }
 };
 
