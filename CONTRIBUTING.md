@@ -1,6 +1,6 @@
 # 🤝 Guia de Contribuição
 
-Obrigado por considerar contribuir com o **Finance-Hub**! Este documento fornece diretrizes para contribuir com o projeto.
+Obrigado por considerar contribuir com o **Promo Finance**! Este documento fornece diretrizes para contribuir com o projeto.
 
 ## 📋 Índice
 
