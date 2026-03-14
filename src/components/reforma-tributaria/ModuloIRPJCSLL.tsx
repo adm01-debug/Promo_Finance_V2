@@ -203,10 +203,10 @@ export function ModuloIRPJCSLL() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">IRPJ Total</CardTitle>
-            <FileText className="h-4 w-4 text-blue-500" />
+            <FileText className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{formatCurrency(totaisAno.irpj)}</div>
+            <div className="text-2xl font-bold text-primary">{formatCurrency(totaisAno.irpj)}</div>
             <p className="text-xs text-muted-foreground">Alíquota: {(ALIQUOTA_IRPJ * 100).toFixed(0)}% + {10}% adicional</p>
           </CardContent>
         </Card>
