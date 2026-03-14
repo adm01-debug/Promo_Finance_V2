@@ -504,7 +504,7 @@ export default function BI() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Lucro do Mês</p>
-                  <p className={`text-2xl font-bold ${kpis.lucroMes >= 0 ? 'text-green-600' : 'text-destructive'}`}>
+                  <p className={`text-2xl font-bold ${kpis.lucroMes >= 0 ? 'text-success' : 'text-destructive'}`}>
                     {formatCurrency(kpis.lucroMes)}
                   </p>
                 </div>
