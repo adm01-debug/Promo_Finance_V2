@@ -23,7 +23,7 @@ interface MetaData {
 }
 
 const DEFAULT_META: MetaData = {
-  siteName: 'Finance Hub',
+  siteName: 'Promo Finance',
   locale: 'pt_BR',
   type: 'website',
   twitterCard: 'summary_large_image',
