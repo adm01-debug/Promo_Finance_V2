@@ -38,9 +38,9 @@ export default function ServerError() {
         </p>
 
         {/* Status */}
-        <div className="mb-8 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-          <div className="flex items-center justify-center gap-2 text-yellow-800 dark:text-yellow-200">
-            <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
+        <div className="mb-8 p-4 bg-warning/10 rounded-lg border border-warning/20">
+          <div className="flex items-center justify-center gap-2 text-warning">
+            <div className="w-2 h-2 bg-warning rounded-full animate-pulse" />
             <span className="text-sm font-medium">
               Nossos sistemas estão sendo verificados
             </span>
