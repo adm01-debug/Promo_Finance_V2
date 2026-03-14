@@ -25,18 +25,7 @@ import { formatCurrency, formatDateTime } from '@/lib/formatters';
 // COMPONENTE: MODAL DE CANCELAMENTO DE NF-E
 // ============================================
 
-interface SefazError {
-  code: string;
-  message: string;
-}
-
-interface SefazResponse {
-  success: boolean;
-  cStat: string;
-  xMotivo: string;
-  protocolo?: string;
-  errors?: SefazError[];
-}
+// Using SefazResponse from sefaz-simulator import
 
 interface NotaFiscal {
   id: string;
