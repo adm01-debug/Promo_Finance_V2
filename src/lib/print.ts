@@ -24,7 +24,7 @@ interface PrintOptions {
  */
 export function printHTML(content: string, options: PrintOptions = {}): void {
   const {
-    title = 'Finance Hub',
+    title = 'Promo Finance',
     pageSize = 'A4',
     orientation = 'portrait',
     margins = { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' },
