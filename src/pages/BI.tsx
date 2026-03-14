@@ -532,8 +532,8 @@ export default function BI() {
                     {kpis.inadimplencia.toFixed(1)}%
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                  <AlertTriangle className="w-6 h-6 text-amber-600" />
+                <div className="w-12 h-12 rounded-xl bg-warning/20 flex items-center justify-center">
+                  <AlertTriangle className="w-6 h-6 text-warning" />
                 </div>
               </div>
               <div className="mt-2 text-sm text-muted-foreground">

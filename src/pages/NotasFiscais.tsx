@@ -1267,8 +1267,8 @@ export default function NotasFiscais() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-full bg-emerald-500/10">
-                    <TrendingUp className="h-6 w-6 text-emerald-500" />
+                  <div className="p-3 rounded-full bg-success/10">
+                    <TrendingUp className="h-6 w-6 text-success" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Taxa de Autorização</p>

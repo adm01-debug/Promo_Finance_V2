@@ -571,7 +571,7 @@ function InadimplenciaView({ data }: { data: Record<string, unknown> }) {
                     {cliente.nome}
                   </TableCell>
                   <TableCell className="text-center">{cliente.quantidade}</TableCell>
-                  <TableCell className="text-right text-red-500 font-medium">
+                  <TableCell className="text-right text-destructive font-medium">
                     {formatCurrency(cliente.valor)}
                   </TableCell>
                 </TableRow>

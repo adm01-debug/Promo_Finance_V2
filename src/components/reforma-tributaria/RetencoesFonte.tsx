@@ -568,11 +568,11 @@ export function RetencoesFonte() {
                     <span className="font-bold">{formatCurrency(dados.total)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-yellow-600">Pendente:</span>
+                    <span className="text-warning">Pendente:</span>
                     <span>{formatCurrency(dados.pendente)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-green-600">Recolhido:</span>
+                    <span className="text-success">Recolhido:</span>
                     <span>{formatCurrency(dados.recolhido)}</span>
                   </div>
                   <Separator />
