@@ -340,7 +340,7 @@ function ContasReceberView({ data }: { data: Record<string, unknown> }) {
         </Card>
         <Card>
           <CardContent className="pt-4 text-center">
-            <p className="text-2xl font-bold text-green-600">{formatCurrency(resumo?.valor_recebido || 0)}</p>
+            <p className="text-2xl font-bold text-success">{formatCurrency(resumo?.valor_recebido || 0)}</p>
             <p className="text-sm text-muted-foreground">Valor Recebido</p>
           </CardContent>
         </Card>
