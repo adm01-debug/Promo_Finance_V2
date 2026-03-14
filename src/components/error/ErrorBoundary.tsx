@@ -87,7 +87,7 @@ Component Stack: ${this.state.errorInfo?.componentStack || 'N/A'}
         <div className="min-h-[500px] flex items-center justify-center p-6 bg-gradient-to-b from-background to-muted/20">
           <Card className="max-w-lg w-full border-destructive/20 shadow-2xl overflow-hidden">
             {/* Gradiente decorativo no topo */}
-            <div className="h-1 bg-gradient-to-r from-destructive via-orange-500 to-destructive" />
+            <div className="h-1 bg-gradient-to-r from-destructive via-warning to-destructive" />
             
             <CardHeader className="text-center pb-2 pt-8">
               {/* Ilustração animada */}
@@ -131,7 +131,7 @@ Component Stack: ${this.state.errorInfo?.componentStack || 'N/A'}
                       className="h-8 px-2"
                     >
                       {this.state.copied ? (
-                        <Check className="h-4 w-4 text-emerald-500" />
+                        <Check className="h-4 w-4 text-success" />
                       ) : (
                         <Copy className="h-4 w-4" />
                       )}

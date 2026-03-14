@@ -126,7 +126,7 @@ export function Collapsible({
   return (
     <div
       className={cn(
-        'border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden',
+        'border border-border rounded-lg overflow-hidden',
         className
       )}
     >
@@ -136,7 +136,7 @@ export function Collapsible({
         disabled={disabled}
         className={cn(
           'w-full flex items-center justify-between px-4 py-3 text-left',
-          'bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700/50',
+          'bg-muted/50 hover:bg-muted',
           'transition-colors',
           disabled && 'opacity-50 cursor-not-allowed',
           headerClassName
@@ -145,14 +145,14 @@ export function Collapsible({
       >
         <div className="flex items-center gap-3">
           {icon && <span className="flex-shrink-0">{icon}</span>}
-          <span className="font-medium text-gray-900 dark:text-white">
+          <span className="font-medium text-foreground">
             {title}
           </span>
           {badge && <span>{badge}</span>}
         </div>
         <ChevronDown
           className={cn(
-            'w-5 h-5 text-gray-500 transition-transform duration-200',
+            'w-5 h-5 text-muted-foreground transition-transform duration-200',
             isOpen && 'rotate-180'
           )}
         />
@@ -271,9 +271,9 @@ export function FAQAccordion({
           key={item.id}
           id={item.id}
           title={item.question}
-          className="border-none border-b border-gray-200 dark:border-gray-700 rounded-none last:border-b-0"
+          className="border-none border-b border-border rounded-none last:border-b-0"
         >
-          <div className="text-gray-600 dark:text-gray-400">{item.answer}</div>
+          <div className="text-muted-foreground">{item.answer}</div>
         </AccordionItem>
       ))}
     </Accordion>
@@ -305,18 +305,18 @@ export function ExpandableCard({
   return (
     <div
       className={cn(
-        'bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden',
+        'bg-card rounded-xl border border-border overflow-hidden',
         className
       )}
     >
       <div className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h3 className="font-semibold text-gray-900 dark:text-white">
+            <h3 className="font-semibold text-foreground">
               {title}
             </h3>
             {subtitle && (
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-sm text-muted-foreground">
                 {subtitle}
               </p>
             )}
@@ -325,11 +325,11 @@ export function ExpandableCard({
             {actions}
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="p-1 rounded-lg hover:bg-muted transition-colors"
             >
               <ChevronDown
                 className={cn(
-                  'w-5 h-5 text-gray-500 transition-transform duration-200',
+                  'w-5 h-5 text-muted-foreground transition-transform duration-200',
                   isExpanded && 'rotate-180'
                 )}
               />
@@ -382,7 +382,7 @@ export function ShowMore({
       >
         {children}
         {!isExpanded && needsExpansion && (
-          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white dark:from-gray-800 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-card to-transparent" />
         )}
       </div>
       {needsExpansion && (
