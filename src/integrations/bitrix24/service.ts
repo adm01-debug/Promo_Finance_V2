@@ -300,7 +300,7 @@ class Bitrix24Service {
   }
 
   /**
-   * Convert Finance-Hub fornecedor to Bitrix company
+   * Convert Promo Finance fornecedor to Bitrix company
    */
   fornecedorToBitrixCompany(fornecedor: {
     razao_social: string;
