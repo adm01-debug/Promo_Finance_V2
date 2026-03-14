@@ -339,8 +339,8 @@ export function ContingenciaNFe() {
             </div>
 
             {isContingencyActive && state.reason && (
-              <div className="mt-4 p-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
-                <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+              <div className="mt-4 p-3 bg-warning/10 rounded-lg border border-warning/20">
+                <div className="flex items-center gap-2 text-warning">
                   <AlertCircle className="h-4 w-4" />
                   <span className="text-sm font-medium">Motivo: {state.reason}</span>
                 </div>
