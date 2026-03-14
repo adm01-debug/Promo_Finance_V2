@@ -263,11 +263,11 @@ export function ContaReceberForm({
             id="parcelamento"
             checked={showParcelas}
             onChange={handleParcelasToggle}
-            className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+            className="w-4 h-4 text-primary border-input rounded focus:ring-ring"
           />
           <label
             htmlFor="parcelamento"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="text-sm font-medium text-foreground"
           >
             Parcelado
           </label>
