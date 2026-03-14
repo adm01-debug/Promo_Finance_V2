@@ -457,7 +457,7 @@ export function InvoiceGenerator({
               />
             </div>
             {calculations.taxAmount > 0 && (
-              <div className="flex justify-between text-sm text-gray-600">
+              <div className="flex justify-between text-sm text-muted-foreground">
                 <span></span>
                 <span>+{formatCurrency(calculations.taxAmount)}</span>
               </div>
