@@ -143,11 +143,11 @@ export const OpenFinancePanel = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'authorized':
-        return <Badge className="bg-green-500/10 text-green-500 border-green-500/20">Autorizado</Badge>;
+        return <Badge className="bg-success/10 text-success border-success/20">Autorizado</Badge>;
       case 'awaiting_authorization':
-        return <Badge className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20">Aguardando</Badge>;
+        return <Badge className="bg-warning/10 text-warning border-warning/20">Aguardando</Badge>;
       case 'revoked':
-        return <Badge className="bg-red-500/10 text-red-500 border-red-500/20">Revogado</Badge>;
+        return <Badge className="bg-destructive/10 text-destructive border-destructive/20">Revogado</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
