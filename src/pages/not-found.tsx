@@ -59,7 +59,7 @@ export default function NotFound() {
 
         {/* Quick links */}
         <div className="mt-8">
-          <p className="text-sm text-gray-500 dark:text-gray-500 mb-3">
+          <p className="text-sm text-muted-foreground mb-3">
             Links úteis:
           </p>
           <div className="flex flex-wrap justify-center gap-3">
