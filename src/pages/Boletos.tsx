@@ -672,25 +672,25 @@ export default function Boletos() {
         <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
             <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-blue-500">{stats.countGerado}</p>
+              <p className="text-3xl font-bold text-secondary">{stats.countGerado}</p>
               <p className="text-sm text-muted-foreground">Boletos Gerados</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-amber-500">{stats.countEnviado}</p>
+              <p className="text-3xl font-bold text-warning">{stats.countEnviado}</p>
               <p className="text-sm text-muted-foreground">Enviados</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-emerald-500">{stats.countPago}</p>
+              <p className="text-3xl font-bold text-success">{stats.countPago}</p>
               <p className="text-sm text-muted-foreground">Pagos</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-red-500">{stats.countVencido}</p>
+              <p className="text-3xl font-bold text-destructive">{stats.countVencido}</p>
               <p className="text-sm text-muted-foreground">Vencidos</p>
             </CardContent>
           </Card>
