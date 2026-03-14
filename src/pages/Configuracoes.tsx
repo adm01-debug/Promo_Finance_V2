@@ -702,7 +702,7 @@ export default function Configuracoes() {
                         <p className="text-xs text-muted-foreground">Sincronização de deals</p>
                       </div>
                     </div>
-                    <Badge variant="default" className="bg-green-500">Conectado</Badge>
+                    <Badge variant="default" className="bg-success">Conectado</Badge>
                   </div>
                   <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                     <div className="flex items-center gap-3">
