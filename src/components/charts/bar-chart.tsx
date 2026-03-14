@@ -209,7 +209,7 @@ export function BarChart({
               y={isVertical ? bar.y - 8 : bar.y + bar.height / 2}
               textAnchor={isVertical ? 'middle' : 'start'}
               dominantBaseline={isVertical ? 'auto' : 'middle'}
-              className="fill-gray-700 dark:fill-gray-300 text-xs font-medium"
+              className="fill-foreground text-xs font-medium"
             >
               {formatValue(bar.value)}
             </text>
