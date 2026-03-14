@@ -249,12 +249,12 @@ export function EventosHistorico() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-emerald-500/10">
-                <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+              <div className="p-2 rounded-lg bg-success/10">
+                <CheckCircle2 className="h-5 w-5 text-success" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Autorizadas</p>
-                <p className="text-2xl font-bold text-emerald-500">{stats.autorizadas}</p>
+                <p className="text-2xl font-bold text-success">{stats.autorizadas}</p>
               </div>
             </div>
           </CardContent>
