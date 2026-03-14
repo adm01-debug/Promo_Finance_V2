@@ -298,8 +298,8 @@ export default function ContasBancarias() {
                       {saldoTotal > 0 ? ((saldoDisponivel / saldoTotal) * 100).toFixed(1) : 0}% do total
                     </p>
                   </div>
-                  <div className="p-3 rounded-full bg-green-100 dark:bg-green-900/30">
-                    <Wallet className="h-6 w-6 text-green-600" />
+                  <div className="p-3 rounded-full bg-success/10">
+                    <Wallet className="h-6 w-6 text-success" />
                   </div>
                 </div>
               </CardContent>
