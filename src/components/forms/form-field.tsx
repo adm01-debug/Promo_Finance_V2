@@ -48,9 +48,9 @@ export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(
           <Label
             htmlFor={fieldId}
             className={cn(
-              'block text-sm font-medium text-gray-700 dark:text-gray-300',
+              'block text-sm font-medium text-foreground',
               horizontal && 'sm:w-1/3 sm:pt-2',
-              error && 'text-red-600 dark:text-red-400',
+              error && 'text-destructive',
               labelClassName
             )}
           >
