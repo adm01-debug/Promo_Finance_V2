@@ -278,12 +278,12 @@ export function InvoiceGenerator({
 
           {/* Invoice Info */}
           <div className="space-y-4">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <h3 className="text-sm font-medium text-foreground">
               Informações da Fatura
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Data Emissão</label>
+                <label className="block text-xs text-muted-foreground mb-1">Data Emissão</label>
                 <input
                   type="date"
                   value={invoice.issueDate?.toISOString().split('T')[0]}
