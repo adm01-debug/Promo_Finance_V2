@@ -361,7 +361,7 @@ export function SimuladorCenariosTributarios() {
               <Separator className="my-2" />
               <div className="flex justify-between font-medium">
                 <span>Total Créditos</span>
-                <span className="text-blue-600">{formatCurrency(resultadoAtual.creditosTotalRecuperaveis)}</span>
+                <span className="text-secondary">{formatCurrency(resultadoAtual.creditosTotalRecuperaveis)}</span>
               </div>
             </div>
 
