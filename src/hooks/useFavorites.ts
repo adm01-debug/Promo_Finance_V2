@@ -21,7 +21,7 @@ interface UseFavoritesOptions {
  */
 export function useFavorites(options: UseFavoritesOptions = {}) {
   const {
-    storageKey = 'finance-hub-favorites',
+    storageKey = 'promo-finance-favorites',
     maxItems = 50,
     onAdd,
     onRemove,
