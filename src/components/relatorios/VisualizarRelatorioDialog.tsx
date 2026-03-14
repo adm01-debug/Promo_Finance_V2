@@ -179,10 +179,10 @@ function FluxoCaixaView({ data }: { data: Record<string, unknown> }) {
       )}
       
       <div className="grid grid-cols-2 gap-4">
-        <Card className="bg-green-500/5 border-green-500/20">
+        <Card className="bg-success/5 border-success/20">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-green-600" />
+              <TrendingUp className="h-4 w-4 text-success" />
               Receitas
             </CardTitle>
           </CardHeader>
