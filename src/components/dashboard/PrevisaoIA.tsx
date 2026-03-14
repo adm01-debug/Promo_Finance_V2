@@ -182,9 +182,9 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
     
     if (inverted) {
       if (isUp) return 'text-destructive';
-      if (isDown) return 'text-green-500';
+      if (isDown) return 'text-success';
     } else {
-      if (isUp) return 'text-green-500';
+      if (isUp) return 'text-success';
       if (isDown) return 'text-destructive';
     }
     return 'text-muted-foreground';
