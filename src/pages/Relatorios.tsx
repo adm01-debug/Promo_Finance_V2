@@ -228,7 +228,7 @@ export default function Relatorios() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-popover">
               <DropdownMenuItem onClick={() => handleExport('pdf')} className="cursor-pointer gap-2">
-                <FileText className="h-4 w-4 text-red-500" />
+                <FileText className="h-4 w-4 text-destructive" />
                 Exportar PDF
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleExport('excel')} className="cursor-pointer gap-2">
