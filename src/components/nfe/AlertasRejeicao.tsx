@@ -135,7 +135,7 @@ const AlertaDetalhe = ({ alerta }: { alerta: AlertaRejeicao }) => {
       <div className={`p-4 rounded-lg ${
         alerta.tipo === 'critico' 
           ? 'bg-destructive/5 border border-destructive/10' 
-          : 'bg-amber-500/5 border border-amber-500/10'
+          : 'bg-warning/5 border border-warning/10'
       }`}>
         <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
           <AlertCircle className="h-4 w-4" />
