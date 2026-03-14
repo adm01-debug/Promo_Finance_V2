@@ -694,8 +694,8 @@ export default function Configuracoes() {
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                        <Zap className="h-4 w-4 text-blue-500" />
+                      <div className="p-2 rounded-lg bg-secondary/10">
+                        <Zap className="h-4 w-4 text-secondary" />
                       </div>
                       <div>
                         <p className="font-medium text-sm">Bitrix24</p>
