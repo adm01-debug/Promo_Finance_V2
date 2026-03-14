@@ -214,10 +214,10 @@ export function ModuloIRPJCSLL() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">CSLL Total</CardTitle>
-            <FileText className="h-4 w-4 text-emerald-500" />
+            <FileText className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">{formatCurrency(totaisAno.csll)}</div>
+            <div className="text-2xl font-bold text-success">{formatCurrency(totaisAno.csll)}</div>
             <p className="text-xs text-muted-foreground">Alíquota: {(ALIQUOTA_CSLL * 100).toFixed(0)}%</p>
           </CardContent>
         </Card>
