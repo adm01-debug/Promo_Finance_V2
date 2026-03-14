@@ -214,7 +214,7 @@ export function HeroKPICard({
                 <div className={cn(
                   'flex items-center gap-1.5 font-medium',
                   config.variation,
-                  isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400',
+                  isPositive ? 'text-success' : 'text-destructive',
                 )}>
                   {isPositive ? (
                     <TrendingUp className="h-3.5 w-3.5" />
