@@ -1,4 +1,4 @@
-# Getting Started - Finance Hub
+# Getting Started - Promo Finance
 
 ## Início Rápido
 
