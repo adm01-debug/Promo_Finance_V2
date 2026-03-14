@@ -60,13 +60,13 @@ const AlertaDetalhe = ({ alerta }: { alerta: AlertaRejeicao }) => {
       <div className={`p-4 rounded-lg ${
         alerta.tipo === 'critico' 
           ? 'bg-destructive/10 border border-destructive/20' 
-          : 'bg-amber-500/10 border border-amber-500/20'
+          : 'bg-warning/10 border border-warning/20'
       }`}>
         <div className="flex items-center gap-3">
           {alerta.tipo === 'critico' ? (
             <XCircle className="h-6 w-6 text-destructive" />
           ) : (
-            <AlertTriangle className="h-6 w-6 text-amber-500" />
+            <AlertTriangle className="h-6 w-6 text-warning" />
           )}
           <div>
             <h3 className="font-semibold">{alerta.titulo}</h3>
