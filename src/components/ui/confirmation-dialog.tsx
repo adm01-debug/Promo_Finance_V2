@@ -137,7 +137,7 @@ export function ConfirmationDialog({
       <div
         className={cn(
           'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50',
-          'w-full max-w-md p-6 bg-white dark:bg-gray-800 rounded-lg shadow-xl',
+          'w-full max-w-md p-6 bg-card rounded-lg shadow-xl',
           className
         )}
         role="dialog"
