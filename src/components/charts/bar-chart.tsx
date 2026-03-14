@@ -340,7 +340,7 @@ export function GroupedBarChart({
                 className="w-3 h-3 rounded"
                 style={{ backgroundColor: item.color }}
               />
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-muted-foreground">
                 {item.name}
               </span>
             </div>

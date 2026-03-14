@@ -250,7 +250,7 @@ export function MultiLineChart({
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: s.color }}
               />
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-muted-foreground">
                 {s.name}
               </span>
             </div>

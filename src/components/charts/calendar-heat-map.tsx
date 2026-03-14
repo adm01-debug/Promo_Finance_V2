@@ -213,7 +213,7 @@ export function CalendarHeatMap({
       
       {/* Legend */}
       {legend && (
-        <div className="flex items-center justify-end gap-2 mt-3 text-xs text-gray-500">
+        <div className="flex items-center justify-end gap-2 mt-3 text-xs text-muted-foreground">
           <span>Menos</span>
           <div className="flex gap-1">
             {colorScale.map((color, index) => (
