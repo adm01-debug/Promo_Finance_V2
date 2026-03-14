@@ -390,7 +390,7 @@ const NFePreview = ({ nfe }: { nfe: NotaFiscal }) => {
           </div>
           <div>
             <span className="text-muted-foreground">Desconto</span>
-            <p className="font-medium text-red-500">-{formatCurrency(nfe.valorDesconto)}</p>
+            <p className="font-medium text-destructive">-{formatCurrency(nfe.valorDesconto)}</p>
           </div>
           <div>
             <span className="text-muted-foreground">ICMS</span>
