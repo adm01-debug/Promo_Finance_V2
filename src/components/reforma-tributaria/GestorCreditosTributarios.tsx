@@ -221,13 +221,13 @@ export function GestorCreditosTributarios() {
           </CardContent>
         </Card>
 
-        <Card className="border-emerald-200 bg-emerald-50/50 dark:bg-emerald-950/20">
+        <Card className="border-success/20 bg-success/5">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">IBS Disponível</CardTitle>
-            <Receipt className="h-4 w-4 text-emerald-500" />
+            <Receipt className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">
+            <div className="text-2xl font-bold text-success">
               {formatCurrency(resumo.ibsDisponivel)}
             </div>
             <p className="text-xs text-muted-foreground">
