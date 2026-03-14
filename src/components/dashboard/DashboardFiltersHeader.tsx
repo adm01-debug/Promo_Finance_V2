@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Building2, Target, Settings2 } from 'lucide-react';
+import { Building2, Target, Settings2, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -37,18 +37,32 @@ export function DashboardFiltersHeader({
   return (
     <motion.div variants={itemVariants} className="flex flex-col gap-4">
       {/* Title section */}
-      <div>
-        <h1 className="text-display-md gradient-text">Dashboard Executivo</h1>
-        <p className="text-muted-foreground mt-1 text-sm sm:text-base">Visão consolidada com drill-down por empresa e centro de custo</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-display-md gradient-text">Dashboard Executivo</h1>
+            <Badge variant="outline" className="hidden sm:flex h-7 px-2.5 gap-1.5 border-success/30 bg-success/5">
+              <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
+              <span className="text-[10px] text-success font-medium">Ao vivo</span>
+            </Badge>
+          </div>
+          <p className="text-muted-foreground mt-1.5 text-sm sm:text-base flex items-center gap-2">
+            <Sparkles className="h-3.5 w-3.5 text-primary hidden sm:block" />
+            Visão consolidada com drill-down por empresa e centro de custo
+          </p>
+        </div>
+        <Button variant="outline" size="icon" onClick={onOpenConfig} className="h-9 w-9 shrink-0">
+          <Settings2 className="h-4 w-4" />
+        </Button>
       </div>
       
-      {/* Filters section - responsive grid */}
+      {/* Filters section */}
       <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-3">
         <Select value={empresaFilter} onValueChange={setEmpresaFilter}>
-          <SelectTrigger className="w-full sm:w-[180px]">
-            <Building2 className="h-4 w-4 mr-2 shrink-0" />
+          <SelectTrigger className="w-full sm:w-[200px] h-9">
+            <Building2 className="h-4 w-4 mr-2 shrink-0 text-muted-foreground" />
             <span className="truncate">
-              <SelectValue placeholder="Empresas" />
+              <SelectValue placeholder="Todas Empresas" />
             </span>
           </SelectTrigger>
           <SelectContent>
@@ -62,10 +76,10 @@ export function DashboardFiltersHeader({
         </Select>
         
         <Select value={centroCustoFilter} onValueChange={setCentroCustoFilter}>
-          <SelectTrigger className="w-full sm:w-[180px]">
-            <Target className="h-4 w-4 mr-2 shrink-0" />
+          <SelectTrigger className="w-full sm:w-[200px] h-9">
+            <Target className="h-4 w-4 mr-2 shrink-0 text-muted-foreground" />
             <span className="truncate">
-              <SelectValue placeholder="Centros" />
+              <SelectValue placeholder="Todos Centros" />
             </span>
           </SelectTrigger>
           <SelectContent>
@@ -75,17 +89,6 @@ export function DashboardFiltersHeader({
             ))}
           </SelectContent>
         </Select>
-        
-        {/* Real-time badge - hidden on mobile, visible on sm+ */}
-        <Badge variant="outline" className="hidden sm:flex h-9 px-3 gap-2 col-span-2 sm:col-span-1 justify-center">
-          <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
-          <span className="text-xs">Tempo real</span>
-        </Badge>
-        
-        {/* Config button */}
-        <Button variant="outline" size="icon" onClick={onOpenConfig} className="h-9 w-9">
-          <Settings2 className="h-4 w-4" />
-        </Button>
       </div>
     </motion.div>
   );

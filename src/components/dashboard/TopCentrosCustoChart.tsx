@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { BarChart3 } from 'lucide-react';
+import { BarChart3, Layers } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/formatters';
 import { 
@@ -31,10 +31,12 @@ interface TopCentrosCustoChartProps {
 export function TopCentrosCustoChart({ dadosPorCentroCusto }: TopCentrosCustoChartProps) {
   return (
     <motion.div variants={itemVariants}>
-      <Card className="h-[450px]">
+      <Card className="h-[450px] overflow-hidden">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-primary" />
+            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Layers className="h-4 w-4 text-primary" />
+            </div>
             Top Centros de Custo
           </CardTitle>
           <CardDescription>Por volume financeiro</CardDescription>
@@ -42,12 +44,36 @@ export function TopCentrosCustoChart({ dadosPorCentroCusto }: TopCentrosCustoCha
         <CardContent className="h-[360px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={dadosPorCentroCusto.slice(0, 5)} layout="vertical">
-              <XAxis type="number" tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} fontSize={11} />
-              <YAxis type="category" dataKey="nome" width={100} fontSize={11} />
-              <Tooltip formatter={(v: number) => formatCurrency(v)} />
-              <Legend />
-              <Bar dataKey="receber" name="A Receber" fill="hsl(150, 70%, 42%)" radius={[0, 4, 4, 0]} />
-              <Bar dataKey="pagar" name="A Pagar" fill="hsl(0, 78%, 55%)" radius={[0, 4, 4, 0]} />
+              <XAxis
+                type="number"
+                tickFormatter={(v) => `${(v/1000).toFixed(0)}K`}
+                fontSize={10}
+                stroke="hsl(var(--muted-foreground))"
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis
+                type="category"
+                dataKey="nome"
+                width={100}
+                fontSize={10}
+                stroke="hsl(var(--muted-foreground))"
+                tickLine={false}
+                axisLine={false}
+              />
+              <Tooltip
+                formatter={(v: number) => formatCurrency(v)}
+                contentStyle={{
+                  backgroundColor: 'hsl(var(--popover))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '12px',
+                  fontSize: '11px',
+                  boxShadow: 'var(--shadow-md)',
+                }}
+              />
+              <Legend wrapperStyle={{ fontSize: '11px' }} />
+              <Bar dataKey="receber" name="A Receber" fill="hsl(var(--success))" radius={[0, 6, 6, 0]} />
+              <Bar dataKey="pagar" name="A Pagar" fill="hsl(var(--destructive))" radius={[0, 6, 6, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
