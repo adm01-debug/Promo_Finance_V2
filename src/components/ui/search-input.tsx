@@ -129,10 +129,10 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           className={cn(
-            'w-full rounded-lg border border-gray-300 dark:border-gray-600',
-            'bg-white dark:bg-gray-700 text-gray-900 dark:text-white',
-            'placeholder-gray-400 dark:placeholder-gray-500',
-            'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+            'w-full rounded-lg border border-input',
+            'bg-background text-foreground',
+            'placeholder-muted-foreground',
+            'focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent',
             'transition-colors',
             classes.input,
             className
