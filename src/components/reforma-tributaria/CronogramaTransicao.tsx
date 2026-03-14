@@ -39,9 +39,9 @@ export function CronogramaTransicao() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'concluido':
-        return <Badge variant="default" className="bg-green-500">Concluído</Badge>;
+        return <Badge variant="default" className="bg-success">Concluído</Badge>;
       case 'em_andamento':
-        return <Badge variant="default" className="bg-blue-500">Em Andamento</Badge>;
+        return <Badge variant="default" className="bg-primary">Em Andamento</Badge>;
       default:
         return <Badge variant="secondary">Futuro</Badge>;
     }
