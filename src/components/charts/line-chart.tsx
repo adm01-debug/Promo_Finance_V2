@@ -192,7 +192,7 @@ export function LineChart({
               x={point.x}
               y={point.y - 10}
               textAnchor="middle"
-              className="fill-gray-700 dark:fill-gray-300 text-xs font-medium"
+              className="fill-foreground text-xs font-medium"
             >
               {formatValue(point.value)}
             </text>
