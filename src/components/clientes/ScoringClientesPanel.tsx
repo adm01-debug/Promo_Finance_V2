@@ -193,10 +193,10 @@ export function ScoringClientesPanel() {
                               {cliente.risco}
                             </Badge>
                             {cliente.tendencia === 'subindo' && (
-                              <ArrowUpRight className="h-4 w-4 text-emerald-500" />
+                              <ArrowUpRight className="h-4 w-4 text-success" />
                             )}
                             {cliente.tendencia === 'descendo' && (
-                              <ArrowDownRight className="h-4 w-4 text-red-500" />
+                              <ArrowDownRight className="h-4 w-4 text-destructive" />
                             )}
                           </div>
                         </div>
