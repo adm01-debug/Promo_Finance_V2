@@ -346,7 +346,7 @@ export function SimuladorCenariosTributarios() {
             </div>
 
             {/* Créditos */}
-            <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+            <div className="p-4 bg-secondary/10 rounded-lg">
               <h4 className="font-medium text-sm mb-2">Créditos Recuperáveis (Não-Cumulatividade Plena)</h4>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="flex justify-between">
