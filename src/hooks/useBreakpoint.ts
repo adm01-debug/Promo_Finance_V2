@@ -217,7 +217,7 @@ export function useIsTouchDevice(): boolean {
       setIsTouch(
         'ontouchstart' in window ||
         navigator.maxTouchPoints > 0 ||
-        ((navigator as Record<string, unknown>).msMaxTouchPoints as number) > 0
+        ('msMaxTouchPoints' in navigator && (navigator as unknown as { msMaxTouchPoints: number }).msMaxTouchPoints > 0)
       );
     };
 
