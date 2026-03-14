@@ -523,7 +523,7 @@ export default function Bitrix24() {
                             )}
                           >
                             <div className="flex-1 grid grid-cols-3 gap-4 items-center">
-                              <div className="p-3 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+                              <div className="p-3 rounded-lg bg-secondary/10">
                                 <p className="text-xs text-muted-foreground mb-1">Bitrix24</p>
                                 <code className="font-mono text-sm font-medium">{mapping.campo_bitrix}</code>
                               </div>
