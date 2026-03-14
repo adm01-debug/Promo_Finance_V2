@@ -39,6 +39,10 @@ export default {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+        },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
@@ -68,6 +72,24 @@ export default {
           DEFAULT: "hsl(var(--warning))",
           foreground: "hsl(var(--warning-foreground))",
         },
+        // Tributary tokens
+        cbs: {
+          DEFAULT: "hsl(var(--cbs))",
+          foreground: "hsl(var(--cbs-foreground))",
+        },
+        ibs: {
+          DEFAULT: "hsl(var(--ibs))",
+          foreground: "hsl(var(--ibs-foreground))",
+        },
+        "imposto-seletivo": {
+          DEFAULT: "hsl(var(--imposto-seletivo))",
+          foreground: "hsl(var(--imposto-seletivo-foreground))",
+        },
+        residual: {
+          DEFAULT: "hsl(var(--residual))",
+          foreground: "hsl(var(--residual-foreground))",
+        },
+        // Financial colors
         receitas: {
           DEFAULT: "hsl(var(--receitas))",
           foreground: "hsl(var(--receitas-foreground))",
@@ -84,7 +106,7 @@ export default {
           DEFAULT: "hsl(var(--saldo))",
           foreground: "hsl(var(--saldo-foreground))",
         },
-        // Gamification colors adapted for financial context
+        // Gamification colors
         xp: {
           DEFAULT: "hsl(var(--xp))",
           foreground: "hsl(var(--xp-foreground))",
@@ -112,6 +134,11 @@ export default {
         elevated: {
           DEFAULT: "hsl(var(--elevated))",
           hover: "hsl(var(--elevated-hover))",
+        },
+        // Glass
+        glass: {
+          bg: "hsl(var(--glass-bg))",
+          border: "hsl(var(--glass-border))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",

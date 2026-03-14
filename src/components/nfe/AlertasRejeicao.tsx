@@ -60,13 +60,13 @@ const AlertaDetalhe = ({ alerta }: { alerta: AlertaRejeicao }) => {
       <div className={`p-4 rounded-lg ${
         alerta.tipo === 'critico' 
           ? 'bg-destructive/10 border border-destructive/20' 
-          : 'bg-amber-500/10 border border-amber-500/20'
+          : 'bg-warning/10 border border-warning/20'
       }`}>
         <div className="flex items-center gap-3">
           {alerta.tipo === 'critico' ? (
             <XCircle className="h-6 w-6 text-destructive" />
           ) : (
-            <AlertTriangle className="h-6 w-6 text-amber-500" />
+            <AlertTriangle className="h-6 w-6 text-warning" />
           )}
           <div>
             <h3 className="font-semibold">{alerta.titulo}</h3>
@@ -95,7 +95,7 @@ const AlertaDetalhe = ({ alerta }: { alerta: AlertaRejeicao }) => {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-amber-500">
+            <div className="text-2xl font-bold text-warning">
               {alerta.ultimasRejeicoes.length}
             </div>
             <p className="text-sm text-muted-foreground">Eventos registrados</p>
@@ -135,7 +135,7 @@ const AlertaDetalhe = ({ alerta }: { alerta: AlertaRejeicao }) => {
       <div className={`p-4 rounded-lg ${
         alerta.tipo === 'critico' 
           ? 'bg-destructive/5 border border-destructive/10' 
-          : 'bg-amber-500/5 border border-amber-500/10'
+          : 'bg-warning/5 border border-warning/10'
       }`}>
         <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
           <AlertCircle className="h-4 w-4" />
@@ -219,7 +219,7 @@ export const AlertasRejeicao = () => {
       case 'aumentando':
         return <TrendingUp className="h-4 w-4 text-destructive" />;
       case 'diminuindo':
-        return <TrendingDown className="h-4 w-4 text-emerald-500" />;
+        return <TrendingDown className="h-4 w-4 text-success" />;
       default:
         return <Minus className="h-4 w-4 text-muted-foreground" />;
     }
@@ -339,14 +339,14 @@ export const AlertasRejeicao = () => {
                       !alerta.lido 
                         ? alerta.tipo === 'critico'
                           ? 'bg-destructive/5 border-destructive/20'
-                          : 'bg-amber-500/5 border-amber-500/20'
+                          : 'bg-warning/5 border-warning/20'
                         : 'bg-muted/30 border-border/50'
                     }`}
                     onClick={() => handleVerDetalhes(alerta)}
                   >
                     <div className="flex items-start gap-3">
                       <div className={`mt-0.5 ${
-                        alerta.tipo === 'critico' ? 'text-destructive' : 'text-amber-500'
+                        alerta.tipo === 'critico' ? 'text-destructive' : 'text-warning'
                       }`}>
                         {alerta.tipo === 'critico' ? (
                           <XCircle className="h-5 w-5" />

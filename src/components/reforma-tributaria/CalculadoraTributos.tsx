@@ -222,7 +222,7 @@ export function CalculadoraTributos() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
-                    <AlertTriangle className="h-4 w-4 text-orange-500" />
+                    <AlertTriangle className="h-4 w-4 text-imposto-seletivo" />
                   </TooltipTrigger>
                   <TooltipContent className="max-w-sm">
                     <p>Incide sobre produtos nocivos à saúde ou meio ambiente</p>
@@ -273,8 +273,8 @@ export function CalculadoraTributos() {
           </CardHeader>
           <CardContent className="space-y-4">
             {resultado.detalhamento.some(d => d.includes('isenta')) ? (
-              <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200">
-                <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
+              <div className="p-4 bg-success/10 rounded-lg border border-success/20">
+                <div className="flex items-center gap-2 text-success">
                   <CheckCircle2 className="h-5 w-5" />
                   <span className="font-medium">Operação Isenta</span>
                 </div>
@@ -290,36 +290,36 @@ export function CalculadoraTributos() {
                     Tributos Novos (IBS/CBS)
                   </h4>
                   
-                  <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-cbs/10 rounded-lg">
                     <div className="flex items-center gap-2">
-                      <Receipt className="h-4 w-4 text-blue-600" />
+                      <Receipt className="h-4 w-4 text-cbs" />
                       <span>CBS (Federal)</span>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-blue-600">{formatCurrency(resultado.valorCBS)}</p>
+                      <p className="font-semibold text-cbs">{formatCurrency(resultado.valorCBS)}</p>
                       <p className="text-xs text-muted-foreground">{resultado.aliquotaCBS.toFixed(2)}%</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-950/20 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-ibs/10 rounded-lg">
                     <div className="flex items-center gap-2">
-                      <Landmark className="h-4 w-4 text-emerald-600" />
+                      <Landmark className="h-4 w-4 text-ibs" />
                       <span>IBS (Est/Mun)</span>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-emerald-600">{formatCurrency(resultado.valorIBS)}</p>
+                      <p className="font-semibold text-ibs">{formatCurrency(resultado.valorIBS)}</p>
                       <p className="text-xs text-muted-foreground">{resultado.aliquotaIBS.toFixed(2)}%</p>
                     </div>
                   </div>
 
                   {resultado.valorIS > 0 && (
-                    <div className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-imposto-seletivo/10 rounded-lg">
                       <div className="flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4 text-orange-600" />
+                        <AlertTriangle className="h-4 w-4 text-imposto-seletivo" />
                         <span>IS (Seletivo)</span>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold text-orange-600">{formatCurrency(resultado.valorIS)}</p>
+                        <p className="font-semibold text-imposto-seletivo">{formatCurrency(resultado.valorIS)}</p>
                         <p className="text-xs text-muted-foreground">{resultado.aliquotaIS.toFixed(2)}%</p>
                       </div>
                     </div>
@@ -401,7 +401,7 @@ export function CalculadoraTributos() {
                 {resultado.valorTotalSplitPayment > 0 && (
                   <>
                     <Separator />
-                    <div className="p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+                    <div className="p-3 bg-accent/10 rounded-lg">
                       <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
                         <ArrowRight className="h-4 w-4" />
                         Split Payment (Retenção Automática)
@@ -418,7 +418,7 @@ export function CalculadoraTributos() {
                       </div>
                       <div className="flex justify-between mt-2 pt-2 border-t">
                         <span className="font-medium">Valor Líquido a Receber</span>
-                        <span className="font-bold text-purple-600">
+                        <span className="font-bold text-accent">
                           {formatCurrency(resultado.valorBase - resultado.valorTotalSplitPayment)}
                         </span>
                       </div>
