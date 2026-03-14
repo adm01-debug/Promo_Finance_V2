@@ -77,10 +77,14 @@ export function SecuritySettings() {
       const { data, error } = await supabase
         .from('security_settings')
         .select('*')
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
-      return data as SecuritySettingsData;
+      return (data as SecuritySettingsData | null) ?? {
+        require_2fa: false,
+        restrict_by_ip: false,
+        allowed_global_ips: [],
+      };
     }
   });
 
