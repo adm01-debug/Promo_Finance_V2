@@ -280,7 +280,7 @@ export function ComprovanteOCR({ onDadosExtraidos, onVincularPagamento }: Compro
                             </Badge>
                           )}
                           {comp.dadosExtraidos.valor && (
-                            <Badge variant="default" className="bg-emerald-500">
+                            <Badge variant="default" className="bg-success">
                               {formatCurrency(comp.dadosExtraidos.valor)}
                             </Badge>
                           )}

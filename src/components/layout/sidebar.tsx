@@ -143,7 +143,7 @@ export function MobileSidebarDrawer({ open, onClose }: MobileSidebarDrawerProps)
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
-      <aside className="fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-xl">
+      <aside className="fixed inset-y-0 left-0 w-64 bg-card shadow-xl">
         <div className="flex items-center justify-between p-4 border-b">
           <span className="text-lg font-semibold">Menu</span>
           <Button variant="ghost" size="sm" onClick={onClose}>

@@ -120,8 +120,8 @@ function EmptyIllustration({ type }: { type: string }) {
           animate={{ y: [0, -5, 0] }}
           transition={{ repeat: Infinity, duration: 2 }}
         >
-          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-950 dark:to-blue-900/50 flex items-center justify-center">
-            <Inbox className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+            <Inbox className="h-8 w-8 text-primary" />
           </div>
         </motion.div>
       </motion.div>

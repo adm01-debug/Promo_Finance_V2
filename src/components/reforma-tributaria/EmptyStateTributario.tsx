@@ -185,7 +185,7 @@ export function EmptyStateTributario({ type, onPrimaryAction, onSecondaryAction 
                 className="w-full p-4 rounded-lg bg-muted/50"
               >
                 <div className="flex items-start gap-2 text-left">
-                  <Lightbulb className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+                  <Lightbulb className="h-4 w-4 text-warning mt-0.5 shrink-0" />
                   <div className="space-y-1">
                     <p className="text-sm font-medium text-foreground">Dicas:</p>
                     <ul className="text-sm text-muted-foreground space-y-1">

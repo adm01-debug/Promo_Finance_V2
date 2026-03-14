@@ -214,7 +214,7 @@ export const BitrixWebhookPanel = () => {
                             Processado
                           </Badge>
                         ) : (
-                          <Badge className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20 gap-1">
+                          <Badge className="bg-warning/10 text-warning border-warning/20 gap-1">
                             <Clock className="h-3 w-3" />
                             Pendente
                           </Badge>

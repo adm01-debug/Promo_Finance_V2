@@ -181,7 +181,7 @@ export function ConfirmationDialog({
           </h3>
           <div
             id="confirmation-message"
-            className="text-sm text-gray-500 dark:text-gray-400"
+            className="text-sm text-muted-foreground"
           >
             {message}
           </div>
