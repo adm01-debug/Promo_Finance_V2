@@ -462,7 +462,7 @@ export function RateLimitDashboard() {
                                 {alert.severity}
                               </Badge>
                               {alert.resolved && (
-                                <Badge variant="outline" className="text-green-600">
+                                <Badge variant="outline" className="text-success">
                                   Resolvido
                                 </Badge>
                               )}

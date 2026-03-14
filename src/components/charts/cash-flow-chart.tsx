@@ -30,21 +30,21 @@ interface CashFlowChartProps {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white dark:bg-gray-800 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
-        <p className="font-medium text-gray-900 dark:text-white mb-2">{label}</p>
+      <div className="bg-popover p-3 border border-border rounded-lg shadow-lg">
+        <p className="font-medium text-foreground mb-2">{label}</p>
         {payload.map((entry: any, index: number) => (
           <div key={index} className="flex items-center gap-2 text-sm">
             <div
               className="w-3 h-3 rounded-full"
               style={{ backgroundColor: entry.color }}
             />
-            <span className="text-gray-600 dark:text-gray-400">{entry.name}:</span>
+            <span className="text-muted-foreground">{entry.name}:</span>
             <span
               className={cn(
                 'font-medium',
-                entry.name === 'Receitas' && 'text-green-600',
-                entry.name === 'Despesas' && 'text-red-600',
-                entry.name === 'Saldo' && (entry.value >= 0 ? 'text-blue-600' : 'text-red-600')
+                entry.name === 'Receitas' && 'text-success',
+                entry.name === 'Despesas' && 'text-destructive',
+                entry.name === 'Saldo' && (entry.value >= 0 ? 'text-secondary' : 'text-destructive')
               )}
             >
               {formatCurrency(entry.value)}
@@ -91,21 +91,18 @@ export function CashFlowChart({
           {showGrid && (
             <CartesianGrid
               strokeDasharray="3 3"
-              stroke="currentColor"
-              className="text-gray-200 dark:text-gray-700"
+              stroke="hsl(var(--border))"
             />
           )}
           <XAxis
             dataKey="name"
-            stroke="currentColor"
-            className="text-gray-500 dark:text-gray-400"
+            stroke="hsl(var(--muted-foreground))"
             fontSize={12}
             tickLine={false}
             axisLine={false}
           />
           <YAxis
-            stroke="currentColor"
-            className="text-gray-500 dark:text-gray-400"
+            stroke="hsl(var(--muted-foreground))"
             fontSize={12}
             tickLine={false}
             axisLine={false}
@@ -117,29 +114,29 @@ export function CashFlowChart({
               verticalAlign="top"
               height={36}
               formatter={(value) => (
-                <span className="text-sm text-gray-600 dark:text-gray-400">{value}</span>
+                <span className="text-sm text-muted-foreground">{value}</span>
               )}
             />
           )}
           <defs>
             <linearGradient id="colorReceitas" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#22C55E" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#22C55E" stopOpacity={0} />
+              <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="colorDespesas" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#EF4444" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#EF4444" stopOpacity={0} />
+              <stop offset="5%" stopColor="hsl(var(--destructive))" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="hsl(var(--destructive))" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="colorSaldo" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
+              <stop offset="5%" stopColor="hsl(var(--secondary))" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="hsl(var(--secondary))" stopOpacity={0} />
             </linearGradient>
           </defs>
           <Area
             type="monotone"
             dataKey="receitas"
             name="Receitas"
-            stroke="#22C55E"
+            stroke="hsl(var(--success))"
             strokeWidth={2}
             fill="url(#colorReceitas)"
           />
@@ -147,7 +144,7 @@ export function CashFlowChart({
             type="monotone"
             dataKey="despesas"
             name="Despesas"
-            stroke="#EF4444"
+            stroke="hsl(var(--destructive))"
             strokeWidth={2}
             fill="url(#colorDespesas)"
           />
@@ -155,7 +152,7 @@ export function CashFlowChart({
             type="monotone"
             dataKey="saldo"
             name="Saldo"
-            stroke="#3B82F6"
+            stroke="hsl(var(--secondary))"
             strokeWidth={2}
             fill="url(#colorSaldo)"
           />
