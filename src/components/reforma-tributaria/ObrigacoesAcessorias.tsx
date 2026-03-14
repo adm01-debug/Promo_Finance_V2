@@ -136,9 +136,9 @@ export function ObrigacoesAcessorias() {
 
   const getEsferaBadge = (esfera: string) => {
     const cores: Record<string, string> = {
-      federal: 'bg-blue-500',
-      estadual: 'bg-emerald-500',
-      municipal: 'bg-purple-500',
+      federal: 'bg-primary',
+      estadual: 'bg-success',
+      municipal: 'bg-accent',
     };
     return <Badge className={cores[esfera]}>{esfera}</Badge>;
   };
