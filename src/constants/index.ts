@@ -130,13 +130,13 @@ export const ALLOWED_SPREADSHEET_TYPES = ['application/vnd.ms-excel', 'applicati
 
 // Storage Keys
 export const STORAGE_KEYS = {
-  AUTH_TOKEN: 'finance_hub_auth_token',
-  USER_DATA: 'finance_hub_user',
-  THEME: 'finance_hub_theme',
-  SIDEBAR_COLLAPSED: 'finance_hub_sidebar_collapsed',
-  RECENT_SEARCHES: 'finance_hub_recent_searches',
-  TABLE_PREFERENCES: 'finance_hub_table_prefs',
-  LANGUAGE: 'finance_hub_language',
+  AUTH_TOKEN: 'promo_finance_auth_token',
+  USER_DATA: 'promo_finance_user',
+  THEME: 'promo_finance_theme',
+  SIDEBAR_COLLAPSED: 'promo_finance_sidebar_collapsed',
+  RECENT_SEARCHES: 'promo_finance_recent_searches',
+  TABLE_PREFERENCES: 'promo_finance_table_prefs',
+  LANGUAGE: 'promo_finance_language',
 } as const;
 
 // Query Keys (for React Query)
