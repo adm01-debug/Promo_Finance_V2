@@ -475,7 +475,7 @@ function BalancoView({ data }: { data: Record<string, unknown> }) {
           <Separator />
           <div className="flex justify-between font-bold text-lg pt-2">
             <span>TOTAL ATIVO</span>
-            <span className="text-blue-600">{formatCurrency(ativo?.total || 0)}</span>
+            <span className="text-primary">{formatCurrency(ativo?.total || 0)}</span>
           </div>
         </div>
       </div>
