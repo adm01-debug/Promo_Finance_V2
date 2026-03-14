@@ -528,7 +528,7 @@ export default function BI() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Inadimplência</p>
-                  <p className={`text-2xl font-bold ${kpis.inadimplencia > 10 ? 'text-destructive' : 'text-amber-600'}`}>
+                  <p className={`text-2xl font-bold ${kpis.inadimplencia > 10 ? 'text-destructive' : 'text-warning'}`}>
                     {kpis.inadimplencia.toFixed(1)}%
                   </p>
                 </div>
