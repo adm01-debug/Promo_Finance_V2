@@ -347,7 +347,7 @@ export function PerDcompPanel() {
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3">
-                  <DollarSign className="h-8 w-8 text-green-500" />
+                  <DollarSign className="h-8 w-8 text-success" />
                   <div>
                     <p className="text-sm text-muted-foreground">Valor Compensado</p>
                     <p className="text-2xl font-bold">{formatCurrency(estatisticas.valorTotalCompensado)}</p>
