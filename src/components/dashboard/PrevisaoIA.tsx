@@ -198,9 +198,9 @@ export function PrevisaoIA({ className }: PrevisaoIAProps) {
 
   const getScoreColor = (score: string): string => {
     const scoreNum = parseInt(score) || 0;
-    if (scoreNum >= 80) return 'text-green-500';
-    if (scoreNum >= 60) return 'text-yellow-500';
-    if (scoreNum >= 40) return 'text-orange-500';
+    if (scoreNum >= 80) return 'text-success';
+    if (scoreNum >= 60) return 'text-warning';
+    if (scoreNum >= 40) return 'text-streak';
     return 'text-destructive';
   };
 
