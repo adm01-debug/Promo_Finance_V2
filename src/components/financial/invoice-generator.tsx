@@ -291,11 +291,11 @@ export function InvoiceGenerator({
                     ...prev,
                     issueDate: new Date(e.target.value),
                   }))}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent"
+                  className="w-full px-3 py-2 border border-border rounded-lg bg-transparent"
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Vencimento</label>
+                <label className="block text-xs text-muted-foreground mb-1">Vencimento</label>
                 <input
                   type="date"
                   value={invoice.dueDate?.toISOString().split('T')[0]}
