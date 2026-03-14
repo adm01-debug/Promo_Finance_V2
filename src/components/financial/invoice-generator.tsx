@@ -208,16 +208,16 @@ export function InvoiceGenerator({
   const handlePrint = () => onPrint?.(buildInvoice());
 
   return (
-    <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+    <div className="max-w-4xl mx-auto bg-card rounded-xl shadow-lg border border-border">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+      <div className="px-6 py-4 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <FileText className="w-6 h-6 text-primary-600" />
+          <FileText className="w-6 h-6 text-primary" />
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-lg font-semibold text-foreground">
               {invoice.id ? 'Editar Fatura' : 'Nova Fatura'}
             </h2>
-            <p className="text-sm text-gray-500">#{invoice.number}</p>
+            <p className="text-sm text-muted-foreground">#{invoice.number}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
