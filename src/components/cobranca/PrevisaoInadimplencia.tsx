@@ -284,7 +284,7 @@ export function PrevisaoInadimplencia() {
       case 'alto':
         return { color: 'text-destructive', bg: 'bg-destructive/10', icon: AlertTriangle, label: 'Alto Risco' };
       case 'medio':
-        return { color: 'text-amber-500', bg: 'bg-amber-500/10', icon: Target, label: 'Médio Risco' };
+        return { color: 'text-warning', bg: 'bg-warning/10', icon: Target, label: 'Médio Risco' };
       case 'baixo':
         return { color: 'text-success', bg: 'bg-success/10', icon: Shield, label: 'Baixo Risco' };
     }
@@ -348,13 +348,13 @@ export function PrevisaoInadimplencia() {
               </CardContent>
             </Card>
 
-            <Card className="border-amber-500/30">
+            <Card className="border-warning/30">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Target className="h-4 w-4 text-amber-500" />
+                  <Target className="h-4 w-4 text-warning" />
                   <span className="text-xs text-muted-foreground">Médio Risco</span>
                 </div>
-                <p className="text-2xl font-bold text-amber-500">{data?.resumo.clientesMedioRisco || 0}</p>
+                <p className="text-2xl font-bold text-warning">{data?.resumo.clientesMedioRisco || 0}</p>
                 <p className="text-xs text-muted-foreground">monitorar de perto</p>
               </CardContent>
             </Card>
@@ -388,7 +388,7 @@ export function PrevisaoInadimplencia() {
                   <TabsTrigger value="alto" className="text-destructive">
                     Alto ({data?.resumo.clientesAltoRisco || 0})
                   </TabsTrigger>
-                  <TabsTrigger value="medio" className="text-amber-500">
+                  <TabsTrigger value="medio" className="text-warning">
                     Médio ({data?.resumo.clientesMedioRisco || 0})
                   </TabsTrigger>
                   <TabsTrigger value="baixo" className="text-success">

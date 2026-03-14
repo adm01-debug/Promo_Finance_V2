@@ -77,7 +77,7 @@ export function ConciliacaoTributariaPanel({ empresaId }: Props) {
             <CardTitle className="text-sm text-muted-foreground">Divergências</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-amber-600">{resumo.divergenciasEncontradas}</div>
+            <div className="text-2xl font-bold text-warning">{resumo.divergenciasEncontradas}</div>
           </CardContent>
         </Card>
         <Card>
@@ -93,7 +93,7 @@ export function ConciliacaoTributariaPanel({ empresaId }: Props) {
             <CardTitle className="text-sm text-muted-foreground">Acurácia</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{resumo.percentualAcuracia.toFixed(0)}%</div>
+            <div className="text-2xl font-bold text-success">{resumo.percentualAcuracia.toFixed(0)}%</div>
             <Progress value={resumo.percentualAcuracia} className="h-2 mt-2" />
           </CardContent>
         </Card>
@@ -138,12 +138,12 @@ export function ConciliacaoTributariaPanel({ empresaId }: Props) {
       )}
 
       {divergencias.length === 0 && resumo.totalNFesEmitidas > 0 && (
-        <Card className="border-green-200 bg-green-50 dark:bg-green-950/20">
+        <Card className="border-success/20 bg-success/5">
           <CardContent className="pt-6 flex items-center gap-4">
-            <CheckCircle className="h-10 w-10 text-green-500" />
+            <CheckCircle className="h-10 w-10 text-success" />
             <div>
-              <h3 className="font-semibold text-green-700">Conciliação OK!</h3>
-              <p className="text-sm text-green-600">Sem divergências encontradas.</p>
+              <h3 className="font-semibold text-success">Conciliação OK!</h3>
+              <p className="text-sm text-success/80">Sem divergências encontradas.</p>
             </div>
           </CardContent>
         </Card>

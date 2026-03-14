@@ -101,9 +101,9 @@ export function ModuloIRPJCSLL() {
     const badges: Record<string, JSX.Element> = {
       rascunho: <Badge variant="outline">Rascunho</Badge>,
       calculado: <Badge variant="secondary">Calculado</Badge>,
-      revisado: <Badge className="bg-blue-500">Revisado</Badge>,
-      transmitido: <Badge className="bg-green-500">Transmitido</Badge>,
-      retificado: <Badge className="bg-orange-500">Retificado</Badge>,
+      revisado: <Badge className="bg-primary">Revisado</Badge>,
+      transmitido: <Badge className="bg-success">Transmitido</Badge>,
+      retificado: <Badge className="bg-warning text-warning-foreground">Retificado</Badge>,
     };
     return badges[status] || <Badge variant="outline">{status}</Badge>;
   };
@@ -203,10 +203,10 @@ export function ModuloIRPJCSLL() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">IRPJ Total</CardTitle>
-            <FileText className="h-4 w-4 text-blue-500" />
+            <FileText className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{formatCurrency(totaisAno.irpj)}</div>
+            <div className="text-2xl font-bold text-primary">{formatCurrency(totaisAno.irpj)}</div>
             <p className="text-xs text-muted-foreground">Alíquota: {(ALIQUOTA_IRPJ * 100).toFixed(0)}% + {10}% adicional</p>
           </CardContent>
         </Card>
@@ -214,10 +214,10 @@ export function ModuloIRPJCSLL() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">CSLL Total</CardTitle>
-            <FileText className="h-4 w-4 text-emerald-500" />
+            <FileText className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">{formatCurrency(totaisAno.csll)}</div>
+            <div className="text-2xl font-bold text-success">{formatCurrency(totaisAno.csll)}</div>
             <p className="text-xs text-muted-foreground">Alíquota: {(ALIQUOTA_CSLL * 100).toFixed(0)}%</p>
           </CardContent>
         </Card>
@@ -233,13 +233,13 @@ export function ModuloIRPJCSLL() {
           </CardContent>
         </Card>
 
-        <Card className="border-orange-200 bg-orange-50/50 dark:bg-orange-950/20">
+        <Card className="border-warning/20 bg-warning/5">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Prejuízos Fiscais</CardTitle>
-            <TrendingDown className="h-4 w-4 text-orange-500" />
+            <TrendingDown className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">
+            <div className="text-2xl font-bold text-warning">
               {formatCurrency(saldoPrejuizos.irpj + saldoPrejuizos.csll)}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -288,8 +288,8 @@ export function ModuloIRPJCSLL() {
                           <Badge variant="outline">{ap.tipo_apuracao}</Badge>
                         </TableCell>
                         <TableCell className="text-right">{formatCurrency(ap.lucro_real)}</TableCell>
-                        <TableCell className="text-right text-blue-600">{formatCurrency(ap.irpj_total)}</TableCell>
-                        <TableCell className="text-right text-emerald-600">{formatCurrency(ap.csll_total)}</TableCell>
+                        <TableCell className="text-right text-primary">{formatCurrency(ap.irpj_total)}</TableCell>
+                        <TableCell className="text-right text-success">{formatCurrency(ap.csll_total)}</TableCell>
                         <TableCell className="text-right font-bold">{formatCurrency(ap.total_tributos)}</TableCell>
                         <TableCell>{getStatusBadge(ap.status)}</TableCell>
                       </TableRow>
@@ -339,8 +339,8 @@ export function ModuloIRPJCSLL() {
                   />
                 </div>
 
-                <div className="p-4 border rounded-lg border-green-200 bg-green-50/50">
-                  <h4 className="font-medium mb-3 text-green-700">Adições</h4>
+                <div className="p-4 border rounded-lg border-success/20 bg-success/5">
+                  <h4 className="font-medium mb-3 text-success">Adições</h4>
                   <div className="space-y-2">
                     <div>
                       <Label className="text-xs">Permanentes</Label>
@@ -361,8 +361,8 @@ export function ModuloIRPJCSLL() {
                   </div>
                 </div>
 
-                <div className="p-4 border rounded-lg border-red-200 bg-red-50/50">
-                  <h4 className="font-medium mb-3 text-red-700">Exclusões</h4>
+                <div className="p-4 border rounded-lg border-destructive/20 bg-destructive/5">
+                  <h4 className="font-medium mb-3 text-destructive">Exclusões</h4>
                   <div className="space-y-2">
                     <div>
                       <Label className="text-xs">Permanentes</Label>
@@ -420,7 +420,7 @@ export function ModuloIRPJCSLL() {
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="p-4 border rounded-lg">
                   <h4 className="font-semibold mb-4 flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    <CheckCircle2 className="h-4 w-4 text-success" />
                     Parte A - Ajustes do Lucro Líquido
                   </h4>
                   <ul className="text-sm space-y-2 text-muted-foreground">
@@ -434,7 +434,7 @@ export function ModuloIRPJCSLL() {
 
                 <div className="p-4 border rounded-lg">
                   <h4 className="font-semibold mb-4 flex items-center gap-2">
-                    <AlertTriangle className="h-4 w-4 text-orange-500" />
+                    <AlertTriangle className="h-4 w-4 text-warning" />
                     Parte B - Controle de Valores
                   </h4>
                   <ul className="text-sm space-y-2 text-muted-foreground">
@@ -469,7 +469,7 @@ export function ModuloIRPJCSLL() {
                           <TableCell>{p.trimestre_origem ? `${p.trimestre_origem}T/${p.ano_origem}` : p.ano_origem}</TableCell>
                           <TableCell className="text-right">{formatCurrency(p.valor_original)}</TableCell>
                           <TableCell className="text-right text-muted-foreground">{formatCurrency(p.valor_compensado)}</TableCell>
-                          <TableCell className="text-right font-medium text-orange-600">{formatCurrency(p.saldo_disponivel)}</TableCell>
+                          <TableCell className="text-right font-medium text-warning">{formatCurrency(p.saldo_disponivel)}</TableCell>
                           <TableCell><Badge variant="secondary">{p.status}</Badge></TableCell>
                         </TableRow>
                       ))}
