@@ -445,7 +445,7 @@ export function ContingenciaNFe() {
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-amber-500" />
+                  <Clock className="h-5 w-5 text-warning" />
                   NF-e Aguardando Transmissão
                 </CardTitle>
                 <CardDescription>
