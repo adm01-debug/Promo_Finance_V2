@@ -283,9 +283,9 @@ export function InutilizacaoNFe() {
                   {isProcessing ? (
                     <Loader2 className="h-5 w-5 text-primary animate-spin" />
                   ) : sefazResponse?.success ? (
-                    <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                    <CheckCircle2 className="h-5 w-5 text-success" />
                   ) : (
-                    <XCircle className="h-5 w-5 text-red-500" />
+                    <XCircle className="h-5 w-5 text-destructive" />
                   )}
                   <span className="font-medium">
                     {isProcessing ? 'Comunicando com SEFAZ...' : 
