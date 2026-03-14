@@ -986,9 +986,9 @@ export default function NotasFiscais() {
   });
 
   const kpis = [
-    { label: 'Total Emitido', value: totalEmitido, count: notasAutorizadas, icon: CheckCircle2, color: 'text-emerald-500' },
-    { label: 'Pendente Autorização', value: totalPendente, count: notas.filter(n => n.status === 'pendente').length, icon: Clock, color: 'text-amber-500' },
-    { label: 'Canceladas', value: totalCancelado, count: notas.filter(n => n.status === 'cancelada').length, icon: XCircle, color: 'text-red-500' },
+    { label: 'Total Emitido', value: totalEmitido, count: notasAutorizadas, icon: CheckCircle2, color: 'text-success' },
+    { label: 'Pendente Autorização', value: totalPendente, count: notas.filter(n => n.status === 'pendente').length, icon: Clock, color: 'text-warning' },
+    { label: 'Canceladas', value: totalCancelado, count: notas.filter(n => n.status === 'cancelada').length, icon: XCircle, color: 'text-destructive' },
     { label: 'Notas Este Mês', value: notas.length, isCount: true, icon: FileText, color: 'text-primary' }
   ];
 
