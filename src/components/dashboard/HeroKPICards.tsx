@@ -1,10 +1,10 @@
 /**
- * Hero KPI Cards - Premium with count-up animations & gradient accents
+ * Hero KPI Cards - Premium with count-up animations, gradient accents & intelligent empty states
  */
 
 import { ReactNode, useState } from 'react';
 import { motion } from 'framer-motion';
-import { LucideIcon, TrendingUp, TrendingDown, ArrowRight, Sparkles, Info } from 'lucide-react';
+import { LucideIcon, TrendingUp, TrendingDown, ArrowRight, Sparkles, Info, Plus } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -33,6 +33,8 @@ interface HeroKPICardProps {
   size?: 'hero' | 'primary' | 'secondary' | 'mini';
   sparkline?: number[];
   insight?: string;
+  emptyStateMessage?: string;
+  emptyStateHref?: string;
 }
 
 const sizeConfig = {
@@ -70,7 +72,6 @@ const sizeConfig = {
   },
 };
 
-// Color scheme per card type for subtle background gradient
 const typeGradients: Record<string, string> = {
   'text-primary': 'from-primary/[0.04] to-transparent',
   'text-success': 'from-success/[0.04] to-transparent',
@@ -78,6 +79,27 @@ const typeGradients: Record<string, string> = {
   'text-warning': 'from-warning/[0.04] to-transparent',
   'text-secondary': 'from-secondary/[0.04] to-transparent',
 };
+
+// Mini sparkline SVG component
+function MiniSparkline({ data, color, className }: { data: number[]; color: string; className?: string }) {
+  if (!data || data.length < 2) return null;
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+  const w = 60;
+  const h = 20;
+  const points = data.map((v, i) => {
+    const x = (i / (data.length - 1)) * w;
+    const y = h - ((v - min) / range) * h;
+    return `${x},${y}`;
+  }).join(' ');
+
+  return (
+    <svg width={w} height={h} className={cn('opacity-40 group-hover:opacity-70 transition-opacity', className)} viewBox={`0 0 ${w} ${h}`}>
+      <polyline fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" points={points} />
+    </svg>
+  );
+}
 
 export function HeroKPICard({
   title,
@@ -98,10 +120,13 @@ export function HeroKPICard({
   size = 'primary',
   sparkline,
   insight,
+  emptyStateMessage,
+  emptyStateHref,
 }: HeroKPICardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const config = sizeConfig[size];
   const animatedValue = useCountUp(value, { duration: 1400, decimals: isPercentage ? 1 : 2 });
+  const isZero = value === 0;
 
   const formattedValue = isPercentage
     ? `${animatedValue.toFixed(1)}%`
@@ -171,23 +196,62 @@ export function HeroKPICard({
               {loading ? (
                 <Skeleton className={cn('h-8', size === 'hero' ? 'w-48' : 'w-32')} />
               ) : (
-                <p className={cn(config.value, 'text-foreground tabular-nums')}>
-                  {formattedValue}
-                </p>
+                <div className="flex items-end gap-3">
+                  <p className={cn(
+                    config.value, 
+                    'text-foreground tabular-nums',
+                    isZero && 'text-muted-foreground/60',
+                  )}>
+                    {formattedValue}
+                  </p>
+                  {/* Sparkline */}
+                  {sparkline && sparkline.length > 1 && (
+                    <MiniSparkline 
+                      data={sparkline} 
+                      color={accentColor || 'hsl(var(--primary))'}
+                    />
+                  )}
+                </div>
               )}
 
-              {/* Variation */}
-              <div className={cn(
-                'flex items-center gap-1.5 font-medium',
-                config.variation,
-                isPositive ? 'text-success' : 'text-destructive',
-              )}>
-                {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                <span>{formatPercentage(Math.abs(variationValue))}</span>
-                <span className="text-muted-foreground font-normal">vs mês anterior</span>
-              </div>
+              {/* Empty state message instead of variation when zero */}
+              {isZero && emptyStateMessage ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex items-center gap-1.5"
+                >
+                  {emptyStateHref ? (
+                    <span className={cn(
+                      'flex items-center gap-1 text-primary font-medium',
+                      config.variation,
+                    )}>
+                      <Plus className="h-3 w-3" />
+                      {emptyStateMessage}
+                    </span>
+                  ) : (
+                    <span className={cn(
+                      'text-success font-medium flex items-center gap-1',
+                      config.variation,
+                    )}>
+                      {emptyStateMessage}
+                    </span>
+                  )}
+                </motion.div>
+              ) : (
+                /* Variation */
+                <div className={cn(
+                  'flex items-center gap-1.5 font-medium',
+                  config.variation,
+                  isPositive ? 'text-success' : 'text-destructive',
+                )}>
+                  {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                  <span>{formatPercentage(Math.abs(variationValue))}</span>
+                  <span className="text-muted-foreground font-normal">vs mês anterior</span>
+                </div>
+              )}
 
-              {/* Insight */}
+              {/* Insight on hover */}
               {insight && size === 'hero' && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}

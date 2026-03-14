@@ -45,6 +45,15 @@ export const DashboardExecutivo = () => {
     return <DashboardSkeleton />;
   }
 
+  // Intelligent badge for inadimplencia - don't show alarming badge when zero
+  const inadimplenciaBadge = metrics.totalVencidasReceber > 0
+    ? formatCurrency(metrics.totalVencidasReceber) + " vencido"
+    : undefined;
+
+  const inadimplenciaBadgeVariant = metrics.totalVencidasReceber > 0
+    ? 'destructive' as const
+    : 'secondary' as const;
+
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4 sm:space-y-6" data-tour="dashboard">
       <DashboardFiltersHeader
@@ -83,6 +92,8 @@ export const DashboardExecutivo = () => {
             href="/contas-receber"
             size="primary"
             badge={metrics.receitasMes > 0 ? formatCurrency(metrics.receitasMes) + " este mês" : undefined}
+            emptyStateMessage={metrics.totalReceber === 0 ? "Crie sua primeira conta a receber →" : undefined}
+            emptyStateHref="/contas-receber"
           />
           <HeroKPICard
             title="A Pagar"
@@ -95,6 +106,8 @@ export const DashboardExecutivo = () => {
             href="/contas-pagar"
             size="primary"
             badge={metrics.despesasMes > 0 ? formatCurrency(metrics.despesasMes) + " este mês" : undefined}
+            emptyStateMessage={metrics.totalPagar === 0 ? "Registre seu primeiro pagamento →" : undefined}
+            emptyStateHref="/contas-pagar"
           />
           <HeroKPICard
             title="Inadimplência"
@@ -107,7 +120,9 @@ export const DashboardExecutivo = () => {
             size="primary"
             isPercentage
             isCurrency={false}
-            badge={formatCurrency(metrics.totalVencidasReceber) + " vencido"}
+            badge={inadimplenciaBadge}
+            badgeVariant={inadimplenciaBadgeVariant}
+            emptyStateMessage={metrics.inadimplencia === 0 ? "✓ Nenhuma inadimplência — excelente!" : undefined}
           />
         </HeroKPIGrid>
       </motion.div>
