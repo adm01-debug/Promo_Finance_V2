@@ -65,8 +65,8 @@ const EMPTY_STATES: Record<EmptyStateType, EmptyStateConfig> = {
   },
   operacoes: {
     icon: FileText,
-    iconColor: 'text-purple-500',
-    iconBg: 'bg-purple-100 dark:bg-purple-900/30',
+    iconColor: 'text-accent-foreground',
+    iconBg: 'bg-accent',
     title: 'Nenhuma operação registrada',
     description: 'Registre operações de compra, venda, serviços ou importação para calcular os tributos automaticamente.',
     primaryAction: { label: 'Nova Operação', icon: Plus },
