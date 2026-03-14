@@ -226,10 +226,10 @@ function FluxoCaixaView({ data }: { data: Record<string, unknown> }) {
         </Card>
       </div>
       
-      <Card className="bg-blue-500/5 border-blue-500/20">
+      <Card className="bg-primary/5 border-primary/20">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
-            <DollarSign className="h-4 w-4 text-blue-600" />
+            <DollarSign className="h-4 w-4 text-primary" />
             Saldo
           </CardTitle>
         </CardHeader>
