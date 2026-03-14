@@ -63,7 +63,7 @@ export const toast = {
   info(message: string, options?: ToastOptions) {
     return sonnerToast.info(message, {
       ...options,
-      icon: <Info className="h-5 w-5 text-blue-500" />,
+      icon: <Info className="h-5 w-5 text-primary" />,
     });
   },
 
