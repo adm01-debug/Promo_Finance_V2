@@ -340,7 +340,7 @@ async function aprovarPagamento(
     .select('*, contas_pagar(*)')
     .or(`id.ilike.${id}%,id.eq.${id}`)
     .eq('status', 'pendente')
-    .single();
+    .maybeSingle();
 
   if (findError || !solicitacao) {
     return { success: false, message: `Solicitação ${id} não encontrada ou já processada` };
