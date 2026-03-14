@@ -268,9 +268,9 @@ export function ResizeHandle({ className, disabled = false }: ResizeHandleProps)
         direction === 'horizontal'
           ? 'w-1 cursor-col-resize'
           : 'h-1 cursor-row-resize',
-        'bg-gray-200 dark:bg-gray-700 hover:bg-primary-400 dark:hover:bg-primary-500',
-        isDragging && 'bg-primary-500',
-        disabled && 'cursor-default bg-gray-100 dark:bg-gray-800',
+        'bg-border hover:bg-primary/50',
+        isDragging && 'bg-primary',
+        disabled && 'cursor-default bg-muted',
         'transition-colors',
         className
       )}
