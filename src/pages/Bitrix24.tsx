@@ -126,19 +126,19 @@ export default function Bitrix24() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'sucesso': return 'bg-green-100 dark:bg-green-900/30';
-      case 'erro': return 'bg-red-100 dark:bg-red-900/30';
-      case 'parcial': return 'bg-yellow-100 dark:bg-yellow-900/30';
-      default: return 'bg-blue-100 dark:bg-blue-900/30';
+      case 'sucesso': return 'bg-success/10';
+      case 'erro': return 'bg-destructive/10';
+      case 'parcial': return 'bg-warning/10';
+      default: return 'bg-secondary/10';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'sucesso': return <CheckCircle2 className="h-5 w-5 text-green-600" />;
-      case 'erro': return <XCircle className="h-5 w-5 text-red-500" />;
-      case 'parcial': return <AlertTriangle className="h-5 w-5 text-yellow-600" />;
-      default: return <Clock className="h-5 w-5 text-blue-600" />;
+      case 'sucesso': return <CheckCircle2 className="h-5 w-5 text-success" />;
+      case 'erro': return <XCircle className="h-5 w-5 text-destructive" />;
+      case 'parcial': return <AlertTriangle className="h-5 w-5 text-warning" />;
+      default: return <Clock className="h-5 w-5 text-secondary" />;
     }
   };
 
