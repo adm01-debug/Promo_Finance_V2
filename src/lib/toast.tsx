@@ -38,7 +38,7 @@ export const toast = {
   success(message: string, options?: ToastOptions) {
     return sonnerToast.success(message, {
       ...options,
-      icon: <CheckCircle className="h-5 w-5 text-green-500" />,
+      icon: <CheckCircle className="h-5 w-5 text-success" />,
     });
   },
 
