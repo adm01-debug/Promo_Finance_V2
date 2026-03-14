@@ -209,7 +209,7 @@ export const BitrixWebhookPanel = () => {
                       <TableCell>{getActionFromEvent(event.event_type)}</TableCell>
                       <TableCell>
                         {event.processed ? (
-                          <Badge className="bg-green-500/10 text-green-500 border-green-500/20 gap-1">
+                          <Badge className="bg-success/10 text-success border-success/20 gap-1">
                             <CheckCircle2 className="h-3 w-3" />
                             Processado
                           </Badge>
