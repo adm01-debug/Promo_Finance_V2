@@ -126,7 +126,7 @@ export function Collapsible({
   return (
     <div
       className={cn(
-        'border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden',
+        'border border-border rounded-lg overflow-hidden',
         className
       )}
     >
@@ -136,7 +136,7 @@ export function Collapsible({
         disabled={disabled}
         className={cn(
           'w-full flex items-center justify-between px-4 py-3 text-left',
-          'bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700/50',
+          'bg-muted/50 hover:bg-muted',
           'transition-colors',
           disabled && 'opacity-50 cursor-not-allowed',
           headerClassName
@@ -145,14 +145,14 @@ export function Collapsible({
       >
         <div className="flex items-center gap-3">
           {icon && <span className="flex-shrink-0">{icon}</span>}
-          <span className="font-medium text-gray-900 dark:text-white">
+          <span className="font-medium text-foreground">
             {title}
           </span>
           {badge && <span>{badge}</span>}
         </div>
         <ChevronDown
           className={cn(
-            'w-5 h-5 text-gray-500 transition-transform duration-200',
+            'w-5 h-5 text-muted-foreground transition-transform duration-200',
             isOpen && 'rotate-180'
           )}
         />
