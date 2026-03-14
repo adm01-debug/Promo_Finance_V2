@@ -130,7 +130,7 @@ export function LineChart({
                 y2={line.y}
                 stroke={gridColor}
                 strokeDasharray="2,2"
-                className="dark:stroke-gray-700"
+                className="dark:stroke-border"
               />
               <text
                 x={padding.left - 8}
