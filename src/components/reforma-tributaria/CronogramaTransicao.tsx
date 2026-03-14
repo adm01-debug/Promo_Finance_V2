@@ -291,7 +291,7 @@ export function CronogramaTransicao() {
             </div>
             
             <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
-              <AlertCircle className="h-5 w-5 text-green-500 mt-0.5" />
+              <AlertCircle className="h-5 w-5 text-success mt-0.5" />
               <div>
                 <p className="font-medium">Split Payment</p>
                 <p className="text-sm text-muted-foreground">
