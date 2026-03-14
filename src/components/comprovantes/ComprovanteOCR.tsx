@@ -180,7 +180,7 @@ export function ComprovanteOCR({ onDadosExtraidos, onVincularPagamento }: Compro
       case 'analyzing':
         return <Loader2 className="h-4 w-4 animate-spin text-primary" />;
       case 'complete':
-        return <CheckCircle className="h-4 w-4 text-emerald-500" />;
+        return <CheckCircle className="h-4 w-4 text-success" />;
       case 'error':
         return <AlertTriangle className="h-4 w-4 text-destructive" />;
     }
