@@ -441,10 +441,10 @@ export default function Boletos() {
   }) || [];
 
   const kpis = [
-    { label: 'Total Gerado', value: stats.totalGerado, icon: FileText, color: 'text-primary' },
-    { label: 'Total Pago', value: stats.totalPago, icon: CheckCircle2, color: 'text-emerald-500' },
-    { label: 'Total Vencido', value: stats.totalVencido, icon: XCircle, color: 'text-red-500' },
-    { label: 'Pendente', value: stats.totalPendente, icon: Clock, color: 'text-amber-500' }
+    { label: 'Total Gerado', value: stats.totalGerado, icon: FileText, color: 'text-primary', bg: 'bg-primary/10' },
+    { label: 'Total Pago', value: stats.totalPago, icon: CheckCircle2, color: 'text-success', bg: 'bg-success/10' },
+    { label: 'Total Vencido', value: stats.totalVencido, icon: XCircle, color: 'text-destructive', bg: 'bg-destructive/10' },
+    { label: 'Pendente', value: stats.totalPendente, icon: Clock, color: 'text-warning', bg: 'bg-warning/10' }
   ];
 
   return (
