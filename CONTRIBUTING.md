@@ -26,8 +26,8 @@ Clique no botão "Fork" no GitHub para criar sua cópia do repositório.
 ### 2. Clone seu Fork
 
 ```bash
-git clone https://github.com/seu-usuario/finance-hub.git
-cd finance-hub
+git clone https://github.com/seu-usuario/promo-finance.git
+cd promo-finance
 ```
 
 ### 3. Configure o Upstream
