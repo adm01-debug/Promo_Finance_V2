@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   Search,
+  SplitSquareHorizontal,
   Filter,
   Link2,
   Unlink,
@@ -47,6 +48,9 @@ import { useConciliacao } from '@/hooks/useConciliacao';
 import { ImportarExtratoDialog } from '@/components/conciliacao/ImportarExtratoDialog';
 import { SugestoesMatchIA } from '@/components/conciliacao/SugestoesMatchIA';
 import { ConciliacaoManualDialog } from '@/components/conciliacao/ConciliacaoManualDialog';
+import { ConciliacaoSplitDialog } from '@/components/conciliacao/ConciliacaoSplitDialog';
+import { ConciliacaoDashboard } from '@/components/conciliacao/ConciliacaoDashboard';
+import { RegrasConciliacaoPanel } from '@/components/conciliacao/RegrasConciliacaoPanel';
 import { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
 import { 
   LancamentoSistema, 
@@ -82,7 +86,9 @@ export default function Conciliacao() {
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [showManualDialog, setShowManualDialog] = useState(false);
+  const [showSplitDialog, setShowSplitDialog] = useState(false);
   const [selectedTransacaoManual, setSelectedTransacaoManual] = useState<TransacaoExtrato | null>(null);
+  const [selectedTransacaoSplit, setSelectedTransacaoSplit] = useState<TransacaoExtrato | null>(null);
   const [transacoes, setTransacoes] = useState<TransacaoExtrato[]>([]);
   const [extratoImportado, setExtratoImportado] = useState<ExtratoOFX | null>(null);
   const [transacoesImportadas, setTransacoesImportadas] = useState<TransacaoOFX[]>([]);
@@ -170,6 +176,14 @@ export default function Conciliacao() {
     }
   }, [transacoes]);
 
+  const handleConciliarSplit = useCallback((transacaoId: string) => {
+    const transacao = transacoes.find(t => t.id === transacaoId);
+    if (transacao) {
+      setSelectedTransacaoSplit(transacao);
+      setShowSplitDialog(true);
+    }
+  }, [transacoes]);
+
   const handleManualSuccess = useCallback((transacaoId: string, lancamentoId: string, tipo: 'pagar' | 'receber') => {
     setTransacoes(prev => prev.map(t => 
       t.id === transacaoId ? { ...t, conciliada: true } : t
@@ -251,6 +265,16 @@ export default function Conciliacao() {
               />
             </>
           </div>
+        </motion.div>
+
+        {/* Dashboard de Métricas */}
+        <motion.div variants={itemVariants}>
+          <ConciliacaoDashboard />
+        </motion.div>
+
+        {/* Regras Aprendidas */}
+        <motion.div variants={itemVariants}>
+          <RegrasConciliacaoPanel />
         </motion.div>
 
         {/* KPI Cards */}
@@ -451,9 +475,13 @@ export default function Conciliacao() {
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuItem className="gap-2">
+                                  <DropdownMenuItem className="gap-2" onClick={() => handleConciliarManual(transacao.id)}>
                                     <Link2 className="h-4 w-4" />
                                     Vincular manualmente
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem className="gap-2" onClick={() => handleConciliarSplit(transacao.id)}>
+                                    <SplitSquareHorizontal className="h-4 w-4" />
+                                    Conciliação parcial (split)
                                   </DropdownMenuItem>
                                   <DropdownMenuItem className="gap-2">
                                     <Eye className="h-4 w-4" />
@@ -504,6 +532,21 @@ export default function Conciliacao() {
           transacao={selectedTransacaoManual}
           lancamentos={lancamentosSistema}
           onSuccess={handleManualSuccess}
+        />
+
+        {/* Dialog de Conciliação Parcial (Split) */}
+        <ConciliacaoSplitDialog
+          open={showSplitDialog}
+          onOpenChange={setShowSplitDialog}
+          transacao={selectedTransacaoSplit}
+          lancamentos={lancamentosSistema}
+          onSuccess={() => {
+            if (selectedTransacaoSplit) {
+              setTransacoes(prev => prev.map(t => 
+                t.id === selectedTransacaoSplit.id ? { ...t, conciliada: true } : t
+              ));
+            }
+          }}
         />
       </motion.div>
     </MainLayout>

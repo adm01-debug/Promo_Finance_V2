@@ -20,6 +20,7 @@ import { useConciliacao } from '@/hooks/useConciliacao';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 import { LancamentoSistema } from '@/lib/transaction-matcher';
 import { logger } from '@/lib/logger';
+import { aprenderRegra } from '@/hooks/useRegrasConciliacao';
 
 interface TransacaoExtrato {
   id: string;
@@ -94,6 +95,9 @@ export function ConciliacaoManualDialog({
         contaPagarId: tipo === 'pagar' ? lancamento.id : undefined,
         contaReceberId: tipo === 'receber' ? lancamento.id : undefined,
       });
+      
+      // Learn rule from this manual match
+      await aprenderRegra(transacao.descricao, lancamento.entidade, tipo, lancamento.id);
       
       celebrateReconciliation(1);
       onSuccess(transacao.id, lancamento.id, tipo);
