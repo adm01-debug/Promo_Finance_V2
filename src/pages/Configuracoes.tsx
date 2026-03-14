@@ -507,8 +507,8 @@ export default function Configuracoes() {
 
                 <motion.div variants={itemVariants} className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30">
-                      <AlertTriangle className="h-5 w-5 text-orange-500" />
+                    <div className="p-2 rounded-lg bg-warning/10">
+                      <AlertTriangle className="h-5 w-5 text-warning" />
                     </div>
                     <div>
                       <p className="font-medium">Alertas de Vencimento</p>
