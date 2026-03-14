@@ -395,7 +395,7 @@ export function InvoiceGenerator({
           <div className="w-full max-w-sm space-y-3">
             {/* Subtotal */}
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
+              <span className="text-muted-foreground">Subtotal</span>
               <span className="font-medium">{formatCurrency(calculations.subtotal)}</span>
             </div>
 
