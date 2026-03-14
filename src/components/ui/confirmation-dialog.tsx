@@ -175,7 +175,7 @@ export function ConfirmationDialog({
         <div className="text-center">
           <h3
             id="confirmation-title"
-            className="text-lg font-semibold text-gray-900 dark:text-white mb-2"
+            className="text-lg font-semibold text-foreground mb-2"
           >
             {title}
           </h3>
