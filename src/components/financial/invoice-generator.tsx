@@ -408,7 +408,7 @@ export function InvoiceGenerator({
                   ...prev,
                   discountType: e.target.value as 'percentage' | 'fixed',
                 }))}
-                className="px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-sm bg-transparent"
+                 className="px-2 py-1 border border-border rounded text-sm bg-transparent"
               >
                 <option value="percentage">%</option>
                 <option value="fixed">R$</option>
