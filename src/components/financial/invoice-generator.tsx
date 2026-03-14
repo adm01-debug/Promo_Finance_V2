@@ -333,7 +333,7 @@ export function InvoiceGenerator({
             </div>
 
             {/* Items */}
-            <div className="divide-y divide-gray-100 dark:divide-gray-700">
+            <div className="divide-y divide-border">
               {calculations.items.map((item) => (
                 <div key={item.id} className="grid grid-cols-12 gap-2 px-4 py-3 items-center">
                   <div className="col-span-5">
