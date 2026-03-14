@@ -1,4 +1,4 @@
-
+@layer utilities {
   /* Scrollbar Styling */
   .scrollbar-thin::-webkit-scrollbar {
     width: 8px;
