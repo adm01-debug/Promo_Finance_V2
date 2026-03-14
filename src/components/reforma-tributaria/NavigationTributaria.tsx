@@ -71,7 +71,7 @@ const NAV_GROUPS: NavGroup[] = [
     id: 'simuladores',
     label: 'Simuladores',
     icon: Zap,
-    color: 'text-amber-500',
+    color: 'text-warning',
     items: [
       { id: 'calculadora', label: 'Calculadora', icon: Calculator },
       { id: 'simulador', label: 'Cenários', icon: Zap },
