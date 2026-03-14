@@ -3,7 +3,7 @@
 // Módulo contábil para empresas Lucro Real
 // ============================================
 
-import { DashboardReformaTributaria } from '@/components/reforma-tributaria';
+import { DashboardReformaTributaria } from '@/components/reforma-tributaria/DashboardReformaTributaria';
 
 export default function ReformaTributaria() {
   return (
