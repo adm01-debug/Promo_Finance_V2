@@ -4357,6 +4357,11 @@ export type Database = {
         Args: { _email: string }
         Returns: undefined
       }
+      is_country_allowed_for_login: {
+        Args: { _country: string }
+        Returns: boolean
+      }
+      is_ip_allowed_for_login: { Args: { _ip: string }; Returns: boolean }
       log_audit: {
         Args: {
           _action: Database["public"]["Enums"]["audit_action"]
