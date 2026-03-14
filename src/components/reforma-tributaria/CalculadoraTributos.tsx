@@ -290,36 +290,36 @@ export function CalculadoraTributos() {
                     Tributos Novos (IBS/CBS)
                   </h4>
                   
-                  <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-cbs/10 rounded-lg">
                     <div className="flex items-center gap-2">
-                      <Receipt className="h-4 w-4 text-blue-600" />
+                      <Receipt className="h-4 w-4 text-cbs" />
                       <span>CBS (Federal)</span>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-blue-600">{formatCurrency(resultado.valorCBS)}</p>
+                      <p className="font-semibold text-cbs">{formatCurrency(resultado.valorCBS)}</p>
                       <p className="text-xs text-muted-foreground">{resultado.aliquotaCBS.toFixed(2)}%</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-950/20 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-ibs/10 rounded-lg">
                     <div className="flex items-center gap-2">
-                      <Landmark className="h-4 w-4 text-emerald-600" />
+                      <Landmark className="h-4 w-4 text-ibs" />
                       <span>IBS (Est/Mun)</span>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-emerald-600">{formatCurrency(resultado.valorIBS)}</p>
+                      <p className="font-semibold text-ibs">{formatCurrency(resultado.valorIBS)}</p>
                       <p className="text-xs text-muted-foreground">{resultado.aliquotaIBS.toFixed(2)}%</p>
                     </div>
                   </div>
 
                   {resultado.valorIS > 0 && (
-                    <div className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-imposto-seletivo/10 rounded-lg">
                       <div className="flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4 text-orange-600" />
+                        <AlertTriangle className="h-4 w-4 text-imposto-seletivo" />
                         <span>IS (Seletivo)</span>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold text-orange-600">{formatCurrency(resultado.valorIS)}</p>
+                        <p className="font-semibold text-imposto-seletivo">{formatCurrency(resultado.valorIS)}</p>
                         <p className="text-xs text-muted-foreground">{resultado.aliquotaIS.toFixed(2)}%</p>
                       </div>
                     </div>

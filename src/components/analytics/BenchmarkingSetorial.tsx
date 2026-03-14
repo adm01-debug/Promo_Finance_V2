@@ -223,8 +223,8 @@ export function BenchmarkingSetorial() {
           <div className="text-right">
             <p className="text-sm text-muted-foreground">Score Geral</p>
             <p className={`text-2xl font-bold ${
-              scoreGeral >= 70 ? 'text-emerald-500' : 
-              scoreGeral >= 50 ? 'text-yellow-500' : 'text-destructive'
+              scoreGeral >= 70 ? 'text-success' : 
+              scoreGeral >= 50 ? 'text-warning' : 'text-destructive'
             }`}>
               {scoreGeral}%
             </p>
