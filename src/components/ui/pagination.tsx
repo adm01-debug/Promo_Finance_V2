@@ -188,12 +188,12 @@ export function PaginationWithInfo({
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-      <p className="text-sm text-gray-500 dark:text-gray-400">
-        Mostrando <span className="font-medium text-gray-900 dark:text-white">{startItem}</span>
+      <p className="text-sm text-muted-foreground">
+        Mostrando <span className="font-medium text-foreground">{startItem}</span>
         {' '}-{' '}
-        <span className="font-medium text-gray-900 dark:text-white">{endItem}</span>
+        <span className="font-medium text-foreground">{endItem}</span>
         {' '}de{' '}
-        <span className="font-medium text-gray-900 dark:text-white">{totalItems}</span>
+        <span className="font-medium text-foreground">{totalItems}</span>
         {' '}resultados
       </p>
       
