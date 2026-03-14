@@ -39,8 +39,8 @@ interface EmptyStateConfig {
 const EMPTY_STATES: Record<EmptyStateType, EmptyStateConfig> = {
   apuracoes: {
     icon: Calculator,
-    iconColor: 'text-blue-500',
-    iconBg: 'bg-blue-100 dark:bg-blue-900/30',
+    iconColor: 'text-primary',
+    iconBg: 'bg-primary/10',
     title: 'Nenhuma apuração encontrada',
     description: 'Crie sua primeira apuração tributária para começar a calcular CBS, IBS e tributos residuais.',
     primaryAction: { label: 'Criar Apuração', icon: Plus },
