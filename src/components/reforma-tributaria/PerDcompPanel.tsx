@@ -323,7 +323,7 @@ export function PerDcompPanel() {
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3">
-                  <Clock className="h-8 w-8 text-blue-500" />
+                  <Clock className="h-8 w-8 text-primary" />
                   <div>
                     <p className="text-sm text-muted-foreground">Em Análise</p>
                     <p className="text-2xl font-bold">{estatisticas.transmitidos + estatisticas.emAnalise}</p>
