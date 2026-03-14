@@ -405,8 +405,8 @@ const NFePreview = ({ nfe }: { nfe: NotaFiscal }) => {
       </div>
 
       {nfe.status === 'cancelada' && nfe.motivoCancelamento && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
-          <div className="flex items-center gap-2 text-red-500 mb-2">
+        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+          <div className="flex items-center gap-2 text-destructive mb-2">
             <AlertTriangle className="h-4 w-4" />
             <span className="font-medium">Nota Fiscal Cancelada</span>
           </div>
