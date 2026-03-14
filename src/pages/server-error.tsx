@@ -78,7 +78,7 @@ export default function ServerError() {
           <Button
             variant="ghost"
             onClick={handleReportError}
-            className="inline-flex items-center text-gray-600 dark:text-gray-400"
+            className="inline-flex items-center text-muted-foreground"
           >
             <Mail className="w-4 h-4 mr-2" />
             Reportar erro
