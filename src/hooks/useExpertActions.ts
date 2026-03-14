@@ -639,7 +639,7 @@ async function agendarCobranca(contaId: string): Promise<ActionResult> {
     .from('contas_receber')
     .select('*, clientes(razao_social, email, telefone)')
     .eq('id', contaId)
-    .single();
+    .maybeSingle();
 
   if (findError || !conta) {
     return { success: false, message: `Conta ${contaId} não encontrada.` };
