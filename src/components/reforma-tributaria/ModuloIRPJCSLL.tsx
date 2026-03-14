@@ -288,8 +288,8 @@ export function ModuloIRPJCSLL() {
                           <Badge variant="outline">{ap.tipo_apuracao}</Badge>
                         </TableCell>
                         <TableCell className="text-right">{formatCurrency(ap.lucro_real)}</TableCell>
-                        <TableCell className="text-right text-blue-600">{formatCurrency(ap.irpj_total)}</TableCell>
-                        <TableCell className="text-right text-emerald-600">{formatCurrency(ap.csll_total)}</TableCell>
+                        <TableCell className="text-right text-primary">{formatCurrency(ap.irpj_total)}</TableCell>
+                        <TableCell className="text-right text-success">{formatCurrency(ap.csll_total)}</TableCell>
                         <TableCell className="text-right font-bold">{formatCurrency(ap.total_tributos)}</TableCell>
                         <TableCell>{getStatusBadge(ap.status)}</TableCell>
                       </TableRow>
