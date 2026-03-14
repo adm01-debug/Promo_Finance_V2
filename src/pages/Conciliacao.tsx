@@ -266,6 +266,16 @@ export default function Conciliacao() {
           </div>
         </motion.div>
 
+        {/* Dashboard de Métricas */}
+        <motion.div variants={itemVariants}>
+          <ConciliacaoDashboard />
+        </motion.div>
+
+        {/* Regras Aprendidas */}
+        <motion.div variants={itemVariants}>
+          <RegrasConciliacaoPanel />
+        </motion.div>
+
         {/* KPI Cards */}
         <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="stat-card group">
