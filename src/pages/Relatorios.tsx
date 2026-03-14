@@ -100,7 +100,7 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 }
 };
 
-const COLORS = ['hsl(24, 95%, 46%)', 'hsl(215, 90%, 42%)', 'hsl(150, 70%, 32%)', 'hsl(275, 75%, 48%)', 'hsl(42, 95%, 48%)', 'hsl(0, 78%, 55%)'];
+const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--success))', 'hsl(var(--accent))', 'hsl(var(--warning))', 'hsl(var(--destructive))'];
 
 const relatoriosDisponiveis = [
   { id: '1', nome: 'DRE - Demonstrativo de Resultados', categoria: 'Contábil', icon: FileText },
