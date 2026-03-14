@@ -260,12 +260,12 @@ export function HeroKPIGrid({ children, layout = 'default' }: HeroKPIGridProps) 
     default: 'grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4',
     'hero-first': cn(
       'grid gap-3 sm:gap-4',
-      // Mobile: 1 col stack
       'grid-cols-1',
-      // Tablet: 2 cols, hero spans full row
       'sm:grid-cols-2 [&>*:first-child]:sm:col-span-2',
-      // Desktop: 4 cols bento — hero=2col, others fit naturally
-      'lg:grid-cols-4 [&>*:first-child]:lg:col-span-2 [&>*:first-child]:lg:row-span-2',
+      // Desktop: 4 cols bento — hero=2col+2row, last card spans remaining 2 cols
+      'lg:grid-cols-4',
+      '[&>*:first-child]:lg:col-span-2 [&>*:first-child]:lg:row-span-2',
+      '[&>*:nth-child(4)]:lg:col-span-2',
     ),
     balanced: 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4',
   };
