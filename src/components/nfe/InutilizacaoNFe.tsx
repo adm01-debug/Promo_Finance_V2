@@ -283,9 +283,9 @@ export function InutilizacaoNFe() {
                   {isProcessing ? (
                     <Loader2 className="h-5 w-5 text-primary animate-spin" />
                   ) : sefazResponse?.success ? (
-                    <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                    <CheckCircle2 className="h-5 w-5 text-success" />
                   ) : (
-                    <XCircle className="h-5 w-5 text-red-500" />
+                    <XCircle className="h-5 w-5 text-destructive" />
                   )}
                   <span className="font-medium">
                     {isProcessing ? 'Comunicando com SEFAZ...' : 
@@ -305,7 +305,7 @@ export function InutilizacaoNFe() {
                           <div 
                             key={step.id}
                             className={`text-center transition-colors ${
-                              isActive ? 'text-primary' : isDone ? 'text-emerald-500' : 'text-muted-foreground'
+                              isActive ? 'text-primary' : isDone ? 'text-success' : 'text-muted-foreground'
                             }`}
                           >
                             <StepIcon className={`h-4 w-4 mx-auto mb-1 ${isActive ? 'animate-pulse' : ''}`} />
@@ -318,9 +318,9 @@ export function InutilizacaoNFe() {
                 )}
 
                 {sefazResponse && (
-                  <div className={`rounded-lg p-3 ${sefazResponse.success ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-red-500/10 border border-red-500/20'}`}>
+                  <div className={`rounded-lg p-3 ${sefazResponse.success ? 'bg-success/10 border border-success/20' : 'bg-destructive/10 border border-destructive/20'}`}>
                     <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="outline" className={sefazResponse.success ? 'bg-emerald-500/20 text-emerald-500' : 'bg-red-500/20 text-red-500'}>
+                      <Badge variant="outline" className={sefazResponse.success ? 'bg-success/20 text-success' : 'bg-destructive/20 text-destructive'}>
                         cStat: {sefazResponse.cStat}
                       </Badge>
                       <span className="text-sm font-medium">{sefazResponse.xMotivo}</span>
@@ -334,7 +334,7 @@ export function InutilizacaoNFe() {
                     {sefazResponse.errors && sefazResponse.errors.length > 0 && (
                       <div className="mt-2 space-y-1">
                         {sefazResponse.errors.map((err, idx) => (
-                          <p key={idx} className="text-sm text-red-500 flex items-center gap-1">
+                          <p key={idx} className="text-sm text-destructive flex items-center gap-1">
                             <AlertTriangle className="h-3 w-3" />
                             {err}
                           </p>
@@ -375,12 +375,12 @@ export function InutilizacaoNFe() {
       </Card>
 
       {/* Informações Importantes */}
-      <Card className="border-amber-500/20 bg-amber-500/5">
+      <Card className="border-warning/20 bg-warning/5">
         <CardContent className="p-4">
           <div className="flex gap-3">
-            <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+            <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
             <div className="space-y-2 text-sm">
-              <p className="font-medium text-amber-500">Informações Importantes</p>
+              <p className="font-medium text-warning">Informações Importantes</p>
               <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                 <li>A inutilização é <strong>irreversível</strong> e deve ser usada apenas para números que não serão utilizados.</li>
                 <li>Utilize quando houver quebra de sequência na numeração das NF-e.</li>

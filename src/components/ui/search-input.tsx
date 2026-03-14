@@ -109,7 +109,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
         {/* Search icon */}
         <div
           className={cn(
-            'absolute top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none',
+            'absolute top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none',
             classes.icon
           )}
         >
@@ -129,10 +129,10 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           className={cn(
-            'w-full rounded-lg border border-gray-300 dark:border-gray-600',
-            'bg-white dark:bg-gray-700 text-gray-900 dark:text-white',
-            'placeholder-gray-400 dark:placeholder-gray-500',
-            'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+            'w-full rounded-lg border border-input',
+            'bg-background text-foreground',
+            'placeholder-muted-foreground',
+            'focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent',
             'transition-colors',
             classes.input,
             className
@@ -146,7 +146,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
             type="button"
             onClick={handleClear}
             className={cn(
-              'absolute top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300',
+              'absolute top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground',
               'transition-colors',
               classes.clear
             )}
@@ -180,7 +180,7 @@ export function SearchInputWithButton({
       <button
         type="button"
         onClick={onButtonClick}
-        className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+        className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
       >
         {buttonLabel}
       </button>

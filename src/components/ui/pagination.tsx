@@ -111,7 +111,7 @@ export function Pagination({
               return (
                 <span
                   key={`ellipsis-${index}`}
-                  className="px-2 text-gray-400 dark:text-gray-500"
+                  className="px-2 text-muted-foreground"
                 >
                   ...
                 </span>
@@ -188,12 +188,12 @@ export function PaginationWithInfo({
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-      <p className="text-sm text-gray-500 dark:text-gray-400">
-        Mostrando <span className="font-medium text-gray-900 dark:text-white">{startItem}</span>
+      <p className="text-sm text-muted-foreground">
+        Mostrando <span className="font-medium text-foreground">{startItem}</span>
         {' '}-{' '}
-        <span className="font-medium text-gray-900 dark:text-white">{endItem}</span>
+        <span className="font-medium text-foreground">{endItem}</span>
         {' '}de{' '}
-        <span className="font-medium text-gray-900 dark:text-white">{totalItems}</span>
+        <span className="font-medium text-foreground">{totalItems}</span>
         {' '}resultados
       </p>
       
@@ -222,13 +222,13 @@ export function PaginationWithPageSize({
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
       <div className="flex items-center gap-2">
-        <span className="text-sm text-gray-500 dark:text-gray-400">
+        <span className="text-sm text-muted-foreground">
           Itens por página:
         </span>
         <select
           value={pageSize}
           onChange={(e) => onPageSizeChange?.(Number(e.target.value))}
-          className="h-8 px-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="h-8 px-2 text-sm border border-border rounded-lg bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
         >
           {pageSizeOptions.map((option) => (
             <option key={option} value={option}>

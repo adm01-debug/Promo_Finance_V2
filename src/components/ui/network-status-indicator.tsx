@@ -52,9 +52,9 @@ export function NetworkStatusIndicator({
   const quality = getConnectionQuality();
 
   const colorClasses = {
-    success: 'text-green-500 bg-green-500/10 border-green-500/20',
-    warning: 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20',
-    destructive: 'text-red-500 bg-red-500/10 border-red-500/20',
+    success: 'text-success bg-success/10 border-success/20',
+    warning: 'text-warning bg-warning/10 border-warning/20',
+    destructive: 'text-destructive bg-destructive/10 border-destructive/20',
   };
 
   const tooltipContent = (
@@ -62,9 +62,9 @@ export function NetworkStatusIndicator({
       <div className="flex items-center gap-2 font-medium">
         <span className={cn(
           'h-2 w-2 rounded-full',
-          quality.color === 'success' && 'bg-green-500',
-          quality.color === 'warning' && 'bg-yellow-500',
-          quality.color === 'destructive' && 'bg-red-500'
+          quality.color === 'success' && 'bg-success',
+          quality.color === 'warning' && 'bg-warning',
+          quality.color === 'destructive' && 'bg-destructive'
         )} />
         {quality.label}
       </div>
@@ -106,9 +106,9 @@ export function NetworkStatusIndicator({
             >
               <SignalIcon className={cn(
                 'h-4 w-4',
-                quality.color === 'success' && 'text-green-500',
-                quality.color === 'warning' && 'text-yellow-500',
-                quality.color === 'destructive' && 'text-red-500'
+                quality.color === 'success' && 'text-success',
+                quality.color === 'warning' && 'text-warning',
+                quality.color === 'destructive' && 'text-destructive'
               )} />
             </motion.div>
           </TooltipTrigger>
@@ -136,9 +136,9 @@ export function NetworkStatusIndicator({
           <motion.div
             className={cn(
               'p-2 rounded-lg',
-              quality.color === 'success' && 'bg-green-500/20',
-              quality.color === 'warning' && 'bg-yellow-500/20',
-              quality.color === 'destructive' && 'bg-red-500/20'
+              quality.color === 'success' && 'bg-success/20',
+              quality.color === 'warning' && 'bg-warning/20',
+              quality.color === 'destructive' && 'bg-destructive/20'
             )}
             animate={!isOnline ? { scale: [1, 1.1, 1] } : {}}
             transition={{ duration: 1, repeat: Infinity }}
@@ -200,7 +200,7 @@ export function NetworkStatusIndicator({
               </motion.span>
             )}
             {isOnline && effectiveType === '4g' && (
-              <Zap className="h-3 w-3 text-green-400" />
+              <Zap className="h-3 w-3 text-success" />
             )}
           </motion.div>
         </TooltipTrigger>
@@ -217,11 +217,11 @@ export function ConnectionDot({ className }: { className?: string }) {
   const { isOnline, effectiveType } = useNetworkStatus();
   
   const getColor = () => {
-    if (!isOnline) return 'bg-red-500';
+    if (!isOnline) return 'bg-destructive';
     switch (effectiveType) {
-      case '4g': return 'bg-green-500';
-      case '3g': return 'bg-yellow-500';
-      default: return 'bg-green-500';
+      case '4g': return 'bg-success';
+      case '3g': return 'bg-warning';
+      default: return 'bg-success';
     }
   };
 

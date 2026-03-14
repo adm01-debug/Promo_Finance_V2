@@ -79,13 +79,13 @@ const itemVariants = {
 };
 
 const modeConfig: Record<ContingencyMode, { color: string; icon: typeof Wifi; description: string }> = {
-  normal: { color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20', icon: Wifi, description: 'Operação normal' },
-  SCAN: { color: 'bg-blue-500/10 text-blue-500 border-blue-500/20', icon: Server, description: 'SCAN - Ambiente Nacional' },
-  DPEC: { color: 'bg-amber-500/10 text-amber-500 border-amber-500/20', icon: FileText, description: 'DPEC - Declaração Prévia' },
-  FSDA: { color: 'bg-purple-500/10 text-purple-500 border-purple-500/20', icon: FileText, description: 'FS-DA - Formulário de Segurança' },
-  SVCAN: { color: 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20', icon: Server, description: 'SVC-AN - SEFAZ Virtual Nacional' },
-  SVCRS: { color: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20', icon: Server, description: 'SVC-RS - SEFAZ Virtual RS' },
-  offline: { color: 'bg-red-500/10 text-red-500 border-red-500/20', icon: WifiOff, description: 'Modo Offline' },
+  normal: { color: 'bg-success/10 text-success border-success/20', icon: Wifi, description: 'Operação normal' },
+  SCAN: { color: 'bg-primary/10 text-primary border-primary/20', icon: Server, description: 'SCAN - Ambiente Nacional' },
+  DPEC: { color: 'bg-warning/10 text-warning border-warning/20', icon: FileText, description: 'DPEC - Declaração Prévia' },
+  FSDA: { color: 'bg-accent text-accent-foreground border-accent', icon: FileText, description: 'FS-DA - Formulário de Segurança' },
+  SVCAN: { color: 'bg-secondary text-secondary-foreground border-secondary', icon: Server, description: 'SVC-AN - SEFAZ Virtual Nacional' },
+  SVCRS: { color: 'bg-muted text-muted-foreground border-border', icon: Server, description: 'SVC-RS - SEFAZ Virtual RS' },
+  offline: { color: 'bg-destructive/10 text-destructive border-destructive/20', icon: WifiOff, description: 'Modo Offline' },
 };
 
 export function ContingenciaNFe() {
@@ -287,7 +287,7 @@ export function ContingenciaNFe() {
         >
       {/* Status Header */}
       <motion.div variants={itemVariants}>
-        <Card className={isContingencyActive ? 'border-amber-500/50 bg-amber-500/5' : ''}>
+        <Card className={isContingencyActive ? 'border-warning/50 bg-warning/5' : ''}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -339,8 +339,8 @@ export function ContingenciaNFe() {
             </div>
 
             {isContingencyActive && state.reason && (
-              <div className="mt-4 p-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
-                <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+              <div className="mt-4 p-3 bg-warning/10 rounded-lg border border-warning/20">
+                <div className="flex items-center gap-2 text-warning">
                   <AlertCircle className="h-4 w-4" />
                   <span className="text-sm font-medium">Motivo: {state.reason}</span>
                 </div>
@@ -362,11 +362,11 @@ export function ContingenciaNFe() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${health.online ? 'bg-emerald-500/10' : 'bg-red-500/10'}`}>
+                <div className={`p-2 rounded-lg ${health.online ? 'bg-success/10' : 'bg-destructive/10'}`}>
                   {health.online ? (
-                    <Wifi className="h-5 w-5 text-emerald-500" />
+                    <Wifi className="h-5 w-5 text-success" />
                   ) : (
-                    <WifiOff className="h-5 w-5 text-red-500" />
+                    <WifiOff className="h-5 w-5 text-destructive" />
                   )}
                 </div>
                 <div>
@@ -393,8 +393,8 @@ export function ContingenciaNFe() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg ${stats.totalPending > 0 ? 'bg-amber-500/10' : 'bg-muted'}`}>
-                <FileText className={`h-5 w-5 ${stats.totalPending > 0 ? 'text-amber-500' : 'text-muted-foreground'}`} />
+              <div className={`p-2 rounded-lg ${stats.totalPending > 0 ? 'bg-warning/10' : 'bg-muted'}`}>
+                <FileText className={`h-5 w-5 ${stats.totalPending > 0 ? 'text-warning' : 'text-muted-foreground'}`} />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">NF-e Pendentes</p>
@@ -445,7 +445,7 @@ export function ContingenciaNFe() {
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-amber-500" />
+                  <Clock className="h-5 w-5 text-warning" />
                   NF-e Aguardando Transmissão
                 </CardTitle>
                 <CardDescription>
@@ -478,26 +478,26 @@ export function ContingenciaNFe() {
                     >
                       <div className="flex items-center gap-4">
                         <div className={`p-2 rounded-lg ${
-                          nfe.status === 'pendente' ? 'bg-amber-500/10' :
-                          nfe.status === 'transmitindo' ? 'bg-blue-500/10' :
-                          nfe.status === 'autorizada' ? 'bg-emerald-500/10' :
-                          'bg-red-500/10'
+                          nfe.status === 'pendente' ? 'bg-warning/10' :
+                          nfe.status === 'transmitindo' ? 'bg-primary/10' :
+                          nfe.status === 'autorizada' ? 'bg-success/10' :
+                          'bg-destructive/10'
                         }`}>
                           {nfe.status === 'transmitindo' ? (
-                            <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />
+                            <Loader2 className="h-5 w-5 text-primary animate-spin" />
                           ) : nfe.status === 'autorizada' ? (
-                            <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                            <CheckCircle2 className="h-5 w-5 text-success" />
                           ) : nfe.status === 'rejeitada' ? (
-                            <XCircle className="h-5 w-5 text-red-500" />
+                            <XCircle className="h-5 w-5 text-destructive" />
                           ) : (
-                            <Clock className="h-5 w-5 text-amber-500" />
+                            <Clock className="h-5 w-5 text-warning" />
                           )}
                         </div>
                         <div>
                           <p className="font-medium">NF-e #{nfe.numero}</p>
                           <p className="text-sm text-muted-foreground">{nfe.destinatario}</p>
                           {nfe.erro && (
-                            <p className="text-xs text-red-500 mt-1">{nfe.erro}</p>
+                            <p className="text-xs text-destructive mt-1">{nfe.erro}</p>
                           )}
                         </div>
                       </div>
@@ -557,7 +557,7 @@ export function ContingenciaNFe() {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              <AlertTriangle className="h-5 w-5 text-warning" />
               Ativar Modo de Contingência
             </DialogTitle>
             <DialogDescription>
@@ -642,7 +642,7 @@ export function ContingenciaNFe() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+              <CheckCircle2 className="h-5 w-5 text-success" />
               Desativar Modo de Contingência
             </DialogTitle>
             <DialogDescription>
@@ -653,8 +653,8 @@ export function ContingenciaNFe() {
           </DialogHeader>
 
           {stats.totalPending > 0 && (
-            <div className="p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
-              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+            <div className="p-4 bg-warning/10 rounded-lg border border-warning/20">
+              <div className="flex items-center gap-2 text-warning">
                 <AlertCircle className="h-4 w-4" />
                 <span className="text-sm font-medium">
                   {stats.totalPending} NF-e pendente(s) - {formatCurrency(stats.pendingValue)}

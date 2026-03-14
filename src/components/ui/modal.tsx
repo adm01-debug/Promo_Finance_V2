@@ -77,7 +77,7 @@ export function Modal({
         aria-labelledby={title ? 'modal-title' : undefined}
         aria-describedby={description ? 'modal-description' : undefined}
         className={cn(
-          'relative z-50 w-full mx-4 bg-white dark:bg-gray-900 rounded-lg shadow-xl',
+          'relative z-50 w-full mx-4 bg-card rounded-lg shadow-xl',
           'animate-in fade-in-0 zoom-in-95 duration-200',
           sizeClasses[size],
           className
@@ -85,12 +85,12 @@ export function Modal({
       >
         {/* Header */}
         {(title || showClose) && (
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between p-4 border-b border-border">
             <div>
               {title && (
                 <h2
                   id="modal-title"
-                  className="text-lg font-semibold text-gray-900 dark:text-white"
+                  className="text-lg font-semibold text-foreground"
                 >
                   {title}
                 </h2>
@@ -98,7 +98,7 @@ export function Modal({
               {description && (
                 <p
                   id="modal-description"
-                  className="mt-1 text-sm text-gray-500 dark:text-gray-400"
+                  className="mt-1 text-sm text-muted-foreground"
                 >
                   {description}
                 </p>
@@ -123,7 +123,7 @@ export function Modal({
 
         {/* Footer */}
         {footer && (
-          <div className="flex items-center justify-end gap-2 p-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-end gap-2 p-4 border-t border-border">
             {footer}
           </div>
         )}
@@ -175,7 +175,7 @@ export function ConfirmModal({
         </>
       }
     >
-      <p className="text-gray-600 dark:text-gray-300">{message}</p>
+      <p className="text-muted-foreground">{message}</p>
     </Modal>
   );
 }
