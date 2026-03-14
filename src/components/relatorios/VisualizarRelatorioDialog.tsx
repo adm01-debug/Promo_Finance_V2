@@ -535,9 +535,9 @@ function InadimplenciaView({ data }: { data: Record<string, unknown> }) {
             <p className="text-sm text-muted-foreground">Títulos Vencidos</p>
           </CardContent>
         </Card>
-        <Card className="bg-orange-500/5 border-orange-500/20">
+        <Card className="bg-warning/5 border-warning/20">
           <CardContent className="pt-4 text-center">
-            <p className="text-2xl font-bold text-orange-500">{(resumo?.taxa_inadimplencia || 0).toFixed(1)}%</p>
+            <p className="text-2xl font-bold text-warning">{(resumo?.taxa_inadimplencia || 0).toFixed(1)}%</p>
             <p className="text-sm text-muted-foreground">Taxa Inadimplência</p>
           </CardContent>
         </Card>
