@@ -322,9 +322,9 @@ export function InvoiceGenerator({
             </Button>
           </div>
 
-          <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+          <div className="border border-border rounded-lg overflow-hidden">
             {/* Table Header */}
-            <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-gray-50 dark:bg-gray-900/50 text-xs font-medium text-gray-500 uppercase">
+            <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-muted/50 text-xs font-medium text-muted-foreground uppercase">
               <div className="col-span-5">Descrição</div>
               <div className="col-span-2 text-center">Qtd</div>
               <div className="col-span-2 text-right">Preço Unit.</div>
