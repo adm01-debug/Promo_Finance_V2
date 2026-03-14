@@ -88,13 +88,13 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(
           max={maxDate ? formatDateForInput(maxDate, format) : undefined}
           className={cn(
             showIcon && 'pr-10',
-            error && 'border-red-500 focus:border-red-500 focus:ring-red-500',
+            error && 'border-destructive focus:border-destructive focus:ring-destructive',
             className
           )}
           {...props}
         />
         {showIcon && (
-          <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+          <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         )}
       </div>
     );
@@ -151,7 +151,7 @@ export function DateRangeInput({
     <div className={cn('flex flex-col sm:flex-row gap-2 sm:gap-4', className)}>
       <div className="flex-1 space-y-1">
         {labels.start && (
-          <label className="text-sm text-gray-600 dark:text-gray-400">
+          <label className="text-sm text-muted-foreground">
             {labels.start}
           </label>
         )}
@@ -165,7 +165,7 @@ export function DateRangeInput({
       </div>
       <div className="flex-1 space-y-1">
         {labels.end && (
-          <label className="text-sm text-gray-600 dark:text-gray-400">
+          <label className="text-sm text-muted-foreground">
             {labels.end}
           </label>
         )}

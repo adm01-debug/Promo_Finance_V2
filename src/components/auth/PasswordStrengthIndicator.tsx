@@ -72,20 +72,20 @@ export function PasswordStrengthIndicator({ password, onStrengthChange }: Passwo
 
     let level: 'weak' | 'fair' | 'good' | 'strong' = 'weak';
     let label = 'Fraca';
-    let color = 'bg-red-500';
+    let color = 'bg-destructive';
 
     if (strength >= 80 && requiredMet) {
       level = 'strong';
       label = 'Forte';
-      color = 'bg-green-500';
+      color = 'bg-success';
     } else if (strength >= 60 && requiredMet) {
       level = 'good';
       label = 'Boa';
-      color = 'bg-blue-500';
+      color = 'bg-primary';
     } else if (strength >= 40) {
       level = 'fair';
       label = 'Média';
-      color = 'bg-yellow-500';
+      color = 'bg-warning';
     }
 
     return { criteria, strength, level, label, color, requiredMet };
@@ -122,13 +122,13 @@ export function PasswordStrengthIndicator({ password, onStrengthChange }: Passwo
     <div className="space-y-3 mt-2">
       {/* Leaked password warning */}
       {leakCheck.leaked && (
-        <div className="flex items-start gap-2 p-3 rounded-lg border border-red-500/50 bg-red-500/10">
-          <ShieldAlert className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+        <div className="flex items-start gap-2 p-3 rounded-lg border border-destructive/50 bg-destructive/10">
+          <ShieldAlert className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
           <div className="text-sm">
-            <p className="font-medium text-red-600 dark:text-red-400">
+            <p className="font-medium text-destructive">
               Senha comprometida!
             </p>
-            <p className="text-red-500/80 text-xs">
+            <p className="text-destructive/80 text-xs">
               Esta senha foi encontrada em {leakCheck.count.toLocaleString()} vazamentos de dados. 
               Escolha uma senha diferente.
             </p>
@@ -147,11 +147,11 @@ export function PasswordStrengthIndicator({ password, onStrengthChange }: Passwo
           </span>
           <span className={cn(
             'font-medium',
-            leakCheck.leaked && 'text-red-500',
-            !leakCheck.leaked && analysis.level === 'weak' && 'text-red-500',
-            !leakCheck.leaked && analysis.level === 'fair' && 'text-yellow-500',
-            !leakCheck.leaked && analysis.level === 'good' && 'text-blue-500',
-            !leakCheck.leaked && analysis.level === 'strong' && 'text-green-500'
+            leakCheck.leaked && 'text-destructive',
+            !leakCheck.leaked && analysis.level === 'weak' && 'text-destructive',
+            !leakCheck.leaked && analysis.level === 'fair' && 'text-warning',
+            !leakCheck.leaked && analysis.level === 'good' && 'text-primary',
+            !leakCheck.leaked && analysis.level === 'strong' && 'text-success'
           )}>
             {leakCheck.leaked ? 'Comprometida' : analysis.label}
           </span>
@@ -160,7 +160,7 @@ export function PasswordStrengthIndicator({ password, onStrengthChange }: Passwo
           <div
             className={cn(
               'h-full transition-all duration-300 ease-out rounded-full',
-              leakCheck.leaked ? 'bg-red-500' : analysis.color
+              leakCheck.leaked ? 'bg-destructive' : analysis.color
             )}
             style={{ width: `${leakCheck.leaked ? 100 : analysis.strength}%` }}
           />
@@ -174,8 +174,8 @@ export function PasswordStrengthIndicator({ password, onStrengthChange }: Passwo
             key={index}
             className={cn(
               'flex items-center gap-1.5 text-xs transition-colors',
-              criterion.met ? 'text-green-600 dark:text-green-400' : 
-                criterion.required ? 'text-red-500' : 'text-muted-foreground'
+              criterion.met ? 'text-success' : 
+                criterion.required ? 'text-destructive' : 'text-muted-foreground'
             )}
           >
             {criterion.met ? (
@@ -195,8 +195,8 @@ export function PasswordStrengthIndicator({ password, onStrengthChange }: Passwo
       <div className={cn(
         'flex items-center gap-1.5 text-xs',
         leakCheck.checking && 'text-muted-foreground',
-        !leakCheck.checking && !leakCheck.leaked && password.length >= 8 && 'text-green-600 dark:text-green-400',
-        leakCheck.leaked && 'text-red-500'
+        !leakCheck.checking && !leakCheck.leaked && password.length >= 8 && 'text-success',
+        leakCheck.leaked && 'text-destructive'
       )}>
         {leakCheck.checking ? (
           <>

@@ -53,10 +53,10 @@ const ROLE_LABELS: Record<Role, string> = {
 };
 
 const ROLE_COLORS: Record<Role, string> = {
-  admin: 'bg-red-500/10 text-red-500 border-red-500/20',
-  financeiro: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-  operacional: 'bg-green-500/10 text-green-500 border-green-500/20',
-  visualizador: 'bg-gray-500/10 text-gray-500 border-gray-500/20',
+  admin: 'bg-destructive/10 text-destructive border-destructive/20',
+  financeiro: 'bg-primary/10 text-primary border-primary/20',
+  operacional: 'bg-success/10 text-success border-success/20',
+  visualizador: 'bg-muted text-muted-foreground border-border',
 };
 
 const MODULE_ICONS: Record<string, React.ReactNode> = {
@@ -353,7 +353,7 @@ export function GerenciadorPermissoes() {
                                     </div>
                                   </div>
                                   {isChecked ? (
-                                    <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
+                                    <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
                                   ) : (
                                     <XCircle className="h-4 w-4 text-muted-foreground/50 shrink-0" />
                                   )}

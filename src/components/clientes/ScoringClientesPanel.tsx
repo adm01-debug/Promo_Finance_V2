@@ -17,18 +17,18 @@ import { formatCurrency } from '@/lib/formatters';
 import { motion } from 'framer-motion';
 
 const CORES_CLASSIFICACAO: Record<string, string> = {
-  A: 'bg-emerald-500',
-  B: 'bg-blue-500',
-  C: 'bg-yellow-500',
-  D: 'bg-orange-500',
-  E: 'bg-red-500',
+  A: 'bg-success',
+  B: 'bg-primary',
+  C: 'bg-warning',
+  D: 'bg-warning/70',
+  E: 'bg-destructive',
 };
 
 const CORES_RISCO: Record<string, string> = {
-  baixo: 'text-emerald-600 bg-emerald-100',
-  medio: 'text-yellow-600 bg-yellow-100',
-  alto: 'text-orange-600 bg-orange-100',
-  critico: 'text-red-600 bg-red-100',
+  baixo: 'text-success bg-success/10',
+  medio: 'text-warning bg-warning/10',
+  alto: 'text-warning bg-warning/20',
+  critico: 'text-destructive bg-destructive/10',
 };
 
 export function ScoringClientesPanel() {
@@ -129,10 +129,10 @@ export function ScoringClientesPanel() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Melhorando</p>
-                <p className="text-3xl font-bold text-emerald-600">{estatisticas.clientesMelhorando}</p>
+                <p className="text-3xl font-bold text-success">{estatisticas.clientesMelhorando}</p>
               </div>
-              <div className="p-3 rounded-full bg-emerald-500/10">
-                <TrendingUp className="h-6 w-6 text-emerald-500" />
+              <div className="p-3 rounded-full bg-success/10">
+                <TrendingUp className="h-6 w-6 text-success" />
               </div>
             </div>
             <p className="text-xs text-muted-foreground mt-2">Score subindo nos últimos 3 meses</p>
@@ -193,10 +193,10 @@ export function ScoringClientesPanel() {
                               {cliente.risco}
                             </Badge>
                             {cliente.tendencia === 'subindo' && (
-                              <ArrowUpRight className="h-4 w-4 text-emerald-500" />
+                              <ArrowUpRight className="h-4 w-4 text-success" />
                             )}
                             {cliente.tendencia === 'descendo' && (
-                              <ArrowDownRight className="h-4 w-4 text-red-500" />
+                              <ArrowDownRight className="h-4 w-4 text-destructive" />
                             )}
                           </div>
                         </div>
@@ -246,9 +246,9 @@ export function ScoringClientesPanel() {
                           <div className="space-y-1">
                             <div className="flex items-center justify-between text-sm">
                               <span className="flex items-center gap-1">
-                                {fator.impacto === 'positivo' && <TrendingUp className="h-3 w-3 text-emerald-500" />}
-                                {fator.impacto === 'negativo' && <TrendingDown className="h-3 w-3 text-red-500" />}
-                                {fator.impacto === 'neutro' && <Minus className="h-3 w-3 text-gray-400" />}
+                                {fator.impacto === 'positivo' && <TrendingUp className="h-3 w-3 text-success" />}
+                                {fator.impacto === 'negativo' && <TrendingDown className="h-3 w-3 text-destructive" />}
+                                {fator.impacto === 'neutro' && <Minus className="h-3 w-3 text-muted-foreground" />}
                                 {fator.nome}
                               </span>
                               <span className="font-semibold">{fator.valor}</span>
@@ -256,8 +256,8 @@ export function ScoringClientesPanel() {
                             <Progress 
                               value={(fator.valor / 250) * 100} 
                               className={`h-1.5 ${
-                                fator.impacto === 'positivo' ? '[&>div]:bg-emerald-500' :
-                                fator.impacto === 'negativo' ? '[&>div]:bg-red-500' : ''
+                                fator.impacto === 'positivo' ? '[&>div]:bg-success' :
+                                fator.impacto === 'negativo' ? '[&>div]:bg-destructive' : ''
                               }`}
                             />
                           </div>

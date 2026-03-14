@@ -268,9 +268,9 @@ export function ResizeHandle({ className, disabled = false }: ResizeHandleProps)
         direction === 'horizontal'
           ? 'w-1 cursor-col-resize'
           : 'h-1 cursor-row-resize',
-        'bg-gray-200 dark:bg-gray-700 hover:bg-primary-400 dark:hover:bg-primary-500',
-        isDragging && 'bg-primary-500',
-        disabled && 'cursor-default bg-gray-100 dark:bg-gray-800',
+        'bg-border hover:bg-primary/50',
+        isDragging && 'bg-primary',
+        disabled && 'cursor-default bg-muted',
         'transition-colors',
         className
       )}
@@ -284,7 +284,7 @@ export function ResizeHandle({ className, disabled = false }: ResizeHandleProps)
       >
         <div
           className={cn(
-            'rounded-full bg-gray-400 dark:bg-gray-500',
+            'rounded-full bg-muted-foreground/50',
             direction === 'horizontal' ? 'w-0.5 h-4' : 'w-4 h-0.5'
           )}
         />

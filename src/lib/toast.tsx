@@ -10,7 +10,7 @@ export function Toaster() {
       richColors
       closeButton
       toastOptions={{
-        className: 'dark:bg-gray-800 dark:text-white',
+        className: 'dark:bg-card dark:text-foreground',
         duration: 4000,
       }}
     />
@@ -38,7 +38,7 @@ export const toast = {
   success(message: string, options?: ToastOptions) {
     return sonnerToast.success(message, {
       ...options,
-      icon: <CheckCircle className="h-5 w-5 text-green-500" />,
+      icon: <CheckCircle className="h-5 w-5 text-success" />,
     });
   },
 
@@ -46,7 +46,7 @@ export const toast = {
   error(message: string, options?: ToastOptions) {
     return sonnerToast.error(message, {
       ...options,
-      icon: <XCircle className="h-5 w-5 text-red-500" />,
+      icon: <XCircle className="h-5 w-5 text-destructive" />,
       duration: options?.duration || 5000, // Errors stay longer
     });
   },
@@ -55,7 +55,7 @@ export const toast = {
   warning(message: string, options?: ToastOptions) {
     return sonnerToast.warning(message, {
       ...options,
-      icon: <AlertTriangle className="h-5 w-5 text-yellow-500" />,
+      icon: <AlertTriangle className="h-5 w-5 text-warning" />,
     });
   },
 
@@ -63,7 +63,7 @@ export const toast = {
   info(message: string, options?: ToastOptions) {
     return sonnerToast.info(message, {
       ...options,
-      icon: <Info className="h-5 w-5 text-blue-500" />,
+      icon: <Info className="h-5 w-5 text-primary" />,
     });
   },
 
@@ -71,7 +71,7 @@ export const toast = {
   loading(message: string, options?: Omit<ToastOptions, 'action' | 'cancel'>) {
     return sonnerToast.loading(message, {
       ...options,
-      icon: <Loader2 className="h-5 w-5 animate-spin text-blue-500" />,
+      icon: <Loader2 className="h-5 w-5 animate-spin text-primary" />,
       duration: Infinity, // Loading toasts don't auto-dismiss
     });
   },

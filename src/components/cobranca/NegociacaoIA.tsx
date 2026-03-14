@@ -265,7 +265,7 @@ Pergunta do usuário: ${mensagemUsuario}
                             {proposta.descricao}
                           </Badge>
                           {proposta.economia > 0 && (
-                            <span className="text-xs text-emerald-600 font-medium">
+                            <span className="text-xs text-success font-medium">
                               Economia: {formatCurrency(proposta.economia)}
                             </span>
                           )}
@@ -275,7 +275,7 @@ Pergunta do usuário: ${mensagemUsuario}
                           <span className="text-sm text-muted-foreground line-through">
                             {formatCurrency(proposta.valorOriginal)}
                           </span>
-                          <span className="text-lg font-bold text-emerald-600">
+                          <span className="text-lg font-bold text-success">
                             {formatCurrency(proposta.valorProposto)}
                           </span>
                         </div>

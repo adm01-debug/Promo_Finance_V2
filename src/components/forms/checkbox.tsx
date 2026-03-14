@@ -18,7 +18,7 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
             id={inputId}
             ref={ref}
             className={cn(
-              'peer h-4 w-4 shrink-0 rounded border border-gray-300 dark:border-gray-600',
+              'peer h-4 w-4 shrink-0 rounded border border-input',
               'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
               'disabled:cursor-not-allowed disabled:opacity-50',
               'checked:bg-primary checked:border-primary',
@@ -28,11 +28,11 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
           />
         </div>
         {label && (
-          <label htmlFor={inputId} className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+          <label htmlFor={inputId} className="text-sm text-foreground cursor-pointer">
             {label}
           </label>
         )}
-        {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
+        {error && <p className="text-sm text-destructive mt-1">{error}</p>}
       </div>
     );
   }
