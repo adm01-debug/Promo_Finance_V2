@@ -550,9 +550,9 @@ export function SefazMonitor() {
                 <p className="font-medium">Modo Atual</p>
                 <p className="text-sm text-muted-foreground">
                   {contingencyState.mode === 'normal' ? 'Operação Normal' :
-                   contingencyState.mode === 'svc-an' ? 'SVC-AN' :
-                   contingencyState.mode === 'svc-rs' ? 'SVC-RS' :
-                   contingencyState.mode === 'epec' ? 'EPEC' : 'Offline'}
+                   contingencyState.mode === 'SVCAN' ? 'SVC-AN' :
+                   contingencyState.mode === 'SVCRS' ? 'SVC-RS' :
+                   contingencyState.mode === 'DPEC' ? 'EPEC' : 'Offline'}
                 </p>
               </div>
               <Badge variant={contingencyState.mode === 'normal' ? 'default' : 'destructive'}>
