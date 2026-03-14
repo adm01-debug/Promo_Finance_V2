@@ -58,10 +58,10 @@ const formasPagamento = [
 ];
 
 const statusOptions = [
-  { value: 'pendente', label: 'Pendente', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' },
-  { value: 'recebido', label: 'Recebido', color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' },
-  { value: 'vencido', label: 'Vencido', color: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' },
-  { value: 'cancelado', label: 'Cancelado', color: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400' },
+  { value: 'pendente', label: 'Pendente', color: 'bg-warning/10 text-warning' },
+  { value: 'recebido', label: 'Recebido', color: 'bg-success/10 text-success' },
+  { value: 'vencido', label: 'Vencido', color: 'bg-destructive/10 text-destructive' },
+  { value: 'cancelado', label: 'Cancelado', color: 'bg-muted text-muted-foreground' },
 ];
 
 export function ContaReceberForm({
