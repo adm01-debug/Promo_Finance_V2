@@ -58,10 +58,10 @@ const formasPagamento = [
 ];
 
 const statusOptions = [
-  { value: 'pendente', label: 'Pendente', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' },
-  { value: 'recebido', label: 'Recebido', color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' },
-  { value: 'vencido', label: 'Vencido', color: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' },
-  { value: 'cancelado', label: 'Cancelado', color: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400' },
+  { value: 'pendente', label: 'Pendente', color: 'bg-warning/10 text-warning' },
+  { value: 'recebido', label: 'Recebido', color: 'bg-success/10 text-success' },
+  { value: 'vencido', label: 'Vencido', color: 'bg-destructive/10 text-destructive' },
+  { value: 'cancelado', label: 'Cancelado', color: 'bg-muted text-muted-foreground' },
 ];
 
 export function ContaReceberForm({
@@ -98,7 +98,7 @@ export function ContaReceberForm({
     >
       {/* Informações Principais */}
       <div className="space-y-4">
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+        <h3 className="text-lg font-medium text-foreground">
           Informações da Conta a Receber
         </h3>
 
@@ -111,7 +111,7 @@ export function ContaReceberForm({
             type="text"
             {...form.getFieldProps('descricao')}
             placeholder="Ex: Venda de produtos, Serviço prestado..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+            className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
           />
         </FormField>
 
@@ -136,7 +136,7 @@ export function ContaReceberForm({
           >
             <select
               {...form.getFieldProps('status')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+              className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
             >
               {statusOptions.map((status) => (
                 <option key={status.value} value={status.value}>
@@ -176,7 +176,7 @@ export function ContaReceberForm({
 
       {/* Cliente e Categoria */}
       <div className="space-y-4">
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+        <h3 className="text-lg font-medium text-foreground">
           Vínculo
         </h3>
 
@@ -188,7 +188,7 @@ export function ContaReceberForm({
           >
             <select
               {...form.getFieldProps('clienteId')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+              className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
             >
               <option value="">Selecione um cliente</option>
               {clientes.map((cliente) => (
@@ -206,7 +206,7 @@ export function ContaReceberForm({
           >
             <select
               {...form.getFieldProps('categoriaId')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+              className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
             >
               <option value="">Selecione uma categoria</option>
               {categorias.map((categoria) => (
@@ -221,7 +221,7 @@ export function ContaReceberForm({
 
       {/* Pagamento */}
       <div className="space-y-4">
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+        <h3 className="text-lg font-medium text-foreground">
           Pagamento
         </h3>
 
@@ -232,7 +232,7 @@ export function ContaReceberForm({
           >
             <select
               {...form.getFieldProps('formaPagamento')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+              className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
             >
               <option value="">Selecione</option>
               {formasPagamento.map((forma) => (
@@ -251,7 +251,7 @@ export function ContaReceberForm({
               type="text"
               {...form.getFieldProps('numeroDocumento')}
               placeholder="Ex: NF-001, REC-2024-001..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+              className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
             />
           </FormField>
         </div>
@@ -263,18 +263,18 @@ export function ContaReceberForm({
             id="parcelamento"
             checked={showParcelas}
             onChange={handleParcelasToggle}
-            className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+            className="w-4 h-4 text-primary border-input rounded focus:ring-ring"
           />
           <label
             htmlFor="parcelamento"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="text-sm font-medium text-foreground"
           >
             Parcelado
           </label>
         </div>
 
         {showParcelas && (
-          <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+          <div className="grid grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
             <FormField
               label="Total de Parcelas"
               error={form.errors.parcelas}
@@ -284,7 +284,7 @@ export function ContaReceberForm({
                 min="1"
                 max="60"
                 {...form.getFieldProps('parcelas')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
               />
             </FormField>
 
@@ -297,14 +297,14 @@ export function ContaReceberForm({
                 min="1"
                 max={form.values.parcelas || 60}
                 {...form.getFieldProps('parcelaAtual')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
               />
             </FormField>
 
             {form.values.parcelas > 1 && form.values.valor > 0 && (
-              <div className="col-span-2 text-sm text-gray-600 dark:text-gray-400">
+              <div className="col-span-2 text-sm text-muted-foreground">
                 Valor por parcela:{' '}
-                <span className="font-medium text-green-600 dark:text-green-400">
+                <span className="font-medium text-success">
                   {new Intl.NumberFormat('pt-BR', {
                     style: 'currency',
                     currency: 'BRL',
@@ -325,18 +325,18 @@ export function ContaReceberForm({
           {...form.getFieldProps('observacoes')}
           rows={3}
           placeholder="Observações adicionais..."
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white resize-none"
+          className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground resize-none"
         />
       </FormField>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div className="flex justify-end gap-3 pt-4 border-t border-border">
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
             disabled={isLoading}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700"
+            className="px-4 py-2 text-sm font-medium text-foreground bg-card border border-input rounded-lg hover:bg-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:opacity-50"
           >
             Cancelar
           </button>
@@ -344,7 +344,7 @@ export function ContaReceberForm({
         <button
           type="submit"
           disabled={isLoading || !form.isValid}
-          className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary border border-transparent rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (
             <span className="flex items-center gap-2">

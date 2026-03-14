@@ -127,7 +127,7 @@ export const MaskedInput = forwardRef<HTMLInputElement, MaskedInputProps>(
         value={displayValue}
         onChange={handleChange}
         className={cn(
-          error && 'border-red-500 focus:border-red-500 focus:ring-red-500',
+          error && 'border-destructive focus:border-destructive focus:ring-destructive',
           className
         )}
         {...props}

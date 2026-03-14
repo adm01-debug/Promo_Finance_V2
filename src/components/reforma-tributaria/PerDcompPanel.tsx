@@ -34,13 +34,13 @@ import { useCreditosTributarios } from '@/hooks/useCreditosTributarios';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 
 const STATUS_CONFIG: Record<StatusPedido, { cor: string; icone: React.ReactNode }> = {
-  rascunho: { cor: 'bg-gray-100 text-gray-800', icone: <FileText className="h-4 w-4" /> },
-  aguardando_transmissao: { cor: 'bg-yellow-100 text-yellow-800', icone: <Clock className="h-4 w-4" /> },
-  transmitido: { cor: 'bg-blue-100 text-blue-800', icone: <Send className="h-4 w-4" /> },
-  em_analise: { cor: 'bg-purple-100 text-purple-800', icone: <Clock className="h-4 w-4" /> },
-  deferido: { cor: 'bg-green-100 text-green-800', icone: <CheckCircle2 className="h-4 w-4" /> },
-  indeferido: { cor: 'bg-red-100 text-red-800', icone: <XCircle className="h-4 w-4" /> },
-  cancelado: { cor: 'bg-gray-100 text-gray-800', icone: <XCircle className="h-4 w-4" /> },
+  rascunho: { cor: 'bg-muted text-muted-foreground', icone: <FileText className="h-4 w-4" /> },
+  aguardando_transmissao: { cor: 'bg-warning/10 text-warning', icone: <Clock className="h-4 w-4" /> },
+  transmitido: { cor: 'bg-primary/10 text-primary', icone: <Send className="h-4 w-4" /> },
+  em_analise: { cor: 'bg-secondary text-secondary-foreground', icone: <Clock className="h-4 w-4" /> },
+  deferido: { cor: 'bg-success/10 text-success', icone: <CheckCircle2 className="h-4 w-4" /> },
+  indeferido: { cor: 'bg-destructive/10 text-destructive', icone: <XCircle className="h-4 w-4" /> },
+  cancelado: { cor: 'bg-muted text-muted-foreground', icone: <XCircle className="h-4 w-4" /> },
 };
 
 export function PerDcompPanel() {
@@ -323,7 +323,7 @@ export function PerDcompPanel() {
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3">
-                  <Clock className="h-8 w-8 text-blue-500" />
+                  <Clock className="h-8 w-8 text-primary" />
                   <div>
                     <p className="text-sm text-muted-foreground">Em Análise</p>
                     <p className="text-2xl font-bold">{estatisticas.transmitidos + estatisticas.emAnalise}</p>
@@ -335,7 +335,7 @@ export function PerDcompPanel() {
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3">
-                  <CheckCircle2 className="h-8 w-8 text-green-500" />
+                  <CheckCircle2 className="h-8 w-8 text-success" />
                   <div>
                     <p className="text-sm text-muted-foreground">Deferidos</p>
                     <p className="text-2xl font-bold">{estatisticas.deferidos}</p>
@@ -347,7 +347,7 @@ export function PerDcompPanel() {
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3">
-                  <DollarSign className="h-8 w-8 text-green-500" />
+                  <DollarSign className="h-8 w-8 text-success" />
                   <div>
                     <p className="text-sm text-muted-foreground">Valor Compensado</p>
                     <p className="text-2xl font-bold">{formatCurrency(estatisticas.valorTotalCompensado)}</p>
@@ -359,7 +359,7 @@ export function PerDcompPanel() {
 
           {/* Créditos Disponíveis */}
           {creditosDisponiveis.length > 0 && (
-            <Card className="border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20">
+            <Card className="border-success/20 bg-success/5">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Créditos Disponíveis para Compensação</CardTitle>
               </CardHeader>
@@ -368,11 +368,11 @@ export function PerDcompPanel() {
                   {creditosDisponiveis.slice(0, 5).map((credito) => (
                     <div 
                       key={credito.id}
-                      className="p-3 bg-white dark:bg-background rounded-lg border"
+                      className="p-3 bg-card rounded-lg border"
                     >
                       <p className="font-medium">{credito.tipo_tributo}</p>
                       <p className="text-sm text-muted-foreground">{credito.competencia_origem}</p>
-                      <p className="text-lg font-bold text-green-600">
+                      <p className="text-lg font-bold text-success">
                         {formatCurrency(credito.saldo_disponivel || 0)}
                       </p>
                     </div>

@@ -65,25 +65,25 @@ const ruleTypeConfig = {
     icon: XCircle, 
     label: 'Falhas consecutivas', 
     description: 'Ativa quando houver X falhas seguidas',
-    color: 'text-red-500 bg-red-500/10'
+    color: 'text-destructive bg-destructive/10'
   },
   latency: { 
     icon: Timer, 
     label: 'Latência alta', 
     description: 'Ativa quando a latência exceder X ms',
-    color: 'text-amber-500 bg-amber-500/10'
+    color: 'text-warning bg-warning/10'
   },
   schedule: { 
     icon: Calendar, 
     label: 'Horário programado', 
     description: 'Ativa em horários/dias específicos',
-    color: 'text-blue-500 bg-blue-500/10'
+    color: 'text-primary bg-primary/10'
   },
   time_window: { 
     icon: Clock, 
     label: 'Indisponibilidade prolongada', 
     description: 'Ativa após X minutos de indisponibilidade',
-    color: 'text-purple-500 bg-purple-500/10'
+    color: 'text-secondary-foreground bg-secondary'
   },
 };
 
@@ -328,7 +328,7 @@ export function AutoContingenciaConfig() {
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="text-lg flex items-center gap-2">
-                <Zap className="h-5 w-5 text-amber-500" />
+                <Zap className="h-5 w-5 text-warning" />
                 Regras de Ativação
               </CardTitle>
               <CardDescription>
@@ -393,7 +393,7 @@ export function AutoContingenciaConfig() {
                                 <span>{rule.config.downtimeMinutes} minutos offline</span>
                               )}
                               {rule.lastTriggered && (
-                                <span className="text-amber-500">
+                                <span className="text-warning">
                                   Último disparo: {formatDateTime(rule.lastTriggered.toISOString())}
                                 </span>
                               )}
@@ -417,7 +417,7 @@ export function AutoContingenciaConfig() {
                             variant="ghost" 
                             size="icon"
                             onClick={() => handleDeleteRule(rule.id)}
-                            className="text-red-500 hover:text-red-600 hover:bg-red-500/10"
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>

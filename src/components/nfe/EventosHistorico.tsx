@@ -169,13 +169,13 @@ const EventoDetalhes = ({ evento }: { evento: EventoSefaz }) => {
             <Timer className="h-4 w-4 text-muted-foreground" />
             <span className="font-medium">{evento.tempoResposta}ms</span>
             {evento.tempoResposta < 1000 && (
-              <Badge variant="outline" className="text-emerald-500 border-emerald-500/20">Rápido</Badge>
+              <Badge variant="outline" className="text-success border-success/20">Rápido</Badge>
             )}
             {evento.tempoResposta >= 1000 && evento.tempoResposta < 3000 && (
-              <Badge variant="outline" className="text-amber-500 border-amber-500/20">Normal</Badge>
+              <Badge variant="outline" className="text-warning border-warning/20">Normal</Badge>
             )}
             {evento.tempoResposta >= 3000 && (
-              <Badge variant="outline" className="text-red-500 border-red-500/20">Lento</Badge>
+              <Badge variant="outline" className="text-destructive border-destructive/20">Lento</Badge>
             )}
           </div>
         </div>
@@ -249,12 +249,12 @@ export function EventosHistorico() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-emerald-500/10">
-                <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+              <div className="p-2 rounded-lg bg-success/10">
+                <CheckCircle2 className="h-5 w-5 text-success" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Autorizadas</p>
-                <p className="text-2xl font-bold text-emerald-500">{stats.autorizadas}</p>
+                <p className="text-2xl font-bold text-success">{stats.autorizadas}</p>
               </div>
             </div>
           </CardContent>
@@ -262,12 +262,12 @@ export function EventosHistorico() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-red-500/10">
-                <XCircle className="h-5 w-5 text-red-500" />
+              <div className="p-2 rounded-lg bg-destructive/10">
+                <XCircle className="h-5 w-5 text-destructive" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Rejeitadas</p>
-                <p className="text-2xl font-bold text-red-500">{stats.rejeitadas}</p>
+                <p className="text-2xl font-bold text-destructive">{stats.rejeitadas}</p>
               </div>
             </div>
           </CardContent>
@@ -275,8 +275,8 @@ export function EventosHistorico() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-amber-500/10">
-                <Zap className="h-5 w-5 text-amber-500" />
+              <div className="p-2 rounded-lg bg-warning/10">
+                <Zap className="h-5 w-5 text-warning" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Tempo Médio</p>

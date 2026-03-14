@@ -318,7 +318,7 @@ export function ExportacaoSPED() {
                   </p>
                 </div>
                 {tipo.disponivel ? (
-                  <CheckCircle2 className="h-5 w-5 text-green-500" />
+                  <CheckCircle2 className="h-5 w-5 text-success" />
                 ) : (
                   <Badge variant="secondary">Em breve</Badge>
                 )}

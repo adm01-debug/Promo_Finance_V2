@@ -141,7 +141,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
           placeholder={placeholder}
           className={cn(
             'text-right',
-            error && 'border-red-500 focus:border-red-500 focus:ring-red-500',
+            error && 'border-destructive focus:border-destructive focus:ring-destructive',
             className
           )}
           {...props}
@@ -174,7 +174,7 @@ export function CurrencyDisplay({
   colorBySign = false,
 }: CurrencyDisplayProps) {
   if (value === null || value === undefined) {
-    return <span className={cn('text-gray-400', className)}>—</span>;
+    return <span className={cn('text-muted-foreground', className)}>—</span>;
   }
 
   const formatted = formatCurrency(Math.abs(value), currency, locale);
@@ -184,8 +184,8 @@ export function CurrencyDisplay({
   return (
     <span
       className={cn(
-        colorBySign && value > 0 && 'text-green-600 dark:text-green-400',
-        colorBySign && value < 0 && 'text-red-600 dark:text-red-400',
+        colorBySign && value > 0 && 'text-success',
+        colorBySign && value < 0 && 'text-destructive',
         className
       )}
     >

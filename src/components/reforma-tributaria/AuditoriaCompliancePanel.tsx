@@ -21,8 +21,8 @@ export function AuditoriaCompliancePanel({ empresaId }: Props) {
   const getSeverityBadge = (severity: string) => {
     switch (severity) {
       case 'critico': return <Badge variant="destructive">Crítico</Badge>;
-      case 'erro': return <Badge className="bg-orange-500">Erro</Badge>;
-      case 'aviso': return <Badge className="bg-amber-500">Aviso</Badge>;
+      case 'erro': return <Badge className="bg-warning text-warning-foreground">Erro</Badge>;
+      case 'aviso': return <Badge className="bg-warning/70 text-warning-foreground">Aviso</Badge>;
       default: return <Badge variant="secondary">Info</Badge>;
     }
   };
@@ -48,7 +48,7 @@ export function AuditoriaCompliancePanel({ empresaId }: Props) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className={`text-3xl font-bold ${resumo.scoreCompliance >= 80 ? 'text-green-600' : resumo.scoreCompliance >= 60 ? 'text-amber-600' : 'text-red-600'}`}>
+            <div className={`text-3xl font-bold ${resumo.scoreCompliance >= 80 ? 'text-success' : resumo.scoreCompliance >= 60 ? 'text-warning' : 'text-destructive'}`}>
               {resumo.scoreCompliance}%
             </div>
             <Progress value={resumo.scoreCompliance} className="h-2 mt-2" />
@@ -59,7 +59,7 @@ export function AuditoriaCompliancePanel({ empresaId }: Props) {
             <CardTitle className="text-sm text-muted-foreground">Críticos</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{resumo.criticos}</div>
+            <div className="text-2xl font-bold text-destructive">{resumo.criticos}</div>
           </CardContent>
         </Card>
         <Card>
@@ -67,7 +67,7 @@ export function AuditoriaCompliancePanel({ empresaId }: Props) {
             <CardTitle className="text-sm text-muted-foreground">Erros</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{resumo.erros}</div>
+            <div className="text-2xl font-bold text-warning">{resumo.erros}</div>
           </CardContent>
         </Card>
         <Card>
@@ -121,12 +121,12 @@ export function AuditoriaCompliancePanel({ empresaId }: Props) {
           </CardContent>
         </Card>
       ) : (
-        <Card className="border-green-200 bg-green-50 dark:bg-green-950/20">
+        <Card className="border-success/20 bg-success/5">
           <CardContent className="pt-6 flex items-center gap-4">
-            <CheckCircle className="h-12 w-12 text-green-500" />
+            <CheckCircle className="h-12 w-12 text-success" />
             <div>
-              <h3 className="text-lg font-semibold text-green-700">Compliance 100%!</h3>
-              <p className="text-green-600">Nenhuma inconsistência detectada.</p>
+              <h3 className="text-lg font-semibold text-success">Compliance 100%!</h3>
+              <p className="text-success/80">Nenhuma inconsistência detectada.</p>
             </div>
           </CardContent>
         </Card>

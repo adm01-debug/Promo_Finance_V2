@@ -287,16 +287,16 @@ export const SefazAnalytics = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Taxa de Sucesso</p>
-                  <p className="text-2xl font-bold text-emerald-500">
+                  <p className="text-2xl font-bold text-success">
                     {stats.taxaSucesso.toFixed(1)}%
                   </p>
                 </div>
-                <div className="p-2 rounded-full bg-emerald-500/10">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                <div className="p-2 rounded-full bg-success/10">
+                  <CheckCircle2 className="h-5 w-5 text-success" />
                 </div>
               </div>
               <div className="flex items-center gap-1 mt-2 text-xs">
-                <TrendingUp className="h-3 w-3 text-emerald-500" />
+                <TrendingUp className="h-3 w-3 text-success" />
                 <span className="text-muted-foreground">{stats.autorizadas} autorizadas</span>
               </div>
             </CardContent>
@@ -355,8 +355,8 @@ export const SefazAnalytics = () => {
                   <p className="text-sm text-muted-foreground">Total de Eventos</p>
                   <p className="text-2xl font-bold">{stats.total}</p>
                 </div>
-                <div className="p-2 rounded-full bg-blue-500/10">
-                  <Activity className="h-5 w-5 text-blue-500" />
+                <div className="p-2 rounded-full bg-primary/10">
+                  <Activity className="h-5 w-5 text-primary" />
                 </div>
               </div>
               <div className="flex items-center gap-1 mt-2 text-xs">
@@ -601,7 +601,7 @@ export const SefazAnalytics = () => {
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground mb-1">Tempo Mínimo</p>
-                  <p className="text-2xl font-bold text-emerald-500">
+                  <p className="text-2xl font-bold text-success">
                     {eventosFiltrados.length > 0 
                       ? ((Math.min(...eventosFiltrados.filter(e => e.tempoResposta).map(e => e.tempoResposta!)) || 0) / 1000).toFixed(2)
                       : '0'}s
@@ -623,7 +623,7 @@ export const SefazAnalytics = () => {
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground mb-1">Tempo Máximo</p>
-                  <p className="text-2xl font-bold text-amber-500">
+                  <p className="text-2xl font-bold text-warning">
                     {eventosFiltrados.length > 0 
                       ? ((Math.max(...eventosFiltrados.filter(e => e.tempoResposta).map(e => e.tempoResposta!)) || 0) / 1000).toFixed(2)
                       : '0'}s

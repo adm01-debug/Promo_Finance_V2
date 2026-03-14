@@ -28,9 +28,9 @@ export function CronogramaTransicao() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'concluido':
-        return 'bg-green-500';
+        return 'bg-success';
       case 'em_andamento':
-        return 'bg-blue-500 animate-pulse';
+        return 'bg-primary animate-pulse';
       default:
         return 'bg-muted';
     }
@@ -39,9 +39,9 @@ export function CronogramaTransicao() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'concluido':
-        return <Badge variant="default" className="bg-green-500">Concluído</Badge>;
+        return <Badge variant="default" className="bg-success">Concluído</Badge>;
       case 'em_andamento':
-        return <Badge variant="default" className="bg-blue-500">Em Andamento</Badge>;
+        return <Badge variant="default" className="bg-primary">Em Andamento</Badge>;
       default:
         return <Badge variant="secondary">Futuro</Badge>;
     }
@@ -154,11 +154,11 @@ export function CronogramaTransicao() {
         <CardContent>
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-green-500" />
+              <div className="w-3 h-3 rounded-full bg-success" />
               <span>Concluído</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-blue-500" />
+              <div className="w-3 h-3 rounded-full bg-primary" />
               <span>Em Andamento</span>
             </div>
             <div className="flex items-center gap-2">
@@ -205,13 +205,13 @@ export function CronogramaTransicao() {
                   <CardContent className="space-y-4">
                     {/* Alíquotas */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="text-center p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                      <div className="text-center p-3 bg-primary/10 rounded-lg">
                         <p className="text-xs text-muted-foreground mb-1">CBS</p>
-                        <p className="text-lg font-bold text-blue-600">{etapa.cbs}%</p>
+                        <p className="text-lg font-bold text-primary">{etapa.cbs}%</p>
                       </div>
-                      <div className="text-center p-3 bg-emerald-50 dark:bg-emerald-950/20 rounded-lg">
+                      <div className="text-center p-3 bg-success/10 rounded-lg">
                         <p className="text-xs text-muted-foreground mb-1">IBS</p>
-                        <p className="text-lg font-bold text-emerald-600">{etapa.ibs}%</p>
+                        <p className="text-lg font-bold text-success">{etapa.ibs}%</p>
                       </div>
                       <div className="text-center p-3 bg-muted/50 rounded-lg">
                         <p className="text-xs text-muted-foreground mb-1">ICMS Residual</p>
@@ -241,9 +241,9 @@ export function CronogramaTransicao() {
                         {info.marcos.map((marco, i) => (
                           <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                             {etapa.status === 'concluido' ? (
-                              <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                              <CheckCircle2 className="h-4 w-4 text-success mt-0.5 shrink-0" />
                             ) : etapa.status === 'em_andamento' ? (
-                              <Clock className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+                              <Clock className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                             ) : (
                               <ArrowRight className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
                             )}
@@ -271,7 +271,7 @@ export function CronogramaTransicao() {
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
-              <AlertCircle className="h-5 w-5 text-orange-500 mt-0.5" />
+              <AlertCircle className="h-5 w-5 text-warning mt-0.5" />
               <div>
                 <p className="font-medium">Período de Adaptação</p>
                 <p className="text-sm text-muted-foreground">
@@ -281,7 +281,7 @@ export function CronogramaTransicao() {
             </div>
             
             <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
-              <AlertCircle className="h-5 w-5 text-blue-500 mt-0.5" />
+              <AlertCircle className="h-5 w-5 text-primary mt-0.5" />
               <div>
                 <p className="font-medium">Créditos Acumulados</p>
                 <p className="text-sm text-muted-foreground">
@@ -291,7 +291,7 @@ export function CronogramaTransicao() {
             </div>
             
             <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
-              <AlertCircle className="h-5 w-5 text-green-500 mt-0.5" />
+              <AlertCircle className="h-5 w-5 text-success mt-0.5" />
               <div>
                 <p className="font-medium">Split Payment</p>
                 <p className="text-sm text-muted-foreground">
@@ -301,7 +301,7 @@ export function CronogramaTransicao() {
             </div>
             
             <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
-              <AlertCircle className="h-5 w-5 text-purple-500 mt-0.5" />
+              <AlertCircle className="h-5 w-5 text-secondary-foreground mt-0.5" />
               <div>
                 <p className="font-medium">Documentos Fiscais</p>
                 <p className="text-sm text-muted-foreground">
