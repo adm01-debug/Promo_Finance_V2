@@ -146,7 +146,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
             type="button"
             onClick={handleClear}
             className={cn(
-              'absolute top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300',
+              'absolute top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground',
               'transition-colors',
               classes.clear
             )}
