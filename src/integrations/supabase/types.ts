@@ -4296,6 +4296,7 @@ export type Database = {
         Returns: undefined
       }
       delete_cron_job: { Args: { job_id: number }; Returns: undefined }
+      gerar_alertas_pendencias_conciliacao: { Args: never; Returns: undefined }
       gerar_alertas_vencimento: { Args: never; Returns: undefined }
       gerar_contas_recorrentes: { Args: never; Returns: number }
       gerar_numero_acordo: { Args: never; Returns: string }

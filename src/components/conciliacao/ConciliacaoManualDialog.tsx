@@ -96,6 +96,9 @@ export function ConciliacaoManualDialog({
         contaReceberId: tipo === 'receber' ? lancamento.id : undefined,
       });
       
+      // Learn rule from this manual match
+      await aprenderRegra(transacao.descricao, lancamento.entidade, tipo, lancamento.id);
+      
       celebrateReconciliation(1);
       onSuccess(transacao.id, lancamento.id, tipo);
       onOpenChange(false);
