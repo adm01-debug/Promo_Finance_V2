@@ -619,6 +619,159 @@ export type Database = {
           },
         ]
       }
+      asaas_customers: {
+        Row: {
+          asaas_id: string
+          cliente_id: string | null
+          cpf_cnpj: string | null
+          created_at: string | null
+          email: string | null
+          empresa_id: string
+          endereco: Json | null
+          id: string
+          nome: string
+          sincronizado_em: string | null
+          telefone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          asaas_id: string
+          cliente_id?: string | null
+          cpf_cnpj?: string | null
+          created_at?: string | null
+          email?: string | null
+          empresa_id: string
+          endereco?: Json | null
+          id?: string
+          nome: string
+          sincronizado_em?: string | null
+          telefone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          asaas_id?: string
+          cliente_id?: string | null
+          cpf_cnpj?: string | null
+          created_at?: string | null
+          email?: string | null
+          empresa_id?: string
+          endereco?: Json | null
+          id?: string
+          nome?: string
+          sincronizado_em?: string | null
+          telefone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asaas_customers_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asaas_customers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      asaas_payments: {
+        Row: {
+          asaas_customer_id: string | null
+          asaas_id: string
+          codigo_barras: string | null
+          conta_receber_id: string | null
+          created_at: string | null
+          data_pagamento: string | null
+          data_vencimento: string
+          descricao: string | null
+          empresa_id: string
+          erro_mensagem: string | null
+          id: string
+          linha_digitavel: string | null
+          link_boleto: string | null
+          link_fatura: string | null
+          nosso_numero: string | null
+          pix_copia_cola: string | null
+          pix_qrcode: string | null
+          status: string
+          tipo: string
+          updated_at: string | null
+          valor: number
+          valor_liquido: number | null
+          webhook_payload: Json | null
+        }
+        Insert: {
+          asaas_customer_id?: string | null
+          asaas_id: string
+          codigo_barras?: string | null
+          conta_receber_id?: string | null
+          created_at?: string | null
+          data_pagamento?: string | null
+          data_vencimento: string
+          descricao?: string | null
+          empresa_id: string
+          erro_mensagem?: string | null
+          id?: string
+          linha_digitavel?: string | null
+          link_boleto?: string | null
+          link_fatura?: string | null
+          nosso_numero?: string | null
+          pix_copia_cola?: string | null
+          pix_qrcode?: string | null
+          status?: string
+          tipo: string
+          updated_at?: string | null
+          valor: number
+          valor_liquido?: number | null
+          webhook_payload?: Json | null
+        }
+        Update: {
+          asaas_customer_id?: string | null
+          asaas_id?: string
+          codigo_barras?: string | null
+          conta_receber_id?: string | null
+          created_at?: string | null
+          data_pagamento?: string | null
+          data_vencimento?: string
+          descricao?: string | null
+          empresa_id?: string
+          erro_mensagem?: string | null
+          id?: string
+          linha_digitavel?: string | null
+          link_boleto?: string | null
+          link_fatura?: string | null
+          nosso_numero?: string | null
+          pix_copia_cola?: string | null
+          pix_qrcode?: string | null
+          status?: string
+          tipo?: string
+          updated_at?: string | null
+          valor?: number
+          valor_liquido?: number | null
+          webhook_payload?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asaas_payments_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asaas_payments_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: Database["public"]["Enums"]["audit_action"]
