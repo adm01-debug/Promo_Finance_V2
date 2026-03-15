@@ -338,7 +338,7 @@ export default function Asaas() {
                 <Plus className="h-4 w-4 mr-1" /> Novo Link
               </Button>
             </div>
-            <LinksListPanel empresaId={empresaId} />
+            <LinksListPanel key={`links-${refreshKey}`} empresaId={empresaId} />
           </TabsContent>
 
           <TabsContent value="extrato">
