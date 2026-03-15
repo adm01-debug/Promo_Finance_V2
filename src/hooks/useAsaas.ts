@@ -1,6 +1,5 @@
 // ============================================
-// HOOK: ASAAS INTEGRATION
-// Cobranças reais via Boleto, Pix e Cartão
+// HOOK: ASAAS INTEGRATION - Full Feature Set
 // ============================================
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -65,7 +64,7 @@ async function invokeAsaas(action: string, data: any) {
 export function useAsaas(empresaId?: string) {
   const queryClient = useQueryClient();
 
-  // ===== CLIENTES ASAAS =====
+  // ===== CLIENTES =====
   const { data: customers = [], isLoading: loadingCustomers } = useQuery({
     queryKey: ['asaas-customers', empresaId],
     queryFn: async () => {
@@ -83,13 +82,8 @@ export function useAsaas(empresaId?: string) {
 
   const criarCliente = useMutation({
     mutationFn: async (payload: {
-      empresa_id: string;
-      cliente_id?: string;
-      nome: string;
-      cpf_cnpj: string;
-      email?: string;
-      telefone?: string;
-      endereco?: Record<string, string>;
+      empresa_id: string; cliente_id?: string; nome: string; cpf_cnpj: string;
+      email?: string; telefone?: string; endereco?: Record<string, string>;
     }) => invokeAsaas('criar_cliente', payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['asaas-customers'] });
@@ -98,7 +92,27 @@ export function useAsaas(empresaId?: string) {
     onError: (e) => toast.error('Erro ao criar cliente: ' + e.message),
   });
 
-  // ===== COBRANÇAS ASAAS =====
+  const editarCliente = useMutation({
+    mutationFn: async (payload: {
+      asaas_id: string; nome?: string; email?: string; telefone?: string; cpf_cnpj?: string;
+    }) => invokeAsaas('editar_cliente', payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-customers'] });
+      toast.success('Cliente atualizado');
+    },
+    onError: (e) => toast.error('Erro ao editar cliente: ' + e.message),
+  });
+
+  const excluirCliente = useMutation({
+    mutationFn: async (asaasId: string) => invokeAsaas('excluir_cliente', { asaas_id: asaasId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-customers'] });
+      toast.success('Cliente removido');
+    },
+    onError: (e) => toast.error('Erro ao excluir cliente: ' + e.message),
+  });
+
+  // ===== COBRANÇAS =====
   const { data: payments = [], isLoading: loadingPayments } = useQuery({
     queryKey: ['asaas-payments', empresaId],
     queryFn: async () => {
@@ -116,29 +130,13 @@ export function useAsaas(empresaId?: string) {
 
   const criarCobranca = useMutation({
     mutationFn: async (payload: {
-      empresa_id: string;
-      asaas_customer_id: string;
-      tipo: AsaasBillingType;
-      valor: number;
-      data_vencimento: string;
-      descricao?: string;
-      conta_receber_id?: string;
-      juros?: number;
-      multa?: number;
-      desconto_valor?: number;
-      desconto_dias?: number;
-      desconto_tipo?: string;
-      cartao?: {
-        holder_name: string;
-        number: string;
-        expiry_month: string;
-        expiry_year: string;
-        ccv: string;
-      };
-      email?: string;
-      cpf_cnpj?: string;
-      cep?: string;
-      telefone?: string;
+      empresa_id: string; asaas_customer_id: string; tipo: AsaasBillingType;
+      valor: number; data_vencimento: string; descricao?: string;
+      conta_receber_id?: string; juros?: number; multa?: number;
+      desconto_valor?: number; desconto_dias?: number; desconto_tipo?: string;
+      parcelas?: number; valor_parcela?: number;
+      cartao?: { holder_name: string; number: string; expiry_month: string; expiry_year: string; ccv: string };
+      email?: string; cpf_cnpj?: string; cep?: string; telefone?: string;
     }) => invokeAsaas('criar_cobranca', payload),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['asaas-payments'] });
@@ -158,24 +156,76 @@ export function useAsaas(empresaId?: string) {
     onError: (e) => toast.error('Erro ao cancelar: ' + e.message),
   });
 
+  // ===== ESTORNO =====
+  const estornarCobranca = useMutation({
+    mutationFn: async (payload: { asaas_id: string; valor?: number; descricao?: string }) =>
+      invokeAsaas('estornar_cobranca', payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-payments'] });
+      toast.success('Estorno realizado com sucesso');
+    },
+    onError: (e) => toast.error('Erro ao estornar: ' + e.message),
+  });
+
+  // ===== SEGUNDA VIA =====
+  const segundaViaBoleto = useMutation({
+    mutationFn: async (payload: { asaas_id: string; nova_data_vencimento: string }) =>
+      invokeAsaas('segunda_via_boleto', payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-payments'] });
+      toast.success('Segunda via gerada com novo vencimento');
+    },
+    onError: (e) => toast.error('Erro ao gerar segunda via: ' + e.message),
+  });
+
+  // ===== PIX QR CODE =====
+  const buscarPixQrCode = useMutation({
+    mutationFn: async (asaasId: string) => invokeAsaas('pix_qrcode', { asaas_id: asaasId }),
+  });
+
+  // ===== ASSINATURAS =====
+  const criarAssinatura = useMutation({
+    mutationFn: async (payload: {
+      asaas_customer_id: string; valor: number; ciclo: string; tipo?: string;
+      proximo_vencimento: string; descricao?: string; max_parcelas?: number;
+    }) => invokeAsaas('criar_assinatura', payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-subscriptions'] });
+      toast.success('Assinatura criada com sucesso');
+    },
+    onError: (e) => toast.error('Erro ao criar assinatura: ' + e.message),
+  });
+
+  const cancelarAssinatura = useMutation({
+    mutationFn: async (asaasId: string) => invokeAsaas('cancelar_assinatura', { asaas_id: asaasId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-subscriptions'] });
+      toast.success('Assinatura cancelada');
+    },
+    onError: (e) => toast.error('Erro ao cancelar assinatura: ' + e.message),
+  });
+
   // ===== SALDO =====
   const consultarSaldo = useMutation({
     mutationFn: () => invokeAsaas('consultar_saldo', {}),
   });
 
-  // ===== PIX TRANSFER =====
+  // ===== TRANSFERÊNCIA PIX =====
   const transferirPix = useMutation({
     mutationFn: async (payload: {
-      valor: number;
-      chave_pix: string;
-      tipo_chave?: string;
-      descricao?: string;
+      valor: number; chave_pix: string; tipo_chave?: string; descricao?: string;
     }) => invokeAsaas('transferir_pix', payload),
     onSuccess: () => toast.success('Transferência Pix realizada!'),
     onError: (e) => toast.error('Erro na transferência: ' + e.message),
   });
 
-  // ===== ESTATÍSTICAS =====
+  // ===== EXTRATO =====
+  const consultarExtrato = useMutation({
+    mutationFn: async (payload: { startDate?: string; finishDate?: string }) =>
+      invokeAsaas('extrato', payload),
+  });
+
+  // ===== STATS =====
   const stats = {
     total: payments.length,
     pendentes: payments.filter(p => p.status === 'PENDING').length,
@@ -186,15 +236,13 @@ export function useAsaas(empresaId?: string) {
   };
 
   return {
-    customers,
-    loadingCustomers,
-    criarCliente,
-    payments,
-    loadingPayments,
-    criarCobranca,
-    cancelarCobranca,
-    consultarSaldo,
-    transferirPix,
+    customers, loadingCustomers,
+    criarCliente, editarCliente, excluirCliente,
+    payments, loadingPayments,
+    criarCobranca, cancelarCobranca, estornarCobranca,
+    segundaViaBoleto, buscarPixQrCode,
+    criarAssinatura, cancelarAssinatura,
+    consultarSaldo, transferirPix, consultarExtrato,
     stats,
   };
 }
