@@ -72,9 +72,9 @@ export default function Bling() {
 
         {/* Connection Card */}
         {isConnected && status?.empresa && (
-          <Card className="border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/20">
+          <Card className="border-primary/30 bg-primary/5">
             <CardContent className="flex items-center gap-4 py-4">
-              <CheckCircle2 className="h-8 w-8 text-green-600" />
+              <CheckCircle2 className="h-8 w-8 text-primary" />
               <div>
                 <p className="font-semibold">{status.empresa?.nome || 'Empresa Bling'}</p>
                 <p className="text-sm text-muted-foreground">
