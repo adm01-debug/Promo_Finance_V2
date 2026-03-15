@@ -329,7 +329,7 @@ export default function Asaas() {
                 <Plus className="h-4 w-4 mr-1" /> Nova Assinatura
               </Button>
             </div>
-            <AssinaturasListPanel empresaId={empresaId} />
+            <AssinaturasListPanel key={`subs-${refreshKey}`} empresaId={empresaId} />
           </TabsContent>
 
           <TabsContent value="links" className="space-y-4">
