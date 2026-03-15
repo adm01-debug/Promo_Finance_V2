@@ -163,10 +163,11 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
 
           <TabsContent value="cobranca" className="space-y-4 mt-4">
             {/* Tipo de cobrança */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {([
                 { value: 'boleto' as const, label: 'Boleto', icon: Banknote },
                 { value: 'pix' as const, label: 'Pix', icon: QrCode },
+                { value: 'credit_card' as const, label: 'Cartão', icon: CreditCard },
               ]).map(opt => (
                 <Button
                   key={opt.value}

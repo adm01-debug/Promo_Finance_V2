@@ -309,9 +309,9 @@ Deno.serve(async (req) => {
       case 'cancelar_cobranca': {
         if (!data?.asaas_id) return err('asaas_id é obrigatório')
         result = await asaasFetch(`/payments/${data.asaas_id}`, ASAAS_API_KEY, { method: 'DELETE' })
-        if (!result.errors) {
-          await supabase.from('asaas_payments').update({ status: 'CANCELLED' }).eq('asaas_id', data.asaas_id)
-        }
+        const errCancel = checkErrors(result)
+        if (errCancel) return errCancel
+        await supabase.from('asaas_payments').update({ status: 'CANCELLED' }).eq('asaas_id', data.asaas_id)
         break
       }
 
