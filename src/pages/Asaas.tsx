@@ -146,6 +146,9 @@ export default function Asaas() {
             <Button variant="outline" size="sm" onClick={() => setAssinaturaOpen(true)}>
               <RefreshCw className="h-4 w-4 mr-1" /> Assinatura
             </Button>
+            <Button variant="outline" size="sm" onClick={() => setLinkPagamentoOpen(true)}>
+              <Link2 className="h-4 w-4 mr-1" /> Link
+            </Button>
             <Button onClick={() => setDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-1" /> Nova Cobrança
             </Button>
