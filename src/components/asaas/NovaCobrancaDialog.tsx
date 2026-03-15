@@ -135,6 +135,13 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
       return;
     }
 
+    if (tipo === 'credit_card') {
+      if (!cardHolderName || !cardNumber || !cardExpiryMonth || !cardExpiryYear || !cardCcv || !cardEmail || !cardCpfCnpj) {
+        toast.error('Preencha todos os dados do cartão de crédito');
+        return;
+      }
+    }
+
     try {
       await criarCobranca.mutateAsync({
         empresa_id: empresaId,
@@ -150,6 +157,19 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
         desconto_valor: descontoValor ? parseFloat(descontoValor) : undefined,
         desconto_dias: descontoDias ? parseInt(descontoDias) : undefined,
         desconto_tipo: descontoValor ? 'FIXED' : undefined,
+        ...(tipo === 'credit_card' ? {
+          cartao: {
+            holder_name: cardHolderName,
+            number: cardNumber.replace(/\s/g, ''),
+            expiry_month: cardExpiryMonth,
+            expiry_year: cardExpiryYear,
+            ccv: cardCcv,
+          },
+          email: cardEmail,
+          cpf_cnpj: cardCpfCnpj.replace(/\D/g, ''),
+          cep: cardCep.replace(/\D/g, ''),
+          telefone: cardPhone,
+        } : {}),
       });
       resetForm();
       onOpenChange(false);
