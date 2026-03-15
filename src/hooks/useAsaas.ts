@@ -225,6 +225,45 @@ export function useAsaas(empresaId?: string) {
       invokeAsaas('extrato', payload),
   });
 
+  // ===== LINKS DE PAGAMENTO =====
+  const criarLinkPagamento = useMutation({
+    mutationFn: async (payload: {
+      nome: string; valor: number; tipo?: string; descricao?: string;
+      dias_limite_vencimento?: number; tipo_cobranca?: string;
+      ciclo_assinatura?: string; max_parcelas?: number; notificacoes?: boolean;
+    }) => invokeAsaas('criar_link_pagamento', payload),
+    onSuccess: (data) => {
+      toast.success('Link de pagamento criado!', {
+        description: data?.url ? 'Copie e envie para o cliente' : undefined,
+      });
+    },
+    onError: (e) => toast.error('Erro ao criar link: ' + e.message),
+  });
+
+  const listarLinksPagamento = useMutation({
+    mutationFn: async (payload?: { offset?: string; limit?: string; active?: boolean }) =>
+      invokeAsaas('listar_links_pagamento', payload || {}),
+  });
+
+  const excluirLinkPagamento = useMutation({
+    mutationFn: async (id: string) => invokeAsaas('excluir_link_pagamento', { id }),
+    onSuccess: () => toast.success('Link removido'),
+    onError: (e) => toast.error('Erro ao remover link: ' + e.message),
+  });
+
+  // ===== ANTECIPAÇÃO =====
+  const simularAntecipacao = useMutation({
+    mutationFn: async (payload: { payment_id: string; installment_id?: string }) =>
+      invokeAsaas('simular_antecipacao', payload),
+  });
+
+  const solicitarAntecipacao = useMutation({
+    mutationFn: async (payload: { payment_id: string; installment_id?: string }) =>
+      invokeAsaas('solicitar_antecipacao', payload),
+    onSuccess: () => toast.success('Antecipação solicitada com sucesso'),
+    onError: (e) => toast.error('Erro na antecipação: ' + e.message),
+  });
+
   // ===== STATS =====
   const stats = {
     total: payments.length,
@@ -243,6 +282,8 @@ export function useAsaas(empresaId?: string) {
     segundaViaBoleto, buscarPixQrCode,
     criarAssinatura, cancelarAssinatura,
     consultarSaldo, transferirPix, consultarExtrato,
+    criarLinkPagamento, listarLinksPagamento, excluirLinkPagamento,
+    simularAntecipacao, solicitarAntecipacao,
     stats,
   };
 }
