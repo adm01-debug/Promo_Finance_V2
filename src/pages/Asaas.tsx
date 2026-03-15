@@ -321,6 +321,7 @@ export default function Asaas() {
       <TransferenciaPixDialog open={pixTransferOpen} onOpenChange={setPixTransferOpen} empresaId={empresaId} />
       <ClientesAsaasDialog open={clientesOpen} onOpenChange={setClientesOpen} empresaId={empresaId} />
       <AssinaturaDialog open={assinaturaOpen} onOpenChange={setAssinaturaOpen} empresaId={empresaId} />
+      <LinkPagamentoDialog open={linkPagamentoOpen} onOpenChange={setLinkPagamentoOpen} empresaId={empresaId} />
 
       {pixQrDialog && (
         <PixQrCodeDialog
