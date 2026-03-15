@@ -102,7 +102,7 @@ export function SecondaryKPICards({
   vencidasTotal,
 }: SecondaryKPICardsProps) {
   return (
-    <div className="col-span-1 lg:col-span-3 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+    <div className="col-span-1 lg:col-span-3 grid grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
       <MiniKPICard
         icon={Building2}
         label="Empresas"
