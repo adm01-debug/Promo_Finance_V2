@@ -41,7 +41,7 @@ const tipoIcons: Record<string, React.ElementType> = {
 };
 
 export default function Asaas() {
-  const { empresas } = useEmpresas();
+  const { data: empresas } = useAllEmpresas();
   const empresaId = empresas?.[0]?.id;
   const {
     payments, loadingPayments, stats,
