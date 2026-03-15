@@ -7,12 +7,12 @@
 /* ========== DESIGN TOKENS ========== */
 @layer base {
   :root {
-    --background: 0 0% 98%;
+    --background: 38 25% 96%;
     --foreground: 225 35% 8%;
-    --card: 0 0% 100%;
+    --card: 36 20% 99%;
     --card-foreground: 225 35% 8%;
-    --card-elevated: 0 0% 100%;
-    --popover: 0 0% 100%;
+    --card-elevated: 36 22% 100%;
+    --popover: 36 20% 99%;
     --popover-foreground: 225 35% 8%;
     --primary: 24 95% 46%;
     --primary-foreground: 0 0% 100%;
@@ -31,8 +31,8 @@
     --accent-foreground: 0 0% 100%;
     --destructive: 0 78% 45%;
     --destructive-foreground: 0 0% 100%;
-    --border: 40 12% 72%;
-    --input: 40 10% 92%;
+    --border: 35 18% 82%;
+    --input: 38 15% 93%;
     --ring: 24 95% 46%;
     --radius: 0.75rem;
     --cbs: 215 85% 50%;
@@ -73,12 +73,12 @@
     --chart-4: 275 75% 48%;
     --chart-5: 42 95% 48%;
     --chart-6: 0 78% 45%;
-    --shadow-xs: 0 1px 3px hsl(225 30% 10% / 0.06);
-    --shadow-sm: 0 2px 8px hsl(225 30% 10% / 0.08), 0 1px 3px hsl(225 30% 10% / 0.05);
-    --shadow-md: 0 4px 20px hsl(225 30% 10% / 0.12), 0 2px 8px hsl(225 30% 10% / 0.07);
-    --shadow-lg: 0 10px 40px hsl(225 30% 10% / 0.14), 0 4px 16px hsl(225 30% 10% / 0.08);
-    --shadow-xl: 0 20px 60px hsl(225 30% 10% / 0.16), 0 8px 28px hsl(225 30% 10% / 0.10);
-    --shadow-glow-primary: 0 4px 28px hsl(24 95% 46% / 0.32);
+    --shadow-xs: 0 1px 3px hsl(30 20% 10% / 0.07);
+    --shadow-sm: 0 2px 8px hsl(30 20% 10% / 0.09), 0 1px 3px hsl(30 20% 10% / 0.06);
+    --shadow-md: 0 4px 20px hsl(30 20% 10% / 0.13), 0 2px 8px hsl(30 20% 10% / 0.08);
+    --shadow-lg: 0 10px 40px hsl(30 20% 10% / 0.16), 0 4px 16px hsl(30 20% 10% / 0.10);
+    --shadow-xl: 0 20px 60px hsl(30 20% 10% / 0.18), 0 8px 28px hsl(30 20% 10% / 0.12);
+    --shadow-glow-primary: 0 4px 28px hsl(24 95% 46% / 0.35);
     --shadow-glow-secondary: 0 4px 28px hsl(215 90% 42% / 0.32);
     --shadow-glow-success: 0 4px 28px hsl(150 70% 32% / 0.32);
     --shadow-glow-xp: 0 0 20px hsl(280 85% 60% / 0.4);
@@ -91,7 +91,7 @@
     --gradient-warning: linear-gradient(135deg, hsl(42 95% 48%), hsl(32 100% 42%));
     --gradient-xp: linear-gradient(90deg, hsl(280 85% 60%), hsl(252 87% 64%));
     --gradient-gold: linear-gradient(135deg, hsl(45 93% 47%), hsl(38 92% 50%));
-    --gradient-surface: linear-gradient(180deg, hsl(0 0% 100%), hsl(40 20% 95%));
+    --gradient-surface: linear-gradient(180deg, hsl(36 22% 99%), hsl(38 25% 95%));
     --divider-gradient: linear-gradient(90deg, transparent 0%, hsl(225 20% 50% / 0.3) 50%, transparent 100%);
     --spacing-card: 1.5rem;
     --spacing-card-sm: 1rem;
@@ -114,13 +114,13 @@
     --z-tooltip: 1070;
     --z-toast: 1080;
     --z-max: 9999;
-    --sidebar-background: 40 18% 94%;
+    --sidebar-background: 38 22% 95%;
     --sidebar-foreground: 225 35% 10%;
     --sidebar-primary: 24 95% 46%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 40 20% 88%;
+    --sidebar-accent: 35 25% 90%;
     --sidebar-accent-foreground: 225 35% 8%;
-    --sidebar-border: 40 12% 78%;
+    --sidebar-border: 35 18% 82%;
     --sidebar-ring: 24 95% 46%;
   }
 

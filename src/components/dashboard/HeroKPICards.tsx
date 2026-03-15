@@ -150,10 +150,10 @@ export function HeroKPICard({
       <Card
         className={cn(
           'relative overflow-hidden transition-all duration-300 cursor-pointer group h-full',
-          'border border-border/50',
+          'border border-border/60',
           `bg-gradient-to-br ${bgGradient}`,
           config.card,
-          size === 'hero' && 'shadow-md hover:shadow-lg',
+          size === 'hero' && 'shadow-md hover:shadow-lg border-primary/10',
           size === 'primary' && 'shadow-sm hover:shadow-md',
         )}
         style={accentColor ? {
