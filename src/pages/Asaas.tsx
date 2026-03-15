@@ -66,6 +66,7 @@ export default function Asaas() {
   const [pixTransferOpen, setPixTransferOpen] = useState(false);
   const [clientesOpen, setClientesOpen] = useState(false);
   const [assinaturaOpen, setAssinaturaOpen] = useState(false);
+  const [linkPagamentoOpen, setLinkPagamentoOpen] = useState(false);
   const [cancelConfirm, setCancelConfirm] = useState<string | null>(null);
 
   // Payment action dialogs
