@@ -32,6 +32,7 @@ export function PixQrCodeDialog({ open, onOpenChange, asaasId, pixCopiaCola, pix
         .catch(() => toast.error('Erro ao buscar QR Code'))
         .finally(() => setLoading(false));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, asaasId]);
 
   const imageData = pixQrcode || qrData?.encodedImage;

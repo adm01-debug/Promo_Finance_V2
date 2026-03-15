@@ -31,6 +31,9 @@ import { AssinaturaDialog } from '@/components/asaas/AssinaturaDialog';
 import { EstornoDialog } from '@/components/asaas/EstornoDialog';
 import { SegundaViaDialog } from '@/components/asaas/SegundaViaDialog';
 import { LinkPagamentoDialog } from '@/components/asaas/LinkPagamentoDialog';
+import { ExtratoAsaasPanel } from '@/components/asaas/ExtratoAsaasPanel';
+import { AssinaturasListPanel } from '@/components/asaas/AssinaturasListPanel';
+import { LinksListPanel } from '@/components/asaas/LinksListPanel';
 import { formatCurrency } from '@/lib/currency';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -143,12 +146,6 @@ export default function Asaas() {
             <Button variant="outline" size="sm" onClick={() => setPixTransferOpen(true)}>
               <Send className="h-4 w-4 mr-1" /> Pix
             </Button>
-            <Button variant="outline" size="sm" onClick={() => setAssinaturaOpen(true)}>
-              <RefreshCw className="h-4 w-4 mr-1" /> Assinatura
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => setLinkPagamentoOpen(true)}>
-              <Link2 className="h-4 w-4 mr-1" /> Link
-            </Button>
             <Button onClick={() => setDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-1" /> Nova Cobrança
             </Button>
@@ -190,130 +187,163 @@ export default function Asaas() {
             <CardContent className="pt-4 pb-4">
               <div className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4 text-primary" />
-                <span className="text-sm text-muted-foreground">Total</span>
+                <span className="text-sm text-muted-foreground">Saldo Pendente</span>
               </div>
-              <p className="text-2xl font-bold mt-1">{stats.total}</p>
+              <p className="text-2xl font-bold mt-1">{saldo ? formatCurrency(saldo.totalPending || 0) : '-'}</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Payments Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Cobranças</CardTitle>
-            <CardDescription>Todas as cobranças emitidas via ASAAS</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loadingPayments ? (
-              <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
-            ) : payments.length === 0 ? (
-              <EmptyState icon={CreditCard} title="Nenhuma cobrança" description="Crie sua primeira cobrança via Boleto ou Pix" action={{ label: 'Nova Cobrança', onClick: () => setDialogOpen(true) }} />
-            ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead>Descrição</TableHead>
-                      <TableHead>Valor</TableHead>
-                      <TableHead>Vencimento</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Links</TableHead>
-                      <TableHead className="w-[80px]">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {payments.map(payment => {
-                      const TipoIcon = tipoIcons[payment.tipo] || CreditCard;
-                      const statusInfo = statusConfig[payment.status] || { label: payment.status, variant: 'outline' as const };
-                      const isPaid = ['RECEIVED', 'CONFIRMED'].includes(payment.status);
-                      const isPending = payment.status === 'PENDING';
-                      const isOverdue = payment.status === 'OVERDUE';
-                      const isBoleto = payment.tipo === 'boleto';
-                      const isPix = payment.tipo === 'pix';
+        {/* Main Tabs */}
+        <Tabs defaultValue="cobrancas" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="cobrancas">Cobranças</TabsTrigger>
+            <TabsTrigger value="assinaturas">Assinaturas</TabsTrigger>
+            <TabsTrigger value="links">Links</TabsTrigger>
+            <TabsTrigger value="extrato">Extrato</TabsTrigger>
+          </TabsList>
 
-                      return (
-                        <TableRow key={payment.id}>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <TipoIcon className="h-4 w-4 text-muted-foreground" />
-                              <span className="text-sm">{tipoLabels[payment.tipo] || payment.tipo}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="max-w-[200px] truncate">{payment.descricao || '-'}</TableCell>
-                          <TableCell className="font-medium">{formatCurrency(payment.valor)}</TableCell>
-                          <TableCell>{formatDate(payment.data_vencimento)}</TableCell>
-                          <TableCell><Badge variant={statusInfo.variant}>{statusInfo.label}</Badge></TableCell>
-                          <TableCell>
-                            <div className="flex gap-1">
-                              {payment.link_boleto && (
-                                <Button variant="ghost" size="icon" className="h-7 w-7" asChild title="Ver boleto">
-                                  <a href={payment.link_boleto} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-3.5 w-3.5" /></a>
-                                </Button>
-                              )}
-                              {isPix && (
-                                <Button variant="ghost" size="icon" className="h-7 w-7" title="Ver QR Code Pix"
-                                  onClick={() => setPixQrDialog({ asaasId: payment.asaas_id, pixCola: payment.pix_copia_cola, pixQr: payment.pix_qrcode })}>
-                                  <QrCode className="h-3.5 w-3.5" />
-                                </Button>
-                              )}
-                              {payment.pix_copia_cola && (
-                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => copyToClipboard(payment.pix_copia_cola!)} title="Copiar Pix copia e cola">
-                                  <Copy className="h-3.5 w-3.5" />
-                                </Button>
-                              )}
-                              {payment.linha_digitavel && (
-                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => copyToClipboard(payment.linha_digitavel!)} title="Copiar linha digitável">
-                                  <Banknote className="h-3.5 w-3.5" />
-                                </Button>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-7 w-7">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                {isPending && (
-                                  <DropdownMenuItem className="text-destructive" onClick={() => setCancelConfirm(payment.asaas_id)}>
-                                    <X className="h-4 w-4 mr-2" /> Cancelar
-                                  </DropdownMenuItem>
-                                )}
-                                {isPaid && (
-                                  <DropdownMenuItem onClick={() => setEstornoDialog({ asaasId: payment.asaas_id, valor: payment.valor })}>
-                                    <Undo2 className="h-4 w-4 mr-2" /> Estornar
-                                  </DropdownMenuItem>
-                                )}
-                                {(isPending || isOverdue) && isBoleto && (
-                                  <DropdownMenuItem onClick={() => setSegundaViaDialog(payment.asaas_id)}>
-                                    <FileText className="h-4 w-4 mr-2" /> Segunda Via
-                                  </DropdownMenuItem>
-                                )}
-                                {payment.link_fatura && (
-                                  <>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem asChild>
-                                      <a href={payment.link_fatura} target="_blank" rel="noopener noreferrer">
-                                        <ExternalLink className="h-4 w-4 mr-2" /> Ver Fatura
-                                      </a>
-                                    </DropdownMenuItem>
-                                  </>
-                                )}
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
+          <TabsContent value="cobrancas">
+            <Card>
+              <CardHeader>
+                <CardTitle>Cobranças</CardTitle>
+                <CardDescription>Todas as cobranças emitidas via ASAAS</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {loadingPayments ? (
+                  <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
+                ) : payments.length === 0 ? (
+                  <EmptyState icon={CreditCard} title="Nenhuma cobrança" description="Crie sua primeira cobrança via Boleto ou Pix" action={{ label: 'Nova Cobrança', onClick: () => setDialogOpen(true) }} />
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Tipo</TableHead>
+                          <TableHead>Descrição</TableHead>
+                          <TableHead>Valor</TableHead>
+                          <TableHead>Vencimento</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Links</TableHead>
+                          <TableHead className="w-[80px]">Ações</TableHead>
                         </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                      </TableHeader>
+                      <TableBody>
+                        {payments.map(payment => {
+                          const TipoIcon = tipoIcons[payment.tipo] || CreditCard;
+                          const statusInfo = statusConfig[payment.status] || { label: payment.status, variant: 'outline' as const };
+                          const isPaid = ['RECEIVED', 'CONFIRMED'].includes(payment.status);
+                          const isPending = payment.status === 'PENDING';
+                          const isOverdue = payment.status === 'OVERDUE';
+                          const isBoleto = payment.tipo === 'boleto';
+                          const isPix = payment.tipo === 'pix';
+
+                          return (
+                            <TableRow key={payment.id}>
+                              <TableCell>
+                                <div className="flex items-center gap-2">
+                                  <TipoIcon className="h-4 w-4 text-muted-foreground" />
+                                  <span className="text-sm">{tipoLabels[payment.tipo] || payment.tipo}</span>
+                                </div>
+                              </TableCell>
+                              <TableCell className="max-w-[200px] truncate">{payment.descricao || '-'}</TableCell>
+                              <TableCell className="font-medium">{formatCurrency(payment.valor)}</TableCell>
+                              <TableCell>{formatDate(payment.data_vencimento)}</TableCell>
+                              <TableCell><Badge variant={statusInfo.variant}>{statusInfo.label}</Badge></TableCell>
+                              <TableCell>
+                                <div className="flex gap-1">
+                                  {payment.link_boleto && (
+                                    <Button variant="ghost" size="icon" className="h-7 w-7" asChild title="Ver boleto">
+                                      <a href={payment.link_boleto} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-3.5 w-3.5" /></a>
+                                    </Button>
+                                  )}
+                                  {isPix && (
+                                    <Button variant="ghost" size="icon" className="h-7 w-7" title="Ver QR Code Pix"
+                                      onClick={() => setPixQrDialog({ asaasId: payment.asaas_id, pixCola: payment.pix_copia_cola, pixQr: payment.pix_qrcode })}>
+                                      <QrCode className="h-3.5 w-3.5" />
+                                    </Button>
+                                  )}
+                                  {payment.pix_copia_cola && (
+                                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => copyToClipboard(payment.pix_copia_cola!)} title="Copiar Pix copia e cola">
+                                      <Copy className="h-3.5 w-3.5" />
+                                    </Button>
+                                  )}
+                                  {payment.linha_digitavel && (
+                                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => copyToClipboard(payment.linha_digitavel!)} title="Copiar linha digitável">
+                                      <Banknote className="h-3.5 w-3.5" />
+                                    </Button>
+                                  )}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7">
+                                      <MoreHorizontal className="h-4 w-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    {isPending && (
+                                      <DropdownMenuItem className="text-destructive" onClick={() => setCancelConfirm(payment.asaas_id)}>
+                                        <X className="h-4 w-4 mr-2" /> Cancelar
+                                      </DropdownMenuItem>
+                                    )}
+                                    {isPaid && (
+                                      <DropdownMenuItem onClick={() => setEstornoDialog({ asaasId: payment.asaas_id, valor: payment.valor })}>
+                                        <Undo2 className="h-4 w-4 mr-2" /> Estornar
+                                      </DropdownMenuItem>
+                                    )}
+                                    {(isPending || isOverdue) && isBoleto && (
+                                      <DropdownMenuItem onClick={() => setSegundaViaDialog(payment.asaas_id)}>
+                                        <FileText className="h-4 w-4 mr-2" /> Segunda Via
+                                      </DropdownMenuItem>
+                                    )}
+                                    {payment.link_fatura && (
+                                      <>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem asChild>
+                                          <a href={payment.link_fatura} target="_blank" rel="noopener noreferrer">
+                                            <ExternalLink className="h-4 w-4 mr-2" /> Ver Fatura
+                                          </a>
+                                        </DropdownMenuItem>
+                                      </>
+                                    )}
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="assinaturas" className="space-y-4">
+            <div className="flex justify-end">
+              <Button variant="outline" size="sm" onClick={() => setAssinaturaOpen(true)}>
+                <Plus className="h-4 w-4 mr-1" /> Nova Assinatura
+              </Button>
+            </div>
+            <AssinaturasListPanel empresaId={empresaId} />
+          </TabsContent>
+
+          <TabsContent value="links" className="space-y-4">
+            <div className="flex justify-end">
+              <Button variant="outline" size="sm" onClick={() => setLinkPagamentoOpen(true)}>
+                <Plus className="h-4 w-4 mr-1" /> Novo Link
+              </Button>
+            </div>
+            <LinksListPanel empresaId={empresaId} />
+          </TabsContent>
+
+          <TabsContent value="extrato">
+            <ExtratoAsaasPanel empresaId={empresaId} />
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Dialogs */}
