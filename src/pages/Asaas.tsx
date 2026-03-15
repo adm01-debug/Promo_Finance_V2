@@ -15,7 +15,7 @@ import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import {
   CreditCard, QrCode, Banknote, Plus, RefreshCw, X,
   DollarSign, Clock, CheckCircle2, AlertTriangle, Copy, ExternalLink,
-  Send, Users, Undo2, FileText, MoreHorizontal,
+  Send, Users, Undo2, FileText, MoreHorizontal, Link2,
 } from 'lucide-react';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -30,6 +30,7 @@ import { ClientesAsaasDialog } from '@/components/asaas/ClientesAsaasDialog';
 import { AssinaturaDialog } from '@/components/asaas/AssinaturaDialog';
 import { EstornoDialog } from '@/components/asaas/EstornoDialog';
 import { SegundaViaDialog } from '@/components/asaas/SegundaViaDialog';
+import { LinkPagamentoDialog } from '@/components/asaas/LinkPagamentoDialog';
 import { formatCurrency } from '@/lib/currency';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -65,6 +66,7 @@ export default function Asaas() {
   const [pixTransferOpen, setPixTransferOpen] = useState(false);
   const [clientesOpen, setClientesOpen] = useState(false);
   const [assinaturaOpen, setAssinaturaOpen] = useState(false);
+  const [linkPagamentoOpen, setLinkPagamentoOpen] = useState(false);
   const [cancelConfirm, setCancelConfirm] = useState<string | null>(null);
 
   // Payment action dialogs
@@ -143,6 +145,9 @@ export default function Asaas() {
             </Button>
             <Button variant="outline" size="sm" onClick={() => setAssinaturaOpen(true)}>
               <RefreshCw className="h-4 w-4 mr-1" /> Assinatura
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setLinkPagamentoOpen(true)}>
+              <Link2 className="h-4 w-4 mr-1" /> Link
             </Button>
             <Button onClick={() => setDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-1" /> Nova Cobrança
@@ -316,6 +321,7 @@ export default function Asaas() {
       <TransferenciaPixDialog open={pixTransferOpen} onOpenChange={setPixTransferOpen} empresaId={empresaId} />
       <ClientesAsaasDialog open={clientesOpen} onOpenChange={setClientesOpen} empresaId={empresaId} />
       <AssinaturaDialog open={assinaturaOpen} onOpenChange={setAssinaturaOpen} empresaId={empresaId} />
+      <LinkPagamentoDialog open={linkPagamentoOpen} onOpenChange={setLinkPagamentoOpen} empresaId={empresaId} />
 
       {pixQrDialog && (
         <PixQrCodeDialog
