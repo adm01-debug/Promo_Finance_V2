@@ -279,6 +279,58 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
               </div>
             </div>
 
+            {/* Dados do Cartão de Crédito */}
+            {tipo === 'credit_card' && (
+              <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+                <p className="text-sm font-medium flex items-center gap-1.5">
+                  <CreditCard className="h-4 w-4" /> Dados do Cartão
+                </p>
+                <div className="space-y-2">
+                  <Label className="text-xs">Nome no cartão *</Label>
+                  <Input value={cardHolderName} onChange={e => setCardHolderName(e.target.value)} placeholder="Como impresso no cartão" className="h-8 text-sm" />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs">Número do cartão *</Label>
+                  <Input value={cardNumber} onChange={e => setCardNumber(e.target.value)} placeholder="0000 0000 0000 0000" className="h-8 text-sm" maxLength={19} />
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-xs">Mês *</Label>
+                    <Input value={cardExpiryMonth} onChange={e => setCardExpiryMonth(e.target.value)} placeholder="MM" maxLength={2} className="h-8 text-sm" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Ano *</Label>
+                    <Input value={cardExpiryYear} onChange={e => setCardExpiryYear(e.target.value)} placeholder="AAAA" maxLength={4} className="h-8 text-sm" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">CVV *</Label>
+                    <Input value={cardCcv} onChange={e => setCardCcv(e.target.value)} placeholder="123" maxLength={4} className="h-8 text-sm" />
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground font-medium mt-2">Dados do titular</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-xs">Email *</Label>
+                    <Input type="email" value={cardEmail} onChange={e => setCardEmail(e.target.value)} placeholder="email@exemplo.com" className="h-8 text-sm" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">CPF/CNPJ *</Label>
+                    <Input value={cardCpfCnpj} onChange={e => setCardCpfCnpj(e.target.value)} placeholder="000.000.000-00" className="h-8 text-sm" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-xs">CEP</Label>
+                    <Input value={cardCep} onChange={e => setCardCep(e.target.value)} placeholder="00000-000" className="h-8 text-sm" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Telefone</Label>
+                    <Input value={cardPhone} onChange={e => setCardPhone(e.target.value)} placeholder="(11) 99999-0000" className="h-8 text-sm" />
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Descrição */}
             <div className="space-y-2">
               <Label>Descrição</Label>
