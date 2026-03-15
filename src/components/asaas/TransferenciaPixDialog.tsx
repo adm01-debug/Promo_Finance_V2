@@ -27,17 +27,22 @@ export function TransferenciaPixDialog({ open, onOpenChange, empresaId }: Props)
   const [chavePix, setChavePix] = useState('');
   const [tipoChave, setTipoChave] = useState('CPF');
   const [descricao, setDescricao] = useState('');
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const handleTransferir = async () => {
+  const handleConfirmar = () => {
     const valorNum = parseFloat(valor);
     if (!chavePix || isNaN(valorNum) || valorNum <= 0) {
       toast.error('Preencha valor e chave Pix');
       return;
     }
+    setConfirmOpen(true);
+  };
 
+  const handleTransferir = async () => {
+    setConfirmOpen(false);
     try {
       await transferirPix.mutateAsync({
-        valor: valorNum,
+        valor: parseFloat(valor),
         chave_pix: chavePix,
         tipo_chave: tipoChave,
         descricao: descricao || undefined,
