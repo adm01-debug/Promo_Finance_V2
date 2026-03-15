@@ -71,6 +71,8 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
     setDescontoValor('');
     setDescontoDias('');
     setShowAdvanced(false);
+    setCardHolderName(''); setCardNumber(''); setCardExpiryMonth(''); setCardExpiryYear('');
+    setCardCcv(''); setCardEmail(''); setCardCpfCnpj(''); setCardCep(''); setCardPhone('');
     setNomeCliente('');
     setCpfCnpj('');
     setEmailCliente('');
