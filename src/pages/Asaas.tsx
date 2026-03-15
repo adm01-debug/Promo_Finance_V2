@@ -7,7 +7,6 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -19,9 +18,10 @@ import { useAsaas } from '@/hooks/useAsaas';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { NovaCobrancaDialog } from '@/components/asaas/NovaCobrancaDialog';
 import { formatCurrency } from '@/lib/currency';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 
 const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
   PENDING: { label: 'Pendente', variant: 'secondary' },
@@ -40,8 +40,15 @@ const tipoIcons: Record<string, React.ElementType> = {
   debit_card: CreditCard,
 };
 
+const tipoLabels: Record<string, string> = {
+  boleto: 'Boleto',
+  pix: 'Pix',
+  credit_card: 'Cartão',
+  debit_card: 'Débito',
+};
+
 export default function Asaas() {
-  const { data: empresas } = useAllEmpresas();
+  const { data: empresas, isLoading: loadingEmpresas } = useAllEmpresas();
   const empresaId = empresas?.[0]?.id;
   const {
     payments, loadingPayments, stats,
@@ -49,6 +56,7 @@ export default function Asaas() {
   } = useAsaas(empresaId);
 
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [cancelConfirm, setCancelConfirm] = useState<string | null>(null);
   const [saldo, setSaldo] = useState<{ balance: number; totalPending: number } | null>(null);
   const [loadingSaldo, setLoadingSaldo] = useState(false);
 
@@ -64,10 +72,55 @@ export default function Asaas() {
     }
   };
 
+  const handleCancelar = async () => {
+    if (!cancelConfirm) return;
+    try {
+      await cancelarCobranca.mutateAsync(cancelConfirm);
+    } catch {
+      // handled by hook
+    } finally {
+      setCancelConfirm(null);
+    }
+  };
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success('Copiado!');
+    toast.success('Copiado para a área de transferência!');
   };
+
+  const formatDate = (dateStr: string) => {
+    try {
+      return format(parseISO(dateStr), 'dd/MM/yyyy', { locale: ptBR });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  if (loadingEmpresas) {
+    return (
+      <MainLayout>
+        <div className="space-y-6">
+          <Skeleton className="h-8 w-64" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24" />)}
+          </div>
+          <Skeleton className="h-64" />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (!empresaId) {
+    return (
+      <MainLayout>
+        <EmptyState
+          icon={CreditCard}
+          title="Nenhuma empresa cadastrada"
+          description="Cadastre uma empresa antes de emitir cobranças ASAAS"
+        />
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -172,33 +225,31 @@ export default function Asaas() {
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <TipoIcon className="h-4 w-4 text-muted-foreground" />
-                              <span className="text-sm capitalize">{payment.tipo === 'credit_card' ? 'Cartão' : payment.tipo}</span>
+                              <span className="text-sm">{tipoLabels[payment.tipo] || payment.tipo}</span>
                             </div>
                           </TableCell>
                           <TableCell className="max-w-[200px] truncate">{payment.descricao || '-'}</TableCell>
                           <TableCell className="font-medium">{formatCurrency(payment.valor)}</TableCell>
-                          <TableCell>
-                            {format(new Date(payment.data_vencimento), 'dd/MM/yyyy', { locale: ptBR })}
-                          </TableCell>
+                          <TableCell>{formatDate(payment.data_vencimento)}</TableCell>
                           <TableCell>
                             <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
                           </TableCell>
                           <TableCell>
                             <div className="flex gap-1">
                               {payment.link_boleto && (
-                                <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
+                                <Button variant="ghost" size="icon" className="h-7 w-7" asChild title="Ver boleto">
                                   <a href={payment.link_boleto} target="_blank" rel="noopener noreferrer">
                                     <ExternalLink className="h-3.5 w-3.5" />
                                   </a>
                                 </Button>
                               )}
                               {payment.pix_copia_cola && (
-                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => copyToClipboard(payment.pix_copia_cola!)}>
+                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => copyToClipboard(payment.pix_copia_cola!)} title="Copiar Pix copia e cola">
                                   <Copy className="h-3.5 w-3.5" />
                                 </Button>
                               )}
                               {payment.linha_digitavel && (
-                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => copyToClipboard(payment.linha_digitavel!)}>
+                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => copyToClipboard(payment.linha_digitavel!)} title="Copiar linha digitável">
                                   <Banknote className="h-3.5 w-3.5" />
                                 </Button>
                               )}
@@ -210,7 +261,8 @@ export default function Asaas() {
                                 variant="ghost"
                                 size="icon"
                                 className="h-7 w-7 text-destructive hover:text-destructive"
-                                onClick={() => cancelarCobranca.mutate(payment.asaas_id)}
+                                onClick={() => setCancelConfirm(payment.asaas_id)}
+                                title="Cancelar cobrança"
                               >
                                 <X className="h-3.5 w-3.5" />
                               </Button>
@@ -231,6 +283,18 @@ export default function Asaas() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         empresaId={empresaId}
+      />
+
+      <ConfirmationDialog
+        isOpen={!!cancelConfirm}
+        onClose={() => setCancelConfirm(null)}
+        title="Cancelar Cobrança"
+        message="Tem certeza que deseja cancelar esta cobrança? Esta ação não pode ser desfeita e o cliente será notificado."
+        confirmText="Sim, Cancelar"
+        cancelText="Não"
+        type="danger"
+        onConfirm={handleCancelar}
+        isLoading={cancelarCobranca.isPending}
       />
     </MainLayout>
   );
