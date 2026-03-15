@@ -74,16 +74,22 @@ export function AssinaturaDialog({ open, onOpenChange, empresaId }: Props) {
         <div className="space-y-4 mt-2">
           <div className="space-y-2">
             <Label>Cliente *</Label>
-            <Select value={customerId} onValueChange={setCustomerId}>
-              <SelectTrigger><SelectValue placeholder="Selecione o cliente" /></SelectTrigger>
-              <SelectContent>
-                {customers.map(c => (
-                  <SelectItem key={c.id} value={c.asaas_id}>
-                    {c.nome} {c.cpf_cnpj ? `(${c.cpf_cnpj})` : ''}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {customers.length === 0 ? (
+              <div className="text-sm text-muted-foreground p-3 border border-border rounded-lg text-center">
+                Nenhum cliente cadastrado. Cadastre um cliente na aba de Cobranças primeiro.
+              </div>
+            ) : (
+              <Select value={customerId} onValueChange={setCustomerId}>
+                <SelectTrigger><SelectValue placeholder="Selecione o cliente" /></SelectTrigger>
+                <SelectContent>
+                  {customers.map(c => (
+                    <SelectItem key={c.id} value={c.asaas_id}>
+                      {c.nome} {c.cpf_cnpj ? `(${c.cpf_cnpj})` : ''}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
