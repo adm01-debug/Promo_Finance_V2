@@ -30,6 +30,7 @@ import { ClientesAsaasDialog } from '@/components/asaas/ClientesAsaasDialog';
 import { AssinaturaDialog } from '@/components/asaas/AssinaturaDialog';
 import { EstornoDialog } from '@/components/asaas/EstornoDialog';
 import { SegundaViaDialog } from '@/components/asaas/SegundaViaDialog';
+import { LinkPagamentoDialog } from '@/components/asaas/LinkPagamentoDialog';
 import { formatCurrency } from '@/lib/currency';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
