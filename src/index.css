@@ -114,13 +114,13 @@
     --z-tooltip: 1070;
     --z-toast: 1080;
     --z-max: 9999;
-    --sidebar-background: 40 18% 94%;
+    --sidebar-background: 38 22% 95%;
     --sidebar-foreground: 225 35% 10%;
     --sidebar-primary: 24 95% 46%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 40 20% 88%;
+    --sidebar-accent: 35 25% 90%;
     --sidebar-accent-foreground: 225 35% 8%;
-    --sidebar-border: 40 12% 78%;
+    --sidebar-border: 35 18% 82%;
     --sidebar-ring: 24 95% 46%;
   }
 
