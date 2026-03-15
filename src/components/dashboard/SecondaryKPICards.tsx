@@ -38,7 +38,7 @@ function MiniKPICard({ icon: Icon, label, value, iconBg, iconColor, href, alertL
     >
       <Card className={cn(
         'p-3 sm:p-4 transition-all duration-300 group cursor-pointer relative overflow-hidden',
-        'hover:shadow-md hover:-translate-y-1',
+        'hover:shadow-md hover:-translate-y-1 shadow-sm',
         alertLevel === 'warning' && value > 0 && 'ring-2 ring-warning/40 shadow-[0_0_12px_hsl(var(--warning)/0.15)]',
         alertLevel === 'danger' && value > 0 && 'ring-1 ring-destructive/30',
       )}>
