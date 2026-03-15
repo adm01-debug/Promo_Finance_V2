@@ -79,6 +79,7 @@ export default function Asaas() {
 
   const [saldo, setSaldo] = useState<{ balance: number; totalPending: number } | null>(null);
   const [loadingSaldo, setLoadingSaldo] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const handleConsultarSaldo = async () => {
     setLoadingSaldo(true);
