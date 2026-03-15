@@ -209,6 +209,7 @@ export function useAsaas(empresaId?: string) {
   // ===== SALDO =====
   const consultarSaldo = useMutation({
     mutationFn: () => invokeAsaas('consultar_saldo', {}),
+    onError: (e) => toast.error('Erro ao consultar saldo: ' + e.message),
   });
 
   // ===== TRANSFERÊNCIA PIX =====
