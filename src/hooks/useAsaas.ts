@@ -247,6 +247,7 @@ export function useAsaas(empresaId?: string) {
   const listarLinksPagamento = useMutation({
     mutationFn: async (payload?: { offset?: string; limit?: string; active?: boolean }) =>
       invokeAsaas('listar_links_pagamento', payload || {}),
+    onError: (e) => toast.error('Erro ao listar links: ' + e.message),
   });
 
   const excluirLinkPagamento = useMutation({

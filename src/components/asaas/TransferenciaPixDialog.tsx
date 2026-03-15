@@ -90,7 +90,7 @@ export function TransferenciaPixDialog({ open, onOpenChange, empresaId }: Props)
             <Label>Descrição</Label>
             <Textarea value={descricao} onChange={e => setDescricao(e.target.value)} placeholder="Descrição da transferência..." rows={2} />
           </div>
-          <Button className="w-full" onClick={handleTransferir} disabled={transferirPix.isPending || !chavePix || !valor}>
+          <Button className="w-full" onClick={handleConfirmar} disabled={transferirPix.isPending || !chavePix || !valor}>
             {transferirPix.isPending ? (
               <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Transferindo...</>
             ) : (
@@ -100,5 +100,16 @@ export function TransferenciaPixDialog({ open, onOpenChange, empresaId }: Props)
         </div>
       </DialogContent>
     </Dialog>
+
+    <ConfirmationDialog
+      isOpen={confirmOpen}
+      onClose={() => setConfirmOpen(false)}
+      title="Confirmar Transferência Pix"
+      message={`Tem certeza que deseja transferir R$ ${parseFloat(valor || '0').toFixed(2)} para a chave ${chavePix}? Esta ação não pode ser desfeita.`}
+      type="danger"
+      confirmText="Sim, Transferir"
+      onConfirm={handleTransferir}
+      isLoading={transferirPix.isPending}
+    />
   );
 }

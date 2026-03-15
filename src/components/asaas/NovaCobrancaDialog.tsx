@@ -183,7 +183,7 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
       <DialogContent className="sm:max-w-[520px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Nova Cobrança ASAAS</DialogTitle>
-          <DialogDescription>Emita uma cobrança real por Boleto ou Pix</DialogDescription>
+          <DialogDescription>Emita uma cobrança real por Boleto, Pix ou Cartão de Crédito</DialogDescription>
         </DialogHeader>
 
         <Tabs value={tab} onValueChange={(v) => setTab(v as 'cobranca' | 'cliente')}>
