@@ -79,6 +79,7 @@ export default function Asaas() {
 
   const [saldo, setSaldo] = useState<{ balance: number; totalPending: number } | null>(null);
   const [loadingSaldo, setLoadingSaldo] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const handleConsultarSaldo = async () => {
     setLoadingSaldo(true);
@@ -328,7 +329,7 @@ export default function Asaas() {
                 <Plus className="h-4 w-4 mr-1" /> Nova Assinatura
               </Button>
             </div>
-            <AssinaturasListPanel empresaId={empresaId} />
+            <AssinaturasListPanel key={`subs-${refreshKey}`} empresaId={empresaId} />
           </TabsContent>
 
           <TabsContent value="links" className="space-y-4">
@@ -337,7 +338,7 @@ export default function Asaas() {
                 <Plus className="h-4 w-4 mr-1" /> Novo Link
               </Button>
             </div>
-            <LinksListPanel empresaId={empresaId} />
+            <LinksListPanel key={`links-${refreshKey}`} empresaId={empresaId} />
           </TabsContent>
 
           <TabsContent value="extrato">
@@ -350,8 +351,8 @@ export default function Asaas() {
       <NovaCobrancaDialog open={dialogOpen} onOpenChange={setDialogOpen} empresaId={empresaId} />
       <TransferenciaPixDialog open={pixTransferOpen} onOpenChange={setPixTransferOpen} empresaId={empresaId} />
       <ClientesAsaasDialog open={clientesOpen} onOpenChange={setClientesOpen} empresaId={empresaId} />
-      <AssinaturaDialog open={assinaturaOpen} onOpenChange={setAssinaturaOpen} empresaId={empresaId} />
-      <LinkPagamentoDialog open={linkPagamentoOpen} onOpenChange={setLinkPagamentoOpen} empresaId={empresaId} />
+      <AssinaturaDialog open={assinaturaOpen} onOpenChange={(v) => { setAssinaturaOpen(v); if (!v) setRefreshKey(k => k + 1); }} empresaId={empresaId} />
+      <LinkPagamentoDialog open={linkPagamentoOpen} onOpenChange={(v) => { setLinkPagamentoOpen(v); if (!v) setRefreshKey(k => k + 1); }} empresaId={empresaId} />
 
       {pixQrDialog && (
         <PixQrCodeDialog

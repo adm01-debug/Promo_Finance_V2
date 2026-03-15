@@ -20,7 +20,15 @@ Deno.serve(async (req) => {
     const WEBHOOK_TOKEN = Deno.env.get('ASAAS_WEBHOOK_TOKEN')
     const receivedToken = req.headers.get('asaas-access-token')
 
-    if (WEBHOOK_TOKEN && receivedToken !== WEBHOOK_TOKEN) {
+    if (!WEBHOOK_TOKEN) {
+      console.error('ASAAS_WEBHOOK_TOKEN não configurado - rejeitando webhook por segurança')
+      return new Response(JSON.stringify({ error: 'Webhook token não configurado' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    if (receivedToken !== WEBHOOK_TOKEN) {
       console.error('Token de webhook inválido')
       return new Response(JSON.stringify({ error: 'Token inválido' }), {
         status: 403,

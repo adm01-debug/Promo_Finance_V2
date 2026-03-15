@@ -121,7 +121,8 @@ export function useAsaas(empresaId?: string) {
         .from('asaas_payments')
         .select('*')
         .eq('empresa_id', empresaId)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(500);
       if (error) throw error;
       return (data || []) as AsaasPayment[];
     },
@@ -209,6 +210,7 @@ export function useAsaas(empresaId?: string) {
   // ===== SALDO =====
   const consultarSaldo = useMutation({
     mutationFn: () => invokeAsaas('consultar_saldo', {}),
+    onError: (e) => toast.error('Erro ao consultar saldo: ' + e.message),
   });
 
   // ===== TRANSFERÊNCIA PIX =====
