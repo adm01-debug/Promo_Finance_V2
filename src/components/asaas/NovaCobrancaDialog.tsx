@@ -42,6 +42,17 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
   const [descontoDias, setDescontoDias] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
   
+  // Cartão de crédito
+  const [cardHolderName, setCardHolderName] = useState('');
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardExpiryMonth, setCardExpiryMonth] = useState('');
+  const [cardExpiryYear, setCardExpiryYear] = useState('');
+  const [cardCcv, setCardCcv] = useState('');
+  const [cardEmail, setCardEmail] = useState('');
+  const [cardCpfCnpj, setCardCpfCnpj] = useState('');
+  const [cardCep, setCardCep] = useState('');
+  const [cardPhone, setCardPhone] = useState('');
+  
   // Form state - novo cliente
   const [nomeCliente, setNomeCliente] = useState('');
   const [cpfCnpj, setCpfCnpj] = useState('');
