@@ -51,7 +51,7 @@ export default function Bling() {
             {statusLoading ? (
               <Skeleton className="h-8 w-32" />
             ) : isConnected ? (
-              <Badge variant="default" className="gap-1 bg-green-600">
+              <Badge variant="default" className="gap-1">
                 <CheckCircle2 className="h-3 w-3" /> Conectado
               </Badge>
             ) : (
