@@ -442,6 +442,85 @@ Deno.serve(async (req) => {
         break
       }
 
+      // ===== LINKS DE PAGAMENTO =====
+      case 'criar_link_pagamento': {
+        if (!data?.nome || !data?.valor) return err('nome e valor são obrigatórios')
+        const linkPayload: any = {
+          name: data.nome,
+          value: data.valor,
+          billingType: data.tipo?.toUpperCase() || 'UNDEFINED',
+          chargeType: data.tipo_cobranca || 'DETACHED',
+          dueDateLimitDays: data.dias_limite_vencimento || 10,
+          description: data.descricao || undefined,
+          notificationEnabled: data.notificacoes !== false,
+        }
+        if (data.tipo_cobranca === 'RECURRENT') {
+          linkPayload.subscriptionCycle = data.ciclo_assinatura || 'MONTHLY'
+        }
+        if (data.max_parcelas) {
+          linkPayload.chargeType = 'INSTALLMENT'
+          linkPayload.maxInstallmentCount = data.max_parcelas
+        }
+        result = await asaasFetch('/paymentLinks', ASAAS_API_KEY, {
+          method: 'POST',
+          body: JSON.stringify(linkPayload),
+        })
+        const errLink = checkErrors(result)
+        if (errLink) return errLink
+        break
+      }
+
+      case 'listar_links_pagamento': {
+        const params = new URLSearchParams()
+        if (data?.offset) params.set('offset', data.offset || '0')
+        if (data?.limit) params.set('limit', data.limit || '20')
+        if (data?.active !== undefined) params.set('active', String(data.active))
+        result = await asaasFetch(`/paymentLinks?${params}`, ASAAS_API_KEY)
+        break
+      }
+
+      case 'excluir_link_pagamento': {
+        if (!data?.id) return err('id é obrigatório')
+        result = await asaasFetch(`/paymentLinks/${data.id}`, ASAAS_API_KEY, { method: 'DELETE' })
+        break
+      }
+
+      // ===== ANTECIPAÇÃO DE RECEBÍVEIS =====
+      case 'solicitar_antecipacao': {
+        if (!data?.payment_id) return err('payment_id é obrigatório')
+        result = await asaasFetch('/anticipations', ASAAS_API_KEY, {
+          method: 'POST',
+          body: JSON.stringify({
+            payment: data.payment_id,
+            installment: data.installment_id || undefined,
+          }),
+        })
+        const errAntec = checkErrors(result)
+        if (errAntec) return errAntec
+        break
+      }
+
+      case 'simular_antecipacao': {
+        if (!data?.payment_id) return err('payment_id é obrigatório')
+        result = await asaasFetch('/anticipations/simulate', ASAAS_API_KEY, {
+          method: 'POST',
+          body: JSON.stringify({
+            payment: data.payment_id,
+            installment: data.installment_id || undefined,
+          }),
+        })
+        break
+      }
+
+      case 'listar_antecipacoes': {
+        const params = new URLSearchParams()
+        if (data?.status) params.set('status', data.status)
+        if (data?.offset) params.set('offset', data.offset || '0')
+        if (data?.limit) params.set('limit', data.limit || '20')
+        result = await asaasFetch(`/anticipations?${params}`, ASAAS_API_KEY)
+        break
+      }
+
       default:
         return err(`Ação desconhecida: ${action}`)
     }
