@@ -193,13 +193,13 @@ function BlingPedidosPanel() {
   const { data, refetch, isFetching } = useBlingPedidos();
   const pedidos = data?.data || [];
 
-  const situacaoMap: Record<number, { label: string; color: string }> = {
-    6: { label: 'Em aberto', color: 'bg-yellow-100 text-yellow-800' },
-    9: { label: 'Atendido', color: 'bg-green-100 text-green-800' },
-    12: { label: 'Cancelado', color: 'bg-gray-100 text-gray-600' },
-    15: { label: 'Em andamento', color: 'bg-blue-100 text-blue-800' },
-    21: { label: 'Em digitação', color: 'bg-pink-100 text-pink-800' },
-    24: { label: 'Verificado', color: 'bg-emerald-100 text-emerald-800' },
+  const situacaoMap: Record<number, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
+    6: { label: 'Em aberto', variant: 'outline' },
+    9: { label: 'Atendido', variant: 'default' },
+    12: { label: 'Cancelado', variant: 'destructive' },
+    15: { label: 'Em andamento', variant: 'secondary' },
+    21: { label: 'Em digitação', variant: 'outline' },
+    24: { label: 'Verificado', variant: 'default' },
   };
 
   return (
