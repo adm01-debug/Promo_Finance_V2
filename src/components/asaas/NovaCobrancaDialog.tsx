@@ -116,7 +116,7 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
       return;
     }
 
-    const parcelasNum = parcelas ? parseInt(parcelas) : undefined;
+    const parcelasNum = parcelas && parcelas !== '1' ? parseInt(parcelas) : undefined;
     if (parcelasNum !== undefined && (parcelasNum < 2 || parcelasNum > 12)) {
       toast.error('Parcelas devem ser entre 2 e 12');
       return;

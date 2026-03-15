@@ -106,7 +106,7 @@ export function AssinaturasListPanel({ empresaId }: Props) {
                     const status = statusLabels[sub.status] || { label: sub.status, variant: 'outline' as const };
                     return (
                       <TableRow key={sub.id}>
-                        <TableCell className="font-medium text-sm">{sub.customer || '-'}</TableCell>
+                        <TableCell className="font-medium text-sm">{customerNameMap.get(sub.customer) || sub.customer || '-'}</TableCell>
                         <TableCell className="font-medium">{formatCurrency(sub.value || 0)}</TableCell>
                         <TableCell><Badge variant="outline" className="text-xs">{cycleLabels[sub.cycle] || sub.cycle}</Badge></TableCell>
                         <TableCell className="text-sm">{sub.nextDueDate || '-'}</TableCell>

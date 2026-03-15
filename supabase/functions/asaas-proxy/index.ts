@@ -21,6 +21,14 @@ async function asaasFetch(path: string, apiKey: string, options: RequestInit = {
       ...(options.headers || {}),
     },
   })
+  
+  const contentType = response.headers.get('content-type') || ''
+  if (!contentType.includes('application/json')) {
+    const text = await response.text()
+    console.error(`ASAAS retornou resposta não-JSON (${response.status}):`, text.substring(0, 500))
+    throw new Error(`ASAAS retornou erro ${response.status}: resposta inesperada`)
+  }
+  
   return response.json()
 }
 

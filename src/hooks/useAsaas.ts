@@ -224,6 +224,7 @@ export function useAsaas(empresaId?: string) {
   const consultarExtrato = useMutation({
     mutationFn: async (payload: { startDate?: string; finishDate?: string }) =>
       invokeAsaas('extrato', payload),
+    onError: (e) => toast.error('Erro ao consultar extrato: ' + e.message),
   });
 
   // ===== LINKS DE PAGAMENTO =====
