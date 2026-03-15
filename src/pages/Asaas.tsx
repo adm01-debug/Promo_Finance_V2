@@ -16,7 +16,7 @@ import {
   DollarSign, Clock, CheckCircle2, AlertTriangle, Copy, ExternalLink,
 } from 'lucide-react';
 import { useAsaas } from '@/hooks/useAsaas';
-import { useEmpresas } from '@/hooks/useEmpresas';
+import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { NovaCobrancaDialog } from '@/components/asaas/NovaCobrancaDialog';
 import { formatCurrency } from '@/lib/currency';
 import { format } from 'date-fns';
