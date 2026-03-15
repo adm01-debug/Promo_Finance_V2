@@ -958,6 +958,123 @@ export type Database = {
         }
         Relationships: []
       }
+      bling_sync_logs: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          detalhes: Json | null
+          finalizado_em: string | null
+          id: string
+          iniciado_em: string
+          mensagem_erro: string | null
+          modulo: string
+          registros_com_erro: number | null
+          registros_processados: number | null
+          status: string
+          tipo: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          detalhes?: Json | null
+          finalizado_em?: string | null
+          id?: string
+          iniciado_em?: string
+          mensagem_erro?: string | null
+          modulo: string
+          registros_com_erro?: number | null
+          registros_processados?: number | null
+          status?: string
+          tipo: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          detalhes?: Json | null
+          finalizado_em?: string | null
+          id?: string
+          iniciado_em?: string
+          mensagem_erro?: string | null
+          modulo?: string
+          registros_com_erro?: number | null
+          registros_processados?: number | null
+          status?: string
+          tipo?: string
+        }
+        Relationships: []
+      }
+      bling_tokens: {
+        Row: {
+          access_token: string
+          created_at: string
+          created_by: string
+          expires_at: string
+          id: string
+          refresh_token: string
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          created_by: string
+          expires_at: string
+          id?: string
+          refresh_token: string
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          created_by?: string
+          expires_at?: string
+          id?: string
+          refresh_token?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      bling_webhook_events: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          event_type: string
+          id: string
+          module: string
+          payload: Json | null
+          processed: boolean | null
+          processed_at: string | null
+          received_at: string
+          resource_id: string | null
+          retries: number | null
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          event_type: string
+          id?: string
+          module: string
+          payload?: Json | null
+          processed?: boolean | null
+          processed_at?: string | null
+          received_at?: string
+          resource_id?: string | null
+          retries?: number | null
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          event_type?: string
+          id?: string
+          module?: string
+          payload?: Json | null
+          processed?: boolean | null
+          processed_at?: string | null
+          received_at?: string
+          resource_id?: string | null
+          retries?: number | null
+        }
+        Relationships: []
+      }
       blocked_ips: {
         Row: {
           blocked_at: string | null

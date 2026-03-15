@@ -48,6 +48,7 @@ const Bitrix24 = lazy(() => import('./pages/Bitrix24'));
 const ReformaTributaria = lazy(() => import('./pages/ReformaTributaria'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const Asaas = lazy(() => import('./pages/Asaas'));
+const BlingPage = lazy(() => import('./pages/Bling'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Inner app component that can use routing hooks
@@ -96,6 +97,7 @@ function AppRoutes() {
             <Route path="/bitrix24" element={<ProtectedRoute><Bitrix24 /></ProtectedRoute>} />
             <Route path="/reforma-tributaria" element={<ProtectedRoute><ReformaTributaria /></ProtectedRoute>} />
             <Route path="/asaas" element={<ProtectedRoute><Asaas /></ProtectedRoute>} />
+            <Route path="/bling" element={<ProtectedRoute><BlingPage /></ProtectedRoute>} />
             
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
