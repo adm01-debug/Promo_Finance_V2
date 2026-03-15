@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { QrCode, Banknote, Loader2, UserPlus, Settings2 } from 'lucide-react';
+import { QrCode, Banknote, CreditCard, Loader2, UserPlus, Settings2 } from 'lucide-react';
 import { useAsaas, type AsaasBillingType } from '@/hooks/useAsaas';
 import { toast } from 'sonner';
 
