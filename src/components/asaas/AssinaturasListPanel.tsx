@@ -32,10 +32,13 @@ const statusLabels: Record<string, { label: string; variant: 'default' | 'second
 };
 
 export function AssinaturasListPanel({ empresaId }: Props) {
-  const { cancelarAssinatura } = useAsaas(empresaId);
+  const { cancelarAssinatura, customers } = useAsaas(empresaId);
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [cancelConfirm, setCancelConfirm] = useState<string | null>(null);
+
+  // Map ASAAS customer IDs to names
+  const customerNameMap = new Map(customers.map(c => [c.asaas_id, c.nome]));
 
   const fetchSubscriptions = async () => {
     setLoading(true);
@@ -103,7 +106,7 @@ export function AssinaturasListPanel({ empresaId }: Props) {
                     const status = statusLabels[sub.status] || { label: sub.status, variant: 'outline' as const };
                     return (
                       <TableRow key={sub.id}>
-                        <TableCell className="font-medium text-sm">{sub.customer || '-'}</TableCell>
+                        <TableCell className="font-medium text-sm">{customerNameMap.get(sub.customer) || sub.customer || '-'}</TableCell>
                         <TableCell className="font-medium">{formatCurrency(sub.value || 0)}</TableCell>
                         <TableCell><Badge variant="outline" className="text-xs">{cycleLabels[sub.cycle] || sub.cycle}</Badge></TableCell>
                         <TableCell className="text-sm">{sub.nextDueDate || '-'}</TableCell>

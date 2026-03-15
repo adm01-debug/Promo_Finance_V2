@@ -181,6 +181,7 @@ export function useAsaas(empresaId?: string) {
   // ===== PIX QR CODE =====
   const buscarPixQrCode = useMutation({
     mutationFn: async (asaasId: string) => invokeAsaas('pix_qrcode', { asaas_id: asaasId }),
+    onError: (e) => toast.error('Erro ao buscar QR Code: ' + e.message),
   });
 
   // ===== ASSINATURAS =====
@@ -223,6 +224,7 @@ export function useAsaas(empresaId?: string) {
   const consultarExtrato = useMutation({
     mutationFn: async (payload: { startDate?: string; finishDate?: string }) =>
       invokeAsaas('extrato', payload),
+    onError: (e) => toast.error('Erro ao consultar extrato: ' + e.message),
   });
 
   // ===== LINKS DE PAGAMENTO =====
