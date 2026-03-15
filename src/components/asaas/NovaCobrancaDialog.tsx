@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CreditCard, QrCode, Banknote, Loader2, UserPlus } from 'lucide-react';
+import { QrCode, Banknote, Loader2, UserPlus } from 'lucide-react';
 import { useAsaas, type AsaasBillingType } from '@/hooks/useAsaas';
 import { toast } from 'sonner';
 
@@ -25,7 +25,7 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
   
   const [tab, setTab] = useState<'cobranca' | 'cliente'>('cobranca');
   
-  // Form state - cobrança
+  // Form state - cobrança (apenas boleto e pix, cartão requer dados sensíveis)
   const [tipo, setTipo] = useState<AsaasBillingType>('boleto');
   const [customerId, setCustomerId] = useState('');
   const [valor, setValor] = useState('');
@@ -56,11 +56,17 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
       return;
     }
 
+    const cleanCpfCnpj = cpfCnpj.replace(/\D/g, '');
+    if (cleanCpfCnpj.length !== 11 && cleanCpfCnpj.length !== 14) {
+      toast.error('CPF deve ter 11 dígitos ou CNPJ deve ter 14 dígitos');
+      return;
+    }
+
     try {
       await criarCliente.mutateAsync({
         empresa_id: empresaId,
         nome: nomeCliente,
-        cpf_cnpj: cpfCnpj.replace(/\D/g, ''),
+        cpf_cnpj: cleanCpfCnpj,
         email: emailCliente || undefined,
         telefone: telefoneCliente || undefined,
       });
@@ -80,12 +86,26 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
       return;
     }
 
+    const valorNum = parseFloat(valor);
+    if (isNaN(valorNum) || valorNum <= 0) {
+      toast.error('Valor deve ser maior que zero');
+      return;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dueDate = new Date(vencimento + 'T00:00:00');
+    if (dueDate < today) {
+      toast.error('Data de vencimento não pode ser no passado');
+      return;
+    }
+
     try {
       await criarCobranca.mutateAsync({
         empresa_id: empresaId,
         asaas_customer_id: customerId,
         tipo,
-        valor: parseFloat(valor),
+        valor: valorNum,
         data_vencimento: vencimento,
         descricao: descricao || undefined,
       });
@@ -101,10 +121,10 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
       <DialogContent className="sm:max-w-[520px]">
         <DialogHeader>
           <DialogTitle>Nova Cobrança ASAAS</DialogTitle>
-          <DialogDescription>Emita uma cobrança real por Boleto, Pix ou Cartão</DialogDescription>
+          <DialogDescription>Emita uma cobrança real por Boleto ou Pix</DialogDescription>
         </DialogHeader>
 
-        <Tabs value={tab} onValueChange={(v) => setTab(v as any)}>
+        <Tabs value={tab} onValueChange={(v) => setTab(v as 'cobranca' | 'cliente')}>
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="cobranca">Cobrança</TabsTrigger>
             <TabsTrigger value="cliente">
@@ -113,13 +133,12 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
           </TabsList>
 
           <TabsContent value="cobranca" className="space-y-4 mt-4">
-            {/* Tipo de cobrança */}
-            <div className="grid grid-cols-3 gap-2">
+            {/* Tipo de cobrança - apenas boleto e pix */}
+            <div className="grid grid-cols-2 gap-2">
               {([
-                { value: 'boleto', label: 'Boleto', icon: Banknote },
-                { value: 'pix', label: 'Pix', icon: QrCode },
-                { value: 'credit_card', label: 'Cartão', icon: CreditCard },
-              ] as const).map(opt => (
+                { value: 'boleto' as const, label: 'Boleto', icon: Banknote },
+                { value: 'pix' as const, label: 'Pix', icon: QrCode },
+              ]).map(opt => (
                 <Button
                   key={opt.value}
                   type="button"
@@ -137,7 +156,7 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
             <div className="space-y-2">
               <Label>Cliente ASAAS *</Label>
               {customers.length === 0 ? (
-                <div className="text-sm text-muted-foreground p-3 border rounded-lg text-center">
+                <div className="text-sm text-muted-foreground p-3 border border-border rounded-lg text-center">
                   Nenhum cliente cadastrado.{' '}
                   <button className="text-primary underline" onClick={() => setTab('cliente')}>
                     Cadastre um cliente primeiro
@@ -166,7 +185,7 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
                 <Input
                   type="number"
                   step="0.01"
-                  min="0"
+                  min="0.01"
                   value={valor}
                   onChange={e => setValor(e.target.value)}
                   placeholder="100.00"
@@ -178,6 +197,7 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
                   type="date"
                   value={vencimento}
                   onChange={e => setVencimento(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
                 />
               </div>
             </div>

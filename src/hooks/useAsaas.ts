@@ -56,6 +56,9 @@ async function invokeAsaas(action: string, data: any) {
   if (result?.errors) {
     throw new Error(result.errors.map((e: any) => e.description).join(', '));
   }
+  if (result?.error) {
+    throw new Error(result.error);
+  }
   return result;
 }
 
@@ -66,12 +69,16 @@ export function useAsaas(empresaId?: string) {
   const { data: customers = [], isLoading: loadingCustomers } = useQuery({
     queryKey: ['asaas-customers', empresaId],
     queryFn: async () => {
-      let query = supabase.from('asaas_customers').select('*').order('created_at', { ascending: false });
-      if (empresaId) query = query.eq('empresa_id', empresaId);
-      const { data, error } = await query;
+      if (!empresaId) return [];
+      const { data, error } = await supabase
+        .from('asaas_customers')
+        .select('*')
+        .eq('empresa_id', empresaId)
+        .order('created_at', { ascending: false });
       if (error) throw error;
       return (data || []) as AsaasCustomer[];
     },
+    enabled: !!empresaId,
   });
 
   const criarCliente = useMutation({
@@ -95,12 +102,16 @@ export function useAsaas(empresaId?: string) {
   const { data: payments = [], isLoading: loadingPayments } = useQuery({
     queryKey: ['asaas-payments', empresaId],
     queryFn: async () => {
-      let query = supabase.from('asaas_payments').select('*').order('created_at', { ascending: false });
-      if (empresaId) query = query.eq('empresa_id', empresaId);
-      const { data, error } = await query;
+      if (!empresaId) return [];
+      const { data, error } = await supabase
+        .from('asaas_payments')
+        .select('*')
+        .eq('empresa_id', empresaId)
+        .order('created_at', { ascending: false });
       if (error) throw error;
       return (data || []) as AsaasPayment[];
     },
+    enabled: !!empresaId,
   });
 
   const criarCobranca = useMutation({
@@ -175,19 +186,15 @@ export function useAsaas(empresaId?: string) {
   };
 
   return {
-    // Customers
     customers,
     loadingCustomers,
     criarCliente,
-    // Payments
     payments,
     loadingPayments,
     criarCobranca,
     cancelarCobranca,
-    // Saldo & Transfers
     consultarSaldo,
     transferirPix,
-    // Stats
     stats,
   };
 }
