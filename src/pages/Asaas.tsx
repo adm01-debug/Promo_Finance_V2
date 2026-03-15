@@ -286,15 +286,15 @@ export default function Asaas() {
       />
 
       <ConfirmationDialog
-        open={!!cancelConfirm}
-        onOpenChange={(open) => !open && setCancelConfirm(null)}
+        isOpen={!!cancelConfirm}
+        onClose={() => setCancelConfirm(null)}
         title="Cancelar Cobrança"
-        description="Tem certeza que deseja cancelar esta cobrança? Esta ação não pode ser desfeita e o cliente será notificado."
+        message="Tem certeza que deseja cancelar esta cobrança? Esta ação não pode ser desfeita e o cliente será notificado."
         confirmText="Sim, Cancelar"
         cancelText="Não"
-        variant="destructive"
+        type="danger"
         onConfirm={handleCancelar}
-        loading={cancelarCobranca.isPending}
+        isLoading={cancelarCobranca.isPending}
       />
     </MainLayout>
   );
