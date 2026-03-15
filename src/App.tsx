@@ -97,6 +97,7 @@ function AppRoutes() {
             <Route path="/bitrix24" element={<ProtectedRoute><Bitrix24 /></ProtectedRoute>} />
             <Route path="/reforma-tributaria" element={<ProtectedRoute><ReformaTributaria /></ProtectedRoute>} />
             <Route path="/asaas" element={<ProtectedRoute><Asaas /></ProtectedRoute>} />
+            <Route path="/bling" element={<ProtectedRoute><BlingPage /></ProtectedRoute>} />
             
             {/* 404 */}
             <Route path="*" element={<NotFound />} />

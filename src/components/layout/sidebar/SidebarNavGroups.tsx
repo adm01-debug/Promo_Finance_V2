@@ -118,6 +118,7 @@ const navGroups: NavGroup[] = [
       { label: 'Logs de Auditoria', icon: ScrollText, href: '/audit-logs' },
       { label: 'Usuários', icon: UserCog, href: '/usuarios' },
       { label: 'Bitrix24', icon: Zap, href: '/bitrix24' },
+      { label: 'Bling ERP', icon: Package, href: '/bling', highlight: true },
       { label: 'Configurações', icon: Settings, href: '/configuracoes' },
     ],
   },
