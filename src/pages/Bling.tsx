@@ -7,6 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -19,18 +21,19 @@ import {
   Link2, RefreshCw, CheckCircle2, XCircle, Loader2,
   ExternalLink, Truck, Clock, AlertTriangle, Search, Eye,
   MoreHorizontal, Trash2, ArrowUpDown, Download, Send,
-  RotateCcw, Receipt, Tag, MapPin, Plus, ChevronLeft, ChevronRight
+  RotateCcw, Receipt, Tag, MapPin, Plus, ChevronLeft, ChevronRight,
+  Edit, CreditCard, Layers, Box, Printer
 } from 'lucide-react';
 import {
   useBlingOAuth, useBlingStatus, useBlingContatos, useBlingContatoMutations,
   useBlingPedidos, useBlingPedidoMutations,
-  useBlingProdutos, useBlingProdutoMutations,
+  useBlingProdutos, useBlingProdutoMutations, useBlingVariacoes, useBlingVariacoesMutations,
   useBlingEstoque, useBlingDepositos, useBlingEstoqueMutations,
-  useBlingFinanceiro, useBlingFinanceiroMutations,
+  useBlingFinanceiro, useBlingFinanceiroMutations, useBlingBorderos,
   useBlingNFe, useBlingNFeMutations,
   useBlingLogisticas, useBlingRemessas, useBlingObjetos, useBlingLogisticaMutations,
   useBlingFormasPagamento, useBlingContasContabeis, useBlingCategoriasFinanceiras,
-  useBlingWebhookEvents, useBlingSyncLogs
+  useBlingWebhookEvents, useBlingSyncLogs, useBlingServicosLogistica
 } from '@/hooks/useBling';
 
 export default function Bling() {
@@ -139,15 +142,49 @@ function BlingContatosPanel() {
   const [pesquisa, setPesquisa] = useState('');
   const [criterio, setCriterio] = useState('1');
   const [pagina, setPagina] = useState(1);
+  const [showCreate, setShowCreate] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const { data, refetch, isFetching } = useBlingContatos({ pesquisa: pesquisa || undefined, criterio: Number(criterio), pagina });
-  const { excluirContatos } = useBlingContatoMutations();
+  const { criarContato, atualizarContato, excluirContatos, alterarSituacaoContato } = useBlingContatoMutations();
   const contatos = data?.data || [];
+
+  const [formData, setFormData] = useState({ nome: '', fantasia: '', tipoPessoa: 'J', numeroDocumento: '', email: '', telefone: '' });
+
+  const resetForm = () => setFormData({ nome: '', fantasia: '', tipoPessoa: 'J', numeroDocumento: '', email: '', telefone: '' });
+
+  const handleSave = () => {
+    const payload = { ...formData };
+    if (editingId) {
+      atualizarContato.mutate({ id: editingId, data: payload }, {
+        onSuccess: () => { setEditingId(null); resetForm(); refetch(); }
+      });
+    } else {
+      criarContato.mutate(payload, {
+        onSuccess: () => { setShowCreate(false); resetForm(); refetch(); }
+      });
+    }
+  };
+
+  const handleEdit = (c: any) => {
+    setFormData({
+      nome: c.nome || '', fantasia: c.fantasia || '', tipoPessoa: c.tipo || 'J',
+      numeroDocumento: c.numeroDocumento || '', email: c.email || '', telefone: c.telefone || c.celular || ''
+    });
+    setEditingId(String(c.id));
+  };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2"><Users className="h-5 w-5" /> Contatos do Bling</CardTitle>
-        <CardDescription>Clientes, fornecedores e transportadoras — busca, filtro por tipo, exclusão em lote</CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2"><Users className="h-5 w-5" /> Contatos do Bling</CardTitle>
+            <CardDescription>Clientes, fornecedores e transportadoras — CRUD completo, situação, lote</CardDescription>
+          </div>
+          <Button onClick={() => { resetForm(); setShowCreate(true); }} className="gap-1.5">
+            <Plus className="h-4 w-4" /> Novo Contato
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-wrap gap-2">
@@ -167,7 +204,7 @@ function BlingContatosPanel() {
           </Button>
         </div>
         {contatos.length === 0 && !isFetching && (
-          <EmptyState icon={Users} title="Nenhum contato encontrado" description="Clique em Buscar para carregar os contatos do Bling" />
+          <EmptyState icon={Users} title="Nenhum contato encontrado" description="Clique em Buscar para carregar ou crie um novo contato" />
         )}
         {contatos.length > 0 && (
           <>
@@ -203,6 +240,13 @@ function BlingContatosPanel() {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleEdit(c)}>
+                              <Edit className="h-4 w-4 mr-2" /> Editar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => alterarSituacaoContato.mutate({ id: String(c.id), data: { situacao: c.situacao === 'A' ? 'I' : 'A' } })}>
+                              <ArrowUpDown className="h-4 w-4 mr-2" /> {c.situacao === 'A' ? 'Inativar' : 'Ativar'}
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem className="text-destructive" onClick={() => {
                               if (confirm(`Excluir contato #${c.id}?`)) excluirContatos.mutate([String(c.id)]);
                             }}><Trash2 className="h-4 w-4 mr-2" /> Excluir</DropdownMenuItem>
@@ -218,6 +262,45 @@ function BlingContatosPanel() {
           </>
         )}
       </CardContent>
+
+      {/* Dialog Criar/Editar Contato */}
+      <Dialog open={showCreate || !!editingId} onOpenChange={(open) => { if (!open) { setShowCreate(false); setEditingId(null); resetForm(); } }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editingId ? 'Editar Contato' : 'Novo Contato'}</DialogTitle>
+            <DialogDescription>Preencha os dados do contato no Bling</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div><Label>Razão Social / Nome</Label><Input value={formData.nome} onChange={e => setFormData(p => ({ ...p, nome: e.target.value }))} /></div>
+            <div><Label>Nome Fantasia</Label><Input value={formData.fantasia} onChange={e => setFormData(p => ({ ...p, fantasia: e.target.value }))} /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Tipo Pessoa</Label>
+                <Select value={formData.tipoPessoa} onValueChange={v => setFormData(p => ({ ...p, tipoPessoa: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="J">Jurídica</SelectItem>
+                    <SelectItem value="F">Física</SelectItem>
+                    <SelectItem value="E">Estrangeiro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div><Label>CPF/CNPJ</Label><Input value={formData.numeroDocumento} onChange={e => setFormData(p => ({ ...p, numeroDocumento: e.target.value }))} /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Email</Label><Input type="email" value={formData.email} onChange={e => setFormData(p => ({ ...p, email: e.target.value }))} /></div>
+              <div><Label>Telefone</Label><Input value={formData.telefone} onChange={e => setFormData(p => ({ ...p, telefone: e.target.value }))} /></div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setShowCreate(false); setEditingId(null); resetForm(); }}>Cancelar</Button>
+            <Button onClick={handleSave} disabled={!formData.nome || criarContato.isPending || atualizarContato.isPending}>
+              {(criarContato.isPending || atualizarContato.isPending) && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {editingId ? 'Salvar' : 'Criar'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
@@ -334,76 +417,176 @@ function BlingPedidosPanel() {
 function BlingProdutosPanel() {
   const [nome, setNome] = useState('');
   const [pagina, setPagina] = useState(1);
+  const [showCreate, setShowCreate] = useState(false);
+  const [showVariacoes, setShowVariacoes] = useState<string | null>(null);
   const { data, refetch, isFetching } = useBlingProdutos({ nome: nome || undefined, pagina });
-  const { excluirProdutos } = useBlingProdutoMutations();
+  const { criarProduto, atualizarProduto, excluirProdutos } = useBlingProdutoMutations();
+  const { data: variacoesData, refetch: refetchVariacoes, isFetching: fetchingVariacoes } = useBlingVariacoes(showVariacoes || undefined);
   const produtos = data?.data || [];
+  const variacoes = variacoesData?.data || [];
+
+  const [prodForm, setProdForm] = useState({ nome: '', codigo: '', preco: '', tipo: 'P', formato: 'S', situacao: 'A' });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2"><Package className="h-5 w-5" /> Produtos</CardTitle>
-        <CardDescription>Catálogo de produtos — busca, variações, kit/composição, exclusão em lote</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex gap-2">
-          <Input placeholder="Buscar produto..." value={nome} onChange={e => setNome(e.target.value)} className="max-w-sm" />
-          <Button onClick={() => { setPagina(1); refetch(); }} disabled={isFetching} className="gap-1.5">
-            {isFetching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />} Buscar
-          </Button>
-        </div>
-        {produtos.length === 0 && !isFetching && (
-          <EmptyState icon={Package} title="Nenhum produto" description="Busque produtos do Bling pelo nome ou código" />
-        )}
-        {produtos.length > 0 && (
-          <>
-            <div className="rounded-md border overflow-auto">
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2"><Package className="h-5 w-5" /> Produtos</CardTitle>
+              <CardDescription>Catálogo — CRUD, variações, kit/composição, exclusão em lote</CardDescription>
+            </div>
+            <Button onClick={() => { setProdForm({ nome: '', codigo: '', preco: '', tipo: 'P', formato: 'S', situacao: 'A' }); setShowCreate(true); }} className="gap-1.5">
+              <Plus className="h-4 w-4" /> Novo Produto
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-2">
+            <Input placeholder="Buscar produto..." value={nome} onChange={e => setNome(e.target.value)} className="max-w-sm" />
+            <Button onClick={() => { setPagina(1); refetch(); }} disabled={isFetching} className="gap-1.5">
+              {isFetching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />} Buscar
+            </Button>
+          </div>
+          {produtos.length === 0 && !isFetching && (
+            <EmptyState icon={Package} title="Nenhum produto" description="Busque ou crie produtos no Bling" />
+          )}
+          {produtos.length > 0 && (
+            <>
+              <div className="rounded-md border overflow-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Código</TableHead>
+                      <TableHead>Nome</TableHead>
+                      <TableHead className="text-right">Preço</TableHead>
+                      <TableHead>Tipo</TableHead>
+                      <TableHead>Formato</TableHead>
+                      <TableHead>Situação</TableHead>
+                      <TableHead className="w-10">Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {produtos.map((p: any) => (
+                      <TableRow key={p.id}>
+                        <TableCell className="font-mono text-xs">{p.codigo || '-'}</TableCell>
+                        <TableCell className="font-medium">{p.nome}</TableCell>
+                        <TableCell className="text-right">R$ {Number(p.preco || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{p.tipo === 'P' ? 'Produto' : p.tipo === 'S' ? 'Serviço' : p.tipo === 'E' ? 'Kit' : p.tipo || '-'}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{p.formato === 'S' ? 'Simples' : p.formato === 'V' ? 'Com Variação' : p.formato === 'E' ? 'Composição' : p.formato || '-'}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={p.situacao === 'A' ? 'default' : 'secondary'}>{p.situacao === 'A' ? 'Ativo' : 'Inativo'}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              {p.formato === 'V' && (
+                                <DropdownMenuItem onClick={() => { setShowVariacoes(String(p.id)); setTimeout(() => refetchVariacoes(), 100); }}>
+                                  <Layers className="h-4 w-4 mr-2" /> Ver Variações
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem className="text-destructive" onClick={() => {
+                                if (confirm(`Excluir produto #${p.id}?`)) excluirProdutos.mutate([String(p.id)]);
+                              }}><Trash2 className="h-4 w-4 mr-2" /> Excluir</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              <PaginationControls pagina={pagina} setPagina={setPagina} hasMore={produtos.length === 100} onRefetch={refetch} />
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Dialog Criar Produto */}
+      <Dialog open={showCreate} onOpenChange={setShowCreate}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Novo Produto</DialogTitle>
+            <DialogDescription>Cadastre um produto no Bling</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div><Label>Nome</Label><Input value={prodForm.nome} onChange={e => setProdForm(p => ({ ...p, nome: e.target.value }))} /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Código (SKU)</Label><Input value={prodForm.codigo} onChange={e => setProdForm(p => ({ ...p, codigo: e.target.value }))} /></div>
+              <div><Label>Preço (R$)</Label><Input type="number" step="0.01" value={prodForm.preco} onChange={e => setProdForm(p => ({ ...p, preco: e.target.value }))} /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Tipo</Label>
+                <Select value={prodForm.tipo} onValueChange={v => setProdForm(p => ({ ...p, tipo: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="P">Produto</SelectItem>
+                    <SelectItem value="S">Serviço</SelectItem>
+                    <SelectItem value="E">Kit</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Formato</Label>
+                <Select value={prodForm.formato} onValueChange={v => setProdForm(p => ({ ...p, formato: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="S">Simples</SelectItem>
+                    <SelectItem value="V">Com Variação</SelectItem>
+                    <SelectItem value="E">Composição</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreate(false)}>Cancelar</Button>
+            <Button onClick={() => {
+              criarProduto.mutate({ nome: prodForm.nome, codigo: prodForm.codigo, preco: Number(prodForm.preco) || 0, tipo: prodForm.tipo, formato: prodForm.formato, situacao: 'A' }, {
+                onSuccess: () => { setShowCreate(false); refetch(); }
+              });
+            }} disabled={!prodForm.nome || criarProduto.isPending}>
+              {criarProduto.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Criar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog Variações */}
+      <Dialog open={!!showVariacoes} onOpenChange={() => setShowVariacoes(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Variações do Produto #{showVariacoes}</DialogTitle>
+          </DialogHeader>
+          {fetchingVariacoes ? <LoadingSkeleton /> : variacoes.length === 0 ? (
+            <p className="text-muted-foreground text-sm">Nenhuma variação encontrada.</p>
+          ) : (
+            <div className="rounded-md border overflow-auto max-h-80">
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Código</TableHead>
-                    <TableHead>Nome</TableHead>
-                    <TableHead className="text-right">Preço</TableHead>
-                    <TableHead>Tipo</TableHead>
-                    <TableHead>Formato</TableHead>
-                    <TableHead>Situação</TableHead>
-                    <TableHead className="w-10">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
+                <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Nome</TableHead><TableHead>Código</TableHead><TableHead className="text-right">Preço</TableHead></TableRow></TableHeader>
                 <TableBody>
-                  {produtos.map((p: any) => (
-                    <TableRow key={p.id}>
-                      <TableCell className="font-mono text-xs">{p.codigo || '-'}</TableCell>
-                      <TableCell className="font-medium">{p.nome}</TableCell>
-                      <TableCell className="text-right">R$ {Number(p.preco || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{p.tipo === 'P' ? 'Produto' : p.tipo === 'S' ? 'Serviço' : p.tipo === 'E' ? 'Kit' : p.tipo || '-'}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{p.formato === 'S' ? 'Simples' : p.formato === 'V' ? 'Com Variação' : p.formato === 'E' ? 'Composição' : p.formato || '-'}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={p.situacao === 'A' ? 'default' : 'secondary'}>{p.situacao === 'A' ? 'Ativo' : 'Inativo'}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem className="text-destructive" onClick={() => {
-                              if (confirm(`Excluir produto #${p.id}?`)) excluirProdutos.mutate([String(p.id)]);
-                            }}><Trash2 className="h-4 w-4 mr-2" /> Excluir</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
+                  {variacoes.map((v: any) => (
+                    <TableRow key={v.id}>
+                      <TableCell className="font-mono text-xs">{v.id}</TableCell>
+                      <TableCell>{v.nome}</TableCell>
+                      <TableCell className="font-mono text-xs">{v.codigo || '-'}</TableCell>
+                      <TableCell className="text-right">R$ {Number(v.preco || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </div>
-            <PaginationControls pagina={pagina} setPagina={setPagina} hasMore={produtos.length === 100} onRefetch={refetch} />
-          </>
-        )}
-      </CardContent>
-    </Card>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
 
@@ -411,15 +594,28 @@ function BlingProdutosPanel() {
 function BlingEstoquePanel() {
   const { data, refetch, isFetching } = useBlingEstoque();
   const { data: depositosData, refetch: refetchDepositos, isFetching: fetchingDepositos } = useBlingDepositos();
+  const { lancarEstoque, criarDeposito } = useBlingEstoqueMutations();
   const saldos = data?.data || [];
   const depositos = depositosData?.data || [];
+
+  const [showLancar, setShowLancar] = useState(false);
+  const [showDeposito, setShowDeposito] = useState(false);
+  const [lancForm, setLancForm] = useState({ idProduto: '', quantidade: '', idDeposito: '', operacao: 'E', observacoes: '' });
+  const [depForm, setDepForm] = useState({ descricao: '', situacao: 'A' });
 
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Warehouse className="h-5 w-5" /> Saldos de Estoque</CardTitle>
-          <CardDescription>Saldos físico e virtual por produto nos depósitos do Bling</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2"><Warehouse className="h-5 w-5" /> Saldos de Estoque</CardTitle>
+              <CardDescription>Saldos físico e virtual por produto nos depósitos do Bling</CardDescription>
+            </div>
+            <Button onClick={() => setShowLancar(true)} variant="outline" className="gap-1.5">
+              <Plus className="h-4 w-4" /> Lançar Movimentação
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <Button onClick={() => refetch()} disabled={isFetching} className="gap-1.5">
@@ -457,8 +653,15 @@ function BlingEstoquePanel() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><MapPin className="h-5 w-5" /> Depósitos</CardTitle>
-          <CardDescription>Armazéns cadastrados no Bling</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2"><MapPin className="h-5 w-5" /> Depósitos</CardTitle>
+              <CardDescription>Armazéns cadastrados no Bling</CardDescription>
+            </div>
+            <Button onClick={() => setShowDeposito(true)} variant="outline" className="gap-1.5">
+              <Plus className="h-4 w-4" /> Novo Depósito
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <Button onClick={() => refetchDepositos()} disabled={fetchingDepositos} variant="outline" className="gap-1.5">
@@ -490,6 +693,65 @@ function BlingEstoquePanel() {
           )}
         </CardContent>
       </Card>
+
+      {/* Dialog Lançar Estoque */}
+      <Dialog open={showLancar} onOpenChange={setShowLancar}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Lançar Movimentação de Estoque</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div><Label>ID do Produto</Label><Input value={lancForm.idProduto} onChange={e => setLancForm(p => ({ ...p, idProduto: e.target.value }))} placeholder="Ex: 12345" /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Quantidade</Label><Input type="number" value={lancForm.quantidade} onChange={e => setLancForm(p => ({ ...p, quantidade: e.target.value }))} /></div>
+              <div>
+                <Label>Operação</Label>
+                <Select value={lancForm.operacao} onValueChange={v => setLancForm(p => ({ ...p, operacao: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="E">Entrada</SelectItem>
+                    <SelectItem value="S">Saída</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div><Label>ID do Depósito (opcional)</Label><Input value={lancForm.idDeposito} onChange={e => setLancForm(p => ({ ...p, idDeposito: e.target.value }))} /></div>
+            <div><Label>Observações</Label><Textarea value={lancForm.observacoes} onChange={e => setLancForm(p => ({ ...p, observacoes: e.target.value }))} /></div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowLancar(false)}>Cancelar</Button>
+            <Button onClick={() => {
+              lancarEstoque.mutate({
+                produto: { id: Number(lancForm.idProduto) },
+                deposito: lancForm.idDeposito ? { id: Number(lancForm.idDeposito) } : undefined,
+                operacao: lancForm.operacao,
+                quantidade: Number(lancForm.quantidade),
+                observacoes: lancForm.observacoes || undefined,
+              }, { onSuccess: () => { setShowLancar(false); refetch(); } });
+            }} disabled={!lancForm.idProduto || !lancForm.quantidade || lancarEstoque.isPending}>
+              {lancarEstoque.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Lançar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog Novo Depósito */}
+      <Dialog open={showDeposito} onOpenChange={setShowDeposito}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Novo Depósito</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div><Label>Descrição</Label><Input value={depForm.descricao} onChange={e => setDepForm(p => ({ ...p, descricao: e.target.value }))} /></div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDeposito(false)}>Cancelar</Button>
+            <Button onClick={() => {
+              criarDeposito.mutate({ descricao: depForm.descricao, situacao: 'A' }, {
+                onSuccess: () => { setShowDeposito(false); refetchDepositos(); }
+              });
+            }} disabled={!depForm.descricao || criarDeposito.isPending}>
+              {criarDeposito.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Criar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -497,17 +759,27 @@ function BlingEstoquePanel() {
 // ═══════════════ FINANCEIRO ═══════════════
 function BlingFinanceiroPanel() {
   const [tipo, setTipo] = useState<'receber' | 'pagar'>('receber');
-  const [subTab, setSubTab] = useState<'contas' | 'formas' | 'portadores' | 'categorias'>('contas');
+  const [subTab, setSubTab] = useState<'contas' | 'formas' | 'portadores' | 'categorias' | 'borderos'>('contas');
   const [pagina, setPagina] = useState(1);
+  const [showBaixa, setShowBaixa] = useState<{ id: string; tipo: 'receber' | 'pagar' } | null>(null);
   const { data, refetch, isFetching } = useBlingFinanceiro(tipo, { pagina });
-  const { excluirContaReceber, excluirContaPagar } = useBlingFinanceiroMutations();
+  const {
+    excluirContaReceber, excluirContaPagar,
+    darBaixaReceber, darBaixaPagar,
+    estornarBaixaReceber, estornarBaixaPagar,
+    criarContaReceber, criarContaPagar
+  } = useBlingFinanceiroMutations();
   const { data: formasData, refetch: refetchFormas, isFetching: fetchingFormas } = useBlingFormasPagamento();
   const { data: portadoresData, refetch: refetchPortadores, isFetching: fetchingPortadores } = useBlingContasContabeis();
   const { data: categoriasData, refetch: refetchCategorias, isFetching: fetchingCategorias } = useBlingCategoriasFinanceiras();
+  const { data: borderosData, refetch: refetchBorderos, isFetching: fetchingBorderos } = useBlingBorderos();
   const contas = data?.data || [];
   const formas = formasData?.data || [];
   const portadores = portadoresData?.data || [];
   const categorias = categoriasData?.data || [];
+  const borderos = borderosData?.data || [];
+
+  const [baixaForm, setBaixaForm] = useState({ valorRecebido: '', data: new Date().toISOString().split('T')[0] });
 
   return (
     <div className="space-y-4">
@@ -523,6 +795,9 @@ function BlingFinanceiroPanel() {
         </Button>
         <Button variant={subTab === 'categorias' ? 'default' : 'outline'} onClick={() => { setSubTab('categorias'); refetchCategorias(); }} size="sm">
           <Tag className="h-4 w-4 mr-1" /> Categorias
+        </Button>
+        <Button variant={subTab === 'borderos' ? 'default' : 'outline'} onClick={() => { setSubTab('borderos'); refetchBorderos(); }} size="sm">
+          <CreditCard className="h-4 w-4 mr-1" /> Borderôs
         </Button>
       </div>
 
@@ -572,6 +847,26 @@ function BlingFinanceiroPanel() {
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
+                                  {c.situacao !== 2 && (
+                                    <DropdownMenuItem onClick={() => {
+                                      setBaixaForm({ valorRecebido: String(c.valor || ''), data: new Date().toISOString().split('T')[0] });
+                                      setShowBaixa({ id: String(c.id), tipo });
+                                    }}>
+                                      <CheckCircle2 className="h-4 w-4 mr-2" /> Dar Baixa
+                                    </DropdownMenuItem>
+                                  )}
+                                  {c.situacao === 2 && (
+                                    <DropdownMenuItem onClick={() => {
+                                      if (confirm('Estornar a última baixa?')) {
+                                        tipo === 'receber'
+                                          ? estornarBaixaReceber.mutate({ id: String(c.id), baixaId: 'last' })
+                                          : estornarBaixaPagar.mutate({ id: String(c.id), baixaId: 'last' });
+                                      }
+                                    }}>
+                                      <RotateCcw className="h-4 w-4 mr-2" /> Estornar Baixa
+                                    </DropdownMenuItem>
+                                  )}
+                                  <DropdownMenuSeparator />
                                   <DropdownMenuItem className="text-destructive" onClick={() => {
                                     if (confirm('Excluir esta conta?')) {
                                       tipo === 'receber' ? excluirContaReceber.mutate(String(c.id)) : excluirContaPagar.mutate(String(c.id));
@@ -595,10 +890,7 @@ function BlingFinanceiroPanel() {
 
       {subTab === 'formas' && (
         <Card>
-          <CardHeader>
-            <CardTitle>Formas de Pagamento</CardTitle>
-            <CardDescription>Cadastros de formas de pagamento no Bling</CardDescription>
-          </CardHeader>
+          <CardHeader><CardTitle>Formas de Pagamento</CardTitle><CardDescription>Cadastros de formas de pagamento no Bling</CardDescription></CardHeader>
           <CardContent>
             {fetchingFormas ? <LoadingSkeleton /> : formas.length === 0 ? (
               <EmptyState icon={Tag} title="Nenhuma forma" description="Clique no botão acima para carregar" />
@@ -625,10 +917,7 @@ function BlingFinanceiroPanel() {
 
       {subTab === 'portadores' && (
         <Card>
-          <CardHeader>
-            <CardTitle>Portadores (Contas Contábeis)</CardTitle>
-            <CardDescription>Bancos e portadores cadastrados no Bling</CardDescription>
-          </CardHeader>
+          <CardHeader><CardTitle>Portadores (Contas Contábeis)</CardTitle><CardDescription>Bancos e portadores cadastrados no Bling</CardDescription></CardHeader>
           <CardContent>
             {fetchingPortadores ? <LoadingSkeleton /> : portadores.length === 0 ? (
               <EmptyState icon={Receipt} title="Nenhum portador" description="Clique no botão acima para carregar" />
@@ -654,10 +943,7 @@ function BlingFinanceiroPanel() {
 
       {subTab === 'categorias' && (
         <Card>
-          <CardHeader>
-            <CardTitle>Categorias de Receitas e Despesas</CardTitle>
-            <CardDescription>Plano de contas financeiro do Bling</CardDescription>
-          </CardHeader>
+          <CardHeader><CardTitle>Categorias de Receitas e Despesas</CardTitle><CardDescription>Plano de contas financeiro do Bling</CardDescription></CardHeader>
           <CardContent>
             {fetchingCategorias ? <LoadingSkeleton /> : categorias.length === 0 ? (
               <EmptyState icon={Tag} title="Nenhuma categoria" description="Clique no botão acima para carregar" />
@@ -680,6 +966,60 @@ function BlingFinanceiroPanel() {
           </CardContent>
         </Card>
       )}
+
+      {subTab === 'borderos' && (
+        <Card>
+          <CardHeader><CardTitle>Borderôs</CardTitle><CardDescription>Borderôs financeiros do Bling</CardDescription></CardHeader>
+          <CardContent>
+            {fetchingBorderos ? <LoadingSkeleton /> : borderos.length === 0 ? (
+              <EmptyState icon={CreditCard} title="Nenhum borderô" description="Clique no botão acima para carregar" />
+            ) : (
+              <div className="rounded-md border overflow-auto">
+                <Table>
+                  <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Data</TableHead><TableHead>Portador</TableHead><TableHead className="text-right">Valor Total</TableHead><TableHead>Situação</TableHead></TableRow></TableHeader>
+                  <TableBody>
+                    {borderos.map((b: any) => (
+                      <TableRow key={b.id}>
+                        <TableCell className="font-mono text-xs">{b.id}</TableCell>
+                        <TableCell>{b.data ? new Date(b.data).toLocaleDateString('pt-BR') : '-'}</TableCell>
+                        <TableCell>{b.portador?.descricao || '-'}</TableCell>
+                        <TableCell className="text-right font-semibold">R$ {Number(b.valorTotal || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
+                        <TableCell><Badge variant="outline">{b.situacao || '-'}</Badge></TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Dialog Dar Baixa */}
+      <Dialog open={!!showBaixa} onOpenChange={() => setShowBaixa(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Dar Baixa — Conta a {showBaixa?.tipo === 'receber' ? 'Receber' : 'Pagar'}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div><Label>Valor {showBaixa?.tipo === 'receber' ? 'Recebido' : 'Pago'} (R$)</Label><Input type="number" step="0.01" value={baixaForm.valorRecebido} onChange={e => setBaixaForm(p => ({ ...p, valorRecebido: e.target.value }))} /></div>
+            <div><Label>Data</Label><Input type="date" value={baixaForm.data} onChange={e => setBaixaForm(p => ({ ...p, data: e.target.value }))} /></div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowBaixa(null)}>Cancelar</Button>
+            <Button onClick={() => {
+              if (!showBaixa) return;
+              const payload = { valorRecebido: Number(baixaForm.valorRecebido), data: baixaForm.data };
+              const mutation = showBaixa.tipo === 'receber' ? darBaixaReceber : darBaixaPagar;
+              mutation.mutate({ id: showBaixa.id, data: payload }, {
+                onSuccess: () => { setShowBaixa(null); refetch(); }
+              });
+            }} disabled={!baixaForm.valorRecebido || darBaixaReceber.isPending || darBaixaPagar.isPending}>
+              {(darBaixaReceber.isPending || darBaixaPagar.isPending) && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Confirmar Baixa
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -688,7 +1028,7 @@ function BlingFinanceiroPanel() {
 function BlingNFePanel() {
   const [pagina, setPagina] = useState(1);
   const { data, refetch, isFetching } = useBlingNFe({ pagina });
-  const { enviarSefaz, cancelarNFe, lancarEstoqueNFe, lancarContasNFe, estornarEstoqueNFe, estornarContasNFe } = useBlingNFeMutations();
+  const { criarNFe, enviarSefaz, cancelarNFe, lancarEstoqueNFe, lancarContasNFe, estornarEstoqueNFe, estornarContasNFe } = useBlingNFeMutations();
   const notas = data?.data || [];
 
   const situacaoNFe: Record<number, string> = {
@@ -790,19 +1130,27 @@ function BlingNFePanel() {
 
 // ═══════════════ LOGÍSTICA ═══════════════
 function BlingLogisticaPanel() {
-  const [subTab, setSubTab] = useState<'integracoes' | 'remessas' | 'objetos'>('integracoes');
+  const [subTab, setSubTab] = useState<'integracoes' | 'remessas' | 'objetos' | 'servicos'>('integracoes');
   const { data: logisticasData, refetch: refetchLogisticas, isFetching: fetchingLogisticas } = useBlingLogisticas();
   const { data: remessasData, refetch: refetchRemessas, isFetching: fetchingRemessas } = useBlingRemessas();
   const { data: objetosData, refetch: refetchObjetos, isFetching: fetchingObjetos } = useBlingObjetos();
+  const { data: servicosData, refetch: refetchServicos, isFetching: fetchingServicos } = useBlingServicosLogistica();
+  const { criarRemessa, gerarEtiqueta, rastrearObjeto } = useBlingLogisticaMutations();
   const logisticas = logisticasData?.data || [];
   const remessas = remessasData?.data || [];
   const objetos = objetosData?.data || [];
+  const servicos = servicosData?.data || [];
+
+  const [rastreioCode, setRastreioCode] = useState('');
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap">
         <Button variant={subTab === 'integracoes' ? 'default' : 'outline'} onClick={() => { setSubTab('integracoes'); refetchLogisticas(); }} size="sm">
           <Truck className="h-4 w-4 mr-1" /> Integrações
+        </Button>
+        <Button variant={subTab === 'servicos' ? 'default' : 'outline'} onClick={() => { setSubTab('servicos'); refetchServicos(); }} size="sm">
+          <Box className="h-4 w-4 mr-1" /> Serviços
         </Button>
         <Button variant={subTab === 'remessas' ? 'default' : 'outline'} onClick={() => { setSubTab('remessas'); refetchRemessas(); }} size="sm">
           <Package className="h-4 w-4 mr-1" /> Remessas
@@ -842,6 +1190,33 @@ function BlingLogisticaPanel() {
         </Card>
       )}
 
+      {subTab === 'servicos' && (
+        <Card>
+          <CardHeader><CardTitle>Serviços Logísticos</CardTitle><CardDescription>Serviços disponíveis nas integrações</CardDescription></CardHeader>
+          <CardContent>
+            {fetchingServicos ? <LoadingSkeleton /> : servicos.length === 0 ? (
+              <EmptyState icon={Box} title="Nenhum serviço" description="Clique no botão acima para carregar" />
+            ) : (
+              <div className="rounded-md border overflow-auto">
+                <Table>
+                  <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Nome</TableHead><TableHead>Transportadora</TableHead><TableHead>Tipo</TableHead></TableRow></TableHeader>
+                  <TableBody>
+                    {servicos.map((s: any) => (
+                      <TableRow key={s.id}>
+                        <TableCell className="font-mono text-xs">{s.id}</TableCell>
+                        <TableCell className="font-medium">{s.nome || s.descricao || '-'}</TableCell>
+                        <TableCell>{s.transportadora || s.logistica?.descricao || '-'}</TableCell>
+                        <TableCell><Badge variant="outline">{s.tipo || '-'}</Badge></TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {subTab === 'remessas' && (
         <Card>
           <CardHeader>
@@ -854,7 +1229,7 @@ function BlingLogisticaPanel() {
             ) : (
               <div className="rounded-md border overflow-auto">
                 <Table>
-                  <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Data</TableHead><TableHead>Transportadora</TableHead><TableHead>Status</TableHead><TableHead>Rastreio</TableHead></TableRow></TableHeader>
+                  <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Data</TableHead><TableHead>Transportadora</TableHead><TableHead>Status</TableHead><TableHead>Rastreio</TableHead><TableHead className="w-10">Ações</TableHead></TableRow></TableHeader>
                   <TableBody>
                     {remessas.map((r: any) => (
                       <TableRow key={r.id}>
@@ -863,6 +1238,16 @@ function BlingLogisticaPanel() {
                         <TableCell>{r.logistica?.descricao || '-'}</TableCell>
                         <TableCell><Badge variant="outline">{r.situacao || '-'}</Badge></TableCell>
                         <TableCell className="font-mono text-xs">{r.codigoRastreamento || '-'}</TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => gerarEtiqueta.mutate({ remessa: { id: r.id } })}>
+                                <Printer className="h-4 w-4 mr-2" /> Gerar Etiqueta
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -879,7 +1264,13 @@ function BlingLogisticaPanel() {
             <CardTitle className="flex items-center gap-2"><MapPin className="h-5 w-5" /> Objetos / Volumes</CardTitle>
             <CardDescription>Objetos e volumes enviados — rastreamento em tempo real</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
+            <div className="flex gap-2">
+              <Input placeholder="Código de rastreio..." value={rastreioCode} onChange={e => setRastreioCode(e.target.value)} className="max-w-sm" />
+              <Button onClick={() => { if (rastreioCode) rastrearObjeto.mutate(rastreioCode); }} disabled={!rastreioCode || rastrearObjeto.isPending} variant="outline" className="gap-1.5">
+                {rastrearObjeto.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />} Rastrear
+              </Button>
+            </div>
             {fetchingObjetos ? <LoadingSkeleton /> : objetos.length === 0 ? (
               <EmptyState icon={MapPin} title="Nenhum objeto" description="Clique para carregar os objetos de envio" />
             ) : (
