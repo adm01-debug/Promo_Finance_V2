@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   ArrowDownCircle,
   ArrowUpCircle,
+  Package,
   Landmark,
   FileText,
   PieChart,
