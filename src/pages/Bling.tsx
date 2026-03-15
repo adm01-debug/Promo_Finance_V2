@@ -230,14 +230,14 @@ function BlingPedidosPanel() {
               </TableHeader>
               <TableBody>
                 {pedidos.map((p: any) => {
-                  const sit = situacaoMap[p.situacao?.id] || { label: `#${p.situacao?.id}`, color: 'bg-muted' };
+                  const sit = situacaoMap[p.situacao?.id] || { label: `#${p.situacao?.id}`, variant: 'outline' as const };
                   return (
                     <TableRow key={p.id}>
                       <TableCell className="font-mono">{p.numero || p.id}</TableCell>
                       <TableCell>{p.data ? new Date(p.data).toLocaleDateString('pt-BR') : '-'}</TableCell>
                       <TableCell>{p.contato?.nome || '-'}</TableCell>
                       <TableCell>R$ {Number(p.totalProdutos || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
-                      <TableCell><span className={`px-2 py-0.5 rounded-full text-xs font-medium ${sit.color}`}>{sit.label}</span></TableCell>
+                      <TableCell><Badge variant={sit.variant}>{sit.label}</Badge></TableCell>
                     </TableRow>
                   );
                 })}
