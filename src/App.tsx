@@ -47,6 +47,7 @@ const PagamentosRecorrentes = lazy(() => import('./pages/PagamentosRecorrentes')
 const Bitrix24 = lazy(() => import('./pages/Bitrix24'));
 const ReformaTributaria = lazy(() => import('./pages/ReformaTributaria'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const Asaas = lazy(() => import('./pages/Asaas'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Inner app component that can use routing hooks
