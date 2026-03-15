@@ -82,6 +82,7 @@ const navGroups: NavGroup[] = [
       { label: 'Boletos', icon: CreditCard, href: '/boletos' },
       { label: 'Fluxo de Caixa', icon: BarChart3, href: '/fluxo-caixa' },
       { label: 'Conciliação', icon: RefreshCcw, href: '/conciliacao' },
+      { label: 'ASAAS', icon: CreditCard, href: '/asaas', highlight: true },
     ],
   },
   {
