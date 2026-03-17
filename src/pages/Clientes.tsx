@@ -103,11 +103,11 @@ export default function Clientes() {
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [formOpen, setFormOpen] = useState(false);
-  const [editingCliente, setEditingCliente] = useState<Cliente | null>(null);
+  const [editingCliente, setEditingCliente] = useState<ExternalCliente | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [deletingCliente, setDeletingCliente] = useState<Cliente | null>(null);
+  const [deletingCliente, setDeletingCliente] = useState<ExternalCliente | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [viewingCliente, setViewingCliente] = useState<Cliente | null>(null);
+  const [viewingCliente, setViewingCliente] = useState<ExternalCliente | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   
   // Advanced filters
