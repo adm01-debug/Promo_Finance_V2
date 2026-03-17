@@ -70,6 +70,18 @@ export function ImportarExtratoDialog({
     setProgress(0);
 
     try {
+      // Check for binary formats that we cannot parse client-side
+      const ext = file.name.toLowerCase().split('.').pop();
+      if (ext === 'xlsx' || ext === 'xls') {
+        setResultado({
+          sucesso: false,
+          erro: 'Arquivos Excel (.xlsx/.xls) ainda não são suportados. Por favor, exporte o extrato do seu banco em formato OFX ou CSV.',
+          avisos: ['Dica: A maioria dos bancos oferece a opção de exportar extratos em OFX no internet banking.'],
+        });
+        setStep('error');
+        return;
+      }
+
       // Simulate progress while reading file
       const progressInterval = setInterval(() => {
         setProgress(prev => Math.min(prev + 15, 70));
@@ -226,8 +238,8 @@ export function ImportarExtratoDialog({
                   <Badge variant="outline" className="text-xs">.OFX</Badge>
                   <Badge variant="outline" className="text-xs">.OFC</Badge>
                   <Badge variant="outline" className="text-xs">.CSV</Badge>
-                  <Badge variant="outline" className="text-xs">.XLSX</Badge>
                   <Badge variant="outline" className="text-xs">.TXT</Badge>
+                  <Badge variant="outline" className="text-xs opacity-50">.XLSX (em breve)</Badge>
                 </div>
               </div>
               
@@ -236,7 +248,7 @@ export function ImportarExtratoDialog({
                 <ul className="space-y-1 text-xs">
                   <li>• <strong>OFX/OFC</strong> - Formato padrão de bancos brasileiros</li>
                   <li>• <strong>CSV/TXT</strong> - Colunas: Data, Descrição, Valor, Tipo</li>
-                  <li>• <strong>XLSX/XLS</strong> - Planilhas Excel com colunas de extrato</li>
+                  <li>• <strong>XLSX/XLS</strong> - Em breve</li>
                 </ul>
               </div>
             </motion.div>
