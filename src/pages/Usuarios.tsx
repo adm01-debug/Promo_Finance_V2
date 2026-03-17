@@ -303,6 +303,8 @@ export default function Usuarios() {
             <GerenciadorPermissoes />
           </TabsContent>
         </Tabs>
+
+        <ConviteUsuarioDialog open={conviteOpen} onOpenChange={setConviteOpen} />
       </div>
     </MainLayout>
   );

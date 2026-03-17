@@ -167,7 +167,11 @@ export default function ContasBancarias() {
               Gerencie suas contas e acompanhe saldos em tempo real
             </p>
           </div>
-          <div className="flex gap-2">
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => setTransferenciaOpen(true)}>
+                <ArrowLeftRight className="h-4 w-4 mr-2" />
+                Transferência
+              </Button>
             <Button variant="outline" size="sm" onClick={() => setShowSaldos(!showSaldos)}>
               {showSaldos ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
               {showSaldos ? 'Ocultar Saldos' : 'Mostrar Saldos'}
