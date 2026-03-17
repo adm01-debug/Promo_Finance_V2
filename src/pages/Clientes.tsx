@@ -62,7 +62,7 @@ import { ExportMenu } from '@/components/ui/export-menu';
 import { SortableHeader, useSorting } from '@/components/ui/sortable-header';
 import { LoadingSkeleton, TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { useClientes, useClientesPaginated, Cliente } from '@/hooks/useFinancialData';
+import { useClientes, useClientesPaginated, ExternalCliente } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
 import { clientesColumns } from '@/lib/export-utils';
 import { cn } from '@/lib/utils';
