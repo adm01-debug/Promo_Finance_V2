@@ -125,9 +125,9 @@ export function FluxoInterEmpresas() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap text-sm">
                     <span className="font-semibold">{sug.de}</span>
-                    <ArrowRight className="h-4 w-4 text-amber-600" />
+                    <ArrowRight className="h-4 w-4 text-accent-foreground" />
                     <span className="font-semibold">{sug.para}</span>
-                    <Badge className="bg-amber-500/20 text-amber-700 hover:bg-amber-500/30">
+                    <Badge className="bg-accent/20 text-accent-foreground hover:bg-accent/30">
                       {formatCurrency(sug.valor)}
                     </Badge>
                   </div>
