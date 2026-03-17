@@ -173,6 +173,9 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
     if (badgeKey === 'aprovacoes' && aprovacoesPendentes > 0) {
       return aprovacoesPendentes;
     }
+    if (badgeKey === 'alertas' && alertasNaoLidos > 0) {
+      return alertasNaoLidos;
+    }
     return undefined;
   };
 
