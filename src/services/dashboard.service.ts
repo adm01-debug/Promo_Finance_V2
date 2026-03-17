@@ -36,7 +36,7 @@ export interface OverdueBill {
   valor: number;
   vencimento: string;
   daysOverdue: number;
-  fornecedor?: { id: string; nome: string };
+  fornecedor?: { id: string; razao_social: string };
 }
 
 export interface CashFlowItem {
