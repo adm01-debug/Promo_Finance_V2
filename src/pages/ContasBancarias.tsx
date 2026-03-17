@@ -529,6 +529,8 @@ export default function ContasBancarias() {
           isLoading={isDeleting}
           onConfirm={handleDeleteConta}
         />
+
+        <TransferenciaDialog open={transferenciaOpen} onOpenChange={setTransferenciaOpen} />
       </div>
     </MainLayout>
   );
