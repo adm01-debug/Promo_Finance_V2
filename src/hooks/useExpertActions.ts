@@ -489,40 +489,41 @@ async function criarContaReceber(
 }
 
 async function consultarCliente(nome: string): Promise<ActionResult> {
-  const { data, error } = await supabase
-    .from('clientes')
-    .select('*')
-    .ilike('razao_social', `%${nome}%`)
-    .limit(5);
+  // Query contas_receber that have a matching cliente_nome instead of querying the local clientes table
+  const { data: contasReceber, error } = await supabase
+    .from('contas_receber')
+    .select('cliente_id, cliente_nome, valor, status, data_vencimento')
+    .ilike('cliente_nome', `%${nome}%`);
 
   if (error) throw error;
 
-  if (!data || data.length === 0) {
+  // Group by client
+  const clienteMap = new Map<string, { nome: string; contas: typeof contasReceber }>();
+  (contasReceber || []).forEach(c => {
+    const key = c.cliente_id || c.cliente_nome;
+    const existing = clienteMap.get(key);
+    if (existing) {
+      existing.contas!.push(c);
+    } else {
+      clienteMap.set(key, { nome: c.cliente_nome || 'Desconhecido', contas: [c] });
+    }
+  });
+
+  if (clienteMap.size === 0) {
     return { success: false, message: `Nenhum cliente encontrado com "${nome}".` };
   }
 
-  // Buscar histórico de pagamentos
-  const clienteIds = data.map(c => c.id);
-  const { data: contasReceber } = await supabase
-    .from('contas_receber')
-    .select('cliente_id, valor, status, data_vencimento')
-    .in('cliente_id', clienteIds);
-
   let mensagem = `👤 **CLIENTES ENCONTRADOS:**\n\n`;
   
-  for (const cliente of data) {
-    const contasCliente = contasReceber?.filter(c => c.cliente_id === cliente.id) || [];
-    const totalReceber = contasCliente.filter(c => c.status !== 'pago').reduce((sum, c) => sum + Number(c.valor), 0);
-    const totalVencido = contasCliente.filter(c => c.status === 'vencido').reduce((sum, c) => sum + Number(c.valor), 0);
+  for (const [, { nome: clienteNome, contas }] of clienteMap) {
+    const totalReceber = (contas || []).filter(c => c.status !== 'pago').reduce((sum, c) => sum + Number(c.valor), 0);
+    const totalVencido = (contas || []).filter(c => c.status === 'vencido').reduce((sum, c) => sum + Number(c.valor), 0);
     
-    mensagem += `**${cliente.razao_social}**\n`;
-    mensagem += `• CNPJ/CPF: ${cliente.cnpj_cpf || 'N/A'}\n`;
-    mensagem += `• Score: ${cliente.score || 'N/A'} | Limite: ${formatCurrency(cliente.limite_credito || 0)}\n`;
-    mensagem += `• Telefone: ${cliente.telefone || 'N/A'} | Email: ${cliente.email || 'N/A'}\n`;
+    mensagem += `**${clienteNome}**\n`;
     mensagem += `• Em aberto: ${formatCurrency(totalReceber)} | Vencido: ${formatCurrency(totalVencido)}\n\n`;
   }
 
-  return { success: true, message: mensagem, data };
+  return { success: true, message: mensagem };
 }
 
 async function consultarFornecedor(nome: string): Promise<ActionResult> {
