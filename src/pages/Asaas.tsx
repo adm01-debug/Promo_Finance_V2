@@ -346,6 +346,10 @@ export default function Asaas() {
           <TabsContent value="extrato">
             <ExtratoAsaasPanel empresaId={empresaId} />
           </TabsContent>
+
+          <TabsContent value="webhooks">
+            <WebhooksLogPanel />
+          </TabsContent>
         </Tabs>
       </div>
 
