@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 import { Button } from '@/components/ui/button';
 
 // BeforeInstallPromptEvent is not in the standard DOM types
@@ -7,7 +7,7 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-export function InstallPWA() {
+export const InstallPWA = forwardRef<HTMLButtonElement>(function InstallPWA(_props, ref) {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   
   useEffect(() => {
@@ -29,8 +29,8 @@ export function InstallPWA() {
   };
   
   return installPrompt ? (
-    <Button onClick={handleInstall} size="sm">
+    <Button ref={ref} onClick={handleInstall} size="sm">
       Instalar App
     </Button>
   ) : null;
-}
+});
