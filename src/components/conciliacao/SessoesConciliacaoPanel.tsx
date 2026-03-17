@@ -47,7 +47,7 @@ export function SessoesConciliacaoPanel() {
                         Período: {formatDate(sessao.periodo_inicio)} → {formatDate(sessao.periodo_fim)}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {sessao.total_itens || 0} transações • {sessao.total_conciliados || 0} conciliadas
+                        {sessao.total_conciliados || 0} conciliadas
                       </p>
                     </div>
                   </div>
