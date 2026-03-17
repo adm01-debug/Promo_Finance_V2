@@ -29,6 +29,7 @@ import {
   FileText
 } from 'lucide-react';
 import { OpenFinancePanel } from '@/components/integracoes/OpenFinancePanel';
+import { WhatsAppConfigPanel } from '@/components/integracoes/WhatsAppConfigPanel';
 import { NotificacoesConfig } from '@/components/configuracoes/NotificacoesConfig';
 import { CronJobsPanel } from '@/components/configuracoes/CronJobsPanel';
 import { SecuritySettings } from '@/components/configuracoes/SecuritySettings';
