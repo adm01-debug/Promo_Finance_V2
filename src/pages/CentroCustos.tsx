@@ -559,6 +559,21 @@ export default function CentroCustos() {
         </DialogContent>
       </Dialog>
 
+      {/* History Dialog */}
+      <Dialog open={!!historyCentro} onOpenChange={(open) => !open && setHistoryCentro(null)}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <History className="h-5 w-5" />
+              Histórico - {historyCentro?.nome}
+            </DialogTitle>
+          </DialogHeader>
+          {historyCentro && (
+            <CentroCustoHistorico centroId={historyCentro.id} centroNome={historyCentro.nome} />
+          )}
+        </DialogContent>
+      </Dialog>
+
     </MainLayout>
   );
 }
