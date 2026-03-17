@@ -14,6 +14,7 @@ import {
   PiggyBank,
   Landmark,
   DollarSign,
+  ArrowLeftRight,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -52,6 +53,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
+import { TransferenciaDialog } from '@/components/contas-bancarias/TransferenciaDialog';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -86,6 +88,7 @@ export default function ContasBancarias() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingConta, setDeletingConta] = useState<ContaBancaria | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [transferenciaOpen, setTransferenciaOpen] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -164,7 +167,11 @@ export default function ContasBancarias() {
               Gerencie suas contas e acompanhe saldos em tempo real
             </p>
           </div>
-          <div className="flex gap-2">
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => setTransferenciaOpen(true)}>
+                <ArrowLeftRight className="h-4 w-4 mr-2" />
+                Transferência
+              </Button>
             <Button variant="outline" size="sm" onClick={() => setShowSaldos(!showSaldos)}>
               {showSaldos ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
               {showSaldos ? 'Ocultar Saldos' : 'Mostrar Saldos'}
@@ -522,6 +529,8 @@ export default function ContasBancarias() {
           isLoading={isDeleting}
           onConfirm={handleDeleteConta}
         />
+
+        <TransferenciaDialog open={transferenciaOpen} onOpenChange={setTransferenciaOpen} />
       </div>
     </MainLayout>
   );

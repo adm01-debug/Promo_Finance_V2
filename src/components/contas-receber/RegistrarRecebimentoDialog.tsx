@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Loader2, DollarSign, Calendar, Wallet } from 'lucide-react';
+import { CalculadoraJurosMulta } from '@/components/contas-receber/CalculadoraJurosMulta';
 import { supabase } from '@/integrations/supabase/client';
 import { useContasBancarias } from '@/hooks/useFinancialData';
 import { toast } from '@/hooks/use-toast';
@@ -189,6 +190,15 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
             </div>
           </DialogDescription>
         </DialogHeader>
+
+        {/* Calculadora de Juros/Multa para títulos vencidos */}
+        {conta.status === 'vencido' && (
+          <CalculadoraJurosMulta
+            valorOriginal={conta.valor}
+            dataVencimento={conta.data_vencimento}
+            valorRecebido={conta.valor_recebido || 0}
+          />
+        )}
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">

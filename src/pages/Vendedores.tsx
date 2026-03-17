@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Users, Plus, Edit2, Trash2, Loader2, Mail, Phone, Target } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useVendedores, useCreateVendedor, useUpdateVendedor, useDeleteVendedor } from '@/hooks/useVendedores';
 import { formatCurrency } from '@/lib/formatters';
+import { VendedorDashboard } from '@/components/vendedores/VendedorDashboard';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -92,52 +94,65 @@ export default function Vendedores() {
           <Card><CardContent className="p-4"><p className="text-sm text-muted-foreground">Inativos</p><p className="text-2xl font-bold">{inativos.length}</p></CardContent></Card>
         </motion.div>
 
-        {/* Lista */}
+        {/* Tabs: Lista + Dashboard */}
         <motion.div variants={itemVariants}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Equipe Comercial</CardTitle>
-              <CardDescription>{ativos.length} vendedores ativos</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <div className="space-y-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16" />)}</div>
-              ) : ativos.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
-                  <Users className="h-12 w-12 mx-auto mb-2 opacity-30" />
-                  <p>Nenhum vendedor cadastrado</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {ativos.map((v) => (
-                    <div key={v.id} className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/5 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <Users className="h-5 w-5 text-primary" />
-                        </div>
-                        <div>
-                          <p className="font-medium">{v.nome}</p>
-                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                            {v.email && <span className="flex items-center gap-1"><Mail className="h-3 w-3" />{v.email}</span>}
-                            {v.telefone && <span className="flex items-center gap-1"><Phone className="h-3 w-3" />{v.telefone}</span>}
+          <Tabs defaultValue="lista" className="space-y-4">
+            <TabsList>
+              <TabsTrigger value="lista">Equipe Comercial</TabsTrigger>
+              <TabsTrigger value="dashboard">Dashboard Performance</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="lista">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Equipe Comercial</CardTitle>
+                  <CardDescription>{ativos.length} vendedores ativos</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {isLoading ? (
+                    <div className="space-y-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16" />)}</div>
+                  ) : ativos.length === 0 ? (
+                    <div className="text-center py-12 text-muted-foreground">
+                      <Users className="h-12 w-12 mx-auto mb-2 opacity-30" />
+                      <p>Nenhum vendedor cadastrado</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {ativos.map((v) => (
+                        <div key={v.id} className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/5 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                              <Users className="h-5 w-5 text-primary" />
+                            </div>
+                            <div>
+                              <p className="font-medium">{v.nome}</p>
+                              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                {v.email && <span className="flex items-center gap-1"><Mail className="h-3 w-3" />{v.email}</span>}
+                                {v.telefone && <span className="flex items-center gap-1"><Phone className="h-3 w-3" />{v.telefone}</span>}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            {v.meta_mensal && (
+                              <Badge variant="outline" className="gap-1">
+                                <Target className="h-3 w-3" />{formatCurrency(v.meta_mensal)}/mês
+                              </Badge>
+                            )}
+                            <Button size="icon" variant="ghost" onClick={() => startEdit(v)}><Edit2 className="h-4 w-4" /></Button>
+                            <Button size="icon" variant="ghost" onClick={() => deleteVendedor.mutate(v.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                           </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        {v.meta_mensal && (
-                          <Badge variant="outline" className="gap-1">
-                            <Target className="h-3 w-3" />{formatCurrency(v.meta_mensal)}/mês
-                          </Badge>
-                        )}
-                        <Button size="icon" variant="ghost" onClick={() => startEdit(v)}><Edit2 className="h-4 w-4" /></Button>
-                        <Button size="icon" variant="ghost" onClick={() => deleteVendedor.mutate(v.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                      </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="dashboard">
+              <VendedorDashboard />
+            </TabsContent>
+          </Tabs>
         </motion.div>
       </motion.div>
     </MainLayout>

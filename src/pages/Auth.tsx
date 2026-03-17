@@ -17,6 +17,7 @@ import {
   AuthMobileBackground 
 } from '@/components/auth/AuthBackground';
 import { LoginForm } from '@/components/auth/LoginForm';
+import { AccountLockoutBanner } from '@/components/auth/AccountLockoutBanner';
 import { RegisterForm } from '@/components/auth/RegisterForm';
 import { ForgotPasswordForm } from '@/components/auth/ForgotPasswordForm';
 
@@ -395,6 +396,12 @@ export default function Auth() {
                     </TabsList>
 
                     <TabsContent value="login">
+                      {accountLocked && (
+                        <AccountLockoutBanner 
+                          locked={accountLocked} 
+                          remainingMinutes={parseInt(lockoutMessage.match(/(\d+)\s*minuto/)?.[1] || '5')} 
+                        />
+                      )}
                       <LoginForm
                         email={email}
                         setEmail={setEmail}

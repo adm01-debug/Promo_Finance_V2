@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { useContasPagar, useContasReceber } from '@/hooks/useFinancialData';
 import { formatCurrency, formatPercentage } from '@/lib/formatters';
+import { ExportDemonstrativoPDF } from '@/components/demonstrativos/ExportDemonstrativoPDF';
 
 interface DREStatementProps {
   periodo: string;
@@ -126,9 +127,19 @@ export const DREStatement = ({ periodo, mes, ano, empresaId }: DREStatementProps
               Período: {meses[mes]} de {ano}
             </CardDescription>
           </div>
-          <Badge variant={dre.lucroLiquido >= 0 ? 'default' : 'destructive'} className="text-sm">
-            {dre.lucroLiquido >= 0 ? 'Lucro' : 'Prejuízo'}: {formatCurrency(Math.abs(dre.lucroLiquido))}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant={dre.lucroLiquido >= 0 ? 'default' : 'destructive'} className="text-sm">
+              {dre.lucroLiquido >= 0 ? 'Lucro' : 'Prejuízo'}: {formatCurrency(Math.abs(dre.lucroLiquido))}
+            </Badge>
+            <ExportDemonstrativoPDF
+              tipo="dre"
+              periodo={periodo}
+              mes={mes}
+              ano={ano}
+              empresa="Promo Finance"
+              linhas={dre.linhas}
+            />
+          </div>
         </div>
       </CardHeader>
       <CardContent>

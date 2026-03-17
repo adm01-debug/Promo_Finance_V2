@@ -63,7 +63,8 @@ import { SefazAnalytics } from '@/components/nfe/SefazAnalytics';
 import { InutilizacaoNFe } from '@/components/nfe/InutilizacaoNFe';
 import { ContingenciaNFe } from '@/components/nfe/ContingenciaNFe';
 import { SefazMonitor } from '@/components/nfe/SefazMonitor';
-
+import { DANFEGenerator } from '@/components/nfe/DANFEGenerator';
+import { EmissaoNFeForm } from '@/components/nfe/EmissaoNFeForm';
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -235,6 +236,7 @@ const statusConfig = {
 // NF-e Preview Component
 const NFePreview = ({ nfe }: { nfe: NotaFiscal }) => {
   const [copied, setCopied] = useState(false);
+  const [danfeOpen, setDanfeOpen] = useState(false);
 
   const handleCopyChave = () => {
     navigator.clipboard.writeText(nfe.chaveAcesso);
@@ -245,10 +247,6 @@ const NFePreview = ({ nfe }: { nfe: NotaFiscal }) => {
 
   const handleDownloadXML = () => {
     toast.success('XML da NF-e baixado com sucesso!');
-  };
-
-  const handleDownloadDANFE = () => {
-    toast.success('DANFE (PDF) gerado com sucesso!');
   };
 
   const handlePrint = () => {
@@ -420,7 +418,7 @@ const NFePreview = ({ nfe }: { nfe: NotaFiscal }) => {
           <FileCode className="h-4 w-4" />
           Download XML
         </Button>
-        <Button onClick={handleDownloadDANFE} className="gap-2">
+        <Button onClick={() => setDanfeOpen(true)} className="gap-2">
           <Download className="h-4 w-4" />
           Download DANFE
         </Button>
@@ -433,6 +431,23 @@ const NFePreview = ({ nfe }: { nfe: NotaFiscal }) => {
           Enviar
         </Button>
       </div>
+
+      <DANFEGenerator 
+        nota={{
+          numero: nfe.numero, serie: nfe.serie, chaveAcesso: nfe.chaveAcesso,
+          naturezaOperacao: nfe.naturezaOperacao, dataEmissao: nfe.dataEmissao,
+          cnpjEmitente: nfe.cnpjEmitente, emitenteNome: nfe.emitenteNome,
+          cnpjDestinatario: nfe.cnpjDestinatario, destinatarioNome: nfe.destinatarioNome,
+          destinatarioEndereco: nfe.destinatarioEndereco,
+          valorProdutos: nfe.valorProdutos, valorFrete: nfe.valorFrete,
+          valorSeguro: nfe.valorSeguro, valorDesconto: nfe.valorDesconto,
+          valorIPI: nfe.valorIPI, valorICMS: nfe.valorICMS, valorTotal: nfe.valorTotal,
+          status: nfe.status, protocolo: nfe.protocolo,
+          itens: nfe.itens,
+        }}
+        open={danfeOpen}
+        onOpenChange={setDanfeOpen}
+      />
     </div>
   );
 };

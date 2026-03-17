@@ -11,12 +11,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Users, Shield, Search, UserCog, Crown, Briefcase, Eye, Settings } from 'lucide-react';
+import { Users, Shield, Search, UserCog, Crown, Briefcase, Eye, Settings, UserPlus } from 'lucide-react';
 import { logger } from '@/lib/logger';
 import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { GerenciadorPermissoes } from '@/components/admin/GerenciadorPermissoes';
+import { ConviteUsuarioDialog } from '@/components/usuarios/ConviteUsuarioDialog';
 
 type AppRole = 'admin' | 'financeiro' | 'operacional' | 'visualizador';
 
@@ -40,6 +41,7 @@ export default function Usuarios() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
+  const [conviteOpen, setConviteOpen] = useState(false);
 
   const { data: users, isLoading } = useQuery({
     queryKey: ['users-management'],
@@ -112,9 +114,15 @@ export default function Usuarios() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight">Gerenciamento de Usuários</h1>
-          <p className="text-muted-foreground">Gerencie os perfis e permissões dos usuários do sistema</p>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Gerenciamento de Usuários</h1>
+            <p className="text-muted-foreground">Gerencie os perfis e permissões dos usuários do sistema</p>
+          </div>
+          <Button onClick={() => setConviteOpen(true)} className="gap-2">
+            <UserPlus className="h-4 w-4" />
+            Convidar Usuário
+          </Button>
         </div>
 
         {/* Stats Cards */}
@@ -295,6 +303,8 @@ export default function Usuarios() {
             <GerenciadorPermissoes />
           </TabsContent>
         </Tabs>
+
+        <ConviteUsuarioDialog open={conviteOpen} onOpenChange={setConviteOpen} />
       </div>
     </MainLayout>
   );
