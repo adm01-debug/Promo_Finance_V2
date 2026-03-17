@@ -53,62 +53,66 @@ const Vendedores = lazy(() => import('./pages/Vendedores'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Inner app component that can use routing hooks
-function AppRoutes() {
+const AppRoutes = forwardRef<HTMLDivElement, Record<string, never>>(function AppRoutes(_, ref) {
   return (
-    <KeyboardShortcutsProvider>
-      <DataPrefetcher>
-        <NavigationTracker />
-        <SkipLinks />
-        <CommandPalette />
-        <Toaster richColors closeButton position="top-right" />
-        <Suspense fallback={<PageLoading />}>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            
-            {/* Protected Routes */}
-            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-            <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-            <Route path="/dashboard-receber" element={<ProtectedRoute><DashboardReceber /></ProtectedRoute>} />
-            <Route path="/dashboard-empresa" element={<ProtectedRoute><DashboardEmpresa /></ProtectedRoute>} />
-            <Route path="/bi" element={<ProtectedRoute><BI /></ProtectedRoute>} />
-            <Route path="/contas-pagar" element={<ProtectedRoute><ContasPagar /></ProtectedRoute>} />
-            <Route path="/contas-receber" element={<ProtectedRoute><ContasReceber /></ProtectedRoute>} />
-            <Route path="/notas-fiscais" element={<ProtectedRoute><NotasFiscais /></ProtectedRoute>} />
-            <Route path="/fluxo-caixa" element={<ProtectedRoute><FluxoCaixa /></ProtectedRoute>} />
-            <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
-            <Route path="/expert" element={<ProtectedRoute><Expert /></ProtectedRoute>} />
-            <Route path="/conciliacao" element={<ProtectedRoute><Conciliacao /></ProtectedRoute>} />
-            <Route path="/cobrancas" element={<ProtectedRoute><Cobrancas /></ProtectedRoute>} />
-            <Route path="/boletos" element={<ProtectedRoute><Boletos /></ProtectedRoute>} />
-            <Route path="/clientes" element={<ProtectedRoute><Clientes /></ProtectedRoute>} />
-            <Route path="/fornecedores" element={<ProtectedRoute><Fornecedores /></ProtectedRoute>} />
-            <Route path="/empresas" element={<ProtectedRoute><Empresas /></ProtectedRoute>} />
-            <Route path="/contas-bancarias" element={<ProtectedRoute><ContasBancarias /></ProtectedRoute>} />
-            <Route path="/centro-custos" element={<ProtectedRoute><CentroCustos /></ProtectedRoute>} />
-            <Route path="/aprovacoes" element={<ProtectedRoute><Aprovacoes /></ProtectedRoute>} />
-            <Route path="/alertas" element={<ProtectedRoute><Alertas /></ProtectedRoute>} />
-            <Route path="/configuracoes" element={<ProtectedRoute><Configuracoes /></ProtectedRoute>} />
-            <Route path="/usuarios" element={<ProtectedRoute><Usuarios /></ProtectedRoute>} />
-            <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
-            <Route path="/seguranca" element={<ProtectedRoute><Seguranca /></ProtectedRoute>} />
-            <Route path="/demonstrativos" element={<ProtectedRoute><Demonstrativos /></ProtectedRoute>} />
-            <Route path="/pagamentos-recorrentes" element={<ProtectedRoute><PagamentosRecorrentes /></ProtectedRoute>} />
-            <Route path="/bitrix24" element={<ProtectedRoute><Bitrix24 /></ProtectedRoute>} />
-            <Route path="/reforma-tributaria" element={<ProtectedRoute><ReformaTributaria /></ProtectedRoute>} />
-            <Route path="/asaas" element={<ProtectedRoute><Asaas /></ProtectedRoute>} />
-            <Route path="/bling" element={<ProtectedRoute><BlingPage /></ProtectedRoute>} />
-            <Route path="/vendedores" element={<ProtectedRoute><Vendedores /></ProtectedRoute>} />
-            
-            {/* 404 */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-      </DataPrefetcher>
-    </KeyboardShortcutsProvider>
+    <div ref={ref} className="contents">
+      <KeyboardShortcutsProvider>
+        <DataPrefetcher>
+          <NavigationTracker />
+          <SkipLinks />
+          <CommandPalette />
+          <Toaster richColors closeButton position="top-right" />
+          <Suspense fallback={<PageLoading />}>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              
+              {/* Protected Routes */}
+              <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+              <Route path="/dashboard-receber" element={<ProtectedRoute><DashboardReceber /></ProtectedRoute>} />
+              <Route path="/dashboard-empresa" element={<ProtectedRoute><DashboardEmpresa /></ProtectedRoute>} />
+              <Route path="/bi" element={<ProtectedRoute><BI /></ProtectedRoute>} />
+              <Route path="/contas-pagar" element={<ProtectedRoute><ContasPagar /></ProtectedRoute>} />
+              <Route path="/contas-receber" element={<ProtectedRoute><ContasReceber /></ProtectedRoute>} />
+              <Route path="/notas-fiscais" element={<ProtectedRoute><NotasFiscais /></ProtectedRoute>} />
+              <Route path="/fluxo-caixa" element={<ProtectedRoute><FluxoCaixa /></ProtectedRoute>} />
+              <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
+              <Route path="/expert" element={<ProtectedRoute><Expert /></ProtectedRoute>} />
+              <Route path="/conciliacao" element={<ProtectedRoute><Conciliacao /></ProtectedRoute>} />
+              <Route path="/cobrancas" element={<ProtectedRoute><Cobrancas /></ProtectedRoute>} />
+              <Route path="/boletos" element={<ProtectedRoute><Boletos /></ProtectedRoute>} />
+              <Route path="/clientes" element={<ProtectedRoute><Clientes /></ProtectedRoute>} />
+              <Route path="/fornecedores" element={<ProtectedRoute><Fornecedores /></ProtectedRoute>} />
+              <Route path="/empresas" element={<ProtectedRoute><Empresas /></ProtectedRoute>} />
+              <Route path="/contas-bancarias" element={<ProtectedRoute><ContasBancarias /></ProtectedRoute>} />
+              <Route path="/centro-custos" element={<ProtectedRoute><CentroCustos /></ProtectedRoute>} />
+              <Route path="/aprovacoes" element={<ProtectedRoute><Aprovacoes /></ProtectedRoute>} />
+              <Route path="/alertas" element={<ProtectedRoute><Alertas /></ProtectedRoute>} />
+              <Route path="/configuracoes" element={<ProtectedRoute><Configuracoes /></ProtectedRoute>} />
+              <Route path="/usuarios" element={<ProtectedRoute><Usuarios /></ProtectedRoute>} />
+              <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
+              <Route path="/seguranca" element={<ProtectedRoute><Seguranca /></ProtectedRoute>} />
+              <Route path="/demonstrativos" element={<ProtectedRoute><Demonstrativos /></ProtectedRoute>} />
+              <Route path="/pagamentos-recorrentes" element={<ProtectedRoute><PagamentosRecorrentes /></ProtectedRoute>} />
+              <Route path="/bitrix24" element={<ProtectedRoute><Bitrix24 /></ProtectedRoute>} />
+              <Route path="/reforma-tributaria" element={<ProtectedRoute><ReformaTributaria /></ProtectedRoute>} />
+              <Route path="/asaas" element={<ProtectedRoute><Asaas /></ProtectedRoute>} />
+              <Route path="/bling" element={<ProtectedRoute><BlingPage /></ProtectedRoute>} />
+              <Route path="/vendedores" element={<ProtectedRoute><Vendedores /></ProtectedRoute>} />
+              
+              {/* 404 */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </DataPrefetcher>
+      </KeyboardShortcutsProvider>
+    </div>
   );
-}
+});
+
+AppRoutes.displayName = 'AppRoutes';
 
 export default function App() {
   return (
