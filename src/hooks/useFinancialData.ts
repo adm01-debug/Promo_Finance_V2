@@ -26,6 +26,8 @@ export interface ExternalCliente {
   observacoes: string | null;
   created_at: string;
   updated_at: string;
+  score?: number | null;
+  limite_credito?: number | null;
   website?: string;
   logo_url?: string;
   grupo_economico?: string;
