@@ -54,8 +54,10 @@ export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogP
       {
         conta_bancaria_id: contaOrigem,
         conta_destino_id: contaDestino,
+        empresa_id: origem?.empresa_id || '',
         valor: valorNum,
         descricao: descricao || `Transferência entre contas`,
+        data_transferencia: new Date().toISOString().split('T')[0],
       },
       {
         onSuccess: () => {
