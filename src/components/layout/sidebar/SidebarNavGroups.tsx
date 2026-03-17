@@ -122,6 +122,7 @@ const navGroups: NavGroup[] = [
       { label: 'Empresas (CNPJs)', icon: Building2, href: '/empresas' },
       { label: 'Contas Bancárias', icon: Landmark, href: '/contas-bancarias' },
       { label: 'Centro de Custos', icon: PieChart, href: '/centro-custos' },
+      { label: 'Orçamento x Realizado', icon: Scale, href: '/orcamento-evento', highlight: true },
     ],
   },
   {
