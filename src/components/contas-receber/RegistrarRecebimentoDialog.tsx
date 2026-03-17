@@ -191,6 +191,15 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
           </DialogDescription>
         </DialogHeader>
 
+        {/* Calculadora de Juros/Multa para títulos vencidos */}
+        {conta.status === 'vencido' && (
+          <CalculadoraJurosMulta
+            valorOriginal={conta.valor}
+            dataVencimento={conta.data_vencimento}
+            valorRecebido={conta.valor_recebido || 0}
+          />
+        )}
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             {/* Tipo de Recebimento */}
