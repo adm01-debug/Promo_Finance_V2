@@ -88,12 +88,15 @@ export default function Conciliacao() {
   const [transacoesImportadas, setTransacoesImportadas] = useState<TransacaoOFX[]>([]);
   const [filters, setFilters] = useState<ConciliacaoFilterState>(INITIAL_FILTERS);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showReportDialog, setShowReportDialog] = useState(false);
+  const [importReport, setImportReport] = useState<ImportReport | null>(null);
+  const [isProcessingImport, setIsProcessingImport] = useState(false);
 
   // Real data
   const { data: contasBancarias } = useContasBancarias();
   const { data: contasPagar } = useContasPagar();
   const { data: contasReceber } = useContasReceber();
-  const { confirmarConciliacao } = useConciliacao();
+  const { confirmarConciliacao, salvarExtratoBanco } = useConciliacao();
 
   // Convert to LancamentoSistema
   const lancamentosSistema = useMemo((): LancamentoSistema[] => {
@@ -114,19 +117,92 @@ export default function Conciliacao() {
     return [...lancamentosPagar, ...lancamentosReceber];
   }, [contasPagar, contasReceber]);
 
-  // Import handler
-  const handleImportSuccess = useCallback((extrato: ExtratoOFX) => {
+  // Import handler with persistence + auto-reconciliation
+  const handleImportSuccess = useCallback(async (extrato: ExtratoOFX) => {
+    setIsProcessingImport(true);
+    
     const novasTransacoes = extrato.transacoes.map((t: TransacaoOFX) => ({
       id: t.id, data: t.data, descricao: t.descricao,
       valor: t.valor, tipo: t.tipo, conciliada: false,
     }));
+
+    // 1. Save to database (extrato_bancario)
+    let savedCount = extrato.transacoes.length;
+    let duplicateCount = 0;
+    
+    if (selectedBanco) {
+      try {
+        const result = await salvarExtratoBanco.mutateAsync({ 
+          extrato, 
+          contaBancariaId: selectedBanco 
+        });
+        savedCount = result.saved;
+        duplicateCount = result.duplicates;
+      } catch (err) {
+        // Continue even if save fails - data still in memory
+        console.error('Failed to persist extrato:', err);
+      }
+    }
+
+    // 2. Auto-reconciliation with matcher engine
+    const matches = encontrarTodosMatches(extrato.transacoes, lancamentosSistema);
+    const estatisticas = calcularEstatisticasMatch(extrato.transacoes, matches);
+    
+    // Auto-conciliate high-confidence matches
+    const matchesAlta: ImportReport['matchesAlta'] = [];
+    let autoConciliadas = 0;
+    let valorAutoConciliado = 0;
+
+    for (const transacao of extrato.transacoes) {
+      const sugestoes = matches.get(transacao.id);
+      if (sugestoes && sugestoes.length > 0 && sugestoes[0].confianca === 'alta') {
+        const bestMatch = sugestoes[0];
+        matchesAlta.push({ transacao, match: bestMatch });
+        autoConciliadas++;
+        valorAutoConciliado += Math.abs(transacao.valor);
+        
+        // Mark as conciliada in local state
+        const idx = novasTransacoes.findIndex(t => t.id === transacao.id);
+        if (idx >= 0) novasTransacoes[idx].conciliada = true;
+      }
+    }
+
+    // 3. Update state
     setTransacoes(prev => [...novasTransacoes, ...prev]);
-    setTransacoesImportadas(prev => [...extrato.transacoes, ...prev]);
+    setTransacoesImportadas(prev => [
+      ...extrato.transacoes.filter(t => {
+        const s = matches.get(t.id);
+        return !s || s.length === 0 || s[0].confianca !== 'alta';
+      }),
+      ...prev,
+    ]);
     setExtratoImportado(extrato);
-    toast.success(`${extrato.transacoes.length} transações importadas`, {
-      description: `Arquivo: ${extrato.nomeArquivo}`,
-    });
-  }, []);
+
+    // 4. Build report
+    const pendentesRevisao = extrato.transacoes.length - autoConciliadas - duplicateCount;
+    const valorPendente = extrato.transacoes
+      .filter(t => {
+        const s = matches.get(t.id);
+        return !s || s.length === 0 || s[0].confianca !== 'alta';
+      })
+      .reduce((sum, t) => sum + Math.abs(t.valor), 0);
+
+    const report: ImportReport = {
+      totalImportadas: extrato.transacoes.length,
+      totalSalvas: savedCount,
+      totalDuplicadas: duplicateCount,
+      autoConciliadas,
+      pendentesRevisao: Math.max(0, pendentesRevisao),
+      valorAutoConciliado,
+      valorPendente,
+      estatisticas,
+      matchesAlta,
+    };
+
+    setImportReport(report);
+    setShowReportDialog(true);
+    setIsProcessingImport(false);
+  }, [selectedBanco, lancamentosSistema, salvarExtratoBanco]);
 
   // Match handlers
   const handleConfirmarMatch = useCallback((transacaoId: string, lancamentoId: string, tipo: 'pagar' | 'receber') => {
