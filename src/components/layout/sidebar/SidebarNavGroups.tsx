@@ -104,6 +104,7 @@ const navGroups: NavGroup[] = [
     items: [
       { label: 'Clientes', icon: User, href: '/clientes' },
       { label: 'Fornecedores', icon: Truck, href: '/fornecedores' },
+      { label: 'Vendedores', icon: UserCog, href: '/vendedores' },
       { label: 'Empresas (CNPJs)', icon: Building2, href: '/empresas' },
       { label: 'Contas Bancárias', icon: Landmark, href: '/contas-bancarias' },
       { label: 'Centro de Custos', icon: PieChart, href: '/centro-custos' },
