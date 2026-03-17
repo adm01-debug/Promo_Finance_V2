@@ -211,7 +211,7 @@ export const NetworkStatusIndicator = forwardRef<HTMLDivElement, NetworkStatusIn
       </Tooltip>
     </TooltipProvider>
   );
-}
+});
 
 // Compact connection status for headers
 export function ConnectionDot({ className }: { className?: string }) {
