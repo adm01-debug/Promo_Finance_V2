@@ -72,11 +72,11 @@ export const dashboardService = {
         .lte('data_pagamento', endDate),
       supabase
         .from('contas_pagar')
-        .select('id, status, vencimento')
+        .select('id, status, data_vencimento')
         .in('status', ['pendente', 'atrasado']),
       supabase
         .from('contas_receber')
-        .select('id, status, vencimento')
+        .select('id, status, data_vencimento')
         .in('status', ['pendente', 'atrasado']),
     ]);
 
