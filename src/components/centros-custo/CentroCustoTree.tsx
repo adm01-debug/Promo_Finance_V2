@@ -288,7 +288,8 @@ export function CentroCustoTree({
   onDelete,
   onReactivate,
   onAddChild,
-}: CentroCustoTreeProps) {
+  onHistory,
+}: CentroCustoTreeProps & { onHistory?: (centro: CentroCusto) => void }) {
   const tree = useMemo(() => buildTree(centros), [centros]);
 
   if (tree.length === 0) {
@@ -310,6 +311,7 @@ export function CentroCustoTree({
           onDelete={onDelete}
           onReactivate={onReactivate}
           onAddChild={onAddChild}
+          onHistory={onHistory}
         />
       ))}
     </div>
