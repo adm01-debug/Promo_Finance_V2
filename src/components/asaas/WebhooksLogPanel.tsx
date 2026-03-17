@@ -21,8 +21,8 @@ export function WebhooksLogPanel() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {recentes.slice(0, 4).map((r, i) => (
                 <div key={i} className="p-3 rounded-lg border text-center">
-                  <p className="text-xs text-muted-foreground">{String(r.event_type || r.tipo || '')}</p>
-                  <p className="text-lg font-bold mt-1">{Number(r.total || r.count || 0)}</p>
+                  <p className="text-xs text-muted-foreground">{r.event_type}</p>
+                  <p className="text-lg font-bold mt-1">{r.status}</p>
                 </div>
               ))}
             </div>
