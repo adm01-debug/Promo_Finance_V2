@@ -239,6 +239,7 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
         totalPages: Math.ceil((countResult.count || 0) / pageSize),
       };
     },
+    staleTime: STALE_TIMES.financial,
   });
 }
 
@@ -310,6 +311,7 @@ export function useContasReceberPaginated(params: PaginatedContasReceberParams) 
         totalPages: Math.ceil((countResult.count || 0) / pageSize),
       };
     },
+    staleTime: STALE_TIMES.financial,
   });
 }
 
@@ -359,6 +361,7 @@ export function useClientesPaginated(params: PaginatedClientesParams) {
         totalPages: result.total_pages || 0,
       };
     },
+    staleTime: STALE_TIMES.config,
   });
 }
 
@@ -407,5 +410,6 @@ export function useFornecedoresPaginated(params: PaginatedFornecedoresParams) {
         totalPages: result.total_pages || 0,
       };
     },
+    staleTime: STALE_TIMES.config,
   });
 }
