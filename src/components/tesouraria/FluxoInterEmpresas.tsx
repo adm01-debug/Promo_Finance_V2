@@ -111,7 +111,7 @@ export function FluxoInterEmpresas() {
         <Card className="border-accent/30 bg-accent/5">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <Lightbulb className="h-5 w-5 text-amber-500" />
+              <Lightbulb className="h-5 w-5 text-accent-foreground" />
               Sugestões de Otimização
             </CardTitle>
             <CardDescription>Redistribuição sugerida com base nos saldos atuais</CardDescription>
