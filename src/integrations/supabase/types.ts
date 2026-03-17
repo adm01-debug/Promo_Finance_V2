@@ -6104,6 +6104,7 @@ export type Database = {
         | "vencido"
         | "parcial"
         | "cancelado"
+        | "atrasado"
       tipo_cobranca: "boleto" | "pix" | "cartao" | "transferencia" | "dinheiro"
       tipo_transacao: "receita" | "despesa"
     }
@@ -6259,7 +6260,14 @@ export const Constants = {
         "denegada",
         "inutilizada",
       ],
-      status_pagamento: ["pago", "pendente", "vencido", "parcial", "cancelado"],
+      status_pagamento: [
+        "pago",
+        "pendente",
+        "vencido",
+        "parcial",
+        "cancelado",
+        "atrasado",
+      ],
       tipo_cobranca: ["boleto", "pix", "cartao", "transferencia", "dinheiro"],
       tipo_transacao: ["receita", "despesa"],
     },
