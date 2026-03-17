@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { STALE_TIMES } from '@/lib/queryClient';
 import type { Tables, Database } from '@/integrations/supabase/types';
 
 export type Empresa = Tables<'empresas'>;
