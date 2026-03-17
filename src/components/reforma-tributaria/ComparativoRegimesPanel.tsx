@@ -163,10 +163,10 @@ export function ComparativoRegimesPanel({ empresaId }: Props = {}) {
                   {regimesEspeciais.map((regime) => (
                     <div key={regime.id} className="flex items-center justify-between p-3 rounded-lg border">
                       <div>
-                        <p className="font-medium text-sm">{regime.nome || regime.tipo}</p>
+                        <p className="font-medium text-sm">{regime.regime_nome}</p>
                         <p className="text-xs text-muted-foreground">
-                          Redução: {regime.reducao_aliquota || 0}%
-                          {regime.vigencia_inicio && ` • Desde ${regime.vigencia_inicio}`}
+                          CBS: -{regime.reducao_cbs}% • IBS: -{regime.reducao_ibs}%
+                          {regime.data_inicio && ` • Desde ${regime.data_inicio}`}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
