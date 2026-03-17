@@ -150,6 +150,20 @@ export function CentroCustoForm({ centroCusto, centrosCusto, defaultParentId, on
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
+            name="responsavel"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Responsável</FormLabel>
+                <FormControl>
+                  <Input placeholder="Nome do responsável" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
             name="parent_id"
             render={({ field }) => (
               <FormItem>
