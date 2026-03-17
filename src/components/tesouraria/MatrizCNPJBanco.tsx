@@ -53,7 +53,7 @@ export function MatrizCNPJBanco() {
     const totalGeral = Object.values(totaisEmpresa).reduce((s, v) => s + v, 0);
 
     return { bancos, matrizData, totaisBanco, totaisEmpresa, totalGeral };
-  }, [empresas, contas, pagar, receber]);
+  }, [empresas, contas]);
 
   if (isLoading) {
     return <Skeleton className="h-96 rounded-xl" />;
