@@ -236,6 +236,7 @@ const statusConfig = {
 // NF-e Preview Component
 const NFePreview = ({ nfe }: { nfe: NotaFiscal }) => {
   const [copied, setCopied] = useState(false);
+  const [danfeOpen, setDanfeOpen] = useState(false);
 
   const handleCopyChave = () => {
     navigator.clipboard.writeText(nfe.chaveAcesso);
@@ -246,11 +247,6 @@ const NFePreview = ({ nfe }: { nfe: NotaFiscal }) => {
 
   const handleDownloadXML = () => {
     toast.success('XML da NF-e baixado com sucesso!');
-  };
-
-  const handleDownloadDANFE = () => {
-    // Use DANFEGenerator component - handled via button below
-    toast.info('Use o botão DANFE abaixo para gerar o PDF.');
   };
 
   const handlePrint = () => {
