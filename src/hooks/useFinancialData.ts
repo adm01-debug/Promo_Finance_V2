@@ -113,13 +113,15 @@ export function useClientes() {
       });
 
       if (!response.ok) {
-        const err = await response.json();
+        const err = await response.json().catch(() => ({ error: 'Erro ao buscar clientes externos' }));
         throw new Error(err.error || 'Erro ao buscar clientes externos');
       }
 
       const result = await response.json();
-      return (result.data || []) as Cliente[];
+      return (result.data || []) as ExternalCliente[];
     },
+    retry: 2,
+    staleTime: 5 * 60 * 1000,
   });
 }
 
