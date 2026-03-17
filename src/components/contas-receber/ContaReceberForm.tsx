@@ -10,6 +10,7 @@ import { FieldLabel } from '@/components/ui/info-tooltip';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useClientes, useCentrosCusto, useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
+import { useVendedoresAtivos } from '@/hooks/useVendedores';
 import { toast } from '@/hooks/use-toast';
 import { useConfetti } from '@/hooks/useConfetti';
 import { sounds } from '@/lib/sound-feedback';
@@ -50,6 +51,7 @@ const contaReceberSchema = z.object({
   empresa_id: z.string().min(1, 'Empresa é obrigatória'),
   centro_custo_id: z.string().optional(),
   conta_bancaria_id: z.string().optional(),
+  vendedor_id: z.string().optional(),
   tipo_cobranca: z.enum(['boleto', 'pix', 'cartao', 'transferencia', 'dinheiro']),
   numero_documento: z.string().max(50, 'Número muito longo').optional(),
   codigo_barras: z.string().max(100, 'Código muito longo').optional(),
@@ -104,6 +106,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const { data: centrosCusto = [] } = useCentrosCusto();
   const { data: contasBancarias = [] } = useContasBancarias();
   const { data: empresas = [] } = useEmpresas();
+  const { data: vendedores = [] } = useVendedoresAtivos();
 
   const form = useForm<ContaReceberFormData>({
     resolver: zodResolver(contaReceberSchema),
@@ -170,6 +173,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
         empresa_id: data.empresa_id,
         centro_custo_id: data.centro_custo_id || null,
         conta_bancaria_id: data.conta_bancaria_id || null,
+        vendedor_id: data.vendedor_id || null,
         tipo_cobranca: data.tipo_cobranca,
         numero_documento: data.numero_documento || null,
         codigo_barras: data.codigo_barras || null,
@@ -412,6 +416,34 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
                 )}
               />
             </div>
+
+            {/* Vendedor */}
+            {vendedores.length > 0 && (
+              <FormField
+                control={form.control}
+                name="vendedor_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FieldLabel label="Vendedor" tooltip="Vendedor responsável por esta conta" />
+                    <Select onValueChange={field.onChange} value={field.value || ''}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um vendedor" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {vendedores.map((v) => (
+                          <SelectItem key={v.id} value={v.id}>
+                            {v.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             {/* Descrição */}
             <FormField

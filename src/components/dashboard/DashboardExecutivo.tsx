@@ -6,6 +6,7 @@ import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import { useDashboardMetrics } from '@/hooks/useDashboardMetrics';
 import { PrevisaoIA } from './PrevisaoIA';
 import { AlertasPreditivosPanel } from './AlertasPreditivosPanel';
+import { MetasFinanceirasPanel } from './MetasFinanceirasPanel';
 import { DashboardConfigDialog } from './DashboardConfigDialog';
 import { DashboardSkeleton } from './DashboardSkeleton';
 import { HeroKPICard, HeroKPIGrid } from './HeroKPICards';
@@ -185,6 +186,9 @@ export const DashboardExecutivo = () => {
               diasAtraso: Math.floor((new Date().getTime() - new Date(c.data_vencimento).getTime()) / (1000 * 60 * 60 * 24)),
             }))}
           />
+        </motion.div>
+        <motion.div variants={itemVariants}>
+          <MetasFinanceirasPanel />
         </motion.div>
       </div>
 

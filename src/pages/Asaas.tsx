@@ -32,6 +32,7 @@ import { EstornoDialog } from '@/components/asaas/EstornoDialog';
 import { SegundaViaDialog } from '@/components/asaas/SegundaViaDialog';
 import { LinkPagamentoDialog } from '@/components/asaas/LinkPagamentoDialog';
 import { ExtratoAsaasPanel } from '@/components/asaas/ExtratoAsaasPanel';
+import { WebhooksLogPanel } from '@/components/asaas/WebhooksLogPanel';
 import { AssinaturasListPanel } from '@/components/asaas/AssinaturasListPanel';
 import { LinksListPanel } from '@/components/asaas/LinksListPanel';
 import { formatCurrency } from '@/lib/currency';
@@ -202,6 +203,7 @@ export default function Asaas() {
             <TabsTrigger value="assinaturas">Assinaturas</TabsTrigger>
             <TabsTrigger value="links">Links</TabsTrigger>
             <TabsTrigger value="extrato">Extrato</TabsTrigger>
+            <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
           </TabsList>
 
           <TabsContent value="cobrancas">
@@ -343,6 +345,10 @@ export default function Asaas() {
 
           <TabsContent value="extrato">
             <ExtratoAsaasPanel empresaId={empresaId} />
+          </TabsContent>
+
+          <TabsContent value="webhooks">
+            <WebhooksLogPanel />
           </TabsContent>
         </Tabs>
       </div>

@@ -5,7 +5,7 @@ import {
   Upload, FileText, CheckCircle2, AlertTriangle, Search,
   SplitSquareHorizontal, Link2, Unlink, Eye, Calendar,
   TrendingUp, TrendingDown, Sparkles, Check, MoreHorizontal,
-  BarChart3, Zap, History, Keyboard,
+  BarChart3, Zap, History, Keyboard, Database,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -38,6 +38,8 @@ import { ConciliacaoDashboard } from '@/components/conciliacao/ConciliacaoDashbo
 import { RegrasConciliacaoPanel } from '@/components/conciliacao/RegrasConciliacaoPanel';
 import { ConciliacaoFilters, ConciliacaoFilterState, INITIAL_FILTERS } from '@/components/conciliacao/ConciliacaoFilters';
 import { ConciliacaoExport } from '@/components/conciliacao/ConciliacaoExport';
+import { ExtratoBancarioPanel } from '@/components/conciliacao/ExtratoBancarioPanel';
+import { SessoesConciliacaoPanel } from '@/components/conciliacao/SessoesConciliacaoPanel';
 import { BulkActionsBar } from '@/components/ui/bulk-actions-bar';
 import { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
 import { 
@@ -330,7 +332,14 @@ export default function Conciliacao() {
               <TabsTrigger value="regras" className="gap-2">
                 <Zap className="h-4 w-4" />
                 Regras
-                {/* We could add a count badge here */}
+              </TabsTrigger>
+              <TabsTrigger value="extrato" className="gap-2">
+                <Database className="h-4 w-4" />
+                Extrato
+              </TabsTrigger>
+              <TabsTrigger value="sessoes" className="gap-2">
+                <History className="h-4 w-4" />
+                Sessões
               </TabsTrigger>
             </TabsList>
 
@@ -591,6 +600,14 @@ export default function Conciliacao() {
             {/* === TAB: REGRAS === */}
             <TabsContent value="regras" className="mt-4">
               <RegrasConciliacaoPanel />
+            </TabsContent>
+
+            <TabsContent value="extrato" className="mt-4">
+              <ExtratoBancarioPanel contaBancariaId={selectedBanco || undefined} />
+            </TabsContent>
+
+            <TabsContent value="sessoes" className="mt-4">
+              <SessoesConciliacaoPanel />
             </TabsContent>
           </Tabs>
         </motion.div>
