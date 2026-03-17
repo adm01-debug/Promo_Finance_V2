@@ -431,6 +431,23 @@ const NFePreview = ({ nfe }: { nfe: NotaFiscal }) => {
           Enviar
         </Button>
       </div>
+
+      <DANFEGenerator 
+        nota={{
+          numero: nfe.numero, serie: nfe.serie, chaveAcesso: nfe.chaveAcesso,
+          naturezaOperacao: nfe.naturezaOperacao, dataEmissao: nfe.dataEmissao,
+          cnpjEmitente: nfe.cnpjEmitente, emitenteNome: nfe.emitenteNome,
+          cnpjDestinatario: nfe.cnpjDestinatario, destinatarioNome: nfe.destinatarioNome,
+          destinatarioEndereco: nfe.destinatarioEndereco,
+          valorProdutos: nfe.valorProdutos, valorFrete: nfe.valorFrete,
+          valorSeguro: nfe.valorSeguro, valorDesconto: nfe.valorDesconto,
+          valorIPI: nfe.valorIPI, valorICMS: nfe.valorICMS, valorTotal: nfe.valorTotal,
+          status: nfe.status, protocolo: nfe.protocolo,
+          itens: nfe.itens,
+        }}
+        open={danfeOpen}
+        onOpenChange={setDanfeOpen}
+      />
     </div>
   );
 };
