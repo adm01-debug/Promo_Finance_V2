@@ -78,6 +78,7 @@ export function CentroCustoForm({ centroCusto, centrosCusto, defaultParentId, on
         nome: values.nome,
         descricao: values.descricao || null,
         parent_id: values.parent_id || null,
+        responsavel: values.responsavel || null,
         orcamento_previsto: values.orcamento_previsto,
         ativo: values.ativo,
       };
