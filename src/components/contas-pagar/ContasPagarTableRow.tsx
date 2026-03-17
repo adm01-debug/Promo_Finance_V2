@@ -98,6 +98,8 @@ interface ContaPagarRow {
   tipo_cobranca: string;
   numero_documento: string | null;
   recorrente: boolean;
+  categoria: string | null;
+  tags: string[] | null;
   aprovado_por?: string | null;
   aprovado_em?: string | null;
   centros_custo?: CentroCustoInfo | null;
