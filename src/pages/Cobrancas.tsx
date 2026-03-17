@@ -493,6 +493,8 @@ export default function Cobrancas() {
             </CardContent>
           </Card>
         </motion.div>
+          </TabsContent>
+        </Tabs>
       </motion.div>
     </MainLayout>
   );
