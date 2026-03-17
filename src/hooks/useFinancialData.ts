@@ -74,6 +74,7 @@ export function useEmpresas() {
       if (error) throw error;
       return data as Empresa[];
     },
+    staleTime: STALE_TIMES.static,
   });
 }
 
