@@ -162,11 +162,11 @@ export const dashboardService = {
 
     const { data, error } = await supabase
       .from('contas_pagar')
-      .select('id, descricao, valor, vencimento, fornecedor:fornecedores(id, nome)')
+      .select('id, descricao, valor, data_vencimento, fornecedor:fornecedores(id, razao_social)')
       .eq('status', 'pendente')
-      .gte('vencimento', today.toISOString().split('T')[0])
-      .lte('vencimento', futureDate.toISOString().split('T')[0])
-      .order('vencimento', { ascending: true });
+      .gte('data_vencimento', today.toISOString().split('T')[0])
+      .lte('data_vencimento', futureDate.toISOString().split('T')[0])
+      .order('data_vencimento', { ascending: true });
 
     if (error) throw error;
 
