@@ -238,6 +238,17 @@ export default function Relatorios() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          <ExportRelatorioAvancadoPDF
+            tipo="fluxo"
+            empresa={empresaSelecionada !== 'all' ? ((empresas || []).find(e => e.id === empresaSelecionada)?.nome_fantasia || (empresas || []).find(e => e.id === empresaSelecionada)?.razao_social || 'Empresa') : 'Todas as Empresas'}
+            periodo={`${periodoInicio} a ${periodoFim}`}
+            fluxoCaixa={(fluxoMensal || []).map(f => ({ data: f.mes, receitas: f.receitas, despesas: f.despesas, saldo: f.saldo }))}
+          />
+          <ExportRelatorioAvancadoPDF
+            tipo="dre"
+            empresa={empresaSelecionada !== 'all' ? ((empresas || []).find(e => e.id === empresaSelecionada)?.nome_fantasia || (empresas || []).find(e => e.id === empresaSelecionada)?.razao_social || 'Empresa') : 'Todas as Empresas'}
+            periodo={`${periodoInicio} a ${periodoFim}`}
+          />
           <Button variant="outline" onClick={handlePrint}>
             <Printer className="h-4 w-4 mr-2" />
             Imprimir
