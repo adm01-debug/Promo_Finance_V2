@@ -271,6 +271,7 @@ function TreeNodeItem({
                 onDelete={onDelete}
                 onReactivate={onReactivate}
                 onAddChild={onAddChild}
+                onHistory={onHistory}
                 defaultExpanded={defaultExpanded}
               />
             ))}
