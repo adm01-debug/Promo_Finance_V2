@@ -85,8 +85,8 @@ export const dashboardService = {
     
     const today = new Date().toISOString().split('T')[0];
     const contasAtrasadas = [
-      ...(contasPagarResult.data?.filter(c => c.vencimento < today && c.status !== 'pago') || []),
-      ...(contasReceberResult.data?.filter(c => c.vencimento < today && c.status !== 'pago') || []),
+      ...(contasPagarResult.data?.filter(c => c.data_vencimento < today && c.status !== 'pago') || []),
+      ...(contasReceberResult.data?.filter(c => c.data_vencimento < today && c.status !== 'pago') || []),
     ].length;
 
     // Get today's transactions
