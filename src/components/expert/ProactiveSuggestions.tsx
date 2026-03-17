@@ -149,8 +149,8 @@ export function ProactiveSuggestions({ onSuggestionClick }: ProactiveSuggestions
           newSuggestions.push({
             id: 'alerta-clientes-risco',
             type: 'risco',
-            title: 'Clientes de Alto Risco',
-            description: `${clientesRisco.length} clientes com score baixo têm ${formatCurrency(totalEmRisco)} em aberto.`,
+            title: 'Contas Vencidas em Risco',
+            description: `${contasVencidas.length} contas vencidas totalizam ${formatCurrency(totalEmRisco)} em risco de inadimplência.`,
             impact: formatCurrency(totalEmRisco),
             action: 'Revise os limites de crédito e intensifique o acompanhamento desses clientes.',
             priority: 'alta',
