@@ -224,23 +224,31 @@ export const reportService = {
   async getByFornecedor(filters: ReportFilters = {}): Promise<FornecedorReport[]> {
     const { startDate, endDate } = filters;
     const today = new Date().toISOString().split('T')[0];
-    const { data: fornecedores } = await supabase.from('fornecedores').select('id, nome_fantasia');
 
     let query = supabase.from('contas_pagar').select('*');
     if (startDate) query = query.gte('data_vencimento', startDate);
     if (endDate) query = query.lte('data_vencimento', endDate);
     const { data: contas } = await query;
 
-    return (fornecedores || []).map(fornecedor => {
-      const contasFornecedor = (contas || []).filter(c => c.fornecedor_id === fornecedor.id);
-      return {
-        fornecedor: { id: fornecedor.id, nome: fornecedor.nome_fantasia || '' },
-        totalPagar: contasFornecedor.filter(c => c.status !== 'pago').reduce((sum, c) => sum + (c.valor || 0), 0),
-        totalPago: contasFornecedor.filter(c => c.status === 'pago').reduce((sum, c) => sum + (c.valor || 0), 0),
-        contasAbertas: contasFornecedor.filter(c => c.status !== 'pago').length,
-        contasAtrasadas: contasFornecedor.filter(c => c.status !== 'pago' && c.data_vencimento < today).length,
-      };
-    }).filter(r => r.totalPagar > 0 || r.totalPago > 0);
+    // Group by fornecedor_id
+    const fornecedorMap = new Map<string, { nome: string; contas: typeof contas }>();
+    (contas || []).forEach(c => {
+      if (!c.fornecedor_id) return;
+      const existing = fornecedorMap.get(c.fornecedor_id);
+      if (existing) {
+        existing.contas!.push(c);
+      } else {
+        fornecedorMap.set(c.fornecedor_id, { nome: c.fornecedor_nome || 'Desconhecido', contas: [c] });
+      }
+    });
+
+    return Array.from(fornecedorMap.entries()).map(([id, { nome, contas: contasFornecedor }]) => ({
+      fornecedor: { id, nome },
+      totalPagar: (contasFornecedor || []).filter(c => c.status !== 'pago').reduce((sum, c) => sum + (c.valor || 0), 0),
+      totalPago: (contasFornecedor || []).filter(c => c.status === 'pago').reduce((sum, c) => sum + (c.valor || 0), 0),
+      contasAbertas: (contasFornecedor || []).filter(c => c.status !== 'pago').length,
+      contasAtrasadas: (contasFornecedor || []).filter(c => c.status !== 'pago' && c.data_vencimento < today).length,
+    })).filter(r => r.totalPagar > 0 || r.totalPago > 0);
   },
 
   async getAging(type: 'pagar' | 'receber'): Promise<AgingReport[]> {

@@ -136,22 +136,14 @@ export function ProactiveSuggestions({ onSuggestionClick }: ProactiveSuggestions
         });
       }
 
-      // 4. Verificar clientes de risco
-      const { data: clientesRisco } = await supabase
-        .from('clientes')
-        .select('id, razao_social, score')
-        .eq('ativo', true)
-        .lt('score', 60);
+      // 4. Verificar contas a receber vencidas (risco de inadimplência) - using contas_receber directly
+      const { data: contasVencidas } = await supabase
+        .from('contas_receber')
+        .select('valor, cliente_nome')
+        .eq('status', 'vencido');
 
-      if (clientesRisco && clientesRisco.length > 0) {
-        const clienteIds = clientesRisco.map(c => c.id);
-        const { data: contasClientesRisco } = await supabase
-          .from('contas_receber')
-          .select('valor, cliente_id')
-          .in('cliente_id', clienteIds)
-          .in('status', ['pendente', 'vencido']);
-
-        const totalEmRisco = contasClientesRisco?.reduce((sum, c) => sum + Number(c.valor), 0) || 0;
+      if (contasVencidas && contasVencidas.length > 0) {
+        const totalEmRisco = contasVencidas.reduce((sum, c) => sum + Number(c.valor), 0);
 
         if (totalEmRisco > 0) {
           newSuggestions.push({

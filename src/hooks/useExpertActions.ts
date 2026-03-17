@@ -753,6 +753,7 @@ async function atualizarScoreCliente(
   novoScore: number,
   queryClient: ReturnType<typeof useQueryClient>
 ): Promise<ActionResult> {
+  // Score updates go to the local clientes table (may be synced to external later)
   const { data: cliente, error: findError } = await supabase
     .from('clientes')
     .select('razao_social, score')
@@ -760,7 +761,7 @@ async function atualizarScoreCliente(
     .maybeSingle();
 
   if (findError || !cliente) {
-    return { success: false, message: `Cliente ${clienteId} não encontrado.` };
+    return { success: false, message: `Cliente ${clienteId} não encontrado no banco local. Scores só podem ser atualizados para clientes sincronizados.` };
   }
 
   const scoreAnterior = cliente.score || 0;

@@ -62,14 +62,26 @@ export function useExpertContext(): ExpertContextData {
   const { data: clientes, isLoading: loadingClientes } = useQuery({
     queryKey: ['expert-clientes'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('clientes')
-        .select('razao_social, score, limite_credito')
-        .eq('ativo', true)
-        .order('score', { ascending: true })
-        .limit(10);
-      if (error) throw error;
-      return data || [];
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return [];
+
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const url = `https://${projectId}.supabase.co/functions/v1/external-data?tabela=clientes&limit=20`;
+
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      });
+
+      if (!response.ok) return [];
+      const result = await response.json();
+      return (result.data || []).map((c: Record<string, unknown>) => ({
+        razao_social: c.razao_social,
+        score: c.score,
+        limite_credito: c.limite_credito,
+      }));
     },
     staleTime: 1000 * 60 * 5,
   });
