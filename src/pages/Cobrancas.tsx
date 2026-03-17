@@ -140,18 +140,6 @@ export default function Cobrancas() {
           </TabsContent>
 
           <TabsContent value="dashboard">
-          </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" className="gap-2">
-              <Settings className="h-4 w-4" />
-              Configurar Régua
-            </Button>
-            <Button size="sm" className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25">
-              <Send className="h-4 w-4" />
-              Enviar Cobranças
-            </Button>
-          </div>
-        </motion.div>
 
         {/* KPI Cards */}
         <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
