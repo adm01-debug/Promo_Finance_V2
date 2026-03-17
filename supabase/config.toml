@@ -83,3 +83,6 @@ verify_jwt = false
 
 [functions.insights-relatorio]
 verify_jwt = false
+
+[functions.benchmarking-setorial]
+verify_jwt = false
