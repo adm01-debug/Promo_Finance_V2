@@ -37,6 +37,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { formatCurrency } from '@/lib/formatters';
+import { InsightsIA } from './InsightsIA';
 
 type DrillLevel = 'resumo' | 'categoria' | 'empresa' | 'detalhes';
 
@@ -251,6 +252,27 @@ export function RelatorioDrillDown() {
                 </>
               ) : (
                 <>
+                  {/* Insights IA no nível resumo */}
+                  {resumoData && (
+                    <div className="col-span-full mb-2">
+                      <InsightsIA
+                        dados={{
+                          receitas_total: resumoData.receitas.total,
+                          receitas_recebidas: resumoData.receitas.realizado,
+                          receitas_pendentes: resumoData.receitas.pendente,
+                          receitas_percentual: resumoData.receitas.percentual,
+                          despesas_total: resumoData.despesas.total,
+                          despesas_pagas: resumoData.despesas.realizado,
+                          despesas_pendentes: resumoData.despesas.pendente,
+                          despesas_percentual: resumoData.despesas.percentual,
+                          saldo_liquido: resumoData.saldo,
+                          total_lancamentos: resumoData.receitas.count + resumoData.despesas.count,
+                          periodo,
+                        }}
+                        contexto={`Relatório drill-down do período ${periodo}. Empresa de eventos com alto volume de PIX.`}
+                      />
+                    </div>
+                  )}
                   {/* Card Receitas */}
                   <Card 
                     className="cursor-pointer hover:border-success transition-colors group"
