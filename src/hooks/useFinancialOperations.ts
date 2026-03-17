@@ -37,6 +37,8 @@ export function useMovimentacoes(contaBancariaId?: string, filters?: { startDate
       if (error) throw error;
       return data || [];
     },
+    staleTime: 2 * 60 * 1000,
+  });
   });
 }
 
