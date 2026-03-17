@@ -417,6 +417,34 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
               />
             </div>
 
+            {/* Vendedor */}
+            {vendedores.length > 0 && (
+              <FormField
+                control={form.control}
+                name="vendedor_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FieldLabel label="Vendedor" tooltip="Vendedor responsável por esta conta" />
+                    <Select onValueChange={field.onChange} value={field.value || ''}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um vendedor" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {vendedores.map((v) => (
+                          <SelectItem key={v.id} value={v.id}>
+                            {v.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
             {/* Descrição */}
             <FormField
               control={form.control}
