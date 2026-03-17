@@ -143,7 +143,7 @@ export const contasPagarService = {
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)
-      .select('*, fornecedor:fornecedores(id, nome, cnpj)')
+      .select('*, fornecedor:fornecedores(id, razao_social, nome_fantasia, cnpj)')
       .single();
 
     if (error) throw error;
