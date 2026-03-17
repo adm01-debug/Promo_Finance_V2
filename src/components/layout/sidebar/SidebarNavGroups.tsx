@@ -42,6 +42,8 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAprovacoesPendentesCount } from '@/hooks/useAprovacoesPendentesCount';
+import { useAlertasNaoLidos } from '@/hooks/useAlertas';
+import { useRealtimeAlertas } from '@/hooks/useRealtimeAlertas';
 
 interface NavItem {
   label: string;
