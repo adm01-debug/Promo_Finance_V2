@@ -208,7 +208,7 @@ export function ImportarExtratoDialog({
                 <input
                   id="ofx-file-upload"
                   type="file"
-                  accept=".ofx,.ofc,.csv,.txt"
+                  accept=".ofx,.ofc,.csv,.txt,.xlsx,.xls"
                   className="hidden"
                   onChange={(e) => handleFileSelect(e.target.files)}
                 />
@@ -226,6 +226,7 @@ export function ImportarExtratoDialog({
                   <Badge variant="outline" className="text-xs">.OFX</Badge>
                   <Badge variant="outline" className="text-xs">.OFC</Badge>
                   <Badge variant="outline" className="text-xs">.CSV</Badge>
+                  <Badge variant="outline" className="text-xs">.XLSX</Badge>
                   <Badge variant="outline" className="text-xs">.TXT</Badge>
                 </div>
               </div>
@@ -234,7 +235,8 @@ export function ImportarExtratoDialog({
                 <p className="font-medium text-foreground mb-1">Formatos suportados:</p>
                 <ul className="space-y-1 text-xs">
                   <li>• <strong>OFX/OFC</strong> - Formato padrão de bancos brasileiros</li>
-                  <li>• <strong>CSV</strong> - Colunas: Data, Descrição, Valor, Tipo</li>
+                  <li>• <strong>CSV/TXT</strong> - Colunas: Data, Descrição, Valor, Tipo</li>
+                  <li>• <strong>XLSX/XLS</strong> - Planilhas Excel com colunas de extrato</li>
                 </ul>
               </div>
             </motion.div>

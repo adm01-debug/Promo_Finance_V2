@@ -3,6 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { toastReconciliationSuccess, toastImportSuccess } from '@/lib/toast-confetti';
 import { logger } from '@/lib/logger';
+import type { TransacaoOFX, ExtratoOFX } from '@/lib/ofx-parser';
+import type { TablesInsert } from '@/integrations/supabase/types';
 
 interface ConfirmarConciliacaoParams {
   transacaoId: string;
@@ -27,7 +29,6 @@ export function useConciliacao() {
       queryClient.invalidateQueries({ queryKey: ['transacoes-bancarias'] });
       queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
       queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
-      // Use confetti toast for reconciliation success
       toastReconciliationSuccess(1);
     },
     onError: (error) => {
@@ -82,7 +83,6 @@ export function useConciliacao() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['transacoes-bancarias'] });
-      // Use confetti toast for import success
       toastImportSuccess(data.length, 'transações');
     },
     onError: (error) => {
@@ -91,10 +91,64 @@ export function useConciliacao() {
     },
   });
 
+  // Save extrato to extrato_bancario table for persistence
+  const salvarExtratoBanco = useMutation({
+    mutationFn: async ({ extrato, contaBancariaId }: { extrato: ExtratoOFX; contaBancariaId: string }) => {
+      // Build rows for extrato_bancario
+      const rows: TablesInsert<'extrato_bancario'>[] = extrato.transacoes.map((t, i) => ({
+        conta_bancaria_id: contaBancariaId,
+        data: t.data.toISOString().split('T')[0],
+        descricao: t.descricao,
+        valor: t.valor,
+        tipo: t.tipo === 'credito' ? 'credito' : 'debito',
+        numero_documento: t.numeroReferencia || null,
+        numero_documento_banco: t.checkNum || null,
+        codigo_transacao: t.tipoTransacao || null,
+        arquivo_origem: extrato.nomeArquivo,
+        importado_de: extrato.formato,
+        importado_em: new Date().toISOString(),
+        linha_arquivo: i + 1,
+        hash_transacao: `${contaBancariaId}_${t.data.toISOString().split('T')[0]}_${t.valor}_${t.descricao.slice(0, 30)}`,
+        saldo: extrato.conta.saldoFinal || null,
+      }));
+
+      // Check for duplicates using hash
+      const hashes = rows.map(r => r.hash_transacao).filter(Boolean) as string[];
+      const { data: existing } = await supabase
+        .from('extrato_bancario')
+        .select('hash_transacao')
+        .in('hash_transacao', hashes);
+
+      const existingHashes = new Set((existing || []).map(e => e.hash_transacao));
+      const newRows = rows.filter(r => !existingHashes.has(r.hash_transacao));
+      const duplicateCount = rows.length - newRows.length;
+
+      if (newRows.length === 0) {
+        return { saved: 0, duplicates: duplicateCount };
+      }
+
+      const { error } = await supabase
+        .from('extrato_bancario')
+        .insert(newRows);
+
+      if (error) throw error;
+
+      return { saved: newRows.length, duplicates: duplicateCount };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['extrato-bancario'] });
+    },
+    onError: (error) => {
+      logger.error('[useConciliacao] Erro ao salvar extrato:', error);
+      toast.error('Erro ao salvar extrato no banco');
+    },
+  });
+
   return {
     confirmarConciliacao,
     inserirTransacao,
     importarTransacoes,
+    salvarExtratoBanco,
   };
 }
 
