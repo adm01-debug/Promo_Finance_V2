@@ -88,6 +88,7 @@ export default function ContasBancarias() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingConta, setDeletingConta] = useState<ContaBancaria | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [transferenciaOpen, setTransferenciaOpen] = useState(false);
 
   const queryClient = useQueryClient();
 
