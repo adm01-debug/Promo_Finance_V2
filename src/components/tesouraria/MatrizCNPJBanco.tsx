@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { useEmpresas, useContasBancarias, useContasPagar, useContasReceber } from '@/hooks/useFinancialData';
+import { useEmpresas, useContasBancarias } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -10,10 +10,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 export function MatrizCNPJBanco() {
   const { data: empresas = [], isLoading: le } = useEmpresas();
   const { data: contas = [], isLoading: lc } = useContasBancarias();
-  const { data: pagar = [], isLoading: lp } = useContasPagar();
-  const { data: receber = [], isLoading: lr } = useContasReceber();
 
-  const isLoading = le || lc || lp || lr;
+  const isLoading = le || lc;
 
   const { bancos, matrizData, totaisBanco, totaisEmpresa, totalGeral } = useMemo(() => {
     // Unique banks
@@ -55,7 +53,7 @@ export function MatrizCNPJBanco() {
     const totalGeral = Object.values(totaisEmpresa).reduce((s, v) => s + v, 0);
 
     return { bancos, matrizData, totaisBanco, totaisEmpresa, totalGeral };
-  }, [empresas, contas, pagar, receber]);
+  }, [empresas, contas]);
 
   if (isLoading) {
     return <Skeleton className="h-96 rounded-xl" />;

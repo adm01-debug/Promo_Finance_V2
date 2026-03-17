@@ -18,12 +18,12 @@ export function FluxoInterEmpresas() {
     queryKey: ['transferencias-intercompany'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('transferencias' as any)
+        .from('transferencias')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(50);
-      if (error) return [];
-      return (data || []) as any[];
+      if (error) throw error;
+      return data || [];
     },
   });
 
@@ -108,26 +108,26 @@ export function FluxoInterEmpresas() {
 
       {/* Sugestões de otimização */}
       {analise.sugestoes.length > 0 && (
-        <Card className="border-amber-500/30 bg-amber-50/5">
+        <Card className="border-accent/30 bg-accent/5">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <Lightbulb className="h-5 w-5 text-amber-500" />
+              <Lightbulb className="h-5 w-5 text-accent-foreground" />
               Sugestões de Otimização
             </CardTitle>
             <CardDescription>Redistribuição sugerida com base nos saldos atuais</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {analise.sugestoes.map((sug, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-amber-500/5 border border-amber-500/20">
-                <Badge variant="outline" className="shrink-0 border-amber-500/30 text-amber-700">
+              <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-accent/5 border border-accent/20">
+                <Badge variant="outline" className="shrink-0 border-accent/30 text-accent-foreground">
                   Sugestão
                 </Badge>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap text-sm">
                     <span className="font-semibold">{sug.de}</span>
-                    <ArrowRight className="h-4 w-4 text-amber-600" />
+                    <ArrowRight className="h-4 w-4 text-accent-foreground" />
                     <span className="font-semibold">{sug.para}</span>
-                    <Badge className="bg-amber-500/20 text-amber-700 hover:bg-amber-500/30">
+                    <Badge className="bg-accent/20 text-accent-foreground hover:bg-accent/30">
                       {formatCurrency(sug.valor)}
                     </Badge>
                   </div>
