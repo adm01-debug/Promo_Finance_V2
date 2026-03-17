@@ -126,6 +126,7 @@ export default function Cobrancas() {
             <TabsTrigger value="engine">Engine & Fila</TabsTrigger>
             <TabsTrigger value="regua">Régua & Templates</TabsTrigger>
             <TabsTrigger value="negativacoes">Negativações & Protestos</TabsTrigger>
+            <TabsTrigger value="whatsapp">WhatsApp</TabsTrigger>
           </TabsList>
 
           <TabsContent value="engine">
