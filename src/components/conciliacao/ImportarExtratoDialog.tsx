@@ -238,8 +238,8 @@ export function ImportarExtratoDialog({
                   <Badge variant="outline" className="text-xs">.OFX</Badge>
                   <Badge variant="outline" className="text-xs">.OFC</Badge>
                   <Badge variant="outline" className="text-xs">.CSV</Badge>
-                  <Badge variant="outline" className="text-xs">.XLSX</Badge>
                   <Badge variant="outline" className="text-xs">.TXT</Badge>
+                  <Badge variant="outline" className="text-xs opacity-50">.XLSX (em breve)</Badge>
                 </div>
               </div>
               
