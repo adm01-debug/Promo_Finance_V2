@@ -83,13 +83,13 @@ export function useRecomendacoesIA() {
     queryKey: ['recomendacoes-metas-ia'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('recomendacoes_metas_ia')
+        .from('recomendacoes_metas_ia' as never)
         .select('*')
         .eq('aplicada', false)
         .order('created_at', { ascending: false })
         .limit(20);
       if (error) throw error;
-      return data || [];
+      return (data || []) as Array<{ id: string; tipo: string; titulo: string; descricao: string; impacto_estimado: number; aplicada: boolean; created_at: string }>;
     },
   });
 }
