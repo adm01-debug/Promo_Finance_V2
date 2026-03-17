@@ -572,6 +572,8 @@ export default function Configuracoes() {
             animate="visible"
           >
             <OpenFinancePanel />
+            <WhatsAppConfigPanel />
+            <DocumentacaoAPI />
           </motion.div>
         </TabsContent>
 
