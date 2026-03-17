@@ -27,6 +27,7 @@ import { ReguaCobrancaConfig } from '@/components/cobranca/ReguaCobrancaConfig';
 import { FilaCobrancasPanel } from '@/components/cobranca/FilaCobrancasPanel';
 import { NegativacoesProtestosPanel } from '@/components/cobranca/NegativacoesProtestosPanel';
 import { WhatsAppHistoryPanel } from '@/components/cobranca/WhatsAppHistoryPanel';
+import { WhatsAppProativoPanel } from '@/components/cobranca/WhatsAppProativoPanel';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -141,7 +142,8 @@ export default function Cobrancas() {
             <NegativacoesProtestosPanel />
           </TabsContent>
 
-          <TabsContent value="whatsapp">
+          <TabsContent value="whatsapp" className="space-y-4">
+            <WhatsAppProativoPanel />
             <WhatsAppHistoryPanel />
           </TabsContent>
 
