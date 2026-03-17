@@ -52,8 +52,8 @@ export interface ContaReceberInput {
 export const contasReceberService = {
   async getAll(filters?: ContaReceberFilters): Promise<ContaReceber[]> {
     let query = supabase
-      .from('contas_receber')
-      .select('*, cliente:clientes(id, nome, cpf_cnpj)')
+      .from('vw_contas_receber_painel')
+      .select('*')
       .order('vencimento', { ascending: true });
 
     if (filters?.status) {
