@@ -311,9 +311,9 @@ export function ContasPagarTableRow({
         </div>
       </TableCell>
       <TableCell>
-        {conta.centro_custo || (conta as any).centros_custo?.nome ? (
+        {conta.centros_custo?.nome ? (
           <Badge variant="secondary" className="font-normal">
-            {conta.centro_custo || (conta as any).centros_custo?.nome}
+            {conta.centros_custo.nome}
           </Badge>
         ) : (
           <span className="text-xs text-muted-foreground">-</span>
