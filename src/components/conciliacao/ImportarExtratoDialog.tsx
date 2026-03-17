@@ -70,6 +70,18 @@ export function ImportarExtratoDialog({
     setProgress(0);
 
     try {
+      // Check for binary formats that we cannot parse client-side
+      const ext = file.name.toLowerCase().split('.').pop();
+      if (ext === 'xlsx' || ext === 'xls') {
+        setResultado({
+          sucesso: false,
+          erro: 'Arquivos Excel (.xlsx/.xls) ainda não são suportados. Por favor, exporte o extrato do seu banco em formato OFX ou CSV.',
+          avisos: ['Dica: A maioria dos bancos oferece a opção de exportar extratos em OFX no internet banking.'],
+        });
+        setStep('error');
+        return;
+      }
+
       // Simulate progress while reading file
       const progressInterval = setInterval(() => {
         setProgress(prev => Math.min(prev + 15, 70));
