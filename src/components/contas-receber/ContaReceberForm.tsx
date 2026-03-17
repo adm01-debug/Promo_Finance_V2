@@ -173,6 +173,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
         empresa_id: data.empresa_id,
         centro_custo_id: data.centro_custo_id || null,
         conta_bancaria_id: data.conta_bancaria_id || null,
+        vendedor_id: data.vendedor_id || null,
         tipo_cobranca: data.tipo_cobranca,
         numero_documento: data.numero_documento || null,
         codigo_barras: data.codigo_barras || null,
