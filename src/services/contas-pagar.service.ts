@@ -118,7 +118,7 @@ export const contasPagarService = {
       .from('contas_pagar')
       .update(updateData as any)
       .eq('id', id)
-      .select('*, fornecedor:fornecedores(id, nome, cnpj)')
+      .select('*, fornecedor:fornecedores(id, razao_social, nome_fantasia, cnpj)')
       .single();
 
     if (error) throw error;
