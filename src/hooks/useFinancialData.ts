@@ -410,5 +410,6 @@ export function useFornecedoresPaginated(params: PaginatedFornecedoresParams) {
         totalPages: result.total_pages || 0,
       };
     },
+    staleTime: STALE_TIMES.config,
   });
 }
