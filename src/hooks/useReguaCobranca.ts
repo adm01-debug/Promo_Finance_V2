@@ -112,3 +112,49 @@ export function useProcessarRegua() {
     onError: (e: Error) => toast.error(`Erro ao processar régua: ${e.message}`),
   });
 }
+
+// ============================================
+// PROCESSAR FILA (dequeue + enviar)
+// ============================================
+export function useProcessarFila() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (limite: number = 50) => {
+      const { data, error } = await supabase.rpc('processar_fila_cobrancas', {
+        p_limite: limite,
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ['fila-cobrancas'] });
+      qc.invalidateQueries({ queryKey: ['execucoes-cobranca'] });
+      toast.success(`${Array.isArray(data) ? data.length : 0} cobranças em processamento.`);
+    },
+    onError: (e: Error) => toast.error(`Erro ao processar fila: ${e.message}`),
+  });
+}
+
+// ============================================
+// CONFIRMAR ENVIO (callback pós-disparo)
+// ============================================
+export function useConfirmarEnvio() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (params: { filaId: string; provider?: string; providerMessageId?: string; sucesso?: boolean; erro?: string }) => {
+      const { error } = await supabase.rpc('confirmar_envio_cobranca', {
+        p_fila_id: params.filaId,
+        p_provider: params.provider || null,
+        p_provider_message_id: params.providerMessageId || null,
+        p_sucesso: params.sucesso ?? true,
+        p_erro: params.erro || null,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['fila-cobrancas'] });
+      qc.invalidateQueries({ queryKey: ['execucoes-cobranca'] });
+    },
+    onError: (e: Error) => toast.error(`Erro ao confirmar envio: ${e.message}`),
+  });
+}
