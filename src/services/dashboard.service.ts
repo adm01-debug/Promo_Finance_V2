@@ -245,7 +245,7 @@ export const dashboardService = {
       id: bill.id,
       descricao: bill.descricao,
       valor: bill.valor,
-      vencimento: bill.vencimento,
+      vencimento: bill.data_vencimento,
       daysUntilDue: 1,
       fornecedor: bill.fornecedor,
     }));
