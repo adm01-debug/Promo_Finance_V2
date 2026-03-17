@@ -53,6 +53,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
+import { TransferenciaDialog } from '@/components/contas-bancarias/TransferenciaDialog';
 
 const containerVariants = {
   hidden: { opacity: 0 },
