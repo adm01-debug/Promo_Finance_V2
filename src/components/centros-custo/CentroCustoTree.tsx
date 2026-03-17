@@ -97,6 +97,7 @@ function TreeNodeItem({
   onDelete,
   onReactivate,
   onAddChild,
+  onHistory,
   defaultExpanded = true,
 }: TreeNodeItemProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
