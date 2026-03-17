@@ -7,10 +7,10 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { formatCurrency, formatDate, getStatusLabel } from '@/lib/formatters';
 import { Building2, Mail, Phone, MapPin, CreditCard, TrendingUp, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
-import type { Cliente } from '@/hooks/useFinancialData';
+import type { ExternalCliente } from '@/hooks/useFinancialData';
 
 interface ClienteDetailDialogProps {
-  cliente: Cliente | null;
+  cliente: ExternalCliente | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
