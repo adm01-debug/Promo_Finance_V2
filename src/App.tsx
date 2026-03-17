@@ -50,6 +50,7 @@ const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const Asaas = lazy(() => import('./pages/Asaas'));
 const BlingPage = lazy(() => import('./pages/Bling'));
 const Vendedores = lazy(() => import('./pages/Vendedores'));
+const MeuPerfil = lazy(() => import('./pages/MeuPerfil'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Inner app component that can use routing hooks
