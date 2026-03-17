@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { useContasPagar, useContasReceber } from '@/hooks/useFinancialData';
 import { formatCurrency, formatPercentage } from '@/lib/formatters';
+import { ExportDemonstrativoPDF } from '@/components/demonstrativos/ExportDemonstrativoPDF';
 
 interface DREStatementProps {
   periodo: string;
