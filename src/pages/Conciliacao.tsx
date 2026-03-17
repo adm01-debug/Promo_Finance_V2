@@ -332,7 +332,14 @@ export default function Conciliacao() {
               <TabsTrigger value="regras" className="gap-2">
                 <Zap className="h-4 w-4" />
                 Regras
-                {/* We could add a count badge here */}
+              </TabsTrigger>
+              <TabsTrigger value="extrato" className="gap-2">
+                <Database className="h-4 w-4" />
+                Extrato
+              </TabsTrigger>
+              <TabsTrigger value="sessoes" className="gap-2">
+                <History className="h-4 w-4" />
+                Sessões
               </TabsTrigger>
             </TabsList>
 
