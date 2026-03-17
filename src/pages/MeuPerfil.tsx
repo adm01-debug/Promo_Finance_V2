@@ -87,9 +87,7 @@ export default function MeuPerfil() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16">
-                <AvatarFallback className="text-lg bg-primary/10 text-primary">{initials}</AvatarFallback>
-              </Avatar>
+              <Avatar name={fullName || email} size="xl" />
               <div>
                 <p className="font-semibold">{fullName || email}</p>
                 <Badge variant="outline" className="capitalize">{role || 'Não definido'}</Badge>
