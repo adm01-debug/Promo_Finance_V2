@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import MainLayout from '@/components/layout/MainLayout';
+import { MainLayout } from '@/components/layout/MainLayout';
 import { Building2, Grid3X3, Wallet, ArrowLeftRight } from 'lucide-react';
 import { ConsolidacaoMultiCNPJ } from '@/components/tesouraria/ConsolidacaoMultiCNPJ';
 import { MatrizCNPJBanco } from '@/components/tesouraria/MatrizCNPJBanco';

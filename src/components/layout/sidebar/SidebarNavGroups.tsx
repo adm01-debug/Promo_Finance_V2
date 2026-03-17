@@ -90,6 +90,7 @@ const navGroups: NavGroup[] = [
       { label: 'Cobrança', icon: Receipt, href: '/cobrancas' },
       { label: 'Boletos', icon: CreditCard, href: '/boletos' },
       { label: 'Fluxo de Caixa', icon: BarChart3, href: '/fluxo-caixa' },
+      { label: 'Tesouraria Multi-CNPJ', icon: Landmark, href: '/tesouraria', highlight: true },
       { label: 'Conciliação', icon: RefreshCcw, href: '/conciliacao' },
       { label: 'Simulador Antecipação', icon: Calculator, href: '/simulador-antecipacao' },
       { label: 'ASAAS', icon: CreditCard, href: '/asaas', highlight: true },
