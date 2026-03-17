@@ -199,9 +199,9 @@ export const dashboardService = {
       id: bill.id,
       descricao: bill.descricao,
       valor: bill.valor,
-      vencimento: bill.vencimento,
+      vencimento: bill.data_vencimento,
       daysOverdue: Math.ceil(
-        (todayDate.getTime() - new Date(bill.vencimento).getTime()) / (1000 * 60 * 60 * 24)
+        (todayDate.getTime() - new Date(bill.data_vencimento).getTime()) / (1000 * 60 * 60 * 24)
       ),
       fornecedor: bill.fornecedor,
     }));
