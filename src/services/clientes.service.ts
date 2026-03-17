@@ -1,21 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 
-export interface Cliente {
-  id: string;
-  nome: string;
-  cpf_cnpj?: string;
-  email?: string;
-  telefone?: string;
-  endereco?: string;
-  cidade?: string;
-  estado?: string;
-  cep?: string;
-  ativo: boolean;
-  observacoes?: string;
-  limite_credito?: number;
-  created_at: string;
-  updated_at: string;
-}
+type ClienteRow = Database['public']['Tables']['clientes']['Row'];
 
 export interface ClienteFilters {
   ativo?: boolean;
@@ -25,16 +11,18 @@ export interface ClienteFilters {
 }
 
 export interface ClienteInput {
-  nome: string;
-  cpf_cnpj?: string;
+  razao_social: string;
+  nome_fantasia?: string;
+  cnpj_cpf?: string;
   email?: string;
   telefone?: string;
   endereco?: string;
   cidade?: string;
   estado?: string;
-  cep?: string;
   observacoes?: string;
   limite_credito?: number;
+  tipo?: string;
+  empresa_id?: string;
 }
 
 export interface ClienteStats {
@@ -46,17 +34,17 @@ export interface ClienteStats {
 }
 
 export const clientesService = {
-  async getAll(filters?: ClienteFilters): Promise<Cliente[]> {
+  async getAll(filters?: ClienteFilters): Promise<ClienteRow[]> {
     let query = supabase
       .from('clientes')
       .select('*')
-      .order('nome', { ascending: true });
+      .order('razao_social', { ascending: true });
 
     if (filters?.ativo !== undefined) {
       query = query.eq('ativo', filters.ativo);
     }
     if (filters?.search) {
-      query = query.or(`nome.ilike.%${filters.search}%,cpf_cnpj.ilike.%${filters.search}%,email.ilike.%${filters.search}%`);
+      query = query.or(`razao_social.ilike.%${filters.search}%,cnpj_cpf.ilike.%${filters.search}%,email.ilike.%${filters.search}%`);
     }
     if (filters?.estado) {
       query = query.eq('estado', filters.estado);
@@ -70,7 +58,7 @@ export const clientesService = {
     return data || [];
   },
 
-  async getById(id: string): Promise<Cliente | null> {
+  async getById(id: string): Promise<ClienteRow | null> {
     const { data, error } = await supabase
       .from('clientes')
       .select('*')
@@ -81,22 +69,33 @@ export const clientesService = {
     return data;
   },
 
-  async getByCpfCnpj(cpfCnpj: string): Promise<Cliente | null> {
+  async getByCpfCnpj(cpfCnpj: string): Promise<ClienteRow | null> {
     const { data, error } = await supabase
       .from('clientes')
       .select('*')
-      .eq('cpf_cnpj', cpfCnpj)
+      .eq('cnpj_cpf', cpfCnpj)
       .single();
 
     if (error && error.code !== 'PGRST116') throw error;
     return data;
   },
 
-  async create(input: ClienteInput): Promise<Cliente> {
+  async create(input: ClienteInput): Promise<ClienteRow> {
     const { data, error } = await supabase
       .from('clientes')
       .insert({
-        ...input,
+        razao_social: input.razao_social,
+        nome_fantasia: input.nome_fantasia,
+        cnpj_cpf: input.cnpj_cpf,
+        email: input.email,
+        telefone: input.telefone,
+        endereco: input.endereco,
+        cidade: input.cidade,
+        estado: input.estado,
+        observacoes: input.observacoes,
+        limite_credito: input.limite_credito,
+        tipo: input.tipo,
+        empresa_id: input.empresa_id,
         ativo: true,
       })
       .select()
@@ -106,7 +105,7 @@ export const clientesService = {
     return data;
   },
 
-  async update(id: string, input: Partial<ClienteInput>): Promise<Cliente> {
+  async update(id: string, input: Partial<ClienteInput>): Promise<ClienteRow> {
     const { data, error } = await supabase
       .from('clientes')
       .update({
@@ -130,13 +129,10 @@ export const clientesService = {
     if (error) throw error;
   },
 
-  async deactivate(id: string): Promise<Cliente> {
+  async deactivate(id: string): Promise<ClienteRow> {
     const { data, error } = await supabase
       .from('clientes')
-      .update({
-        ativo: false,
-        updated_at: new Date().toISOString(),
-      })
+      .update({ ativo: false, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
       .single();
@@ -145,13 +141,10 @@ export const clientesService = {
     return data;
   },
 
-  async activate(id: string): Promise<Cliente> {
+  async activate(id: string): Promise<ClienteRow> {
     const { data, error } = await supabase
       .from('clientes')
-      .update({
-        ativo: true,
-        updated_at: new Date().toISOString(),
-      })
+      .update({ ativo: true, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
       .single();
@@ -160,12 +153,12 @@ export const clientesService = {
     return data;
   },
 
-  async getContasReceber(clienteId: string): Promise<any[]> {
+  async getContasReceber(clienteId: string) {
     const { data, error } = await supabase
       .from('contas_receber')
       .select('*')
       .eq('cliente_id', clienteId)
-      .order('vencimento', { ascending: false });
+      .order('data_vencimento', { ascending: false });
 
     if (error) throw error;
     return data || [];
@@ -177,37 +170,37 @@ export const clientesService = {
 
     const totalReceber = contas
       .filter(c => c.status === 'pendente')
-      .reduce((sum, c) => sum + c.valor, 0);
+      .reduce((sum, c) => sum + (c.valor || 0), 0);
 
     const totalRecebido = contas
-      .filter(c => c.status === 'recebido')
-      .reduce((sum, c) => sum + c.valor, 0);
+      .filter(c => c.status === 'pago')
+      .reduce((sum, c) => sum + (c.valor || 0), 0);
 
     const contasAbertas = contas.filter(c => c.status === 'pendente').length;
     
     const contasAtrasadas = contas.filter(
-      c => c.status === 'pendente' && c.vencimento < today
+      c => c.status === 'pendente' && c.data_vencimento < today
     ).length;
 
     const ultimaConta = contas
-      .filter(c => c.status === 'recebido')
-      .sort((a, b) => new Date(b.data_recebimento).getTime() - new Date(a.data_recebimento).getTime())[0];
+      .filter(c => c.status === 'pago')
+      .sort((a, b) => new Date(b.data_recebimento || '').getTime() - new Date(a.data_recebimento || '').getTime())[0];
 
     return {
       totalReceber,
       totalRecebido,
       contasAbertas,
       contasAtrasadas,
-      ultimaCompra: ultimaConta?.data_recebimento,
+      ultimaCompra: ultimaConta?.data_recebimento || undefined,
     };
   },
 
-  async search(term: string): Promise<Cliente[]> {
+  async search(term: string): Promise<ClienteRow[]> {
     const { data, error } = await supabase
       .from('clientes')
       .select('*')
       .eq('ativo', true)
-      .or(`nome.ilike.%${term}%,cpf_cnpj.ilike.%${term}%`)
+      .or(`razao_social.ilike.%${term}%,cnpj_cpf.ilike.%${term}%`)
       .limit(10);
 
     if (error) throw error;
@@ -221,7 +214,7 @@ export const clientesService = {
       .not('estado', 'is', null);
 
     if (error) throw error;
-    return [...new Set((data || []).map(d => d.estado).filter(Boolean))].sort();
+    return [...new Set((data || []).map(d => d.estado).filter(Boolean) as string[])].sort();
   },
 
   async getCidades(estado?: string): Promise<string[]> {
@@ -236,7 +229,7 @@ export const clientesService = {
 
     const { data, error } = await query;
     if (error) throw error;
-    return [...new Set((data || []).map(d => d.cidade).filter(Boolean))].sort();
+    return [...new Set((data || []).map(d => d.cidade).filter(Boolean) as string[])].sort();
   },
 
   async checkLimiteCredito(clienteId: string): Promise<{ disponivel: number; usado: number; limite: number }> {
@@ -263,11 +256,11 @@ export const clientesService = {
   async exportToCSV(filters?: ClienteFilters): Promise<string> {
     const clientes = await this.getAll(filters);
     
-    const headers = ['ID', 'Nome', 'CPF/CNPJ', 'Email', 'Telefone', 'Cidade', 'Estado', 'Ativo'];
+    const headers = ['ID', 'Razão Social', 'CPF/CNPJ', 'Email', 'Telefone', 'Cidade', 'Estado', 'Ativo'];
     const rows = clientes.map(c => [
       c.id,
-      c.nome,
-      c.cpf_cnpj || '',
+      c.razao_social,
+      c.cnpj_cpf || '',
       c.email || '',
       c.telefone || '',
       c.cidade || '',
