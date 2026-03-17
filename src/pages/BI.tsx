@@ -54,6 +54,7 @@ import { formatCurrency } from "@/lib/formatters";
 import { PositionBadge, getRankFromScore, RankBadge, RankLegend } from "@/components/ui/rank-badge";
 import { BenchmarkingSetorial } from "@/components/analytics/BenchmarkingSetorial";
 import { InadimplenciaSegmentada } from "@/components/analytics/InadimplenciaSegmentada";
+import { HistoricoAnalisesPreditivasPanel } from "@/components/analytics/HistoricoAnalisesPreditivasPanel";
 
 const containerVariants = {
   hidden: { opacity: 0 },
