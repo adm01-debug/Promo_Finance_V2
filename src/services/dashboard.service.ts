@@ -235,9 +235,9 @@ export const dashboardService = {
 
     const { data, error } = await supabase
       .from('contas_pagar')
-      .select('id, descricao, valor, vencimento, fornecedor:fornecedores(id, nome)')
+      .select('id, descricao, valor, data_vencimento, fornecedor:fornecedores(id, razao_social)')
       .eq('status', 'pendente')
-      .eq('vencimento', tomorrowStr);
+      .eq('data_vencimento', tomorrowStr);
 
     if (error) throw error;
 
