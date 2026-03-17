@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-type AuditAction = 'INSERT' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'LOGOUT' | 'LOGIN_FAILED' | 'MFA_ENABLED' | 'MFA_DISABLED' | 'ROLE_CHANGED' | 'PERMISSION_CHANGED' | 'EXPORT' | 'IMPORT' | 'APPROVE' | 'REJECT' | 'PASSWORD_CHANGE' | 'SETTINGS_CHANGE' | 'PASSWORD_RESET_REQUEST' | 'PASSWORD_RESET_APPROVE' | 'PASSWORD_RESET_REJECT';
+type AuditAction = 'INSERT' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'LOGOUT' | 'EXPORT' | 'APPROVE' | 'REJECT';
 
 export function useLogAudit() {
   return useMutation({
