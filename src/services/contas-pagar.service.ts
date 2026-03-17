@@ -232,7 +232,7 @@ export const contasPagarService = {
       .from('contas_pagar')
       .update(updateData as any)
       .in('id', ids)
-      .select('*, fornecedor:fornecedores(id, nome, cnpj)');
+      .select('*, fornecedor:fornecedores(id, razao_social, nome_fantasia, cnpj)');
 
     if (error) throw error;
     return data || [];
