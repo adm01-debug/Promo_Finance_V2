@@ -34,7 +34,7 @@ export function HistoricoAnalisesPreditivasPanel() {
                 <div className="flex items-center gap-3">
                   <TrendingUp className="h-5 w-5 text-primary" />
                   <div>
-                    <p className="font-medium text-sm">{analise.tipo || 'Análise Geral'}</p>
+                    <p className="font-medium text-sm">{analise.resumo_executivo?.slice(0, 60) || 'Análise Geral'}</p>
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
                       {formatDate(analise.created_at)}
@@ -43,12 +43,10 @@ export function HistoricoAnalisesPreditivasPanel() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant={analise.status === 'concluida' ? 'default' : 'secondary'}>
-                    {analise.status || 'concluída'}
-                  </Badge>
-                  {analise.acuracia != null && (
+                  <Badge variant="default">Concluída</Badge>
+                  {analise.score_saude_financeira != null && (
                     <Badge variant="outline" className="text-xs">
-                      Acurácia: {(analise.acuracia * 100).toFixed(0)}%
+                      Score: {analise.score_saude_financeira}
                     </Badge>
                   )}
                 </div>

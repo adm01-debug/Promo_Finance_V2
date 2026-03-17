@@ -56,21 +56,21 @@ export function WebhooksLogPanel() {
                   <div className="flex items-center gap-3">
                     {wh.processado ? (
                       <CheckCircle2 className="h-4 w-4 text-success" />
-                    ) : wh.erro ? (
+                    ) : wh.erro_mensagem ? (
                       <XCircle className="h-4 w-4 text-destructive" />
                     ) : (
                       <Clock className="h-4 w-4 text-warning" />
                     )}
                     <div>
-                      <p className="font-medium text-sm font-mono">{wh.evento || wh.event_type}</p>
+                      <p className="font-medium text-sm font-mono">{wh.event_type}</p>
                       <p className="text-xs text-muted-foreground">
-                        {wh.origem || 'asaas'} • ID: {wh.external_id || wh.id.slice(0, 8)}
+                        {wh.provider || 'asaas'} • ID: {wh.id.slice(0, 8)}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant={wh.processado ? 'default' : wh.erro ? 'destructive' : 'secondary'}>
-                      {wh.processado ? 'Processado' : wh.erro ? 'Erro' : 'Pendente'}
+                    <Badge variant={wh.processado ? 'default' : wh.erro_mensagem ? 'destructive' : 'secondary'}>
+                      {wh.processado ? 'Processado' : wh.erro_mensagem ? 'Erro' : 'Pendente'}
                     </Badge>
                     <span className="text-xs text-muted-foreground">{formatDate(wh.created_at)}</span>
                   </div>

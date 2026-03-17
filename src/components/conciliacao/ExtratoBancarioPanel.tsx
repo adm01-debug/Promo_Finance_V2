@@ -43,7 +43,7 @@ export function ExtratoBancarioPanel({ contaBancariaId }: Props) {
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
                       {formatDate(item.data)}
-                      {item.documento && <span>• Doc: {item.documento}</span>}
+                      {item.numero_documento && <span>• Doc: {item.numero_documento}</span>}
                     </p>
                   </div>
                 </div>
