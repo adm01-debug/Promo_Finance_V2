@@ -18,12 +18,12 @@ export function FluxoInterEmpresas() {
     queryKey: ['transferencias-intercompany'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('transferencias' as any)
+        .from('transferencias')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(50);
-      if (error) return [];
-      return (data || []) as any[];
+      if (error) throw error;
+      return data || [];
     },
   });
 

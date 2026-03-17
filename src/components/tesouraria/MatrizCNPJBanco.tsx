@@ -10,10 +10,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 export function MatrizCNPJBanco() {
   const { data: empresas = [], isLoading: le } = useEmpresas();
   const { data: contas = [], isLoading: lc } = useContasBancarias();
-  const { data: pagar = [], isLoading: lp } = useContasPagar();
-  const { data: receber = [], isLoading: lr } = useContasReceber();
 
-  const isLoading = le || lc || lp || lr;
+  const isLoading = le || lc;
 
   const { bancos, matrizData, totaisBanco, totaisEmpresa, totalGeral } = useMemo(() => {
     // Unique banks
