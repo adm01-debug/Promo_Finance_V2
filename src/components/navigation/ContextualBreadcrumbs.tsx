@@ -69,7 +69,7 @@ interface BreadcrumbItemData {
   isLast: boolean;
 }
 
-export function ContextualBreadcrumbs({ className }: { className?: string }) {
+export const ContextualBreadcrumbs = forwardRef<HTMLDivElement, { className?: string }>(function ContextualBreadcrumbs({ className }, ref) {
   const location = useLocation();
   
   const breadcrumbs = useMemo(() => {
