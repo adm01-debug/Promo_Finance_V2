@@ -1484,6 +1484,7 @@ export type Database = {
         Row: {
           conta_bancaria_id: string
           created_at: string
+          diferenca: number | null
           empresa_id: string | null
           finalizada_em: string | null
           finalizada_por: string | null
@@ -1500,6 +1501,7 @@ export type Database = {
         Insert: {
           conta_bancaria_id: string
           created_at?: string
+          diferenca?: number | null
           empresa_id?: string | null
           finalizada_em?: string | null
           finalizada_por?: string | null
@@ -1516,6 +1518,7 @@ export type Database = {
         Update: {
           conta_bancaria_id?: string
           created_at?: string
+          diferenca?: number | null
           empresa_id?: string | null
           finalizada_em?: string | null
           finalizada_por?: string | null
@@ -1722,6 +1725,7 @@ export type Database = {
           numero_documento: string | null
           numero_parcela_atual: number | null
           observacoes: string | null
+          parcela_atual: number | null
           plano_conta_id: string | null
           recorrente: boolean
           status: Database["public"]["Enums"]["status_pagamento"]
@@ -1731,10 +1735,12 @@ export type Database = {
           user_id: string | null
           valor: number
           valor_desconto: number | null
+          valor_final: number | null
           valor_juros: number | null
           valor_multa: number | null
           valor_original: number | null
           valor_pago: number | null
+          vencimento: string | null
         }
         Insert: {
           aprovado_em?: string | null
@@ -1761,6 +1767,7 @@ export type Database = {
           numero_documento?: string | null
           numero_parcela_atual?: number | null
           observacoes?: string | null
+          parcela_atual?: number | null
           plano_conta_id?: string | null
           recorrente?: boolean
           status?: Database["public"]["Enums"]["status_pagamento"]
@@ -1770,10 +1777,12 @@ export type Database = {
           user_id?: string | null
           valor: number
           valor_desconto?: number | null
+          valor_final?: number | null
           valor_juros?: number | null
           valor_multa?: number | null
           valor_original?: number | null
           valor_pago?: number | null
+          vencimento?: string | null
         }
         Update: {
           aprovado_em?: string | null
@@ -1800,6 +1809,7 @@ export type Database = {
           numero_documento?: string | null
           numero_parcela_atual?: number | null
           observacoes?: string | null
+          parcela_atual?: number | null
           plano_conta_id?: string | null
           recorrente?: boolean
           status?: Database["public"]["Enums"]["status_pagamento"]
@@ -1809,10 +1819,12 @@ export type Database = {
           user_id?: string | null
           valor?: number
           valor_desconto?: number | null
+          valor_final?: number | null
           valor_juros?: number | null
           valor_multa?: number | null
           valor_original?: number | null
           valor_pago?: number | null
+          vencimento?: string | null
         }
         Relationships: [
           {
@@ -1893,6 +1905,7 @@ export type Database = {
           numero_documento: string | null
           numero_parcela_atual: number | null
           observacoes: string | null
+          parcela_atual: number | null
           plano_conta_id: string | null
           recorrente: boolean | null
           status: Database["public"]["Enums"]["status_pagamento"]
@@ -1902,10 +1915,13 @@ export type Database = {
           user_id: string | null
           valor: number
           valor_desconto: number | null
+          valor_final: number | null
           valor_juros: number | null
           valor_multa: number | null
           valor_original: number | null
+          valor_pago: number | null
           valor_recebido: number | null
+          vencimento: string | null
           vendedor_id: string | null
         }
         Insert: {
@@ -1934,6 +1950,7 @@ export type Database = {
           numero_documento?: string | null
           numero_parcela_atual?: number | null
           observacoes?: string | null
+          parcela_atual?: number | null
           plano_conta_id?: string | null
           recorrente?: boolean | null
           status?: Database["public"]["Enums"]["status_pagamento"]
@@ -1943,10 +1960,13 @@ export type Database = {
           user_id?: string | null
           valor: number
           valor_desconto?: number | null
+          valor_final?: number | null
           valor_juros?: number | null
           valor_multa?: number | null
           valor_original?: number | null
+          valor_pago?: number | null
           valor_recebido?: number | null
+          vencimento?: string | null
           vendedor_id?: string | null
         }
         Update: {
@@ -1975,6 +1995,7 @@ export type Database = {
           numero_documento?: string | null
           numero_parcela_atual?: number | null
           observacoes?: string | null
+          parcela_atual?: number | null
           plano_conta_id?: string | null
           recorrente?: boolean | null
           status?: Database["public"]["Enums"]["status_pagamento"]
@@ -1984,10 +2005,13 @@ export type Database = {
           user_id?: string | null
           valor?: number
           valor_desconto?: number | null
+          valor_final?: number | null
           valor_juros?: number | null
           valor_multa?: number | null
           valor_original?: number | null
+          valor_pago?: number | null
           valor_recebido?: number | null
+          vencimento?: string | null
           vendedor_id?: string | null
         }
         Relationships: [
@@ -2918,6 +2942,7 @@ export type Database = {
           endereco: string | null
           estado: string | null
           id: string
+          nome: string | null
           nome_fantasia: string | null
           observacoes: string | null
           pix: string | null
@@ -2946,6 +2971,7 @@ export type Database = {
           endereco?: string | null
           estado?: string | null
           id?: string
+          nome?: string | null
           nome_fantasia?: string | null
           observacoes?: string | null
           pix?: string | null
@@ -2974,6 +3000,7 @@ export type Database = {
           endereco?: string | null
           estado?: string | null
           id?: string
+          nome?: string | null
           nome_fantasia?: string | null
           observacoes?: string | null
           pix?: string | null
