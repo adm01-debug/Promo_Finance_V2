@@ -1,5 +1,3 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -11,83 +9,55 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const EXTERNAL_DB_URL = Deno.env.get('EXTERNAL_DB_URL');
-    if (!EXTERNAL_DB_URL) {
+    const EXTERNAL_SERVICE_KEY = Deno.env.get('EXTERNAL_DB_URL');
+    if (!EXTERNAL_SERVICE_KEY) {
       throw new Error('EXTERNAL_DB_URL not configured');
     }
 
-    const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
-    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-
-    // Current project client
-    const currentClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
-    // External project client  
-    const externalClient = createClient(
-      'https://xyykivpcdbfukaongpbw.supabase.co',
-      EXTERNAL_DB_URL // This should be the anon/service key
-    );
-
-    // Query tables from both databases using RPC or direct queries
-    const queries = {
-      tables: `SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename`,
-      functions: `SELECT routine_name FROM information_schema.routines WHERE routine_schema = 'public' ORDER BY routine_name`,
-      views: `SELECT viewname FROM pg_views WHERE schemaname = 'public' ORDER BY viewname`,
-      triggers: `SELECT tgname FROM pg_trigger t JOIN pg_class c ON t.tgrelid = c.oid JOIN pg_namespace n ON c.relnamespace = n.oid WHERE n.nspname = 'public' AND NOT t.tgisinternal ORDER BY tgname`,
-      enums: `SELECT typname FROM pg_type WHERE typnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public') AND typtype = 'e' ORDER BY typname`,
-    };
-
-    // Since we can't run raw SQL via supabase-js directly,
-    // let's use the REST API with pg_catalog approach
-    // We'll query the external DB via its REST endpoint
-
-    // Get external tables by querying information_schema via RPC if available
-    // Alternative: use fetch to the external PostgREST endpoint
-    
     const externalUrl = 'https://xyykivpcdbfukaongpbw.supabase.co';
-    const externalKey = EXTERNAL_DB_URL;
 
-    // Fetch external tables list via PostgREST
-    const fetchExternal = async (table: string, select: string, filters?: string) => {
-      const url = `${externalUrl}/rest/v1/${table}?select=${select}${filters ? '&' + filters : ''}`;
-      const res = await fetch(url, {
-        headers: {
-          'apikey': externalKey,
-          'Authorization': `Bearer ${externalKey}`,
-        },
-      });
-      if (!res.ok) {
-        const text = await res.text();
-        return { error: `${res.status}: ${text}`, data: null };
-      }
-      return { data: await res.json(), error: null };
-    };
-
-    // We can't query pg_tables via PostgREST. Let's just compare what tables
-    // the external DB exposes via its API
-    // The best approach: list all tables from the external OpenAPI spec
+    // Use the service_role key to call an RPC that lists tables
+    // First, try to get tables via a direct SQL query using the pg_catalog
+    // Since we have service_role, we can use the /rest/v1/rpc endpoint
     
+    // Alternative approach: query the OpenAPI spec with service_role key
     const specRes = await fetch(`${externalUrl}/rest/v1/`, {
       headers: {
-        'apikey': externalKey,
-        'Authorization': `Bearer ${externalKey}`,
+        'apikey': EXTERNAL_SERVICE_KEY,
+        'Authorization': `Bearer ${EXTERNAL_SERVICE_KEY}`,
       },
     });
-    
+
     let externalTables: string[] = [];
+    let specDebug = '';
+    
     if (specRes.ok) {
       const spec = await specRes.json();
       if (spec.definitions) {
         externalTables = Object.keys(spec.definitions).sort();
       } else if (spec.paths) {
         externalTables = Object.keys(spec.paths)
-          .map(p => p.replace('/', ''))
-          .filter(p => p.length > 0)
+          .map((p: string) => p.replace(/^\//, ''))
+          .filter((p: string) => p.length > 0)
           .sort();
       }
+      specDebug = `keys: ${Object.keys(spec).join(', ')}`;
+    } else {
+      specDebug = `status: ${specRes.status}, body: ${await specRes.text()}`;
     }
 
-    // Current DB tables (we already know from our query)
+    // Also try to list tables by querying each known table
+    // Let's try fetching from a few known tables to verify connectivity
+    const testTableRes = await fetch(`${externalUrl}/rest/v1/profiles?select=id&limit=1`, {
+      headers: {
+        'apikey': EXTERNAL_SERVICE_KEY,
+        'Authorization': `Bearer ${EXTERNAL_SERVICE_KEY}`,
+      },
+    });
+    const testTableDebug = `profiles test: ${testTableRes.status}`;
+    const testBody = await testTableRes.text();
+
+    // Current DB tables
     const currentTables = [
       'account_lockouts', 'acordos_parcelamento', 'alertas', 'alertas_preditivos',
       'alertas_tributarios', 'allowed_countries', 'allowed_ips', 'anexos_financeiros',
@@ -122,10 +92,14 @@ Deno.serve(async (req) => {
     const inBoth = currentTables.filter(t => externalTables.includes(t));
 
     const result = {
+      debug: {
+        spec: specDebug,
+        test_table: testTableDebug,
+        test_body: testBody.substring(0, 500),
+      },
       current_db: {
         project: 'iikqosstymnnxaujzadw',
         total_tables: currentTables.length,
-        tables: currentTables,
       },
       external_db: {
         project: 'xyykivpcdbfukaongpbw',
@@ -134,6 +108,7 @@ Deno.serve(async (req) => {
       },
       comparison: {
         tables_in_both: inBoth.length,
+        in_both: inBoth,
         only_in_external: onlyInExternal,
         only_in_current: onlyInCurrent,
         missing_from_current: onlyInExternal.length,
