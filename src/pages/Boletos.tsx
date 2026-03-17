@@ -34,7 +34,7 @@ import { formatCurrency, formatDate } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { useBoletos, Boleto, NovoBoletoData } from '@/hooks/useBoletos';
 import { toastWithUndo } from '@/lib/toast-with-undo';
-import { cn } from '@/lib/utils';
+import { BoletoBarcode } from '@/components/boletos/BoletoBarcode';
 import { EmptyState } from '@/components/ui/micro-interactions';
 
 const containerVariants = {
