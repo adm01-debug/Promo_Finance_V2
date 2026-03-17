@@ -29,6 +29,7 @@ interface CentroCustoTreeProps {
   onDelete: (centro: CentroCusto) => void;
   onReactivate: (centro: CentroCusto) => void;
   onAddChild: (parentId: string) => void;
+  onHistory?: (centro: CentroCusto) => void;
 }
 
 const COLORS = ['hsl(24, 95%, 46%)', 'hsl(215, 90%, 42%)', 'hsl(150, 70%, 32%)', 'hsl(275, 75%, 48%)', 'hsl(42, 95%, 48%)'];
