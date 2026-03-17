@@ -140,6 +140,7 @@ export const DREStatement = ({ periodo, mes, ano, empresaId }: DREStatementProps
               linhas={dre.linhas}
             />
           </div>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="rounded-lg border border-border/50 overflow-hidden">
