@@ -115,6 +115,7 @@ function AppRoutes() {
             <Route path="/comprovante-ocr" element={<ProtectedRoute><ComprovanteOCRPage /></ProtectedRoute>} />
             <Route path="/movimentacoes" element={<ProtectedRoute><Movimentacoes /></ProtectedRoute>} />
             <Route path="/tesouraria" element={<ProtectedRoute><Tesouraria /></ProtectedRoute>} />
+            <Route path="/pix-hub" element={<ProtectedRoute><PixHub /></ProtectedRoute>} />
             
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
