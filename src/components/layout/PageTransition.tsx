@@ -1,6 +1,6 @@
 import { motion, AnimatePresence, Transition, Variants } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
-import { ReactNode } from 'react';
+import { ReactNode, forwardRef } from 'react';
 
 interface PageTransitionProps {
   children: ReactNode;
@@ -30,25 +30,28 @@ const pageTransition: Transition = {
   duration: 0.35,
 };
 
-export function PageTransition({ children }: PageTransitionProps) {
-  const location = useLocation();
+export const PageTransition = forwardRef<HTMLDivElement, PageTransitionProps>(
+  function PageTransition({ children }, ref) {
+    const location = useLocation();
 
-  return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={location.pathname}
-        initial="initial"
-        animate="in"
-        exit="out"
-        variants={pageVariants}
-        transition={pageTransition}
-        className="w-full"
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
-  );
-}
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div
+          ref={ref}
+          key={location.pathname}
+          initial="initial"
+          animate="in"
+          exit="out"
+          variants={pageVariants}
+          transition={pageTransition}
+          className="w-full"
+        >
+          {children}
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
+);
 
 // Variantes alternativas para diferentes tipos de transição
 export const slideVariants: Variants = {

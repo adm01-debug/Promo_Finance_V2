@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo, forwardRef } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -69,7 +69,7 @@ interface BreadcrumbItemData {
   isLast: boolean;
 }
 
-export function ContextualBreadcrumbs({ className }: { className?: string }) {
+export const ContextualBreadcrumbs = forwardRef<HTMLDivElement, { className?: string }>(function ContextualBreadcrumbs({ className }, ref) {
   const location = useLocation();
   
   const breadcrumbs = useMemo(() => {
@@ -123,32 +123,33 @@ export function ContextualBreadcrumbs({ className }: { className?: string }) {
             const Icon = item.icon;
             
             return (
-              <BreadcrumbItem key={item.path}>
+              <React.Fragment key={item.path}>
                 {index > 0 && <BreadcrumbSeparator />}
-                
-                {item.isLast ? (
-                  <BreadcrumbPage className="flex items-center gap-1.5">
-                    <Icon className="h-3.5 w-3.5" />
-                    <span>{item.label}</span>
-                  </BreadcrumbPage>
-                ) : (
-                  <BreadcrumbLink asChild>
-                    <Link 
-                      to={item.path}
-                      className="flex items-center gap-1.5 hover:text-primary transition-colors"
-                    >
+                <BreadcrumbItem>
+                  {item.isLast ? (
+                    <BreadcrumbPage className="flex items-center gap-1.5">
                       <Icon className="h-3.5 w-3.5" />
-                      <span className="hidden sm:inline">{item.label}</span>
-                    </Link>
-                  </BreadcrumbLink>
-                )}
-              </BreadcrumbItem>
+                      <span>{item.label}</span>
+                    </BreadcrumbPage>
+                  ) : (
+                    <BreadcrumbLink asChild>
+                      <Link 
+                        to={item.path}
+                        className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                      >
+                        <Icon className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">{item.label}</span>
+                      </Link>
+                    </BreadcrumbLink>
+                  )}
+                </BreadcrumbItem>
+              </React.Fragment>
             );
           })}
         </BreadcrumbList>
       </Breadcrumb>
     </motion.div>
   );
-}
+});
 
 export default ContextualBreadcrumbs;
