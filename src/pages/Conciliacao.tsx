@@ -601,6 +601,14 @@ export default function Conciliacao() {
             <TabsContent value="regras" className="mt-4">
               <RegrasConciliacaoPanel />
             </TabsContent>
+
+            <TabsContent value="extrato" className="mt-4">
+              <ExtratoBancarioPanel contaBancariaId={selectedBanco || undefined} />
+            </TabsContent>
+
+            <TabsContent value="sessoes" className="mt-4">
+              <SessoesConciliacaoPanel />
+            </TabsContent>
           </Tabs>
         </motion.div>
 
