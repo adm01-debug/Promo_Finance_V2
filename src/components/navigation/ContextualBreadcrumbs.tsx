@@ -150,6 +150,6 @@ export const ContextualBreadcrumbs = forwardRef<HTMLDivElement, { className?: st
       </Breadcrumb>
     </motion.div>
   );
-}
+});
 
 export default ContextualBreadcrumbs;
