@@ -171,12 +171,14 @@ export function useContasPagar() {
     queryKey: ['contas-pagar'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('contas_pagar')
-        .select('*, centros_custo(nome, codigo), contas_bancarias(banco), fornecedores(razao_social, nome_fantasia)')
-        .order('data_vencimento', { ascending: true });
+        .from('vw_contas_pagar_painel')
+        .select('*')
+        .order('data_vencimento', { ascending: true })
+        .limit(500);
       if (error) throw error;
       return data;
     },
+    staleTime: STALE_TIMES.financial,
   });
 }
 
