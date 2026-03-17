@@ -146,6 +146,8 @@ interface SidebarNavGroupsProps {
 export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
   const location = useLocation();
   const { count: aprovacoesPendentes } = useAprovacoesPendentesCount();
+  const { data: alertasNaoLidos = 0 } = useAlertasNaoLidos();
+  useRealtimeAlertas();
 
   // Track which groups are open
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
