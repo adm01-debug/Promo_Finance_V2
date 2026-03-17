@@ -186,7 +186,7 @@ export const contasPagarService = {
 
     const { data, error } = await supabase
       .from('contas_pagar')
-      .select('*, fornecedor:fornecedores(id, nome, cnpj)')
+      .select('*, fornecedor:fornecedores(id, razao_social, nome_fantasia, cnpj)')
       .eq('status', 'pendente')
       .gte('data_vencimento', today.toISOString().split('T')[0])
       .lte('data_vencimento', endOfWeek.toISOString().split('T')[0])
