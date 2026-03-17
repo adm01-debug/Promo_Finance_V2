@@ -211,7 +211,7 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(function Log
         </Button>
 
         {biometricAvailable && (
-
+          <>
             <Button
               type="button"
               variant="outline"
