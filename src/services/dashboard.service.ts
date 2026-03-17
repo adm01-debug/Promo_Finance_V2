@@ -1,4 +1,3 @@
-// @ts-nocheck - Service uses columns not in current schema (vencimento, categoria)
 import { supabase } from '@/integrations/supabase/client';
 
 export interface DashboardStats {
