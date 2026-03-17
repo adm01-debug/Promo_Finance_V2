@@ -106,6 +106,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const { data: centrosCusto = [] } = useCentrosCusto();
   const { data: contasBancarias = [] } = useContasBancarias();
   const { data: empresas = [] } = useEmpresas();
+  const { data: vendedores = [] } = useVendedoresAtivos();
 
   const form = useForm<ContaReceberFormData>({
     resolver: zodResolver(contaReceberSchema),
