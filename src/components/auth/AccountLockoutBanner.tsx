@@ -37,7 +37,7 @@ export function AccountLockoutBanner({ locked, remainingMinutes = 0 }: AccountLo
   const progress = totalSeconds > 0 ? ((totalSeconds - secondsLeft) / totalSeconds) * 100 : 100;
 
   return (
-    <Alert variant="destructive" className="mb-4 border-destructive/50 bg-destructive/10">
+    <Alert variant="error" className="mb-4 border-destructive/50 bg-destructive/10">
       <ShieldAlert className="h-5 w-5" />
       <AlertTitle className="font-bold">Conta Temporariamente Bloqueada</AlertTitle>
       <AlertDescription className="space-y-3">

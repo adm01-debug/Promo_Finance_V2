@@ -8,8 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { useContasBancarias, ContaBancaria } from '@/hooks/useFinancialData';
-import { useFinancialOperations } from '@/hooks/useFinancialOperations';
+import { useContasBancarias } from '@/hooks/useFinancialData';
+import { useCreateTransferencia } from '@/hooks/useFinancialOperations';
 import { formatCurrency } from '@/lib/formatters';
 import { toast } from 'sonner';
 
@@ -20,7 +20,6 @@ interface TransferenciaDialogProps {
 
 export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogProps) {
   const { data: contas = [] } = useContasBancarias();
-  const { useCreateTransferencia } = useFinancialOperations();
   const createTransferencia = useCreateTransferencia();
   
   const [contaOrigem, setContaOrigem] = useState('');
