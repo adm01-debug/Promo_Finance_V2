@@ -7033,25 +7033,29 @@ export type Database = {
         Row: {
           aprovado_em: string | null
           aprovado_por: string | null
+          asaas_bill_id: string | null
+          asaas_status: string | null
           bitrix_deal_id: string | null
           categoria: string | null
+          centro_custo: string | null
           centro_custo_id: string | null
-          centro_custo_nome: string | null
           codigo_barras: string | null
+          conta_bancaria: string | null
           conta_bancaria_id: string | null
-          conta_banco: string | null
           contato_id: string | null
+          contato_nome: string | null
           created_at: string | null
           created_by: string | null
           data_emissao: string | null
           data_pagamento: string | null
           data_vencimento: string | null
           descricao: string | null
+          dias_para_vencer: number | null
           empresa_id: string | null
           forma_pagamento: string | null
           forma_pagamento_id: string | null
-          fornecedor_cnpj_display: string | null
-          fornecedor_display: string | null
+          fornecedor: string | null
+          fornecedor_cnpj: string | null
           fornecedor_id: string | null
           fornecedor_nome: string | null
           frequencia_recorrencia: string | null
@@ -7064,7 +7068,9 @@ export type Database = {
           plano_conta_id: string | null
           plano_conta_nome: string | null
           recorrente: boolean | null
+          saldo_devedor: number | null
           status: Database["public"]["Enums"]["status_pagamento"] | null
+          tags: string[] | null
           tipo_cobranca: Database["public"]["Enums"]["tipo_cobranca"] | null
           total_parcelas: number | null
           updated_at: string | null
@@ -7146,13 +7152,17 @@ export type Database = {
       }
       vw_contas_receber_painel: {
         Row: {
+          asaas_billing_type: string | null
+          asaas_payment_id: string | null
+          asaas_status: string | null
           bitrix_deal_id: string | null
           categoria: string | null
+          centro_custo: string | null
           centro_custo_id: string | null
           centro_custo_nome: string | null
           chave_pix: string | null
-          cliente_cpf_cnpj_display: string | null
-          cliente_display: string | null
+          cliente: string | null
+          cliente_cpf_cnpj: string | null
           cliente_id: string | null
           cliente_nome: string | null
           cliente_score: number | null
@@ -7160,12 +7170,15 @@ export type Database = {
           conta_bancaria_id: string | null
           conta_banco: string | null
           contato_id: string | null
+          contato_nome: string | null
           created_at: string | null
           created_by: string | null
+          data_credito: string | null
           data_emissao: string | null
           data_recebimento: string | null
           data_vencimento: string | null
           descricao: string | null
+          dias_para_vencer: number | null
           empresa_id: string | null
           etapa_cobranca: Database["public"]["Enums"]["etapa_cobranca"] | null
           forma_pagamento_id: string | null
@@ -7174,13 +7187,17 @@ export type Database = {
           id: string | null
           link_boleto: string | null
           numero_documento: string | null
+          numero_nf: string | null
           numero_parcela_atual: number | null
           observacoes: string | null
           parcela_atual: number | null
           plano_conta_id: string | null
           plano_conta_nome: string | null
           recorrente: boolean | null
+          saldo_a_receber: number | null
           status: Database["public"]["Enums"]["status_pagamento"] | null
+          tags: string[] | null
+          taxa_gateway: number | null
           tipo_cobranca: Database["public"]["Enums"]["tipo_cobranca"] | null
           total_parcelas: number | null
           updated_at: string | null
@@ -7189,6 +7206,7 @@ export type Database = {
           valor_desconto: number | null
           valor_final: number | null
           valor_juros: number | null
+          valor_liquido: number | null
           valor_multa: number | null
           valor_original: number | null
           valor_pago: number | null
@@ -7271,11 +7289,16 @@ export type Database = {
       }
       vw_dre_mensal: {
         Row: {
+          categoria: string | null
           despesas: number | null
           empresa_id: string | null
           mes: string | null
           receitas: number | null
           resultado: number | null
+          tipo_conta: string | null
+          total_bruto: number | null
+          total_liquido: number | null
+          total_taxas: number | null
         }
         Relationships: [
           {
@@ -7290,7 +7313,11 @@ export type Database = {
       vw_dso_aging: {
         Row: {
           a_vencer: number | null
+          em_cobranca: number | null
           empresa_id: string | null
+          faixa: string | null
+          media_dias_atraso: number | null
+          quantidade: number | null
           saldo_aberto: number | null
           total_titulos: number | null
           valor_total: number | null
@@ -7313,20 +7340,62 @@ export type Database = {
       }
       vw_fluxo_caixa: {
         Row: {
-          despesas_previstas: number | null
-          dia: string | null
-          receitas_previstas: number | null
-          saldo_dia: number | null
+          asaas_transaction_id: string | null
+          asaas_type: string | null
+          categoria: string | null
+          centro_custo: string | null
+          conciliado: boolean | null
+          conta_bancaria: string | null
+          conta_bancaria_id: string | null
+          contato: string | null
+          created_at: string | null
+          data_movimentacao: string | null
+          descricao: string | null
+          empresa_id: string | null
+          origem: string | null
+          taxa_gateway: number | null
+          tipo: string | null
+          tipo_categoria: string | null
+          valor: number | null
+          valor_liquido: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "movimentacoes_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimentacoes_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimentacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       vw_fluxo_caixa_diario: {
         Row: {
+          data: string | null
           dia: string | null
           empresa_id: string | null
           entradas: number | null
+          entradas_liquidas: number | null
           saidas: number | null
           saldo: number | null
+          saldo_dia: number | null
+          total_entradas: number | null
+          total_saidas: number | null
+          total_taxas: number | null
         }
         Relationships: [
           {
@@ -7340,11 +7409,15 @@ export type Database = {
       }
       vw_gastos_centro_custo: {
         Row: {
+          bitrix_deal_id: string | null
+          centro_custo: string | null
           centro_custo_id: string | null
           codigo: string | null
           nome: string | null
           orcamento_previsto: number | null
           percentual_utilizado: number | null
+          saldo_orcamento: number | null
+          tipo: string | null
           total_gasto: number | null
         }
         Relationships: []
@@ -7352,9 +7425,19 @@ export type Database = {
       vw_metricas_cobranca: {
         Row: {
           canal: string | null
+          contas_cobradas: number | null
+          custo_total: number | null
           empresa_id: string | null
+          entregues: number | null
+          enviados: number | null
           etapa: string | null
+          etapa_nome: string | null
+          falhas: number | null
+          lidos: number | null
+          respondidos: number | null
           taxa_entrega: number | null
+          taxa_entrega_pct: number | null
+          total_disparos: number | null
           total_entregues: number | null
           total_enviados: number | null
           total_lidos: number | null
@@ -7379,7 +7462,9 @@ export type Database = {
           empresa_id: string | null
           empresa_nome: string | null
           id: string | null
+          nome: string | null
           saldo_atual: number | null
+          tipo: string | null
           tipo_conta: string | null
         }
         Relationships: [
@@ -7396,10 +7481,13 @@ export type Database = {
         Row: {
           aprovado_em: string | null
           aprovado_por: string | null
+          asaas_comprovante_url: string | null
+          asaas_end_to_end: string | null
           asaas_status: string | null
           asaas_transfer_id: string | null
           banco_destino: string | null
           banco_origem: string | null
+          bitrix_deal_id: string | null
           cancelado_em: string | null
           cancelado_por: string | null
           chave_pix: string | null
@@ -7408,15 +7496,19 @@ export type Database = {
           conta_bancaria_id: string | null
           conta_destino_id: string | null
           conta_destino_numero: string | null
+          conta_origem: string | null
           conta_origem_numero: string | null
           conta_pagar_id: string | null
           created_at: string | null
           created_by: string | null
           data_efetivacao: string | null
+          data_solicitacao: string | null
           data_transferencia: string | null
           descricao: string | null
+          destinatario: string | null
           empresa_id: string | null
           erro_mensagem: string | null
+          external_reference: string | null
           favorecido_agencia: string | null
           favorecido_banco: string | null
           favorecido_conta: string | null
@@ -7425,13 +7517,16 @@ export type Database = {
           favorecido_tipo_conta: string | null
           id: string | null
           linha_digitavel: string | null
+          modalidade: string | null
           motivo_cancelamento: string | null
           movimentacao_id: string | null
           numero_documento: string | null
           observacoes: string | null
           origem: string | null
+          pix_chave_destino: string | null
           protocolo: string | null
           status: string | null
+          tags: string[] | null
           taxa: number | null
           tipo: string | null
           tipo_chave_pix: string | null
@@ -7493,9 +7588,13 @@ export type Database = {
       }
       vw_webhooks_recentes: {
         Row: {
+          asaas_payment_id: string | null
+          asaas_transfer_id: string | null
           created_at: string | null
+          erro_detalhe: string | null
           erro_mensagem: string | null
           event_type: string | null
+          evento: string | null
           headers: Json | null
           id: string | null
           ip_origem: string | null
@@ -7504,6 +7603,7 @@ export type Database = {
           processado_em: string | null
           provider: string | null
           status: string | null
+          status_processamento: string | null
           updated_at: string | null
         }
         Relationships: []
