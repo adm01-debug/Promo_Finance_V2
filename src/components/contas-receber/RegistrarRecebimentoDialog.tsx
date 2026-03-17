@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Loader2, DollarSign, Calendar, Wallet } from 'lucide-react';
+import { CalculadoraJurosMulta } from '@/components/contas-receber/CalculadoraJurosMulta';
 import { supabase } from '@/integrations/supabase/client';
 import { useContasBancarias } from '@/hooks/useFinancialData';
 import { toast } from '@/hooks/use-toast';
