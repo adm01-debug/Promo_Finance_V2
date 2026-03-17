@@ -14,7 +14,9 @@ Deno.serve(async (req) => {
     // Verify caller is authenticated
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders });
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const localSupabase = createClient(
@@ -26,12 +28,14 @@ Deno.serve(async (req) => {
     const token = authHeader.replace('Bearer ', '');
     const { data: claimsData, error: claimsError } = await localSupabase.auth.getClaims(token);
     if (claimsError || !claimsData?.claims) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders });
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     // Parse request
     const url = new URL(req.url);
-    const tabela = url.searchParams.get('tabela'); // 'clientes' or 'fornecedores'
+    const tabela = url.searchParams.get('tabela');
     const search = url.searchParams.get('search') || '';
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = Math.min(parseInt(url.searchParams.get('limit') || '50'), 200);
@@ -47,7 +51,7 @@ Deno.serve(async (req) => {
     const extUrl = Deno.env.get('EXTERNAL_SUPABASE_URL');
     const extKey = Deno.env.get('EXTERNAL_SUPABASE_SERVICE_KEY');
     if (!extUrl || !extKey) {
-      return new Response(JSON.stringify({ error: 'External DB not configured' }), {
+      return new Response(JSON.stringify({ error: 'External DB not configured', extUrl: !!extUrl, extKey: !!extKey }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -58,7 +62,11 @@ Deno.serve(async (req) => {
     let query = extSupabase.from(tabela).select('*', { count: 'exact' });
 
     if (search) {
-      query = query.or(`razao_social.ilike.%${search}%,nome_fantasia.ilike.%${search}%,cnpj_cpf.ilike.%${search}%`);
+      if (tabela === 'clientes') {
+        query = query.or(`razao_social.ilike.%${search}%,nome_fantasia.ilike.%${search}%,cnpj_cpf.ilike.%${search}%`);
+      } else {
+        query = query.or(`razao_social.ilike.%${search}%,nome_fantasia.ilike.%${search}%,cnpj_cpf.ilike.%${search}%`);
+      }
     }
 
     query = query.order('razao_social', { ascending: true }).range(offset, offset + limit - 1);
@@ -67,7 +75,7 @@ Deno.serve(async (req) => {
 
     if (error) {
       console.error(`[external-data] Error querying ${tabela}:`, error);
-      return new Response(JSON.stringify({ error: error.message }), {
+      return new Response(JSON.stringify({ error: error.message, details: error }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
