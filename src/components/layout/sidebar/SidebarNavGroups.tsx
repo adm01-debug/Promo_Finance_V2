@@ -32,6 +32,11 @@ import {
   FolderOpen,
   UserCog,
   Wrench,
+  FileSignature,
+  Calculator,
+  Camera,
+  ArrowLeftRight,
+  FileCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
