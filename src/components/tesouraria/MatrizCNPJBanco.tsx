@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { useEmpresas, useContasBancarias, useContasPagar, useContasReceber } from '@/hooks/useFinancialData';
+import { useEmpresas, useContasBancarias } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
