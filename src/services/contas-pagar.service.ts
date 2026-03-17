@@ -75,7 +75,7 @@ export const contasPagarService = {
   async getById(id: string) {
     const { data, error } = await supabase
       .from('contas_pagar')
-      .select('*, fornecedor:fornecedores(id, nome, cnpj)')
+      .select('*, fornecedor:fornecedores(id, razao_social, nome_fantasia, cnpj)')
       .eq('id', id)
       .single();
 
