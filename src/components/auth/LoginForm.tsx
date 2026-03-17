@@ -58,6 +58,23 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(function Log
   onForgotPassword,
 }, ref) {
   const [showPassword, setShowPassword] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  const handleGoogleLogin = async () => {
+    setGoogleLoading(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth('google', {
+        redirect_uri: window.location.origin,
+      });
+      if (result?.error) {
+        toast.error('Erro ao entrar com Google: ' + (result.error as Error).message);
+      }
+    } catch (err) {
+      toast.error('Erro ao conectar com Google');
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
 
   return (
     <div ref={ref}>
