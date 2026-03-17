@@ -58,6 +58,7 @@ const ComprovanteOCRPage = lazy(() => import('./pages/ComprovanteOCR'));
 const Movimentacoes = lazy(() => import('./pages/Movimentacoes'));
 const Tesouraria = lazy(() => import('./pages/Tesouraria'));
 const PixHub = lazy(() => import('./pages/PixHub'));
+const OrcamentoEvento = lazy(() => import('./pages/OrcamentoEvento'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Inner app component that can use routing hooks
