@@ -1128,6 +1128,11 @@ export default function BI() {
         <motion.div variants={itemVariants} className="mt-6">
           <BenchmarkingSetorial />
         </motion.div>
+
+        {/* Histórico de Análises Preditivas */}
+        <motion.div variants={itemVariants} className="mt-6">
+          <HistoricoAnalisesPreditivasPanel />
+        </motion.div>
       </motion.div>
     </MainLayout>
   );

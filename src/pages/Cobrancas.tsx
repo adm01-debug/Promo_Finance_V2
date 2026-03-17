@@ -141,6 +141,10 @@ export default function Cobrancas() {
             <NegativacoesProtestosPanel />
           </TabsContent>
 
+          <TabsContent value="whatsapp">
+            <WhatsAppHistoryPanel />
+          </TabsContent>
+
           <TabsContent value="dashboard" className="space-y-6">
 
         {/* KPI Cards */}
