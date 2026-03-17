@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { Wifi, WifiOff, Signal, SignalLow, SignalMedium, SignalHigh, Zap, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -16,12 +17,12 @@ interface NetworkStatusIndicatorProps {
   className?: string;
 }
 
-export function NetworkStatusIndicator({ 
+export const NetworkStatusIndicator = forwardRef<HTMLDivElement, NetworkStatusIndicatorProps>(function NetworkStatusIndicator({ 
   showDetails = false,
   showLabel = false,
   variant = 'badge',
   className 
-}: NetworkStatusIndicatorProps) {
+}, ref) {
   const { isOnline, effectiveType, downlink, rtt } = useNetworkStatus();
 
   const getSignalIcon = () => {
@@ -210,7 +211,7 @@ export function NetworkStatusIndicator({
       </Tooltip>
     </TooltipProvider>
   );
-}
+});
 
 // Compact connection status for headers
 export function ConnectionDot({ className }: { className?: string }) {
