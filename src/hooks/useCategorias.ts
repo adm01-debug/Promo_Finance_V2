@@ -6,9 +6,10 @@ export interface Categoria {
   id: string;
   nome: string;
   tipo: string;
-  cor: string;
-  icone?: string;
+  cor: string | null;
+  icone: string | null;
   ativo: boolean;
+  plano_conta_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -19,60 +20,6 @@ export interface CategoriaInput {
   cor?: string;
   icone?: string;
 }
-
-// ============================================
-// SERVICE (inline, no separate table needed - uses contas_pagar/contas_receber categorias)
-// ============================================
-
-// Since there's no 'categorias' table in the DB, we derive categories from existing data
-const categoriasService = {
-  async getAll(tipo?: 'despesa' | 'receita'): Promise<Categoria[]> {
-    // Get unique categories from contas_pagar and contas_receber
-    const categories: Categoria[] = [];
-    
-    if (!tipo || tipo === 'despesa') {
-      const { data: pagar } = await supabase
-        .from('contas_pagar')
-        .select('tipo_cobranca')
-        .not('tipo_cobranca', 'is', null);
-      
-      const uniquePagar = [...new Set((pagar || []).map(p => p.tipo_cobranca))];
-      uniquePagar.forEach((cat, i) => {
-        categories.push({
-          id: `despesa-${i}`,
-          nome: cat,
-          tipo: 'despesa',
-          cor: '#EF4444',
-          ativo: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        });
-      });
-    }
-
-    if (!tipo || tipo === 'receita') {
-      const { data: receber } = await supabase
-        .from('contas_receber')
-        .select('tipo_cobranca')
-        .not('tipo_cobranca', 'is', null);
-      
-      const uniqueReceber = [...new Set((receber || []).map(r => r.tipo_cobranca))];
-      uniqueReceber.forEach((cat, i) => {
-        categories.push({
-          id: `receita-${i}`,
-          nome: cat,
-          tipo: 'receita',
-          cor: '#22C55E',
-          ativo: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        });
-      });
-    }
-
-    return categories;
-  },
-};
 
 // ============================================
 // HOOKS
@@ -86,7 +33,21 @@ export function useCategorias(tipo?: 'despesa' | 'receita') {
     refetch,
   } = useQuery({
     queryKey: ['categorias', tipo],
-    queryFn: () => categoriasService.getAll(tipo),
+    queryFn: async () => {
+      let query = supabase
+        .from('categorias')
+        .select('*')
+        .eq('ativo', true)
+        .order('nome');
+
+      if (tipo) {
+        query = query.eq('tipo', tipo);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return (data || []) as Categoria[];
+    },
   });
 
   const categoriasDespesa = categorias.filter((c) => c.tipo === 'despesa');
@@ -103,14 +64,88 @@ export function useCategorias(tipo?: 'despesa' | 'receita') {
 }
 
 export function useCategoria(id: string | undefined) {
-  const { categorias } = useCategorias();
-  const categoria = categorias.find(c => c.id === id);
+  return useQuery({
+    queryKey: ['categorias', 'detail', id],
+    queryFn: async () => {
+      if (!id) return null;
+      const { data, error } = await supabase
+        .from('categorias')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+      if (error) throw error;
+      return data as Categoria | null;
+    },
+    enabled: !!id,
+  });
+}
 
-  return {
-    categoria,
-    isLoading: false,
-    error: null,
-  };
+export function useCreateCategoria() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: CategoriaInput) => {
+      const { data, error } = await supabase
+        .from('categorias')
+        .insert({ ...input, ativo: true })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categorias'] });
+      toast.success('Categoria criada com sucesso!');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erro ao criar categoria: ${error.message}`);
+    },
+  });
+}
+
+export function useUpdateCategoria() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, data: input }: { id: string; data: Partial<CategoriaInput> }) => {
+      const { data, error } = await supabase
+        .from('categorias')
+        .update(input)
+        .eq('id', id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categorias'] });
+      toast.success('Categoria atualizada!');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erro ao atualizar categoria: ${error.message}`);
+    },
+  });
+}
+
+export function useDeleteCategoria() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('categorias')
+        .update({ ativo: false })
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categorias'] });
+      toast.success('Categoria desativada!');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erro ao desativar categoria: ${error.message}`);
+    },
+  });
 }
 
 // Predefined colors for categories
