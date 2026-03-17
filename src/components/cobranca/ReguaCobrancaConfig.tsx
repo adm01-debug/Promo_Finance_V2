@@ -46,7 +46,7 @@ export function ReguaCobrancaConfig() {
         </CardHeader>
         <CardContent className="space-y-4">
           {regua?.map((etapa) => (
-            <div key={etapa.id} className={`p-4 rounded-lg border ${etapaColors[etapa.etapa || etapa.nome?.toLowerCase()] || 'border-border'}`}>
+            <div key={etapa.id} className={`p-4 rounded-lg border ${etapaColors[etapa.nome?.toLowerCase()] || 'border-border'}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-background flex items-center justify-center">
