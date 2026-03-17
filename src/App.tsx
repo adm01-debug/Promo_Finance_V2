@@ -57,6 +57,7 @@ const AssinaturaDigitalPage = lazy(() => import('./pages/AssinaturaDigital'));
 const ComprovanteOCRPage = lazy(() => import('./pages/ComprovanteOCR'));
 const Movimentacoes = lazy(() => import('./pages/Movimentacoes'));
 const Tesouraria = lazy(() => import('./pages/Tesouraria'));
+const PixHub = lazy(() => import('./pages/PixHub'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Inner app component that can use routing hooks
@@ -114,6 +115,7 @@ function AppRoutes() {
             <Route path="/comprovante-ocr" element={<ProtectedRoute><ComprovanteOCRPage /></ProtectedRoute>} />
             <Route path="/movimentacoes" element={<ProtectedRoute><Movimentacoes /></ProtectedRoute>} />
             <Route path="/tesouraria" element={<ProtectedRoute><Tesouraria /></ProtectedRoute>} />
+            <Route path="/pix-hub" element={<ProtectedRoute><PixHub /></ProtectedRoute>} />
             
             {/* 404 */}
             <Route path="*" element={<NotFound />} />

@@ -94,6 +94,7 @@ const navGroups: NavGroup[] = [
       { label: 'Conciliação', icon: RefreshCcw, href: '/conciliacao' },
       { label: 'Simulador Antecipação', icon: Calculator, href: '/simulador-antecipacao' },
       { label: 'ASAAS', icon: CreditCard, href: '/asaas', highlight: true },
+      { label: 'Central PIX', icon: Zap, href: '/pix-hub', highlight: true },
     ],
   },
   {
