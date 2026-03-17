@@ -108,7 +108,7 @@ export function FluxoInterEmpresas() {
 
       {/* Sugestões de otimização */}
       {analise.sugestoes.length > 0 && (
-        <Card className="border-amber-500/30 bg-amber-50/5">
+        <Card className="border-accent/30 bg-accent/5">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Lightbulb className="h-5 w-5 text-amber-500" />
