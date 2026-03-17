@@ -1,27 +1,11 @@
-// @ts-nocheck - Service types diverge from generated DB types
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 
-export interface ContaReceber {
-  id: string;
-  descricao: string;
-  valor: number;
-  vencimento: string;
-  status: 'pendente' | 'recebido' | 'atrasado' | 'cancelado';
-  data_recebimento?: string;
-  cliente_id?: string;
-  cliente?: { id: string; nome: string; cpf_cnpj?: string };
-  categoria?: string;
-  observacoes?: string;
-  numero_documento?: string;
-  forma_recebimento?: string;
-  parcela?: number;
-  total_parcelas?: number;
-  created_at: string;
-  updated_at: string;
-}
+type StatusPagamento = Database['public']['Enums']['status_pagamento'];
+type TipoCobranca = Database['public']['Enums']['tipo_cobranca'];
 
 export interface ContaReceberFilters {
-  status?: string;
+  status?: StatusPagamento;
   cliente_id?: string;
   categoria?: string;
   startDate?: string;
@@ -36,21 +20,23 @@ export interface ContaReceberInput {
   valor: number;
   data_vencimento: string;
   cliente_id?: string;
-  cliente_nome?: string;
+  cliente_nome: string;
   categoria?: string;
   observacoes?: string;
   numero_documento?: string;
   forma_recebimento?: string;
-  tipo_cobranca?: string;
-  empresa_id?: string;
+  tipo_cobranca?: TipoCobranca;
+  empresa_id: string;
   centro_custo_id?: string;
   conta_bancaria_id?: string;
-  parcela?: number;
+  created_by: string;
+  numero_parcela_atual?: number;
   total_parcelas?: number;
+  vendedor_id?: string;
 }
 
 export const contasReceberService = {
-  async getAll(filters?: ContaReceberFilters): Promise<ContaReceber[]> {
+  async getAll(filters?: ContaReceberFilters) {
     let query = supabase
       .from('vw_contas_receber_painel')
       .select('*')
@@ -86,10 +72,10 @@ export const contasReceberService = {
     return data || [];
   },
 
-  async getById(id: string): Promise<ContaReceber | null> {
+  async getById(id: string) {
     const { data, error } = await supabase
       .from('contas_receber')
-      .select('*, cliente:clientes(id, nome, cpf_cnpj)')
+      .select('*, cliente:clientes(id, razao_social, cnpj_cpf)')
       .eq('id', id)
       .single();
 
@@ -97,29 +83,43 @@ export const contasReceberService = {
     return data;
   },
 
-  async create(input: ContaReceberInput): Promise<ContaReceber> {
+  async create(input: ContaReceberInput) {
     const { data, error } = await supabase
       .from('contas_receber')
       .insert({
-        ...input,
-        status: 'pendente',
+        descricao: input.descricao,
+        valor: input.valor,
+        data_vencimento: input.data_vencimento,
+        cliente_id: input.cliente_id,
+        cliente_nome: input.cliente_nome,
+        categoria: input.categoria,
+        observacoes: input.observacoes,
+        numero_documento: input.numero_documento,
+        forma_recebimento: input.forma_recebimento,
+        tipo_cobranca: input.tipo_cobranca || 'boleto',
+        empresa_id: input.empresa_id,
+        centro_custo_id: input.centro_custo_id,
+        conta_bancaria_id: input.conta_bancaria_id,
+        created_by: input.created_by,
+        numero_parcela_atual: input.numero_parcela_atual,
+        total_parcelas: input.total_parcelas,
+        vendedor_id: input.vendedor_id,
+        status: 'pendente' as StatusPagamento,
       })
-      .select('*, cliente:clientes(id, nome, cpf_cnpj)')
+      .select('*, cliente:clientes(id, razao_social, cnpj_cpf)')
       .single();
 
     if (error) throw error;
     return data;
   },
 
-  async update(id: string, input: Partial<ContaReceberInput>): Promise<ContaReceber> {
+  async update(id: string, input: Partial<ContaReceberInput>) {
+    const updateData: Record<string, unknown> = { ...input, updated_at: new Date().toISOString() };
     const { data, error } = await supabase
       .from('contas_receber')
-      .update({
-        ...input,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updateData as any)
       .eq('id', id)
-      .select('*, cliente:clientes(id, nome, cpf_cnpj)')
+      .select('*, cliente:clientes(id, razao_social, cnpj_cpf)')
       .single();
 
     if (error) throw error;
@@ -135,80 +135,80 @@ export const contasReceberService = {
     if (error) throw error;
   },
 
-  async markAsReceived(id: string, dataRecebimento?: string): Promise<ContaReceber> {
+  async markAsReceived(id: string, dataRecebimento?: string) {
     const { data, error } = await supabase
       .from('contas_receber')
       .update({
-        status: 'recebido',
+        status: 'pago' as StatusPagamento,
         data_recebimento: dataRecebimento || new Date().toISOString().split('T')[0],
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)
-      .select('*, cliente:clientes(id, nome, cpf_cnpj)')
+      .select('*, cliente:clientes(id, razao_social, cnpj_cpf)')
       .single();
 
     if (error) throw error;
     return data;
   },
 
-  async cancel(id: string): Promise<ContaReceber> {
+  async cancel(id: string) {
     const { data, error } = await supabase
       .from('contas_receber')
       .update({
-        status: 'cancelado',
+        status: 'cancelado' as StatusPagamento,
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)
-      .select('*, cliente:clientes(id, nome, cpf_cnpj)')
+      .select('*, cliente:clientes(id, razao_social, cnpj_cpf)')
       .single();
 
     if (error) throw error;
     return data;
   },
 
-  async getOverdue(): Promise<ContaReceber[]> {
+  async getOverdue() {
     const today = new Date().toISOString().split('T')[0];
 
     const { data, error } = await supabase
       .from('contas_receber')
-      .select('*, cliente:clientes(id, nome, cpf_cnpj)')
+      .select('*, cliente:clientes(id, razao_social, cnpj_cpf)')
       .eq('status', 'pendente')
-      .lt('vencimento', today)
-      .order('vencimento', { ascending: true });
+      .lt('data_vencimento', today)
+      .order('data_vencimento', { ascending: true });
 
     if (error) throw error;
     return data || [];
   },
 
-  async getDueThisWeek(): Promise<ContaReceber[]> {
+  async getDueThisWeek() {
     const today = new Date();
     const endOfWeek = new Date(today);
     endOfWeek.setDate(today.getDate() + 7);
 
     const { data, error } = await supabase
       .from('contas_receber')
-      .select('*, cliente:clientes(id, nome, cpf_cnpj)')
+      .select('*, cliente:clientes(id, razao_social, cnpj_cpf)')
       .eq('status', 'pendente')
-      .gte('vencimento', today.toISOString().split('T')[0])
-      .lte('vencimento', endOfWeek.toISOString().split('T')[0])
-      .order('vencimento', { ascending: true });
+      .gte('data_vencimento', today.toISOString().split('T')[0])
+      .lte('data_vencimento', endOfWeek.toISOString().split('T')[0])
+      .order('data_vencimento', { ascending: true });
 
     if (error) throw error;
     return data || [];
   },
 
-  async getByCliente(clienteId: string): Promise<ContaReceber[]> {
+  async getByCliente(clienteId: string) {
     const { data, error } = await supabase
       .from('contas_receber')
-      .select('*, cliente:clientes(id, nome, cpf_cnpj)')
+      .select('*, cliente:clientes(id, razao_social, cnpj_cpf)')
       .eq('cliente_id', clienteId)
-      .order('vencimento', { ascending: false });
+      .order('data_vencimento', { ascending: false });
 
     if (error) throw error;
     return data || [];
   },
 
-  async getTotalByStatus(): Promise<Record<string, { count: number; total: number }>> {
+  async getTotalByStatus() {
     const { data, error } = await supabase
       .from('contas_receber')
       .select('status, valor');
@@ -227,15 +227,13 @@ export const contasReceberService = {
     return result;
   },
 
-  async bulkUpdate(ids: string[], updates: Partial<ContaReceberInput>): Promise<ContaReceber[]> {
+  async bulkUpdate(ids: string[], updates: Partial<ContaReceberInput>) {
+    const updateData: Record<string, unknown> = { ...updates, updated_at: new Date().toISOString() };
     const { data, error } = await supabase
       .from('contas_receber')
-      .update({
-        ...updates,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updateData as any)
       .in('id', ids)
-      .select('*, cliente:clientes(id, nome, cpf_cnpj)');
+      .select('*, cliente:clientes(id, razao_social, cnpj_cpf)');
 
     if (error) throw error;
     return data || [];
@@ -250,16 +248,16 @@ export const contasReceberService = {
     if (error) throw error;
   },
 
-  async bulkMarkAsReceived(ids: string[], dataRecebimento?: string): Promise<ContaReceber[]> {
+  async bulkMarkAsReceived(ids: string[], dataRecebimento?: string) {
     const { data, error } = await supabase
       .from('contas_receber')
       .update({
-        status: 'recebido',
+        status: 'pago' as StatusPagamento,
         data_recebimento: dataRecebimento || new Date().toISOString().split('T')[0],
         updated_at: new Date().toISOString(),
       })
       .in('id', ids)
-      .select('*, cliente:clientes(id, nome, cpf_cnpj)');
+      .select('*, cliente:clientes(id, razao_social, cnpj_cpf)');
 
     if (error) throw error;
     return data || [];
@@ -272,23 +270,17 @@ export const contasReceberService = {
       .not('categoria', 'is', null);
 
     if (error) throw error;
-    return [...new Set((data || []).map(d => d.categoria).filter(Boolean))];
+    return [...new Set((data || []).map(d => d.categoria).filter(Boolean) as string[])];
   },
 
-  async getSummary(filters?: ContaReceberFilters): Promise<{
-    total: number;
-    pendente: number;
-    recebido: number;
-    atrasado: number;
-    count: number;
-  }> {
+  async getSummary(filters?: ContaReceberFilters) {
     const contas = await this.getAll(filters);
     
     return {
-      total: contas.reduce((sum, c) => sum + c.valor, 0),
-      pendente: contas.filter(c => c.status === 'pendente').reduce((sum, c) => sum + c.valor, 0),
-      recebido: contas.filter(c => c.status === 'recebido').reduce((sum, c) => sum + c.valor, 0),
-      atrasado: contas.filter(c => c.status === 'atrasado').reduce((sum, c) => sum + c.valor, 0),
+      total: contas.reduce((sum, c: any) => sum + (c.valor || 0), 0),
+      pendente: contas.filter((c: any) => c.status === 'pendente').reduce((sum, c: any) => sum + (c.valor || 0), 0),
+      recebido: contas.filter((c: any) => c.status === 'pago').reduce((sum, c: any) => sum + (c.valor || 0), 0),
+      atrasado: contas.filter((c: any) => c.status === 'vencido').reduce((sum, c: any) => sum + (c.valor || 0), 0),
       count: contas.length,
     };
   },
@@ -297,13 +289,13 @@ export const contasReceberService = {
     const contas = await this.getAll(filters);
     
     const headers = ['ID', 'Descrição', 'Valor', 'Vencimento', 'Status', 'Cliente', 'Categoria', 'Data Recebimento'];
-    const rows = contas.map(c => [
+    const rows = contas.map((c: any) => [
       c.id,
       c.descricao,
-      c.valor.toString(),
-      c.vencimento,
+      c.valor?.toString() || '',
+      c.vencimento || c.data_vencimento || '',
       c.status,
-      c.cliente?.nome || '',
+      c.cliente_nome || '',
       c.categoria || '',
       c.data_recebimento || '',
     ]);

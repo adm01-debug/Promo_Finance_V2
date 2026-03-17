@@ -1,4 +1,3 @@
-// @ts-nocheck - Uses columns/views not in current schema
 import { supabase } from '@/integrations/supabase/client';
 
 export interface ReportFilters {

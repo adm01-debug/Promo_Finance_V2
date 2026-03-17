@@ -1,28 +1,7 @@
-// @ts-nocheck - Service types diverge from generated DB types
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 
-export interface Fornecedor {
-  id: string;
-  nome: string;
-  cnpj?: string;
-  email?: string;
-  telefone?: string;
-  endereco?: string;
-  cidade?: string;
-  estado?: string;
-  cep?: string;
-  ativo: boolean;
-  categoria?: string;
-  observacoes?: string;
-  contato_nome?: string;
-  contato_telefone?: string;
-  banco?: string;
-  agencia?: string;
-  conta?: string;
-  pix?: string;
-  created_at: string;
-  updated_at: string;
-}
+type FornecedorRow = Database['public']['Tables']['fornecedores']['Row'];
 
 export interface FornecedorFilters {
   ativo?: boolean;
@@ -32,7 +11,8 @@ export interface FornecedorFilters {
 }
 
 export interface FornecedorInput {
-  nome: string;
+  razao_social: string;
+  nome_fantasia?: string;
   cnpj?: string;
   email?: string;
   telefone?: string;
@@ -48,6 +28,7 @@ export interface FornecedorInput {
   agencia?: string;
   conta?: string;
   pix?: string;
+  empresa_id?: string;
 }
 
 export interface FornecedorStats {
@@ -59,17 +40,17 @@ export interface FornecedorStats {
 }
 
 export const fornecedoresService = {
-  async getAll(filters?: FornecedorFilters): Promise<Fornecedor[]> {
+  async getAll(filters?: FornecedorFilters): Promise<FornecedorRow[]> {
     let query = supabase
       .from('fornecedores')
       .select('*')
-      .order('nome', { ascending: true });
+      .order('razao_social', { ascending: true });
 
     if (filters?.ativo !== undefined) {
       query = query.eq('ativo', filters.ativo);
     }
     if (filters?.search) {
-      query = query.or(`nome.ilike.%${filters.search}%,cnpj.ilike.%${filters.search}%,email.ilike.%${filters.search}%`);
+      query = query.or(`razao_social.ilike.%${filters.search}%,cnpj.ilike.%${filters.search}%,email.ilike.%${filters.search}%`);
     }
     if (filters?.estado) {
       query = query.eq('estado', filters.estado);
@@ -83,7 +64,7 @@ export const fornecedoresService = {
     return data || [];
   },
 
-  async getById(id: string): Promise<Fornecedor | null> {
+  async getById(id: string): Promise<FornecedorRow | null> {
     const { data, error } = await supabase
       .from('fornecedores')
       .select('*')
@@ -94,7 +75,7 @@ export const fornecedoresService = {
     return data;
   },
 
-  async getByCnpj(cnpj: string): Promise<Fornecedor | null> {
+  async getByCnpj(cnpj: string): Promise<FornecedorRow | null> {
     const { data, error } = await supabase
       .from('fornecedores')
       .select('*')
@@ -105,11 +86,28 @@ export const fornecedoresService = {
     return data;
   },
 
-  async create(input: FornecedorInput): Promise<Fornecedor> {
+  async create(input: FornecedorInput): Promise<FornecedorRow> {
     const { data, error } = await supabase
       .from('fornecedores')
       .insert({
-        ...input,
+        razao_social: input.razao_social,
+        nome_fantasia: input.nome_fantasia,
+        cnpj: input.cnpj,
+        email: input.email,
+        telefone: input.telefone,
+        endereco: input.endereco,
+        cidade: input.cidade,
+        estado: input.estado,
+        cep: input.cep,
+        categoria: input.categoria,
+        observacoes: input.observacoes,
+        contato_nome: input.contato_nome,
+        contato_telefone: input.contato_telefone,
+        banco: input.banco,
+        agencia: input.agencia,
+        conta: input.conta,
+        pix: input.pix,
+        empresa_id: input.empresa_id,
         ativo: true,
       })
       .select()
@@ -119,7 +117,7 @@ export const fornecedoresService = {
     return data;
   },
 
-  async update(id: string, input: Partial<FornecedorInput>): Promise<Fornecedor> {
+  async update(id: string, input: Partial<FornecedorInput>): Promise<FornecedorRow> {
     const { data, error } = await supabase
       .from('fornecedores')
       .update({
@@ -143,13 +141,10 @@ export const fornecedoresService = {
     if (error) throw error;
   },
 
-  async deactivate(id: string): Promise<Fornecedor> {
+  async deactivate(id: string): Promise<FornecedorRow> {
     const { data, error } = await supabase
       .from('fornecedores')
-      .update({
-        ativo: false,
-        updated_at: new Date().toISOString(),
-      })
+      .update({ ativo: false, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
       .single();
@@ -158,13 +153,10 @@ export const fornecedoresService = {
     return data;
   },
 
-  async activate(id: string): Promise<Fornecedor> {
+  async activate(id: string): Promise<FornecedorRow> {
     const { data, error } = await supabase
       .from('fornecedores')
-      .update({
-        ativo: true,
-        updated_at: new Date().toISOString(),
-      })
+      .update({ ativo: true, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
       .single();
@@ -173,12 +165,12 @@ export const fornecedoresService = {
     return data;
   },
 
-  async getContasPagar(fornecedorId: string): Promise<any[]> {
+  async getContasPagar(fornecedorId: string) {
     const { data, error } = await supabase
       .from('contas_pagar')
       .select('*')
       .eq('fornecedor_id', fornecedorId)
-      .order('vencimento', { ascending: false });
+      .order('data_vencimento', { ascending: false });
 
     if (error) throw error;
     return data || [];
@@ -199,28 +191,28 @@ export const fornecedoresService = {
     const contasAbertas = contas.filter(c => c.status === 'pendente').length;
     
     const contasAtrasadas = contas.filter(
-      c => c.status === 'pendente' && c.vencimento < today
+      c => c.status === 'pendente' && c.data_vencimento < today
     ).length;
 
     const ultimaConta = contas
       .filter(c => c.status === 'pago')
-      .sort((a, b) => new Date(b.data_pagamento).getTime() - new Date(a.data_pagamento).getTime())[0];
+      .sort((a, b) => new Date(b.data_pagamento || '').getTime() - new Date(a.data_pagamento || '').getTime())[0];
 
     return {
       totalPago,
       totalPendente,
       contasAbertas,
       contasAtrasadas,
-      ultimoPagamento: ultimaConta?.data_pagamento,
+      ultimoPagamento: ultimaConta?.data_pagamento || undefined,
     };
   },
 
-  async search(term: string): Promise<Fornecedor[]> {
+  async search(term: string): Promise<FornecedorRow[]> {
     const { data, error } = await supabase
       .from('fornecedores')
       .select('*')
       .eq('ativo', true)
-      .or(`nome.ilike.%${term}%,cnpj.ilike.%${term}%`)
+      .or(`razao_social.ilike.%${term}%,cnpj.ilike.%${term}%`)
       .limit(10);
 
     if (error) throw error;
@@ -234,7 +226,7 @@ export const fornecedoresService = {
       .not('categoria', 'is', null);
 
     if (error) throw error;
-    return [...new Set((data || []).map(d => d.categoria).filter(Boolean))].sort();
+    return [...new Set((data || []).map(d => d.categoria).filter(Boolean) as string[])].sort();
   },
 
   async getEstados(): Promise<string[]> {
@@ -244,16 +236,16 @@ export const fornecedoresService = {
       .not('estado', 'is', null);
 
     if (error) throw error;
-    return [...new Set((data || []).map(d => d.estado).filter(Boolean))].sort();
+    return [...new Set((data || []).map(d => d.estado).filter(Boolean) as string[])].sort();
   },
 
   async exportToCSV(filters?: FornecedorFilters): Promise<string> {
     const fornecedores = await this.getAll(filters);
     
-    const headers = ['ID', 'Nome', 'CNPJ', 'Email', 'Telefone', 'Cidade', 'Estado', 'Categoria', 'Ativo'];
+    const headers = ['ID', 'Razão Social', 'CNPJ', 'Email', 'Telefone', 'Cidade', 'Estado', 'Categoria', 'Ativo'];
     const rows = fornecedores.map(f => [
       f.id,
-      f.nome,
+      f.razao_social,
       f.cnpj || '',
       f.email || '',
       f.telefone || '',

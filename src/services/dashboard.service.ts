@@ -1,4 +1,3 @@
-// @ts-nocheck - Service uses columns not in current schema (vencimento, categoria)
 import { supabase } from '@/integrations/supabase/client';
 
 export interface DashboardStats {
@@ -62,7 +61,7 @@ export const dashboardService = {
       supabase
         .from('contas_receber')
         .select('valor')
-        .eq('status', 'recebido')
+        .eq('status', 'pago')
         .gte('data_recebimento', startDate)
         .lte('data_recebimento', endDate),
       supabase
@@ -87,7 +86,7 @@ export const dashboardService = {
     const today = new Date().toISOString().split('T')[0];
     const contasAtrasadas = [
       ...(contasPagarResult.data?.filter(c => c.vencimento < today && c.status !== 'pago') || []),
-      ...(contasReceberResult.data?.filter(c => c.vencimento < today && c.status !== 'recebido') || []),
+      ...(contasReceberResult.data?.filter(c => c.vencimento < today && c.status !== 'pago') || []),
     ].length;
 
     // Get today's transactions
@@ -95,7 +94,7 @@ export const dashboardService = {
       supabase
         .from('contas_receber')
         .select('valor')
-        .eq('status', 'recebido')
+        .eq('status', 'pago')
         .eq('data_recebimento', today),
       supabase
         .from('contas_pagar')
@@ -259,7 +258,7 @@ export const dashboardService = {
       supabase
         .from('contas_receber')
         .select('data_recebimento, valor')
-        .eq('status', 'recebido')
+        .eq('status', 'pago')
         .gte('data_recebimento', startDate)
         .lte('data_recebimento', endDate),
       supabase

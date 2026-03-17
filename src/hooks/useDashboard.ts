@@ -94,7 +94,7 @@ export function useDashboard(options: UseDashboardOptions = {}) {
       // Buscar transações de hoje
       const [receberHoje, pagarHoje] = await Promise.all([
         contasReceberService.getAll({ 
-          status: 'recebido', 
+          status: 'pago', 
           startDate: today, 
           endDate: today 
         }).catch(() => []),

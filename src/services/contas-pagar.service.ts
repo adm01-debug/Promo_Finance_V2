@@ -1,27 +1,12 @@
-// @ts-nocheck - Service types diverge from generated DB types
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 
-export interface ContaPagar {
-  id: string;
-  descricao: string;
-  valor: number;
-  vencimento: string;
-  status: 'pendente' | 'pago' | 'atrasado' | 'cancelado';
-  data_pagamento?: string;
-  fornecedor_id?: string;
-  fornecedor?: { id: string; nome: string; cnpj?: string };
-  categoria?: string;
-  observacoes?: string;
-  numero_documento?: string;
-  forma_pagamento?: string;
-  parcela?: number;
-  total_parcelas?: number;
-  created_at: string;
-  updated_at: string;
-}
+type ContaPagarRow = Database['public']['Tables']['contas_pagar']['Row'];
+type StatusPagamento = Database['public']['Enums']['status_pagamento'];
+type TipoCobranca = Database['public']['Enums']['tipo_cobranca'];
 
 export interface ContaPagarFilters {
-  status?: string;
+  status?: StatusPagamento;
   fornecedor_id?: string;
   categoria?: string;
   startDate?: string;
@@ -36,21 +21,22 @@ export interface ContaPagarInput {
   valor: number;
   data_vencimento: string;
   fornecedor_id?: string;
-  fornecedor_nome?: string;
+  fornecedor_nome: string;
   categoria?: string;
   observacoes?: string;
   numero_documento?: string;
   forma_pagamento?: string;
-  tipo_cobranca?: string;
-  empresa_id?: string;
+  tipo_cobranca?: TipoCobranca;
+  empresa_id: string;
   centro_custo_id?: string;
   conta_bancaria_id?: string;
-  parcela?: number;
+  created_by: string;
+  numero_parcela_atual?: number;
   total_parcelas?: number;
 }
 
 export const contasPagarService = {
-  async getAll(filters?: ContaPagarFilters): Promise<ContaPagar[]> {
+  async getAll(filters?: ContaPagarFilters) {
     let query = supabase
       .from('vw_contas_pagar_painel')
       .select('*')
@@ -86,7 +72,7 @@ export const contasPagarService = {
     return data || [];
   },
 
-  async getById(id: string): Promise<ContaPagar | null> {
+  async getById(id: string) {
     const { data, error } = await supabase
       .from('contas_pagar')
       .select('*, fornecedor:fornecedores(id, nome, cnpj)')
@@ -97,12 +83,27 @@ export const contasPagarService = {
     return data;
   },
 
-  async create(input: ContaPagarInput): Promise<ContaPagar> {
+  async create(input: ContaPagarInput) {
     const { data, error } = await supabase
       .from('contas_pagar')
       .insert({
-        ...input,
-        status: 'pendente',
+        descricao: input.descricao,
+        valor: input.valor,
+        data_vencimento: input.data_vencimento,
+        fornecedor_id: input.fornecedor_id,
+        fornecedor_nome: input.fornecedor_nome,
+        categoria: input.categoria,
+        observacoes: input.observacoes,
+        numero_documento: input.numero_documento,
+        forma_pagamento: input.forma_pagamento,
+        tipo_cobranca: input.tipo_cobranca || 'boleto',
+        empresa_id: input.empresa_id,
+        centro_custo_id: input.centro_custo_id,
+        conta_bancaria_id: input.conta_bancaria_id,
+        created_by: input.created_by,
+        numero_parcela_atual: input.numero_parcela_atual,
+        total_parcelas: input.total_parcelas,
+        status: 'pendente' as StatusPagamento,
       })
       .select('*, fornecedor:fornecedores(id, nome, cnpj)')
       .single();
@@ -111,13 +112,11 @@ export const contasPagarService = {
     return data;
   },
 
-  async update(id: string, input: Partial<ContaPagarInput>): Promise<ContaPagar> {
+  async update(id: string, input: Partial<ContaPagarInput>) {
+    const updateData: Record<string, unknown> = { ...input, updated_at: new Date().toISOString() };
     const { data, error } = await supabase
       .from('contas_pagar')
-      .update({
-        ...input,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updateData as any)
       .eq('id', id)
       .select('*, fornecedor:fornecedores(id, nome, cnpj)')
       .single();
@@ -135,11 +134,11 @@ export const contasPagarService = {
     if (error) throw error;
   },
 
-  async markAsPaid(id: string, dataPagamento?: string): Promise<ContaPagar> {
+  async markAsPaid(id: string, dataPagamento?: string) {
     const { data, error } = await supabase
       .from('contas_pagar')
       .update({
-        status: 'pago',
+        status: 'pago' as StatusPagamento,
         data_pagamento: dataPagamento || new Date().toISOString().split('T')[0],
         updated_at: new Date().toISOString(),
       })
@@ -151,11 +150,11 @@ export const contasPagarService = {
     return data;
   },
 
-  async cancel(id: string): Promise<ContaPagar> {
+  async cancel(id: string) {
     const { data, error } = await supabase
       .from('contas_pagar')
       .update({
-        status: 'cancelado',
+        status: 'cancelado' as StatusPagamento,
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)
@@ -166,21 +165,21 @@ export const contasPagarService = {
     return data;
   },
 
-  async getOverdue(): Promise<ContaPagar[]> {
+  async getOverdue() {
     const today = new Date().toISOString().split('T')[0];
 
     const { data, error } = await supabase
       .from('contas_pagar')
       .select('*, fornecedor:fornecedores(id, nome, cnpj)')
       .eq('status', 'pendente')
-      .lt('vencimento', today)
-      .order('vencimento', { ascending: true });
+      .lt('data_vencimento', today)
+      .order('data_vencimento', { ascending: true });
 
     if (error) throw error;
     return data || [];
   },
 
-  async getDueThisWeek(): Promise<ContaPagar[]> {
+  async getDueThisWeek() {
     const today = new Date();
     const endOfWeek = new Date(today);
     endOfWeek.setDate(today.getDate() + 7);
@@ -189,26 +188,26 @@ export const contasPagarService = {
       .from('contas_pagar')
       .select('*, fornecedor:fornecedores(id, nome, cnpj)')
       .eq('status', 'pendente')
-      .gte('vencimento', today.toISOString().split('T')[0])
-      .lte('vencimento', endOfWeek.toISOString().split('T')[0])
-      .order('vencimento', { ascending: true });
+      .gte('data_vencimento', today.toISOString().split('T')[0])
+      .lte('data_vencimento', endOfWeek.toISOString().split('T')[0])
+      .order('data_vencimento', { ascending: true });
 
     if (error) throw error;
     return data || [];
   },
 
-  async getByFornecedor(fornecedorId: string): Promise<ContaPagar[]> {
+  async getByFornecedor(fornecedorId: string) {
     const { data, error } = await supabase
       .from('contas_pagar')
       .select('*, fornecedor:fornecedores(id, nome, cnpj)')
       .eq('fornecedor_id', fornecedorId)
-      .order('vencimento', { ascending: false });
+      .order('data_vencimento', { ascending: false });
 
     if (error) throw error;
     return data || [];
   },
 
-  async getTotalByStatus(): Promise<Record<string, { count: number; total: number }>> {
+  async getTotalByStatus() {
     const { data, error } = await supabase
       .from('contas_pagar')
       .select('status, valor');
@@ -227,13 +226,11 @@ export const contasPagarService = {
     return result;
   },
 
-  async bulkUpdate(ids: string[], updates: Partial<ContaPagarInput>): Promise<ContaPagar[]> {
+  async bulkUpdate(ids: string[], updates: Partial<ContaPagarInput>) {
+    const updateData: Record<string, unknown> = { ...updates, updated_at: new Date().toISOString() };
     const { data, error } = await supabase
       .from('contas_pagar')
-      .update({
-        ...updates,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updateData as any)
       .in('id', ids)
       .select('*, fornecedor:fornecedores(id, nome, cnpj)');
 
@@ -250,11 +247,11 @@ export const contasPagarService = {
     if (error) throw error;
   },
 
-  async bulkMarkAsPaid(ids: string[], dataPagamento?: string): Promise<ContaPagar[]> {
+  async bulkMarkAsPaid(ids: string[], dataPagamento?: string) {
     const { data, error } = await supabase
       .from('contas_pagar')
       .update({
-        status: 'pago',
+        status: 'pago' as StatusPagamento,
         data_pagamento: dataPagamento || new Date().toISOString().split('T')[0],
         updated_at: new Date().toISOString(),
       })
@@ -272,20 +269,20 @@ export const contasPagarService = {
       .not('categoria', 'is', null);
 
     if (error) throw error;
-    return [...new Set((data || []).map(d => d.categoria).filter(Boolean))];
+    return [...new Set((data || []).map(d => d.categoria).filter(Boolean) as string[])];
   },
 
   async exportToCSV(filters?: ContaPagarFilters): Promise<string> {
     const contas = await this.getAll(filters);
     
     const headers = ['ID', 'Descrição', 'Valor', 'Vencimento', 'Status', 'Fornecedor', 'Categoria', 'Data Pagamento'];
-    const rows = contas.map(c => [
+    const rows = contas.map((c: any) => [
       c.id,
       c.descricao,
-      c.valor.toString(),
-      c.vencimento,
+      c.valor?.toString() || '',
+      c.vencimento || c.data_vencimento || '',
       c.status,
-      c.fornecedor?.nome || '',
+      c.fornecedor_nome || '',
       c.categoria || '',
       c.data_pagamento || '',
     ]);
