@@ -33,6 +33,7 @@ export default defineConfig(({ mode }) => ({
           'animation-vendor': ['framer-motion'],
           'form-vendor': ['react-hook-form', 'zod', '@hookform/resolvers'],
           'pdf-vendor': ['jspdf', 'jspdf-autotable'],
+          'confetti-vendor': ['canvas-confetti'],
         },
       },
     },
@@ -41,6 +42,7 @@ export default defineConfig(({ mode }) => ({
     minify: 'esbuild',
     target: 'es2020',
     cssMinify: true,
+    reportCompressedSize: true,
   },
   server: {
     host: '::',
