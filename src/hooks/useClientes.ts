@@ -2,12 +2,34 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { clientesService, ClienteFilters, ClienteInput } from '@/services/clientes.service';
 import { queryKeys } from '@/lib/queryClient';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
-// List clientes
+// List clientes from external DB
 export function useClientes(filters?: ClienteFilters) {
   return useQuery({
     queryKey: queryKeys.clientes.list(filters as Record<string, unknown>),
-    queryFn: () => clientesService.getAll(filters),
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
+
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const url = `https://${projectId}.supabase.co/functions/v1/external-data?tabela=clientes&limit=200`;
+
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Erro ao buscar clientes externos');
+      }
+
+      const result = await response.json();
+      return result.data || [];
+    },
   });
 }
 
@@ -29,20 +51,62 @@ export function useClientesStats(clienteId: string) {
   });
 }
 
-// Search clientes
+// Search clientes from external DB
 export function useSearchClientes(query: string) {
   return useQuery({
     queryKey: queryKeys.clientes.search(query),
-    queryFn: () => clientesService.search(query),
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
+
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const url = `https://${projectId}.supabase.co/functions/v1/external-data?tabela=clientes&search=${encodeURIComponent(query)}&limit=50`;
+
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Erro ao buscar clientes');
+      }
+
+      const result = await response.json();
+      return result.data || [];
+    },
     enabled: query.length >= 2,
   });
 }
 
-// Get active clientes
+// Get active clientes from external DB
 export function useClientesAtivos() {
   return useQuery({
     queryKey: queryKeys.clientes.list({ ativo: true }),
-    queryFn: () => clientesService.getAll({ ativo: true }),
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
+
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const url = `https://${projectId}.supabase.co/functions/v1/external-data?tabela=clientes&limit=200`;
+
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Erro ao buscar clientes');
+      }
+
+      const result = await response.json();
+      return result.data || [];
+    },
   });
 }
 

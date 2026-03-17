@@ -58,30 +58,56 @@ export function useContasBancarias() {
 
 export function useClientes() {
   return useQuery({
-    queryKey: ['clientes'],
+    queryKey: ['clientes', 'external'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('clientes')
-        .select('*')
-        .eq('ativo', true)
-        .order('razao_social');
-      if (error) throw error;
-      return data as Cliente[];
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
+
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const url = `https://${projectId}.supabase.co/functions/v1/external-data?tabela=clientes&limit=200`;
+
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Erro ao buscar clientes externos');
+      }
+
+      const result = await response.json();
+      return (result.data || []) as Cliente[];
     },
   });
 }
 
 export function useFornecedores() {
   return useQuery({
-    queryKey: ['fornecedores'],
+    queryKey: ['fornecedores', 'external'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('fornecedores')
-        .select('*')
-        .eq('ativo', true)
-        .order('razao_social');
-      if (error) throw error;
-      return data as Fornecedor[];
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
+
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const url = `https://${projectId}.supabase.co/functions/v1/external-data?tabela=fornecedores&limit=200`;
+
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Erro ao buscar fornecedores externos');
+      }
+
+      const result = await response.json();
+      return (result.data || []) as Fornecedor[];
     },
   });
 }
@@ -235,70 +261,40 @@ export interface PaginatedClientesParams {
 }
 
 export function useClientesPaginated(params: PaginatedClientesParams) {
-  const { page, pageSize, search, status, estado, scoreRange } = params;
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
+  const { page, pageSize, search } = params;
 
   return useQuery({
-    queryKey: ['clientes', 'paginated', page, pageSize, search, status, estado, scoreRange],
+    queryKey: ['clientes', 'paginated', 'external', page, pageSize, search],
     queryFn: async () => {
-      let countQuery = supabase
-        .from('clientes')
-        .select('*', { count: 'exact', head: true });
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
 
-      let dataQuery = supabase
-        .from('clientes')
-        .select('*')
-        .order('razao_social', { ascending: true })
-        .range(from, to);
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const queryParams = new URLSearchParams({
+        tabela: 'clientes',
+        page: String(page),
+        limit: String(pageSize),
+        search: search || '',
+      });
+      const url = `https://${projectId}.supabase.co/functions/v1/external-data?${queryParams}`;
 
-      // Apply filters
-      if (search) {
-        const searchFilter = `razao_social.ilike.%${search}%,nome_fantasia.ilike.%${search}%,cnpj_cpf.ilike.%${search}%,email.ilike.%${search}%`;
-        countQuery = countQuery.or(searchFilter);
-        dataQuery = dataQuery.or(searchFilter);
-      }
-      if (status === 'ativo') {
-        countQuery = countQuery.eq('ativo', true);
-        dataQuery = dataQuery.eq('ativo', true);
-      } else if (status === 'inativo') {
-        countQuery = countQuery.eq('ativo', false);
-        dataQuery = dataQuery.eq('ativo', false);
-      }
-      if (estado && estado !== 'all') {
-        countQuery = countQuery.eq('estado', estado);
-        dataQuery = dataQuery.eq('estado', estado);
-      }
-      if (scoreRange) {
-        switch (scoreRange) {
-          case 'excelente':
-            countQuery = countQuery.gte('score', 800);
-            dataQuery = dataQuery.gte('score', 800);
-            break;
-          case 'bom':
-            countQuery = countQuery.gte('score', 600).lt('score', 800);
-            dataQuery = dataQuery.gte('score', 600).lt('score', 800);
-            break;
-          case 'regular':
-            countQuery = countQuery.gte('score', 400).lt('score', 600);
-            dataQuery = dataQuery.gte('score', 400).lt('score', 600);
-            break;
-          case 'critico':
-            countQuery = countQuery.lt('score', 400);
-            dataQuery = dataQuery.lt('score', 400);
-            break;
-        }
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Erro ao buscar clientes externos');
       }
 
-      const [countResult, dataResult] = await Promise.all([countQuery, dataQuery]);
-
-      if (countResult.error) throw countResult.error;
-      if (dataResult.error) throw dataResult.error;
-
+      const result = await response.json();
       return {
-        data: dataResult.data as Cliente[] || [],
-        totalCount: countResult.count || 0,
-        totalPages: Math.ceil((countResult.count || 0) / pageSize),
+        data: (result.data || []) as Cliente[],
+        totalCount: result.total || 0,
+        totalPages: result.total_pages || 0,
       };
     },
   });
@@ -313,50 +309,40 @@ export interface PaginatedFornecedoresParams {
 }
 
 export function useFornecedoresPaginated(params: PaginatedFornecedoresParams) {
-  const { page, pageSize, search, status, estado } = params;
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
+  const { page, pageSize, search } = params;
 
   return useQuery({
-    queryKey: ['fornecedores', 'paginated', page, pageSize, search, status, estado],
+    queryKey: ['fornecedores', 'paginated', 'external', page, pageSize, search],
     queryFn: async () => {
-      let countQuery = supabase
-        .from('fornecedores')
-        .select('*', { count: 'exact', head: true });
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
 
-      let dataQuery = supabase
-        .from('fornecedores')
-        .select('*')
-        .order('razao_social', { ascending: true })
-        .range(from, to);
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const queryParams = new URLSearchParams({
+        tabela: 'fornecedores',
+        page: String(page),
+        limit: String(pageSize),
+        search: search || '',
+      });
+      const url = `https://${projectId}.supabase.co/functions/v1/external-data?${queryParams}`;
 
-      // Apply filters
-      if (search) {
-        const searchFilter = `razao_social.ilike.%${search}%,nome_fantasia.ilike.%${search}%,cnpj_cpf.ilike.%${search}%,email.ilike.%${search}%`;
-        countQuery = countQuery.or(searchFilter);
-        dataQuery = dataQuery.or(searchFilter);
-      }
-      if (status === 'ativo') {
-        countQuery = countQuery.eq('ativo', true);
-        dataQuery = dataQuery.eq('ativo', true);
-      } else if (status === 'inativo') {
-        countQuery = countQuery.eq('ativo', false);
-        dataQuery = dataQuery.eq('ativo', false);
-      }
-      if (estado && estado !== 'all') {
-        countQuery = countQuery.eq('estado', estado);
-        dataQuery = dataQuery.eq('estado', estado);
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Erro ao buscar fornecedores externos');
       }
 
-      const [countResult, dataResult] = await Promise.all([countQuery, dataQuery]);
-
-      if (countResult.error) throw countResult.error;
-      if (dataResult.error) throw dataResult.error;
-
+      const result = await response.json();
       return {
-        data: dataResult.data as Fornecedor[] || [],
-        totalCount: countResult.count || 0,
-        totalPages: Math.ceil((countResult.count || 0) / pageSize),
+        data: (result.data || []) as Fornecedor[],
+        totalCount: result.total || 0,
+        totalPages: result.total_pages || 0,
       };
     },
   });

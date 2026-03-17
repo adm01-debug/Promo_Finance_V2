@@ -2,12 +2,34 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fornecedoresService, FornecedorFilters, FornecedorInput } from '@/services/fornecedores.service';
 import { queryKeys } from '@/lib/queryClient';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
-// List fornecedores
+// List fornecedores from external DB
 export function useFornecedores(filters?: FornecedorFilters) {
   return useQuery({
     queryKey: queryKeys.fornecedores.list(filters as Record<string, unknown>),
-    queryFn: () => fornecedoresService.getAll(filters),
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
+
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const url = `https://${projectId}.supabase.co/functions/v1/external-data?tabela=fornecedores&limit=200`;
+
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Erro ao buscar fornecedores externos');
+      }
+
+      const result = await response.json();
+      return result.data || [];
+    },
   });
 }
 
@@ -29,20 +51,62 @@ export function useFornecedoresStats(fornecedorId: string) {
   });
 }
 
-// Search fornecedores
+// Search fornecedores from external DB
 export function useSearchFornecedores(query: string) {
   return useQuery({
     queryKey: queryKeys.fornecedores.search(query),
-    queryFn: () => fornecedoresService.search(query),
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
+
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const url = `https://${projectId}.supabase.co/functions/v1/external-data?tabela=fornecedores&search=${encodeURIComponent(query)}&limit=50`;
+
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Erro ao buscar fornecedores');
+      }
+
+      const result = await response.json();
+      return result.data || [];
+    },
     enabled: query.length >= 2,
   });
 }
 
-// Get active fornecedores
+// Get active fornecedores from external DB
 export function useFornecedoresAtivos() {
   return useQuery({
     queryKey: queryKeys.fornecedores.list({ ativo: true }),
-    queryFn: () => fornecedoresService.getAll({ ativo: true }),
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
+
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const url = `https://${projectId}.supabase.co/functions/v1/external-data?tabela=fornecedores&limit=200`;
+
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Erro ao buscar fornecedores');
+      }
+
+      const result = await response.json();
+      return result.data || [];
+    },
   });
 }
 
