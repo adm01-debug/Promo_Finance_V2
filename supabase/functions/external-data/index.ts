@@ -70,7 +70,7 @@ Deno.serve(async (req) => {
     const joinTable = isCliente ? 'customers' : 'suppliers';
 
     // Select companies with the related sub-table and contacts
-    const selectFields = `*,${joinTable}(*),contacts(id,first_name,last_name,cargo,full_name)`;
+    const selectFields = `*,${joinTable}(*),contacts(id,first_name,last_name,full_name)`;
 
     let query = extSupabase
       .from('companies')

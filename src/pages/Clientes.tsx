@@ -62,7 +62,7 @@ import { ExportMenu } from '@/components/ui/export-menu';
 import { SortableHeader, useSorting } from '@/components/ui/sortable-header';
 import { LoadingSkeleton, TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { useClientes, useClientesPaginated, Cliente } from '@/hooks/useFinancialData';
+import { useClientes, useClientesPaginated, ExternalCliente } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
 import { clientesColumns } from '@/lib/export-utils';
 import { cn } from '@/lib/utils';
@@ -103,11 +103,11 @@ export default function Clientes() {
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [formOpen, setFormOpen] = useState(false);
-  const [editingCliente, setEditingCliente] = useState<Cliente | null>(null);
+  const [editingCliente, setEditingCliente] = useState<ExternalCliente | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [deletingCliente, setDeletingCliente] = useState<Cliente | null>(null);
+  const [deletingCliente, setDeletingCliente] = useState<ExternalCliente | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [viewingCliente, setViewingCliente] = useState<Cliente | null>(null);
+  const [viewingCliente, setViewingCliente] = useState<ExternalCliente | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   
   // Advanced filters
@@ -605,11 +605,11 @@ export default function Clientes() {
             setFormOpen(open);
             if (!open) setEditingCliente(null);
           }}
-          cliente={editingCliente}
+          cliente={editingCliente as any}
         />
 
         <ClienteDetailDialog
-          cliente={viewingCliente}
+          cliente={viewingCliente as any}
           open={detailOpen}
           onOpenChange={(open) => {
             setDetailOpen(open);

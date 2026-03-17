@@ -11,6 +11,56 @@ export type ContaPagar = Tables<'contas_pagar'>;
 export type ContaReceber = Tables<'contas_receber'>;
 export type StatusPagamento = Database['public']['Enums']['status_pagamento'];
 
+// Type for external data coming from the edge function proxy
+export interface ExternalCliente {
+  id: string;
+  razao_social: string;
+  nome_fantasia: string;
+  cnpj_cpf: string;
+  nome: string;
+  email: string | null;
+  telefone: string | null;
+  contato: string | null;
+  ativo: boolean;
+  ramo_atividade?: string | null;
+  observacoes: string | null;
+  created_at: string;
+  updated_at: string;
+  score?: number | null;
+  limite_credito?: number | null;
+  // Address fields (may come from external or be null)
+  endereco?: string | null;
+  cidade?: string | null;
+  estado?: string | null;
+  cep?: string | null;
+  bairro?: string | null;
+  // External-specific
+  website?: string;
+  logo_url?: string;
+  grupo_economico?: string;
+  inscricao_estadual?: string;
+  status_externo?: string;
+  is_customer?: boolean;
+  is_supplier?: boolean;
+  // Customer-specific
+  vendedor_nome?: string;
+  cliente_ativado?: boolean;
+  ja_comprou?: boolean;
+  total_pedidos?: number;
+  valor_total_compras?: number;
+  ticket_medio?: number;
+  grupo_clientes?: string;
+  // Supplier-specific
+  categoria?: string;
+  tipo_fornecedor?: string;
+  prazo_entrega_medio?: number;
+  pedido_minimo?: number;
+  forma_pagamento?: string;
+  prazo_pagamento?: string;
+  // Allow any extra fields from mapping
+  [key: string]: unknown;
+}
+
 export function useEmpresas() {
   return useQuery({
     queryKey: ['empresas'],
@@ -74,13 +124,15 @@ export function useClientes() {
       });
 
       if (!response.ok) {
-        const err = await response.json();
+        const err = await response.json().catch(() => ({ error: 'Erro ao buscar clientes externos' }));
         throw new Error(err.error || 'Erro ao buscar clientes externos');
       }
 
       const result = await response.json();
-      return (result.data || []) as Cliente[];
+      return (result.data || []) as ExternalCliente[];
     },
+    retry: 2,
+    staleTime: 5 * 60 * 1000,
   });
 }
 
@@ -102,13 +154,15 @@ export function useFornecedores() {
       });
 
       if (!response.ok) {
-        const err = await response.json();
+        const err = await response.json().catch(() => ({ error: 'Erro ao buscar fornecedores externos' }));
         throw new Error(err.error || 'Erro ao buscar fornecedores externos');
       }
 
       const result = await response.json();
-      return (result.data || []) as Fornecedor[];
+      return (result.data || []) as ExternalCliente[];
     },
+    retry: 2,
+    staleTime: 5 * 60 * 1000,
   });
 }
 

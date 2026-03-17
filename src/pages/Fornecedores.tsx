@@ -58,7 +58,7 @@ import {
 import { ExportMenu } from '@/components/ui/export-menu';
 import { LoadingSkeleton, TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { useFornecedores, useFornecedoresPaginated, Fornecedor } from '@/hooks/useFinancialData';
+import { useFornecedores, useFornecedoresPaginated, ExternalCliente } from '@/hooks/useFinancialData';
 import { fornecedoresColumns } from '@/lib/export-utils';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -82,11 +82,11 @@ export default function Fornecedores() {
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [formOpen, setFormOpen] = useState(false);
-  const [editingFornecedor, setEditingFornecedor] = useState<Fornecedor | null>(null);
+  const [editingFornecedor, setEditingFornecedor] = useState<ExternalCliente | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [deletingFornecedor, setDeletingFornecedor] = useState<Fornecedor | null>(null);
+  const [deletingFornecedor, setDeletingFornecedor] = useState<ExternalCliente | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [viewingFornecedor, setViewingFornecedor] = useState<Fornecedor | null>(null);
+  const [viewingFornecedor, setViewingFornecedor] = useState<ExternalCliente | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   
   // Advanced filters
@@ -485,7 +485,7 @@ export default function Fornecedores() {
             setFormOpen(open);
             if (!open) setEditingFornecedor(null);
           }}
-          fornecedor={editingFornecedor}
+          fornecedor={editingFornecedor as any}
         />
 
         <FornecedorDetailDialog
