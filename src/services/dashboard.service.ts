@@ -27,7 +27,7 @@ export interface UpcomingBill {
   valor: number;
   vencimento: string;
   daysUntilDue: number;
-  fornecedor?: { id: string; nome: string };
+  fornecedor?: { id: string; razao_social: string };
 }
 
 export interface OverdueBill {
