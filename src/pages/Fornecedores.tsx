@@ -58,7 +58,7 @@ import {
 import { ExportMenu } from '@/components/ui/export-menu';
 import { LoadingSkeleton, TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { useFornecedores, useFornecedoresPaginated, Fornecedor } from '@/hooks/useFinancialData';
+import { useFornecedores, useFornecedoresPaginated, ExternalCliente } from '@/hooks/useFinancialData';
 import { fornecedoresColumns } from '@/lib/export-utils';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';

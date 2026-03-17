@@ -28,6 +28,13 @@ export interface ExternalCliente {
   updated_at: string;
   score?: number | null;
   limite_credito?: number | null;
+  // Address fields (may come from external or be null)
+  endereco?: string | null;
+  cidade?: string | null;
+  estado?: string | null;
+  cep?: string | null;
+  bairro?: string | null;
+  // External-specific
   website?: string;
   logo_url?: string;
   grupo_economico?: string;
@@ -50,6 +57,8 @@ export interface ExternalCliente {
   pedido_minimo?: number;
   forma_pagamento?: string;
   prazo_pagamento?: string;
+  // Allow any extra fields from mapping
+  [key: string]: unknown;
 }
 
 export function useEmpresas() {
