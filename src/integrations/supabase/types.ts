@@ -2300,6 +2300,110 @@ export type Database = {
         }
         Relationships: []
       }
+      execucoes_cobranca: {
+        Row: {
+          canal: string
+          cliente_id: string | null
+          cliente_nome: string | null
+          conta_receber_id: string | null
+          created_at: string
+          destinatario: string | null
+          empresa_id: string | null
+          entregue: boolean | null
+          entregue_em: string | null
+          erro_mensagem: string | null
+          etapa: string
+          fila_id: string | null
+          id: string
+          lido: boolean | null
+          lido_em: string | null
+          mensagem: string | null
+          provider: string | null
+          provider_message_id: string | null
+          respondido: boolean | null
+          resposta: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          canal: string
+          cliente_id?: string | null
+          cliente_nome?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          destinatario?: string | null
+          empresa_id?: string | null
+          entregue?: boolean | null
+          entregue_em?: string | null
+          erro_mensagem?: string | null
+          etapa: string
+          fila_id?: string | null
+          id?: string
+          lido?: boolean | null
+          lido_em?: string | null
+          mensagem?: string | null
+          provider?: string | null
+          provider_message_id?: string | null
+          respondido?: boolean | null
+          resposta?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          canal?: string
+          cliente_id?: string | null
+          cliente_nome?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          destinatario?: string | null
+          empresa_id?: string | null
+          entregue?: boolean | null
+          entregue_em?: string | null
+          erro_mensagem?: string | null
+          etapa?: string
+          fila_id?: string | null
+          id?: string
+          lido?: boolean | null
+          lido_em?: string | null
+          mensagem?: string | null
+          provider?: string | null
+          provider_message_id?: string | null
+          respondido?: boolean | null
+          resposta?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "execucoes_cobranca_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execucoes_cobranca_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execucoes_cobranca_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execucoes_cobranca_fila_id_fkey"
+            columns: ["fila_id"]
+            isOneToOne: false
+            referencedRelation: "fila_cobrancas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       expert_conversations: {
         Row: {
           created_at: string
@@ -2485,6 +2589,110 @@ export type Database = {
           transacao_descricao?: string
         }
         Relationships: []
+      }
+      fila_cobrancas: {
+        Row: {
+          agendado_para: string | null
+          canal: string
+          cliente_id: string | null
+          cliente_nome: string | null
+          conta_receber_id: string | null
+          created_at: string
+          created_by: string | null
+          destinatario: string | null
+          empresa_id: string | null
+          erro_mensagem: string | null
+          etapa: string
+          id: string
+          max_tentativas: number | null
+          mensagem_renderizada: string | null
+          prioridade: number | null
+          processado_em: string | null
+          processado_por: string | null
+          proxima_tentativa: string | null
+          status: string
+          template_id: string | null
+          tentativas: number | null
+          updated_at: string
+        }
+        Insert: {
+          agendado_para?: string | null
+          canal: string
+          cliente_id?: string | null
+          cliente_nome?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          destinatario?: string | null
+          empresa_id?: string | null
+          erro_mensagem?: string | null
+          etapa: string
+          id?: string
+          max_tentativas?: number | null
+          mensagem_renderizada?: string | null
+          prioridade?: number | null
+          processado_em?: string | null
+          processado_por?: string | null
+          proxima_tentativa?: string | null
+          status?: string
+          template_id?: string | null
+          tentativas?: number | null
+          updated_at?: string
+        }
+        Update: {
+          agendado_para?: string | null
+          canal?: string
+          cliente_id?: string | null
+          cliente_nome?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          destinatario?: string | null
+          empresa_id?: string | null
+          erro_mensagem?: string | null
+          etapa?: string
+          id?: string
+          max_tentativas?: number | null
+          mensagem_renderizada?: string | null
+          prioridade?: number | null
+          processado_em?: string | null
+          processado_por?: string | null
+          proxima_tentativa?: string | null
+          status?: string
+          template_id?: string | null
+          tentativas?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fila_cobrancas_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fila_cobrancas_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fila_cobrancas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fila_cobrancas_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "templates_cobranca"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       formas_pagamento: {
         Row: {
@@ -3210,6 +3418,82 @@ export type Database = {
           },
           {
             foreignKeyName: "movimentacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      negativacoes: {
+        Row: {
+          bureau: string
+          cliente_id: string | null
+          conta_receber_id: string | null
+          created_at: string
+          created_by: string | null
+          data_exclusao: string | null
+          data_inclusao: string | null
+          empresa_id: string | null
+          id: string
+          motivo: string | null
+          observacoes: string | null
+          protocolo: string | null
+          status: string
+          updated_at: string
+          valor: number
+        }
+        Insert: {
+          bureau: string
+          cliente_id?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_exclusao?: string | null
+          data_inclusao?: string | null
+          empresa_id?: string | null
+          id?: string
+          motivo?: string | null
+          observacoes?: string | null
+          protocolo?: string | null
+          status?: string
+          updated_at?: string
+          valor: number
+        }
+        Update: {
+          bureau?: string
+          cliente_id?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_exclusao?: string | null
+          data_inclusao?: string | null
+          empresa_id?: string | null
+          id?: string
+          motivo?: string | null
+          observacoes?: string | null
+          protocolo?: string | null
+          status?: string
+          updated_at?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "negativacoes_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "negativacoes_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "negativacoes_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
@@ -4138,6 +4422,91 @@ export type Database = {
         }
         Relationships: []
       }
+      protestos: {
+        Row: {
+          cartorio: string | null
+          cidade_cartorio: string | null
+          cliente_id: string | null
+          conta_receber_id: string | null
+          created_at: string
+          created_by: string | null
+          custas: number | null
+          data_pagamento: string | null
+          data_protesto: string | null
+          data_protocolo: string | null
+          empresa_id: string | null
+          estado_cartorio: string | null
+          id: string
+          observacoes: string | null
+          protocolo: string | null
+          status: string
+          updated_at: string
+          valor: number
+        }
+        Insert: {
+          cartorio?: string | null
+          cidade_cartorio?: string | null
+          cliente_id?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          custas?: number | null
+          data_pagamento?: string | null
+          data_protesto?: string | null
+          data_protocolo?: string | null
+          empresa_id?: string | null
+          estado_cartorio?: string | null
+          id?: string
+          observacoes?: string | null
+          protocolo?: string | null
+          status?: string
+          updated_at?: string
+          valor: number
+        }
+        Update: {
+          cartorio?: string | null
+          cidade_cartorio?: string | null
+          cliente_id?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          custas?: number | null
+          data_pagamento?: string | null
+          data_protesto?: string | null
+          data_protocolo?: string | null
+          empresa_id?: string | null
+          estado_cartorio?: string | null
+          id?: string
+          observacoes?: string | null
+          protocolo?: string | null
+          status?: string
+          updated_at?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "protestos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "protestos_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "protestos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       push_subscriptions: {
         Row: {
           ativo: boolean
@@ -4798,6 +5167,65 @@ export type Database = {
             columns: ["operacao_id"]
             isOneToOne: false
             referencedRelation: "operacoes_tributaveis"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      templates_cobranca: {
+        Row: {
+          assunto: string | null
+          ativo: boolean
+          canal: string
+          corpo: string
+          created_at: string
+          created_by: string | null
+          empresa_id: string | null
+          etapa: string
+          id: string
+          padrao: boolean | null
+          tom: string | null
+          updated_at: string
+          variaveis_disponiveis: string[] | null
+          versao: number | null
+        }
+        Insert: {
+          assunto?: string | null
+          ativo?: boolean
+          canal: string
+          corpo: string
+          created_at?: string
+          created_by?: string | null
+          empresa_id?: string | null
+          etapa: string
+          id?: string
+          padrao?: boolean | null
+          tom?: string | null
+          updated_at?: string
+          variaveis_disponiveis?: string[] | null
+          versao?: number | null
+        }
+        Update: {
+          assunto?: string | null
+          ativo?: boolean
+          canal?: string
+          corpo?: string
+          created_at?: string
+          created_by?: string | null
+          empresa_id?: string | null
+          etapa?: string
+          id?: string
+          padrao?: boolean | null
+          tom?: string | null
+          updated_at?: string
+          variaveis_disponiveis?: string[] | null
+          versao?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "templates_cobranca_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
             referencedColumns: ["id"]
           },
         ]
