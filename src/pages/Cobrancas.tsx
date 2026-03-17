@@ -27,6 +27,7 @@ import { ReguaCobrancaConfig } from '@/components/cobranca/ReguaCobrancaConfig';
 import { FilaCobrancasPanel } from '@/components/cobranca/FilaCobrancasPanel';
 import { NegativacoesProtestosPanel } from '@/components/cobranca/NegativacoesProtestosPanel';
 import { WhatsAppHistoryPanel } from '@/components/cobranca/WhatsAppHistoryPanel';
+import { WhatsAppProativoPanel } from '@/components/cobranca/WhatsAppProativoPanel';
 
 const containerVariants = {
   hidden: { opacity: 0 },
