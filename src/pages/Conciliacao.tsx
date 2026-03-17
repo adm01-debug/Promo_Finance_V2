@@ -735,6 +735,16 @@ export default function Conciliacao() {
             }
           }}
         />
+        <RelatorioImportacaoDialog
+          open={showReportDialog}
+          onOpenChange={setShowReportDialog}
+          report={importReport}
+          onIrParaConciliacao={() => {
+            setShowReportDialog(false);
+            setMainTab('conciliacao');
+            setStatusTab('pendentes');
+          }}
+        />
       </motion.div>
     </MainLayout>
   );
