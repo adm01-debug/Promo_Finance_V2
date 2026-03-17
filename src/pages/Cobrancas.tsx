@@ -26,6 +26,7 @@ import { PrevisaoInadimplencia } from '@/components/cobranca/PrevisaoInadimplenc
 import { ReguaCobrancaConfig } from '@/components/cobranca/ReguaCobrancaConfig';
 import { FilaCobrancasPanel } from '@/components/cobranca/FilaCobrancasPanel';
 import { NegativacoesProtestosPanel } from '@/components/cobranca/NegativacoesProtestosPanel';
+import { WhatsAppHistoryPanel } from '@/components/cobranca/WhatsAppHistoryPanel';
 
 const containerVariants = {
   hidden: { opacity: 0 },
