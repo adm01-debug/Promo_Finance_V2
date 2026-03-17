@@ -26,6 +26,7 @@ import { PrevisaoInadimplencia } from '@/components/cobranca/PrevisaoInadimplenc
 import { ReguaCobrancaConfig } from '@/components/cobranca/ReguaCobrancaConfig';
 import { FilaCobrancasPanel } from '@/components/cobranca/FilaCobrancasPanel';
 import { NegativacoesProtestosPanel } from '@/components/cobranca/NegativacoesProtestosPanel';
+import { WhatsAppHistoryPanel } from '@/components/cobranca/WhatsAppHistoryPanel';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -125,6 +126,7 @@ export default function Cobrancas() {
             <TabsTrigger value="engine">Engine & Fila</TabsTrigger>
             <TabsTrigger value="regua">Régua & Templates</TabsTrigger>
             <TabsTrigger value="negativacoes">Negativações & Protestos</TabsTrigger>
+            <TabsTrigger value="whatsapp">WhatsApp</TabsTrigger>
           </TabsList>
 
           <TabsContent value="engine">
@@ -137,6 +139,10 @@ export default function Cobrancas() {
 
           <TabsContent value="negativacoes">
             <NegativacoesProtestosPanel />
+          </TabsContent>
+
+          <TabsContent value="whatsapp">
+            <WhatsAppHistoryPanel />
           </TabsContent>
 
           <TabsContent value="dashboard" className="space-y-6">

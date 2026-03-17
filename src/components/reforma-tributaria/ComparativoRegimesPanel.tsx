@@ -2,19 +2,28 @@
 // COMPONENTE: COMPARATIVO DE REGIMES TRIBUTÁRIOS
 // ============================================
 
-import { Calculator, Award, XCircle } from 'lucide-react';
+import { Calculator, Award, XCircle, Shield } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell } from 'recharts';
 import { useComparativoRegimes } from '@/hooks/useComparativoRegimes';
+import { useRegimesEspeciaisEmpresa, useUpdateRegimeEspecial } from '@/hooks/useRegimesEspeciais';
 import { formatCurrency } from '@/lib/formatters';
 
-export function ComparativoRegimesPanel() {
+interface Props {
+  empresaId?: string;
+}
+
+export function ComparativoRegimesPanel({ empresaId }: Props = {}) {
   const { parametros, setParametros, resultado } = useComparativoRegimes();
+  const { data: regimesEspeciais, isLoading: loadingRegimes } = useRegimesEspeciaisEmpresa(empresaId);
+  const updateRegime = useUpdateRegimeEspecial();
 
   const chartData = resultado.resultados.map(r => ({
     name: r.nome,
@@ -136,6 +145,50 @@ export function ComparativoRegimesPanel() {
             ))}
           </Tabs>
         </div>
+
+        {/* Regimes Especiais da Empresa */}
+        {empresaId && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Shield className="h-5 w-5 text-primary" />
+                Regimes Especiais Aplicáveis
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loadingRegimes ? (
+                <div className="space-y-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-14" />)}</div>
+              ) : regimesEspeciais && regimesEspeciais.length > 0 ? (
+                <div className="space-y-3">
+                  {regimesEspeciais.map((regime) => (
+                    <div key={regime.id} className="flex items-center justify-between p-3 rounded-lg border">
+                      <div>
+                        <p className="font-medium text-sm">{regime.regime_nome}</p>
+                        <p className="text-xs text-muted-foreground">
+                          CBS: -{regime.reducao_cbs}% • IBS: -{regime.reducao_ibs}%
+                          {regime.data_inicio && ` • Desde ${regime.data_inicio}`}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={regime.ativo ? 'default' : 'secondary'}>
+                          {regime.ativo ? 'Ativo' : 'Inativo'}
+                        </Badge>
+                        <Switch
+                          checked={regime.ativo}
+                          onCheckedChange={(checked) => updateRegime.mutate({ id: regime.id, ativo: checked })}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-muted-foreground py-6">
+                  Nenhum regime especial cadastrado para esta empresa
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
