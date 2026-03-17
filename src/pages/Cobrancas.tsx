@@ -142,7 +142,8 @@ export default function Cobrancas() {
             <NegativacoesProtestosPanel />
           </TabsContent>
 
-          <TabsContent value="whatsapp">
+          <TabsContent value="whatsapp" className="space-y-4">
+            <WhatsAppProativoPanel />
             <WhatsAppHistoryPanel />
           </TabsContent>
 
