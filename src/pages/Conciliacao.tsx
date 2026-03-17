@@ -34,6 +34,7 @@ import { ImportarExtratoDialog } from '@/components/conciliacao/ImportarExtratoD
 import { SugestoesMatchIA } from '@/components/conciliacao/SugestoesMatchIA';
 import { ConciliacaoManualDialog } from '@/components/conciliacao/ConciliacaoManualDialog';
 import { ConciliacaoSplitDialog } from '@/components/conciliacao/ConciliacaoSplitDialog';
+import { RelatorioImportacaoDialog, type ImportReport } from '@/components/conciliacao/RelatorioImportacaoDialog';
 import { ConciliacaoDashboard } from '@/components/conciliacao/ConciliacaoDashboard';
 import { RegrasConciliacaoPanel } from '@/components/conciliacao/RegrasConciliacaoPanel';
 import { ConciliacaoFilters, ConciliacaoFilterState, INITIAL_FILTERS } from '@/components/conciliacao/ConciliacaoFilters';
