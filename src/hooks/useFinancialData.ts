@@ -243,12 +243,14 @@ export function useContasReceber() {
     queryKey: ['contas-receber'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('contas_receber')
-        .select('*, centros_custo(nome, codigo), contas_bancarias(banco), clientes(razao_social, nome_fantasia, score)')
-        .order('data_vencimento', { ascending: true });
+        .from('vw_contas_receber_painel')
+        .select('*')
+        .order('data_vencimento', { ascending: true })
+        .limit(500);
       if (error) throw error;
       return data;
     },
+    staleTime: STALE_TIMES.financial,
   });
 }
 
