@@ -1,26 +1,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Send,
-  Mail,
-  MessageSquare,
-  Phone,
-  Smartphone,
-  Target,
-  TrendingUp,
-  AlertTriangle,
-  CheckCircle2,
-  Clock,
-  DollarSign,
-  Filter,
-  Plus,
-  Settings,
-  BarChart3,
-  Eye,
-  RefreshCcw,
-  Loader2,
-  Bot,
-  FileText,
+  Send, Mail, MessageSquare, Phone, Smartphone, Target, TrendingUp,
+  AlertTriangle, CheckCircle2, Clock, DollarSign, Filter, Plus,
+  Settings, BarChart3, Eye, RefreshCcw, Loader2, Bot, FileText, Shield, Gavel,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -32,22 +15,17 @@ import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { 
-  useCobrancaKPIs, 
-  useAgingData, 
-  useTopDevedores, 
-  useEtapasCobranca 
+  useCobrancaKPIs, useAgingData, useTopDevedores, useEtapasCobranca 
 } from '@/hooks/useCobrancas';
 import { 
-  ResponsiveContainer, 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  Tooltip,
+  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip,
 } from 'recharts';
 import { AcordoParcelamentoDialog } from '@/components/cobranca/AcordoParcelamentoDialog';
 import { NegociacaoIA } from '@/components/cobranca/NegociacaoIA';
 import { PrevisaoInadimplencia } from '@/components/cobranca/PrevisaoInadimplencia';
+import { ReguaCobrancaConfig } from '@/components/cobranca/ReguaCobrancaConfig';
+import { FilaCobrancasPanel } from '@/components/cobranca/FilaCobrancasPanel';
+import { NegativacoesProtestosPanel } from '@/components/cobranca/NegativacoesProtestosPanel';
 
 const containerVariants = {
   hidden: { opacity: 0 },
