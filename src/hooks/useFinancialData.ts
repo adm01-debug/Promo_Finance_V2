@@ -90,6 +90,7 @@ export function useCentrosCusto() {
       if (error) throw error;
       return data as CentroCusto[];
     },
+    staleTime: STALE_TIMES.static,
   });
 }
 
