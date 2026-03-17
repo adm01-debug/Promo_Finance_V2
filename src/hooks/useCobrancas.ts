@@ -10,7 +10,7 @@ export interface ContaVencida {
   valor_recebido: number | null;
   data_vencimento: string;
   etapa_cobranca: 'preventiva' | 'lembrete' | 'cobranca' | 'negociacao' | 'juridico' | null;
-  status: 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
+  status: 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado' | 'atrasado';
   dias_atraso: number;
   score?: number | null;
 }
@@ -76,7 +76,7 @@ export function useContasVencidas() {
         valor_recebido: number | null;
         data_vencimento: string;
         etapa_cobranca: 'preventiva' | 'lembrete' | 'cobranca' | 'negociacao' | 'juridico' | null;
-        status: 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
+        status: 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado' | 'atrasado';
         clientes?: { score: number | null } | null;
       }
 
