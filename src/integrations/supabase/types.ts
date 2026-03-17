@@ -5038,6 +5038,94 @@ export type Database = {
         }
         Relationships: []
       }
+      pix_templates: {
+        Row: {
+          ativo: boolean | null
+          categoria: string | null
+          centro_custo_id: string | null
+          chave_pix: string
+          created_at: string | null
+          created_by: string
+          descricao: string | null
+          empresa_id: string | null
+          favorecido_cpf_cnpj: string | null
+          favorecido_nome: string
+          id: string
+          nome: string
+          tags: string[] | null
+          tipo_chave_pix: string
+          ultimo_uso: string | null
+          updated_at: string | null
+          uso_count: number | null
+          valor_fixo: boolean | null
+          valor_padrao: number | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          categoria?: string | null
+          centro_custo_id?: string | null
+          chave_pix: string
+          created_at?: string | null
+          created_by: string
+          descricao?: string | null
+          empresa_id?: string | null
+          favorecido_cpf_cnpj?: string | null
+          favorecido_nome: string
+          id?: string
+          nome: string
+          tags?: string[] | null
+          tipo_chave_pix?: string
+          ultimo_uso?: string | null
+          updated_at?: string | null
+          uso_count?: number | null
+          valor_fixo?: boolean | null
+          valor_padrao?: number | null
+        }
+        Update: {
+          ativo?: boolean | null
+          categoria?: string | null
+          centro_custo_id?: string | null
+          chave_pix?: string
+          created_at?: string | null
+          created_by?: string
+          descricao?: string | null
+          empresa_id?: string | null
+          favorecido_cpf_cnpj?: string | null
+          favorecido_nome?: string
+          id?: string
+          nome?: string
+          tags?: string[] | null
+          tipo_chave_pix?: string
+          ultimo_uso?: string | null
+          updated_at?: string | null
+          uso_count?: number | null
+          valor_fixo?: boolean | null
+          valor_padrao?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pix_templates_centro_custo_id_fkey"
+            columns: ["centro_custo_id"]
+            isOneToOne: false
+            referencedRelation: "centros_custo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pix_templates_centro_custo_id_fkey"
+            columns: ["centro_custo_id"]
+            isOneToOne: false
+            referencedRelation: "vw_gastos_centro_custo"
+            referencedColumns: ["centro_custo_id"]
+          },
+          {
+            foreignKeyName: "pix_templates_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       plano_contas: {
         Row: {
           ativo: boolean | null
