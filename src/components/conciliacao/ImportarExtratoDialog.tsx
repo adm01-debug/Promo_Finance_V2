@@ -235,7 +235,8 @@ export function ImportarExtratoDialog({
                 <p className="font-medium text-foreground mb-1">Formatos suportados:</p>
                 <ul className="space-y-1 text-xs">
                   <li>• <strong>OFX/OFC</strong> - Formato padrão de bancos brasileiros</li>
-                  <li>• <strong>CSV</strong> - Colunas: Data, Descrição, Valor, Tipo</li>
+                  <li>• <strong>CSV/TXT</strong> - Colunas: Data, Descrição, Valor, Tipo</li>
+                  <li>• <strong>XLSX/XLS</strong> - Planilhas Excel com colunas de extrato</li>
                 </ul>
               </div>
             </motion.div>
