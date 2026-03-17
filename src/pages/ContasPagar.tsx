@@ -62,6 +62,16 @@ export default function ContasPagar() {
             <p className="text-muted-foreground mt-1">Controle todas as obrigações financeiras e fornecedores</p>
           </div>
           <div className="flex items-center gap-3">
+            <CategorizacaoLoteButton
+              despesas={logic.sortedContas
+                .filter(c => !c.categoria)
+                .map(c => ({
+                  id: c.id,
+                  descricao: c.descricao,
+                  valor: c.valor,
+                  fornecedor_nome: c.fornecedor_nome,
+                }))}
+            />
             <ExportMenu
               data={logic.sortedContas}
               columns={contasPagarColumns}
