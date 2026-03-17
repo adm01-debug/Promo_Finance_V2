@@ -11,6 +11,45 @@ export type ContaPagar = Tables<'contas_pagar'>;
 export type ContaReceber = Tables<'contas_receber'>;
 export type StatusPagamento = Database['public']['Enums']['status_pagamento'];
 
+// Type for external data coming from the edge function proxy
+export interface ExternalCliente {
+  id: string;
+  razao_social: string;
+  nome_fantasia: string;
+  cnpj_cpf: string;
+  nome: string;
+  email: string | null;
+  telefone: string | null;
+  contato: string | null;
+  ativo: boolean;
+  ramo_atividade: string | null;
+  observacoes: string | null;
+  created_at: string;
+  updated_at: string;
+  website?: string;
+  logo_url?: string;
+  grupo_economico?: string;
+  inscricao_estadual?: string;
+  status_externo?: string;
+  is_customer?: boolean;
+  is_supplier?: boolean;
+  // Customer-specific
+  vendedor_nome?: string;
+  cliente_ativado?: boolean;
+  ja_comprou?: boolean;
+  total_pedidos?: number;
+  valor_total_compras?: number;
+  ticket_medio?: number;
+  grupo_clientes?: string;
+  // Supplier-specific
+  categoria?: string;
+  tipo_fornecedor?: string;
+  prazo_entrega_medio?: number;
+  pedido_minimo?: number;
+  forma_pagamento?: string;
+  prazo_pagamento?: string;
+}
+
 export function useEmpresas() {
   return useQuery({
     queryKey: ['empresas'],
