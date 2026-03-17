@@ -16,8 +16,14 @@ import { useComparativoRegimes } from '@/hooks/useComparativoRegimes';
 import { useRegimesEspeciaisEmpresa, useUpdateRegimeEspecial } from '@/hooks/useRegimesEspeciais';
 import { formatCurrency } from '@/lib/formatters';
 
-export function ComparativoRegimesPanel() {
+interface Props {
+  empresaId?: string;
+}
+
+export function ComparativoRegimesPanel({ empresaId }: Props = {}) {
   const { parametros, setParametros, resultado } = useComparativoRegimes();
+  const { data: regimesEspeciais, isLoading: loadingRegimes } = useRegimesEspeciaisEmpresa(empresaId);
+  const updateRegime = useUpdateRegimeEspecial();
 
   const chartData = resultado.resultados.map(r => ({
     name: r.nome,
