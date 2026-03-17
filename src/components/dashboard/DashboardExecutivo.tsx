@@ -6,6 +6,7 @@ import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import { useDashboardMetrics } from '@/hooks/useDashboardMetrics';
 import { PrevisaoIA } from './PrevisaoIA';
 import { AlertasPreditivosPanel } from './AlertasPreditivosPanel';
+import { MetasFinanceirasPanel } from './MetasFinanceirasPanel';
 import { DashboardConfigDialog } from './DashboardConfigDialog';
 import { DashboardSkeleton } from './DashboardSkeleton';
 import { HeroKPICard, HeroKPIGrid } from './HeroKPICards';
