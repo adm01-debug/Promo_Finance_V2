@@ -237,5 +237,9 @@ export const invalidateQueries = {
   fornecedores: () => queryClient.invalidateQueries({ queryKey: queryKeys.fornecedores.all() }),
   clientes: () => queryClient.invalidateQueries({ queryKey: queryKeys.clientes.all() }),
   dashboard: () => queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all() }),
+  views: () => queryClient.invalidateQueries({ queryKey: queryKeys.views.all() }),
+  movimentacoes: () => queryClient.invalidateQueries({ queryKey: queryKeys.movimentacoes.all() }),
+  transferencias: () => queryClient.invalidateQueries({ queryKey: queryKeys.transferencias.all() }),
+  categorias: () => queryClient.invalidateQueries({ queryKey: queryKeys.categorias.all() }),
   all: () => queryClient.invalidateQueries({ queryKey: queryKeys.all }),
 };
