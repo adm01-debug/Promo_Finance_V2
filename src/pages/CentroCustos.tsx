@@ -91,7 +91,7 @@ export default function CentroCustos() {
   const [showInactive, setShowInactive] = useState(false);
   const [viewMode, setViewMode] = useState<'cards' | 'tree'>('tree');
   const [parentIdForNew, setParentIdForNew] = useState<string | null>(null);
-
+  const [historyCentro, setHistoryCentro] = useState<CentroCusto | null>(null);
   // Filtered data
   const filteredCentros = useMemo(() => {
     return centros.filter((c) => {
