@@ -86,6 +86,7 @@ interface TreeNodeItemProps {
   onDelete: (centro: CentroCusto) => void;
   onReactivate: (centro: CentroCusto) => void;
   onAddChild: (parentId: string) => void;
+  onHistory?: (centro: CentroCusto) => void;
   defaultExpanded?: boolean;
 }
 
