@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useVendedores, useCreateVendedor, useUpdateVendedor, useDeleteVendedor } from '@/hooks/useVendedores';
 import { formatCurrency } from '@/lib/formatters';
+import { VendedorDashboard } from '@/components/vendedores/VendedorDashboard';
 
 const containerVariants = {
   hidden: { opacity: 0 },
