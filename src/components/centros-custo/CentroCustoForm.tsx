@@ -29,6 +29,7 @@ const formSchema = z.object({
   nome: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(100),
   descricao: z.string().max(500).optional(),
   parent_id: z.string().optional(),
+  responsavel: z.string().max(100).optional(),
   orcamento_previsto: z.coerce.number().min(0, 'Valor deve ser positivo'),
   ativo: z.boolean(),
 });
