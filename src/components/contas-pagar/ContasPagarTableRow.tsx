@@ -20,6 +20,7 @@ import {
   Banknote,
   QrCode,
   ShieldAlert,
+  Tag,
   ShieldCheck,
   ShieldX,
   MoreHorizontal,
