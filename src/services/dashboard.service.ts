@@ -27,7 +27,7 @@ export interface UpcomingBill {
   valor: number;
   vencimento: string;
   daysUntilDue: number;
-  fornecedor?: { id: string; nome: string };
+  fornecedor?: { id: string; razao_social: string };
 }
 
 export interface OverdueBill {
@@ -36,7 +36,7 @@ export interface OverdueBill {
   valor: number;
   vencimento: string;
   daysOverdue: number;
-  fornecedor?: { id: string; nome: string };
+  fornecedor?: { id: string; razao_social: string };
 }
 
 export interface CashFlowItem {
@@ -72,11 +72,11 @@ export const dashboardService = {
         .lte('data_pagamento', endDate),
       supabase
         .from('contas_pagar')
-        .select('id, status, vencimento')
+        .select('id, status, data_vencimento')
         .in('status', ['pendente', 'atrasado']),
       supabase
         .from('contas_receber')
-        .select('id, status, vencimento')
+        .select('id, status, data_vencimento')
         .in('status', ['pendente', 'atrasado']),
     ]);
 
@@ -85,8 +85,8 @@ export const dashboardService = {
     
     const today = new Date().toISOString().split('T')[0];
     const contasAtrasadas = [
-      ...(contasPagarResult.data?.filter(c => c.vencimento < today && c.status !== 'pago') || []),
-      ...(contasReceberResult.data?.filter(c => c.vencimento < today && c.status !== 'pago') || []),
+      ...(contasPagarResult.data?.filter(c => c.data_vencimento < today && c.status !== 'pago') || []),
+      ...(contasReceberResult.data?.filter(c => c.data_vencimento < today && c.status !== 'pago') || []),
     ].length;
 
     // Get today's transactions
@@ -162,11 +162,11 @@ export const dashboardService = {
 
     const { data, error } = await supabase
       .from('contas_pagar')
-      .select('id, descricao, valor, vencimento, fornecedor:fornecedores(id, nome)')
+      .select('id, descricao, valor, data_vencimento, fornecedor:fornecedores(id, razao_social)')
       .eq('status', 'pendente')
-      .gte('vencimento', today.toISOString().split('T')[0])
-      .lte('vencimento', futureDate.toISOString().split('T')[0])
-      .order('vencimento', { ascending: true });
+      .gte('data_vencimento', today.toISOString().split('T')[0])
+      .lte('data_vencimento', futureDate.toISOString().split('T')[0])
+      .order('data_vencimento', { ascending: true });
 
     if (error) throw error;
 
@@ -174,9 +174,9 @@ export const dashboardService = {
       id: bill.id,
       descricao: bill.descricao,
       valor: bill.valor,
-      vencimento: bill.vencimento,
+      vencimento: bill.data_vencimento,
       daysUntilDue: Math.ceil(
-        (new Date(bill.vencimento).getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+        (new Date(bill.data_vencimento).getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
       ),
       fornecedor: bill.fornecedor,
     }));
@@ -187,10 +187,10 @@ export const dashboardService = {
 
     const { data, error } = await supabase
       .from('contas_pagar')
-      .select('id, descricao, valor, vencimento, fornecedor:fornecedores(id, nome)')
+      .select('id, descricao, valor, data_vencimento, fornecedor:fornecedores(id, razao_social)')
       .eq('status', 'pendente')
-      .lt('vencimento', today)
-      .order('vencimento', { ascending: true });
+      .lt('data_vencimento', today)
+      .order('data_vencimento', { ascending: true });
 
     if (error) throw error;
 
@@ -199,9 +199,9 @@ export const dashboardService = {
       id: bill.id,
       descricao: bill.descricao,
       valor: bill.valor,
-      vencimento: bill.vencimento,
+      vencimento: bill.data_vencimento,
       daysOverdue: Math.ceil(
-        (todayDate.getTime() - new Date(bill.vencimento).getTime()) / (1000 * 60 * 60 * 24)
+        (todayDate.getTime() - new Date(bill.data_vencimento).getTime()) / (1000 * 60 * 60 * 24)
       ),
       fornecedor: bill.fornecedor,
     }));
@@ -212,9 +212,9 @@ export const dashboardService = {
 
     const { data, error } = await supabase
       .from('contas_pagar')
-      .select('id, descricao, valor, vencimento, fornecedor:fornecedores(id, nome)')
+      .select('id, descricao, valor, data_vencimento, fornecedor:fornecedores(id, razao_social)')
       .eq('status', 'pendente')
-      .eq('vencimento', today);
+      .eq('data_vencimento', today);
 
     if (error) throw error;
 
@@ -222,7 +222,7 @@ export const dashboardService = {
       id: bill.id,
       descricao: bill.descricao,
       valor: bill.valor,
-      vencimento: bill.vencimento,
+      vencimento: bill.data_vencimento,
       daysUntilDue: 0,
       fornecedor: bill.fornecedor,
     }));
@@ -235,9 +235,9 @@ export const dashboardService = {
 
     const { data, error } = await supabase
       .from('contas_pagar')
-      .select('id, descricao, valor, vencimento, fornecedor:fornecedores(id, nome)')
+      .select('id, descricao, valor, data_vencimento, fornecedor:fornecedores(id, razao_social)')
       .eq('status', 'pendente')
-      .eq('vencimento', tomorrowStr);
+      .eq('data_vencimento', tomorrowStr);
 
     if (error) throw error;
 
@@ -245,7 +245,7 @@ export const dashboardService = {
       id: bill.id,
       descricao: bill.descricao,
       valor: bill.valor,
-      vencimento: bill.vencimento,
+      vencimento: bill.data_vencimento,
       daysUntilDue: 1,
       fornecedor: bill.fornecedor,
     }));

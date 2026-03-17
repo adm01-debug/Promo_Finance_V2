@@ -75,7 +75,7 @@ export const contasPagarService = {
   async getById(id: string) {
     const { data, error } = await supabase
       .from('contas_pagar')
-      .select('*, fornecedor:fornecedores(id, nome, cnpj)')
+      .select('*, fornecedor:fornecedores(id, razao_social, nome_fantasia, cnpj)')
       .eq('id', id)
       .single();
 
@@ -105,7 +105,7 @@ export const contasPagarService = {
         total_parcelas: input.total_parcelas,
         status: 'pendente' as StatusPagamento,
       })
-      .select('*, fornecedor:fornecedores(id, nome, cnpj)')
+      .select('*, fornecedor:fornecedores(id, razao_social, nome_fantasia, cnpj)')
       .single();
 
     if (error) throw error;
@@ -118,7 +118,7 @@ export const contasPagarService = {
       .from('contas_pagar')
       .update(updateData as any)
       .eq('id', id)
-      .select('*, fornecedor:fornecedores(id, nome, cnpj)')
+      .select('*, fornecedor:fornecedores(id, razao_social, nome_fantasia, cnpj)')
       .single();
 
     if (error) throw error;
@@ -143,7 +143,7 @@ export const contasPagarService = {
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)
-      .select('*, fornecedor:fornecedores(id, nome, cnpj)')
+      .select('*, fornecedor:fornecedores(id, razao_social, nome_fantasia, cnpj)')
       .single();
 
     if (error) throw error;
@@ -158,7 +158,7 @@ export const contasPagarService = {
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)
-      .select('*, fornecedor:fornecedores(id, nome, cnpj)')
+      .select('*, fornecedor:fornecedores(id, razao_social, nome_fantasia, cnpj)')
       .single();
 
     if (error) throw error;
@@ -170,7 +170,7 @@ export const contasPagarService = {
 
     const { data, error } = await supabase
       .from('contas_pagar')
-      .select('*, fornecedor:fornecedores(id, nome, cnpj)')
+      .select('*, fornecedor:fornecedores(id, razao_social, nome_fantasia, cnpj)')
       .eq('status', 'pendente')
       .lt('data_vencimento', today)
       .order('data_vencimento', { ascending: true });
@@ -186,7 +186,7 @@ export const contasPagarService = {
 
     const { data, error } = await supabase
       .from('contas_pagar')
-      .select('*, fornecedor:fornecedores(id, nome, cnpj)')
+      .select('*, fornecedor:fornecedores(id, razao_social, nome_fantasia, cnpj)')
       .eq('status', 'pendente')
       .gte('data_vencimento', today.toISOString().split('T')[0])
       .lte('data_vencimento', endOfWeek.toISOString().split('T')[0])
@@ -199,7 +199,7 @@ export const contasPagarService = {
   async getByFornecedor(fornecedorId: string) {
     const { data, error } = await supabase
       .from('contas_pagar')
-      .select('*, fornecedor:fornecedores(id, nome, cnpj)')
+      .select('*, fornecedor:fornecedores(id, razao_social, nome_fantasia, cnpj)')
       .eq('fornecedor_id', fornecedorId)
       .order('data_vencimento', { ascending: false });
 
@@ -232,7 +232,7 @@ export const contasPagarService = {
       .from('contas_pagar')
       .update(updateData as any)
       .in('id', ids)
-      .select('*, fornecedor:fornecedores(id, nome, cnpj)');
+      .select('*, fornecedor:fornecedores(id, razao_social, nome_fantasia, cnpj)');
 
     if (error) throw error;
     return data || [];
@@ -256,7 +256,7 @@ export const contasPagarService = {
         updated_at: new Date().toISOString(),
       })
       .in('id', ids)
-      .select('*, fornecedor:fornecedores(id, nome, cnpj)');
+      .select('*, fornecedor:fornecedores(id, razao_social, nome_fantasia, cnpj)');
 
     if (error) throw error;
     return data || [];
