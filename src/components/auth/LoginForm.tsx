@@ -15,6 +15,8 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
+import { lovable } from '@/integrations/lovable/index';
+import { toast } from 'sonner';
 
 interface LoginFormProps {
   email: string;
