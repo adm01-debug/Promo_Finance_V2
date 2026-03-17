@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, ArrowDownCircle, ArrowUpCircle, AlertTriangle } from 'lucide-react';
+import { Wallet, ArrowDownCircle, ArrowUpCircle, AlertTriangle, BarChart3, Brain, Target } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import { useDashboardMetrics } from '@/hooks/useDashboardMetrics';
@@ -20,13 +20,29 @@ import { TopCentrosCustoChart } from './TopCentrosCustoChart';
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
+  visible: { opacity: 1, transition: { staggerChildren: 0.06 } },
 } as const;
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } },
 } as const;
+
+function SectionDivider({ label, icon: Icon }: { label: string; icon: React.ElementType }) {
+  return (
+    <div className="flex items-center gap-3 py-1">
+      <div className="flex items-center gap-2 shrink-0">
+        <div className="h-7 w-7 rounded-lg bg-primary/[0.06] flex items-center justify-center">
+          <Icon className="h-3.5 w-3.5 text-primary/70" />
+        </div>
+        <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/70">
+          {label}
+        </span>
+      </div>
+      <div className="flex-1 h-px bg-gradient-to-r from-border/60 via-border/30 to-transparent" />
+    </div>
+  );
+}
 
 export const DashboardExecutivo = () => {
   const [empresaFilter, setEmpresaFilter] = useState<string>('all');
@@ -46,7 +62,6 @@ export const DashboardExecutivo = () => {
     return <DashboardSkeleton />;
   }
 
-  // Intelligent badge for inadimplencia - don't show alarming badge when zero
   const inadimplenciaBadge = metrics.totalVencidasReceber > 0
     ? formatCurrency(metrics.totalVencidasReceber) + " vencido"
     : undefined;
@@ -56,7 +71,8 @@ export const DashboardExecutivo = () => {
     : 'secondary' as const;
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4 sm:space-y-6" data-tour="dashboard">
+    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-5 sm:space-y-7" data-tour="dashboard">
+      {/* Hero Header */}
       <DashboardFiltersHeader
         empresas={metrics.empresas}
         centrosCusto={metrics.centrosCusto}
@@ -67,6 +83,7 @@ export const DashboardExecutivo = () => {
         onOpenConfig={() => setConfigDialogOpen(true)}
       />
 
+      {/* Hero KPIs */}
       <motion.div variants={itemVariants}>
         <HeroKPIGrid layout="hero-first">
           <HeroKPICard
@@ -128,6 +145,7 @@ export const DashboardExecutivo = () => {
         </HeroKPIGrid>
       </motion.div>
 
+      {/* Secondary KPIs */}
       <motion.div variants={itemVariants}>
         <SecondaryKPICards
           empresasCount={metrics.empresas.length}
@@ -139,7 +157,10 @@ export const DashboardExecutivo = () => {
         />
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+      {/* Section: Analytics */}
+      <SectionDivider label="Analytics" icon={BarChart3} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
         <div className="lg:col-span-2">
           <FluxoCaixaChart
             data={metrics.fluxoCaixaProjetado}
@@ -153,17 +174,23 @@ export const DashboardExecutivo = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         <TopClientesLeaderboard topClientesReceita={metrics.topClientesReceita} />
         <StatusContasPieChart statusContasPagar={metrics.statusContasPagar} />
         <TopCentrosCustoChart dadosPorCentroCusto={metrics.dadosPorCentroCusto} />
       </div>
 
+      {/* Section: Intelligence */}
+      <SectionDivider label="Inteligência" icon={Brain} />
+
       <motion.div variants={itemVariants}>
         <PrevisaoIA />
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+      {/* Section: Planning */}
+      <SectionDivider label="Planejamento" icon={Target} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
         <motion.div variants={itemVariants}>
           <AlertasPreditivosPanel
             saldoAtual={metrics.saldoTotal}
