@@ -9,168 +9,61 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const SERVICE_KEY = Deno.env.get('EXTERNAL_DB_URL');
-    if (!SERVICE_KEY) throw new Error('EXTERNAL_DB_URL not configured');
-
-    const externalUrl = 'https://xyykivpcdbfukaongpbw.supabase.co';
-
-    const fetchExt = async (path: string, hdrs?: Record<string,string>) => {
-      const res = await fetch(`${externalUrl}${path}`, {
-        headers: {
-          'apikey': SERVICE_KEY,
-          'Authorization': `Bearer ${SERVICE_KEY}`,
-          'Content-Type': 'application/json',
-          ...(hdrs || {}),
-        },
-      });
-      const text = await res.text();
-      let json = null;
-      try { json = JSON.parse(text); } catch {}
-      return { status: res.status, json, ok: res.ok };
-    };
-
-    // 1. Get full OpenAPI spec from external
-    const specRes = await fetchExt('/rest/v1/');
-    const spec = specRes.json;
-
-    if (!spec?.definitions) {
-      return new Response(JSON.stringify({ error: 'Could not read external OpenAPI spec', raw: spec }), {
-        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // 2. Extract ALL table/view definitions with full column details
-    const externalSchemas: Record<string, Record<string, { type: string; format?: string; description?: string }>> = {};
-    for (const [name, def] of Object.entries(spec.definitions)) {
-      const props = (def as any)?.properties;
-      if (props) {
-        const columns: Record<string, any> = {};
-        for (const [col, colDef] of Object.entries(props)) {
-          columns[col] = {
-            type: (colDef as any)?.type || 'unknown',
-            format: (colDef as any)?.format || null,
-            description: (colDef as any)?.description || null,
-          };
-        }
-        externalSchemas[name] = columns;
-      }
-    }
-
-    // 3. Get local OpenAPI spec
+    // Connect to external DB directly via pg connection string
+    const EXTERNAL_DB_URL = Deno.env.get('SUPABASE_DB_URL');
+    
+    // Use local DB to query view definitions
     const localUrl = Deno.env.get('SUPABASE_URL') || '';
     const localKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+
+    // Query local view definitions
+    const viewsQuery = `
+      SELECT viewname, definition 
+      FROM pg_views 
+      WHERE schemaname = 'public' 
+      AND viewname LIKE 'vw_%'
+      ORDER BY viewname;
+    `;
+
+    // We need to use the external DB URL to get the view definitions from the external DB
+    // Since we have the service_role key, let's use RPC or direct SQL
+    // Actually, let's query via the PostgREST RPC approach using a custom function
     
-    const localSpecRes = await fetch(`${localUrl}/rest/v1/`, {
-      headers: {
-        'apikey': localKey,
-        'Authorization': `Bearer ${localKey}`,
-        'Content-Type': 'application/json',
-      },
-    });
-    const localSpec = await localSpecRes.json();
-
-    const localSchemas: Record<string, Record<string, any>> = {};
-    if (localSpec?.definitions) {
-      for (const [name, def] of Object.entries(localSpec.definitions)) {
-        const props = (def as any)?.properties;
-        if (props) {
-          const columns: Record<string, any> = {};
-          for (const [col, colDef] of Object.entries(props)) {
-            columns[col] = {
-              type: (colDef as any)?.type || 'unknown',
-              format: (colDef as any)?.format || null,
-              description: (colDef as any)?.description || null,
-            };
-          }
-          localSchemas[name] = columns;
-        }
-      }
+    // Alternative: use the Postgres connection directly with Deno
+    // Import the postgres module
+    const { default: postgres } = await import('https://deno.land/x/postgresjs@v3.4.4/mod.js');
+    
+    // Get external DB URL from secrets
+    const extDbUrl = Deno.env.get('EXTERNAL_DB_URL');
+    
+    // The EXTERNAL_DB_URL is the service_role key, not a pg connection string
+    // We need to query views from local DB that we know exist, and compare with external
+    // Let's query our local views first
+    const localDbUrl = Deno.env.get('SUPABASE_DB_URL');
+    if (!localDbUrl) throw new Error('SUPABASE_DB_URL not configured');
+    
+    const sql = postgres(localDbUrl);
+    
+    const views = await sql`
+      SELECT viewname, definition 
+      FROM pg_views 
+      WHERE schemaname = 'public' 
+      AND viewname LIKE 'vw_%'
+      ORDER BY viewname
+    `;
+    
+    await sql.end();
+    
+    const result: Record<string, string> = {};
+    for (const v of views) {
+      result[v.viewname] = v.definition;
     }
 
-    // 4. Compare: find missing tables, missing columns, type mismatches
-    const missingTables: string[] = [];
-    const missingColumns: Record<string, string[]> = {};
-    const typeMismatches: Record<string, Record<string, { external: any; local: any }>> = {};
-    const extraLocalTables: string[] = [];
-
-    for (const [table, extCols] of Object.entries(externalSchemas)) {
-      if (!localSchemas[table]) {
-        missingTables.push(table);
-        continue;
-      }
-      const localCols = localSchemas[table];
-      for (const [col, extDef] of Object.entries(extCols)) {
-        if (!localCols[col]) {
-          if (!missingColumns[table]) missingColumns[table] = [];
-          missingColumns[table].push(col);
-        } else {
-          // Check type match
-          if (localCols[col].type !== (extDef as any).type || localCols[col].format !== (extDef as any).format) {
-            if (!typeMismatches[table]) typeMismatches[table] = {};
-            typeMismatches[table][col] = {
-              external: extDef,
-              local: localCols[col],
-            };
-          }
-        }
-      }
-    }
-
-    for (const table of Object.keys(localSchemas)) {
-      if (!externalSchemas[table]) {
-        extraLocalTables.push(table);
-      }
-    }
-
-    // 5. Compare RPCs
-    const extRpcs: string[] = [];
-    const localRpcs: string[] = [];
-    if (spec?.paths) {
-      for (const p of Object.keys(spec.paths)) {
-        if (p.startsWith('/rpc/')) extRpcs.push(p.replace('/rpc/', ''));
-      }
-    }
-    if (localSpec?.paths) {
-      for (const p of Object.keys(localSpec.paths)) {
-        if (p.startsWith('/rpc/')) localRpcs.push(p.replace('/rpc/', ''));
-      }
-    }
-    const missingRpcs = extRpcs.filter(r => !localRpcs.includes(r));
-    const extraLocalRpcs = localRpcs.filter(r => !extRpcs.includes(r));
-
-    // 6. Summary
-    const totalExtTables = Object.keys(externalSchemas).length;
-    const totalLocalTables = Object.keys(localSchemas).length;
-    const totalMissingCols = Object.values(missingColumns).reduce((a, b) => a + b.length, 0);
-    const totalMismatches = Object.values(typeMismatches).reduce((a, b) => a + Object.keys(b).length, 0);
-
-    const isPerfect = missingTables.length === 0 && totalMissingCols === 0 && missingRpcs.length === 0;
-
-    return new Response(JSON.stringify({
-      summary: {
-        status: isPerfect ? '✅ 100% PARITY - NADA SE PERDE' : '⚠️ DIVERGÊNCIAS ENCONTRADAS',
-        external_tables: totalExtTables,
-        local_tables: totalLocalTables,
-        missing_tables: missingTables.length,
-        missing_columns: totalMissingCols,
-        type_mismatches: totalMismatches,
-        missing_rpcs: missingRpcs.length,
-        extra_local_tables: extraLocalTables.length,
-        extra_local_rpcs: extraLocalRpcs.length,
-      },
-      details: {
-        missing_tables: missingTables,
-        missing_columns: missingColumns,
-        type_mismatches: typeMismatches,
-        missing_rpcs: missingRpcs,
-        extra_local_tables: extraLocalTables.sort(),
-        extra_local_rpcs: extraLocalRpcs.sort(),
-      },
-    }, null, 2), {
+    return new Response(JSON.stringify(result, null, 2), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: (error as Error).message }), {
+    return new Response(JSON.stringify({ error: (error as Error).message, stack: (error as Error).stack }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }

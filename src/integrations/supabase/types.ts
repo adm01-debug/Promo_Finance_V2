@@ -380,11 +380,14 @@ export type Database = {
           entidade_tipo: string
           id: string
           nome_arquivo: string
+          storage_path: string | null
           tamanho_bytes: number | null
           tipo_arquivo: string | null
           updated_at: string
           uploaded_by: string | null
+          uploaded_por: string | null
           url: string
+          url_publica: string | null
         }
         Insert: {
           created_at?: string
@@ -393,11 +396,14 @@ export type Database = {
           entidade_tipo: string
           id?: string
           nome_arquivo: string
+          storage_path?: string | null
           tamanho_bytes?: number | null
           tipo_arquivo?: string | null
           updated_at?: string
           uploaded_by?: string | null
+          uploaded_por?: string | null
           url: string
+          url_publica?: string | null
         }
         Update: {
           created_at?: string
@@ -406,11 +412,14 @@ export type Database = {
           entidade_tipo?: string
           id?: string
           nome_arquivo?: string
+          storage_path?: string | null
           tamanho_bytes?: number | null
           tipo_arquivo?: string | null
           updated_at?: string
           uploaded_by?: string | null
+          uploaded_por?: string | null
           url?: string
+          url_publica?: string | null
         }
         Relationships: []
       }
@@ -420,6 +429,7 @@ export type Database = {
           adicoes_temporarias: number | null
           ano: number
           compensacao_prejuizos: number | null
+          competencia: string | null
           created_at: string
           created_by: string | null
           csll_a_pagar: number | null
@@ -442,6 +452,7 @@ export type Database = {
           irpj_total: number | null
           irrf_retido: number | null
           lucro_contabil: number | null
+          lucro_liquido: number | null
           lucro_real: number | null
           lucro_real_antes_compensacao: number | null
           mes: number | null
@@ -462,6 +473,7 @@ export type Database = {
           adicoes_temporarias?: number | null
           ano: number
           compensacao_prejuizos?: number | null
+          competencia?: string | null
           created_at?: string
           created_by?: string | null
           csll_a_pagar?: number | null
@@ -484,6 +496,7 @@ export type Database = {
           irpj_total?: number | null
           irrf_retido?: number | null
           lucro_contabil?: number | null
+          lucro_liquido?: number | null
           lucro_real?: number | null
           lucro_real_antes_compensacao?: number | null
           mes?: number | null
@@ -504,6 +517,7 @@ export type Database = {
           adicoes_temporarias?: number | null
           ano?: number
           compensacao_prejuizos?: number | null
+          competencia?: string | null
           created_at?: string
           created_by?: string | null
           csll_a_pagar?: number | null
@@ -526,6 +540,7 @@ export type Database = {
           irpj_total?: number | null
           irrf_retido?: number | null
           lucro_contabil?: number | null
+          lucro_liquido?: number | null
           lucro_real?: number | null
           lucro_real_antes_compensacao?: number | null
           mes?: number | null
@@ -868,37 +883,49 @@ export type Database = {
       }
       auditoria_financeira: {
         Row: {
+          acao: string | null
           created_at: string
+          dados_anteriores: Json | null
           dados_antigos: Json | null
           dados_novos: Json | null
           id: string
+          ip: string | null
           ip_address: string | null
           operacao: string
           registro_id: string | null
           tabela: string
           user_id: string | null
+          usuario: string | null
         }
         Insert: {
+          acao?: string | null
           created_at?: string
+          dados_anteriores?: Json | null
           dados_antigos?: Json | null
           dados_novos?: Json | null
           id?: string
+          ip?: string | null
           ip_address?: string | null
           operacao: string
           registro_id?: string | null
           tabela: string
           user_id?: string | null
+          usuario?: string | null
         }
         Update: {
+          acao?: string | null
           created_at?: string
+          dados_anteriores?: Json | null
           dados_antigos?: Json | null
           dados_novos?: Json | null
           id?: string
+          ip?: string | null
           ip_address?: string | null
           operacao?: string
           registro_id?: string | null
           tabela?: string
           user_id?: string | null
+          usuario?: string | null
         }
         Relationships: []
       }
@@ -1360,6 +1387,7 @@ export type Database = {
       centros_custo: {
         Row: {
           ativo: boolean
+          bitrix_deal_id: string | null
           codigo: string
           created_at: string
           descricao: string | null
@@ -1368,10 +1396,13 @@ export type Database = {
           orcamento_previsto: number
           orcamento_realizado: number
           parent_id: string | null
+          responsavel: string | null
+          tipo: string | null
           updated_at: string
         }
         Insert: {
           ativo?: boolean
+          bitrix_deal_id?: string | null
           codigo: string
           created_at?: string
           descricao?: string | null
@@ -1380,10 +1411,13 @@ export type Database = {
           orcamento_previsto?: number
           orcamento_realizado?: number
           parent_id?: string | null
+          responsavel?: string | null
+          tipo?: string | null
           updated_at?: string
         }
         Update: {
           ativo?: boolean
+          bitrix_deal_id?: string | null
           codigo?: string
           created_at?: string
           descricao?: string | null
@@ -1392,6 +1426,8 @@ export type Database = {
           orcamento_previsto?: number
           orcamento_realizado?: number
           parent_id?: string | null
+          responsavel?: string | null
+          tipo?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -1413,12 +1449,19 @@ export type Database = {
       }
       clientes: {
         Row: {
+          asaas_customer_id: string | null
           ativo: boolean
+          bairro: string | null
+          bitrix_company_id: string | null
+          bitrix_contact_id: string | null
           bitrix_id: string | null
+          cep: string | null
           cidade: string | null
           cnpj_cpf: string | null
+          complemento: string | null
           contato: string | null
           contato_financeiro_id: string | null
+          cpf_cnpj: string | null
           created_at: string
           email: string | null
           empresa_id: string | null
@@ -1426,7 +1469,9 @@ export type Database = {
           estado: string | null
           id: string
           limite_credito: number | null
+          nome: string | null
           nome_fantasia: string | null
+          numero: string | null
           observacoes: string | null
           ramo_atividade: string | null
           razao_social: string
@@ -1434,15 +1479,23 @@ export type Database = {
           telefone: string | null
           tipo: string | null
           updated_at: string
+          user_id: string | null
           vendedor_id: string | null
         }
         Insert: {
+          asaas_customer_id?: string | null
           ativo?: boolean
+          bairro?: string | null
+          bitrix_company_id?: string | null
+          bitrix_contact_id?: string | null
           bitrix_id?: string | null
+          cep?: string | null
           cidade?: string | null
           cnpj_cpf?: string | null
+          complemento?: string | null
           contato?: string | null
           contato_financeiro_id?: string | null
+          cpf_cnpj?: string | null
           created_at?: string
           email?: string | null
           empresa_id?: string | null
@@ -1450,7 +1503,9 @@ export type Database = {
           estado?: string | null
           id?: string
           limite_credito?: number | null
+          nome?: string | null
           nome_fantasia?: string | null
+          numero?: string | null
           observacoes?: string | null
           ramo_atividade?: string | null
           razao_social: string
@@ -1458,15 +1513,23 @@ export type Database = {
           telefone?: string | null
           tipo?: string | null
           updated_at?: string
+          user_id?: string | null
           vendedor_id?: string | null
         }
         Update: {
+          asaas_customer_id?: string | null
           ativo?: boolean
+          bairro?: string | null
+          bitrix_company_id?: string | null
+          bitrix_contact_id?: string | null
           bitrix_id?: string | null
+          cep?: string | null
           cidade?: string | null
           cnpj_cpf?: string | null
+          complemento?: string | null
           contato?: string | null
           contato_financeiro_id?: string | null
+          cpf_cnpj?: string | null
           created_at?: string
           email?: string | null
           empresa_id?: string | null
@@ -1474,7 +1537,9 @@ export type Database = {
           estado?: string | null
           id?: string
           limite_credito?: number | null
+          nome?: string | null
           nome_fantasia?: string | null
+          numero?: string | null
           observacoes?: string | null
           ramo_atividade?: string | null
           razao_social?: string
@@ -1482,6 +1547,7 @@ export type Database = {
           telefone?: string | null
           tipo?: string | null
           updated_at?: string
+          user_id?: string | null
           vendedor_id?: string | null
         }
         Relationships: [
@@ -1512,51 +1578,69 @@ export type Database = {
         Row: {
           conta_bancaria_id: string
           created_at: string
+          data_fim: string | null
+          data_inicio: string | null
           diferenca: number | null
           empresa_id: string | null
           finalizada_em: string | null
           finalizada_por: string | null
           id: string
+          observacoes: string | null
           periodo_fim: string
           periodo_inicio: string
+          realizado_por: string | null
           saldo_banco: number
           saldo_sistema: number
           status: string | null
           total_conciliados: number | null
+          total_itens_conciliados: number | null
+          total_itens_pendentes: number | null
           total_pendentes: number | null
           updated_at: string
         }
         Insert: {
           conta_bancaria_id: string
           created_at?: string
+          data_fim?: string | null
+          data_inicio?: string | null
           diferenca?: number | null
           empresa_id?: string | null
           finalizada_em?: string | null
           finalizada_por?: string | null
           id?: string
+          observacoes?: string | null
           periodo_fim: string
           periodo_inicio: string
+          realizado_por?: string | null
           saldo_banco?: number
           saldo_sistema?: number
           status?: string | null
           total_conciliados?: number | null
+          total_itens_conciliados?: number | null
+          total_itens_pendentes?: number | null
           total_pendentes?: number | null
           updated_at?: string
         }
         Update: {
           conta_bancaria_id?: string
           created_at?: string
+          data_fim?: string | null
+          data_inicio?: string | null
           diferenca?: number | null
           empresa_id?: string | null
           finalizada_em?: string | null
           finalizada_por?: string | null
           id?: string
+          observacoes?: string | null
           periodo_fim?: string
           periodo_inicio?: string
+          realizado_por?: string | null
           saldo_banco?: number
           saldo_sistema?: number
           status?: string | null
           total_conciliados?: number | null
+          total_itens_conciliados?: number | null
+          total_itens_pendentes?: number | null
           total_pendentes?: number | null
           updated_at?: string
         }
@@ -1692,9 +1776,12 @@ export type Database = {
           conta: string
           cor: string | null
           created_at: string
+          data_saldo_inicial: string | null
           empresa_id: string
           id: string
+          moeda: string | null
           nome: string | null
+          observacoes: string | null
           saldo_atual: number
           saldo_disponivel: number
           saldo_inicial: number | null
@@ -1710,9 +1797,12 @@ export type Database = {
           conta: string
           cor?: string | null
           created_at?: string
+          data_saldo_inicial?: string | null
           empresa_id: string
           id?: string
+          moeda?: string | null
           nome?: string | null
+          observacoes?: string | null
           saldo_atual?: number
           saldo_disponivel?: number
           saldo_inicial?: number | null
@@ -1728,9 +1818,12 @@ export type Database = {
           conta?: string
           cor?: string | null
           created_at?: string
+          data_saldo_inicial?: string | null
           empresa_id?: string
           id?: string
+          moeda?: string | null
           nome?: string | null
+          observacoes?: string | null
           saldo_atual?: number
           saldo_disponivel?: number
           saldo_inicial?: number | null
@@ -1752,6 +1845,10 @@ export type Database = {
         Row: {
           aprovado_em: string | null
           aprovado_por: string | null
+          asaas_bill_id: string | null
+          asaas_status: string | null
+          asaas_transfer_id: string | null
+          bitrix_activity_id: string | null
           bitrix_deal_id: string | null
           categoria: string | null
           centro_custo_id: string | null
@@ -1760,6 +1857,7 @@ export type Database = {
           contato_id: string | null
           created_at: string
           created_by: string
+          data_competencia: string | null
           data_emissao: string
           data_pagamento: string | null
           data_vencimento: string
@@ -1774,10 +1872,13 @@ export type Database = {
           numero_documento: string | null
           numero_parcela_atual: number | null
           observacoes: string | null
+          origem: string | null
           parcela_atual: number | null
           plano_conta_id: string | null
+          recorrencia_parent_id: string | null
           recorrente: boolean
           status: Database["public"]["Enums"]["status_pagamento"]
+          tags: string[] | null
           tipo_cobranca: Database["public"]["Enums"]["tipo_cobranca"]
           total_parcelas: number | null
           updated_at: string
@@ -1794,6 +1895,10 @@ export type Database = {
         Insert: {
           aprovado_em?: string | null
           aprovado_por?: string | null
+          asaas_bill_id?: string | null
+          asaas_status?: string | null
+          asaas_transfer_id?: string | null
+          bitrix_activity_id?: string | null
           bitrix_deal_id?: string | null
           categoria?: string | null
           centro_custo_id?: string | null
@@ -1802,6 +1907,7 @@ export type Database = {
           contato_id?: string | null
           created_at?: string
           created_by: string
+          data_competencia?: string | null
           data_emissao?: string
           data_pagamento?: string | null
           data_vencimento: string
@@ -1816,10 +1922,13 @@ export type Database = {
           numero_documento?: string | null
           numero_parcela_atual?: number | null
           observacoes?: string | null
+          origem?: string | null
           parcela_atual?: number | null
           plano_conta_id?: string | null
+          recorrencia_parent_id?: string | null
           recorrente?: boolean
           status?: Database["public"]["Enums"]["status_pagamento"]
+          tags?: string[] | null
           tipo_cobranca?: Database["public"]["Enums"]["tipo_cobranca"]
           total_parcelas?: number | null
           updated_at?: string
@@ -1836,6 +1945,10 @@ export type Database = {
         Update: {
           aprovado_em?: string | null
           aprovado_por?: string | null
+          asaas_bill_id?: string | null
+          asaas_status?: string | null
+          asaas_transfer_id?: string | null
+          bitrix_activity_id?: string | null
           bitrix_deal_id?: string | null
           categoria?: string | null
           centro_custo_id?: string | null
@@ -1844,6 +1957,7 @@ export type Database = {
           contato_id?: string | null
           created_at?: string
           created_by?: string
+          data_competencia?: string | null
           data_emissao?: string
           data_pagamento?: string | null
           data_vencimento?: string
@@ -1858,10 +1972,13 @@ export type Database = {
           numero_documento?: string | null
           numero_parcela_atual?: number | null
           observacoes?: string | null
+          origem?: string | null
           parcela_atual?: number | null
           plano_conta_id?: string | null
+          recorrencia_parent_id?: string | null
           recorrente?: boolean
           status?: Database["public"]["Enums"]["status_pagamento"]
+          tags?: string[] | null
           tipo_cobranca?: Database["public"]["Enums"]["tipo_cobranca"]
           total_parcelas?: number | null
           updated_at?: string
@@ -1943,6 +2060,13 @@ export type Database = {
       }
       contas_receber: {
         Row: {
+          asaas_billing_type: string | null
+          asaas_installment_id: string | null
+          asaas_invoice_url: string | null
+          asaas_payment_id: string | null
+          asaas_status: string | null
+          asaas_subscription_id: string | null
+          bitrix_activity_id: string | null
           bitrix_deal_id: string | null
           categoria: string | null
           centro_custo_id: string | null
@@ -1954,6 +2078,8 @@ export type Database = {
           contato_id: string | null
           created_at: string
           created_by: string
+          data_competencia: string | null
+          data_credito: string | null
           data_emissao: string
           data_recebimento: string | null
           data_vencimento: string
@@ -1966,12 +2092,16 @@ export type Database = {
           id: string
           link_boleto: string | null
           numero_documento: string | null
+          numero_nf: string | null
           numero_parcela_atual: number | null
           observacoes: string | null
+          origem: string | null
           parcela_atual: number | null
           plano_conta_id: string | null
           recorrente: boolean | null
           status: Database["public"]["Enums"]["status_pagamento"]
+          tags: string[] | null
+          taxa_gateway: number | null
           tipo_cobranca: Database["public"]["Enums"]["tipo_cobranca"]
           total_parcelas: number | null
           updated_at: string
@@ -1980,6 +2110,7 @@ export type Database = {
           valor_desconto: number | null
           valor_final: number | null
           valor_juros: number | null
+          valor_liquido: number | null
           valor_multa: number | null
           valor_original: number | null
           valor_pago: number | null
@@ -1988,6 +2119,13 @@ export type Database = {
           vendedor_id: string | null
         }
         Insert: {
+          asaas_billing_type?: string | null
+          asaas_installment_id?: string | null
+          asaas_invoice_url?: string | null
+          asaas_payment_id?: string | null
+          asaas_status?: string | null
+          asaas_subscription_id?: string | null
+          bitrix_activity_id?: string | null
           bitrix_deal_id?: string | null
           categoria?: string | null
           centro_custo_id?: string | null
@@ -1999,6 +2137,8 @@ export type Database = {
           contato_id?: string | null
           created_at?: string
           created_by: string
+          data_competencia?: string | null
+          data_credito?: string | null
           data_emissao?: string
           data_recebimento?: string | null
           data_vencimento: string
@@ -2011,12 +2151,16 @@ export type Database = {
           id?: string
           link_boleto?: string | null
           numero_documento?: string | null
+          numero_nf?: string | null
           numero_parcela_atual?: number | null
           observacoes?: string | null
+          origem?: string | null
           parcela_atual?: number | null
           plano_conta_id?: string | null
           recorrente?: boolean | null
           status?: Database["public"]["Enums"]["status_pagamento"]
+          tags?: string[] | null
+          taxa_gateway?: number | null
           tipo_cobranca?: Database["public"]["Enums"]["tipo_cobranca"]
           total_parcelas?: number | null
           updated_at?: string
@@ -2025,6 +2169,7 @@ export type Database = {
           valor_desconto?: number | null
           valor_final?: number | null
           valor_juros?: number | null
+          valor_liquido?: number | null
           valor_multa?: number | null
           valor_original?: number | null
           valor_pago?: number | null
@@ -2033,6 +2178,13 @@ export type Database = {
           vendedor_id?: string | null
         }
         Update: {
+          asaas_billing_type?: string | null
+          asaas_installment_id?: string | null
+          asaas_invoice_url?: string | null
+          asaas_payment_id?: string | null
+          asaas_status?: string | null
+          asaas_subscription_id?: string | null
+          bitrix_activity_id?: string | null
           bitrix_deal_id?: string | null
           categoria?: string | null
           centro_custo_id?: string | null
@@ -2044,6 +2196,8 @@ export type Database = {
           contato_id?: string | null
           created_at?: string
           created_by?: string
+          data_competencia?: string | null
+          data_credito?: string | null
           data_emissao?: string
           data_recebimento?: string | null
           data_vencimento?: string
@@ -2056,12 +2210,16 @@ export type Database = {
           id?: string
           link_boleto?: string | null
           numero_documento?: string | null
+          numero_nf?: string | null
           numero_parcela_atual?: number | null
           observacoes?: string | null
+          origem?: string | null
           parcela_atual?: number | null
           plano_conta_id?: string | null
           recorrente?: boolean | null
           status?: Database["public"]["Enums"]["status_pagamento"]
+          tags?: string[] | null
+          taxa_gateway?: number | null
           tipo_cobranca?: Database["public"]["Enums"]["tipo_cobranca"]
           total_parcelas?: number | null
           updated_at?: string
@@ -2070,6 +2228,7 @@ export type Database = {
           valor_desconto?: number | null
           valor_final?: number | null
           valor_juros?: number | null
+          valor_liquido?: number | null
           valor_multa?: number | null
           valor_original?: number | null
           valor_pago?: number | null
@@ -2152,10 +2311,17 @@ export type Database = {
       }
       contatos_financeiros: {
         Row: {
+          agencia: string | null
+          asaas_customer_id: string | null
+          asaas_subconta_wallet_id: string | null
           ativo: boolean
+          banco: string | null
+          bitrix_company_id: string | null
+          bitrix_contact_id: string | null
           cargo: string | null
           cep: string | null
           cidade: string | null
+          conta: string | null
           cpf_cnpj: string | null
           created_at: string
           departamento: string | null
@@ -2168,16 +2334,26 @@ export type Database = {
           nome: string
           observacoes: string | null
           origem: string | null
+          pix_chave: string | null
+          pix_tipo: string | null
+          razao_social: string | null
           telefone: string | null
           tipo: string | null
           updated_at: string
           whatsapp: string | null
         }
         Insert: {
+          agencia?: string | null
+          asaas_customer_id?: string | null
+          asaas_subconta_wallet_id?: string | null
           ativo?: boolean
+          banco?: string | null
+          bitrix_company_id?: string | null
+          bitrix_contact_id?: string | null
           cargo?: string | null
           cep?: string | null
           cidade?: string | null
+          conta?: string | null
           cpf_cnpj?: string | null
           created_at?: string
           departamento?: string | null
@@ -2190,16 +2366,26 @@ export type Database = {
           nome: string
           observacoes?: string | null
           origem?: string | null
+          pix_chave?: string | null
+          pix_tipo?: string | null
+          razao_social?: string | null
           telefone?: string | null
           tipo?: string | null
           updated_at?: string
           whatsapp?: string | null
         }
         Update: {
+          agencia?: string | null
+          asaas_customer_id?: string | null
+          asaas_subconta_wallet_id?: string | null
           ativo?: boolean
+          banco?: string | null
+          bitrix_company_id?: string | null
+          bitrix_contact_id?: string | null
           cargo?: string | null
           cep?: string | null
           cidade?: string | null
+          conta?: string | null
           cpf_cnpj?: string | null
           created_at?: string
           departamento?: string | null
@@ -2212,6 +2398,9 @@ export type Database = {
           nome?: string
           observacoes?: string | null
           origem?: string | null
+          pix_chave?: string | null
+          pix_tipo?: string | null
+          razao_social?: string | null
           telefone?: string | null
           tipo?: string | null
           updated_at?: string
@@ -2508,16 +2697,21 @@ export type Database = {
       empresas: {
         Row: {
           ativo: boolean
+          bairro: string | null
           cep: string | null
           cidade: string | null
           cnpj: string
+          complemento: string | null
           created_at: string
           email: string | null
           endereco: string | null
           estado: string | null
           id: string
           inscricao_estadual: string | null
+          inscricao_municipal: string | null
+          logo_url: string | null
           nome_fantasia: string | null
+          numero: string | null
           razao_social: string
           regime_tributario: string | null
           telefone: string | null
@@ -2526,16 +2720,21 @@ export type Database = {
         }
         Insert: {
           ativo?: boolean
+          bairro?: string | null
           cep?: string | null
           cidade?: string | null
           cnpj: string
+          complemento?: string | null
           created_at?: string
           email?: string | null
           endereco?: string | null
           estado?: string | null
           id?: string
           inscricao_estadual?: string | null
+          inscricao_municipal?: string | null
+          logo_url?: string | null
           nome_fantasia?: string | null
+          numero?: string | null
           razao_social: string
           regime_tributario?: string | null
           telefone?: string | null
@@ -2544,16 +2743,21 @@ export type Database = {
         }
         Update: {
           ativo?: boolean
+          bairro?: string | null
           cep?: string | null
           cidade?: string | null
           cnpj?: string
+          complemento?: string | null
           created_at?: string
           email?: string | null
           endereco?: string | null
           estado?: string | null
           id?: string
           inscricao_estadual?: string | null
+          inscricao_municipal?: string | null
+          logo_url?: string | null
           nome_fantasia?: string | null
+          numero?: string | null
           razao_social?: string
           regime_tributario?: string | null
           telefone?: string | null
@@ -2569,10 +2773,14 @@ export type Database = {
           cliente_nome: string | null
           conta_receber_id: string | null
           created_at: string
+          created_by: string | null
+          custo: number | null
           destinatario: string | null
           empresa_id: string | null
           entregue: boolean | null
           entregue_em: string | null
+          enviado_em: string | null
+          erro_detalhe: string | null
           erro_mensagem: string | null
           etapa: string
           fila_id: string | null
@@ -2580,10 +2788,15 @@ export type Database = {
           lido: boolean | null
           lido_em: string | null
           mensagem: string | null
+          mensagem_enviada: string | null
+          metadata: Json | null
           provider: string | null
           provider_message_id: string | null
+          regua_etapa_id: string | null
           respondido: boolean | null
+          respondido_em: string | null
           resposta: string | null
+          resposta_cliente: string | null
           status: string
           updated_at: string
         }
@@ -2593,10 +2806,14 @@ export type Database = {
           cliente_nome?: string | null
           conta_receber_id?: string | null
           created_at?: string
+          created_by?: string | null
+          custo?: number | null
           destinatario?: string | null
           empresa_id?: string | null
           entregue?: boolean | null
           entregue_em?: string | null
+          enviado_em?: string | null
+          erro_detalhe?: string | null
           erro_mensagem?: string | null
           etapa: string
           fila_id?: string | null
@@ -2604,10 +2821,15 @@ export type Database = {
           lido?: boolean | null
           lido_em?: string | null
           mensagem?: string | null
+          mensagem_enviada?: string | null
+          metadata?: Json | null
           provider?: string | null
           provider_message_id?: string | null
+          regua_etapa_id?: string | null
           respondido?: boolean | null
+          respondido_em?: string | null
           resposta?: string | null
+          resposta_cliente?: string | null
           status?: string
           updated_at?: string
         }
@@ -2617,10 +2839,14 @@ export type Database = {
           cliente_nome?: string | null
           conta_receber_id?: string | null
           created_at?: string
+          created_by?: string | null
+          custo?: number | null
           destinatario?: string | null
           empresa_id?: string | null
           entregue?: boolean | null
           entregue_em?: string | null
+          enviado_em?: string | null
+          erro_detalhe?: string | null
           erro_mensagem?: string | null
           etapa?: string
           fila_id?: string | null
@@ -2628,10 +2854,15 @@ export type Database = {
           lido?: boolean | null
           lido_em?: string | null
           mensagem?: string | null
+          mensagem_enviada?: string | null
+          metadata?: Json | null
           provider?: string | null
           provider_message_id?: string | null
+          regua_etapa_id?: string | null
           respondido?: boolean | null
+          respondido_em?: string | null
           resposta?: string | null
+          resposta_cliente?: string | null
           status?: string
           updated_at?: string
         }
@@ -2740,57 +2971,90 @@ export type Database = {
       }
       extrato_bancario: {
         Row: {
+          arquivo_origem: string | null
           categoria: string | null
+          codigo_transacao: string | null
           conciliado: boolean | null
+          conciliado_em: string | null
+          conciliado_por: string | null
           conta_bancaria_id: string
           created_at: string
           data: string
+          data_transacao: string | null
           descricao: string
+          descricao_banco: string | null
           empresa_id: string | null
           hash_transacao: string | null
           id: string
           importado_de: string | null
+          importado_em: string | null
+          linha_arquivo: number | null
+          movimentacao_id: string | null
           numero_documento: string | null
+          numero_documento_banco: string | null
           observacoes: string | null
           saldo: number | null
+          saldo_apos: number | null
           tipo: string
           transacao_bancaria_id: string | null
           updated_at: string
           valor: number
         }
         Insert: {
+          arquivo_origem?: string | null
           categoria?: string | null
+          codigo_transacao?: string | null
           conciliado?: boolean | null
+          conciliado_em?: string | null
+          conciliado_por?: string | null
           conta_bancaria_id: string
           created_at?: string
           data: string
+          data_transacao?: string | null
           descricao: string
+          descricao_banco?: string | null
           empresa_id?: string | null
           hash_transacao?: string | null
           id?: string
           importado_de?: string | null
+          importado_em?: string | null
+          linha_arquivo?: number | null
+          movimentacao_id?: string | null
           numero_documento?: string | null
+          numero_documento_banco?: string | null
           observacoes?: string | null
           saldo?: number | null
+          saldo_apos?: number | null
           tipo: string
           transacao_bancaria_id?: string | null
           updated_at?: string
           valor: number
         }
         Update: {
+          arquivo_origem?: string | null
           categoria?: string | null
+          codigo_transacao?: string | null
           conciliado?: boolean | null
+          conciliado_em?: string | null
+          conciliado_por?: string | null
           conta_bancaria_id?: string
           created_at?: string
           data?: string
+          data_transacao?: string | null
           descricao?: string
+          descricao_banco?: string | null
           empresa_id?: string | null
           hash_transacao?: string | null
           id?: string
           importado_de?: string | null
+          importado_em?: string | null
+          linha_arquivo?: number | null
+          movimentacao_id?: string | null
           numero_documento?: string | null
+          numero_documento_banco?: string | null
           observacoes?: string | null
           saldo?: number | null
+          saldo_apos?: number | null
           tipo?: string
           transacao_bancaria_id?: string | null
           updated_at?: string
@@ -2869,23 +3133,31 @@ export type Database = {
       fila_cobrancas: {
         Row: {
           agendado_para: string | null
+          assunto: string | null
           canal: string
           cliente_id: string | null
           cliente_nome: string | null
           conta_receber_id: string | null
           created_at: string
           created_by: string | null
+          data_agendamento: string | null
           destinatario: string | null
           empresa_id: string | null
+          entregue_em: string | null
+          enviado_em: string | null
+          erro_detalhe: string | null
           erro_mensagem: string | null
           etapa: string
           id: string
+          lido_em: string | null
+          link_pagamento: string | null
           max_tentativas: number | null
           mensagem_renderizada: string | null
           prioridade: number | null
           processado_em: string | null
           processado_por: string | null
           proxima_tentativa: string | null
+          regua_etapa_id: string | null
           status: string
           template_id: string | null
           tentativas: number | null
@@ -2893,23 +3165,31 @@ export type Database = {
         }
         Insert: {
           agendado_para?: string | null
+          assunto?: string | null
           canal: string
           cliente_id?: string | null
           cliente_nome?: string | null
           conta_receber_id?: string | null
           created_at?: string
           created_by?: string | null
+          data_agendamento?: string | null
           destinatario?: string | null
           empresa_id?: string | null
+          entregue_em?: string | null
+          enviado_em?: string | null
+          erro_detalhe?: string | null
           erro_mensagem?: string | null
           etapa: string
           id?: string
+          lido_em?: string | null
+          link_pagamento?: string | null
           max_tentativas?: number | null
           mensagem_renderizada?: string | null
           prioridade?: number | null
           processado_em?: string | null
           processado_por?: string | null
           proxima_tentativa?: string | null
+          regua_etapa_id?: string | null
           status?: string
           template_id?: string | null
           tentativas?: number | null
@@ -2917,23 +3197,31 @@ export type Database = {
         }
         Update: {
           agendado_para?: string | null
+          assunto?: string | null
           canal?: string
           cliente_id?: string | null
           cliente_nome?: string | null
           conta_receber_id?: string | null
           created_at?: string
           created_by?: string | null
+          data_agendamento?: string | null
           destinatario?: string | null
           empresa_id?: string | null
+          entregue_em?: string | null
+          enviado_em?: string | null
+          erro_detalhe?: string | null
           erro_mensagem?: string | null
           etapa?: string
           id?: string
+          lido_em?: string | null
+          link_pagamento?: string | null
           max_tentativas?: number | null
           mensagem_renderizada?: string | null
           prioridade?: number | null
           processado_em?: string | null
           processado_por?: string | null
           proxima_tentativa?: string | null
+          regua_etapa_id?: string | null
           status?: string
           template_id?: string | null
           tentativas?: number | null
@@ -2981,12 +3269,16 @@ export type Database = {
         Row: {
           ativo: boolean
           codigo: string | null
+          conta_bancaria_id: string | null
           created_at: string
           dias_compensacao: number | null
           icone: string | null
           id: string
           nome: string
+          parcelas_padrao: number | null
+          prazo_recebimento_dias: number | null
           requer_dados_bancarios: boolean | null
+          taxa_fixa: number | null
           taxa_percentual: number | null
           tipo: string | null
           updated_at: string
@@ -2994,12 +3286,16 @@ export type Database = {
         Insert: {
           ativo?: boolean
           codigo?: string | null
+          conta_bancaria_id?: string | null
           created_at?: string
           dias_compensacao?: number | null
           icone?: string | null
           id?: string
           nome: string
+          parcelas_padrao?: number | null
+          prazo_recebimento_dias?: number | null
           requer_dados_bancarios?: boolean | null
+          taxa_fixa?: number | null
           taxa_percentual?: number | null
           tipo?: string | null
           updated_at?: string
@@ -3007,12 +3303,16 @@ export type Database = {
         Update: {
           ativo?: boolean
           codigo?: string | null
+          conta_bancaria_id?: string | null
           created_at?: string
           dias_compensacao?: number | null
           icone?: string | null
           id?: string
           nome?: string
+          parcelas_padrao?: number | null
+          prazo_recebimento_dias?: number | null
           requer_dados_bancarios?: boolean | null
+          taxa_fixa?: number | null
           taxa_percentual?: number | null
           tipo?: string | null
           updated_at?: string
@@ -3023,12 +3323,15 @@ export type Database = {
         Row: {
           agencia: string | null
           ativo: boolean
+          bairro: string | null
           banco: string | null
+          bitrix_company_id: string | null
           categoria: string | null
           cep: string | null
           cidade: string | null
           cnpj: string | null
           cnpj_cpf: string | null
+          complemento: string | null
           conta: string | null
           contato: string | null
           contato_financeiro_id: string | null
@@ -3042,22 +3345,27 @@ export type Database = {
           id: string
           nome: string | null
           nome_fantasia: string | null
+          numero: string | null
           observacoes: string | null
           pix: string | null
           razao_social: string
           score: number | null
           telefone: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           agencia?: string | null
           ativo?: boolean
+          bairro?: string | null
           banco?: string | null
+          bitrix_company_id?: string | null
           categoria?: string | null
           cep?: string | null
           cidade?: string | null
           cnpj?: string | null
           cnpj_cpf?: string | null
+          complemento?: string | null
           conta?: string | null
           contato?: string | null
           contato_financeiro_id?: string | null
@@ -3071,22 +3379,27 @@ export type Database = {
           id?: string
           nome?: string | null
           nome_fantasia?: string | null
+          numero?: string | null
           observacoes?: string | null
           pix?: string | null
           razao_social: string
           score?: number | null
           telefone?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           agencia?: string | null
           ativo?: boolean
+          bairro?: string | null
           banco?: string | null
+          bitrix_company_id?: string | null
           categoria?: string | null
           cep?: string | null
           cidade?: string | null
           cnpj?: string | null
           cnpj_cpf?: string | null
+          complemento?: string | null
           conta?: string | null
           contato?: string | null
           contato_financeiro_id?: string | null
@@ -3100,12 +3413,14 @@ export type Database = {
           id?: string
           nome?: string | null
           nome_fantasia?: string | null
+          numero?: string | null
           observacoes?: string | null
           pix?: string | null
           razao_social?: string
           score?: number | null
           telefone?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -3666,14 +3981,21 @@ export type Database = {
       }
       movimentacoes: {
         Row: {
+          asaas_transaction_id: string | null
+          asaas_type: string | null
+          bitrix_deal_id: string | null
           categoria_id: string | null
           centro_custo_id: string | null
+          conciliacao_id: string | null
           conciliada: boolean | null
           conciliada_em: string | null
           conciliada_por: string | null
+          conciliado: boolean | null
           conta_bancaria_id: string | null
+          conta_destino_id: string | null
           conta_pagar_id: string | null
           conta_receber_id: string | null
+          contato_id: string | null
           created_at: string
           created_by: string | null
           data_competencia: string | null
@@ -3689,20 +4011,31 @@ export type Database = {
           numero_documento: string | null
           observacoes: string | null
           origem: string | null
+          plano_conta_id: string | null
+          tags: string[] | null
+          taxa_gateway: number | null
           tipo: string
           transferencia_id: string | null
           updated_at: string
           valor: number
+          valor_liquido: number | null
         }
         Insert: {
+          asaas_transaction_id?: string | null
+          asaas_type?: string | null
+          bitrix_deal_id?: string | null
           categoria_id?: string | null
           centro_custo_id?: string | null
+          conciliacao_id?: string | null
           conciliada?: boolean | null
           conciliada_em?: string | null
           conciliada_por?: string | null
+          conciliado?: boolean | null
           conta_bancaria_id?: string | null
+          conta_destino_id?: string | null
           conta_pagar_id?: string | null
           conta_receber_id?: string | null
+          contato_id?: string | null
           created_at?: string
           created_by?: string | null
           data_competencia?: string | null
@@ -3718,20 +4051,31 @@ export type Database = {
           numero_documento?: string | null
           observacoes?: string | null
           origem?: string | null
+          plano_conta_id?: string | null
+          tags?: string[] | null
+          taxa_gateway?: number | null
           tipo: string
           transferencia_id?: string | null
           updated_at?: string
           valor: number
+          valor_liquido?: number | null
         }
         Update: {
+          asaas_transaction_id?: string | null
+          asaas_type?: string | null
+          bitrix_deal_id?: string | null
           categoria_id?: string | null
           centro_custo_id?: string | null
+          conciliacao_id?: string | null
           conciliada?: boolean | null
           conciliada_em?: string | null
           conciliada_por?: string | null
+          conciliado?: boolean | null
           conta_bancaria_id?: string | null
+          conta_destino_id?: string | null
           conta_pagar_id?: string | null
           conta_receber_id?: string | null
+          contato_id?: string | null
           created_at?: string
           created_by?: string | null
           data_competencia?: string | null
@@ -3747,10 +4091,14 @@ export type Database = {
           numero_documento?: string | null
           observacoes?: string | null
           origem?: string | null
+          plano_conta_id?: string | null
+          tags?: string[] | null
+          taxa_gateway?: number | null
           tipo?: string
           transferencia_id?: string | null
           updated_at?: string
           valor?: number
+          valor_liquido?: number | null
         }
         Relationships: [
           {
@@ -3828,8 +4176,10 @@ export type Database = {
           data_exclusao: string | null
           data_inclusao: string | null
           empresa_id: string | null
+          erro_detalhe: string | null
           id: string
           motivo: string | null
+          motivo_exclusao: string | null
           observacoes: string | null
           protocolo: string | null
           status: string
@@ -3845,8 +4195,10 @@ export type Database = {
           data_exclusao?: string | null
           data_inclusao?: string | null
           empresa_id?: string | null
+          erro_detalhe?: string | null
           id?: string
           motivo?: string | null
+          motivo_exclusao?: string | null
           observacoes?: string | null
           protocolo?: string | null
           status?: string
@@ -3862,8 +4214,10 @@ export type Database = {
           data_exclusao?: string | null
           data_inclusao?: string | null
           empresa_id?: string | null
+          erro_detalhe?: string | null
           id?: string
           motivo?: string | null
+          motivo_exclusao?: string | null
           observacoes?: string | null
           protocolo?: string | null
           status?: string
@@ -3947,81 +4301,129 @@ export type Database = {
       }
       notas_fiscais: {
         Row: {
+          aliquota_iss: number | null
+          asaas_invoice_id: string | null
+          asaas_payment_id: string | null
+          asaas_pdf_url: string | null
+          asaas_rps_number: string | null
+          asaas_status: string | null
+          asaas_xml_url: string | null
+          bitrix_deal_id: string | null
           chave_acesso: string | null
           cliente_cnpj: string | null
           cliente_id: string | null
           cliente_nome: string
+          conta_receber_id: string | null
+          contato_id: string | null
           created_at: string
           created_by: string
+          data_competencia: string | null
           data_emissao: string
           data_saida: string | null
+          descricao_servico: string | null
           empresa_id: string
           id: string
           motivo_cancelamento: string | null
           natureza_operacao: string
           numero: string
+          observacoes: string | null
           protocolo: string | null
           serie: string
           status: Database["public"]["Enums"]["status_nfe"]
+          tipo: string | null
           updated_at: string
+          valor: number | null
           valor_desconto: number | null
           valor_frete: number | null
           valor_icms: number | null
           valor_ipi: number | null
+          valor_iss: number | null
           valor_produtos: number
           valor_seguro: number | null
           valor_total: number
           xml_nfe: string | null
         }
         Insert: {
+          aliquota_iss?: number | null
+          asaas_invoice_id?: string | null
+          asaas_payment_id?: string | null
+          asaas_pdf_url?: string | null
+          asaas_rps_number?: string | null
+          asaas_status?: string | null
+          asaas_xml_url?: string | null
+          bitrix_deal_id?: string | null
           chave_acesso?: string | null
           cliente_cnpj?: string | null
           cliente_id?: string | null
           cliente_nome: string
+          conta_receber_id?: string | null
+          contato_id?: string | null
           created_at?: string
           created_by: string
+          data_competencia?: string | null
           data_emissao?: string
           data_saida?: string | null
+          descricao_servico?: string | null
           empresa_id: string
           id?: string
           motivo_cancelamento?: string | null
           natureza_operacao: string
           numero: string
+          observacoes?: string | null
           protocolo?: string | null
           serie?: string
           status?: Database["public"]["Enums"]["status_nfe"]
+          tipo?: string | null
           updated_at?: string
+          valor?: number | null
           valor_desconto?: number | null
           valor_frete?: number | null
           valor_icms?: number | null
           valor_ipi?: number | null
+          valor_iss?: number | null
           valor_produtos: number
           valor_seguro?: number | null
           valor_total: number
           xml_nfe?: string | null
         }
         Update: {
+          aliquota_iss?: number | null
+          asaas_invoice_id?: string | null
+          asaas_payment_id?: string | null
+          asaas_pdf_url?: string | null
+          asaas_rps_number?: string | null
+          asaas_status?: string | null
+          asaas_xml_url?: string | null
+          bitrix_deal_id?: string | null
           chave_acesso?: string | null
           cliente_cnpj?: string | null
           cliente_id?: string | null
           cliente_nome?: string
+          conta_receber_id?: string | null
+          contato_id?: string | null
           created_at?: string
           created_by?: string
+          data_competencia?: string | null
           data_emissao?: string
           data_saida?: string | null
+          descricao_servico?: string | null
           empresa_id?: string
           id?: string
           motivo_cancelamento?: string | null
           natureza_operacao?: string
           numero?: string
+          observacoes?: string | null
           protocolo?: string | null
           serie?: string
           status?: Database["public"]["Enums"]["status_nfe"]
+          tipo?: string | null
           updated_at?: string
+          valor?: number | null
           valor_desconto?: number | null
           valor_frete?: number | null
           valor_icms?: number | null
           valor_ipi?: number | null
+          valor_iss?: number | null
           valor_produtos?: number
           valor_seguro?: number | null
           valor_total?: number
@@ -4605,21 +5007,30 @@ export type Database = {
       }
       permissions: {
         Row: {
+          ativo: boolean | null
+          code: string | null
           created_at: string | null
+          descricao: string | null
           description: string | null
           id: string
           module: string
           name: string
         }
         Insert: {
+          ativo?: boolean | null
+          code?: string | null
           created_at?: string | null
+          descricao?: string | null
           description?: string | null
           id?: string
           module: string
           name: string
         }
         Update: {
+          ativo?: boolean | null
+          code?: string | null
           created_at?: string | null
+          descricao?: string | null
           description?: string | null
           id?: string
           module?: string
@@ -4636,8 +5047,10 @@ export type Database = {
           id: string
           natureza: string
           nivel: number
+          nome: string | null
           parent_id: string | null
           tipo: string
+          updated_at: string | null
         }
         Insert: {
           ativo?: boolean | null
@@ -4647,8 +5060,10 @@ export type Database = {
           id?: string
           natureza: string
           nivel?: number
+          nome?: string | null
           parent_id?: string | null
           tipo: string
+          updated_at?: string | null
         }
         Update: {
           ativo?: boolean | null
@@ -4658,8 +5073,10 @@ export type Database = {
           id?: string
           natureza?: string
           nivel?: number
+          nome?: string | null
           parent_id?: string | null
           tipo?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -4922,7 +5339,9 @@ export type Database = {
           created_at: string
           detalhes: Json | null
           id: string
+          ip: string | null
           ip_address: string | null
+          metadata: Json | null
           token_id: string | null
           user_agent: string | null
         }
@@ -4932,7 +5351,9 @@ export type Database = {
           created_at?: string
           detalhes?: Json | null
           id?: string
+          ip?: string | null
           ip_address?: string | null
+          metadata?: Json | null
           token_id?: string | null
           user_agent?: string | null
         }
@@ -4942,7 +5363,9 @@ export type Database = {
           created_at?: string
           detalhes?: Json | null
           id?: string
+          ip?: string | null
           ip_address?: string | null
+          metadata?: Json | null
           token_id?: string | null
           user_agent?: string | null
         }
@@ -4967,32 +5390,53 @@ export type Database = {
         Row: {
           ativo: boolean | null
           cliente_id: string | null
+          conta_receber_id: string | null
           created_at: string
           email_cliente: string
+          empresa_id: string | null
           expires_at: string
           id: string
+          ip_acesso: string | null
+          tipo: string | null
           token: string
           ultimo_acesso: string | null
+          usado: boolean | null
+          usado_em: string | null
+          valido_ate: string | null
         }
         Insert: {
           ativo?: boolean | null
           cliente_id?: string | null
+          conta_receber_id?: string | null
           created_at?: string
           email_cliente: string
+          empresa_id?: string | null
           expires_at?: string
           id?: string
+          ip_acesso?: string | null
+          tipo?: string | null
           token: string
           ultimo_acesso?: string | null
+          usado?: boolean | null
+          usado_em?: string | null
+          valido_ate?: string | null
         }
         Update: {
           ativo?: boolean | null
           cliente_id?: string | null
+          conta_receber_id?: string | null
           created_at?: string
           email_cliente?: string
+          empresa_id?: string | null
           expires_at?: string
           id?: string
+          ip_acesso?: string | null
+          tipo?: string | null
           token?: string
           ultimo_acesso?: string | null
+          usado?: boolean | null
+          usado_em?: string | null
+          valido_ate?: string | null
         }
         Relationships: [
           {
@@ -5062,6 +5506,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          ativo: boolean | null
           avatar_url: string | null
           cargo: string | null
           created_at: string
@@ -5069,10 +5514,12 @@ export type Database = {
           empresa_id: string | null
           full_name: string | null
           id: string
+          telefone: string | null
           updated_at: string
           user_id: string | null
         }
         Insert: {
+          ativo?: boolean | null
           avatar_url?: string | null
           cargo?: string | null
           created_at?: string
@@ -5080,10 +5527,12 @@ export type Database = {
           empresa_id?: string | null
           full_name?: string | null
           id: string
+          telefone?: string | null
           updated_at?: string
           user_id?: string | null
         }
         Update: {
+          ativo?: boolean | null
           avatar_url?: string | null
           cargo?: string | null
           created_at?: string
@@ -5091,6 +5540,7 @@ export type Database = {
           empresa_id?: string | null
           full_name?: string | null
           id?: string
+          telefone?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -5113,15 +5563,18 @@ export type Database = {
           created_at: string
           created_by: string | null
           custas: number | null
+          data_cancelamento: string | null
           data_pagamento: string | null
           data_protesto: string | null
           data_protocolo: string | null
           empresa_id: string | null
+          erro_detalhe: string | null
           estado_cartorio: string | null
           id: string
           observacoes: string | null
           protocolo: string | null
           status: string
+          uf_cartorio: string | null
           updated_at: string
           valor: number
         }
@@ -5133,15 +5586,18 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           custas?: number | null
+          data_cancelamento?: string | null
           data_pagamento?: string | null
           data_protesto?: string | null
           data_protocolo?: string | null
           empresa_id?: string | null
+          erro_detalhe?: string | null
           estado_cartorio?: string | null
           id?: string
           observacoes?: string | null
           protocolo?: string | null
           status?: string
+          uf_cartorio?: string | null
           updated_at?: string
           valor: number
         }
@@ -5153,15 +5609,18 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           custas?: number | null
+          data_cancelamento?: string | null
           data_pagamento?: string | null
           data_protesto?: string | null
           data_protocolo?: string | null
           empresa_id?: string | null
+          erro_detalhe?: string | null
           estado_cartorio?: string | null
           id?: string
           observacoes?: string | null
           protocolo?: string | null
           status?: string
+          uf_cartorio?: string | null
           updated_at?: string
           valor?: number
         }
@@ -5237,6 +5696,7 @@ export type Database = {
           id: string
           ip_address: string
           requests_count: number | null
+          user_id: string | null
           window_start: string | null
         }
         Insert: {
@@ -5246,6 +5706,7 @@ export type Database = {
           id?: string
           ip_address: string
           requests_count?: number | null
+          user_id?: string | null
           window_start?: string | null
         }
         Update: {
@@ -5255,6 +5716,7 @@ export type Database = {
           id?: string
           ip_address?: string
           requests_count?: number | null
+          user_id?: string | null
           window_start?: string | null
         }
         Relationships: []
@@ -5416,6 +5878,7 @@ export type Database = {
           auto_executar: boolean | null
           canais: string[] | null
           canal: string
+          condicoes: Json | null
           created_at: string
           created_by: string | null
           descricao: string | null
@@ -5423,9 +5886,11 @@ export type Database = {
           dias_apos_vencimento: number | null
           dias_gatilho: number | null
           empresa_id: string | null
+          etapa: string | null
           id: string
           nome: string
           ordem: number
+          prioridade: number | null
           template_mensagem: string
           updated_at: string
         }
@@ -5434,6 +5899,7 @@ export type Database = {
           auto_executar?: boolean | null
           canais?: string[] | null
           canal?: string
+          condicoes?: Json | null
           created_at?: string
           created_by?: string | null
           descricao?: string | null
@@ -5441,9 +5907,11 @@ export type Database = {
           dias_apos_vencimento?: number | null
           dias_gatilho?: number | null
           empresa_id?: string | null
+          etapa?: string | null
           id?: string
           nome: string
           ordem?: number
+          prioridade?: number | null
           template_mensagem: string
           updated_at?: string
         }
@@ -5452,6 +5920,7 @@ export type Database = {
           auto_executar?: boolean | null
           canais?: string[] | null
           canal?: string
+          condicoes?: Json | null
           created_at?: string
           created_by?: string | null
           descricao?: string | null
@@ -5459,9 +5928,11 @@ export type Database = {
           dias_apos_vencimento?: number | null
           dias_gatilho?: number | null
           empresa_id?: string | null
+          etapa?: string | null
           id?: string
           nome?: string
           ordem?: number
+          prioridade?: number | null
           template_mensagem?: string
           updated_at?: string
         }
@@ -5562,6 +6033,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           darf_gerado: boolean | null
+          darf_id: string | null
           data_fato_gerador: string
           data_recolhimento: string | null
           data_retencao: string
@@ -5589,6 +6061,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           darf_gerado?: boolean | null
+          darf_id?: string | null
           data_fato_gerador: string
           data_recolhimento?: string | null
           data_retencao: string
@@ -5616,6 +6089,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           darf_gerado?: boolean | null
+          darf_id?: string | null
           data_fato_gerador?: string
           data_recolhimento?: string | null
           data_retencao?: string
@@ -5905,6 +6379,7 @@ export type Database = {
           empresa_id: string | null
           etapa: string
           id: string
+          nome: string | null
           padrao: boolean | null
           tom: string | null
           updated_at: string
@@ -5921,6 +6396,7 @@ export type Database = {
           empresa_id?: string | null
           etapa: string
           id?: string
+          nome?: string | null
           padrao?: boolean | null
           tom?: string | null
           updated_at?: string
@@ -5937,6 +6413,7 @@ export type Database = {
           empresa_id?: string | null
           etapa?: string
           id?: string
+          nome?: string | null
           padrao?: boolean | null
           tom?: string | null
           updated_at?: string
@@ -6052,25 +6529,39 @@ export type Database = {
       }
       transferencias: {
         Row: {
+          agencia_destino: string | null
           aprovado_em: string | null
           aprovado_por: string | null
+          asaas_authorized: boolean | null
+          asaas_comprovante_url: string | null
+          asaas_end_to_end: string | null
+          asaas_fail_reason: string | null
           asaas_status: string | null
           asaas_transfer_id: string | null
+          banco_destino: string | null
+          bitrix_deal_id: string | null
           cancelado_em: string | null
           cancelado_por: string | null
+          centro_custo_id: string | null
           chave_pix: string | null
           codigo_barras: string | null
           comprovante_url: string | null
           conta_bancaria_id: string | null
+          conta_destino: string | null
           conta_destino_id: string | null
           conta_pagar_id: string | null
+          contato_id: string | null
           created_at: string
           created_by: string | null
+          data_agendamento: string | null
+          data_credito: string | null
           data_efetivacao: string | null
+          data_solicitacao: string | null
           data_transferencia: string
           descricao: string
           empresa_id: string | null
           erro_mensagem: string | null
+          external_reference: string | null
           favorecido_agencia: string | null
           favorecido_banco: string | null
           favorecido_conta: string | null
@@ -6079,13 +6570,22 @@ export type Database = {
           favorecido_tipo_conta: string | null
           id: string
           linha_digitavel: string | null
+          modalidade: string | null
           motivo_cancelamento: string | null
           movimentacao_id: string | null
           numero_documento: string | null
           observacoes: string | null
           origem: string | null
+          pix_chave_destino: string | null
+          pix_tipo_chave: string | null
+          plano_conta_id: string | null
           protocolo: string | null
+          recorrencia_fim: string | null
+          recorrencia_frequencia: string | null
+          recorrencia_inicio: string | null
+          recorrente: boolean | null
           status: string
+          tags: string[] | null
           taxa: number | null
           tipo: string
           tipo_chave_pix: string | null
@@ -6094,25 +6594,39 @@ export type Database = {
           valor_liquido: number | null
         }
         Insert: {
+          agencia_destino?: string | null
           aprovado_em?: string | null
           aprovado_por?: string | null
+          asaas_authorized?: boolean | null
+          asaas_comprovante_url?: string | null
+          asaas_end_to_end?: string | null
+          asaas_fail_reason?: string | null
           asaas_status?: string | null
           asaas_transfer_id?: string | null
+          banco_destino?: string | null
+          bitrix_deal_id?: string | null
           cancelado_em?: string | null
           cancelado_por?: string | null
+          centro_custo_id?: string | null
           chave_pix?: string | null
           codigo_barras?: string | null
           comprovante_url?: string | null
           conta_bancaria_id?: string | null
+          conta_destino?: string | null
           conta_destino_id?: string | null
           conta_pagar_id?: string | null
+          contato_id?: string | null
           created_at?: string
           created_by?: string | null
+          data_agendamento?: string | null
+          data_credito?: string | null
           data_efetivacao?: string | null
+          data_solicitacao?: string | null
           data_transferencia?: string
           descricao: string
           empresa_id?: string | null
           erro_mensagem?: string | null
+          external_reference?: string | null
           favorecido_agencia?: string | null
           favorecido_banco?: string | null
           favorecido_conta?: string | null
@@ -6121,13 +6635,22 @@ export type Database = {
           favorecido_tipo_conta?: string | null
           id?: string
           linha_digitavel?: string | null
+          modalidade?: string | null
           motivo_cancelamento?: string | null
           movimentacao_id?: string | null
           numero_documento?: string | null
           observacoes?: string | null
           origem?: string | null
+          pix_chave_destino?: string | null
+          pix_tipo_chave?: string | null
+          plano_conta_id?: string | null
           protocolo?: string | null
+          recorrencia_fim?: string | null
+          recorrencia_frequencia?: string | null
+          recorrencia_inicio?: string | null
+          recorrente?: boolean | null
           status?: string
+          tags?: string[] | null
           taxa?: number | null
           tipo?: string
           tipo_chave_pix?: string | null
@@ -6136,25 +6659,39 @@ export type Database = {
           valor_liquido?: number | null
         }
         Update: {
+          agencia_destino?: string | null
           aprovado_em?: string | null
           aprovado_por?: string | null
+          asaas_authorized?: boolean | null
+          asaas_comprovante_url?: string | null
+          asaas_end_to_end?: string | null
+          asaas_fail_reason?: string | null
           asaas_status?: string | null
           asaas_transfer_id?: string | null
+          banco_destino?: string | null
+          bitrix_deal_id?: string | null
           cancelado_em?: string | null
           cancelado_por?: string | null
+          centro_custo_id?: string | null
           chave_pix?: string | null
           codigo_barras?: string | null
           comprovante_url?: string | null
           conta_bancaria_id?: string | null
+          conta_destino?: string | null
           conta_destino_id?: string | null
           conta_pagar_id?: string | null
+          contato_id?: string | null
           created_at?: string
           created_by?: string | null
+          data_agendamento?: string | null
+          data_credito?: string | null
           data_efetivacao?: string | null
+          data_solicitacao?: string | null
           data_transferencia?: string
           descricao?: string
           empresa_id?: string | null
           erro_mensagem?: string | null
+          external_reference?: string | null
           favorecido_agencia?: string | null
           favorecido_banco?: string | null
           favorecido_conta?: string | null
@@ -6163,13 +6700,22 @@ export type Database = {
           favorecido_tipo_conta?: string | null
           id?: string
           linha_digitavel?: string | null
+          modalidade?: string | null
           motivo_cancelamento?: string | null
           movimentacao_id?: string | null
           numero_documento?: string | null
           observacoes?: string | null
           origem?: string | null
+          pix_chave_destino?: string | null
+          pix_tipo_chave?: string | null
+          plano_conta_id?: string | null
           protocolo?: string | null
+          recorrencia_fim?: string | null
+          recorrencia_frequencia?: string | null
+          recorrencia_inicio?: string | null
+          recorrente?: boolean | null
           status?: string
+          tags?: string[] | null
           taxa?: number | null
           tipo?: string
           tipo_chave_pix?: string | null
@@ -6360,45 +6906,69 @@ export type Database = {
       }
       webhooks_log: {
         Row: {
+          asaas_event_id: string | null
+          asaas_payment_id: string | null
+          asaas_subscription_id: string | null
+          asaas_transfer_id: string | null
           created_at: string
+          erro_detalhe: string | null
           erro_mensagem: string | null
           event_type: string
+          evento: string | null
           headers: Json | null
           id: string
           ip_origem: string | null
+          origem: string | null
           payload: Json | null
           processado: boolean | null
           processado_em: string | null
           provider: string
           status: string | null
+          status_processamento: string | null
           updated_at: string
         }
         Insert: {
+          asaas_event_id?: string | null
+          asaas_payment_id?: string | null
+          asaas_subscription_id?: string | null
+          asaas_transfer_id?: string | null
           created_at?: string
+          erro_detalhe?: string | null
           erro_mensagem?: string | null
           event_type: string
+          evento?: string | null
           headers?: Json | null
           id?: string
           ip_origem?: string | null
+          origem?: string | null
           payload?: Json | null
           processado?: boolean | null
           processado_em?: string | null
           provider: string
           status?: string | null
+          status_processamento?: string | null
           updated_at?: string
         }
         Update: {
+          asaas_event_id?: string | null
+          asaas_payment_id?: string | null
+          asaas_subscription_id?: string | null
+          asaas_transfer_id?: string | null
           created_at?: string
+          erro_detalhe?: string | null
           erro_mensagem?: string | null
           event_type?: string
+          evento?: string | null
           headers?: Json | null
           id?: string
           ip_origem?: string | null
+          origem?: string | null
           payload?: Json | null
           processado?: boolean | null
           processado_em?: string | null
           provider?: string
           status?: string | null
+          status_processamento?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -6463,25 +7033,29 @@ export type Database = {
         Row: {
           aprovado_em: string | null
           aprovado_por: string | null
+          asaas_bill_id: string | null
+          asaas_status: string | null
           bitrix_deal_id: string | null
           categoria: string | null
+          centro_custo: string | null
           centro_custo_id: string | null
-          centro_custo_nome: string | null
           codigo_barras: string | null
+          conta_bancaria: string | null
           conta_bancaria_id: string | null
-          conta_banco: string | null
           contato_id: string | null
+          contato_nome: string | null
           created_at: string | null
           created_by: string | null
           data_emissao: string | null
           data_pagamento: string | null
           data_vencimento: string | null
           descricao: string | null
+          dias_para_vencer: number | null
           empresa_id: string | null
           forma_pagamento: string | null
           forma_pagamento_id: string | null
-          fornecedor_cnpj_display: string | null
-          fornecedor_display: string | null
+          fornecedor: string | null
+          fornecedor_cnpj: string | null
           fornecedor_id: string | null
           fornecedor_nome: string | null
           frequencia_recorrencia: string | null
@@ -6494,7 +7068,9 @@ export type Database = {
           plano_conta_id: string | null
           plano_conta_nome: string | null
           recorrente: boolean | null
+          saldo_devedor: number | null
           status: Database["public"]["Enums"]["status_pagamento"] | null
+          tags: string[] | null
           tipo_cobranca: Database["public"]["Enums"]["tipo_cobranca"] | null
           total_parcelas: number | null
           updated_at: string | null
@@ -6576,13 +7152,17 @@ export type Database = {
       }
       vw_contas_receber_painel: {
         Row: {
+          asaas_billing_type: string | null
+          asaas_payment_id: string | null
+          asaas_status: string | null
           bitrix_deal_id: string | null
           categoria: string | null
+          centro_custo: string | null
           centro_custo_id: string | null
           centro_custo_nome: string | null
           chave_pix: string | null
-          cliente_cpf_cnpj_display: string | null
-          cliente_display: string | null
+          cliente: string | null
+          cliente_cpf_cnpj: string | null
           cliente_id: string | null
           cliente_nome: string | null
           cliente_score: number | null
@@ -6590,12 +7170,15 @@ export type Database = {
           conta_bancaria_id: string | null
           conta_banco: string | null
           contato_id: string | null
+          contato_nome: string | null
           created_at: string | null
           created_by: string | null
+          data_credito: string | null
           data_emissao: string | null
           data_recebimento: string | null
           data_vencimento: string | null
           descricao: string | null
+          dias_para_vencer: number | null
           empresa_id: string | null
           etapa_cobranca: Database["public"]["Enums"]["etapa_cobranca"] | null
           forma_pagamento_id: string | null
@@ -6604,13 +7187,17 @@ export type Database = {
           id: string | null
           link_boleto: string | null
           numero_documento: string | null
+          numero_nf: string | null
           numero_parcela_atual: number | null
           observacoes: string | null
           parcela_atual: number | null
           plano_conta_id: string | null
           plano_conta_nome: string | null
           recorrente: boolean | null
+          saldo_a_receber: number | null
           status: Database["public"]["Enums"]["status_pagamento"] | null
+          tags: string[] | null
+          taxa_gateway: number | null
           tipo_cobranca: Database["public"]["Enums"]["tipo_cobranca"] | null
           total_parcelas: number | null
           updated_at: string | null
@@ -6619,6 +7206,7 @@ export type Database = {
           valor_desconto: number | null
           valor_final: number | null
           valor_juros: number | null
+          valor_liquido: number | null
           valor_multa: number | null
           valor_original: number | null
           valor_pago: number | null
@@ -6701,11 +7289,16 @@ export type Database = {
       }
       vw_dre_mensal: {
         Row: {
+          categoria: string | null
           despesas: number | null
           empresa_id: string | null
           mes: string | null
           receitas: number | null
           resultado: number | null
+          tipo_conta: string | null
+          total_bruto: number | null
+          total_liquido: number | null
+          total_taxas: number | null
         }
         Relationships: [
           {
@@ -6720,7 +7313,11 @@ export type Database = {
       vw_dso_aging: {
         Row: {
           a_vencer: number | null
+          em_cobranca: number | null
           empresa_id: string | null
+          faixa: string | null
+          media_dias_atraso: number | null
+          quantidade: number | null
           saldo_aberto: number | null
           total_titulos: number | null
           valor_total: number | null
@@ -6743,20 +7340,62 @@ export type Database = {
       }
       vw_fluxo_caixa: {
         Row: {
-          despesas_previstas: number | null
-          dia: string | null
-          receitas_previstas: number | null
-          saldo_dia: number | null
+          asaas_transaction_id: string | null
+          asaas_type: string | null
+          categoria: string | null
+          centro_custo: string | null
+          conciliado: boolean | null
+          conta_bancaria: string | null
+          conta_bancaria_id: string | null
+          contato: string | null
+          created_at: string | null
+          data_movimentacao: string | null
+          descricao: string | null
+          empresa_id: string | null
+          origem: string | null
+          taxa_gateway: number | null
+          tipo: string | null
+          tipo_categoria: string | null
+          valor: number | null
+          valor_liquido: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "movimentacoes_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimentacoes_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimentacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       vw_fluxo_caixa_diario: {
         Row: {
+          data: string | null
           dia: string | null
           empresa_id: string | null
           entradas: number | null
+          entradas_liquidas: number | null
           saidas: number | null
           saldo: number | null
+          saldo_dia: number | null
+          total_entradas: number | null
+          total_saidas: number | null
+          total_taxas: number | null
         }
         Relationships: [
           {
@@ -6770,11 +7409,15 @@ export type Database = {
       }
       vw_gastos_centro_custo: {
         Row: {
+          bitrix_deal_id: string | null
+          centro_custo: string | null
           centro_custo_id: string | null
           codigo: string | null
           nome: string | null
           orcamento_previsto: number | null
           percentual_utilizado: number | null
+          saldo_orcamento: number | null
+          tipo: string | null
           total_gasto: number | null
         }
         Relationships: []
@@ -6782,9 +7425,19 @@ export type Database = {
       vw_metricas_cobranca: {
         Row: {
           canal: string | null
+          contas_cobradas: number | null
+          custo_total: number | null
           empresa_id: string | null
+          entregues: number | null
+          enviados: number | null
           etapa: string | null
+          etapa_nome: string | null
+          falhas: number | null
+          lidos: number | null
+          respondidos: number | null
           taxa_entrega: number | null
+          taxa_entrega_pct: number | null
+          total_disparos: number | null
           total_entregues: number | null
           total_enviados: number | null
           total_lidos: number | null
@@ -6809,7 +7462,9 @@ export type Database = {
           empresa_id: string | null
           empresa_nome: string | null
           id: string | null
+          nome: string | null
           saldo_atual: number | null
+          tipo: string | null
           tipo_conta: string | null
         }
         Relationships: [
@@ -6826,10 +7481,13 @@ export type Database = {
         Row: {
           aprovado_em: string | null
           aprovado_por: string | null
+          asaas_comprovante_url: string | null
+          asaas_end_to_end: string | null
           asaas_status: string | null
           asaas_transfer_id: string | null
           banco_destino: string | null
           banco_origem: string | null
+          bitrix_deal_id: string | null
           cancelado_em: string | null
           cancelado_por: string | null
           chave_pix: string | null
@@ -6838,15 +7496,19 @@ export type Database = {
           conta_bancaria_id: string | null
           conta_destino_id: string | null
           conta_destino_numero: string | null
+          conta_origem: string | null
           conta_origem_numero: string | null
           conta_pagar_id: string | null
           created_at: string | null
           created_by: string | null
           data_efetivacao: string | null
+          data_solicitacao: string | null
           data_transferencia: string | null
           descricao: string | null
+          destinatario: string | null
           empresa_id: string | null
           erro_mensagem: string | null
+          external_reference: string | null
           favorecido_agencia: string | null
           favorecido_banco: string | null
           favorecido_conta: string | null
@@ -6855,13 +7517,16 @@ export type Database = {
           favorecido_tipo_conta: string | null
           id: string | null
           linha_digitavel: string | null
+          modalidade: string | null
           motivo_cancelamento: string | null
           movimentacao_id: string | null
           numero_documento: string | null
           observacoes: string | null
           origem: string | null
+          pix_chave_destino: string | null
           protocolo: string | null
           status: string | null
+          tags: string[] | null
           taxa: number | null
           tipo: string | null
           tipo_chave_pix: string | null
@@ -6923,9 +7588,13 @@ export type Database = {
       }
       vw_webhooks_recentes: {
         Row: {
+          asaas_payment_id: string | null
+          asaas_transfer_id: string | null
           created_at: string | null
+          erro_detalhe: string | null
           erro_mensagem: string | null
           event_type: string | null
+          evento: string | null
           headers: Json | null
           id: string | null
           ip_origem: string | null
@@ -6934,6 +7603,7 @@ export type Database = {
           processado_em: string | null
           provider: string | null
           status: string | null
+          status_processamento: string | null
           updated_at: string | null
         }
         Relationships: []
