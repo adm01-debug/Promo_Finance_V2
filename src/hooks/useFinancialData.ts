@@ -22,7 +22,7 @@ export interface ExternalCliente {
   telefone: string | null;
   contato: string | null;
   ativo: boolean;
-  ramo_atividade: string | null;
+  ramo_atividade?: string | null;
   observacoes: string | null;
   created_at: string;
   updated_at: string;
