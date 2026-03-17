@@ -17,6 +17,7 @@ import {
   AuthMobileBackground 
 } from '@/components/auth/AuthBackground';
 import { LoginForm } from '@/components/auth/LoginForm';
+import { AccountLockoutBanner } from '@/components/auth/AccountLockoutBanner';
 import { RegisterForm } from '@/components/auth/RegisterForm';
 import { ForgotPasswordForm } from '@/components/auth/ForgotPasswordForm';
 
