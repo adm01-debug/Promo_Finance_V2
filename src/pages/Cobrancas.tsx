@@ -1,26 +1,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Send,
-  Mail,
-  MessageSquare,
-  Phone,
-  Smartphone,
-  Target,
-  TrendingUp,
-  AlertTriangle,
-  CheckCircle2,
-  Clock,
-  DollarSign,
-  Filter,
-  Plus,
-  Settings,
-  BarChart3,
-  Eye,
-  RefreshCcw,
-  Loader2,
-  Bot,
-  FileText,
+  Send, Mail, MessageSquare, Phone, Smartphone, Target, TrendingUp,
+  AlertTriangle, CheckCircle2, Clock, DollarSign, Filter, Plus,
+  Settings, BarChart3, Eye, RefreshCcw, Loader2, Bot, FileText, Shield, Gavel,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -32,22 +15,17 @@ import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { 
-  useCobrancaKPIs, 
-  useAgingData, 
-  useTopDevedores, 
-  useEtapasCobranca 
+  useCobrancaKPIs, useAgingData, useTopDevedores, useEtapasCobranca 
 } from '@/hooks/useCobrancas';
 import { 
-  ResponsiveContainer, 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  Tooltip,
+  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip,
 } from 'recharts';
 import { AcordoParcelamentoDialog } from '@/components/cobranca/AcordoParcelamentoDialog';
 import { NegociacaoIA } from '@/components/cobranca/NegociacaoIA';
 import { PrevisaoInadimplencia } from '@/components/cobranca/PrevisaoInadimplencia';
+import { ReguaCobrancaConfig } from '@/components/cobranca/ReguaCobrancaConfig';
+import { FilaCobrancasPanel } from '@/components/cobranca/FilaCobrancasPanel';
+import { NegativacoesProtestosPanel } from '@/components/cobranca/NegativacoesProtestosPanel';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -127,6 +105,8 @@ export default function Cobrancas() {
     return etapasCount?.find(e => e.etapa === etapaId)?.count || 0;
   };
 
+  const [activeTab, setActiveTab] = useState('dashboard');
+
   return (
     <MainLayout>
       <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
@@ -136,17 +116,30 @@ export default function Cobrancas() {
             <h1 className="text-display-md text-foreground">Cobrança</h1>
             <p className="text-muted-foreground mt-1">Régua de cobrança automatizada e gestão de inadimplência</p>
           </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" className="gap-2">
-              <Settings className="h-4 w-4" />
-              Configurar Régua
-            </Button>
-            <Button size="sm" className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25">
-              <Send className="h-4 w-4" />
-              Enviar Cobranças
-            </Button>
-          </div>
         </motion.div>
+
+        {/* Main Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="mb-4">
+            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+            <TabsTrigger value="engine">Engine & Fila</TabsTrigger>
+            <TabsTrigger value="regua">Régua & Templates</TabsTrigger>
+            <TabsTrigger value="negativacoes">Negativações & Protestos</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="engine">
+            <FilaCobrancasPanel />
+          </TabsContent>
+
+          <TabsContent value="regua">
+            <ReguaCobrancaConfig />
+          </TabsContent>
+
+          <TabsContent value="negativacoes">
+            <NegativacoesProtestosPanel />
+          </TabsContent>
+
+          <TabsContent value="dashboard" className="space-y-6">
 
         {/* KPI Cards */}
         <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -488,6 +481,8 @@ export default function Cobrancas() {
             </CardContent>
           </Card>
         </motion.div>
+          </TabsContent>
+        </Tabs>
       </motion.div>
     </MainLayout>
   );
