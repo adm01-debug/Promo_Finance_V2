@@ -527,40 +527,41 @@ async function consultarCliente(nome: string): Promise<ActionResult> {
 }
 
 async function consultarFornecedor(nome: string): Promise<ActionResult> {
-  const { data, error } = await supabase
-    .from('fornecedores')
-    .select('*')
-    .ilike('razao_social', `%${nome}%`)
-    .limit(5);
+  // Query contas_pagar that have a matching fornecedor_nome instead of querying the local fornecedores table
+  const { data: contasPagar, error } = await supabase
+    .from('contas_pagar')
+    .select('fornecedor_id, fornecedor_nome, valor, status, data_vencimento')
+    .ilike('fornecedor_nome', `%${nome}%`);
 
   if (error) throw error;
 
-  if (!data || data.length === 0) {
+  // Group by fornecedor
+  const fornecedorMap = new Map<string, { nome: string; contas: typeof contasPagar }>();
+  (contasPagar || []).forEach(c => {
+    const key = c.fornecedor_id || c.fornecedor_nome;
+    const existing = fornecedorMap.get(key);
+    if (existing) {
+      existing.contas!.push(c);
+    } else {
+      fornecedorMap.set(key, { nome: c.fornecedor_nome || 'Desconhecido', contas: [c] });
+    }
+  });
+
+  if (fornecedorMap.size === 0) {
     return { success: false, message: `Nenhum fornecedor encontrado com "${nome}".` };
   }
 
-  // Buscar histórico de pagamentos
-  const fornecedorIds = data.map(f => f.id);
-  const { data: contasPagar } = await supabase
-    .from('contas_pagar')
-    .select('fornecedor_id, valor, status, data_vencimento')
-    .in('fornecedor_id', fornecedorIds);
-
   let mensagem = `🏢 **FORNECEDORES ENCONTRADOS:**\n\n`;
   
-  for (const fornecedor of data) {
-    const contasFornecedor = contasPagar?.filter(c => c.fornecedor_id === fornecedor.id) || [];
-    const totalPagar = contasFornecedor.filter(c => c.status !== 'pago').reduce((sum, c) => sum + Number(c.valor), 0);
-    const totalVencido = contasFornecedor.filter(c => c.status === 'vencido').reduce((sum, c) => sum + Number(c.valor), 0);
+  for (const [, { nome: fornecedorNome, contas }] of fornecedorMap) {
+    const totalPagar = (contas || []).filter(c => c.status !== 'pago').reduce((sum, c) => sum + Number(c.valor), 0);
+    const totalVencido = (contas || []).filter(c => c.status === 'vencido').reduce((sum, c) => sum + Number(c.valor), 0);
     
-    mensagem += `**${fornecedor.razao_social}**\n`;
-    mensagem += `• CNPJ/CPF: ${fornecedor.cnpj_cpf || 'N/A'}\n`;
-    mensagem += `• Contato: ${fornecedor.contato || 'N/A'}\n`;
-    mensagem += `• Telefone: ${fornecedor.telefone || 'N/A'} | Email: ${fornecedor.email || 'N/A'}\n`;
+    mensagem += `**${fornecedorNome}**\n`;
     mensagem += `• A pagar: ${formatCurrency(totalPagar)} | Vencido: ${formatCurrency(totalVencido)}\n\n`;
   }
 
-  return { success: true, message: mensagem, data };
+  return { success: true, message: mensagem };
 }
 
 async function analisarFluxo(periodo: string): Promise<ActionResult> {
