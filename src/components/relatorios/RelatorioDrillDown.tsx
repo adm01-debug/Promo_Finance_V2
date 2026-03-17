@@ -37,6 +37,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { formatCurrency } from '@/lib/formatters';
+import { InsightsIA } from './InsightsIA';
 
 type DrillLevel = 'resumo' | 'categoria' | 'empresa' | 'detalhes';
 
