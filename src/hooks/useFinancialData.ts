@@ -309,50 +309,40 @@ export interface PaginatedFornecedoresParams {
 }
 
 export function useFornecedoresPaginated(params: PaginatedFornecedoresParams) {
-  const { page, pageSize, search, status, estado } = params;
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
+  const { page, pageSize, search } = params;
 
   return useQuery({
-    queryKey: ['fornecedores', 'paginated', page, pageSize, search, status, estado],
+    queryKey: ['fornecedores', 'paginated', 'external', page, pageSize, search],
     queryFn: async () => {
-      let countQuery = supabase
-        .from('fornecedores')
-        .select('*', { count: 'exact', head: true });
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
 
-      let dataQuery = supabase
-        .from('fornecedores')
-        .select('*')
-        .order('razao_social', { ascending: true })
-        .range(from, to);
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const queryParams = new URLSearchParams({
+        tabela: 'fornecedores',
+        page: String(page),
+        limit: String(pageSize),
+        search: search || '',
+      });
+      const url = `https://${projectId}.supabase.co/functions/v1/external-data?${queryParams}`;
 
-      // Apply filters
-      if (search) {
-        const searchFilter = `razao_social.ilike.%${search}%,nome_fantasia.ilike.%${search}%,cnpj_cpf.ilike.%${search}%,email.ilike.%${search}%`;
-        countQuery = countQuery.or(searchFilter);
-        dataQuery = dataQuery.or(searchFilter);
-      }
-      if (status === 'ativo') {
-        countQuery = countQuery.eq('ativo', true);
-        dataQuery = dataQuery.eq('ativo', true);
-      } else if (status === 'inativo') {
-        countQuery = countQuery.eq('ativo', false);
-        dataQuery = dataQuery.eq('ativo', false);
-      }
-      if (estado && estado !== 'all') {
-        countQuery = countQuery.eq('estado', estado);
-        dataQuery = dataQuery.eq('estado', estado);
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Erro ao buscar fornecedores externos');
       }
 
-      const [countResult, dataResult] = await Promise.all([countQuery, dataQuery]);
-
-      if (countResult.error) throw countResult.error;
-      if (dataResult.error) throw dataResult.error;
-
+      const result = await response.json();
       return {
-        data: dataResult.data as Fornecedor[] || [],
-        totalCount: countResult.count || 0,
-        totalPages: Math.ceil((countResult.count || 0) / pageSize),
+        data: (result.data || []) as Fornecedor[],
+        totalCount: result.total || 0,
+        totalPages: result.total_pages || 0,
       };
     },
   });
