@@ -74,3 +74,9 @@ verify_jwt = false
 
 [functions.bling-webhook]
 verify_jwt = false
+
+[functions.external-data]
+verify_jwt = false
+
+[functions.compare-schemas]
+verify_jwt = false
