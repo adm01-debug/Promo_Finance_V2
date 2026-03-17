@@ -249,7 +249,8 @@ const NFePreview = ({ nfe }: { nfe: NotaFiscal }) => {
   };
 
   const handleDownloadDANFE = () => {
-    toast.success('DANFE (PDF) gerado com sucesso!');
+    // Use DANFEGenerator component - handled via button below
+    toast.info('Use o botão DANFE abaixo para gerar o PDF.');
   };
 
   const handlePrint = () => {
