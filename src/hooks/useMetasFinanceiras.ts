@@ -65,12 +65,12 @@ export function useHistoricoScoreSaude() {
     queryKey: ['historico-score-saude'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('historico_score_saude')
+        .from('historico_score_saude' as never)
         .select('*')
         .order('data_calculo', { ascending: false })
         .limit(30);
       if (error) throw error;
-      return data || [];
+      return (data || []) as Array<{ id: string; score: number; data_calculo: string; detalhes: unknown; created_at: string }>;
     },
   });
 }
