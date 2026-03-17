@@ -74,7 +74,7 @@ const navGroups: NavGroup[] = [
       { label: 'BI Gestão', icon: BarChart3, href: '/bi', highlight: true },
       { label: 'Dashboard Empresa', icon: Building2, href: '/dashboard-empresa' },
       { label: 'EXPERT (IA)', icon: Bot, href: '/expert', highlight: true },
-      { label: 'Alertas', icon: Bell, href: '/alertas' },
+      { label: 'Alertas', icon: Bell, href: '/alertas', badgeKey: 'alertas' },
     ],
   },
   {
