@@ -145,6 +145,50 @@ export function ComparativoRegimesPanel({ empresaId }: Props = {}) {
             ))}
           </Tabs>
         </div>
+
+        {/* Regimes Especiais da Empresa */}
+        {empresaId && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Shield className="h-5 w-5 text-primary" />
+                Regimes Especiais Aplicáveis
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loadingRegimes ? (
+                <div className="space-y-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-14" />)}</div>
+              ) : regimesEspeciais && regimesEspeciais.length > 0 ? (
+                <div className="space-y-3">
+                  {regimesEspeciais.map((regime) => (
+                    <div key={regime.id} className="flex items-center justify-between p-3 rounded-lg border">
+                      <div>
+                        <p className="font-medium text-sm">{regime.nome || regime.tipo}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Redução: {regime.reducao_aliquota || 0}%
+                          {regime.vigencia_inicio && ` • Desde ${regime.vigencia_inicio}`}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={regime.ativo ? 'default' : 'secondary'}>
+                          {regime.ativo ? 'Ativo' : 'Inativo'}
+                        </Badge>
+                        <Switch
+                          checked={regime.ativo}
+                          onCheckedChange={(checked) => updateRegime.mutate({ id: regime.id, ativo: checked })}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-muted-foreground py-6">
+                  Nenhum regime especial cadastrado para esta empresa
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
