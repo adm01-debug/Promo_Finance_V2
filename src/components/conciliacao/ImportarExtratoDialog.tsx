@@ -208,7 +208,7 @@ export function ImportarExtratoDialog({
                 <input
                   id="ofx-file-upload"
                   type="file"
-                  accept=".ofx,.ofc,.csv,.txt"
+                  accept=".ofx,.ofc,.csv,.txt,.xlsx,.xls"
                   className="hidden"
                   onChange={(e) => handleFileSelect(e.target.files)}
                 />
