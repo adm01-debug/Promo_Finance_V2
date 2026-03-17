@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Users, Shield, Search, UserCog, Crown, Briefcase, Eye, Settings } from 'lucide-react';
+import { Users, Shield, Search, UserCog, Crown, Briefcase, Eye, Settings, UserPlus } from 'lucide-react';
 import { logger } from '@/lib/logger';
 import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { format } from 'date-fns';
