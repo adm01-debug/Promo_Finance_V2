@@ -114,20 +114,26 @@ const AppRoutes = forwardRef<HTMLDivElement, Record<string, never>>(function App
 
 AppRoutes.displayName = 'AppRoutes';
 
-export default function App() {
+const App = forwardRef<HTMLDivElement, Record<string, never>>(function App(_, ref) {
   return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
-          <TooltipProvider>
-            <AuthProvider>
-              <BrowserRouter>
-                <AppRoutes />
-              </BrowserRouter>
-            </AuthProvider>
-          </TooltipProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
+    <div ref={ref} className="contents">
+      <ErrorBoundary>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider>
+            <TooltipProvider>
+              <AuthProvider>
+                <BrowserRouter>
+                  <AppRoutes />
+                </BrowserRouter>
+              </AuthProvider>
+            </TooltipProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    </div>
   );
-}
+});
+
+App.displayName = 'App';
+
+export default App;
