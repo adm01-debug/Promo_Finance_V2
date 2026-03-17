@@ -191,7 +191,7 @@ export const OnboardingChecklist = forwardRef<HTMLDivElement, Record<string, nev
   }
 
   return (
-    <>
+    <div ref={ref} className="w-full">
       {/* Full celebration overlay */}
       <AnimatePresence>
         {showCelebration && (
