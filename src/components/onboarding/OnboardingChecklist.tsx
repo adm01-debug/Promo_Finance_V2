@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { forwardRef, useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   CheckCircle2,
@@ -108,7 +108,7 @@ function ConfettiParticles() {
   );
 }
 
-export const OnboardingChecklist = () => {
+export const OnboardingChecklist = forwardRef<HTMLDivElement, Record<string, never>>(function OnboardingChecklist(_, ref) {
   const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(true);
   const [isDismissed, setIsDismissed] = useState(false);
@@ -191,7 +191,7 @@ export const OnboardingChecklist = () => {
   }
 
   return (
-    <>
+    <div ref={ref} className="w-full">
       {/* Full celebration overlay */}
       <AnimatePresence>
         {showCelebration && (
@@ -404,6 +404,6 @@ export const OnboardingChecklist = () => {
           )}
         </AnimatePresence>
       </motion.div>
-    </>
+    </div>
   );
-};
+});
