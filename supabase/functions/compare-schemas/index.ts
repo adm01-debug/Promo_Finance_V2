@@ -16,46 +16,94 @@ Deno.serve(async (req) => {
 
     const externalUrl = 'https://xyykivpcdbfukaongpbw.supabase.co';
 
-    // Use the service_role key to call an RPC that lists tables
-    // First, try to get tables via a direct SQL query using the pg_catalog
-    // Since we have service_role, we can use the /rest/v1/rpc endpoint
-    
-    // Alternative approach: query the OpenAPI spec with service_role key
-    const specRes = await fetch(`${externalUrl}/rest/v1/`, {
-      headers: {
-        'apikey': EXTERNAL_SERVICE_KEY,
-        'Authorization': `Bearer ${EXTERNAL_SERVICE_KEY}`,
-      },
-    });
+    const fetchExt = async (path: string, options?: RequestInit) => {
+      const res = await fetch(`${externalUrl}${path}`, {
+        ...options,
+        headers: {
+          'apikey': EXTERNAL_SERVICE_KEY,
+          'Authorization': `Bearer ${EXTERNAL_SERVICE_KEY}`,
+          'Content-Type': 'application/json',
+          ...(options?.headers || {}),
+        },
+      });
+      const text = await res.text();
+      let json = null;
+      try { json = JSON.parse(text); } catch {}
+      return { status: res.status, text, json, ok: res.ok };
+    };
 
+    // 1. Get OpenAPI spec
+    const specRes = await fetchExt('/rest/v1/');
     let externalTables: string[] = [];
-    let specDebug = '';
+    let specInfo = { status: specRes.status, hasDefinitions: false, hasPaths: false, topKeys: [] as string[] };
     
-    if (specRes.ok) {
-      const spec = await specRes.json();
-      if (spec.definitions) {
-        externalTables = Object.keys(spec.definitions).sort();
-      } else if (spec.paths) {
-        externalTables = Object.keys(spec.paths)
-          .map((p: string) => p.replace(/^\//, ''))
-          .filter((p: string) => p.length > 0)
-          .sort();
+    if (specRes.json) {
+      specInfo.topKeys = Object.keys(specRes.json);
+      if (specRes.json.definitions) {
+        specInfo.hasDefinitions = true;
+        externalTables = Object.keys(specRes.json.definitions).sort();
       }
-      specDebug = `keys: ${Object.keys(spec).join(', ')}`;
-    } else {
-      specDebug = `status: ${specRes.status}, body: ${await specRes.text()}`;
+      if (specRes.json.paths) {
+        specInfo.hasPaths = true;
+        if (externalTables.length === 0) {
+          externalTables = Object.keys(specRes.json.paths)
+            .map((p: string) => p.replace(/^\//, ''))
+            .filter((p: string) => p.length > 0 && !p.startsWith('rpc/'))
+            .sort();
+        }
+      }
     }
 
-    // Also try to list tables by querying each known table
-    // Let's try fetching from a few known tables to verify connectivity
-    const testTableRes = await fetch(`${externalUrl}/rest/v1/profiles?select=id&limit=1`, {
-      headers: {
-        'apikey': EXTERNAL_SERVICE_KEY,
-        'Authorization': `Bearer ${EXTERNAL_SERVICE_KEY}`,
-      },
-    });
-    const testTableDebug = `profiles test: ${testTableRes.status}`;
-    const testBody = await testTableRes.text();
+    // 2. Get RPC functions from OpenAPI paths
+    let externalRPCs: string[] = [];
+    if (specRes.json?.paths) {
+      externalRPCs = Object.keys(specRes.json.paths)
+        .filter((p: string) => p.startsWith('/rpc/'))
+        .map((p: string) => p.replace('/rpc/', ''))
+        .sort();
+    }
+
+    // 3. Try probing known tables to check connectivity
+    const probeTables = ['profiles', 'empresas', 'clientes', 'contas_pagar', 'contas_receber', 
+      'movimentacoes', 'contas_bancarias', 'categorias', 'fornecedores', 'alertas',
+      'user_roles', 'audit_logs', 'boletos', 'darfs', 'notas_fiscais', 'contratos'];
+    
+    const probeResults: Record<string, { status: number; count?: number; error?: string }> = {};
+    
+    await Promise.all(probeTables.map(async (table) => {
+      const res = await fetchExt(`/rest/v1/${table}?select=count&limit=0`, {
+        headers: { 'Prefer': 'count=exact' }
+      });
+      const countHeader = res.status;
+      probeResults[table] = { 
+        status: res.status,
+        error: !res.ok ? (res.json?.message || res.text.substring(0, 100)) : undefined
+      };
+    }));
+
+    // 4. Check for storage buckets
+    const storageRes = await fetchExt('/storage/v1/bucket');
+    const storageBuckets = storageRes.ok ? (storageRes.json || []) : [];
+
+    // 5. Check for auth users count
+    const authRes = await fetchExt('/auth/v1/admin/users?per_page=1&page=1');
+    const authInfo = {
+      status: authRes.status,
+      hasUsers: authRes.ok,
+      totalUsers: authRes.json?.total || authRes.json?.users?.length || 0,
+    };
+
+    // 6. Check edge functions
+    // We can't list edge functions via REST API, but we can try known ones
+
+    // 7. Get table details for existing external tables (columns)
+    const tableDetails: Record<string, unknown> = {};
+    for (const table of externalTables.slice(0, 30)) {
+      const res = await fetchExt(`/rest/v1/${table}?limit=0`);
+      if (res.ok) {
+        tableDetails[table] = { exists: true };
+      }
+    }
 
     // Current DB tables
     const currentTables = [
@@ -86,33 +134,58 @@ Deno.serve(async (req) => {
       'workflow_aprovacoes'
     ];
 
-    // Compare
-    const onlyInExternal = externalTables.filter(t => !currentTables.includes(t));
-    const onlyInCurrent = currentTables.filter(t => !externalTables.includes(t));
-    const inBoth = currentTables.filter(t => externalTables.includes(t));
+    const currentRPCs = [
+      'gerar_numero_acordo', 'update_updated_at', 'update_updated_at_column',
+      'delete_cron_job', 'fn_auditoria_financeira', 'log_audit', 'has_permission',
+      'check_account_lockout', 'fn_transferencia_movimentacao', 'fn_atualizar_saldo_movimentacao',
+      'toggle_cron_job', 'get_webauthn_credential_by_email', 'has_any_role',
+      'is_country_allowed_for_login', 'increment_failed_attempts', 'processar_fila_cobrancas',
+      'has_role', 'get_cron_jobs', 'get_user_role', 'confirmar_envio_cobranca',
+      'handle_new_user', 'log_etapa_cobranca_change', 'get_lockout_details',
+      'gerar_alertas_vencimento', 'calcular_proxima_geracao', 'gerar_alertas_pendencias_conciliacao',
+      'gerar_contas_recorrentes', 'reset_failed_attempts', 'processar_regua_cobranca',
+      'is_ip_allowed_for_login', 'confirmar_conciliacao', 'fn_sync_valor_cp',
+      'fn_sync_valor_pago_movimentacao', 'fn_sync_valor_cr'
+    ];
+
+    // Compare tables
+    const tablesOnlyInExternal = externalTables.filter(t => !currentTables.includes(t));
+    const tablesOnlyInCurrent = currentTables.filter(t => !externalTables.includes(t));
+    const tablesInBoth = currentTables.filter(t => externalTables.includes(t));
+
+    // Compare RPCs
+    const rpcsOnlyInExternal = externalRPCs.filter(r => !currentRPCs.includes(r));
+    const rpcsOnlyInCurrent = currentRPCs.filter(r => !externalRPCs.includes(r));
+    const rpcsInBoth = currentRPCs.filter(r => externalRPCs.includes(r));
 
     const result = {
-      debug: {
-        spec: specDebug,
-        test_table: testTableDebug,
-        test_body: testBody.substring(0, 500),
+      summary: {
+        external_tables: externalTables.length,
+        current_tables: currentTables.length,
+        tables_missing_from_current: tablesOnlyInExternal.length,
+        tables_extra_in_current: tablesOnlyInCurrent.length,
+        external_rpcs: externalRPCs.length,
+        current_rpcs: currentRPCs.length,
+        rpcs_missing_from_current: rpcsOnlyInExternal.length,
+        storage_buckets: Array.isArray(storageBuckets) ? storageBuckets.length : 0,
+        auth_users: authInfo.totalUsers,
       },
-      current_db: {
-        project: 'iikqosstymnnxaujzadw',
-        total_tables: currentTables.length,
+      gaps: {
+        tables_missing_from_current: tablesOnlyInExternal,
+        rpcs_missing_from_current: rpcsOnlyInExternal,
+        tables_only_in_current: tablesOnlyInCurrent,
+        rpcs_only_in_current: rpcsOnlyInCurrent,
       },
       external_db: {
-        project: 'xyykivpcdbfukaongpbw',
-        total_tables: externalTables.length,
         tables: externalTables,
+        rpcs: externalRPCs,
+        storage_buckets: storageBuckets,
+        auth: authInfo,
       },
-      comparison: {
-        tables_in_both: inBoth.length,
-        in_both: inBoth,
-        only_in_external: onlyInExternal,
-        only_in_current: onlyInCurrent,
-        missing_from_current: onlyInExternal.length,
-        extra_in_current: onlyInCurrent.length,
+      probe_results: probeResults,
+      spec_info: specInfo,
+      debug: {
+        spec_raw_preview: specRes.text.substring(0, 2000),
       },
     };
 
@@ -121,7 +194,7 @@ Deno.serve(async (req) => {
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(JSON.stringify({ error: msg }), {
+    return new Response(JSON.stringify({ error: msg, stack: error instanceof Error ? error.stack : '' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
