@@ -35,6 +35,7 @@ import { toast } from 'sonner';
 import { useBoletos, Boleto, NovoBoletoData } from '@/hooks/useBoletos';
 import { toastWithUndo } from '@/lib/toast-with-undo';
 import { BoletoBarcode } from '@/components/boletos/BoletoBarcode';
+import { cn } from '@/lib/utils';
 import { EmptyState } from '@/components/ui/micro-interactions';
 
 const containerVariants = {
