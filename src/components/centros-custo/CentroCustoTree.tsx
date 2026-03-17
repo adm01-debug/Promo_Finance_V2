@@ -153,6 +153,11 @@ function TreeNodeItem({
             <Badge variant="outline" className="text-xs shrink-0">
               {node.codigo}
             </Badge>
+            {node.responsavel && (
+              <Badge variant="secondary" className="text-xs shrink-0">
+                👤 {node.responsavel}
+              </Badge>
+            )}
             {!node.ativo && (
               <Badge variant="secondary" className="text-xs shrink-0">
                 Inativo
