@@ -122,6 +122,7 @@ const navGroups: NavGroup[] = [
       { label: 'Bitrix24', icon: Zap, href: '/bitrix24' },
       { label: 'Bling ERP', icon: Package, href: '/bling', highlight: true },
       { label: 'Configurações', icon: Settings, href: '/configuracoes' },
+      { label: 'Meu Perfil', icon: User, href: '/meu-perfil' },
     ],
   },
 ];

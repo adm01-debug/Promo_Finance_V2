@@ -396,6 +396,12 @@ export default function Auth() {
                     </TabsList>
 
                     <TabsContent value="login">
+                      {accountLocked && (
+                        <AccountLockoutBanner 
+                          locked={accountLocked} 
+                          remainingMinutes={parseInt(lockoutMessage.match(/(\d+)\s*minuto/)?.[1] || '5')} 
+                        />
+                      )}
                       <LoginForm
                         email={email}
                         setEmail={setEmail}
