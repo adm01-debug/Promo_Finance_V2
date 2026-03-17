@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { Plus, CheckCircle2, XCircle, ArrowUpDown } from 'lucide-react';
+import { Plus, CheckCircle2, XCircle, ArrowUpDown, Sparkles } from 'lucide-react';
+import { CategorizacaoLoteButton } from '@/components/contas-pagar/CategorizacaoIABadge';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -61,6 +62,16 @@ export default function ContasPagar() {
             <p className="text-muted-foreground mt-1">Controle todas as obrigações financeiras e fornecedores</p>
           </div>
           <div className="flex items-center gap-3">
+            <CategorizacaoLoteButton
+              despesas={logic.sortedContas
+                .filter(c => !c.categoria)
+                .map(c => ({
+                  id: c.id,
+                  descricao: c.descricao,
+                  valor: c.valor,
+                  fornecedor_nome: c.fornecedor_nome,
+                }))}
+            />
             <ExportMenu
               data={logic.sortedContas}
               columns={contasPagarColumns}

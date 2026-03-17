@@ -1,4 +1,9 @@
 import { motion } from 'framer-motion';
+import { CategorizacaoIABadge } from './CategorizacaoIABadge';
+import { CategoriaDetectada } from '@/hooks/useCategorizacaoIA';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   Eye,
   Edit,
@@ -15,6 +20,7 @@ import {
   Banknote,
   QrCode,
   ShieldAlert,
+  Tag,
   ShieldCheck,
   ShieldX,
   MoreHorizontal,
@@ -92,6 +98,8 @@ interface ContaPagarRow {
   tipo_cobranca: string;
   numero_documento: string | null;
   recorrente: boolean;
+  categoria: string | null;
+  tags: string[] | null;
   aprovado_por?: string | null;
   aprovado_em?: string | null;
   centros_custo?: CentroCustoInfo | null;
@@ -244,7 +252,34 @@ export function ContasPagarTableRow({
         <div className="flex items-center gap-2">
           <FileText className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm truncate max-w-[200px]">{conta.descricao}</span>
+          <CategorizacaoIABadge
+            despesa={{
+              id: conta.id,
+              descricao: conta.descricao,
+              valor: conta.valor,
+              fornecedor_nome: conta.fornecedor_nome,
+              data_vencimento: conta.data_vencimento,
+            }}
+            categoriaAtual={conta.categoria || undefined}
+            onAplicar={async (cat: CategoriaDetectada) => {
+              const { error } = await supabase
+                .from('contas_pagar')
+                .update({ categoria: cat.categoria, tags: cat.tags || [] })
+                .eq('id', conta.id);
+              if (error) {
+                toast.error('Erro ao aplicar categoria');
+              } else {
+                toast.success(`Categoria "${cat.categoria}" aplicada`);
+              }
+            }}
+          />
         </div>
+        {conta.categoria && (
+          <Badge variant="secondary" className="text-xs mt-1 gap-1">
+            <Tag className="h-3 w-3" />
+            {conta.categoria}
+          </Badge>
+        )}
         {conta.numero_documento && (
           <p className="text-xs text-muted-foreground mt-0.5">{conta.numero_documento}</p>
         )}
