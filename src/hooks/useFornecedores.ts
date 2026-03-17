@@ -81,11 +81,32 @@ export function useSearchFornecedores(query: string) {
   });
 }
 
-// Get active fornecedores
+// Get active fornecedores from external DB
 export function useFornecedoresAtivos() {
   return useQuery({
     queryKey: queryKeys.fornecedores.list({ ativo: true }),
-    queryFn: () => fornecedoresService.getAll({ ativo: true }),
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
+
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const url = `https://${projectId}.supabase.co/functions/v1/external-data?tabela=fornecedores&limit=200`;
+
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Erro ao buscar fornecedores');
+      }
+
+      const result = await response.json();
+      return result.data || [];
+    },
   });
 }
 
