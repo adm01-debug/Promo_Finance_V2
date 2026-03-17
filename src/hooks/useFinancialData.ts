@@ -106,6 +106,7 @@ export function useContasBancarias() {
       if (error) throw error;
       return data as ContaBancaria[];
     },
+    staleTime: STALE_TIMES.config,
   });
 }
 
