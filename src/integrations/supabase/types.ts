@@ -1390,8 +1390,10 @@ export type Database = {
           cidade: string | null
           cnpj_cpf: string | null
           contato: string | null
+          contato_financeiro_id: string | null
           created_at: string
           email: string | null
+          empresa_id: string | null
           endereco: string | null
           estado: string | null
           id: string
@@ -1402,6 +1404,7 @@ export type Database = {
           razao_social: string
           score: number | null
           telefone: string | null
+          tipo: string | null
           updated_at: string
           vendedor_id: string | null
         }
@@ -1411,8 +1414,10 @@ export type Database = {
           cidade?: string | null
           cnpj_cpf?: string | null
           contato?: string | null
+          contato_financeiro_id?: string | null
           created_at?: string
           email?: string | null
+          empresa_id?: string | null
           endereco?: string | null
           estado?: string | null
           id?: string
@@ -1423,6 +1428,7 @@ export type Database = {
           razao_social: string
           score?: number | null
           telefone?: string | null
+          tipo?: string | null
           updated_at?: string
           vendedor_id?: string | null
         }
@@ -1432,8 +1438,10 @@ export type Database = {
           cidade?: string | null
           cnpj_cpf?: string | null
           contato?: string | null
+          contato_financeiro_id?: string | null
           created_at?: string
           email?: string | null
+          empresa_id?: string | null
           endereco?: string | null
           estado?: string | null
           id?: string
@@ -1444,10 +1452,25 @@ export type Database = {
           razao_social?: string
           score?: number | null
           telefone?: string | null
+          tipo?: string | null
           updated_at?: string
           vendedor_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "clientes_contato_financeiro_id_fkey"
+            columns: ["contato_financeiro_id"]
+            isOneToOne: false
+            referencedRelation: "contatos_financeiros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clientes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "clientes_vendedor_id_fkey"
             columns: ["vendedor_id"]
@@ -1619,8 +1642,11 @@ export type Database = {
           created_at: string
           empresa_id: string
           id: string
+          nome: string | null
           saldo_atual: number
           saldo_disponivel: number
+          saldo_inicial: number | null
+          tipo: string | null
           tipo_conta: string
           updated_at: string
         }
@@ -1634,8 +1660,11 @@ export type Database = {
           created_at?: string
           empresa_id: string
           id?: string
+          nome?: string | null
           saldo_atual?: number
           saldo_disponivel?: number
+          saldo_inicial?: number | null
+          tipo?: string | null
           tipo_conta?: string
           updated_at?: string
         }
@@ -1649,8 +1678,11 @@ export type Database = {
           created_at?: string
           empresa_id?: string
           id?: string
+          nome?: string | null
           saldo_atual?: number
           saldo_disponivel?: number
+          saldo_inicial?: number | null
+          tipo?: string | null
           tipo_conta?: string
           updated_at?: string
         }
@@ -1669,9 +1701,11 @@ export type Database = {
           aprovado_em: string | null
           aprovado_por: string | null
           bitrix_deal_id: string | null
+          categoria: string | null
           centro_custo_id: string | null
           codigo_barras: string | null
           conta_bancaria_id: string | null
+          contato_id: string | null
           created_at: string
           created_by: string
           data_emissao: string
@@ -1679,25 +1713,38 @@ export type Database = {
           data_vencimento: string
           descricao: string
           empresa_id: string
+          forma_pagamento: string | null
+          forma_pagamento_id: string | null
           fornecedor_id: string | null
           fornecedor_nome: string
+          frequencia_recorrencia: string | null
           id: string
           numero_documento: string | null
+          numero_parcela_atual: number | null
           observacoes: string | null
+          plano_conta_id: string | null
           recorrente: boolean
           status: Database["public"]["Enums"]["status_pagamento"]
           tipo_cobranca: Database["public"]["Enums"]["tipo_cobranca"]
+          total_parcelas: number | null
           updated_at: string
+          user_id: string | null
           valor: number
+          valor_desconto: number | null
+          valor_juros: number | null
+          valor_multa: number | null
+          valor_original: number | null
           valor_pago: number | null
         }
         Insert: {
           aprovado_em?: string | null
           aprovado_por?: string | null
           bitrix_deal_id?: string | null
+          categoria?: string | null
           centro_custo_id?: string | null
           codigo_barras?: string | null
           conta_bancaria_id?: string | null
+          contato_id?: string | null
           created_at?: string
           created_by: string
           data_emissao?: string
@@ -1705,25 +1752,38 @@ export type Database = {
           data_vencimento: string
           descricao: string
           empresa_id: string
+          forma_pagamento?: string | null
+          forma_pagamento_id?: string | null
           fornecedor_id?: string | null
           fornecedor_nome: string
+          frequencia_recorrencia?: string | null
           id?: string
           numero_documento?: string | null
+          numero_parcela_atual?: number | null
           observacoes?: string | null
+          plano_conta_id?: string | null
           recorrente?: boolean
           status?: Database["public"]["Enums"]["status_pagamento"]
           tipo_cobranca?: Database["public"]["Enums"]["tipo_cobranca"]
+          total_parcelas?: number | null
           updated_at?: string
+          user_id?: string | null
           valor: number
+          valor_desconto?: number | null
+          valor_juros?: number | null
+          valor_multa?: number | null
+          valor_original?: number | null
           valor_pago?: number | null
         }
         Update: {
           aprovado_em?: string | null
           aprovado_por?: string | null
           bitrix_deal_id?: string | null
+          categoria?: string | null
           centro_custo_id?: string | null
           codigo_barras?: string | null
           conta_bancaria_id?: string | null
+          contato_id?: string | null
           created_at?: string
           created_by?: string
           data_emissao?: string
@@ -1731,16 +1791,27 @@ export type Database = {
           data_vencimento?: string
           descricao?: string
           empresa_id?: string
+          forma_pagamento?: string | null
+          forma_pagamento_id?: string | null
           fornecedor_id?: string | null
           fornecedor_nome?: string
+          frequencia_recorrencia?: string | null
           id?: string
           numero_documento?: string | null
+          numero_parcela_atual?: number | null
           observacoes?: string | null
+          plano_conta_id?: string | null
           recorrente?: boolean
           status?: Database["public"]["Enums"]["status_pagamento"]
           tipo_cobranca?: Database["public"]["Enums"]["tipo_cobranca"]
+          total_parcelas?: number | null
           updated_at?: string
+          user_id?: string | null
           valor?: number
+          valor_desconto?: number | null
+          valor_juros?: number | null
+          valor_multa?: number | null
+          valor_original?: number | null
           valor_pago?: number | null
         }
         Relationships: [
@@ -1759,10 +1830,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "contas_pagar_contato_id_fkey"
+            columns: ["contato_id"]
+            isOneToOne: false
+            referencedRelation: "contatos_financeiros"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "contas_pagar_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contas_pagar_forma_pagamento_id_fkey"
+            columns: ["forma_pagamento_id"]
+            isOneToOne: false
+            referencedRelation: "formas_pagamento"
             referencedColumns: ["id"]
           },
           {
@@ -1772,17 +1857,26 @@ export type Database = {
             referencedRelation: "fornecedores"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "contas_pagar_plano_conta_id_fkey"
+            columns: ["plano_conta_id"]
+            isOneToOne: false
+            referencedRelation: "plano_contas"
+            referencedColumns: ["id"]
+          },
         ]
       }
       contas_receber: {
         Row: {
           bitrix_deal_id: string | null
+          categoria: string | null
           centro_custo_id: string | null
           chave_pix: string | null
           cliente_id: string | null
           cliente_nome: string
           codigo_barras: string | null
           conta_bancaria_id: string | null
+          contato_id: string | null
           created_at: string
           created_by: string
           data_emissao: string
@@ -1791,25 +1885,39 @@ export type Database = {
           descricao: string
           empresa_id: string
           etapa_cobranca: Database["public"]["Enums"]["etapa_cobranca"] | null
+          forma_pagamento_id: string | null
+          forma_recebimento: string | null
+          frequencia_recorrencia: string | null
           id: string
           link_boleto: string | null
           numero_documento: string | null
+          numero_parcela_atual: number | null
           observacoes: string | null
+          plano_conta_id: string | null
+          recorrente: boolean | null
           status: Database["public"]["Enums"]["status_pagamento"]
           tipo_cobranca: Database["public"]["Enums"]["tipo_cobranca"]
+          total_parcelas: number | null
           updated_at: string
+          user_id: string | null
           valor: number
+          valor_desconto: number | null
+          valor_juros: number | null
+          valor_multa: number | null
+          valor_original: number | null
           valor_recebido: number | null
           vendedor_id: string | null
         }
         Insert: {
           bitrix_deal_id?: string | null
+          categoria?: string | null
           centro_custo_id?: string | null
           chave_pix?: string | null
           cliente_id?: string | null
           cliente_nome: string
           codigo_barras?: string | null
           conta_bancaria_id?: string | null
+          contato_id?: string | null
           created_at?: string
           created_by: string
           data_emissao?: string
@@ -1818,25 +1926,39 @@ export type Database = {
           descricao: string
           empresa_id: string
           etapa_cobranca?: Database["public"]["Enums"]["etapa_cobranca"] | null
+          forma_pagamento_id?: string | null
+          forma_recebimento?: string | null
+          frequencia_recorrencia?: string | null
           id?: string
           link_boleto?: string | null
           numero_documento?: string | null
+          numero_parcela_atual?: number | null
           observacoes?: string | null
+          plano_conta_id?: string | null
+          recorrente?: boolean | null
           status?: Database["public"]["Enums"]["status_pagamento"]
           tipo_cobranca?: Database["public"]["Enums"]["tipo_cobranca"]
+          total_parcelas?: number | null
           updated_at?: string
+          user_id?: string | null
           valor: number
+          valor_desconto?: number | null
+          valor_juros?: number | null
+          valor_multa?: number | null
+          valor_original?: number | null
           valor_recebido?: number | null
           vendedor_id?: string | null
         }
         Update: {
           bitrix_deal_id?: string | null
+          categoria?: string | null
           centro_custo_id?: string | null
           chave_pix?: string | null
           cliente_id?: string | null
           cliente_nome?: string
           codigo_barras?: string | null
           conta_bancaria_id?: string | null
+          contato_id?: string | null
           created_at?: string
           created_by?: string
           data_emissao?: string
@@ -1845,14 +1967,26 @@ export type Database = {
           descricao?: string
           empresa_id?: string
           etapa_cobranca?: Database["public"]["Enums"]["etapa_cobranca"] | null
+          forma_pagamento_id?: string | null
+          forma_recebimento?: string | null
+          frequencia_recorrencia?: string | null
           id?: string
           link_boleto?: string | null
           numero_documento?: string | null
+          numero_parcela_atual?: number | null
           observacoes?: string | null
+          plano_conta_id?: string | null
+          recorrente?: boolean | null
           status?: Database["public"]["Enums"]["status_pagamento"]
           tipo_cobranca?: Database["public"]["Enums"]["tipo_cobranca"]
+          total_parcelas?: number | null
           updated_at?: string
+          user_id?: string | null
           valor?: number
+          valor_desconto?: number | null
+          valor_juros?: number | null
+          valor_multa?: number | null
+          valor_original?: number | null
           valor_recebido?: number | null
           vendedor_id?: string | null
         }
@@ -1879,10 +2013,31 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "contas_receber_contato_id_fkey"
+            columns: ["contato_id"]
+            isOneToOne: false
+            referencedRelation: "contatos_financeiros"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "contas_receber_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contas_receber_forma_pagamento_id_fkey"
+            columns: ["forma_pagamento_id"]
+            isOneToOne: false
+            referencedRelation: "formas_pagamento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contas_receber_plano_conta_id_fkey"
+            columns: ["plano_conta_id"]
+            isOneToOne: false
+            referencedRelation: "plano_contas"
             referencedColumns: ["id"]
           },
           {
@@ -2263,7 +2418,9 @@ export type Database = {
           inscricao_estadual: string | null
           nome_fantasia: string | null
           razao_social: string
+          regime_tributario: string | null
           telefone: string | null
+          tipo_pessoa: string | null
           updated_at: string
         }
         Insert: {
@@ -2279,7 +2436,9 @@ export type Database = {
           inscricao_estadual?: string | null
           nome_fantasia?: string | null
           razao_social: string
+          regime_tributario?: string | null
           telefone?: string | null
+          tipo_pessoa?: string | null
           updated_at?: string
         }
         Update: {
@@ -2295,7 +2454,9 @@ export type Database = {
           inscricao_estadual?: string | null
           nome_fantasia?: string | null
           razao_social?: string
+          regime_tributario?: string | null
           telefone?: string | null
+          tipo_pessoa?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -2738,54 +2899,105 @@ export type Database = {
       }
       fornecedores: {
         Row: {
+          agencia: string | null
           ativo: boolean
+          banco: string | null
+          categoria: string | null
+          cep: string | null
           cidade: string | null
+          cnpj: string | null
           cnpj_cpf: string | null
+          conta: string | null
           contato: string | null
+          contato_financeiro_id: string | null
+          contato_nome: string | null
+          contato_telefone: string | null
           created_at: string
           email: string | null
+          empresa_id: string | null
           endereco: string | null
           estado: string | null
           id: string
           nome_fantasia: string | null
           observacoes: string | null
+          pix: string | null
           razao_social: string
+          score: number | null
           telefone: string | null
           updated_at: string
         }
         Insert: {
+          agencia?: string | null
           ativo?: boolean
+          banco?: string | null
+          categoria?: string | null
+          cep?: string | null
           cidade?: string | null
+          cnpj?: string | null
           cnpj_cpf?: string | null
+          conta?: string | null
           contato?: string | null
+          contato_financeiro_id?: string | null
+          contato_nome?: string | null
+          contato_telefone?: string | null
           created_at?: string
           email?: string | null
+          empresa_id?: string | null
           endereco?: string | null
           estado?: string | null
           id?: string
           nome_fantasia?: string | null
           observacoes?: string | null
+          pix?: string | null
           razao_social: string
+          score?: number | null
           telefone?: string | null
           updated_at?: string
         }
         Update: {
+          agencia?: string | null
           ativo?: boolean
+          banco?: string | null
+          categoria?: string | null
+          cep?: string | null
           cidade?: string | null
+          cnpj?: string | null
           cnpj_cpf?: string | null
+          conta?: string | null
           contato?: string | null
+          contato_financeiro_id?: string | null
+          contato_nome?: string | null
+          contato_telefone?: string | null
           created_at?: string
           email?: string | null
+          empresa_id?: string | null
           endereco?: string | null
           estado?: string | null
           id?: string
           nome_fantasia?: string | null
           observacoes?: string | null
+          pix?: string | null
           razao_social?: string
+          score?: number | null
           telefone?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fornecedores_contato_financeiro_id_fkey"
+            columns: ["contato_financeiro_id"]
+            isOneToOne: false
+            referencedRelation: "contatos_financeiros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fornecedores_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       historico_analises_preditivas: {
         Row: {
@@ -4398,29 +4610,46 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          cargo: string | null
           created_at: string
           email: string
+          empresa_id: string | null
           full_name: string | null
           id: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           avatar_url?: string | null
+          cargo?: string | null
           created_at?: string
           email: string
+          empresa_id?: string | null
           full_name?: string | null
           id: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           avatar_url?: string | null
+          cargo?: string | null
           created_at?: string
           email?: string
+          empresa_id?: string | null
           full_name?: string | null
           id?: string
           updated_at?: string
+          user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       protestos: {
         Row: {
@@ -4724,12 +4953,16 @@ export type Database = {
       regua_cobranca: {
         Row: {
           ativo: boolean | null
+          auto_executar: boolean | null
+          canais: string[] | null
           canal: string
           created_at: string
           created_by: string | null
           descricao: string | null
           dias_antes_vencimento: number | null
           dias_apos_vencimento: number | null
+          dias_gatilho: number | null
+          empresa_id: string | null
           id: string
           nome: string
           ordem: number
@@ -4738,12 +4971,16 @@ export type Database = {
         }
         Insert: {
           ativo?: boolean | null
+          auto_executar?: boolean | null
+          canais?: string[] | null
           canal?: string
           created_at?: string
           created_by?: string | null
           descricao?: string | null
           dias_antes_vencimento?: number | null
           dias_apos_vencimento?: number | null
+          dias_gatilho?: number | null
+          empresa_id?: string | null
           id?: string
           nome: string
           ordem?: number
@@ -4752,19 +4989,31 @@ export type Database = {
         }
         Update: {
           ativo?: boolean | null
+          auto_executar?: boolean | null
+          canais?: string[] | null
           canal?: string
           created_at?: string
           created_by?: string | null
           descricao?: string | null
           dias_antes_vencimento?: number | null
           dias_apos_vencimento?: number | null
+          dias_gatilho?: number | null
+          empresa_id?: string | null
           id?: string
           nome?: string
           ordem?: number
           template_mensagem?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "regua_cobranca_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       relatorios_agendados: {
         Row: {
