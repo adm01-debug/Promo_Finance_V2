@@ -126,10 +126,10 @@ export function MetasFinanceirasPanel() {
                     </div>
                     <p className="font-semibold">{formatCurrency(meta.valor_meta)}</p>
                   </div>
-                  <Progress value={((meta.valor_realizado || 0) / meta.valor_meta) * 100} className="h-2" />
+                  <Progress value={0} className="h-2" />
                   <div className="flex items-center justify-between mt-1 text-xs text-muted-foreground">
-                    <span>{formatCurrency(meta.valor_realizado || 0)} realizado</span>
-                    <span>{(((meta.valor_realizado || 0) / meta.valor_meta) * 100).toFixed(0)}%</span>
+                    <span>{formatCurrency(0)} realizado</span>
+                    <span>0%</span>
                   </div>
                 </div>
               ))}
