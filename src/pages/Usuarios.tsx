@@ -114,9 +114,15 @@ export default function Usuarios() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight">Gerenciamento de Usuários</h1>
-          <p className="text-muted-foreground">Gerencie os perfis e permissões dos usuários do sistema</p>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Gerenciamento de Usuários</h1>
+            <p className="text-muted-foreground">Gerencie os perfis e permissões dos usuários do sistema</p>
+          </div>
+          <Button onClick={() => setConviteOpen(true)} className="gap-2">
+            <UserPlus className="h-4 w-4" />
+            Convidar Usuário
+          </Button>
         </div>
 
         {/* Stats Cards */}
