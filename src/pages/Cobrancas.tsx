@@ -105,6 +105,8 @@ export default function Cobrancas() {
     return etapasCount?.find(e => e.etapa === etapaId)?.count || 0;
   };
 
+  const [activeTab, setActiveTab] = useState('dashboard');
+
   return (
     <MainLayout>
       <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
@@ -113,6 +115,31 @@ export default function Cobrancas() {
           <div>
             <h1 className="text-display-md text-foreground">Cobrança</h1>
             <p className="text-muted-foreground mt-1">Régua de cobrança automatizada e gestão de inadimplência</p>
+          </div>
+        </motion.div>
+
+        {/* Main Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="mb-4">
+            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+            <TabsTrigger value="engine">Engine & Fila</TabsTrigger>
+            <TabsTrigger value="regua">Régua & Templates</TabsTrigger>
+            <TabsTrigger value="negativacoes">Negativações & Protestos</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="engine">
+            <FilaCobrancasPanel />
+          </TabsContent>
+
+          <TabsContent value="regua">
+            <ReguaCobrancaConfig />
+          </TabsContent>
+
+          <TabsContent value="negativacoes">
+            <NegativacoesProtestosPanel />
+          </TabsContent>
+
+          <TabsContent value="dashboard">
           </div>
           <div className="flex items-center gap-3">
             <Button variant="outline" size="sm" className="gap-2">
