@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Plus,
@@ -17,6 +17,7 @@ import {
   FolderTree,
   LayoutGrid,
   List,
+  History,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -39,11 +40,14 @@ import {
 } from '@/hooks/useCentrosCusto';
 import { CentroCustoTree } from '@/components/centros-custo/CentroCustoTree';
 import { CentroCustoForm } from '@/components/centros-custo/CentroCustoForm';
+import { CentroCustoExport } from '@/components/centros-custo/CentroCustoExport';
+import { CentroCustoHistorico } from '@/components/centros-custo/CentroCustoHistorico';
 import { formatCurrency, formatPercentage } from '@/lib/formatters';
 import { toastWithUndo } from '@/lib/toast-with-undo';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { EmptyState, StaggerContainer, StaggerItem } from '@/components/ui/micro-interactions';
+import { toast } from 'sonner';
 import {
   ResponsiveContainer,
   PieChart as RePieChart,
