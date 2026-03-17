@@ -42,6 +42,8 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAprovacoesPendentesCount } from '@/hooks/useAprovacoesPendentesCount';
+import { useAlertasNaoLidos } from '@/hooks/useAlertas';
+import { useRealtimeAlertas } from '@/hooks/useRealtimeAlertas';
 
 interface NavItem {
   label: string;
@@ -72,7 +74,7 @@ const navGroups: NavGroup[] = [
       { label: 'BI Gestão', icon: BarChart3, href: '/bi', highlight: true },
       { label: 'Dashboard Empresa', icon: Building2, href: '/dashboard-empresa' },
       { label: 'EXPERT (IA)', icon: Bot, href: '/expert', highlight: true },
-      { label: 'Alertas', icon: Bell, href: '/alertas' },
+      { label: 'Alertas', icon: Bell, href: '/alertas', badgeKey: 'alertas' },
     ],
   },
   {
@@ -144,6 +146,8 @@ interface SidebarNavGroupsProps {
 export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
   const location = useLocation();
   const { count: aprovacoesPendentes } = useAprovacoesPendentesCount();
+  const { data: alertasNaoLidos = 0 } = useAlertasNaoLidos();
+  useRealtimeAlertas();
 
   // Track which groups are open
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
@@ -168,6 +172,9 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
   const getBadgeCount = (badgeKey?: string): number | undefined => {
     if (badgeKey === 'aprovacoes' && aprovacoesPendentes > 0) {
       return aprovacoesPendentes;
+    }
+    if (badgeKey === 'alertas' && alertasNaoLidos > 0) {
+      return alertasNaoLidos;
     }
     return undefined;
   };
