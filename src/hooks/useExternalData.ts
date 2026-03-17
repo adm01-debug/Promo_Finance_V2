@@ -37,12 +37,6 @@ export function useExternalData<T = Record<string, unknown>>({
         limit: String(limit),
       });
 
-      const { data, error } = await supabase.functions.invoke('external-data', {
-        body: null,
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      // supabase.functions.invoke doesn't support query params, so we use fetch
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
       const url = `https://${projectId}.supabase.co/functions/v1/external-data?${params}`;
 
@@ -61,6 +55,6 @@ export function useExternalData<T = Record<string, unknown>>({
       return response.json();
     },
     enabled,
-    staleTime: 5 * 60 * 1000, // 5 min cache
+    staleTime: 5 * 60 * 1000,
   });
 }
