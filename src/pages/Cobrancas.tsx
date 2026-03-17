@@ -139,7 +139,7 @@ export default function Cobrancas() {
             <NegativacoesProtestosPanel />
           </TabsContent>
 
-          <TabsContent value="dashboard">
+          <TabsContent value="dashboard" className="space-y-6">
 
         {/* KPI Cards */}
         <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
