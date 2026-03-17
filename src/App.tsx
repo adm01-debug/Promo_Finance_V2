@@ -107,6 +107,11 @@ function AppRoutes() {
             <Route path="/bling" element={<ProtectedRoute><BlingPage /></ProtectedRoute>} />
             <Route path="/vendedores" element={<ProtectedRoute><Vendedores /></ProtectedRoute>} />
             <Route path="/meu-perfil" element={<ProtectedRoute><MeuPerfil /></ProtectedRoute>} />
+            <Route path="/contratos" element={<ProtectedRoute><Contratos /></ProtectedRoute>} />
+            <Route path="/simulador-antecipacao" element={<ProtectedRoute><SimuladorAntecipacaoPage /></ProtectedRoute>} />
+            <Route path="/assinatura-digital" element={<ProtectedRoute><AssinaturaDigitalPage /></ProtectedRoute>} />
+            <Route path="/comprovante-ocr" element={<ProtectedRoute><ComprovanteOCRPage /></ProtectedRoute>} />
+            <Route path="/movimentacoes" element={<ProtectedRoute><Movimentacoes /></ProtectedRoute>} />
             
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
