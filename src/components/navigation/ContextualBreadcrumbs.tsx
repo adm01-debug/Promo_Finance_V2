@@ -123,26 +123,27 @@ export function ContextualBreadcrumbs({ className }: { className?: string }) {
             const Icon = item.icon;
             
             return (
-              <BreadcrumbItem key={item.path}>
+              <React.Fragment key={item.path}>
                 {index > 0 && <BreadcrumbSeparator />}
-                
-                {item.isLast ? (
-                  <BreadcrumbPage className="flex items-center gap-1.5">
-                    <Icon className="h-3.5 w-3.5" />
-                    <span>{item.label}</span>
-                  </BreadcrumbPage>
-                ) : (
-                  <BreadcrumbLink asChild>
-                    <Link 
-                      to={item.path}
-                      className="flex items-center gap-1.5 hover:text-primary transition-colors"
-                    >
+                <BreadcrumbItem>
+                  {item.isLast ? (
+                    <BreadcrumbPage className="flex items-center gap-1.5">
                       <Icon className="h-3.5 w-3.5" />
-                      <span className="hidden sm:inline">{item.label}</span>
-                    </Link>
-                  </BreadcrumbLink>
-                )}
-              </BreadcrumbItem>
+                      <span>{item.label}</span>
+                    </BreadcrumbPage>
+                  ) : (
+                    <BreadcrumbLink asChild>
+                      <Link 
+                        to={item.path}
+                        className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                      >
+                        <Icon className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">{item.label}</span>
+                      </Link>
+                    </BreadcrumbLink>
+                  )}
+                </BreadcrumbItem>
+              </React.Fragment>
             );
           })}
         </BreadcrumbList>
