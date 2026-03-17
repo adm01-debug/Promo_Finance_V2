@@ -55,6 +55,8 @@ Deno.serve(async (req) => {
       });
     }
 
+    console.log(`[external-data] Connecting to external DB: url_starts=${extUrl.substring(0, 20)}, key_len=${extKey.length}`);
+
     const extSupabase = createClient(extUrl, extKey);
 
     // Build query
