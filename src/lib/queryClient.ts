@@ -192,6 +192,40 @@ export const queryKeys = {
     summary: () => [...queryKeys.dashboard.all(), 'summary'] as const,
     charts: () => [...queryKeys.dashboard.all(), 'charts'] as const,
   },
+
+  views: {
+    all: () => ['views'] as const,
+    saldos: (empresaId?: string) => [...queryKeys.views.all(), 'saldos-contas', empresaId] as const,
+    dre: (empresaId?: string) => [...queryKeys.views.all(), 'dre-mensal', empresaId] as const,
+    fluxoCaixa: () => [...queryKeys.views.all(), 'fluxo-caixa'] as const,
+    fluxoDiario: (empresaId?: string) => [...queryKeys.views.all(), 'fluxo-caixa-diario', empresaId] as const,
+    dsoAging: (empresaId?: string) => [...queryKeys.views.all(), 'dso-aging', empresaId] as const,
+    gastosCentroCusto: () => [...queryKeys.views.all(), 'gastos-centro-custo'] as const,
+    metricasCobranca: (empresaId?: string) => [...queryKeys.views.all(), 'metricas-cobranca', empresaId] as const,
+  },
+
+  movimentacoes: {
+    all: () => ['movimentacoes'] as const,
+    list: (contaId?: string) => [...queryKeys.movimentacoes.all(), contaId] as const,
+  },
+
+  transferencias: {
+    all: () => ['transferencias'] as const,
+    list: (empresaId?: string) => [...queryKeys.transferencias.all(), empresaId] as const,
+  },
+
+  categorias: {
+    all: () => ['categorias'] as const,
+    byTipo: (tipo?: string) => [...queryKeys.categorias.all(), tipo] as const,
+  },
+
+  formasPagamento: {
+    all: () => ['formas-pagamento'] as const,
+  },
+
+  planoContas: {
+    all: () => ['plano-contas'] as const,
+  },
 } as const;
 
 // ============================================
@@ -203,5 +237,9 @@ export const invalidateQueries = {
   fornecedores: () => queryClient.invalidateQueries({ queryKey: queryKeys.fornecedores.all() }),
   clientes: () => queryClient.invalidateQueries({ queryKey: queryKeys.clientes.all() }),
   dashboard: () => queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all() }),
+  views: () => queryClient.invalidateQueries({ queryKey: queryKeys.views.all() }),
+  movimentacoes: () => queryClient.invalidateQueries({ queryKey: queryKeys.movimentacoes.all() }),
+  transferencias: () => queryClient.invalidateQueries({ queryKey: queryKeys.transferencias.all() }),
+  categorias: () => queryClient.invalidateQueries({ queryKey: queryKeys.categorias.all() }),
   all: () => queryClient.invalidateQueries({ queryKey: queryKeys.all }),
 };
