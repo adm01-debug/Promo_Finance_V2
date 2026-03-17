@@ -50,6 +50,7 @@ const contaReceberSchema = z.object({
   empresa_id: z.string().min(1, 'Empresa é obrigatória'),
   centro_custo_id: z.string().optional(),
   conta_bancaria_id: z.string().optional(),
+  vendedor_id: z.string().optional(),
   tipo_cobranca: z.enum(['boleto', 'pix', 'cartao', 'transferencia', 'dinheiro']),
   numero_documento: z.string().max(50, 'Número muito longo').optional(),
   codigo_barras: z.string().max(100, 'Código muito longo').optional(),
