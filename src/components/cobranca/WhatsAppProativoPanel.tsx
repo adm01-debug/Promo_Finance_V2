@@ -268,7 +268,7 @@ export function WhatsAppProativoPanel() {
                           {dados.valor && <span className="font-medium">{formatCurrency(Number(dados.valor))}</span>}
                           {dados.dias_atraso && (
                             <Badge variant="destructive" className="text-[10px] h-4 px-1">
-                              {dados.dias_atraso}d atraso
+                              {String(dados.dias_atraso)}d atraso
                             </Badge>
                           )}
                         </div>
