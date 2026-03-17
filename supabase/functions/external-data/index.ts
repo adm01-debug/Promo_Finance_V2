@@ -35,16 +35,11 @@ Deno.serve(async (req) => {
     // Parse request
     const url = new URL(req.url);
     const tabela = url.searchParams.get('tabela');
+    const action = url.searchParams.get('action');
     const search = url.searchParams.get('search') || '';
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = Math.min(parseInt(url.searchParams.get('limit') || '50'), 200);
     const offset = (page - 1) * limit;
-
-    if (!tabela || !['clientes', 'fornecedores'].includes(tabela)) {
-      return new Response(JSON.stringify({ error: 'Parâmetro "tabela" inválido. Use: clientes ou fornecedores' }), {
-        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
 
     // Connect to external DB
     const extUrl = Deno.env.get('EXTERNAL_SUPABASE_URL')?.trim();
@@ -55,10 +50,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Sanitize: keep only valid ASCII printable characters and extract just the JWT token
+    // Sanitize key
     let extKey = extKeyRaw.replace(/[^\x20-\x7E]/g, '').trim();
-    
-    // If the key was pasted multiple times or has extra content, try to extract the JWT
     const jwtMatch = extKey.match(/eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/);
     if (jwtMatch) {
       extKey = jwtMatch[0];
@@ -68,15 +61,42 @@ Deno.serve(async (req) => {
 
     const extSupabase = createClient(extUrl, extKey);
 
+    // Special action: list tables
+    if (action === 'list-tables') {
+      // Try to query a known PostgREST endpoint to discover tables
+      // We'll try fetching the OpenAPI spec
+      const openApiResponse = await fetch(`${extUrl}/rest/v1/`, {
+        headers: {
+          'apikey': extKey,
+          'Authorization': `Bearer ${extKey}`,
+        },
+      });
+      
+      if (openApiResponse.ok) {
+        const spec = await openApiResponse.json();
+        const tables = spec.definitions ? Object.keys(spec.definitions) : [];
+        return new Response(JSON.stringify({ tables, total: tables.length }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } else {
+        const errText = await openApiResponse.text();
+        return new Response(JSON.stringify({ error: 'Could not list tables', status: openApiResponse.status, details: errText }), {
+          status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    if (!tabela || !['clientes', 'fornecedores'].includes(tabela)) {
+      return new Response(JSON.stringify({ error: 'Parâmetro "tabela" inválido. Use: clientes ou fornecedores' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // Build query
     let query = extSupabase.from(tabela).select('*', { count: 'exact' });
 
     if (search) {
-      if (tabela === 'clientes') {
-        query = query.or(`razao_social.ilike.%${search}%,nome_fantasia.ilike.%${search}%,cnpj_cpf.ilike.%${search}%`);
-      } else {
-        query = query.or(`razao_social.ilike.%${search}%,nome_fantasia.ilike.%${search}%,cnpj_cpf.ilike.%${search}%`);
-      }
+      query = query.or(`razao_social.ilike.%${search}%,nome_fantasia.ilike.%${search}%,cnpj_cpf.ilike.%${search}%`);
     }
 
     query = query.order('razao_social', { ascending: true }).range(offset, offset + limit - 1);
