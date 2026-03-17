@@ -105,7 +105,7 @@ export const contasPagarService = {
         total_parcelas: input.total_parcelas,
         status: 'pendente' as StatusPagamento,
       })
-      .select('*, fornecedor:fornecedores(id, nome, cnpj)')
+      .select('*, fornecedor:fornecedores(id, razao_social, nome_fantasia, cnpj)')
       .single();
 
     if (error) throw error;
