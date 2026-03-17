@@ -404,6 +404,6 @@ export const OnboardingChecklist = forwardRef<HTMLDivElement, Record<string, nev
           )}
         </AnimatePresence>
       </motion.div>
-    </>
+    </div>
   );
-};
+});
