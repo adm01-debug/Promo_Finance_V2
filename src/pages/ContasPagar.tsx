@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { Plus, CheckCircle2, XCircle, ArrowUpDown } from 'lucide-react';
+import { Plus, CheckCircle2, XCircle, ArrowUpDown, Sparkles } from 'lucide-react';
+import { CategorizacaoLoteButton } from '@/components/contas-pagar/CategorizacaoIABadge';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
