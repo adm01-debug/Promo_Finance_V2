@@ -485,7 +485,7 @@ export default function Fornecedores() {
             setFormOpen(open);
             if (!open) setEditingFornecedor(null);
           }}
-          fornecedor={editingFornecedor}
+          fornecedor={editingFornecedor as any}
         />
 
         <FornecedorDetailDialog
