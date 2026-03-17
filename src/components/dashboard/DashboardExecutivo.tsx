@@ -187,6 +187,9 @@ export const DashboardExecutivo = () => {
             }))}
           />
         </motion.div>
+        <motion.div variants={itemVariants}>
+          <MetasFinanceirasPanel />
+        </motion.div>
       </div>
 
       <DashboardConfigDialog
