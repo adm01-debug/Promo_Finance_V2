@@ -118,8 +118,8 @@ export function FluxoInterEmpresas() {
           </CardHeader>
           <CardContent className="space-y-3">
             {analise.sugestoes.map((sug, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-amber-500/5 border border-amber-500/20">
-                <Badge variant="outline" className="shrink-0 border-amber-500/30 text-amber-700">
+              <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-accent/5 border border-accent/20">
+                <Badge variant="outline" className="shrink-0 border-accent/30 text-accent-foreground">
                   Sugestão
                 </Badge>
                 <div className="flex-1 min-w-0">
