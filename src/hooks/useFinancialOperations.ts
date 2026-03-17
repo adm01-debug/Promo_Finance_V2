@@ -39,7 +39,6 @@ export function useMovimentacoes(contaBancariaId?: string, filters?: { startDate
     },
     staleTime: 2 * 60 * 1000,
   });
-  });
 }
 
 export function useCreateMovimentacao() {
