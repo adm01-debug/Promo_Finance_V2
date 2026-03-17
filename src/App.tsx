@@ -51,6 +51,11 @@ const Asaas = lazy(() => import('./pages/Asaas'));
 const BlingPage = lazy(() => import('./pages/Bling'));
 const Vendedores = lazy(() => import('./pages/Vendedores'));
 const MeuPerfil = lazy(() => import('./pages/MeuPerfil'));
+const Contratos = lazy(() => import('./pages/Contratos'));
+const SimuladorAntecipacaoPage = lazy(() => import('./pages/SimuladorAntecipacao'));
+const AssinaturaDigitalPage = lazy(() => import('./pages/AssinaturaDigital'));
+const ComprovanteOCRPage = lazy(() => import('./pages/ComprovanteOCR'));
+const Movimentacoes = lazy(() => import('./pages/Movimentacoes'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Inner app component that can use routing hooks
