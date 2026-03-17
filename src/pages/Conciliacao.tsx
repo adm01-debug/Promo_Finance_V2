@@ -46,7 +46,9 @@ import { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
 import { 
   LancamentoSistema, 
   converterContasPagarParaLancamentos, 
-  converterContasReceberParaLancamentos 
+  converterContasReceberParaLancamentos,
+  encontrarTodosMatches,
+  calcularEstatisticasMatch,
 } from '@/lib/transaction-matcher';
 import { useContasPagar, useContasReceber } from '@/hooks/useFinancialData';
 import { toast } from 'sonner';
