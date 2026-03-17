@@ -9,6 +9,7 @@ import {
   Trash2,
   RotateCcw,
   Plus,
+  History,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,6 +29,7 @@ interface CentroCustoTreeProps {
   onDelete: (centro: CentroCusto) => void;
   onReactivate: (centro: CentroCusto) => void;
   onAddChild: (parentId: string) => void;
+  onHistory?: (centro: CentroCusto) => void;
 }
 
 const COLORS = ['hsl(24, 95%, 46%)', 'hsl(215, 90%, 42%)', 'hsl(150, 70%, 32%)', 'hsl(275, 75%, 48%)', 'hsl(42, 95%, 48%)'];
@@ -84,6 +86,7 @@ interface TreeNodeItemProps {
   onDelete: (centro: CentroCusto) => void;
   onReactivate: (centro: CentroCusto) => void;
   onAddChild: (parentId: string) => void;
+  onHistory?: (centro: CentroCusto) => void;
   defaultExpanded?: boolean;
 }
 
@@ -94,6 +97,7 @@ function TreeNodeItem({
   onDelete,
   onReactivate,
   onAddChild,
+  onHistory,
   defaultExpanded = true,
 }: TreeNodeItemProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
@@ -153,6 +157,11 @@ function TreeNodeItem({
             <Badge variant="outline" className="text-xs shrink-0">
               {node.codigo}
             </Badge>
+            {node.responsavel && (
+              <Badge variant="secondary" className="text-xs shrink-0">
+                👤 {node.responsavel}
+              </Badge>
+            )}
             {!node.ativo && (
               <Badge variant="secondary" className="text-xs shrink-0">
                 Inativo
@@ -203,6 +212,17 @@ function TreeNodeItem({
           >
             <Plus className="h-3.5 w-3.5" />
           </Button>
+          {onHistory && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={() => onHistory(node)}
+              title="Histórico"
+            >
+              <History className="h-3.5 w-3.5" />
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="icon"
@@ -251,6 +271,7 @@ function TreeNodeItem({
                 onDelete={onDelete}
                 onReactivate={onReactivate}
                 onAddChild={onAddChild}
+                onHistory={onHistory}
                 defaultExpanded={defaultExpanded}
               />
             ))}
@@ -267,7 +288,8 @@ export function CentroCustoTree({
   onDelete,
   onReactivate,
   onAddChild,
-}: CentroCustoTreeProps) {
+  onHistory,
+}: CentroCustoTreeProps & { onHistory?: (centro: CentroCusto) => void }) {
   const tree = useMemo(() => buildTree(centros), [centros]);
 
   if (tree.length === 0) {
@@ -289,6 +311,7 @@ export function CentroCustoTree({
           onDelete={onDelete}
           onReactivate={onReactivate}
           onAddChild={onAddChild}
+          onHistory={onHistory}
         />
       ))}
     </div>

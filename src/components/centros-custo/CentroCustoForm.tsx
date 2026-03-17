@@ -29,6 +29,7 @@ const formSchema = z.object({
   nome: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(100),
   descricao: z.string().max(500).optional(),
   parent_id: z.string().optional(),
+  responsavel: z.string().max(100).optional(),
   orcamento_previsto: z.coerce.number().min(0, 'Valor deve ser positivo'),
   ativo: z.boolean(),
 });
@@ -64,6 +65,7 @@ export function CentroCustoForm({ centroCusto, centrosCusto, defaultParentId, on
       nome: centroCusto?.nome || '',
       descricao: centroCusto?.descricao || '',
       parent_id: centroCusto?.parent_id || defaultParentId || undefined,
+      responsavel: centroCusto?.responsavel || '',
       orcamento_previsto: centroCusto?.orcamento_previsto || 0,
       ativo: centroCusto?.ativo ?? true,
     },
@@ -76,6 +78,7 @@ export function CentroCustoForm({ centroCusto, centrosCusto, defaultParentId, on
         nome: values.nome,
         descricao: values.descricao || null,
         parent_id: values.parent_id || null,
+        responsavel: values.responsavel || null,
         orcamento_previsto: values.orcamento_previsto,
         ativo: values.ativo,
       };
@@ -145,6 +148,20 @@ export function CentroCustoForm({ centroCusto, centrosCusto, defaultParentId, on
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="responsavel"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Responsável</FormLabel>
+                <FormControl>
+                  <Input placeholder="Nome do responsável" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="parent_id"

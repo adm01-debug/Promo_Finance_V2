@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Plus,
@@ -17,6 +17,7 @@ import {
   FolderTree,
   LayoutGrid,
   List,
+  History,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -39,11 +40,14 @@ import {
 } from '@/hooks/useCentrosCusto';
 import { CentroCustoTree } from '@/components/centros-custo/CentroCustoTree';
 import { CentroCustoForm } from '@/components/centros-custo/CentroCustoForm';
+import { CentroCustoExport } from '@/components/centros-custo/CentroCustoExport';
+import { CentroCustoHistorico } from '@/components/centros-custo/CentroCustoHistorico';
 import { formatCurrency, formatPercentage } from '@/lib/formatters';
 import { toastWithUndo } from '@/lib/toast-with-undo';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { EmptyState, StaggerContainer, StaggerItem } from '@/components/ui/micro-interactions';
+import { toast } from 'sonner';
 import {
   ResponsiveContainer,
   PieChart as RePieChart,
@@ -87,7 +91,7 @@ export default function CentroCustos() {
   const [showInactive, setShowInactive] = useState(false);
   const [viewMode, setViewMode] = useState<'cards' | 'tree'>('tree');
   const [parentIdForNew, setParentIdForNew] = useState<string | null>(null);
-
+  const [historyCentro, setHistoryCentro] = useState<CentroCusto | null>(null);
   // Filtered data
   const filteredCentros = useMemo(() => {
     return centros.filter((c) => {
@@ -120,6 +124,46 @@ export default function CentroCustos() {
     valor: c.orcamento_realizado,
     percentual: totalRealizado > 0 ? (c.orcamento_realizado / totalRealizado) * 100 : 0,
   }));
+
+  // Budget threshold alerts
+  useEffect(() => {
+    if (activeCentros.length === 0) return;
+    const alertsShown = sessionStorage.getItem('cc_alerts_shown');
+    if (alertsShown) return;
+
+    const overBudget = activeCentros.filter(c => c.orcamento_previsto > 0 && c.orcamento_realizado > c.orcamento_previsto);
+    const near100 = activeCentros.filter(c => {
+      const pct = c.orcamento_previsto > 0 ? (c.orcamento_realizado / c.orcamento_previsto) * 100 : 0;
+      return pct >= 90 && pct <= 100;
+    });
+    const near80 = activeCentros.filter(c => {
+      const pct = c.orcamento_previsto > 0 ? (c.orcamento_realizado / c.orcamento_previsto) * 100 : 0;
+      return pct >= 80 && pct < 90;
+    });
+
+    if (overBudget.length > 0) {
+      toast.error(`🚨 ${overBudget.length} centro(s) estouraram o orçamento!`, {
+        description: overBudget.map(c => c.nome).join(', '),
+        duration: 8000,
+      });
+    }
+    if (near100.length > 0) {
+      toast.warning(`⚠️ ${near100.length} centro(s) acima de 90% do orçamento`, {
+        description: near100.map(c => c.nome).join(', '),
+        duration: 6000,
+      });
+    }
+    if (near80.length > 0) {
+      toast.info(`📊 ${near80.length} centro(s) acima de 80% do orçamento`, {
+        description: near80.map(c => c.nome).join(', '),
+        duration: 5000,
+      });
+    }
+
+    if (overBudget.length > 0 || near100.length > 0 || near80.length > 0) {
+      sessionStorage.setItem('cc_alerts_shown', 'true');
+    }
+  }, [activeCentros]);
 
   const handleOpenCreate = (parentId?: string) => {
     setEditingCentro(null);
@@ -189,6 +233,7 @@ export default function CentroCustos() {
                 </TabsTrigger>
               </TabsList>
             </Tabs>
+            <CentroCustoExport centros={centros} />
             <Button
               variant="outline"
               size="sm"
@@ -380,6 +425,7 @@ export default function CentroCustos() {
                 onDelete={handleDelete}
                 onReactivate={handleReactivate}
                 onAddChild={(parentId) => handleOpenCreate(parentId)}
+                onHistory={(centro) => setHistoryCentro(centro)}
               />
             </Card>
           ) : filteredCentros.length === 0 ? (
@@ -510,6 +556,21 @@ export default function CentroCustos() {
             onSuccess={handleFormSuccess}
             onCancel={() => setIsFormOpen(false)}
           />
+        </DialogContent>
+      </Dialog>
+
+      {/* History Dialog */}
+      <Dialog open={!!historyCentro} onOpenChange={(open) => !open && setHistoryCentro(null)}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <History className="h-5 w-5" />
+              Histórico - {historyCentro?.nome}
+            </DialogTitle>
+          </DialogHeader>
+          {historyCentro && (
+            <CentroCustoHistorico centroId={historyCentro.id} centroNome={historyCentro.nome} />
+          )}
         </DialogContent>
       </Dialog>
 
