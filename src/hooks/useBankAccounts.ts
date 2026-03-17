@@ -33,8 +33,9 @@ export interface BankAccountInput {
   codigo_banco: string;
   empresa_id: string;
   saldo_atual?: number;
-  saldo_disponivel?: number;
+  saldo_inicial?: number;
   cor?: string;
+  // Note: saldo_disponivel is GENERATED from saldo_atual — never insert it
 }
 
 export interface BankTransaction {

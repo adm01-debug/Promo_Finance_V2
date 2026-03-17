@@ -34,12 +34,17 @@ export interface ContaReceberFilters {
 export interface ContaReceberInput {
   descricao: string;
   valor: number;
-  vencimento: string;
+  data_vencimento: string;
   cliente_id?: string;
+  cliente_nome?: string;
   categoria?: string;
   observacoes?: string;
   numero_documento?: string;
   forma_recebimento?: string;
+  tipo_cobranca?: string;
+  empresa_id?: string;
+  centro_custo_id?: string;
+  conta_bancaria_id?: string;
   parcela?: number;
   total_parcelas?: number;
 }

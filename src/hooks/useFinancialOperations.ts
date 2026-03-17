@@ -2,9 +2,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-// ============================================
-// MOVIMENTAÇÕES
-// ============================================
+// NOTE: movimentacoes are primarily created by triggers (transferências, pagamentos).
+// Direct inserts should only be used for manual adjustments by admins.
 
 export interface MovimentacaoInput {
   empresa_id: string;

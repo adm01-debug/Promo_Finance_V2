@@ -34,12 +34,17 @@ export interface ContaPagarFilters {
 export interface ContaPagarInput {
   descricao: string;
   valor: number;
-  vencimento: string;
+  data_vencimento: string;
   fornecedor_id?: string;
+  fornecedor_nome?: string;
   categoria?: string;
   observacoes?: string;
   numero_documento?: string;
   forma_pagamento?: string;
+  tipo_cobranca?: string;
+  empresa_id?: string;
+  centro_custo_id?: string;
+  conta_bancaria_id?: string;
   parcela?: number;
   total_parcelas?: number;
 }
