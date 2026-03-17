@@ -119,6 +119,7 @@ function AppRoutes() {
             <Route path="/tesouraria" element={<ProtectedRoute><Tesouraria /></ProtectedRoute>} />
             <Route path="/pix-hub" element={<ProtectedRoute><PixHub /></ProtectedRoute>} />
             <Route path="/orcamento-evento" element={<ProtectedRoute><OrcamentoEvento /></ProtectedRoute>} />
+            <Route path="/benchmarking" element={<ProtectedRoute><BenchmarkingSetorial /></ProtectedRoute>} />
             
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
