@@ -17,6 +17,7 @@ import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { GerenciadorPermissoes } from '@/components/admin/GerenciadorPermissoes';
+import { ConviteUsuarioDialog } from '@/components/usuarios/ConviteUsuarioDialog';
 
 type AppRole = 'admin' | 'financeiro' | 'operacional' | 'visualizador';
 
