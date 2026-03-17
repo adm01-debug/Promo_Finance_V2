@@ -125,6 +125,46 @@ export default function CentroCustos() {
     percentual: totalRealizado > 0 ? (c.orcamento_realizado / totalRealizado) * 100 : 0,
   }));
 
+  // Budget threshold alerts
+  useEffect(() => {
+    if (activeCentros.length === 0) return;
+    const alertsShown = sessionStorage.getItem('cc_alerts_shown');
+    if (alertsShown) return;
+
+    const overBudget = activeCentros.filter(c => c.orcamento_previsto > 0 && c.orcamento_realizado > c.orcamento_previsto);
+    const near100 = activeCentros.filter(c => {
+      const pct = c.orcamento_previsto > 0 ? (c.orcamento_realizado / c.orcamento_previsto) * 100 : 0;
+      return pct >= 90 && pct <= 100;
+    });
+    const near80 = activeCentros.filter(c => {
+      const pct = c.orcamento_previsto > 0 ? (c.orcamento_realizado / c.orcamento_previsto) * 100 : 0;
+      return pct >= 80 && pct < 90;
+    });
+
+    if (overBudget.length > 0) {
+      toast.error(`🚨 ${overBudget.length} centro(s) estouraram o orçamento!`, {
+        description: overBudget.map(c => c.nome).join(', '),
+        duration: 8000,
+      });
+    }
+    if (near100.length > 0) {
+      toast.warning(`⚠️ ${near100.length} centro(s) acima de 90% do orçamento`, {
+        description: near100.map(c => c.nome).join(', '),
+        duration: 6000,
+      });
+    }
+    if (near80.length > 0) {
+      toast.info(`📊 ${near80.length} centro(s) acima de 80% do orçamento`, {
+        description: near80.map(c => c.nome).join(', '),
+        duration: 5000,
+      });
+    }
+
+    if (overBudget.length > 0 || near100.length > 0 || near80.length > 0) {
+      sessionStorage.setItem('cc_alerts_shown', 'true');
+    }
+  }, [activeCentros]);
+
   const handleOpenCreate = (parentId?: string) => {
     setEditingCentro(null);
     setParentIdForNew(parentId || null);
