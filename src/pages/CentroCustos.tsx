@@ -425,6 +425,7 @@ export default function CentroCustos() {
                 onDelete={handleDelete}
                 onReactivate={handleReactivate}
                 onAddChild={(parentId) => handleOpenCreate(parentId)}
+                onHistory={(centro) => setHistoryCentro(centro)}
               />
             </Card>
           ) : filteredCentros.length === 0 ? (
