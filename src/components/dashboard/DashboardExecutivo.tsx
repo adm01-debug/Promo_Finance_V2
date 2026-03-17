@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Wallet, ArrowDownCircle, ArrowUpCircle, AlertTriangle, BarChart3, Brain, Target } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
-import { useDashboardConfig } from '@/hooks/useDashboardConfig';
+import { useDashboardConfig, DashboardWidget } from '@/hooks/useDashboardConfig';
 import { useDashboardMetrics } from '@/hooks/useDashboardMetrics';
 import { PrevisaoIA } from './PrevisaoIA';
 import { AlertasPreditivosPanel } from './AlertasPreditivosPanel';
@@ -17,6 +17,7 @@ import { SaldoPorBancoCard } from './SaldoPorBancoCard';
 import { TopClientesLeaderboard } from './TopClientesLeaderboard';
 import { StatusContasPieChart } from './StatusContasPieChart';
 import { TopCentrosCustoChart } from './TopCentrosCustoChart';
+import { DraggableDashboard } from './DraggableDashboard';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -49,8 +50,16 @@ export const DashboardExecutivo = () => {
   const [centroCustoFilter, setCentroCustoFilter] = useState<string>('all');
   const [periodoFluxo, setPeriodoFluxo] = useState('30');
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
-  
-  const { widgets, toggleWidget, resizeWidget, resetToDefault } = useDashboardConfig();
+
+  const {
+    widgets,
+    isEditing,
+    setIsEditing,
+    toggleWidget,
+    reorderWidgets,
+    resizeWidget,
+    resetToDefault,
+  } = useDashboardConfig();
 
   const metrics = useDashboardMetrics({
     empresaFilter,
@@ -70,6 +79,57 @@ export const DashboardExecutivo = () => {
     ? 'destructive' as const
     : 'secondary' as const;
 
+  const renderWidget = (widget: DashboardWidget): ReactNode => {
+    switch (widget.id) {
+      case 'fluxo-caixa':
+        return (
+          <FluxoCaixaChart
+            data={metrics.fluxoCaixaProjetado}
+            periodoFluxo={periodoFluxo}
+            setPeriodoFluxo={setPeriodoFluxo}
+          />
+        );
+      case 'composicao':
+        return <SaldoPorBancoCard contasBancariasFiltradas={metrics.contasBancariasFiltradas} saldoTotal={metrics.saldoTotal} />;
+      case 'top-clientes':
+        return <TopClientesLeaderboard topClientesReceita={metrics.topClientesReceita} />;
+      case 'vencimentos':
+        return <StatusContasPieChart statusContasPagar={metrics.statusContasPagar} />;
+      case 'previsao-ia':
+        return <PrevisaoIA />;
+      case 'aprovacoes':
+        return <TopCentrosCustoChart dadosPorCentroCusto={metrics.dadosPorCentroCusto} />;
+      case 'alertas-preditivos':
+        return (
+          <AlertasPreditivosPanel
+            saldoAtual={metrics.saldoTotal}
+            receitasPrevistas={metrics.contasReceberFiltradas
+              .filter(c => c.status !== 'pago' && c.status !== 'cancelado')
+              .map(c => ({
+                valor: c.valor - (c.valor_recebido || 0),
+                dataVencimento: new Date(c.data_vencimento),
+                entidade: c.cliente_nome,
+              }))}
+            despesasPrevistas={metrics.contasPagarFiltradas
+              .filter(c => c.status !== 'pago' && c.status !== 'cancelado')
+              .map(c => ({
+                valor: c.valor - (c.valor_pago || 0),
+                dataVencimento: new Date(c.data_vencimento),
+                entidade: c.fornecedor_nome,
+              }))}
+            historicoInadimplencia={metrics.vencidasReceber.map(c => ({
+              clienteId: c.cliente_id || 'unknown',
+              diasAtraso: Math.floor((new Date().getTime() - new Date(c.data_vencimento).getTime()) / (1000 * 60 * 60 * 24)),
+            }))}
+          />
+        );
+      case 'metas':
+        return <MetasFinanceirasPanel />;
+      default:
+        return <div className="p-4 text-sm text-muted-foreground">Widget: {widget.title}</div>;
+    }
+  };
+
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-5 sm:space-y-7" data-tour="dashboard">
       {/* Hero Header */}
@@ -83,7 +143,7 @@ export const DashboardExecutivo = () => {
         onOpenConfig={() => setConfigDialogOpen(true)}
       />
 
-      {/* Hero KPIs */}
+      {/* Hero KPIs — always visible, not draggable */}
       <motion.div variants={itemVariants}>
         <HeroKPIGrid layout="hero-first">
           <HeroKPICard
@@ -157,67 +217,18 @@ export const DashboardExecutivo = () => {
         />
       </motion.div>
 
-      {/* Section: Analytics */}
-      <SectionDivider label="Analytics" icon={BarChart3} />
+      {/* Section: Customizable Widgets */}
+      <SectionDivider label="Analytics & Inteligência" icon={BarChart3} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
-        <div className="lg:col-span-2">
-          <FluxoCaixaChart
-            data={metrics.fluxoCaixaProjetado}
-            periodoFluxo={periodoFluxo}
-            setPeriodoFluxo={setPeriodoFluxo}
-          />
-        </div>
-        <SaldoPorBancoCard
-          contasBancariasFiltradas={metrics.contasBancariasFiltradas}
-          saldoTotal={metrics.saldoTotal}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-        <TopClientesLeaderboard topClientesReceita={metrics.topClientesReceita} />
-        <StatusContasPieChart statusContasPagar={metrics.statusContasPagar} />
-        <TopCentrosCustoChart dadosPorCentroCusto={metrics.dadosPorCentroCusto} />
-      </div>
-
-      {/* Section: Intelligence */}
-      <SectionDivider label="Inteligência" icon={Brain} />
-
-      <motion.div variants={itemVariants}>
-        <PrevisaoIA />
-      </motion.div>
-
-      {/* Section: Planning */}
-      <SectionDivider label="Planejamento" icon={Target} />
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
-        <motion.div variants={itemVariants}>
-          <AlertasPreditivosPanel
-            saldoAtual={metrics.saldoTotal}
-            receitasPrevistas={metrics.contasReceberFiltradas
-              .filter(c => c.status !== 'pago' && c.status !== 'cancelado')
-              .map(c => ({
-                valor: c.valor - (c.valor_recebido || 0),
-                dataVencimento: new Date(c.data_vencimento),
-                entidade: c.cliente_nome,
-              }))}
-            despesasPrevistas={metrics.contasPagarFiltradas
-              .filter(c => c.status !== 'pago' && c.status !== 'cancelado')
-              .map(c => ({
-                valor: c.valor - (c.valor_pago || 0),
-                dataVencimento: new Date(c.data_vencimento),
-                entidade: c.fornecedor_nome,
-              }))}
-            historicoInadimplencia={metrics.vencidasReceber.map(c => ({
-              clienteId: c.cliente_id || 'unknown',
-              diasAtraso: Math.floor((new Date().getTime() - new Date(c.data_vencimento).getTime()) / (1000 * 60 * 60 * 24)),
-            }))}
-          />
-        </motion.div>
-        <motion.div variants={itemVariants}>
-          <MetasFinanceirasPanel />
-        </motion.div>
-      </div>
+      <DraggableDashboard
+        widgets={widgets}
+        isEditing={isEditing}
+        setIsEditing={setIsEditing}
+        onReorder={reorderWidgets}
+        onToggle={toggleWidget}
+        onResize={resizeWidget}
+        renderWidget={renderWidget}
+      />
 
       <DashboardConfigDialog
         open={configDialogOpen}
