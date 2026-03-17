@@ -26,8 +26,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const isMobile = useIsMobile();
   const location = useLocation();
   
-  // Initialize route prefetching
-  usePrefetchRoutes();
+  // Route prefetching is handled by DataPrefetcher
 
   // Show onboarding checklist only on dashboard
   const showOnboarding = location.pathname === '/';
