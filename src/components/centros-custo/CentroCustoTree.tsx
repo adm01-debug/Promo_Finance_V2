@@ -9,6 +9,7 @@ import {
   Trash2,
   RotateCcw,
   Plus,
+  History,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
