@@ -47,15 +47,24 @@ Deno.serve(async (req) => {
     }
 
     // Connect to external DB
-    const extUrl = Deno.env.get('EXTERNAL_SUPABASE_URL');
-    const extKey = Deno.env.get('EXTERNAL_SUPABASE_SERVICE_KEY');
-    if (!extUrl || !extKey) {
-      return new Response(JSON.stringify({ error: 'External DB not configured', extUrl: !!extUrl, extKey: !!extKey }), {
+    const extUrl = Deno.env.get('EXTERNAL_SUPABASE_URL')?.trim();
+    const extKeyRaw = Deno.env.get('EXTERNAL_SUPABASE_SERVICE_KEY')?.trim();
+    if (!extUrl || !extKeyRaw) {
+      return new Response(JSON.stringify({ error: 'External DB not configured', extUrl: !!extUrl, extKey: !!extKeyRaw }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    console.log(`[external-data] Connecting to external DB: url_starts=${extUrl.substring(0, 20)}, key_len=${extKey.length}`);
+    // Sanitize: keep only valid ASCII printable characters and extract just the JWT token
+    let extKey = extKeyRaw.replace(/[^\x20-\x7E]/g, '').trim();
+    
+    // If the key was pasted multiple times or has extra content, try to extract the JWT
+    const jwtMatch = extKey.match(/eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/);
+    if (jwtMatch) {
+      extKey = jwtMatch[0];
+    }
+
+    console.log(`[external-data] Connecting to external DB: url_starts=${extUrl.substring(0, 20)}, key_len_raw=${extKeyRaw.length}, key_len_clean=${extKey.length}`);
 
     const extSupabase = createClient(extUrl, extKey);
 
