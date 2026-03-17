@@ -212,6 +212,17 @@ function TreeNodeItem({
           >
             <Plus className="h-3.5 w-3.5" />
           </Button>
+          {onHistory && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={() => onHistory(node)}
+              title="Histórico"
+            >
+              <History className="h-3.5 w-3.5" />
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="icon"
