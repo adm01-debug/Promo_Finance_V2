@@ -41,6 +41,7 @@ export default function Usuarios() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
+  const [conviteOpen, setConviteOpen] = useState(false);
 
   const { data: users, isLoading } = useQuery({
     queryKey: ['users-management'],
