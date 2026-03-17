@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { RelatoriosAgendados } from '@/components/relatorios/RelatoriosAgendados';
 import { RelatorioDrillDown } from '@/components/relatorios/RelatorioDrillDown';
+import { ExportRelatorioAvancadoPDF } from '@/components/relatorios/ExportRelatorioAvancadoPDF';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
