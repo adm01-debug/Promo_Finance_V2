@@ -120,8 +120,7 @@ export function useDashboardMetrics(filters: DashboardFilters) {
     
     contasPagarFiltradas.forEach(c => {
       const ccId = c.centro_custo_id || 'sem-cc';
-      const centroCusto = c.centros_custo as { nome?: string } | null;
-      const ccNome = centroCusto?.nome || 'Sem Centro de Custo';
+      const ccNome = (c as any).centro_custo || (c as any).centros_custo?.nome || 'Sem Centro de Custo';
       if (!map.has(ccId)) {
         map.set(ccId, { nome: ccNome, pagar: 0, receber: 0, saldo: 0 });
       }
@@ -133,8 +132,7 @@ export function useDashboardMetrics(filters: DashboardFilters) {
 
     contasReceberFiltradas.forEach(c => {
       const ccId = c.centro_custo_id || 'sem-cc';
-      const centroCusto = c.centros_custo as { nome?: string } | null;
-      const ccNome = centroCusto?.nome || 'Sem Centro de Custo';
+      const ccNome = (c as any).centro_custo || (c as any).centros_custo?.nome || 'Sem Centro de Custo';
       if (!map.has(ccId)) {
         map.set(ccId, { nome: ccNome, pagar: 0, receber: 0, saldo: 0 });
       }

@@ -53,28 +53,28 @@ export const DREStatement = ({ periodo, mes, ano, empresaId }: DREStatementProps
 
     // Custos por categoria (simulado baseado em centro de custo)
     const custoMercadoria = pagamentos
-      .filter(p => p.centros_custo?.nome?.toLowerCase().includes('mercadoria') || 
-                   p.centros_custo?.nome?.toLowerCase().includes('produto'))
+      .filter(p => p.centro_custo.toLowerCase().includes('mercadoria') || 
+                   p.centro_custo.toLowerCase().includes('produto'))
       .reduce((acc, p) => acc + (p.valor_pago || p.valor), 0);
 
     const lucroBruto = receitaLiquida - custoMercadoria;
 
     // Despesas operacionais
     const despesasAdministrativas = pagamentos
-      .filter(p => p.centros_custo?.nome?.toLowerCase().includes('admin'))
+      .filter(p => p.centro_custo.toLowerCase().includes('admin'))
       .reduce((acc, p) => acc + (p.valor_pago || p.valor), 0);
 
     const despesasComerciais = pagamentos
-      .filter(p => p.centros_custo?.nome?.toLowerCase().includes('comercial') ||
-                   p.centros_custo?.nome?.toLowerCase().includes('vendas'))
+      .filter(p => p.centro_custo.toLowerCase().includes('comercial') ||
+                   p.centro_custo.toLowerCase().includes('vendas'))
       .reduce((acc, p) => acc + (p.valor_pago || p.valor), 0);
 
     const outrasDespesas = pagamentos
-      .filter(p => !p.centros_custo?.nome?.toLowerCase().includes('mercadoria') &&
-                   !p.centros_custo?.nome?.toLowerCase().includes('produto') &&
-                   !p.centros_custo?.nome?.toLowerCase().includes('admin') &&
-                   !p.centros_custo?.nome?.toLowerCase().includes('comercial') &&
-                   !p.centros_custo?.nome?.toLowerCase().includes('vendas'))
+      .filter(p => !p.centro_custo.toLowerCase().includes('mercadoria') &&
+                   !p.centro_custo.toLowerCase().includes('produto') &&
+                   !p.centro_custo.toLowerCase().includes('admin') &&
+                   !p.centro_custo.toLowerCase().includes('comercial') &&
+                   !p.centro_custo.toLowerCase().includes('vendas'))
       .reduce((acc, p) => acc + (p.valor_pago || p.valor), 0);
 
     const totalDespesasOperacionais = despesasAdministrativas + despesasComerciais + outrasDespesas;

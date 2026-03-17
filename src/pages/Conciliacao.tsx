@@ -104,14 +104,16 @@ export default function Conciliacao() {
       ? converterContasPagarParaLancamentos(contasPagar.map(cp => ({
           id: cp.id, descricao: cp.descricao, valor: cp.valor,
           data_vencimento: cp.data_vencimento, fornecedor_nome: cp.fornecedor_nome,
-          status: cp.status, numero_documento: cp.numero_documento, fornecedores: cp.fornecedores,
+          status: cp.status, numero_documento: cp.numero_documento,
+          fornecedores: cp.fornecedor ? { razao_social: cp.fornecedor, nome_fantasia: null } : null,
         }))) 
       : [];
     const lancamentosReceber = contasReceber 
       ? converterContasReceberParaLancamentos(contasReceber.map(cr => ({
           id: cr.id, descricao: cr.descricao, valor: cr.valor,
           data_vencimento: cr.data_vencimento, cliente_nome: cr.cliente_nome,
-          status: cr.status, numero_documento: cr.numero_documento, clientes: cr.clientes,
+          status: cr.status, numero_documento: cr.numero_documento,
+          clientes: cr.cliente ? { razao_social: cr.cliente, nome_fantasia: null } : null,
         }))) 
       : [];
     return [...lancamentosPagar, ...lancamentosReceber];

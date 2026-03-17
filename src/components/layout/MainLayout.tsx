@@ -6,7 +6,6 @@ import { Header } from './Header';
 import { PageTransition } from './PageTransition';
 import { cn } from '@/lib/utils';
 import { NetworkStatusIndicator } from '@/components/ui/network-status-indicator';
-import { usePrefetchRoutes } from '@/hooks/usePrefetchRoutes';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist';
 import { GuidedTour } from '@/components/onboarding/GuidedTour';
@@ -26,8 +25,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const isMobile = useIsMobile();
   const location = useLocation();
   
-  // Initialize route prefetching
-  usePrefetchRoutes();
+  // Route prefetching is handled by DataPrefetcher
 
   // Show onboarding checklist only on dashboard
   const showOnboarding = location.pathname === '/';

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { STALE_TIMES } from '@/lib/queryClient';
 import type { Tables, Database } from '@/integrations/supabase/types';
 
 export type Empresa = Tables<'empresas'>;
@@ -73,6 +74,7 @@ export function useEmpresas() {
       if (error) throw error;
       return data as Empresa[];
     },
+    staleTime: STALE_TIMES.static,
   });
 }
 
@@ -88,6 +90,7 @@ export function useCentrosCusto() {
       if (error) throw error;
       return data as CentroCusto[];
     },
+    staleTime: STALE_TIMES.static,
   });
 }
 
@@ -103,6 +106,7 @@ export function useContasBancarias() {
       if (error) throw error;
       return data as ContaBancaria[];
     },
+    staleTime: STALE_TIMES.config,
   });
 }
 
@@ -171,12 +175,14 @@ export function useContasPagar() {
     queryKey: ['contas-pagar'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('contas_pagar')
-        .select('*, centros_custo(nome, codigo), contas_bancarias(banco), fornecedores(razao_social, nome_fantasia)')
-        .order('data_vencimento', { ascending: true });
+        .from('vw_contas_pagar_painel')
+        .select('*')
+        .order('data_vencimento', { ascending: true })
+        .limit(500);
       if (error) throw error;
       return data;
     },
+    staleTime: STALE_TIMES.financial,
   });
 }
 
@@ -241,12 +247,14 @@ export function useContasReceber() {
     queryKey: ['contas-receber'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('contas_receber')
-        .select('*, centros_custo(nome, codigo), contas_bancarias(banco), clientes(razao_social, nome_fantasia, score)')
-        .order('data_vencimento', { ascending: true });
+        .from('vw_contas_receber_painel')
+        .select('*')
+        .order('data_vencimento', { ascending: true })
+        .limit(500);
       if (error) throw error;
       return data;
     },
+    staleTime: STALE_TIMES.financial,
   });
 }
 
