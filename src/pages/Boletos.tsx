@@ -199,14 +199,14 @@ const BoletoPreview = ({ boleto, onUpdateStatus }: {
 
         <Separator />
 
-        {/* Código de Barras */}
-        <div className="space-y-2">
-          <div className="text-xs text-muted-foreground">Código de Barras</div>
-          <BarcodeVisual code={boleto.codigo_barras} />
-          <div className="text-xs font-mono text-center text-muted-foreground">
-            {boleto.codigo_barras}
-          </div>
-        </div>
+        {/* Enhanced Barcode */}
+        <BoletoBarcode
+          banco={boleto.banco}
+          valor={boleto.valor}
+          vencimento={boleto.vencimento}
+          cedenteCnpj={boleto.cedente_cnpj || undefined}
+          numero={boleto.numero}
+        />
       </div>
 
       {/* Ações */}
