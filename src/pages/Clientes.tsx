@@ -605,11 +605,11 @@ export default function Clientes() {
             setFormOpen(open);
             if (!open) setEditingCliente(null);
           }}
-          cliente={editingCliente}
+          cliente={editingCliente as any}
         />
 
         <ClienteDetailDialog
-          cliente={viewingCliente}
+          cliente={viewingCliente as any}
           open={detailOpen}
           onOpenChange={(open) => {
             setDetailOpen(open);
