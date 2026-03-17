@@ -239,6 +239,7 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
         totalPages: Math.ceil((countResult.count || 0) / pageSize),
       };
     },
+    staleTime: STALE_TIMES.financial,
   });
 }
 
