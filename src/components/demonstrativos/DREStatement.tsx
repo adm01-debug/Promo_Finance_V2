@@ -127,10 +127,19 @@ export const DREStatement = ({ periodo, mes, ano, empresaId }: DREStatementProps
               Período: {meses[mes]} de {ano}
             </CardDescription>
           </div>
-          <Badge variant={dre.lucroLiquido >= 0 ? 'default' : 'destructive'} className="text-sm">
-            {dre.lucroLiquido >= 0 ? 'Lucro' : 'Prejuízo'}: {formatCurrency(Math.abs(dre.lucroLiquido))}
-          </Badge>
-        </div>
+          <div className="flex items-center gap-2">
+            <Badge variant={dre.lucroLiquido >= 0 ? 'default' : 'destructive'} className="text-sm">
+              {dre.lucroLiquido >= 0 ? 'Lucro' : 'Prejuízo'}: {formatCurrency(Math.abs(dre.lucroLiquido))}
+            </Badge>
+            <ExportDemonstrativoPDF
+              tipo="dre"
+              periodo={periodo}
+              mes={mes}
+              ano={ano}
+              empresa="Promo Finance"
+              linhas={dre.linhas}
+            />
+          </div>
       </CardHeader>
       <CardContent>
         <div className="rounded-lg border border-border/50 overflow-hidden">
