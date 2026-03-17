@@ -4671,6 +4671,250 @@ export type Database = {
           },
         ]
       }
+      ponto_departamentos: {
+        Row: {
+          cargo: string | null
+          codigo_firebird: number | null
+          created_at: string | null
+          id: number
+          nome: string | null
+          responsavel: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cargo?: string | null
+          codigo_firebird?: number | null
+          created_at?: string | null
+          id?: number
+          nome?: string | null
+          responsavel?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cargo?: string | null
+          codigo_firebird?: number | null
+          created_at?: string | null
+          id?: number
+          nome?: string | null
+          responsavel?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      ponto_funcionarios: {
+        Row: {
+          celular: string | null
+          codigo_firebird: number | null
+          cpf: string | null
+          cracha: string | null
+          created_at: string | null
+          data_admissao: string | null
+          data_desligamento: string | null
+          data_nascimento: string | null
+          departamento_id: number | null
+          email: string | null
+          empresa_codigo: number | null
+          funcao: string | null
+          id: number
+          matricula: string | null
+          nome: string | null
+          pis: string | null
+          rg: string | null
+          situacao: string | null
+          telefone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          celular?: string | null
+          codigo_firebird?: number | null
+          cpf?: string | null
+          cracha?: string | null
+          created_at?: string | null
+          data_admissao?: string | null
+          data_desligamento?: string | null
+          data_nascimento?: string | null
+          departamento_id?: number | null
+          email?: string | null
+          empresa_codigo?: number | null
+          funcao?: string | null
+          id?: number
+          matricula?: string | null
+          nome?: string | null
+          pis?: string | null
+          rg?: string | null
+          situacao?: string | null
+          telefone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          celular?: string | null
+          codigo_firebird?: number | null
+          cpf?: string | null
+          cracha?: string | null
+          created_at?: string | null
+          data_admissao?: string | null
+          data_desligamento?: string | null
+          data_nascimento?: string | null
+          departamento_id?: number | null
+          email?: string | null
+          empresa_codigo?: number | null
+          funcao?: string | null
+          id?: number
+          matricula?: string | null
+          nome?: string | null
+          pis?: string | null
+          rg?: string | null
+          situacao?: string | null
+          telefone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ponto_funcionarios_departamento_id_fkey"
+            columns: ["departamento_id"]
+            isOneToOne: false
+            referencedRelation: "ponto_departamentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ponto_registros: {
+        Row: {
+          abono: string | null
+          abono_negativo: string | null
+          codigo_firebird: number | null
+          created_at: string | null
+          dados_brutos: Json | null
+          data_batida: string | null
+          entrada_1: string | null
+          entrada_2: string | null
+          entrada_3: string | null
+          entrada_4: string | null
+          entrada_5: string | null
+          entrada_6: string | null
+          folga: number | null
+          funcionario_id: number | null
+          horario_codigo: number | null
+          id: number
+          justificativa_abono: number | null
+          neutro: number | null
+          observacoes: Json | null
+          saida_1: string | null
+          saida_2: string | null
+          saida_3: string | null
+          saida_4: string | null
+          saida_5: string | null
+          saida_6: string | null
+          sincronizado_em: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          abono?: string | null
+          abono_negativo?: string | null
+          codigo_firebird?: number | null
+          created_at?: string | null
+          dados_brutos?: Json | null
+          data_batida?: string | null
+          entrada_1?: string | null
+          entrada_2?: string | null
+          entrada_3?: string | null
+          entrada_4?: string | null
+          entrada_5?: string | null
+          entrada_6?: string | null
+          folga?: number | null
+          funcionario_id?: number | null
+          horario_codigo?: number | null
+          id?: number
+          justificativa_abono?: number | null
+          neutro?: number | null
+          observacoes?: Json | null
+          saida_1?: string | null
+          saida_2?: string | null
+          saida_3?: string | null
+          saida_4?: string | null
+          saida_5?: string | null
+          saida_6?: string | null
+          sincronizado_em?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          abono?: string | null
+          abono_negativo?: string | null
+          codigo_firebird?: number | null
+          created_at?: string | null
+          dados_brutos?: Json | null
+          data_batida?: string | null
+          entrada_1?: string | null
+          entrada_2?: string | null
+          entrada_3?: string | null
+          entrada_4?: string | null
+          entrada_5?: string | null
+          entrada_6?: string | null
+          folga?: number | null
+          funcionario_id?: number | null
+          horario_codigo?: number | null
+          id?: number
+          justificativa_abono?: number | null
+          neutro?: number | null
+          observacoes?: Json | null
+          saida_1?: string | null
+          saida_2?: string | null
+          saida_3?: string | null
+          saida_4?: string | null
+          saida_5?: string | null
+          saida_6?: string | null
+          sincronizado_em?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ponto_registros_funcionario_id_fkey"
+            columns: ["funcionario_id"]
+            isOneToOne: false
+            referencedRelation: "ponto_funcionarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ponto_sync_log: {
+        Row: {
+          created_at: string | null
+          departamentos_sincronizados: number | null
+          erro: string | null
+          fim: string | null
+          funcionarios_sincronizados: number | null
+          id: number
+          inicio: string | null
+          registros_atualizados: number | null
+          registros_novos: number | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          departamentos_sincronizados?: number | null
+          erro?: string | null
+          fim?: string | null
+          funcionarios_sincronizados?: number | null
+          id?: number
+          inicio?: string | null
+          registros_atualizados?: number | null
+          registros_novos?: number | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          departamentos_sincronizados?: number | null
+          erro?: string | null
+          fim?: string | null
+          funcionarios_sincronizados?: number | null
+          id?: number
+          inicio?: string | null
+          registros_atualizados?: number | null
+          registros_novos?: number | null
+          status?: string | null
+        }
+        Relationships: []
+      }
       portal_cliente_acessos: {
         Row: {
           acao: string
@@ -6724,6 +6968,7 @@ export type Database = {
         Returns: undefined
       }
       delete_cron_job: { Args: { job_id: number }; Returns: undefined }
+      fn_verificar_vencidos: { Args: never; Returns: undefined }
       gerar_alertas_pendencias_conciliacao: { Args: never; Returns: undefined }
       gerar_alertas_vencimento: { Args: never; Returns: undefined }
       gerar_contas_recorrentes: { Args: never; Returns: number }
