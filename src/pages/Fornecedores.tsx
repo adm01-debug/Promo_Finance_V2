@@ -82,11 +82,11 @@ export default function Fornecedores() {
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [formOpen, setFormOpen] = useState(false);
-  const [editingFornecedor, setEditingFornecedor] = useState<Fornecedor | null>(null);
+  const [editingFornecedor, setEditingFornecedor] = useState<ExternalCliente | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [deletingFornecedor, setDeletingFornecedor] = useState<Fornecedor | null>(null);
+  const [deletingFornecedor, setDeletingFornecedor] = useState<ExternalCliente | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [viewingFornecedor, setViewingFornecedor] = useState<Fornecedor | null>(null);
+  const [viewingFornecedor, setViewingFornecedor] = useState<ExternalCliente | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   
   // Advanced filters
