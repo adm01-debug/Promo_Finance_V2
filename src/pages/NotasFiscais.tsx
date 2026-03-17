@@ -418,17 +418,10 @@ const NFePreview = ({ nfe }: { nfe: NotaFiscal }) => {
           <FileCode className="h-4 w-4" />
           Download XML
         </Button>
-        <DANFEGenerator nfe={{
-          numero: nfe.numero, serie: nfe.serie, chaveAcesso: nfe.chaveAcesso,
-          naturezaOperacao: nfe.naturezaOperacao, dataEmissao: nfe.dataEmissao,
-          emitenteNome: nfe.emitenteNome, emitenteCnpj: nfe.cnpjEmitente,
-          destinatarioNome: nfe.destinatarioNome, destinatarioCnpj: nfe.cnpjDestinatario,
-          destinatarioEndereco: nfe.destinatarioEndereco,
-          valorProdutos: nfe.valorProdutos, valorFrete: nfe.valorFrete,
-          valorDesconto: nfe.valorDesconto, valorTotal: nfe.valorTotal,
-          valorICMS: nfe.valorICMS, protocolo: nfe.protocolo,
-          itens: nfe.itens.map(i => ({ descricao: i.descricao, ncm: i.ncm, cfop: i.cfop, unidade: i.unidade, quantidade: i.quantidade, valorUnitario: i.valorUnitario, valorTotal: i.valorTotal })),
-        }} />
+        <Button onClick={() => setDanfeOpen(true)} className="gap-2">
+          <Download className="h-4 w-4" />
+          Download DANFE
+        </Button>
         <Button variant="outline" onClick={handlePrint} className="gap-2">
           <Printer className="h-4 w-4" />
           Imprimir
