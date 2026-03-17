@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react'; // dashboard hook
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { contasPagarService } from '@/services/contas-pagar.service';
 import { contasReceberService } from '@/services/contas-receber.service';
