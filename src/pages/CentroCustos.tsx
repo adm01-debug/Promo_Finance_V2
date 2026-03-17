@@ -233,6 +233,7 @@ export default function CentroCustos() {
                 </TabsTrigger>
               </TabsList>
             </Tabs>
+            <CentroCustoExport centros={centros} />
             <Button
               variant="outline"
               size="sm"
