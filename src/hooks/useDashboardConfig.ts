@@ -11,16 +11,14 @@ export interface DashboardWidget {
 }
 
 const DEFAULT_WIDGETS: DashboardWidget[] = [
-  { id: 'kpi-saldo', type: 'kpi-saldo', title: 'Saldo Total', visible: true, order: 0, size: 'sm' },
-  { id: 'kpi-receber', type: 'kpi-receber', title: 'A Receber', visible: true, order: 1, size: 'sm' },
-  { id: 'kpi-pagar', type: 'kpi-pagar', title: 'A Pagar', visible: true, order: 2, size: 'sm' },
-  { id: 'kpi-vencidas', type: 'kpi-vencidas', title: 'Vencidas', visible: true, order: 3, size: 'sm' },
-  { id: 'fluxo-caixa', type: 'fluxo-caixa', title: 'Fluxo de Caixa', visible: true, order: 4, size: 'lg' },
-  { id: 'composicao', type: 'composicao', title: 'Composição Financeira', visible: true, order: 5, size: 'md' },
-  { id: 'vencimentos', type: 'vencimentos', title: 'Próximos Vencimentos', visible: true, order: 6, size: 'md' },
-  { id: 'previsao-ia', type: 'previsao-ia', title: 'Previsão IA', visible: true, order: 7, size: 'md' },
-  { id: 'aprovacoes', type: 'aprovacoes', title: 'Aprovações Pendentes', visible: true, order: 8, size: 'sm' },
-  { id: 'top-clientes', type: 'top-clientes', title: 'Top Clientes', visible: true, order: 9, size: 'md' },
+  { id: 'fluxo-caixa', type: 'fluxo-caixa', title: 'Fluxo de Caixa', visible: true, order: 0, size: 'lg' },
+  { id: 'composicao', type: 'composicao', title: 'Saldo por Banco', visible: true, order: 1, size: 'sm' },
+  { id: 'top-clientes', type: 'top-clientes', title: 'Top Clientes', visible: true, order: 2, size: 'sm' },
+  { id: 'vencimentos', type: 'vencimentos', title: 'Status Contas', visible: true, order: 3, size: 'sm' },
+  { id: 'aprovacoes', type: 'aprovacoes', title: 'Centros de Custo', visible: true, order: 4, size: 'sm' },
+  { id: 'previsao-ia', type: 'previsao-ia', title: 'Previsão IA', visible: true, order: 5, size: 'lg' },
+  { id: 'alertas-preditivos', type: 'kpi-vencidas', title: 'Alertas Preditivos', visible: true, order: 6, size: 'md' },
+  { id: 'metas', type: 'kpi-saldo', title: 'Metas Financeiras', visible: true, order: 7, size: 'md' },
 ];
 
 const STORAGE_KEY = 'dashboard-widgets-config';
