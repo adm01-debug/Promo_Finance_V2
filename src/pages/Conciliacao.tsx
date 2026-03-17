@@ -38,6 +38,8 @@ import { ConciliacaoDashboard } from '@/components/conciliacao/ConciliacaoDashbo
 import { RegrasConciliacaoPanel } from '@/components/conciliacao/RegrasConciliacaoPanel';
 import { ConciliacaoFilters, ConciliacaoFilterState, INITIAL_FILTERS } from '@/components/conciliacao/ConciliacaoFilters';
 import { ConciliacaoExport } from '@/components/conciliacao/ConciliacaoExport';
+import { ExtratoBancarioPanel } from '@/components/conciliacao/ExtratoBancarioPanel';
+import { SessoesConciliacaoPanel } from '@/components/conciliacao/SessoesConciliacaoPanel';
 import { BulkActionsBar } from '@/components/ui/bulk-actions-bar';
 import { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
 import { 
