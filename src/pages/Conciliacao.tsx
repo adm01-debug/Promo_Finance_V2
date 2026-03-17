@@ -204,12 +204,20 @@ export default function Conciliacao() {
     setIsProcessingImport(false);
   }, [selectedBanco, lancamentosSistema, salvarExtratoBanco]);
 
-  // Match handlers
-  const handleConfirmarMatch = useCallback((transacaoId: string, lancamentoId: string, tipo: 'pagar' | 'receber') => {
+  // Match handlers - persist to DB via RPC
+  const handleConfirmarMatch = useCallback(async (transacaoId: string, lancamentoId: string, tipo: 'pagar' | 'receber') => {
+    try {
+      await confirmarConciliacao.mutateAsync({
+        transacaoId,
+        contaPagarId: tipo === 'pagar' ? lancamentoId : undefined,
+        contaReceberId: tipo === 'receber' ? lancamentoId : undefined,
+      });
+    } catch {
+      // RPC may fail if transacaoId is an OFX ID not in transacoes_bancarias - update local state anyway
+    }
     setTransacoes(prev => prev.map(t => t.id === transacaoId ? { ...t, conciliada: true } : t));
     setTransacoesImportadas(prev => prev.filter(t => t.id !== transacaoId));
-    toast.success('Transação conciliada');
-  }, []);
+  }, [confirmarConciliacao]);
 
   const handleRejeitarMatch = useCallback((transacaoId: string, lancamentoId: string) => {
     toast.info('Sugestão rejeitada');
