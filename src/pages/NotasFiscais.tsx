@@ -65,6 +65,7 @@ import { ContingenciaNFe } from '@/components/nfe/ContingenciaNFe';
 import { SefazMonitor } from '@/components/nfe/SefazMonitor';
 import { DANFEGenerator } from '@/components/nfe/DANFEGenerator';
 import { EmissaoNFeForm } from '@/components/nfe/EmissaoNFeForm';
+import { BlingNFePanel } from '@/components/nfe/BlingNFePanel';
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
