@@ -49,7 +49,8 @@ import {
   Bell,
   BarChart3,
   Shield,
-  Activity
+  Activity,
+  ExternalLink
 } from 'lucide-react';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/formatters';
 import { useEmpresas } from '@/hooks/useFinancialData';
