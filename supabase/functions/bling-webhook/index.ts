@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
     const resourceId = payload.data?.id?.toString() || null;
     const retries = payload.retries || 0;
 
-    // Idempotency check: if same resource_id + event_type was processed, skip
+    // Idempotency check
     if (resourceId) {
       const { data: existing } = await supabase
         .from("bling_webhook_events")
@@ -111,7 +111,7 @@ Deno.serve(async (req) => {
 
         default:
           console.log(`Unhandled module: ${module}`);
-          processed = true; // Mark as processed to avoid re-processing
+          processed = true;
       }
     } catch (processError) {
       errorMessage =
@@ -167,7 +167,6 @@ async function processPedidoEvent(supabase: any, event: string, data: any) {
   const pedidoId = data?.id;
 
   if (event === "situacao:alterada" && situacao) {
-    // Create alert for important status changes
     const situacaoNames: Record<number, string> = {
       6: "Em aberto",
       9: "Atendido",
@@ -185,7 +184,7 @@ async function processPedidoEvent(supabase: any, event: string, data: any) {
       prioridade,
       entidade_tipo: "bling_pedido",
       entidade_id: String(pedidoId),
-      acao_url: "/bling",
+      acao_url: "/notas-fiscais", // Gap #7: fixed from /bling
     });
   }
 }
@@ -201,7 +200,7 @@ async function processNFeEvent(supabase: any, event: string, data: any) {
       prioridade: "baixa",
       entidade_tipo: "bling_nfe",
       entidade_id: String(nfeId),
-      acao_url: "/bling",
+      acao_url: "/notas-fiscais", // Gap #7: fixed
     });
   }
 
@@ -213,7 +212,7 @@ async function processNFeEvent(supabase: any, event: string, data: any) {
       prioridade: "alta",
       entidade_tipo: "bling_nfe",
       entidade_id: String(nfeId),
-      acao_url: "/bling",
+      acao_url: "/notas-fiscais", // Gap #7: fixed
     });
   }
 }
@@ -227,7 +226,7 @@ async function processContaReceberEvent(supabase: any, event: string, data: any)
       prioridade: "baixa",
       entidade_tipo: "bling_conta_receber",
       entidade_id: String(data?.id),
-      acao_url: "/bling",
+      acao_url: "/notas-fiscais", // Gap #7: fixed
     });
   }
 }
@@ -241,17 +240,99 @@ async function processContaPagarEvent(supabase: any, event: string, data: any) {
       prioridade: "baixa",
       entidade_tipo: "bling_conta_pagar",
       entidade_id: String(data?.id),
-      acao_url: "/bling",
+      acao_url: "/notas-fiscais", // Gap #7: fixed
     });
   }
 }
 
+// Gap #11: Real sync for Contato events
 async function processContatoEvent(supabase: any, event: string, data: any) {
-  console.log(`Contato event: ${event}, ID: ${data?.id}`);
+  const contatoId = data?.id;
+  if (!contatoId) return;
+
+  if (event === "incluir" || event === "alterar") {
+    // Sync contact data to clientes table if matching bitrix/bling reference exists
+    const nome = data?.nome || data?.nomeFantasia || "";
+    const cnpjCpf = data?.numeroDocumento || "";
+    const email = data?.email || "";
+    const telefone = data?.celular || data?.fone || "";
+
+    if (nome) {
+      // Try to update existing client by CNPJ/CPF match
+      if (cnpjCpf) {
+        const { data: existing } = await supabase
+          .from("clientes")
+          .select("id")
+          .or(`cnpj_cpf.eq.${cnpjCpf},cpf_cnpj.eq.${cnpjCpf}`)
+          .limit(1);
+
+        if (existing && existing.length > 0) {
+          await supabase.from("clientes").update({
+            razao_social: nome,
+            email: email || undefined,
+            telefone: telefone || undefined,
+            updated_at: new Date().toISOString(),
+          }).eq("id", existing[0].id);
+        }
+      }
+
+      // Always create an alert
+      await supabase.from("alertas").insert({
+        tipo: "bling_contato",
+        titulo: `Contato ${event === "incluir" ? "criado" : "atualizado"} no Bling`,
+        mensagem: `O contato "${nome}" (ID: ${contatoId}) foi ${event === "incluir" ? "incluído" : "alterado"} no Bling.`,
+        prioridade: "baixa",
+        entidade_tipo: "bling_contato",
+        entidade_id: String(contatoId),
+        acao_url: "/notas-fiscais",
+      });
+    }
+  }
+
+  if (event === "excluir") {
+    await supabase.from("alertas").insert({
+      tipo: "bling_contato",
+      titulo: `Contato excluído no Bling`,
+      mensagem: `O contato (ID: ${contatoId}) foi excluído no Bling.`,
+      prioridade: "media",
+      entidade_tipo: "bling_contato",
+      entidade_id: String(contatoId),
+      acao_url: "/notas-fiscais",
+    });
+  }
 }
 
+// Gap #11: Real sync for Produto events
 async function processProdutoEvent(supabase: any, event: string, data: any) {
-  console.log(`Produto event: ${event}, ID: ${data?.id}`);
+  const produtoId = data?.id;
+  if (!produtoId) return;
+
+  const nome = data?.nome || data?.descricao || "";
+  const sku = data?.codigo || "";
+
+  if (event === "incluir" || event === "alterar") {
+    await supabase.from("alertas").insert({
+      tipo: "bling_produto",
+      titulo: `Produto ${event === "incluir" ? "criado" : "atualizado"} no Bling`,
+      mensagem: `O produto "${nome || "sem nome"}" (SKU: ${sku || "N/A"}, ID: ${produtoId}) foi ${event === "incluir" ? "incluído" : "alterado"} no Bling.`,
+      prioridade: "baixa",
+      entidade_tipo: "bling_produto",
+      entidade_id: String(produtoId),
+      acao_url: "/notas-fiscais",
+    });
+  }
+
+  if (event === "excluir") {
+    await supabase.from("alertas").insert({
+      tipo: "bling_produto",
+      titulo: `Produto excluído no Bling`,
+      mensagem: `O produto (ID: ${produtoId}) foi excluído no Bling.`,
+      prioridade: "media",
+      entidade_tipo: "bling_produto",
+      entidade_id: String(produtoId),
+      acao_url: "/notas-fiscais",
+    });
+  }
 }
 
 async function processEstoqueEvent(supabase: any, event: string, data: any) {
@@ -263,7 +344,7 @@ async function processEstoqueEvent(supabase: any, event: string, data: any) {
       prioridade: "alta",
       entidade_tipo: "bling_produto",
       entidade_id: String(data?.id),
-      acao_url: "/bling",
+      acao_url: "/notas-fiscais", // Gap #7: fixed
     });
   }
 }

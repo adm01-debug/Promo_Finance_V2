@@ -40,6 +40,11 @@ Deno.serve(async (req) => {
       return await handleOAuthCallback(supabase, params, userId);
     }
 
+    // --- Gap #3: Token revocation ---
+    if (action === "revogar_token") {
+      return await handleTokenRevocation(supabase);
+    }
+
     // --- Get valid access token ---
     const accessToken = await getValidAccessToken(supabase);
     if (!accessToken) {
@@ -94,6 +99,18 @@ Deno.serve(async (req) => {
       case "gerar_nfce_pedido":
         return await blingPost(accessToken, `/pedidos/vendas/${params.id}/gerar-nfce`);
 
+      // ═══════════════ PEDIDOS DE COMPRA (Gap #14) ═══════════════
+      case "listar_pedidos_compra":
+        return await blingGet(accessToken, "/pedidos/compras", params.filtros);
+      case "buscar_pedido_compra":
+        return await blingGet(accessToken, `/pedidos/compras/${params.id}`);
+      case "criar_pedido_compra":
+        return await blingPost(accessToken, "/pedidos/compras", params.data);
+      case "atualizar_pedido_compra":
+        return await blingPut(accessToken, `/pedidos/compras/${params.id}`, params.data);
+      case "excluir_pedidos_compra":
+        return await blingRequest(accessToken, "DELETE", "/pedidos/compras", { idsPedidosCompras: params.ids });
+
       // ═══════════════ PRODUTOS ═══════════════
       case "listar_produtos":
         return await blingGet(accessToken, "/produtos", params.filtros);
@@ -107,21 +124,18 @@ Deno.serve(async (req) => {
         return await blingRequest(accessToken, "PATCH", `/produtos/${params.id}`, params.data);
       case "excluir_produtos":
         return await blingRequest(accessToken, "DELETE", "/produtos", { idsProdutos: params.ids });
-      // Variações
       case "listar_variacoes":
         return await blingGet(accessToken, `/produtos/${params.id}/variacoes`);
       case "criar_variacoes":
         return await blingPost(accessToken, `/produtos/${params.id}/variacoes`, params.data);
       case "gerar_combinacoes":
         return await blingPost(accessToken, "/produtos/variacoes/atributos/gerar-combinacoes", params.data);
-      // Estrutura/Kit
       case "buscar_estrutura":
         return await blingGet(accessToken, `/produtos/estruturas/${params.id}`);
       case "atualizar_estrutura":
         return await blingPut(accessToken, `/produtos/estruturas/${params.id}`, params.data);
       case "excluir_estrutura":
         return await blingRequest(accessToken, "DELETE", `/produtos/estruturas/${params.id}`);
-      // Produto-Fornecedor
       case "listar_produto_fornecedores":
         return await blingGet(accessToken, "/produtos/fornecedores", params.filtros);
       case "criar_produto_fornecedor":
@@ -130,7 +144,6 @@ Deno.serve(async (req) => {
         return await blingPut(accessToken, `/produtos/fornecedores/${params.id}`, params.data);
       case "excluir_produto_fornecedor":
         return await blingRequest(accessToken, "DELETE", `/produtos/fornecedores/${params.id}`);
-      // Produto-Loja
       case "listar_produto_lojas":
         return await blingGet(accessToken, "/produtos/lojas", params.filtros);
       case "criar_produto_loja":
@@ -139,7 +152,6 @@ Deno.serve(async (req) => {
         return await blingPut(accessToken, `/produtos/lojas/${params.id}`, params.data);
       case "excluir_produto_loja":
         return await blingRequest(accessToken, "DELETE", `/produtos/lojas/${params.id}`);
-      // Lotes
       case "listar_lotes":
         return await blingGet(accessToken, "/produtos/lotes", params.filtros);
       case "atualizar_lote":
@@ -160,7 +172,6 @@ Deno.serve(async (req) => {
         return await blingPut(accessToken, `/depositos/${params.id}`, params.data);
 
       // ═══════════════ FINANCEIRO ═══════════════
-      // Contas a Receber
       case "listar_contas_receber":
         return await blingGet(accessToken, "/contas/receber", params.filtros);
       case "buscar_conta_receber":
@@ -175,7 +186,6 @@ Deno.serve(async (req) => {
         return await blingPost(accessToken, `/contas/receber/${params.id}/baixas`, params.data);
       case "estornar_baixa_receber":
         return await blingRequest(accessToken, "DELETE", `/contas/receber/${params.id}/baixas/${params.baixaId}`);
-      // Contas a Pagar
       case "listar_contas_pagar":
         return await blingGet(accessToken, "/contas/pagar", params.filtros);
       case "buscar_conta_pagar":
@@ -190,19 +200,16 @@ Deno.serve(async (req) => {
         return await blingPost(accessToken, `/contas/pagar/${params.id}/baixas`, params.data);
       case "estornar_baixa_pagar":
         return await blingRequest(accessToken, "DELETE", `/contas/pagar/${params.id}/baixas/${params.baixaId}`);
-      // Borderôs
       case "listar_borderos":
         return await blingGet(accessToken, "/borderos", params.filtros);
       case "criar_bordero":
         return await blingPost(accessToken, "/borderos", params.data);
       case "excluir_bordero":
         return await blingRequest(accessToken, "DELETE", `/borderos/${params.id}`);
-      // Contas Contábeis (Portadores)
       case "listar_contas_contabeis":
         return await blingGet(accessToken, "/contas-contabeis");
       case "criar_conta_contabil":
         return await blingPost(accessToken, "/contas-contabeis", params.data);
-      // Formas de Pagamento
       case "formas_pagamento":
         return await blingGet(accessToken, "/formas-pagamentos");
       case "criar_forma_pagamento":
@@ -211,7 +218,6 @@ Deno.serve(async (req) => {
         return await blingPut(accessToken, `/formas-pagamentos/${params.id}`, params.data);
       case "excluir_forma_pagamento":
         return await blingRequest(accessToken, "DELETE", `/formas-pagamentos/${params.id}`);
-      // Categorias Receitas/Despesas
       case "categorias_receitas_despesas":
         return await blingGet(accessToken, "/categorias/receitas-despesas");
       case "criar_categoria":
@@ -236,6 +242,16 @@ Deno.serve(async (req) => {
         return await blingPost(accessToken, `/nfe/${params.id}/estornar-estoque`);
       case "estornar_contas_nfe":
         return await blingPost(accessToken, `/nfe/${params.id}/estornar-contas`);
+
+      // ═══════════════ NFC-e (Gap #15) ═══════════════
+      case "listar_nfce":
+        return await blingGet(accessToken, "/nfce", params.filtros);
+      case "buscar_nfce":
+        return await blingGet(accessToken, `/nfce/${params.id}`);
+      case "criar_nfce":
+        return await blingPost(accessToken, "/nfce", params.data);
+      case "enviar_nfce":
+        return await blingPost(accessToken, `/nfce/${params.id}/enviar`);
 
       // ═══════════════ LOGÍSTICA ═══════════════
       case "listar_logisticas":
@@ -263,6 +279,10 @@ Deno.serve(async (req) => {
       case "dados_empresa":
         return await blingGet(accessToken, "/empresas/me/dados-basicos");
 
+      // ═══════════════ NATUREZAS DE OPERAÇÃO ═══════════════
+      case "listar_naturezas_operacao":
+        return await blingGet(accessToken, "/naturezas-operacoes", params.filtros);
+
       default:
         return jsonResponse({ error: `Ação desconhecida: ${action}` }, 400);
     }
@@ -274,6 +294,54 @@ Deno.serve(async (req) => {
     );
   }
 });
+
+// --- Gap #3: Token Revocation ---
+async function handleTokenRevocation(supabase: any) {
+  const serviceRole = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const adminClient = createClient(Deno.env.get("SUPABASE_URL")!, serviceRole);
+  const clientId = Deno.env.get("BLING_CLIENT_ID");
+  const clientSecret = Deno.env.get("BLING_CLIENT_SECRET");
+
+  if (!clientId || !clientSecret) {
+    return jsonResponse({ error: "Credenciais Bling não configuradas" }, 500);
+  }
+
+  const { data: tokens } = await adminClient
+    .from("bling_tokens")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(1);
+
+  if (!tokens || tokens.length === 0) {
+    return jsonResponse({ error: "Nenhum token encontrado" }, 404);
+  }
+
+  const token = tokens[0];
+  const basicAuth = btoa(`${clientId}:${clientSecret}`);
+
+  try {
+    const res = await fetch(`${BLING_AUTH_BASE}/revoke`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${basicAuth}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({ token: token.access_token }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error("Bling revoke error:", errText);
+    }
+  } catch (e) {
+    console.error("Revoke fetch error:", e);
+  }
+
+  // Always clean up local tokens
+  await adminClient.from("bling_tokens").delete().eq("id", token.id);
+
+  return jsonResponse({ success: true });
+}
 
 // --- OAuth Callback Handler ---
 async function handleOAuthCallback(
@@ -431,7 +499,16 @@ async function blingRequest(accessToken: string, method: string, path: string, d
   return await blingFetch(accessToken, `${BLING_API_BASE}${path}`, method, data);
 }
 
-async function blingFetch(accessToken: string, url: string, method: string, data?: any) {
+/** Gap #5: Retry with exponential backoff for 429/5xx, auto-refresh on 401 */
+async function blingFetch(
+  accessToken: string,
+  url: string,
+  method: string,
+  data?: any,
+  attempt = 0
+): Promise<Response> {
+  const MAX_RETRIES = 3;
+
   const headers: Record<string, string> = {
     Authorization: `Bearer ${accessToken}`,
     Accept: "application/json",
@@ -451,6 +528,25 @@ async function blingFetch(accessToken: string, url: string, method: string, data
   const res = await fetch(url, opts);
   const contentType = res.headers.get("content-type") || "";
 
+  // Gap #5: Handle 429 (rate limit) with retry
+  if (res.status === 429 && attempt < MAX_RETRIES) {
+    const retryAfter = parseInt(res.headers.get("Retry-After") || "0", 10);
+    const waitMs = retryAfter > 0 ? retryAfter * 1000 : Math.pow(2, attempt + 1) * 1000;
+    console.warn(`Bling 429 rate limit. Retrying in ${waitMs}ms (attempt ${attempt + 1})`);
+    await res.text(); // consume body
+    await new Promise((r) => setTimeout(r, waitMs));
+    return blingFetch(accessToken, url, method, data, attempt + 1);
+  }
+
+  // Gap #5: Handle 5xx with exponential backoff
+  if (res.status >= 500 && attempt < MAX_RETRIES) {
+    const waitMs = Math.pow(2, attempt + 1) * 1000;
+    console.warn(`Bling ${res.status} server error. Retrying in ${waitMs}ms (attempt ${attempt + 1})`);
+    await res.text(); // consume body
+    await new Promise((r) => setTimeout(r, waitMs));
+    return blingFetch(accessToken, url, method, data, attempt + 1);
+  }
+
   let responseData: any;
   if (contentType.includes("application/json")) {
     responseData = await res.json();
@@ -462,7 +558,7 @@ async function blingFetch(accessToken: string, url: string, method: string, data
     console.error(`Bling API error [${res.status}]:`, JSON.stringify(responseData));
     return jsonResponse(
       { error: `Bling API error`, status: res.status, details: responseData },
-      res.status === 429 ? 429 : res.status >= 500 ? 502 : 400
+      res.status === 429 ? 429 : res.status === 403 ? 403 : res.status >= 500 ? 502 : 400
     );
   }
 
