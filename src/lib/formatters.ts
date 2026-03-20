@@ -30,8 +30,10 @@ export const formatDate = (date: Date | string | null | undefined): string => {
   }).format(d);
 };
 
-export const formatDateShort = (date: Date | string): string => {
+export const formatDateShort = (date: Date | string | null | undefined): string => {
+  if (!date) return '-';
   const d = typeof date === 'string' ? new Date(date) : date;
+  if (isNaN(d.getTime())) return '-';
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
     month: 'short',
