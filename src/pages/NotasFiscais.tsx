@@ -1359,6 +1359,10 @@ export default function NotasFiscais() {
             <TabsContent value="monitor">
               <SefazMonitor />
             </TabsContent>
+
+            <TabsContent value="bling">
+              <BlingNFePanel />
+            </TabsContent>
           </Tabs>
         </motion.div>
 
