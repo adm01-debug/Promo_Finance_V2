@@ -49,7 +49,8 @@ import {
   Bell,
   BarChart3,
   Shield,
-  Activity
+  Activity,
+  ExternalLink
 } from 'lucide-react';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/formatters';
 import { useEmpresas } from '@/hooks/useFinancialData';
@@ -65,6 +66,7 @@ import { ContingenciaNFe } from '@/components/nfe/ContingenciaNFe';
 import { SefazMonitor } from '@/components/nfe/SefazMonitor';
 import { DANFEGenerator } from '@/components/nfe/DANFEGenerator';
 import { EmissaoNFeForm } from '@/components/nfe/EmissaoNFeForm';
+import { BlingNFePanel } from '@/components/nfe/BlingNFePanel';
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -1099,6 +1101,10 @@ export default function NotasFiscais() {
                 <Activity className="h-4 w-4" />
                 Monitor
               </TabsTrigger>
+              <TabsTrigger value="bling" className="gap-2">
+                <ExternalLink className="h-4 w-4" />
+                Bling ERP
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="notas" className="space-y-4">
@@ -1352,6 +1358,10 @@ export default function NotasFiscais() {
 
             <TabsContent value="monitor">
               <SefazMonitor />
+            </TabsContent>
+
+            <TabsContent value="bling">
+              <BlingNFePanel />
             </TabsContent>
           </Tabs>
         </motion.div>
