@@ -8,14 +8,15 @@ export const formatCurrency = (value: number | null | undefined): string => {
   }).format(value);
 };
 
-export const formatCurrencyCompact = (value: number): string => {
-  if (value >= 1000000) {
-    return `R$ ${(value / 1000000).toFixed(1)}M`;
+export const formatCurrencyCompact = (value: number | null | undefined): string => {
+  const v = value ?? 0;
+  if (v >= 1000000) {
+    return `R$ ${(v / 1000000).toFixed(1)}M`;
   }
-  if (value >= 1000) {
-    return `R$ ${(value / 1000).toFixed(1)}K`;
+  if (v >= 1000) {
+    return `R$ ${(v / 1000).toFixed(1)}K`;
   }
-  return formatCurrency(value);
+  return formatCurrency(v);
 };
 
 export const formatDate = (date: Date | string): string => {
