@@ -1100,6 +1100,10 @@ export default function NotasFiscais() {
                 <Activity className="h-4 w-4" />
                 Monitor
               </TabsTrigger>
+              <TabsTrigger value="bling" className="gap-2">
+                <ExternalLink className="h-4 w-4" />
+                Bling ERP
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="notas" className="space-y-4">
