@@ -1,24 +1,28 @@
 // Formatadores de valores monetários e datas
 
-export const formatCurrency = (value: number): string => {
+export const formatCurrency = (value: number | null | undefined): string => {
+  if (value == null || isNaN(value)) return 'R$ 0,00';
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
   }).format(value);
 };
 
-export const formatCurrencyCompact = (value: number): string => {
-  if (value >= 1000000) {
-    return `R$ ${(value / 1000000).toFixed(1)}M`;
+export const formatCurrencyCompact = (value: number | null | undefined): string => {
+  const v = value ?? 0;
+  if (v >= 1000000) {
+    return `R$ ${(v / 1000000).toFixed(1)}M`;
   }
-  if (value >= 1000) {
-    return `R$ ${(value / 1000).toFixed(1)}K`;
+  if (v >= 1000) {
+    return `R$ ${(v / 1000).toFixed(1)}K`;
   }
-  return formatCurrency(value);
+  return formatCurrency(v);
 };
 
-export const formatDate = (date: Date | string): string => {
+export const formatDate = (date: Date | string | null | undefined): string => {
+  if (!date) return '-';
   const d = typeof date === 'string' ? new Date(date) : date;
+  if (isNaN(d.getTime())) return '-';
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
     month: '2-digit',
@@ -26,16 +30,20 @@ export const formatDate = (date: Date | string): string => {
   }).format(d);
 };
 
-export const formatDateShort = (date: Date | string): string => {
+export const formatDateShort = (date: Date | string | null | undefined): string => {
+  if (!date) return '-';
   const d = typeof date === 'string' ? new Date(date) : date;
+  if (isNaN(d.getTime())) return '-';
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
     month: 'short',
   }).format(d);
 };
 
-export const formatDateTime = (date: Date | string): string => {
+export const formatDateTime = (date: Date | string | null | undefined): string => {
+  if (!date) return '-';
   const d = typeof date === 'string' ? new Date(date) : date;
+  if (isNaN(d.getTime())) return '-';
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
     month: '2-digit',
@@ -54,7 +62,7 @@ export const formatNumber = (value: number): string => {
 };
 
 export const getDaysUntil = (date: Date | string): number => {
-  const d = typeof date === 'string' ? new Date(date) : date;
+  const d = new Date(typeof date === 'string' ? date : date.getTime());
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   d.setHours(0, 0, 0, 0);

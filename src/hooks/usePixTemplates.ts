@@ -70,10 +70,12 @@ export const useIncrementTemplateUso = () => {
       const { error } = await supabase.rpc('increment_pix_template_uso' as any, { p_template_id: templateId });
       // Fallback if RPC doesn't exist - direct update
       if (error) {
+        const { data: current } = await supabase.from('pix_templates').select('uso_count').eq('id', templateId).maybeSingle();
+        const currentCount = (current?.uso_count as number) ?? 0;
         const { error: updateError } = await supabase
           .from('pix_templates')
           .update({ 
-            uso_count: (await supabase.from('pix_templates').select('uso_count').eq('id', templateId).single()).data?.uso_count as number + 1,
+            uso_count: currentCount + 1,
             ultimo_uso: new Date().toISOString()
           })
           .eq('id', templateId);
