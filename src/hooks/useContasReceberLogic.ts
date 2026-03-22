@@ -99,6 +99,12 @@ export function useContasReceberLogic() {
     setCobrancaDialogOpen(true);
   }, []);
 
+  // Aplicar desconto (#12)
+  const handleAplicarDesconto = useCallback((conta: ContaReceberWithRelations) => {
+    setDescontoConta(conta);
+    setDescontoDialogOpen(true);
+  }, []);
+
   // KPI drill-down (#28)
   const handleKpiClick = useCallback((filter: string) => {
     if (filter === 'all') {
