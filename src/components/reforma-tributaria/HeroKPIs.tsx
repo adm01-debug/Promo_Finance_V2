@@ -70,6 +70,7 @@ const colorClasses = {
 export function HeroKPIs({
   cargaTributaria, cbsSaldo, ibsSaldo, creditosDisponiveis, creditosUtilizados,
   creditosAcumulados, percentualMigracao, aliquotaCbs, aliquotaIbs, alertasCriticos = 0,
+  onKPIClick,
 }: Props) {
   const percentualCreditos = creditosAcumulados > 0 
     ? (creditosUtilizados / creditosAcumulados) * 100 
