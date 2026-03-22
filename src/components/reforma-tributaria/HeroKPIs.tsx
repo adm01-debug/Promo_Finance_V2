@@ -193,7 +193,7 @@ export function HeroKPIs({
 
         {/* Alertas */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.35 }}>
-          <Card className={cn("transition-all duration-200 hover:shadow-md", alertasCriticos > 0 ? `${colorClasses.red.border} animate-pulse` : colorClasses.green.border)}>
+          <Card className={cn("transition-all duration-200 hover:shadow-md cursor-pointer", alertasCriticos > 0 ? `${colorClasses.red.border} animate-pulse` : colorClasses.green.border)} onClick={() => onKPIClick?.('alertas')}>
             <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
               <CardTitle className="text-[10px] sm:text-sm font-medium text-muted-foreground">Alertas</CardTitle>
               {alertasCriticos > 0 
