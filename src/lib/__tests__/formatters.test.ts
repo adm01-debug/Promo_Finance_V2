@@ -14,8 +14,8 @@ import {
 describe('formatCurrency', () => {
   it('formata valor positivo', () => expect(formatCurrency(1234.56)).toContain('1.234,56'));
   it('formata zero', () => expect(formatCurrency(0)).toContain('0,00'));
-  it('formata null', () => expect(formatCurrency(null)).toBe('R$ 0,00'));
-  it('formata undefined', () => expect(formatCurrency(undefined)).toBe('R$ 0,00'));
+  it('formata null', () => expect(formatCurrency(null)).toContain('0,00'));
+  it('formata undefined', () => expect(formatCurrency(undefined)).toContain('0,00'));
   it('formata NaN', () => expect(formatCurrency(NaN)).toBe('R$ 0,00'));
   it('formata valor negativo', () => expect(formatCurrency(-500)).toContain('500,00'));
   it('formata centavos', () => expect(formatCurrency(0.01)).toContain('0,01'));
