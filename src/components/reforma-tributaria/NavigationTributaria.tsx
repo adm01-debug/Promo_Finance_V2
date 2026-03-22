@@ -109,7 +109,7 @@ interface Props {
   alertasCriticos?: number;
 }
 
-export function NavigationTributaria({ activeTab, onTabChange }: Props) {
+export function NavigationTributaria({ activeTab, onTabChange, alertasCriticos = 0 }: Props) {
   const [expandedGroup, setExpandedGroup] = useState<string | null>(() => {
     // Encontra o grupo que contém a aba ativa
     for (const group of NAV_GROUPS) {
