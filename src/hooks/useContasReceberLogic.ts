@@ -103,10 +103,10 @@ export function useContasReceberLogic() {
       setStatusFilter('all');
     } else if (filter === 'vence_hoje') {
       setStatusFilter('pendente');
-      handleFilterChange('hoje', null);
+      handleFilterChange('today', null);
     } else if (filter === 'vence_semana') {
       setStatusFilter('pendente');
-      handleFilterChange('semana', null);
+      handleFilterChange('week', null);
     } else {
       setStatusFilter(filter);
     }
