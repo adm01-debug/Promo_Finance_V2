@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import {
   Building2, FileText, Calendar, MoreHorizontal, Eye, Edit, Trash2, Send,
   CheckCircle2, Clock, AlertTriangle, MessageCircle, DollarSign,
-  Banknote, QrCode, CreditCard, Wallet, Shield, Scale,
+  Banknote, QrCode, CreditCard, Wallet, Shield, Scale, Gavel, Tag,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -31,6 +31,8 @@ export interface ContaReceberWithRelations extends ContaReceberRow {
   centros_custo?: { nome: string; codigo: string } | null;
   contas_bancarias?: { banco: string } | null;
   empresas?: { razao_social: string; nome_fantasia: string | null } | null;
+  has_protesto?: boolean;
+  has_boleto?: boolean;
 }
 
 type StatusPagamento = 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
@@ -52,19 +54,10 @@ const tipoCobrancaConfig: Record<string, { label: string; color: string; icon: t
 };
 
 const etapaIcons: Record<string, typeof Shield> = {
-  preventiva: Shield,
-  lembrete: Clock,
-  cobranca: AlertTriangle,
-  negociacao: DollarSign,
-  juridico: Scale,
+  preventiva: Shield, lembrete: Clock, cobranca: AlertTriangle, negociacao: DollarSign, juridico: Scale,
 };
-
 const etapaColors: Record<string, string> = {
-  preventiva: 'text-primary',
-  lembrete: 'text-warning',
-  cobranca: 'text-destructive',
-  negociacao: 'text-secondary',
-  juridico: 'text-destructive',
+  preventiva: 'text-primary', lembrete: 'text-warning', cobranca: 'text-destructive', negociacao: 'text-secondary', juridico: 'text-destructive',
 };
 
 const getScoreColor = (score: number) => {
@@ -73,7 +66,6 @@ const getScoreColor = (score: number) => {
   if (score >= 400) return 'text-streak';
   return 'text-destructive';
 };
-
 const getScoreLabel = (score: number) => {
   if (score >= 800) return 'Excelente';
   if (score >= 600) return 'Bom';
@@ -91,13 +83,16 @@ interface ContasReceberTableRowProps {
   onRegistrarRecebimento: (conta: ContaReceberWithRelations) => void;
   onView?: (conta: ContaReceberWithRelations) => void;
   onEnviarCobranca?: (conta: ContaReceberWithRelations) => void;
+  onAplicarDesconto?: (conta: ContaReceberWithRelations) => void;
   showEmpresa?: boolean;
+  showDiasAtraso?: boolean;
   animate?: boolean;
 }
 
 export function ContasReceberTableRow({
   conta, index, isSelected, onToggleSelect, onEdit, onDelete,
-  onRegistrarRecebimento, onView, onEnviarCobranca, showEmpresa = false, animate = false,
+  onRegistrarRecebimento, onView, onEnviarCobranca, onAplicarDesconto,
+  showEmpresa = false, showDiasAtraso = true, animate = false,
 }: ContasReceberTableRowProps) {
   const status = statusConfig[conta.status as StatusPagamento];
   const StatusIcon = status?.icon || Clock;
@@ -112,30 +107,24 @@ export function ContasReceberTableRow({
 
   const RowComponent = animate ? motion.tr : 'tr';
   const animationProps = animate ? {
-    initial: { opacity: 0, y: 10 },
-    animate: { opacity: 1, y: 0 },
-    transition: { delay: index * 0.02 },
+    initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, transition: { delay: index * 0.02 },
   } : {};
 
   return (
-    <RowComponent
-      {...animationProps}
-      className={cn(
-        "group hover:bg-muted/50 transition-colors",
-        isSelected && "bg-primary/5"
-      )}
-    >
+    <RowComponent {...animationProps} className={cn("group hover:bg-muted/50 transition-colors", isSelected && "bg-primary/5")}>
       <TableCell>
-        <Checkbox
-          checked={isSelected}
-          onChange={() => onToggleSelect(conta.id)}
-          aria-label={`Selecionar ${conta.descricao}`}
-        />
+        <Checkbox checked={isSelected} onChange={() => onToggleSelect(conta.id)} aria-label={`Selecionar ${conta.descricao}`} />
       </TableCell>
       <TableCell>
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center relative">
             <Building2 className="h-5 w-5 text-primary" />
+            {/* Protesto indicator (#25) */}
+            {conta.has_protesto && (
+              <div className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-destructive flex items-center justify-center">
+                <Gavel className="h-2.5 w-2.5 text-destructive-foreground" />
+              </div>
+            )}
           </div>
           <div>
             <p className="font-medium">{conta.cliente_nome}</p>
@@ -148,13 +137,18 @@ export function ContasReceberTableRow({
           <FileText className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm truncate max-w-[200px]">{conta.descricao}</span>
         </div>
-        {conta.numero_documento && (
-          <p className="text-xs text-muted-foreground mt-0.5">{conta.numero_documento}</p>
+        {conta.numero_documento && <p className="text-xs text-muted-foreground mt-0.5">{conta.numero_documento}</p>}
+        {/* Parcela indicator */}
+        {conta.numero_parcela_atual && conta.total_parcelas && (
+          <p className="text-xs text-primary font-medium mt-0.5">{conta.numero_parcela_atual}/{conta.total_parcelas}</p>
         )}
       </TableCell>
       <TableCell>
         <div>
           <p className="font-semibold">{formatCurrency(conta.valor)}</p>
+          {conta.valor_desconto && conta.valor_desconto > 0 && (
+            <p className="text-xs text-warning">Desc: -{formatCurrency(conta.valor_desconto)}</p>
+          )}
           {conta.valor_recebido && conta.valor_recebido > 0 && (
             <div className="mt-1">
               <Progress value={percentualRecebido} className="h-1.5 w-20" />
@@ -177,36 +171,52 @@ export function ContasReceberTableRow({
           </div>
         </div>
       </TableCell>
+      {/* Dias em Atraso dedicado sortável (#15) */}
+      {showDiasAtraso && (
+        <TableCell>
+          {conta.status !== 'pago' && conta.status !== 'cancelado' ? (
+            <span className={cn(
+              "text-sm font-semibold tabular-nums",
+              overdueDays > 30 ? "text-destructive" : overdueDays > 0 ? "text-warning" : "text-success"
+            )}>
+              {overdueDays > 0 ? overdueDays : overdueDays === 0 ? 'Hoje' : `${Math.abs(overdueDays)}d`}
+            </span>
+          ) : (
+            <span className="text-xs text-muted-foreground">—</span>
+          )}
+        </TableCell>
+      )}
       <TableCell>
         <div className="flex flex-col gap-1">
           <Badge variant="outline" className={cn("gap-1 w-fit", status?.color)}>
-            <StatusIcon className="h-3 w-3" />
-            {status?.label || conta.status}
+            <StatusIcon className="h-3 w-3" /> {status?.label || conta.status}
           </Badge>
-          {/* Tipo de Cobrança Badge (#16) */}
           {tipo && (
             <Badge variant="outline" className={cn("gap-1 w-fit text-[10px] px-1.5 py-0", tipo.color)}>
-              <TipoIcon className="h-2.5 w-2.5" />
-              {tipo.label}
+              <TipoIcon className="h-2.5 w-2.5" /> {tipo.label}
             </Badge>
           )}
-          {/* Etapa da Régua (#29) */}
           {EtapaIcon && etapa && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Badge variant="outline" className={cn("gap-1 w-fit text-[10px] px-1.5 py-0", etapaColors[etapa] || '')}>
-                    <EtapaIcon className="h-2.5 w-2.5" />
-                    {getEtapaCobrancaLabel(etapa)}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent>Etapa da régua de cobrança</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <TooltipProvider><Tooltip><TooltipTrigger>
+              <Badge variant="outline" className={cn("gap-1 w-fit text-[10px] px-1.5 py-0", etapaColors[etapa] || '')}>
+                <EtapaIcon className="h-2.5 w-2.5" /> {getEtapaCobrancaLabel(etapa)}
+              </Badge>
+            </TooltipTrigger><TooltipContent>Etapa da régua de cobrança</TooltipContent></Tooltip></TooltipProvider>
+          )}
+          {/* Protesto badge (#25) */}
+          {conta.has_protesto && (
+            <Badge variant="outline" className="gap-1 w-fit text-[10px] px-1.5 py-0 bg-destructive/10 text-destructive border-destructive/20">
+              <Gavel className="h-2.5 w-2.5" /> Protestado
+            </Badge>
+          )}
+          {/* Boleto indicator (#35) */}
+          {conta.has_boleto && (
+            <Badge variant="outline" className="gap-1 w-fit text-[10px] px-1.5 py-0 bg-primary/10 text-primary border-primary/20">
+              <Banknote className="h-2.5 w-2.5" /> Boleto
+            </Badge>
           )}
         </div>
       </TableCell>
-      {/* Empresa Column (#14) */}
       {showEmpresa && (
         <TableCell>
           <span className="text-xs text-muted-foreground">
@@ -222,58 +232,30 @@ export function ContasReceberTableRow({
           </div>
         )}
       </TableCell>
-      {/* Quick Actions inline (#27) */}
       <TableCell>
         <div className="flex items-center gap-1">
-          {/* Quick inline actions */}
           {conta.status !== 'pago' && conta.status !== 'cancelado' && (
             <>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost" size="icon-sm"
-                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-success hover:text-success"
-                      onClick={() => onRegistrarRecebimento(conta)}
-                    >
-                      <DollarSign className="h-3.5 w-3.5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Registrar Recebimento</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost" size="icon-sm"
-                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-primary hover:text-primary"
-                      onClick={() => onEnviarCobranca?.(conta)}
-                    >
-                      <MessageCircle className="h-3.5 w-3.5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Enviar Cobrança</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <TooltipProvider><Tooltip><TooltipTrigger asChild>
+                <Button variant="ghost" size="icon-sm" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-success hover:text-success"
+                  onClick={() => onRegistrarRecebimento(conta)}>
+                  <DollarSign className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger><TooltipContent>Registrar Recebimento</TooltipContent></Tooltip></TooltipProvider>
+              <TooltipProvider><Tooltip><TooltipTrigger asChild>
+                <Button variant="ghost" size="icon-sm" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-primary hover:text-primary"
+                  onClick={() => onEnviarCobranca?.(conta)}>
+                  <MessageCircle className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger><TooltipContent>Enviar Cobrança</TooltipContent></Tooltip></TooltipProvider>
             </>
           )}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost" size="icon-sm"
-                  className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => onView?.(conta)}
-                >
-                  <Eye className="h-3.5 w-3.5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Visualizar Detalhes</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <TooltipProvider><Tooltip><TooltipTrigger asChild>
+            <Button variant="ghost" size="icon-sm" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => onView?.(conta)}>
+              <Eye className="h-3.5 w-3.5" />
+            </Button>
+          </TooltipTrigger><TooltipContent>Visualizar Detalhes</TooltipContent></Tooltip></TooltipProvider>
 
-          {/* Dropdown for more actions */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -281,21 +263,17 @@ export function ContasReceberTableRow({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem className="gap-2" onClick={() => onView?.(conta)}>
-                <Eye className="h-4 w-4" /> Visualizar
-              </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2" onClick={() => onEdit(conta)}>
-                <Edit className="h-4 w-4" /> Editar
-              </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2" onClick={() => onEnviarCobranca?.(conta)}>
-                <Send className="h-4 w-4" /> Enviar Cobrança
-              </DropdownMenuItem>
+              <DropdownMenuItem className="gap-2" onClick={() => onView?.(conta)}><Eye className="h-4 w-4" /> Visualizar</DropdownMenuItem>
+              <DropdownMenuItem className="gap-2" onClick={() => onEdit(conta)}><Edit className="h-4 w-4" /> Editar</DropdownMenuItem>
+              <DropdownMenuItem className="gap-2" onClick={() => onEnviarCobranca?.(conta)}><Send className="h-4 w-4" /> Enviar Cobrança</DropdownMenuItem>
+              {/* Desconto (#12) */}
+              {conta.status !== 'pago' && conta.status !== 'cancelado' && (
+                <DropdownMenuItem className="gap-2" onClick={() => onAplicarDesconto?.(conta)}>
+                  <Tag className="h-4 w-4" /> Aplicar Desconto
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="gap-2"
-                onClick={() => onRegistrarRecebimento(conta)}
-                disabled={conta.status === 'pago' || conta.status === 'cancelado'}
-              >
+              <DropdownMenuItem className="gap-2" onClick={() => onRegistrarRecebimento(conta)} disabled={conta.status === 'pago' || conta.status === 'cancelado'}>
                 <CheckCircle2 className="h-4 w-4" /> Registrar Recebimento
               </DropdownMenuItem>
               <DropdownMenuSeparator />
