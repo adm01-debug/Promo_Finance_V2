@@ -170,7 +170,7 @@ describe('ContasReceberKPIs', () => {
 
     it('exibe taxa de inadimplência com uma casa decimal', () => {
       render(<ContasReceberKPIs {...defaultProps} />);
-      expect(screen.getByText('8,5%').textContent || screen.getByText('8.5%')).toBeTruthy();
+      expect(screen.getByText('8.5%')).toBeInTheDocument();
     });
 
     it('inadimplência > 10% usa cor destructive', () => {
