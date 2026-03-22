@@ -175,20 +175,20 @@ describe('ContasReceberKPIs', () => {
 
     it('inadimplência > 10% usa cor destructive', () => {
       const { container } = render(<ContasReceberKPIs {...defaultProps} taxaInadimplencia={15} />);
-      const inadText = screen.getByText(/15/);
+      const inadText = screen.getByText(/15\.0%/);
       expect(inadText.className).toContain('destructive');
     });
 
     it('inadimplência < 5% usa cor success', () => {
       const { container } = render(<ContasReceberKPIs {...defaultProps} taxaInadimplencia={3} />);
-      const inadText = screen.getByText(/3/);
+      const inadText = screen.getByText(/3\.0%/);
       expect(inadText.className).toContain('success');
     });
 
     it('Progress bar renderiza na inadimplência', () => {
       const { container } = render(<ContasReceberKPIs {...defaultProps} />);
       const progress = container.querySelector('[role="progressbar"]');
-      expect(progress).toBeInTheDocument();
+      expect(progress).toBeTruthy();
     });
   });
 });

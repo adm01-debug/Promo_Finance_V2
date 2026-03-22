@@ -374,8 +374,8 @@ describe('ContasReceberTableRow', () => {
   describe('Checkbox seleção', () => {
     it('renderiza checkbox com estado correto', () => {
       const { container } = renderRow({}, { isSelected: true });
-      const checkbox = container.querySelector('[role="checkbox"]');
-      expect(checkbox).toBeInTheDocument();
+      const checkbox = container.querySelector('button[role="checkbox"], input[type="checkbox"]');
+      expect(checkbox).toBeTruthy();
     });
 
     it('chama onToggleSelect ao mudar checkbox', () => {
