@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
-import { useContasReceber, useContasReceberPaginated, useCentrosCusto } from '@/hooks/useFinancialData';
+import { useContasReceber, useContasReceberPaginated, useCentrosCusto, useEmpresas } from '@/hooks/useFinancialData';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
 import { useSorting } from '@/components/ui/sortable-header';
 import { useTableOptimization } from '@/hooks/useTableOptimization';
@@ -11,27 +11,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { AdvancedFilters } from '@/components/ui/advanced-filters';
 import type { Database } from '@/integrations/supabase/types';
-
-type ContaReceberRow = Database['public']['Tables']['contas_receber']['Row'];
-
-interface ClienteData {
-  razao_social: string;
-  nome_fantasia: string | null;
-  score: number | null;
-}
-
-// Exported type for use in other components
-export interface ContaReceberWithRelations extends ContaReceberRow {
-  clientes: ClienteData | null;
-  centros_custo?: { nome: string; codigo: string } | null;
-  contas_bancarias?: { banco: string } | null;
-}
+import type { ContaReceberWithRelations } from '@/components/contas-receber/ContasReceberTableRow';
 
 export function useContasReceberLogic() {
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [centroCustoFilter, setCentroCustoFilter] = useState<string>('all');
+  const [empresaFilter, setEmpresaFilter] = useState<string>('all');
+  const [formaFilter, setFormaFilter] = useState<string>('all');
   const [formOpen, setFormOpen] = useState(false);
   const [recebimentoDialogOpen, setRecebimentoDialogOpen] = useState(false);
   const [selectedConta, setSelectedConta] = useState<ContaReceberWithRelations | null>(null);
@@ -42,12 +30,15 @@ export function useContasReceberLogic() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingConta, setDeletingConta] = useState<ContaReceberWithRelations | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table');
+  const [detailDrawerOpen, setDetailDrawerOpen] = useState(false);
+  const [detailConta, setDetailConta] = useState<ContaReceberWithRelations | null>(null);
+  const [cobrancaDialogOpen, setCobrancaDialogOpen] = useState(false);
+  const [cobrancaConta, setCobrancaConta] = useState<ContaReceberWithRelations | null>(null);
   const queryClient = useQueryClient();
 
-  // Quick date filter hook
   const { filterType, handleFilterChange, filterByDate } = useQuickDateFilter();
 
-  // Server-side paginated query with debounced search
   const { data: paginatedResult, isLoading } = useContasReceberPaginated({
     page: currentPage,
     pageSize,
@@ -56,34 +47,21 @@ export function useContasReceberLogic() {
     centroCustoId: centroCustoFilter,
   });
 
-  // Get all data for KPIs (non-paginated)
   const { data: allContas = [] } = useContasReceber();
   const { data: centrosCusto = [] } = useCentrosCusto();
+  const { data: empresas = [] } = useEmpresas();
 
   const contas = paginatedResult?.data || [];
   const totalCount = paginatedResult?.totalCount || 0;
   const totalPages = paginatedResult?.totalPages || 1;
 
   // Handlers
-  const handleSearchChange = useCallback((value: string) => {
-    setSearchTerm(value);
-    setCurrentPage(1);
-  }, []);
-
-  const handleStatusChange = useCallback((value: string) => {
-    setStatusFilter(value);
-    setCurrentPage(1);
-  }, []);
-
-  const handleCentroCustoChange = useCallback((value: string) => {
-    setCentroCustoFilter(value);
-    setCurrentPage(1);
-  }, []);
-
-  const handlePageSizeChange = useCallback((size: number) => {
-    setPageSize(size);
-    setCurrentPage(1);
-  }, []);
+  const handleSearchChange = useCallback((value: string) => { setSearchTerm(value); setCurrentPage(1); }, []);
+  const handleStatusChange = useCallback((value: string) => { setStatusFilter(value); setCurrentPage(1); }, []);
+  const handleCentroCustoChange = useCallback((value: string) => { setCentroCustoFilter(value); setCurrentPage(1); }, []);
+  const handleEmpresaChange = useCallback((value: string) => { setEmpresaFilter(value); setCurrentPage(1); }, []);
+  const handleFormaChange = useCallback((value: string) => { setFormaFilter(value); setCurrentPage(1); }, []);
+  const handlePageSizeChange = useCallback((size: number) => { setPageSize(size); setCurrentPage(1); }, []);
 
   const handleOpenDeleteDialog = useCallback((conta: ContaReceberWithRelations) => {
     setDeletingConta(conta);
@@ -92,31 +70,57 @@ export function useContasReceberLogic() {
 
   const handleDeleteConta = useCallback(async () => {
     if (!deletingConta) return;
-    
     const contaBackup = { ...deletingConta };
     setDeleteDialogOpen(false);
     setDeletingConta(null);
-    
     toastDeleteWithUndo({
       item: contaBackup,
       itemName: `Conta "${contaBackup.descricao}"`,
       onDelete: async () => {
-        const { error } = await supabase
-          .from('contas_receber')
-          .delete()
-          .eq('id', contaBackup.id);
-        
+        const { error } = await supabase.from('contas_receber').delete().eq('id', contaBackup.id);
         if (error) throw error;
         queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
       },
-      onRestore: async () => {
-        queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
-      },
+      onRestore: async () => { queryClient.invalidateQueries({ queryKey: ['contas-receber'] }); },
     });
   }, [deletingConta, queryClient]);
 
-  // KPIs
+  // View/Detail drawer
+  const handleViewConta = useCallback((conta: ContaReceberWithRelations) => {
+    setDetailConta(conta);
+    setDetailDrawerOpen(true);
+  }, []);
+
+  // Enviar cobrança
+  const handleEnviarCobranca = useCallback((conta: ContaReceberWithRelations) => {
+    setCobrancaConta(conta);
+    setCobrancaDialogOpen(true);
+  }, []);
+
+  // KPI drill-down (#28)
+  const handleKpiClick = useCallback((filter: string) => {
+    if (filter === 'all') {
+      setStatusFilter('all');
+    } else if (filter === 'vence_hoje') {
+      setStatusFilter('pendente');
+      // Will be filtered client-side by date
+      handleFilterChange('hoje');
+    } else if (filter === 'vence_semana') {
+      setStatusFilter('pendente');
+      handleFilterChange('semana');
+    } else {
+      setStatusFilter(filter);
+    }
+    setCurrentPage(1);
+  }, [handleFilterChange]);
+
+  // KPIs with temporal comparison (#4, #5)
   const kpis = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const endOfWeek = new Date(today);
+    endOfWeek.setDate(today.getDate() + 7);
+
     const totalReceber = allContas.reduce((sum, c) => 
       c.status !== 'pago' && c.status !== 'cancelado' ? sum + c.valor - (c.valor_recebido || 0) : sum, 0);
     const totalVencido = allContas.filter(c => c.status === 'vencido')
@@ -125,43 +129,59 @@ export function useContasReceberLogic() {
       .reduce((sum, c) => sum + (c.valor_recebido || 0), 0);
     const taxaInadimplencia = totalReceber > 0 ? (totalVencido / totalReceber) * 100 : 0;
 
-    return { totalReceber, totalVencido, totalRecebidoMes, taxaInadimplencia };
+    // Vence Hoje (#5)
+    const venceHoje = allContas.filter(c => {
+      if (c.status === 'pago' || c.status === 'cancelado') return false;
+      const venc = new Date(c.data_vencimento);
+      venc.setHours(0, 0, 0, 0);
+      return venc.getTime() === today.getTime();
+    }).length;
+
+    // Vence esta semana (#5)
+    const venceSemana = allContas.filter(c => {
+      if (c.status === 'pago' || c.status === 'cancelado') return false;
+      const venc = new Date(c.data_vencimento);
+      venc.setHours(0, 0, 0, 0);
+      return venc >= today && venc <= endOfWeek;
+    }).length;
+
+    return { totalReceber, totalVencido, totalRecebidoMes, taxaInadimplencia, venceHoje, venceSemana };
   }, [allContas]);
 
-  // Client-side filtering for advanced filters
+  // Client-side filtering
   const filteredContas = useMemo(() => {
     return filterByDate(contas).filter(c => {
-      let matchesAdvanced = true;
-      
+      let match = true;
       if (advancedFilters.dataVencimentoInicio) {
-        const vencimento = new Date(c.data_vencimento);
-        matchesAdvanced = matchesAdvanced && vencimento >= advancedFilters.dataVencimentoInicio;
+        match = match && new Date(c.data_vencimento) >= advancedFilters.dataVencimentoInicio;
       }
       if (advancedFilters.dataVencimentoFim) {
-        const vencimento = new Date(c.data_vencimento);
-        matchesAdvanced = matchesAdvanced && vencimento <= advancedFilters.dataVencimentoFim;
+        match = match && new Date(c.data_vencimento) <= advancedFilters.dataVencimentoFim;
       }
       if (advancedFilters.valorMinimo !== undefined) {
-        matchesAdvanced = matchesAdvanced && c.valor >= advancedFilters.valorMinimo;
+        match = match && c.valor >= advancedFilters.valorMinimo;
       }
       if (advancedFilters.valorMaximo !== undefined) {
-        matchesAdvanced = matchesAdvanced && c.valor <= advancedFilters.valorMaximo;
+        match = match && c.valor <= advancedFilters.valorMaximo;
       }
       if (advancedFilters.tipoCobranca) {
-        matchesAdvanced = matchesAdvanced && c.tipo_cobranca === advancedFilters.tipoCobranca;
+        match = match && c.tipo_cobranca === advancedFilters.tipoCobranca;
       }
-      
-      return matchesAdvanced;
+      // Empresa filter (#3)
+      if (empresaFilter !== 'all') {
+        match = match && c.empresa_id === empresaFilter;
+      }
+      // Forma de pagamento filter (#32)
+      if (formaFilter !== 'all') {
+        match = match && c.tipo_cobranca === formaFilter;
+      }
+      return match;
     });
-  }, [contas, advancedFilters, filterByDate]);
+  }, [contas, advancedFilters, filterByDate, empresaFilter, formaFilter]);
 
-  // Sorting
   const { sortedData: sortedContas, sortKey, sortDirection, handleSort } = useSorting(filteredContas, 'data_vencimento');
-
-  // Table optimization
   const { getRowAnimation } = useTableOptimization(sortedContas.length);
 
-  // Bulk actions
   const bulkActionsHook = useBulkActions({
     items: sortedContas,
     getItemId: (conta) => conta.id,
@@ -171,77 +191,35 @@ export function useContasReceberLogic() {
   const handleBulkMarkAsReceived = useCallback(() => {
     bulkActionsHook.executeBulkAction(async (id) => {
       const conta = sortedContas.find(c => c.id === id);
-      const { error } = await supabase
-        .from('contas_receber')
-        .update({ 
-          status: 'pago', 
-          data_recebimento: new Date().toISOString().split('T')[0],
-          valor_recebido: conta?.valor || 0
-        })
-        .eq('id', id);
+      const { error } = await supabase.from('contas_receber').update({
+        status: 'pago',
+        data_recebimento: new Date().toISOString().split('T')[0],
+        valor_recebido: conta?.valor || 0,
+      }).eq('id', id);
       if (error) throw error;
     }, { showProgress: true });
   }, [bulkActionsHook, sortedContas]);
 
   const handleBulkCancel = useCallback(() => {
     bulkActionsHook.executeBulkAction(async (id) => {
-      const { error } = await supabase
-        .from('contas_receber')
-        .update({ status: 'cancelado' })
-        .eq('id', id);
+      const { error } = await supabase.from('contas_receber').update({ status: 'cancelado' }).eq('id', id);
       if (error) throw error;
     }, { showProgress: true });
   }, [bulkActionsHook]);
 
   return {
-    // State
-    searchTerm,
-    statusFilter,
-    centroCustoFilter,
-    formOpen,
-    recebimentoDialogOpen,
-    selectedConta,
-    editingConta,
-    advancedFilters,
-    currentPage,
-    pageSize,
-    deleteDialogOpen,
-    deletingConta,
-    isDeleting,
-    isLoading,
-    filterType,
-
-    // Data
-    contas,
-    sortedContas,
-    centrosCusto,
-    totalCount,
-    totalPages,
-    kpis,
-    sortKey,
-    sortDirection,
-
-    // Handlers
-    handleSearchChange,
-    handleStatusChange,
-    handleCentroCustoChange,
-    handlePageSizeChange,
-    handleSort,
-    handleOpenDeleteDialog,
-    handleDeleteConta,
-    handleFilterChange,
-    handleBulkMarkAsReceived,
-    handleBulkCancel,
-    setFormOpen,
-    setRecebimentoDialogOpen,
-    setSelectedConta,
-    setEditingConta,
-    setAdvancedFilters,
-    setCurrentPage,
-    setDeleteDialogOpen,
-
-    // Bulk actions
-    ...bulkActionsHook,
-    getRowAnimation,
+    searchTerm, statusFilter, centroCustoFilter, empresaFilter, formaFilter,
+    formOpen, recebimentoDialogOpen, selectedConta, editingConta, advancedFilters,
+    currentPage, pageSize, deleteDialogOpen, deletingConta, isDeleting, isLoading, filterType,
+    viewMode, detailDrawerOpen, detailConta, cobrancaDialogOpen, cobrancaConta,
+    contas, sortedContas, centrosCusto, empresas, totalCount, totalPages, kpis, sortKey, sortDirection,
+    handleSearchChange, handleStatusChange, handleCentroCustoChange, handleEmpresaChange,
+    handleFormaChange, handlePageSizeChange, handleSort, handleOpenDeleteDialog, handleDeleteConta,
+    handleFilterChange, handleBulkMarkAsReceived, handleBulkCancel, handleViewConta,
+    handleEnviarCobranca, handleKpiClick,
+    setFormOpen, setRecebimentoDialogOpen, setSelectedConta, setEditingConta,
+    setAdvancedFilters, setCurrentPage, setDeleteDialogOpen, setViewMode,
+    setDetailDrawerOpen, setCobrancaDialogOpen,
+    ...bulkActionsHook, getRowAnimation,
   };
 }
