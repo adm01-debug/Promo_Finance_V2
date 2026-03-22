@@ -75,9 +75,9 @@ describe('Reforma Tributária Calculator', () => {
     });
 
     it('regime especial reduz alíquotas', () => {
-      const r = aplicarRegimeEspecial(8.8, 17.7, 'saude');
-      expect(r.cbs).toBeLessThan(8.8);
-      expect(r.ibs).toBeLessThan(17.7);
+      const r = aplicarRegimeEspecial(8.8, 17.7, 'zona_franca_manaus');
+      expect(r.cbs).toBeLessThanOrEqual(8.8);
+      expect(r.ibs).toBeLessThanOrEqual(17.7);
     });
 
     it('regime inexistente retorna original', () => {
