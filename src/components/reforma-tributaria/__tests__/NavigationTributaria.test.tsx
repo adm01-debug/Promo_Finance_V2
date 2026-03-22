@@ -27,9 +27,9 @@ describe('NavigationTributaria', () => {
     });
 
     it('mostra badge com contagem quando alertas > 0', () => {
-      const { container } = render(<NavigationTributaria {...defaultProps} alertasCriticos={7} />);
-      // Badge is rendered as a small span with the number inside navigation
-      const allText = container.textContent;
+      // Expand the Compliance group which contains the Alertas item with badge
+      render(<NavigationTributaria {...defaultProps} activeTab="alertas" alertasCriticos={7} />);
+      const allText = document.body.textContent;
       expect(allText).toContain('7');
     });
   });

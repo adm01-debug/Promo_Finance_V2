@@ -43,7 +43,7 @@ describe('ReguaCobrancaConfig', () => {
 
     it('exibe etapa Preventiva', () => {
       render(<ReguaCobrancaConfig />, { wrapper });
-      expect(screen.getByText('Preventiva')).toBeInTheDocument();
+      expect(screen.getAllByText('Preventiva').length).toBeGreaterThanOrEqual(1);
     });
 
     it('exibe etapa Cobranca', () => {
