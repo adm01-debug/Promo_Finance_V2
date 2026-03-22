@@ -35,6 +35,8 @@ export function useContasReceberLogic() {
   const [detailConta, setDetailConta] = useState<ContaReceberWithRelations | null>(null);
   const [cobrancaDialogOpen, setCobrancaDialogOpen] = useState(false);
   const [cobrancaConta, setCobrancaConta] = useState<ContaReceberWithRelations | null>(null);
+  const [descontoDialogOpen, setDescontoDialogOpen] = useState(false);
+  const [descontoConta, setDescontoConta] = useState<ContaReceberWithRelations | null>(null);
   const queryClient = useQueryClient();
 
   const { filterType, handleFilterChange, filterByDate } = useQuickDateFilter();
@@ -95,6 +97,12 @@ export function useContasReceberLogic() {
   const handleEnviarCobranca = useCallback((conta: ContaReceberWithRelations) => {
     setCobrancaConta(conta);
     setCobrancaDialogOpen(true);
+  }, []);
+
+  // Aplicar desconto (#12)
+  const handleAplicarDesconto = useCallback((conta: ContaReceberWithRelations) => {
+    setDescontoConta(conta);
+    setDescontoDialogOpen(true);
   }, []);
 
   // KPI drill-down (#28)
@@ -211,14 +219,15 @@ export function useContasReceberLogic() {
     formOpen, recebimentoDialogOpen, selectedConta, editingConta, advancedFilters,
     currentPage, pageSize, deleteDialogOpen, deletingConta, isDeleting, isLoading, filterType,
     viewMode, detailDrawerOpen, detailConta, cobrancaDialogOpen, cobrancaConta,
+    descontoDialogOpen, descontoConta,
     contas, sortedContas, centrosCusto, empresas, totalCount, totalPages, kpis, sortKey, sortDirection,
     handleSearchChange, handleStatusChange, handleCentroCustoChange, handleEmpresaChange,
     handleFormaChange, handlePageSizeChange, handleSort, handleOpenDeleteDialog, handleDeleteConta,
     handleFilterChange, handleBulkMarkAsReceived, handleBulkCancel, handleViewConta,
-    handleEnviarCobranca, handleKpiClick,
+    handleEnviarCobranca, handleKpiClick, handleAplicarDesconto,
     setFormOpen, setRecebimentoDialogOpen, setSelectedConta, setEditingConta,
     setAdvancedFilters, setCurrentPage, setDeleteDialogOpen, setViewMode,
-    setDetailDrawerOpen, setCobrancaDialogOpen,
+    setDetailDrawerOpen, setCobrancaDialogOpen, setDescontoDialogOpen,
     ...bulkActionsHook, getRowAnimation,
   };
 }
