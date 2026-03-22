@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Plus, Inbox, CheckCircle2, XCircle } from 'lucide-react';
+import { Plus, Inbox, CheckCircle2, XCircle, LayoutGrid, Table as TableIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -14,6 +14,9 @@ import { EmptyState } from '@/components/ui/micro-interactions';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ContaReceberForm } from '@/components/contas-receber/ContaReceberForm';
 import { RegistrarRecebimentoDialog } from '@/components/contas-receber/RegistrarRecebimentoDialog';
+import { ContaReceberDetailDrawer } from '@/components/contas-receber/ContaReceberDetailDrawer';
+import { EnviarCobrancaDialog } from '@/components/contas-receber/EnviarCobrancaDialog';
+import { ContasReceberKanban } from '@/components/contas-receber/ContasReceberKanban';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { ContasReceberKPIs } from '@/components/contas-receber/ContasReceberKPIs';
 import { ContasReceberFilters } from '@/components/contas-receber/ContasReceberFilters';
@@ -21,6 +24,7 @@ import { ContasReceberTableRow } from '@/components/contas-receber/ContasReceber
 import { useContasReceberLogic } from '@/hooks/useContasReceberLogic';
 import { contasReceberColumns } from '@/lib/export-utils';
 import { formatCurrency } from '@/lib/formatters';
+import { cn } from '@/lib/utils';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -34,16 +38,18 @@ const itemVariants = {
 
 export default function ContasReceber() {
   const {
-    searchTerm, statusFilter, centroCustoFilter, formOpen, recebimentoDialogOpen,
-    selectedConta, editingConta, advancedFilters, currentPage, pageSize,
-    deleteDialogOpen, deletingConta, isDeleting, isLoading, filterType,
-    contas, sortedContas, centrosCusto, totalCount, totalPages, kpis,
-    sortKey, sortDirection,
-    handleSearchChange, handleStatusChange, handleCentroCustoChange, handlePageSizeChange,
-    handleSort, handleOpenDeleteDialog, handleDeleteConta, handleFilterChange,
-    handleBulkMarkAsReceived, handleBulkCancel,
+    searchTerm, statusFilter, centroCustoFilter, empresaFilter, formaFilter,
+    formOpen, recebimentoDialogOpen, selectedConta, editingConta, advancedFilters,
+    currentPage, pageSize, deleteDialogOpen, deletingConta, isDeleting, isLoading, filterType,
+    viewMode, detailDrawerOpen, detailConta, cobrancaDialogOpen, cobrancaConta,
+    contas, sortedContas, centrosCusto, empresas, totalCount, totalPages, kpis, sortKey, sortDirection,
+    handleSearchChange, handleStatusChange, handleCentroCustoChange, handleEmpresaChange,
+    handleFormaChange, handlePageSizeChange, handleSort, handleOpenDeleteDialog, handleDeleteConta,
+    handleFilterChange, handleBulkMarkAsReceived, handleBulkCancel, handleViewConta,
+    handleEnviarCobranca, handleKpiClick,
     setFormOpen, setRecebimentoDialogOpen, setSelectedConta, setEditingConta,
-    setAdvancedFilters, setCurrentPage, setDeleteDialogOpen,
+    setAdvancedFilters, setCurrentPage, setDeleteDialogOpen, setViewMode,
+    setDetailDrawerOpen, setCobrancaDialogOpen,
     selectedIds, selectedCount, isProcessing, progress, isSelected, isAllSelected,
     selectAll, toggleSelect, clearSelection,
   } = useContasReceberLogic();
@@ -63,6 +69,25 @@ export default function ContasReceber() {
             <p className="text-muted-foreground mt-1">Gerencie todos os títulos a receber e acompanhe a inadimplência</p>
           </div>
           <div className="flex items-center gap-3">
+            {/* View Mode Toggle (#33) */}
+            <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+              <Button
+                variant={viewMode === 'table' ? 'default' : 'ghost'}
+                size="icon-sm"
+                onClick={() => setViewMode('table')}
+                className="h-8 w-8"
+              >
+                <TableIcon className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === 'kanban' ? 'default' : 'ghost'}
+                size="icon-sm"
+                onClick={() => setViewMode('kanban')}
+                className="h-8 w-8"
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </Button>
+            </div>
             <ExportMenu data={sortedContas} columns={contasReceberColumns} filename="contas_receber" title="Relatório de Contas a Receber" />
             <Button size="sm" className="gap-2 bg-gradient-to-r from-primary to-primary/80" onClick={() => setFormOpen(true)}>
               <Plus className="h-4 w-4" /> Nova Conta
@@ -70,9 +95,9 @@ export default function ContasReceber() {
           </div>
         </motion.div>
 
-        {/* KPIs */}
+        {/* KPIs with drill-down and urgency */}
         <motion.div variants={itemVariants}>
-          <ContasReceberKPIs {...kpis} />
+          <ContasReceberKPIs {...kpis} onKpiClick={handleKpiClick} />
         </motion.div>
 
         {/* Quick Date Filters */}
@@ -80,54 +105,100 @@ export default function ContasReceber() {
           <QuickDateFilters value={filterType} onChange={handleFilterChange} showOverdue />
         </motion.div>
 
-        {/* Filters */}
+        {/* Filters with empresa + forma */}
         <motion.div variants={itemVariants}>
           <ContasReceberFilters
             searchTerm={searchTerm} onSearchChange={handleSearchChange}
             statusFilter={statusFilter} onStatusChange={handleStatusChange}
             centroCustoFilter={centroCustoFilter} onCentroCustoChange={handleCentroCustoChange}
-            centrosCusto={centrosCusto} advancedFilters={advancedFilters} onAdvancedFiltersChange={setAdvancedFilters}
+            centrosCusto={centrosCusto}
+            empresaFilter={empresaFilter} onEmpresaChange={handleEmpresaChange} empresas={empresas}
+            formaFilter={formaFilter} onFormaChange={handleFormaChange}
+            advancedFilters={advancedFilters} onAdvancedFiltersChange={setAdvancedFilters}
           />
         </motion.div>
 
-        {/* Table */}
+        {/* Content - Table or Kanban */}
         <motion.div variants={itemVariants}>
-          <Card className="card-elevated overflow-hidden">
-            {isLoading ? (
-              <TableShimmerSkeleton rows={pageSize} columns={7} showCheckbox showAvatar />
-            ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="hover:bg-transparent">
-                      <TableHead className="w-[40px]"><Checkbox checked={isAllSelected} onChange={selectAll} /></TableHead>
-                      <TableHead className="w-[250px]"><SortableHeader label="Cliente" sortKey="cliente_nome" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></TableHead>
-                      <TableHead>Descrição</TableHead>
-                      <TableHead><SortableHeader label="Valor" sortKey="valor" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></TableHead>
-                      <TableHead><SortableHeader label="Vencimento" sortKey="data_vencimento" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Score</TableHead>
-                      <TableHead className="w-[80px]"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {sortedContas.length === 0 ? (
-                      <TableRow><TableCell colSpan={8} className="p-0">
-                        <EmptyState icon={<Inbox className="h-8 w-8 text-muted-foreground" />} title={contas.length === 0 ? 'Nenhuma conta cadastrada' : 'Nenhuma conta encontrada'} description={contas.length === 0 ? 'Comece adicionando sua primeira conta a receber' : 'Tente ajustar os filtros'} />
-                      </TableCell></TableRow>
-                    ) : sortedContas.map((conta, index) => (
-                      <ContasReceberTableRow key={conta.id} conta={conta} index={index} isSelected={isSelected(conta.id)} onToggleSelect={toggleSelect} onEdit={(c) => { setEditingConta(c); setFormOpen(true); }} onDelete={handleOpenDeleteDialog} onRegistrarRecebimento={(c) => { setSelectedConta(c); setRecebimentoDialogOpen(true); }} />
-                    ))}
-                  </TableBody>
-                </Table>
-                <TablePagination currentPage={currentPage} totalPages={totalPages} pageSize={pageSize} totalItems={totalCount} onPageChange={setCurrentPage} onPageSizeChange={handlePageSizeChange} />
-              </div>
-            )}
-          </Card>
+          {viewMode === 'kanban' ? (
+            <ContasReceberKanban
+              contas={sortedContas}
+              onSelectConta={handleViewConta}
+            />
+          ) : (
+            <Card className="card-elevated overflow-hidden">
+              {isLoading ? (
+                <TableShimmerSkeleton rows={pageSize} columns={8} showCheckbox showAvatar />
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="hover:bg-transparent">
+                        <TableHead className="w-[40px]"><Checkbox checked={isAllSelected} onChange={selectAll} /></TableHead>
+                        <TableHead className="w-[250px]"><SortableHeader label="Cliente" sortKey="cliente_nome" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></TableHead>
+                        <TableHead>Descrição</TableHead>
+                        <TableHead><SortableHeader label="Valor" sortKey="valor" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></TableHead>
+                        <TableHead><SortableHeader label="Vencimento" sortKey="data_vencimento" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></TableHead>
+                        <TableHead>Status</TableHead>
+                        {empresas.length > 1 && <TableHead>Empresa</TableHead>}
+                        <TableHead>Score</TableHead>
+                        <TableHead className="w-[120px]"></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {sortedContas.length === 0 ? (
+                        <TableRow><TableCell colSpan={empresas.length > 1 ? 9 : 8} className="p-0">
+                          <EmptyState
+                            icon={<Inbox className="h-8 w-8 text-muted-foreground" />}
+                            title={contas.length === 0 ? 'Nenhuma conta cadastrada' : 'Nenhuma conta encontrada'}
+                            description={contas.length === 0 ? 'Comece adicionando sua primeira conta a receber clicando em "Nova Conta"' : 'Tente ajustar os filtros para encontrar o que procura'}
+                            action={contas.length === 0 ? (
+                              <Button size="sm" className="gap-2 mt-3" onClick={() => setFormOpen(true)}>
+                                <Plus className="h-4 w-4" /> Criar primeira conta
+                              </Button>
+                            ) : undefined}
+                          />
+                        </TableCell></TableRow>
+                      ) : sortedContas.map((conta, index) => (
+                        <ContasReceberTableRow
+                          key={conta.id}
+                          conta={conta}
+                          index={index}
+                          isSelected={isSelected(conta.id)}
+                          onToggleSelect={toggleSelect}
+                          onEdit={(c) => { setEditingConta(c); setFormOpen(true); }}
+                          onDelete={handleOpenDeleteDialog}
+                          onRegistrarRecebimento={(c) => { setSelectedConta(c); setRecebimentoDialogOpen(true); }}
+                          onView={handleViewConta}
+                          onEnviarCobranca={handleEnviarCobranca}
+                          showEmpresa={empresas.length > 1}
+                        />
+                      ))}
+                    </TableBody>
+                  </Table>
+                  <TablePagination currentPage={currentPage} totalPages={totalPages} pageSize={pageSize} totalItems={totalCount} onPageChange={setCurrentPage} onPageSizeChange={handlePageSizeChange} />
+                </div>
+              )}
+            </Card>
+          )}
         </motion.div>
 
+        {/* Dialogs & Drawers */}
         <ContaReceberForm open={formOpen} onOpenChange={(open) => { setFormOpen(open); if (!open) setEditingConta(null); }} conta={editingConta} />
         <RegistrarRecebimentoDialog conta={selectedConta} open={recebimentoDialogOpen} onOpenChange={setRecebimentoDialogOpen} />
+        <ContaReceberDetailDrawer
+          conta={detailConta}
+          open={detailDrawerOpen}
+          onOpenChange={setDetailDrawerOpen}
+          onEdit={(c) => { setEditingConta(c); setFormOpen(true); }}
+          onRegistrarRecebimento={(c) => { setSelectedConta(c); setRecebimentoDialogOpen(true); }}
+          onEnviarCobranca={handleEnviarCobranca}
+        />
+        <EnviarCobrancaDialog
+          conta={cobrancaConta}
+          open={cobrancaDialogOpen}
+          onOpenChange={setCobrancaDialogOpen}
+        />
         <ConfirmDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} title="Confirmar exclusão" description={`Tem certeza que deseja excluir "${deletingConta?.descricao}" (${deletingConta?.valor ? formatCurrency(deletingConta.valor) : ''})?`} confirmLabel="Excluir" variant="danger" isLoading={isDeleting} onConfirm={handleDeleteConta} />
         <BulkActionsBar selectedCount={selectedCount} isProcessing={isProcessing} progress={progress} actions={bulkActions} onClear={clearSelection} />
       </motion.div>
