@@ -5,7 +5,7 @@ import {
   Building2, Calendar, DollarSign, FileText, Clock, CheckCircle2,
   AlertTriangle, Send, MessageCircle, Paperclip, History, Calculator,
   ExternalLink, Copy, X, Banknote, QrCode, CreditCard, Wallet,
-  TrendingUp, Shield, Handshake, Scale,
+  TrendingUp, Shield, Users, Scale,
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
