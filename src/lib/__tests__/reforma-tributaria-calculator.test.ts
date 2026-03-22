@@ -100,7 +100,7 @@ describe('Reforma Tributária Calculator', () => {
     });
 
     it('categoria válida retorna alíquota base', () => {
-      const aliq = obterAliquotaIS('cigarros');
+      const aliq = obterAliquotaIS('bebidas_alcoolicas');
       expect(aliq).toBeGreaterThan(0);
     });
   });
