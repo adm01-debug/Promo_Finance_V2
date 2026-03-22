@@ -106,6 +106,7 @@ const NAV_GROUPS: NavGroup[] = [
 interface Props {
   activeTab: string;
   onTabChange: (tab: string) => void;
+  alertasCriticos?: number;
 }
 
 export function NavigationTributaria({ activeTab, onTabChange }: Props) {

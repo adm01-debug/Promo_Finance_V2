@@ -25,6 +25,7 @@ interface Props {
   aliquotaCbs: number;
   aliquotaIbs: number;
   alertasCriticos?: number;
+  onKPIClick?: (tabId: string) => void;
 }
 
 const colorClasses = {
