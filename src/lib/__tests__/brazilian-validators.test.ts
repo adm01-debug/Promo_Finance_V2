@@ -19,7 +19,7 @@ describe('validateCPF', () => {
   it('CPF inválido - todos iguais', () => expect(validateCPF('11111111111')).toBe(false));
   it('CPF inválido - curto', () => expect(validateCPF('123')).toBe(false));
   it('CPF inválido - vazio', () => expect(validateCPF('')).toBe(false));
-  it('CPF válido 2', () => expect(validateCPF('34738834010')).toBe(true));
+  it('CPF inválido com dígitos errados', () => expect(validateCPF('34738834010')).toBe(false));
 });
 
 describe('formatCPF', () => {

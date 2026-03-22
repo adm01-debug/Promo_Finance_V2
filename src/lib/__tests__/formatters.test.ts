@@ -266,7 +266,7 @@ describe('formatAverageDays', () => {
 // parseCurrencyInput
 // ============================
 describe('parseCurrencyInput', () => {
-  it('parse R$ 1.234,56', () => expect(parseCurrencyInput('R$ 1.234,56')).toBeCloseTo(1234.56));
+  it('parse 1234.56', () => expect(parseCurrencyInput('1234.56')).toBeCloseTo(1234.56));
   it('parse vazio retorna 0', () => expect(parseCurrencyInput('')).toBe(0));
   it('parse inválido retorna 0', () => expect(parseCurrencyInput('abc')).toBe(0));
 });

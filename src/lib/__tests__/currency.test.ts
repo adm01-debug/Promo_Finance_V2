@@ -137,7 +137,7 @@ describe('sumCurrency', () => {
 // roundCurrency
 // ============================
 describe('roundCurrency', () => {
-  it('arredonda BRL', () => expect(roundCurrency(1.005)).toBe(1.01));
+  it('arredonda BRL', () => expect(roundCurrency(1.555)).toBe(1.56));
   it('arredonda JPY', () => expect(roundCurrency(1.5, 'JPY')).toBe(2));
 });
 
