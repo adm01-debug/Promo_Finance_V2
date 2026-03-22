@@ -3,28 +3,21 @@
 // Visão executiva para empresas Lucro Real
 // ============================================
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Progress } from '@/components/ui/progress';
-import { Calendar, Receipt, Landmark, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Calendar, Receipt, Landmark, AlertTriangle, CheckCircle2, Building2 } from 'lucide-react';
 import { 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  AreaChart,
-  Area,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+  PieChart, Pie, Cell, AreaChart, Area,
 } from 'recharts';
 import useReformaTributaria from '@/hooks/useReformaTributaria';
+import { useAllEmpresas } from '@/hooks/useEmpresas';
+import useAlertasTributarios from '@/hooks/useAlertasTributarios';
+import { useApuracoesTributarias } from '@/hooks/useApuracoesTributarias';
 import { formatCurrency } from '@/lib/formatters';
 
 // Componentes internos
@@ -52,13 +45,12 @@ import { AuditoriaCompliancePanel } from './AuditoriaCompliancePanel';
 import { ComparativoRegimesPanel } from './ComparativoRegimesPanel';
 import { CashbackSimuladorPanel } from './CashbackSimuladorPanel';
 import { ImportacaoXMLPanel } from './ImportacaoXMLPanel';
+import { EmptyStateTributario } from './EmptyStateTributario';
+import { GlossarioTooltip } from './GlossarioTooltip';
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.05 }
-  }
+  visible: { opacity: 1, transition: { staggerChildren: 0.05 } }
 };
 
 const itemVariants = {
@@ -68,36 +60,59 @@ const itemVariants = {
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--muted-foreground))'];
 
-// Mapeamento de abas para componentes
-const TAB_COMPONENTS: Record<string, React.ReactNode> = {};
-
 export function DashboardReformaTributaria() {
   const {
-    anoReferencia,
-    setAnoReferencia,
-    faseAtual,
-    aliquotasAtuais,
-    metricas,
-    isLoadingMetricas,
+    anoReferencia, setAnoReferencia, faseAtual, aliquotasAtuais,
+    metricas, isLoadingMetricas,
   } = useReformaTributaria();
 
   const [activeTab, setActiveTab] = useState('visao-geral');
+  const [empresaId, setEmpresaId] = useState<string>('');
 
-  // Dados para gráficos
-  const dadosComparativoMensal = [
-    { mes: 'Jan', cbsIbs: 45000, antigosResidual: 35000 },
-    { mes: 'Fev', cbsIbs: 48000, antigosResidual: 32000 },
-    { mes: 'Mar', cbsIbs: 52000, antigosResidual: 28000 },
-    { mes: 'Abr', cbsIbs: 49000, antigosResidual: 30000 },
-    { mes: 'Mai', cbsIbs: 55000, antigosResidual: 25000 },
-    { mes: 'Jun', cbsIbs: 58000, antigosResidual: 22000 },
-  ];
+  // Dados reais
+  const { data: empresas = [] } = useAllEmpresas();
+  const { alertas: alertasData } = useAlertasTributarios(empresaId || undefined);
+  const { apuracoes } = useApuracoesTributarias(empresaId || undefined);
+
+  // Contagem real de alertas críticos
+  const alertasCriticos = (alertasData || []).filter(
+    (a: { prioridade: string; resolvido: boolean }) => 
+      (a.prioridade === 'critica' || a.prioridade === 'alta') && !a.resolvido
+  ).length;
+
+  // Dados REAIS para gráfico de evolução (baseado em apurações)
+  const dadosComparativoMensal = (() => {
+    if (!apuracoes || apuracoes.length === 0) {
+      return [
+        { mes: 'Jan', cbsIbs: 0, antigosResidual: 0 },
+        { mes: 'Fev', cbsIbs: 0, antigosResidual: 0 },
+        { mes: 'Mar', cbsIbs: 0, antigosResidual: 0 },
+      ];
+    }
+    const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    return apuracoes
+      .sort((a, b) => a.mes - b.mes)
+      .map(ap => ({
+        mes: meses[ap.mes - 1] || `M${ap.mes}`,
+        cbsIbs: (Number(ap.cbs_a_pagar) || 0) + (Number(ap.ibs_a_pagar) || 0),
+        antigosResidual: (Number(ap.icms_residual) || 0) + (Number(ap.iss_residual) || 0) +
+          (Number(ap.pis_residual) || 0) + (Number(ap.cofins_residual) || 0),
+      }));
+  })();
 
   const dadosDistribuicaoTributos = [
     { name: 'CBS', value: metricas?.cbsSaldoAPagar || 0 },
     { name: 'IBS', value: metricas?.ibsSaldoAPagar || 0 },
     { name: 'Residuais', value: metricas?.tributosAntigosResidual || 0 },
   ];
+
+  // Deep-linking: clicar em KPI muda aba
+  const handleKPIClick = useCallback((tabId: string) => {
+    setActiveTab(tabId);
+  }, []);
+
+  // Verificar se é primeiro acesso (sem apurações e sem operações)
+  const isFirstAccess = !isLoadingMetricas && !apuracoes?.length && !empresaId;
 
   if (isLoadingMetricas) {
     return (
@@ -120,10 +135,18 @@ export function DashboardReformaTributaria() {
     );
   }
 
-  // Renderiza conteúdo baseado na aba ativa
   const renderContent = () => {
     switch (activeTab) {
       case 'visao-geral':
+        if (isFirstAccess) {
+          return (
+            <EmptyStateTributario
+              type="onboarding"
+              onPrimaryAction={() => setActiveTab('importacao-xml')}
+              onSecondaryAction={() => setActiveTab('calculadora')}
+            />
+          );
+        }
         return (
           <motion.div variants={itemVariants} className="space-y-4 sm:space-y-6">
             {/* Gráficos */}
@@ -131,7 +154,9 @@ export function DashboardReformaTributaria() {
               <Card className="hover:shadow-md transition-shadow">
                 <CardHeader className="pb-2 sm:pb-4">
                   <CardTitle className="text-sm sm:text-base">Evolução Tributária</CardTitle>
-                  <CardDescription className="text-xs sm:text-sm">CBS/IBS vs residuais</CardDescription>
+                  <CardDescription className="text-xs sm:text-sm">
+                    <GlossarioTooltip termo="CBS">CBS</GlossarioTooltip>/<GlossarioTooltip termo="IBS">IBS</GlossarioTooltip> vs residuais
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="px-2 sm:px-6">
                   <div className="h-[200px] sm:h-[300px]">
@@ -142,24 +167,10 @@ export function DashboardReformaTributaria() {
                         <YAxis tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} tick={{ fontSize: 10 }} />
                         <Tooltip formatter={(value: number) => formatCurrency(value)} />
                         <Legend wrapperStyle={{ fontSize: '10px' }} />
-                        <Area 
-                          type="monotone" 
-                          dataKey="cbsIbs" 
-                          name="CBS + IBS"
-                          stackId="1"
-                          stroke="hsl(var(--primary))" 
-                          fill="hsl(var(--primary))" 
-                          fillOpacity={0.6}
-                        />
-                        <Area 
-                          type="monotone" 
-                          dataKey="antigosResidual" 
-                          name="Residuais"
-                          stackId="1"
-                          stroke="hsl(var(--muted-foreground))" 
-                          fill="hsl(var(--muted))" 
-                          fillOpacity={0.4}
-                        />
+                        <Area type="monotone" dataKey="cbsIbs" name="CBS + IBS" stackId="1"
+                          stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.6} />
+                        <Area type="monotone" dataKey="antigosResidual" name="Residuais" stackId="1"
+                          stroke="hsl(var(--muted-foreground))" fill="hsl(var(--muted))" fillOpacity={0.4} />
                       </AreaChart>
                     </ResponsiveContainer>
                   </div>
@@ -175,15 +186,9 @@ export function DashboardReformaTributaria() {
                   <div className="h-[200px] sm:h-[300px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
-                        <Pie
-                          data={dadosDistribuicaoTributos}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
+                        <Pie data={dadosDistribuicaoTributos} cx="50%" cy="50%" labelLine={false}
                           label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                          outerRadius="70%"
-                          dataKey="value"
-                        >
+                          outerRadius="70%" dataKey="value">
                           {dadosDistribuicaoTributos.map((_, index) => (
                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                           ))}
@@ -196,13 +201,14 @@ export function DashboardReformaTributaria() {
               </Card>
             </div>
 
-            {/* Cards de Alíquotas */}
+            {/* Cards de Alíquotas com Glossário */}
             <div className="grid gap-3 sm:gap-4 grid-cols-3">
-              <Card className="border-primary/20 bg-primary/5 hover:scale-[1.02] transition-transform">
+              <Card className="border-primary/20 bg-primary/5 hover:scale-[1.02] transition-transform cursor-pointer"
+                onClick={() => handleKPIClick('apuracao')}>
                 <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
                   <CardTitle className="text-[10px] sm:text-sm flex items-center gap-1 sm:gap-2">
                     <Receipt className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                    <span className="truncate">CBS</span>
+                    <GlossarioTooltip termo="CBS" showIcon={false}>CBS</GlossarioTooltip>
                     <span className="hidden md:inline truncate">- Contribuição Federal</span>
                   </CardTitle>
                 </CardHeader>
@@ -214,11 +220,12 @@ export function DashboardReformaTributaria() {
                 </CardContent>
               </Card>
 
-              <Card className="border-success/20 bg-success/5 hover:scale-[1.02] transition-transform">
+              <Card className="border-success/20 bg-success/5 hover:scale-[1.02] transition-transform cursor-pointer"
+                onClick={() => handleKPIClick('apuracao')}>
                 <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
                   <CardTitle className="text-[10px] sm:text-sm flex items-center gap-1 sm:gap-2">
                     <Landmark className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                    <span className="truncate">IBS</span>
+                    <GlossarioTooltip termo="IBS" showIcon={false}>IBS</GlossarioTooltip>
                     <span className="hidden md:inline truncate">- Est/Municipal</span>
                   </CardTitle>
                 </CardHeader>
@@ -230,11 +237,12 @@ export function DashboardReformaTributaria() {
                 </CardContent>
               </Card>
 
-              <Card className="border-warning/20 bg-warning/5 hover:scale-[1.02] transition-transform">
+              <Card className="border-warning/20 bg-warning/5 hover:scale-[1.02] transition-transform cursor-pointer"
+                onClick={() => handleKPIClick('simulador')}>
                 <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
                   <CardTitle className="text-[10px] sm:text-sm flex items-center gap-1 sm:gap-2">
                     <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                    <span className="truncate">IS</span>
+                    <GlossarioTooltip termo="IS" showIcon={false}>IS</GlossarioTooltip>
                     <span className="hidden md:inline truncate">- Seletivo</span>
                   </CardTitle>
                 </CardHeader>
@@ -247,20 +255,26 @@ export function DashboardReformaTributaria() {
               </Card>
             </div>
 
-            {/* Destaques */}
+            {/* Destaques com Glossário */}
             <div className="grid gap-4 md:grid-cols-4">
               {[
-                { label: 'Não-Cumulatividade Plena', desc: 'Crédito amplo em todas as aquisições' },
-                { label: 'Destino', desc: 'Tributo no local de consumo' },
-                { label: 'Split Payment', desc: 'Recolhimento automático na transação' },
-                { label: 'Cashback', desc: 'Devolução para famílias de baixa renda' },
+                { label: 'Não-Cumulatividade Plena', desc: 'Crédito amplo em todas as aquisições', termo: 'Não-Cumulatividade', tab: 'creditos' },
+                { label: 'Destino', desc: 'Tributo no local de consumo', tab: 'calculadora' },
+                { label: 'Split Payment', desc: 'Recolhimento automático na transação', termo: 'Split Payment', tab: 'split-payment' },
+                { label: 'Cashback', desc: 'Devolução para famílias de baixa renda', termo: 'Cashback', tab: 'cashback' },
               ].map((item, i) => (
-                <Card key={i} className="hover:shadow-md transition-all">
+                <Card key={i} className="hover:shadow-md transition-all cursor-pointer" onClick={() => handleKPIClick(item.tab)}>
                   <CardContent className="pt-6">
                     <div className="flex items-start gap-3">
                       <CheckCircle2 className="h-5 w-5 text-success mt-0.5" />
                       <div>
-                        <p className="font-medium text-sm">{item.label}</p>
+                        {item.termo ? (
+                          <GlossarioTooltip termo={item.termo} showIcon={false}>
+                            <p className="font-medium text-sm">{item.label}</p>
+                          </GlossarioTooltip>
+                        ) : (
+                          <p className="font-medium text-sm">{item.label}</p>
+                        )}
                         <p className="text-xs text-muted-foreground">{item.desc}</p>
                       </div>
                     </div>
@@ -271,61 +285,34 @@ export function DashboardReformaTributaria() {
           </motion.div>
         );
 
-      case 'apuracao':
-        return <ApuracaoMensal />;
-      case 'operacoes':
-        return <OperacoesLista />;
-      case 'creditos':
-        return <GestorCreditosTributarios />;
-      case 'calculadora':
-        return <CalculadoraTributos />;
-      case 'simulador':
-        return <SimuladorCenariosTributarios />;
-      case 'obrigacoes':
-        return <ObrigacoesAcessorias />;
-      case 'cronograma':
-        return <CronogramaTransicao />;
-      case 'irpj-csll':
-        return <ModuloIRPJCSLL />;
-      case 'retencoes':
-        return <RetencoesFonte />;
-      case 'exportacao':
-        return <ExportacaoSPED />;
-      case 'alertas':
-        return <AlertasTributarios />;
-      case 'relatorios':
-        return <RelatoriosContabeisTributarios />;
-      case 'metricas':
-        return <DashboardMetricasTributarias />;
-      case 'split-payment':
-        return <SplitPaymentPanel />;
-      case 'per-dcomp':
-        return <PerDcompPanel />;
-      case 'conciliacao':
-        return <ConciliacaoTributariaPanel empresaId="default" />;
-      case 'incentivos':
-        return <IncentivosFiscaisPanel empresaId="default" />;
-      case 'auditoria':
-        return <AuditoriaCompliancePanel empresaId="default" />;
-      case 'comparativo':
-        return <ComparativoRegimesPanel />;
-      case 'cashback':
-        return <CashbackSimuladorPanel />;
-      case 'importacao-xml':
-        return <ImportacaoXMLPanel empresaId="default" />;
-      default:
-        return null;
+      case 'apuracao': return <ApuracaoMensal />;
+      case 'operacoes': return <OperacoesLista />;
+      case 'creditos': return <GestorCreditosTributarios />;
+      case 'calculadora': return <CalculadoraTributos />;
+      case 'simulador': return <SimuladorCenariosTributarios />;
+      case 'obrigacoes': return <ObrigacoesAcessorias />;
+      case 'cronograma': return <CronogramaTransicao />;
+      case 'irpj-csll': return <ModuloIRPJCSLL />;
+      case 'retencoes': return <RetencoesFonte />;
+      case 'exportacao': return <ExportacaoSPED />;
+      case 'alertas': return <AlertasTributarios />;
+      case 'relatorios': return <RelatoriosContabeisTributarios />;
+      case 'metricas': return <DashboardMetricasTributarias />;
+      case 'split-payment': return <SplitPaymentPanel />;
+      case 'per-dcomp': return <PerDcompPanel />;
+      case 'conciliacao': return <ConciliacaoTributariaPanel empresaId={empresaId || 'default'} />;
+      case 'incentivos': return <IncentivosFiscaisPanel empresaId={empresaId || 'default'} />;
+      case 'auditoria': return <AuditoriaCompliancePanel empresaId={empresaId || 'default'} />;
+      case 'comparativo': return <ComparativoRegimesPanel />;
+      case 'cashback': return <CashbackSimuladorPanel />;
+      case 'importacao-xml': return <ImportacaoXMLPanel empresaId={empresaId || 'default'} />;
+      default: return null;
     }
   };
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="space-y-6"
-    >
-      {/* Header */}
+    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+      {/* Header with Global Empresa Selector */}
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
@@ -337,7 +324,23 @@ export function DashboardReformaTributaria() {
             </p>
           </div>
           
-          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 flex-wrap">
+            {/* Seletor de Empresa Global */}
+            <Select value={empresaId} onValueChange={setEmpresaId}>
+              <SelectTrigger className="w-36 sm:w-48 h-8 sm:h-10 text-xs sm:text-sm">
+                <Building2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
+                <SelectValue placeholder="Todas empresas" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas Empresas</SelectItem>
+                {empresas.map((emp) => (
+                  <SelectItem key={emp.id} value={emp.id}>
+                    {emp.razao_social || emp.nome_fantasia}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             <Badge variant="outline" className="px-2 sm:px-4 py-1 sm:py-2 text-xs whitespace-nowrap">
               <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Fase: </span>
@@ -350,9 +353,7 @@ export function DashboardReformaTributaria() {
               </SelectTrigger>
               <SelectContent>
                 {[2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033].map((ano) => (
-                  <SelectItem key={ano} value={String(ano)}>
-                    {ano}
-                  </SelectItem>
+                  <SelectItem key={ano} value={String(ano)}>{ano}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -360,11 +361,11 @@ export function DashboardReformaTributaria() {
         </div>
       </div>
 
-      {/* Navegação Hierárquica */}
-      <NavigationTributaria activeTab={activeTab} onTabChange={setActiveTab} />
+      {/* Navegação com badge de alertas */}
+      <NavigationTributaria activeTab={activeTab} onTabChange={setActiveTab} alertasCriticos={alertasCriticos} />
 
-      {/* Hero KPIs - Apenas na visão geral */}
-      {activeTab === 'visao-geral' && (
+      {/* Hero KPIs com deep-linking e alertas reais */}
+      {activeTab === 'visao-geral' && !isFirstAccess && (
         <motion.div variants={itemVariants}>
           <HeroKPIs
             cargaTributaria={metricas?.cargaTributariaEfetiva || 0}
@@ -376,28 +377,21 @@ export function DashboardReformaTributaria() {
             percentualMigracao={metricas?.percentualMigracao || 0}
             aliquotaCbs={aliquotasAtuais.cbs}
             aliquotaIbs={aliquotasAtuais.ibs}
-            alertasCriticos={0}
+            alertasCriticos={alertasCriticos}
+            onKPIClick={handleKPIClick}
           />
         </motion.div>
       )}
 
-      {/* Progresso da Migração - Apenas na visão geral */}
-      {activeTab === 'visao-geral' && (
+      {/* Progresso da Migração */}
+      {activeTab === 'visao-geral' && !isFirstAccess && (
         <motion.div variants={itemVariants}>
-          <ProgressoMigracao
-            percentual={metricas?.percentualMigracao || 0}
-            fase={faseAtual}
-          />
+          <ProgressoMigracao percentual={metricas?.percentualMigracao || 0} fase={faseAtual} />
         </motion.div>
       )}
 
       {/* Conteúdo da Aba */}
-      <motion.div
-        key={activeTab}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2 }}
-      >
+      <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
         {renderContent()}
       </motion.div>
     </motion.div>

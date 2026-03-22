@@ -30,7 +30,7 @@ interface NavGroup {
   items: NavItem[];
 }
 
-const NAV_GROUPS: NavGroup[] = [
+const getNavGroups = (alertasCriticos: number): NavGroup[] => [
   {
     id: 'overview',
     label: 'Visão Geral',
@@ -61,10 +61,10 @@ const NAV_GROUPS: NavGroup[] = [
     icon: Shield,
     color: 'text-success',
     items: [
-      { id: 'obrigacoes', label: 'Obrigações', icon: Clock, badge: '3', badgeVariant: 'destructive' },
+      { id: 'obrigacoes', label: 'Obrigações', icon: Clock },
       { id: 'auditoria', label: 'Auditoria', icon: Shield },
       { id: 'conciliacao', label: 'Conciliação', icon: CheckCircle },
-      { id: 'alertas', label: 'Alertas', icon: AlertTriangle },
+      { id: 'alertas', label: 'Alertas', icon: AlertTriangle, badge: alertasCriticos > 0 ? String(alertasCriticos) : undefined, badgeVariant: 'destructive' as const },
     ]
   },
   {
@@ -106,12 +106,13 @@ const NAV_GROUPS: NavGroup[] = [
 interface Props {
   activeTab: string;
   onTabChange: (tab: string) => void;
+  alertasCriticos?: number;
 }
 
-export function NavigationTributaria({ activeTab, onTabChange }: Props) {
+export function NavigationTributaria({ activeTab, onTabChange, alertasCriticos = 0 }: Props) {
   const [expandedGroup, setExpandedGroup] = useState<string | null>(() => {
     // Encontra o grupo que contém a aba ativa
-    for (const group of NAV_GROUPS) {
+    for (const group of getNavGroups(alertasCriticos)) {
       if (group.items.some(item => item.id === activeTab)) {
         return group.id;
       }
@@ -124,7 +125,7 @@ export function NavigationTributaria({ activeTab, onTabChange }: Props) {
   };
 
   const getActiveGroup = () => {
-    for (const group of NAV_GROUPS) {
+    for (const group of getNavGroups(alertasCriticos)) {
       if (group.items.some(item => item.id === activeTab)) {
         return group.id;
       }
@@ -138,7 +139,7 @@ export function NavigationTributaria({ activeTab, onTabChange }: Props) {
     <div className="bg-card border rounded-lg sm:rounded-xl p-1.5 sm:p-2 shadow-sm">
       {/* Desktop: Horizontal navigation */}
       <div className="hidden lg:flex items-center gap-0.5 sm:gap-1 flex-wrap">
-        {NAV_GROUPS.map((group) => {
+        {getNavGroups(alertasCriticos).map((group) => {
           const isActive = activeGroupId === group.id;
           const isExpanded = expandedGroup === group.id;
           const Icon = group.icon;
@@ -215,7 +216,7 @@ export function NavigationTributaria({ activeTab, onTabChange }: Props) {
 
       {/* Mobile: Collapsible accordion */}
       <div className="lg:hidden space-y-0.5 sm:space-y-1">
-        {NAV_GROUPS.map((group) => {
+        {getNavGroups(alertasCriticos).map((group) => {
           const isActive = activeGroupId === group.id;
           const isExpanded = expandedGroup === group.id;
           const Icon = group.icon;

@@ -25,6 +25,7 @@ interface Props {
   aliquotaCbs: number;
   aliquotaIbs: number;
   alertasCriticos?: number;
+  onKPIClick?: (tabId: string) => void;
 }
 
 const colorClasses = {
@@ -69,6 +70,7 @@ const colorClasses = {
 export function HeroKPIs({
   cargaTributaria, cbsSaldo, ibsSaldo, creditosDisponiveis, creditosUtilizados,
   creditosAcumulados, percentualMigracao, aliquotaCbs, aliquotaIbs, alertasCriticos = 0,
+  onKPIClick,
 }: Props) {
   const percentualCreditos = creditosAcumulados > 0 
     ? (creditosUtilizados / creditosAcumulados) * 100 
@@ -80,7 +82,7 @@ export function HeroKPIs({
       <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
         {/* Carga Tributária - Hero */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-          <Card className={cn("relative overflow-hidden transition-all duration-300 hover:scale-[1.02]", colorClasses.primary.border, colorClasses.primary.bg, colorClasses.primary.glow)}>
+          <Card className={cn("relative overflow-hidden transition-all duration-300 hover:scale-[1.02] cursor-pointer", colorClasses.primary.border, colorClasses.primary.bg, colorClasses.primary.glow)} onClick={() => onKPIClick?.('metricas')}>
             <div className="absolute top-0 right-0 w-20 sm:w-32 h-20 sm:h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-bl-full" />
             <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
               <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground flex items-center gap-1.5 sm:gap-2">
@@ -112,7 +114,7 @@ export function HeroKPIs({
 
         {/* Créditos Disponíveis - Hero */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
-          <Card className={cn("relative overflow-hidden transition-all duration-300 hover:scale-[1.02]", colorClasses.green.border, colorClasses.green.bg, colorClasses.green.glow)}>
+          <Card className={cn("relative overflow-hidden transition-all duration-300 hover:scale-[1.02] cursor-pointer", colorClasses.green.border, colorClasses.green.bg, colorClasses.green.glow)} onClick={() => onKPIClick?.('creditos')}>
             <div className="absolute top-0 right-0 w-20 sm:w-32 h-20 sm:h-32 bg-gradient-to-br from-success/10 to-transparent rounded-bl-full" />
             <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
               <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground flex items-center gap-1.5 sm:gap-2">
@@ -143,7 +145,7 @@ export function HeroKPIs({
       <div className="grid gap-2 sm:gap-4 grid-cols-2 lg:grid-cols-4">
         {/* CBS a Recolher */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.2 }}>
-          <Card className={cn("transition-all duration-200 hover:shadow-md hover:border-primary/30", colorClasses.blue.border)}>
+          <Card className={cn("transition-all duration-200 hover:shadow-md hover:border-primary/30 cursor-pointer", colorClasses.blue.border)} onClick={() => onKPIClick?.('apuracao')}>
             <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
               <CardTitle className="text-[10px] sm:text-sm font-medium text-muted-foreground">CBS</CardTitle>
               <Receipt className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
@@ -159,7 +161,7 @@ export function HeroKPIs({
 
         {/* IBS a Recolher */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.25 }}>
-          <Card className={cn("transition-all duration-200 hover:shadow-md hover:border-success/30", colorClasses.emerald.border)}>
+          <Card className={cn("transition-all duration-200 hover:shadow-md hover:border-success/30 cursor-pointer", colorClasses.emerald.border)} onClick={() => onKPIClick?.('apuracao')}>
             <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
               <CardTitle className="text-[10px] sm:text-sm font-medium text-muted-foreground">IBS</CardTitle>
               <Landmark className="h-3 w-3 sm:h-4 sm:w-4 text-success" />
@@ -175,7 +177,7 @@ export function HeroKPIs({
 
         {/* Migração */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.3 }}>
-          <Card className={cn("transition-all duration-200 hover:shadow-md hover:border-warning/30", colorClasses.amber.border)}>
+          <Card className={cn("transition-all duration-200 hover:shadow-md hover:border-warning/30 cursor-pointer", colorClasses.amber.border)} onClick={() => onKPIClick?.('cronograma')}>
             <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
               <CardTitle className="text-[10px] sm:text-sm font-medium text-muted-foreground">Migração</CardTitle>
               <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-warning" />
@@ -191,7 +193,7 @@ export function HeroKPIs({
 
         {/* Alertas */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.35 }}>
-          <Card className={cn("transition-all duration-200 hover:shadow-md", alertasCriticos > 0 ? `${colorClasses.red.border} animate-pulse` : colorClasses.green.border)}>
+          <Card className={cn("transition-all duration-200 hover:shadow-md cursor-pointer", alertasCriticos > 0 ? `${colorClasses.red.border} animate-pulse` : colorClasses.green.border)} onClick={() => onKPIClick?.('alertas')}>
             <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
               <CardTitle className="text-[10px] sm:text-sm font-medium text-muted-foreground">Alertas</CardTitle>
               {alertasCriticos > 0 
