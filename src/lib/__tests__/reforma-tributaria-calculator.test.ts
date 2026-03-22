@@ -215,8 +215,7 @@ describe('Reforma Tributária Calculator', () => {
 
     it('regime especial pode reduzir crédito', () => {
       const normal = calcularCreditos({ valorAquisicao: 50000, tipoOperacao: 'compra', anoReferencia: 2033 });
-      const regime = calcularCreditos({ valorAquisicao: 50000, tipoOperacao: 'compra', regimeEspecial: 'saude', anoReferencia: 2033 });
-      // Regime may or may not reduce depending on config
+      const regime = calcularCreditos({ valorAquisicao: 50000, tipoOperacao: 'compra', regimeEspecial: 'servicos_financeiros', anoReferencia: 2033 });
       expect(regime.creditoTotal).toBeLessThanOrEqual(normal.creditoTotal);
     });
   });
