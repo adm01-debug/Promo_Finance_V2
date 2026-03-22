@@ -44,7 +44,7 @@ const etapaConfig: Record<string, { label: string; color: string; icon: typeof S
   preventiva: { label: 'Preventiva', color: 'bg-primary/10 text-primary', icon: Shield },
   lembrete: { label: 'Lembrete', color: 'bg-warning/10 text-warning', icon: Clock },
   cobranca: { label: 'Cobrança', color: 'bg-destructive/10 text-destructive', icon: AlertTriangle },
-  negociacao: { label: 'Negociação', color: 'bg-secondary/10 text-secondary', icon: Handshake },
+  negociacao: { label: 'Negociação', color: 'bg-secondary/10 text-secondary', icon: Users },
   juridico: { label: 'Jurídico', color: 'bg-destructive/10 text-destructive', icon: Scale },
 };
 
