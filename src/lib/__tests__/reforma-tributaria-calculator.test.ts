@@ -190,8 +190,8 @@ describe('Reforma Tributária Calculator', () => {
       expect(r.aliquotaIBSMunicipal).toBeCloseTo(r.aliquotaIBS * 0.25, 4);
     });
 
-    it('com IS (cigarro) adiciona imposto seletivo', () => {
-      const r = calcularTributosReforma({ ...dadosVenda, categoriaIS: 'cigarros' }, 2033);
+    it('com IS (bebidas alcoólicas) adiciona imposto seletivo', () => {
+      const r = calcularTributosReforma({ ...dadosVenda, categoriaIS: 'bebidas_alcoolicas' }, 2033);
       expect(r.valorIS).toBeGreaterThan(0);
       expect(r.aliquotaIS).toBeGreaterThan(0);
     });
