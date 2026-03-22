@@ -30,7 +30,7 @@ interface NavGroup {
   items: NavItem[];
 }
 
-const NAV_GROUPS: NavGroup[] = [
+const getNavGroups = (alertasCriticos: number): NavGroup[] => [
   {
     id: 'overview',
     label: 'Visão Geral',
@@ -61,10 +61,10 @@ const NAV_GROUPS: NavGroup[] = [
     icon: Shield,
     color: 'text-success',
     items: [
-      { id: 'obrigacoes', label: 'Obrigações', icon: Clock, badge: '3', badgeVariant: 'destructive' },
+      { id: 'obrigacoes', label: 'Obrigações', icon: Clock },
       { id: 'auditoria', label: 'Auditoria', icon: Shield },
       { id: 'conciliacao', label: 'Conciliação', icon: CheckCircle },
-      { id: 'alertas', label: 'Alertas', icon: AlertTriangle },
+      { id: 'alertas', label: 'Alertas', icon: AlertTriangle, badge: alertasCriticos > 0 ? String(alertasCriticos) : undefined, badgeVariant: 'destructive' as const },
     ]
   },
   {
