@@ -103,11 +103,10 @@ export function useContasReceberLogic() {
       setStatusFilter('all');
     } else if (filter === 'vence_hoje') {
       setStatusFilter('pendente');
-      // Will be filtered client-side by date
-      handleFilterChange('hoje');
+      handleFilterChange('hoje', null);
     } else if (filter === 'vence_semana') {
       setStatusFilter('pendente');
-      handleFilterChange('semana');
+      handleFilterChange('semana', null);
     } else {
       setStatusFilter(filter);
     }
