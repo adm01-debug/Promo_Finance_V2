@@ -32,6 +32,7 @@ import {
   Landmark
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { BackButton } from './BackButton';
 
 // Route configuration with icons and labels
 const routeConfig: Record<string, { label: string; icon: React.ElementType; parent?: string }> = {
@@ -76,7 +77,6 @@ export const ContextualBreadcrumbs = forwardRef<HTMLDivElement, { className?: st
     const items: BreadcrumbItemData[] = [];
     let currentPath = location.pathname;
     
-    // Build breadcrumb chain from current route to root
     while (currentPath) {
       const config = routeConfig[currentPath];
       if (config) {
@@ -88,12 +88,10 @@ export const ContextualBreadcrumbs = forwardRef<HTMLDivElement, { className?: st
         });
         currentPath = config.parent || '';
       } else {
-        // Handle dynamic routes or unknown routes
         break;
       }
     }
     
-    // Always ensure home is first if not already
     if (items.length > 0 && items[0].path !== '/') {
       items.unshift({
         path: '/',
@@ -115,8 +113,12 @@ export const ContextualBreadcrumbs = forwardRef<HTMLDivElement, { className?: st
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={cn("mb-4", className)}
+      className={cn("mb-4 flex items-center gap-2", className)}
+      ref={ref}
     >
+      {/* Back Button integrated with breadcrumbs */}
+      <BackButton size="sm" variant="ghost" className="shrink-0" />
+
       <Breadcrumb>
         <BreadcrumbList>
           {breadcrumbs.map((item, index) => {
