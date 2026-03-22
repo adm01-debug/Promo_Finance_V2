@@ -14,6 +14,8 @@ import { OfflineBanner } from '@/components/offline/OfflineBanner';
 import { InstallPWA } from '@/components/pwa/InstallPWA';
 import { MobileBottomNav } from './sidebar/MobileBottomNav';
 import { MobileSidebarDrawer } from './sidebar/MobileSidebarDrawer';
+import { useSwipeBack } from '@/hooks/useSwipeBack';
+import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -25,7 +27,9 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const isMobile = useIsMobile();
   const location = useLocation();
   
-  // Route prefetching is handled by DataPrefetcher
+  // Navigation enhancements
+  useSwipeBack({ enabled: isMobile });
+  useKeyboardNavigation();
 
   // Show onboarding checklist only on dashboard
   const showOnboarding = location.pathname === '/';
@@ -77,7 +81,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         }}
       >
         <div className="w-full max-w-full p-4 md:p-6 lg:p-8">
-          {/* Contextual Breadcrumbs */}
+          {/* Contextual Breadcrumbs with Back Button */}
           <ContextualBreadcrumbs />
           
           {/* Onboarding Checklist - show on dashboard */}
