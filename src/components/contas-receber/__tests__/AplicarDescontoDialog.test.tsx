@@ -36,7 +36,7 @@ describe('AplicarDescontoDialog', () => {
   describe('Gap #12 - Aplicar desconto', () => {
     it('renderiza dialog quando open=true', () => {
       render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, { wrapper });
-      expect(screen.getByText(/Aplicar Desconto/)).toBeInTheDocument();
+      expect(screen.getAllByText(/Aplicar Desconto/).length).toBeGreaterThanOrEqual(1);
     });
 
     it('não renderiza quando conta é null', () => {

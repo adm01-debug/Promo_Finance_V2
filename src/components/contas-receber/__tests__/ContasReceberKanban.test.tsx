@@ -102,7 +102,8 @@ describe('ContasReceberKanban', () => {
       const contas = [createConta({ status: 'pendente', descricao: 'Consultoria', valor: 5500 })];
       render(<ContasReceberKanban contas={contas} onSelectConta={vi.fn()} />);
       expect(screen.getByText('Consultoria')).toBeInTheDocument();
-      expect(screen.getByText('R$ 5500.00')).toBeInTheDocument();
+      // Value appears in card and in column total
+      expect(screen.getAllByText('R$ 5500.00').length).toBeGreaterThanOrEqual(1);
     });
 
     it('exibe dias de atraso em cards vencidos', () => {
