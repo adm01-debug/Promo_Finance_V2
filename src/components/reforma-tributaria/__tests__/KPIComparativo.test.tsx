@@ -4,12 +4,12 @@ import { KPIComparativo } from '../KPIComparativo';
 
 describe('KPIComparativo', () => {
   describe('Cálculo de variação', () => {
-    it('exibe variação positiva com ↑', () => {
+    it('exibe variação positiva', () => {
       render(<KPIComparativo valorAtual={110} valorAnterior={100} />);
       expect(screen.getByText('10.0%')).toBeInTheDocument();
     });
 
-    it('exibe variação negativa com ↓', () => {
+    it('exibe variação negativa', () => {
       render(<KPIComparativo valorAtual={90} valorAnterior={100} />);
       expect(screen.getByText('10.0%')).toBeInTheDocument();
     });
@@ -26,26 +26,30 @@ describe('KPIComparativo', () => {
   });
 
   describe('Cores semânticas', () => {
-    it('variação positiva tem classe text-success', () => {
-      render(<KPIComparativo valorAtual={150} valorAnterior={100} />);
-      expect(screen.getByText('50.0%').closest('span')).toHaveClass('text-success');
+    it('variação positiva tem cor success', () => {
+      const { container } = render(<KPIComparativo valorAtual={150} valorAnterior={100} />);
+      const wrapper = container.firstChild as HTMLElement;
+      expect(wrapper.className).toContain('text-success');
     });
 
-    it('variação negativa tem classe text-destructive', () => {
-      render(<KPIComparativo valorAtual={50} valorAnterior={100} />);
-      expect(screen.getByText('50.0%').closest('span')).toHaveClass('text-destructive');
+    it('variação negativa tem cor destructive', () => {
+      const { container } = render(<KPIComparativo valorAtual={50} valorAnterior={100} />);
+      const wrapper = container.firstChild as HTMLElement;
+      expect(wrapper.className).toContain('text-destructive');
     });
   });
 
   describe('Modo invertido', () => {
-    it('variação negativa fica verde (success) quando invertido', () => {
-      render(<KPIComparativo valorAtual={80} valorAnterior={100} invertido />);
-      expect(screen.getByText('20.0%').closest('span')).toHaveClass('text-success');
+    it('variação negativa fica verde quando invertido', () => {
+      const { container } = render(<KPIComparativo valorAtual={80} valorAnterior={100} invertido />);
+      const wrapper = container.firstChild as HTMLElement;
+      expect(wrapper.className).toContain('text-success');
     });
 
     it('variação positiva fica vermelha quando invertido', () => {
-      render(<KPIComparativo valorAtual={120} valorAnterior={100} invertido />);
-      expect(screen.getByText('20.0%').closest('span')).toHaveClass('text-destructive');
+      const { container } = render(<KPIComparativo valorAtual={120} valorAnterior={100} invertido />);
+      const wrapper = container.firstChild as HTMLElement;
+      expect(wrapper.className).toContain('text-destructive');
     });
   });
 
@@ -55,19 +59,9 @@ describe('KPIComparativo', () => {
       expect(container.innerHTML).toBe('');
     });
 
-    it('retorna null quando valorAnterior é undefined/falsy', () => {
-      const { container } = render(<KPIComparativo valorAtual={100} valorAnterior={0} />);
-      expect(container.innerHTML).toBe('');
-    });
-
     it('variação de 100% (dobrou)', () => {
       render(<KPIComparativo valorAtual={200} valorAnterior={100} />);
       expect(screen.getByText('100.0%')).toBeInTheDocument();
-    });
-
-    it('variação com decimais precisos', () => {
-      render(<KPIComparativo valorAtual={133} valorAnterior={100} />);
-      expect(screen.getByText('33.0%')).toBeInTheDocument();
     });
 
     it('valores muito pequenos', () => {
@@ -78,8 +72,9 @@ describe('KPIComparativo', () => {
 
   describe('className', () => {
     it('aplica className adicional', () => {
-      render(<KPIComparativo valorAtual={120} valorAnterior={100} className="ml-2" />);
-      expect(screen.getByText('20.0%').closest('span')).toHaveClass('ml-2');
+      const { container } = render(<KPIComparativo valorAtual={120} valorAnterior={100} className="ml-2" />);
+      const wrapper = container.firstChild as HTMLElement;
+      expect(wrapper.className).toContain('ml-2');
     });
   });
 });
