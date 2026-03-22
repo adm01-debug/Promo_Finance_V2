@@ -373,7 +373,7 @@ export function ContaReceberDetailDrawer({
                   <Separator />
                   <div className="space-y-3">
                     <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
-                      <Handshake className="h-4 w-4" /> Acordos de Parcelamento
+                      <Users className="h-4 w-4" /> Acordos de Parcelamento
                     </h4>
                     {acordos.map((a: any) => (
                       <div key={a.id} className="p-3 rounded-lg border bg-muted/20 text-sm space-y-1">
