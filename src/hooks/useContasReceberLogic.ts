@@ -35,6 +35,8 @@ export function useContasReceberLogic() {
   const [detailConta, setDetailConta] = useState<ContaReceberWithRelations | null>(null);
   const [cobrancaDialogOpen, setCobrancaDialogOpen] = useState(false);
   const [cobrancaConta, setCobrancaConta] = useState<ContaReceberWithRelations | null>(null);
+  const [descontoDialogOpen, setDescontoDialogOpen] = useState(false);
+  const [descontoConta, setDescontoConta] = useState<ContaReceberWithRelations | null>(null);
   const queryClient = useQueryClient();
 
   const { filterType, handleFilterChange, filterByDate } = useQuickDateFilter();
