@@ -125,7 +125,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
     return clientes.filter(c =>
       c.razao_social.toLowerCase().includes(lower) ||
       (c.nome_fantasia && c.nome_fantasia.toLowerCase().includes(lower)) ||
-      (c.cpf_cnpj && c.cpf_cnpj.includes(clienteSearch))
+      (c.cnpj_cpf && (c.cnpj_cpf as string).includes(clienteSearch))
     );
   }, [clientes, clienteSearch]);
 
