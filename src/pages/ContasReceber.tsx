@@ -16,6 +16,7 @@ import { ContaReceberForm } from '@/components/contas-receber/ContaReceberForm';
 import { RegistrarRecebimentoDialog } from '@/components/contas-receber/RegistrarRecebimentoDialog';
 import { ContaReceberDetailDrawer } from '@/components/contas-receber/ContaReceberDetailDrawer';
 import { EnviarCobrancaDialog } from '@/components/contas-receber/EnviarCobrancaDialog';
+import { AplicarDescontoDialog } from '@/components/contas-receber/AplicarDescontoDialog';
 import { ContasReceberKanban } from '@/components/contas-receber/ContasReceberKanban';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { ContasReceberKPIs } from '@/components/contas-receber/ContasReceberKPIs';
@@ -42,14 +43,15 @@ export default function ContasReceber() {
     formOpen, recebimentoDialogOpen, selectedConta, editingConta, advancedFilters,
     currentPage, pageSize, deleteDialogOpen, deletingConta, isDeleting, isLoading, filterType,
     viewMode, detailDrawerOpen, detailConta, cobrancaDialogOpen, cobrancaConta,
+    descontoDialogOpen, descontoConta,
     contas, sortedContas, centrosCusto, empresas, totalCount, totalPages, kpis, sortKey, sortDirection,
     handleSearchChange, handleStatusChange, handleCentroCustoChange, handleEmpresaChange,
     handleFormaChange, handlePageSizeChange, handleSort, handleOpenDeleteDialog, handleDeleteConta,
     handleFilterChange, handleBulkMarkAsReceived, handleBulkCancel, handleViewConta,
-    handleEnviarCobranca, handleKpiClick,
+    handleEnviarCobranca, handleKpiClick, handleAplicarDesconto,
     setFormOpen, setRecebimentoDialogOpen, setSelectedConta, setEditingConta,
     setAdvancedFilters, setCurrentPage, setDeleteDialogOpen, setViewMode,
-    setDetailDrawerOpen, setCobrancaDialogOpen,
+    setDetailDrawerOpen, setCobrancaDialogOpen, setDescontoDialogOpen,
     selectedIds, selectedCount, isProcessing, progress, isSelected, isAllSelected,
     selectAll, toggleSelect, clearSelection,
   } = useContasReceberLogic();
@@ -58,6 +60,8 @@ export default function ContasReceber() {
     { id: 'mark-received', label: 'Marcar como Recebido', icon: <CheckCircle2 className="h-4 w-4" />, variant: 'default' as const, onClick: handleBulkMarkAsReceived },
     { id: 'cancel', label: 'Cancelar', icon: <XCircle className="h-4 w-4" />, variant: 'destructive' as const, onClick: handleBulkCancel },
   ];
+
+  const colCount = 9 + (empresas.length > 1 ? 1 : 0) + 1; // +1 for dias atraso
 
   return (
     <MainLayout>
@@ -69,22 +73,11 @@ export default function ContasReceber() {
             <p className="text-muted-foreground mt-1">Gerencie todos os títulos a receber e acompanhe a inadimplência</p>
           </div>
           <div className="flex items-center gap-3">
-            {/* View Mode Toggle (#33) */}
             <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-              <Button
-                variant={viewMode === 'table' ? 'default' : 'ghost'}
-                size="icon-sm"
-                onClick={() => setViewMode('table')}
-                className="h-8 w-8"
-              >
+              <Button variant={viewMode === 'table' ? 'default' : 'ghost'} size="icon-sm" onClick={() => setViewMode('table')} className="h-8 w-8">
                 <TableIcon className="h-4 w-4" />
               </Button>
-              <Button
-                variant={viewMode === 'kanban' ? 'default' : 'ghost'}
-                size="icon-sm"
-                onClick={() => setViewMode('kanban')}
-                className="h-8 w-8"
-              >
+              <Button variant={viewMode === 'kanban' ? 'default' : 'ghost'} size="icon-sm" onClick={() => setViewMode('kanban')} className="h-8 w-8">
                 <LayoutGrid className="h-4 w-4" />
               </Button>
             </div>
@@ -95,7 +88,7 @@ export default function ContasReceber() {
           </div>
         </motion.div>
 
-        {/* KPIs with drill-down and urgency */}
+        {/* KPIs */}
         <motion.div variants={itemVariants}>
           <ContasReceberKPIs {...kpis} onKpiClick={handleKpiClick} />
         </motion.div>
@@ -105,7 +98,7 @@ export default function ContasReceber() {
           <QuickDateFilters value={filterType} onChange={handleFilterChange} showOverdue />
         </motion.div>
 
-        {/* Filters with empresa + forma */}
+        {/* Filters */}
         <motion.div variants={itemVariants}>
           <ContasReceberFilters
             searchTerm={searchTerm} onSearchChange={handleSearchChange}
@@ -118,13 +111,10 @@ export default function ContasReceber() {
           />
         </motion.div>
 
-        {/* Content - Table or Kanban */}
+        {/* Content */}
         <motion.div variants={itemVariants}>
           {viewMode === 'kanban' ? (
-            <ContasReceberKanban
-              contas={sortedContas}
-              onSelectConta={handleViewConta}
-            />
+            <ContasReceberKanban contas={sortedContas} onSelectConta={handleViewConta} />
           ) : (
             <Card className="card-elevated overflow-hidden">
               {isLoading ? (
@@ -139,6 +129,8 @@ export default function ContasReceber() {
                         <TableHead>Descrição</TableHead>
                         <TableHead><SortableHeader label="Valor" sortKey="valor" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></TableHead>
                         <TableHead><SortableHeader label="Vencimento" sortKey="data_vencimento" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></TableHead>
+                        {/* Dias em Atraso sortável (#15) */}
+                        <TableHead className="w-[80px]"><SortableHeader label="Dias" sortKey="data_vencimento" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></TableHead>
                         <TableHead>Status</TableHead>
                         {empresas.length > 1 && <TableHead>Empresa</TableHead>}
                         <TableHead>Score</TableHead>
@@ -147,7 +139,7 @@ export default function ContasReceber() {
                     </TableHeader>
                     <TableBody>
                       {sortedContas.length === 0 ? (
-                        <TableRow><TableCell colSpan={empresas.length > 1 ? 9 : 8} className="p-0">
+                        <TableRow><TableCell colSpan={colCount} className="p-0">
                           <EmptyState
                             icon={<Inbox className="h-8 w-8 text-muted-foreground" />}
                             title={contas.length === 0 ? 'Nenhuma conta cadastrada' : 'Nenhuma conta encontrada'}
@@ -171,7 +163,9 @@ export default function ContasReceber() {
                           onRegistrarRecebimento={(c) => { setSelectedConta(c); setRecebimentoDialogOpen(true); }}
                           onView={handleViewConta}
                           onEnviarCobranca={handleEnviarCobranca}
+                          onAplicarDesconto={handleAplicarDesconto}
                           showEmpresa={empresas.length > 1}
+                          showDiasAtraso
                         />
                       ))}
                     </TableBody>
@@ -187,19 +181,16 @@ export default function ContasReceber() {
         <ContaReceberForm open={formOpen} onOpenChange={(open) => { setFormOpen(open); if (!open) setEditingConta(null); }} conta={editingConta} />
         <RegistrarRecebimentoDialog conta={selectedConta} open={recebimentoDialogOpen} onOpenChange={setRecebimentoDialogOpen} />
         <ContaReceberDetailDrawer
-          conta={detailConta}
-          open={detailDrawerOpen}
-          onOpenChange={setDetailDrawerOpen}
+          conta={detailConta} open={detailDrawerOpen} onOpenChange={setDetailDrawerOpen}
           onEdit={(c) => { setEditingConta(c); setFormOpen(true); }}
           onRegistrarRecebimento={(c) => { setSelectedConta(c); setRecebimentoDialogOpen(true); }}
           onEnviarCobranca={handleEnviarCobranca}
         />
-        <EnviarCobrancaDialog
-          conta={cobrancaConta}
-          open={cobrancaDialogOpen}
-          onOpenChange={setCobrancaDialogOpen}
-        />
-        <ConfirmDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} title="Confirmar exclusão" description={`Tem certeza que deseja excluir "${deletingConta?.descricao}" (${deletingConta?.valor ? formatCurrency(deletingConta.valor) : ''})?`} confirmLabel="Excluir" variant="danger" isLoading={isDeleting} onConfirm={handleDeleteConta} />
+        <EnviarCobrancaDialog conta={cobrancaConta} open={cobrancaDialogOpen} onOpenChange={setCobrancaDialogOpen} />
+        <AplicarDescontoDialog conta={descontoConta} open={descontoDialogOpen} onOpenChange={setDescontoDialogOpen} />
+        <ConfirmDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} title="Confirmar exclusão"
+          description={`Tem certeza que deseja excluir "${deletingConta?.descricao}" (${deletingConta?.valor ? formatCurrency(deletingConta.valor) : ''})?`}
+          confirmLabel="Excluir" variant="danger" isLoading={isDeleting} onConfirm={handleDeleteConta} />
         <BulkActionsBar selectedCount={selectedCount} isProcessing={isProcessing} progress={progress} actions={bulkActions} onClear={clearSelection} />
       </motion.div>
     </MainLayout>
