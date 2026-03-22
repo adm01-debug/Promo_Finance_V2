@@ -114,7 +114,7 @@ export function HeroKPIs({
 
         {/* Créditos Disponíveis - Hero */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
-          <Card className={cn("relative overflow-hidden transition-all duration-300 hover:scale-[1.02]", colorClasses.green.border, colorClasses.green.bg, colorClasses.green.glow)}>
+          <Card className={cn("relative overflow-hidden transition-all duration-300 hover:scale-[1.02] cursor-pointer", colorClasses.green.border, colorClasses.green.bg, colorClasses.green.glow)} onClick={() => onKPIClick?.('creditos')}>
             <div className="absolute top-0 right-0 w-20 sm:w-32 h-20 sm:h-32 bg-gradient-to-br from-success/10 to-transparent rounded-bl-full" />
             <CardHeader className="pb-1 sm:pb-2 p-3 sm:p-6">
               <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground flex items-center gap-1.5 sm:gap-2">
