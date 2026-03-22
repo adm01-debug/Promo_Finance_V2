@@ -219,14 +219,15 @@ export function useContasReceberLogic() {
     formOpen, recebimentoDialogOpen, selectedConta, editingConta, advancedFilters,
     currentPage, pageSize, deleteDialogOpen, deletingConta, isDeleting, isLoading, filterType,
     viewMode, detailDrawerOpen, detailConta, cobrancaDialogOpen, cobrancaConta,
+    descontoDialogOpen, descontoConta,
     contas, sortedContas, centrosCusto, empresas, totalCount, totalPages, kpis, sortKey, sortDirection,
     handleSearchChange, handleStatusChange, handleCentroCustoChange, handleEmpresaChange,
     handleFormaChange, handlePageSizeChange, handleSort, handleOpenDeleteDialog, handleDeleteConta,
     handleFilterChange, handleBulkMarkAsReceived, handleBulkCancel, handleViewConta,
-    handleEnviarCobranca, handleKpiClick,
+    handleEnviarCobranca, handleKpiClick, handleAplicarDesconto,
     setFormOpen, setRecebimentoDialogOpen, setSelectedConta, setEditingConta,
     setAdvancedFilters, setCurrentPage, setDeleteDialogOpen, setViewMode,
-    setDetailDrawerOpen, setCobrancaDialogOpen,
+    setDetailDrawerOpen, setCobrancaDialogOpen, setDescontoDialogOpen,
     ...bulkActionsHook, getRowAnimation,
   };
 }
