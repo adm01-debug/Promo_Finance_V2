@@ -145,7 +145,7 @@ export function HeroKPIs({
       <div className="grid gap-2 sm:gap-4 grid-cols-2 lg:grid-cols-4">
         {/* CBS a Recolher */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.2 }}>
-          <Card className={cn("transition-all duration-200 hover:shadow-md hover:border-primary/30", colorClasses.blue.border)}>
+          <Card className={cn("transition-all duration-200 hover:shadow-md hover:border-primary/30 cursor-pointer", colorClasses.blue.border)} onClick={() => onKPIClick?.('apuracao')}>
             <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
               <CardTitle className="text-[10px] sm:text-sm font-medium text-muted-foreground">CBS</CardTitle>
               <Receipt className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
