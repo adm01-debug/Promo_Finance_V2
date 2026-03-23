@@ -698,24 +698,44 @@ describe('Table display logic', () => {
     expect(r.rpc_name || r.table_name || '-').toBe('-');
   });
 
-  it('shows record_count or dash', () => {
-    expect(makeRow({ record_count: 42 }).record_count ?? '-').toBe(42);
-    expect(makeRow({ record_count: null }).record_count ?? '-').toBe('-');
+  it('record_count defaults to number', () => {
+    const r = makeRow({ record_count: 42 });
+    expect(r.record_count).toBe(42);
   });
 
-  it('shows query_limit or dash', () => {
-    expect(makeRow({ query_limit: 100 }).query_limit ?? '-').toBe(100);
-    expect(makeRow({ query_limit: null }).query_limit ?? '-').toBe('-');
+  it('record_count null yields dash via nullish coalescing', () => {
+    const r = makeRow({ record_count: null });
+    expect(r.record_count ?? '-').toBe('-');
   });
 
-  it('shows query_offset or dash', () => {
-    expect(makeRow({ query_offset: 0 }).query_offset ?? '-').toBe(0);
-    expect(makeRow({ query_offset: null }).query_offset ?? '-').toBe('-');
+  it('query_limit defaults to number', () => {
+    const r = makeRow({ query_limit: 200 });
+    expect(r.query_limit).toBe(200);
   });
 
-  it('shows count_mode or dash', () => {
-    expect(makeRow({ count_mode: 'exact' }).count_mode || '-').toBe('exact');
-    expect(makeRow({ count_mode: null }).count_mode || '-').toBe('-');
+  it('query_limit null yields dash', () => {
+    const r = makeRow({ query_limit: null });
+    expect(r.query_limit ?? '-').toBe('-');
+  });
+
+  it('query_offset defaults to number', () => {
+    const r = makeRow({ query_offset: 0 });
+    expect(r.query_offset).toBe(0);
+  });
+
+  it('query_offset null yields dash', () => {
+    const r = makeRow({ query_offset: null });
+    expect(r.query_offset ?? '-').toBe('-');
+  });
+
+  it('count_mode defaults to string', () => {
+    const r = makeRow({ count_mode: 'exact' });
+    expect(r.count_mode).toBe('exact');
+  });
+
+  it('count_mode null yields dash via OR', () => {
+    const r = makeRow({ count_mode: null });
+    expect(r.count_mode || '-').toBe('-');
   });
 });
 
