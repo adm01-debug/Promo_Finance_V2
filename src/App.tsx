@@ -60,6 +60,7 @@ const Tesouraria = lazy(() => import('./pages/Tesouraria'));
 const PixHub = lazy(() => import('./pages/PixHub'));
 const OrcamentoEvento = lazy(() => import('./pages/OrcamentoEvento'));
 const BenchmarkingSetorial = lazy(() => import('./pages/BenchmarkingSetorial'));
+const AdminTelemetria = lazy(() => import('./pages/AdminTelemetria'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Inner app component that can use routing hooks
