@@ -5,10 +5,66 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+// ── Telemetry helper ────────────────────────────────────────────────────
+async function emitTelemetry(opts: {
+  operation: string;
+  table_name?: string;
+  rpc_name?: string;
+  duration_ms: number;
+  record_count?: number;
+  query_limit?: number;
+  query_offset?: number;
+  count_mode?: string;
+  error_message?: string;
+  user_id?: string;
+}) {
+  const SLOW_THRESHOLD_MS = 3000;
+  const VERY_SLOW_THRESHOLD_MS = 8000;
+
+  let severity = 'normal';
+  if (opts.error_message) {
+    severity = 'error';
+  } else if (opts.duration_ms >= VERY_SLOW_THRESHOLD_MS) {
+    severity = 'very_slow';
+  } else if (opts.duration_ms >= SLOW_THRESHOLD_MS) {
+    severity = 'slow';
+  }
+
+  // Only persist slow/error queries to avoid flooding
+  if (severity === 'normal') return;
+
+  try {
+    const serviceClient = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
+
+    await serviceClient.from('query_telemetry').insert({
+      operation: opts.operation,
+      table_name: opts.table_name || null,
+      rpc_name: opts.rpc_name || null,
+      duration_ms: opts.duration_ms,
+      record_count: opts.record_count ?? null,
+      query_limit: opts.query_limit ?? null,
+      query_offset: opts.query_offset ?? null,
+      count_mode: opts.count_mode ?? null,
+      severity,
+      error_message: opts.error_message || null,
+      user_id: opts.user_id || null,
+    });
+  } catch (e) {
+    console.error('[telemetry] Failed to persist telemetry:', e);
+  }
+}
+
+// ── Main handler ────────────────────────────────────────────────────────
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
+
+  const startTime = Date.now();
+  let userId: string | undefined;
 
   try {
     // Verify caller is authenticated
@@ -31,6 +87,7 @@ Deno.serve(async (req) => {
         status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+    userId = user.id;
 
     // Parse request
     const url = new URL(req.url);
@@ -63,13 +120,10 @@ Deno.serve(async (req) => {
 
     const extSupabase = createClient(extUrl, extKey);
 
-    // External DB uses "companies" table with is_customer/is_supplier flags
-    // and related "customers"/"suppliers" tables via company_id
     const isCliente = tabela === 'clientes';
     const filterField = isCliente ? 'is_customer' : 'is_supplier';
     const joinTable = isCliente ? 'customers' : 'suppliers';
 
-    // Select companies with the related sub-table and contacts
     const selectFields = `*,${joinTable}(*),contacts(id,first_name,last_name,full_name)`;
 
     let query = extSupabase
@@ -85,13 +139,39 @@ Deno.serve(async (req) => {
     query = query.order('razao_social', { ascending: true }).range(offset, offset + limit - 1);
 
     const { data, error, count } = await query;
+    const durationMs = Date.now() - startTime;
 
     if (error) {
       console.error(`[external-data] Error querying companies (${tabela}):`, error);
+
+      // Emit error telemetry
+      await emitTelemetry({
+        operation: 'SELECT',
+        table_name: `companies (${tabela})`,
+        duration_ms: durationMs,
+        query_limit: limit,
+        query_offset: offset,
+        count_mode: 'exact',
+        error_message: error.message,
+        user_id: userId,
+      });
+
       return new Response(JSON.stringify({ error: error.message, details: error }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    // Emit telemetry for successful queries
+    await emitTelemetry({
+      operation: 'SELECT',
+      table_name: `companies (${tabela})`,
+      duration_ms: durationMs,
+      record_count: data?.length ?? 0,
+      query_limit: limit,
+      query_offset: offset,
+      count_mode: 'exact',
+      user_id: userId,
+    });
 
     // Map external "companies" format to the local format expected by the frontend
     const mappedData = (data || []).map((company: Record<string, unknown>) => {
@@ -100,7 +180,6 @@ Deno.serve(async (req) => {
       const primaryContact = contacts && contacts.length > 0 ? contacts[0] : null;
 
       return {
-        // Core fields matching local clientes/fornecedores schema
         id: company.id,
         razao_social: company.razao_social || '',
         nome_fantasia: company.nome_fantasia || '',
@@ -114,7 +193,6 @@ Deno.serve(async (req) => {
         observacoes: subData ? subData.observacoes : null,
         created_at: company.created_at,
         updated_at: company.updated_at,
-        // Extra fields from external DB
         website: company.website,
         logo_url: company.logo_url,
         grupo_economico: company.grupo_economico,
@@ -122,7 +200,6 @@ Deno.serve(async (req) => {
         status_externo: company.status,
         is_customer: company.is_customer,
         is_supplier: company.is_supplier,
-        // Customer-specific
         ...(isCliente && subData ? {
           vendedor_nome: subData.vendedor_nome,
           cliente_ativado: subData.cliente_ativado,
@@ -132,7 +209,6 @@ Deno.serve(async (req) => {
           ticket_medio: subData.ticket_medio,
           grupo_clientes: subData.grupo_clientes,
         } : {}),
-        // Supplier-specific
         ...(!isCliente && subData ? {
           categoria: subData.categoria,
           tipo_fornecedor: subData.tipo_fornecedor,
@@ -154,9 +230,23 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    const durationMs = Date.now() - startTime;
     console.error('[external-data] Unexpected error:', error);
+
+    // Emit telemetry for unexpected errors
+    await emitTelemetry({
+      operation: 'SELECT',
+      table_name: 'companies',
+      duration_ms: durationMs,
+      error_message: (error as Error).message,
+      user_id: userId,
+    });
+
     return new Response(JSON.stringify({ error: (error as Error).message }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });
+
+// Export for testing
+export { emitTelemetry };
