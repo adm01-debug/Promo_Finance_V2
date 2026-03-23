@@ -76,3 +76,4 @@ describe('TelemetryCharts', () => {
     const { container } = render(<TelemetryCharts rows={rows} timeFilter="24h" />);
     expect(container.innerHTML).not.toBe('');
   });
+});
