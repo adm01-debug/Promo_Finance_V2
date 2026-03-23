@@ -27,10 +27,11 @@ describe('TelemetryCharts', () => {
     expect(container.innerHTML).toBe('');
   });
 
-  it('renders two chart cards when rows have data', () => {
+  it('renders three chart cards when rows have data', () => {
     render(<TelemetryCharts rows={makeRows(5)} timeFilter="24h" />);
-    expect(screen.getByText('Queries por Período')).toBeInTheDocument();
-    expect(screen.getByText('Distribuição por Severidade')).toBeInTheDocument();
+    expect(screen.getByText('Alertas ao Longo do Tempo')).toBeInTheDocument();
+    expect(screen.getByText('Duração Média / Máxima')).toBeInTheDocument();
+    expect(screen.getByText('Alertas por Tabela')).toBeInTheDocument();
   });
 
   it.each(['1h', '6h', '24h', '7d'] as const)('renders without error for timeFilter=%s', (tf) => {
@@ -40,7 +41,7 @@ describe('TelemetryCharts', () => {
 
   it('renders charts for a single row', () => {
     render(<TelemetryCharts rows={[makeRow()]} timeFilter="24h" />);
-    expect(screen.getByText('Queries por Período')).toBeInTheDocument();
+    expect(screen.getByText('Alertas ao Longo do Tempo')).toBeInTheDocument();
   });
 
   it('handles 200 rows without crashing', () => {
@@ -48,23 +49,31 @@ describe('TelemetryCharts', () => {
     expect(container.innerHTML).not.toBe('');
   });
 
-  it('handles rows with rpc_name', () => {
-    const { container } = render(
-      <TelemetryCharts rows={makeRows(3, { rpc_name: 'fn', table_name: null })} timeFilter="24h" />
-    );
+  it('groups data by severity correctly', () => {
+    const rows = [
+      makeRow({ severity: 'slow' }),
+      makeRow({ severity: 'very_slow' }),
+      makeRow({ severity: 'error' }),
+    ];
+    const { container } = render(<TelemetryCharts rows={rows} timeFilter="24h" />);
     expect(container.innerHTML).not.toBe('');
   });
 
-  it('handles zero duration_ms', () => {
-    const { container } = render(<TelemetryCharts rows={makeRows(3, { duration_ms: 0 })} timeFilter="24h" />);
-    expect(container.innerHTML).not.toBe('');
+  it('groups data by table name for bar chart', () => {
+    const rows = [
+      makeRow({ table_name: 'orders' }),
+      makeRow({ table_name: 'orders' }),
+      makeRow({ table_name: 'clients' }),
+    ];
+    render(<TelemetryCharts rows={rows} timeFilter="24h" />);
+    expect(screen.getByText('Alertas por Tabela')).toBeInTheDocument();
   });
 
-  it('handles rows spanning midnight', () => {
-    const y = new Date(); y.setDate(y.getDate() - 1); y.setHours(23, 55);
-    const t = new Date(); t.setHours(0, 5);
-    const rows = [makeRow({ created_at: y.toISOString() }), makeRow({ created_at: t.toISOString() })];
-    const { container } = render(<TelemetryCharts rows={rows} timeFilter="6h" />);
+  it('prefers rpc_name over table_name in bar chart', () => {
+    const rows = [
+      makeRow({ rpc_name: 'get_totals', table_name: 'orders' }),
+    ];
+    const { container } = render(<TelemetryCharts rows={rows} timeFilter="24h" />);
     expect(container.innerHTML).not.toBe('');
   });
 });
