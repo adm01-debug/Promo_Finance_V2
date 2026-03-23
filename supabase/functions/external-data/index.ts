@@ -5,6 +5,10 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+// ── Telemetry constants ─────────────────────────────────────────────────
+const SLOW_QUERY_THRESHOLD_MS = 3000;
+const VERY_SLOW_QUERY_THRESHOLD_MS = 8000;
+
 // ── Telemetry helper ────────────────────────────────────────────────────
 async function emitTelemetry(opts: {
   operation: string;
@@ -18,16 +22,35 @@ async function emitTelemetry(opts: {
   error_message?: string;
   user_id?: string;
 }) {
-  const SLOW_THRESHOLD_MS = 3000;
-  const VERY_SLOW_THRESHOLD_MS = 8000;
-
   let severity = 'normal';
   if (opts.error_message) {
     severity = 'error';
-  } else if (opts.duration_ms >= VERY_SLOW_THRESHOLD_MS) {
+  } else if (opts.duration_ms >= VERY_SLOW_QUERY_THRESHOLD_MS) {
     severity = 'very_slow';
-  } else if (opts.duration_ms >= SLOW_THRESHOLD_MS) {
+  } else if (opts.duration_ms >= SLOW_QUERY_THRESHOLD_MS) {
     severity = 'slow';
+  }
+
+  // Structured console logging
+  const icon = severity === 'very_slow' ? '🔴'
+    : severity === 'slow' ? '🟡'
+    : severity === 'error' ? '❌'
+    : '✅';
+  const target = opts.rpc_name || opts.table_name || 'unknown';
+  const line = `${icon} [telemetry] ${opts.operation}:${target} ${opts.duration_ms}ms` +
+    ` | records=${opts.record_count ?? '-'}` +
+    ` limit=${opts.query_limit ?? '-'}` +
+    ` offset=${opts.query_offset ?? '-'}` +
+    ` count=${opts.count_mode ?? '-'}`;
+
+  if (severity === 'very_slow') {
+    console.warn(`⚠️ VERY SLOW QUERY: ${line}`);
+  } else if (severity === 'slow') {
+    console.warn(`⚠️ SLOW QUERY: ${line}`);
+  } else if (severity === 'error') {
+    console.error(`${line} error=${opts.error_message}`);
+  } else {
+    console.info(line);
   }
 
   // Only persist slow/error queries to avoid flooding
@@ -39,7 +62,8 @@ async function emitTelemetry(opts: {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
 
-    await serviceClient.from('query_telemetry').insert({
+    // Fire-and-forget: persist but don't block the response
+    serviceClient.from('query_telemetry').insert({
       operation: opts.operation,
       table_name: opts.table_name || null,
       rpc_name: opts.rpc_name || null,
@@ -51,8 +75,11 @@ async function emitTelemetry(opts: {
       severity,
       error_message: opts.error_message || null,
       user_id: opts.user_id || null,
+    }).then(({ error: insertErr }) => {
+      if (insertErr) console.warn('[telemetry-persist] Insert failed:', insertErr.message);
     });
   } catch (e) {
+    // Fire-and-forget: NEVER block the main response
     console.error('[telemetry] Failed to persist telemetry:', e);
   }
 }
@@ -63,7 +90,7 @@ Deno.serve(async (req) => {
     return new Response('ok', { headers: corsHeaders });
   }
 
-  const startTime = Date.now();
+  const startTime = performance.now();
   let userId: string | undefined;
 
   try {
@@ -126,6 +153,9 @@ Deno.serve(async (req) => {
 
     const selectFields = `*,${joinTable}(*),contacts(id,first_name,last_name,full_name)`;
 
+    // Measure external query time
+    const queryStart = performance.now();
+
     let query = extSupabase
       .from('companies')
       .select(selectFields, { count: 'exact' })
@@ -139,16 +169,16 @@ Deno.serve(async (req) => {
     query = query.order('razao_social', { ascending: true }).range(offset, offset + limit - 1);
 
     const { data, error, count } = await query;
-    const durationMs = Date.now() - startTime;
+    const queryDurationMs = Math.round(performance.now() - queryStart);
 
     if (error) {
       console.error(`[external-data] Error querying companies (${tabela}):`, error);
 
       // Emit error telemetry
-      await emitTelemetry({
+      emitTelemetry({
         operation: 'SELECT',
         table_name: `companies (${tabela})`,
-        duration_ms: durationMs,
+        duration_ms: queryDurationMs,
         query_limit: limit,
         query_offset: offset,
         count_mode: 'exact',
@@ -162,10 +192,10 @@ Deno.serve(async (req) => {
     }
 
     // Emit telemetry for successful queries
-    await emitTelemetry({
+    emitTelemetry({
       operation: 'SELECT',
       table_name: `companies (${tabela})`,
-      duration_ms: durationMs,
+      duration_ms: queryDurationMs,
       record_count: data?.length ?? 0,
       query_limit: limit,
       query_offset: offset,
@@ -230,11 +260,11 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    const durationMs = Date.now() - startTime;
+    const durationMs = Math.round(performance.now() - startTime);
     console.error('[external-data] Unexpected error:', error);
 
     // Emit telemetry for unexpected errors
-    await emitTelemetry({
+    emitTelemetry({
       operation: 'SELECT',
       table_name: 'companies',
       duration_ms: durationMs,
