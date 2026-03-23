@@ -382,11 +382,11 @@ export default function AdminTelemetriaPage() {
                 <PopoverTrigger asChild>
                   <Button variant="outline" size="sm" className="text-xs gap-1.5">
                     <CalendarIcon className="h-3.5 w-3.5" />
-                    {customDateFrom ? format(customDateFrom, "dd/MM/yyyy", { locale: ptBR }) : "De"}
+                    {customDateFrom ? format(customDateFrom, "dd/MM/yyyy") : "De"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={customDateFrom} onSelect={setCustomDateFrom} locale={ptBR} />
+                  <Calendar mode="single" selected={customDateFrom} onSelect={setCustomDateFrom} />
                 </PopoverContent>
               </Popover>
               <span className="text-xs text-muted-foreground">até</span>
@@ -394,11 +394,11 @@ export default function AdminTelemetriaPage() {
                 <PopoverTrigger asChild>
                   <Button variant="outline" size="sm" className="text-xs gap-1.5">
                     <CalendarIcon className="h-3.5 w-3.5" />
-                    {customDateTo ? format(customDateTo, "dd/MM/yyyy", { locale: ptBR }) : "Até"}
+                    {customDateTo ? format(customDateTo, "dd/MM/yyyy") : "Até"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={customDateTo} onSelect={setCustomDateTo} locale={ptBR} />
+                  <Calendar mode="single" selected={customDateTo} onSelect={setCustomDateTo} />
                 </PopoverContent>
               </Popover>
             </div>
