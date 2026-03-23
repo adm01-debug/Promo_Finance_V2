@@ -25,18 +25,18 @@ let rowCounter = 0;
 function makeRow(overrides: Partial<TelemetryRow> = {}): TelemetryRow {
   rowCounter++;
   return {
-    id: overrides.id ?? `tel-${rowCounter}`,
+    id: 'id' in overrides ? overrides.id! : `tel-${rowCounter}`,
     operation: overrides.operation ?? 'SELECT',
-    table_name: overrides.table_name ?? 'companies',
-    rpc_name: overrides.rpc_name ?? null,
+    table_name: 'table_name' in overrides ? (overrides.table_name ?? null) : 'companies',
+    rpc_name: 'rpc_name' in overrides ? (overrides.rpc_name ?? null) : null,
     duration_ms: overrides.duration_ms ?? 4500,
-    record_count: overrides.record_count ?? 25,
-    query_limit: overrides.query_limit ?? 100,
-    query_offset: overrides.query_offset ?? 0,
-    count_mode: overrides.count_mode ?? 'exact',
+    record_count: 'record_count' in overrides ? (overrides.record_count ?? null) : 25,
+    query_limit: 'query_limit' in overrides ? (overrides.query_limit ?? null) : 100,
+    query_offset: 'query_offset' in overrides ? (overrides.query_offset ?? null) : 0,
+    count_mode: 'count_mode' in overrides ? (overrides.count_mode ?? null) : 'exact',
     severity: overrides.severity ?? 'slow',
-    error_message: overrides.error_message ?? null,
-    user_id: overrides.user_id ?? null,
+    error_message: 'error_message' in overrides ? (overrides.error_message ?? null) : null,
+    user_id: 'user_id' in overrides ? (overrides.user_id ?? null) : null,
     created_at: overrides.created_at ?? new Date().toISOString(),
   };
 }
