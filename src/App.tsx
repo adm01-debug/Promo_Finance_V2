@@ -60,6 +60,7 @@ const Tesouraria = lazy(() => import('./pages/Tesouraria'));
 const PixHub = lazy(() => import('./pages/PixHub'));
 const OrcamentoEvento = lazy(() => import('./pages/OrcamentoEvento'));
 const BenchmarkingSetorial = lazy(() => import('./pages/BenchmarkingSetorial'));
+const AdminTelemetria = lazy(() => import('./pages/AdminTelemetria'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Inner app component that can use routing hooks
@@ -120,6 +121,7 @@ function AppRoutes() {
             <Route path="/pix-hub" element={<ProtectedRoute><PixHub /></ProtectedRoute>} />
             <Route path="/orcamento-evento" element={<ProtectedRoute><OrcamentoEvento /></ProtectedRoute>} />
             <Route path="/benchmarking" element={<ProtectedRoute><BenchmarkingSetorial /></ProtectedRoute>} />
+            <Route path="/admin/telemetria" element={<ProtectedRoute><AdminTelemetria /></ProtectedRoute>} />
             
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
