@@ -79,11 +79,8 @@ const BarcodeVisual = ({ code }: { code: string }) => {
     </div>
   );
 };
-
 import { BoletoPreviewPanel } from '@/components/boletos/BoletoPreviewPanel';
 import { NovoBoletoForm } from '@/components/boletos/NovoBoletoForm';
-  const [copied, setCopied] = useState(false);
-
   const handleCopyLinhaDigitavel = () => {
     navigator.clipboard.writeText(boleto.linha_digitavel.replace(/\s/g, ''));
     setCopied(true);
