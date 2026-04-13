@@ -80,11 +80,8 @@ const BarcodeVisual = ({ code }: { code: string }) => {
   );
 };
 
-// Boleto Preview Component
-const BoletoPreview = ({ boleto, onUpdateStatus }: { 
-  boleto: Boleto; 
-  onUpdateStatus: (data: { id: string; status: Boleto['status'] }) => void;
-}) => {
+import { BoletoPreviewPanel } from '@/components/boletos/BoletoPreviewPanel';
+import { NovoBoletoForm } from '@/components/boletos/NovoBoletoForm';
   const [copied, setCopied] = useState(false);
 
   const handleCopyLinhaDigitavel = () => {

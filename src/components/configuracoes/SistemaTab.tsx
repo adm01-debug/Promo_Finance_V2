@@ -10,8 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } };
 
 interface Preferencias {
-  temaEscuro: boolean; formatoData: string; fusoHorario: string;
-  backupAutomatico: boolean; frequenciaBackup: string;
+  notificacoesEmail: boolean; notificacoesPush: boolean; alertasVencimento: number;
+  alertasFluxoCaixa: boolean; temaEscuro: boolean; formatoData: string;
+  formatoMoeda: string; fusoHorario: string; backupAutomatico: boolean; frequenciaBackup: string;
 }
 
 interface SistemaTabProps {
