@@ -53,6 +53,9 @@ import { useToast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/formatters';
 import { useBitrix24 } from '@/hooks/useBitrix24';
 import { BitrixWebhookPanel } from '@/components/integracoes/BitrixWebhookPanel';
+import { BitrixKpiCards } from '@/components/bitrix/BitrixKpis';
+import { BitrixDealsTab } from '@/components/bitrix/BitrixDealsTab';
+import { BitrixSyncLogsTab } from '@/components/bitrix/BitrixSyncLogsTab';
 import { logger } from '@/lib/logger';
 
 const containerVariants = {
@@ -203,104 +206,7 @@ export default function Bitrix24() {
       )}
 
       {/* KPIs */}
-      <motion.div 
-        className="grid grid-cols-2 lg:grid-cols-5 gap-4"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <motion.div variants={itemVariants}>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className={cn(
-                  "p-2 rounded-lg",
-                  isConnected ? "bg-success/10" : "bg-destructive/10"
-                )}>
-                  {isConnected ? (
-                    <CheckCircle2 className="h-5 w-5 text-success" />
-                  ) : (
-                    <XCircle className="h-5 w-5 text-destructive" />
-                  )}
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Status</p>
-                  <p className={cn(
-                    "font-semibold",
-                    isConnected ? "text-success" : "text-destructive"
-                  )}>
-                    {isConnected ? 'Online' : 'Offline'}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-secondary/10">
-                  <Clock className="h-5 w-5 text-secondary" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Última Sync</p>
-                  <p className="font-semibold">{formatRelativeTime(stats.ultimaSync)}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-accent/10">
-                  <Database className="h-5 w-5 text-accent" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Sincronizados</p>
-                  <p className="font-semibold">{stats.totalSincronizados}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-streak/10">
-                  <DollarSign className="h-5 w-5 text-streak" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Deals</p>
-                  <p className="font-semibold">{stats.dealsImportados}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-destructive/10">
-                  <XCircle className="h-5 w-5 text-destructive" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Erros Hoje</p>
-                  <p className="font-semibold">{stats.errosHoje}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </motion.div>
+      <BitrixKpiCards isConnected={isConnected} stats={stats} formatRelativeTime={formatRelativeTime} />
 
       <Tabs defaultValue="deals" className="space-y-6">
         <TabsList>
@@ -328,157 +234,37 @@ export default function Bitrix24() {
 
         {/* Deals Importados */}
         <TabsContent value="deals">
+          <BitrixDealsTab deals={syncedDeals} isLoading={isLoading} onSync={() => syncDeals()} />
+        </TabsContent>
+
+        {/* Clientes Importados - keep inline since it's unique */}
+        <TabsContent value="clients">
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Deals do Bitrix24</CardTitle>
-                  <CardDescription>
-                    Negócios sincronizados como contas a receber
-                  </CardDescription>
-                </div>
+                <div><CardTitle>Clientes do Bitrix24</CardTitle><CardDescription>Contatos e empresas sincronizados</CardDescription></div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => syncDeals()}>
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Sincronizar Deals
-                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => syncContacts()}><Users className="h-4 w-4 mr-2" />Sync Contatos</Button>
+                  <Button variant="outline" size="sm" onClick={() => syncCompanies()}><Building2 className="h-4 w-4 mr-2" />Sync Empresas</Button>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               {isLoading ? (
-                <div className="space-y-2">
-                  {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}
-                </div>
-              ) : syncedDeals && syncedDeals.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>ID Bitrix</TableHead>
-                      <TableHead>Descrição</TableHead>
-                      <TableHead>Cliente</TableHead>
-                      <TableHead className="text-right">Valor</TableHead>
-                      <TableHead>Vencimento</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {syncedDeals.map((deal) => (
-                      <TableRow key={deal.id}>
-                        <TableCell>
-                          <Badge variant="outline" className="font-mono">
-                            {deal.bitrix_deal_id}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="font-medium">{deal.descricao}</TableCell>
-                        <TableCell>{deal.cliente_nome}</TableCell>
-                        <TableCell className="text-right font-medium">
-                          {formatCurrency(deal.valor)}
-                        </TableCell>
-                        <TableCell>
-                          {new Date(deal.data_vencimento).toLocaleDateString('pt-BR')}
-                        </TableCell>
-                        <TableCell>
-                          <Badge 
-                            variant={deal.status === 'pago' ? 'default' : 'secondary'}
-                            className={deal.status === 'pago' ? 'bg-success' : ''}
-                          >
-                            {deal.status}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <div className="space-y-2">{[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}</div>
+              ) : syncedClients && syncedClients.length > 0 ? (
+                <Table><TableHeader><TableRow><TableHead>ID Bitrix</TableHead><TableHead>Razão Social</TableHead><TableHead>Email</TableHead><TableHead>Telefone</TableHead><TableHead>Cidade/UF</TableHead></TableRow></TableHeader>
+                <TableBody>{syncedClients.map((cliente) => (<TableRow key={cliente.id}><TableCell><Badge variant="outline" className="font-mono">{cliente.bitrix_id}</Badge></TableCell><TableCell className="font-medium">{cliente.razao_social}</TableCell><TableCell>{cliente.email || '-'}</TableCell><TableCell>{cliente.telefone || '-'}</TableCell><TableCell>{cliente.cidade ? `${cliente.cidade}${cliente.estado ? `/${cliente.estado}` : ''}` : '-'}</TableCell></TableRow>))}</TableBody></Table>
               ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Database className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Nenhum deal sincronizado ainda</p>
-                  <Button variant="outline" className="mt-4" onClick={() => syncDeals()}>
-                    <Play className="h-4 w-4 mr-2" />
-                    Importar Deals
-                  </Button>
-                </div>
+                <div className="text-center py-8 text-muted-foreground"><Users className="h-12 w-12 mx-auto mb-4 opacity-50" /><p>Nenhum cliente sincronizado ainda</p></div>
               )}
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Clientes Importados */}
-        <TabsContent value="clients">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Clientes do Bitrix24</CardTitle>
-                  <CardDescription>
-                    Contatos e empresas sincronizados
-                  </CardDescription>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => syncContacts()}>
-                    <Users className="h-4 w-4 mr-2" />
-                    Sync Contatos
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => syncCompanies()}>
-                    <Building2 className="h-4 w-4 mr-2" />
-                    Sync Empresas
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <div className="space-y-2">
-                  {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}
-                </div>
-              ) : syncedClients && syncedClients.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>ID Bitrix</TableHead>
-                      <TableHead>Razão Social</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Telefone</TableHead>
-                      <TableHead>Cidade/UF</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {syncedClients.map((cliente) => (
-                      <TableRow key={cliente.id}>
-                        <TableCell>
-                          <Badge variant="outline" className="font-mono">
-                            {cliente.bitrix_id}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="font-medium">{cliente.razao_social}</TableCell>
-                        <TableCell>{cliente.email || '-'}</TableCell>
-                        <TableCell>{cliente.telefone || '-'}</TableCell>
-                        <TableCell>
-                          {cliente.cidade ? `${cliente.cidade}${cliente.estado ? `/${cliente.estado}` : ''}` : '-'}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Nenhum cliente sincronizado ainda</p>
-                  <div className="flex gap-2 justify-center mt-4">
-                    <Button variant="outline" onClick={() => syncContacts()}>
-                      <Play className="h-4 w-4 mr-2" />
-                      Importar Contatos
-                    </Button>
-                    <Button variant="outline" onClick={() => syncCompanies()}>
-                      <Play className="h-4 w-4 mr-2" />
-                      Importar Empresas
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+        {/* Histórico de Sincronização */}
+        <TabsContent value="logs">
+          <BitrixSyncLogsTab logs={syncLogs} isLoading={isLoading} formatRelativeTime={formatRelativeTime} />
         </TabsContent>
 
         {/* Mapeamento de Campos */}
@@ -574,70 +360,7 @@ export default function Bitrix24() {
           </Card>
         </TabsContent>
 
-        {/* Histórico de Sincronização */}
-        <TabsContent value="logs">
-          <Card>
-            <CardHeader>
-              <CardTitle>Histórico de Sincronização</CardTitle>
-              <CardDescription>
-                Logs das últimas operações de sincronização
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[400px]">
-                {isLoading ? (
-                  <div className="space-y-2">
-                    {[1, 2, 3].map(i => <Skeleton key={i} className="h-24 w-full" />)}
-                  </div>
-                ) : syncLogs && syncLogs.length > 0 ? (
-                  <div className="space-y-3">
-                    {syncLogs.map((log) => (
-                      <motion.div 
-                        key={log.id}
-                        variants={itemVariants}
-                        className="flex items-start gap-4 p-4 rounded-lg border"
-                      >
-                        <div className={cn("p-2 rounded-lg", getStatusColor(log.status))}>
-                          {getStatusIcon(log.status)}
-                        </div>
-
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <Badge variant={
-                              log.tipo === 'entrada' ? 'default' :
-                              log.tipo === 'saida' ? 'secondary' : 'outline'
-                            }>
-                              {log.tipo === 'entrada' ? 'Entrada' : 
-                               log.tipo === 'saida' ? 'Saída' : 'Alteração'}
-                            </Badge>
-                            <span className="font-medium capitalize">{log.entidade}</span>
-                            <span className="text-xs text-muted-foreground">
-                              {formatRelativeTime(log.iniciado_em)}
-                            </span>
-                          </div>
-                          {log.mensagem_erro && (
-                            <p className="text-sm text-muted-foreground">{log.mensagem_erro}</p>
-                          )}
-                          <div className="flex items-center gap-4 mt-2 text-xs">
-                            <span className="text-success">{log.registros_processados} registros</span>
-                            {log.registros_com_erro > 0 && (
-                              <span className="text-destructive">{log.registros_com_erro} erros</span>
-                            )}
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <History className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Nenhuma sincronização realizada ainda</p>
-                  </div>
-                )}
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        </TabsContent>
+        {/* Histórico (already rendered above) */}
 
         {/* Configuração */}
         <TabsContent value="config">

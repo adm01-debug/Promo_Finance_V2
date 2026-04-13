@@ -609,7 +609,7 @@ export default function Boletos() {
                                   <DialogHeader>
                                     <DialogTitle>Boleto #{boleto.numero}</DialogTitle>
                                   </DialogHeader>
-                                  <BoletoPreview 
+                                   <BoletoPreviewPanel 
                                     boleto={boleto} 
                                     onUpdateStatus={updateStatus}
                                   />
