@@ -251,10 +251,9 @@ export default function NotasFiscais() {
 
         {notaCancelar && (
           <CancelamentoNFe
-            nota={{ id: notaCancelar.id, numero: notaCancelar.numero, chaveAcesso: notaCancelar.chaveAcesso, destinatarioNome: notaCancelar.destinatarioNome, valorTotal: notaCancelar.valorTotal }}
-            open={!!notaCancelar}
-            onOpenChange={() => setNotaCancelar(null)}
-            onCancelar={handleCancelarNota}
+            nota={notaCancelar}
+            onClose={() => setNotaCancelar(null)}
+            onSuccess={handleCancelarNota}
           />
         )}
       </motion.div>
