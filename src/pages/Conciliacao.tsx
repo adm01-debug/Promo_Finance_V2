@@ -42,6 +42,8 @@ import { ConciliacaoExport } from '@/components/conciliacao/ConciliacaoExport';
 import { ExtratoBancarioPanel } from '@/components/conciliacao/ExtratoBancarioPanel';
 import { SessoesConciliacaoPanel } from '@/components/conciliacao/SessoesConciliacaoPanel';
 import { BulkActionsBar } from '@/components/ui/bulk-actions-bar';
+import { ConciliacaoTransactionList } from '@/components/conciliacao/ConciliacaoTransactionList';
+import { ConciliacaoBatchKpis } from '@/components/conciliacao/ConciliacaoBatchKpis';
 import { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
 import { 
   LancamentoSistema, 

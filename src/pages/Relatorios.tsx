@@ -87,6 +87,8 @@ import {
   useRelatorioKPIs,
 } from '@/hooks/useRelatoriosData';
 import { generateFluxoCaixaPDF, generateFluxoCaixaCSV } from '@/lib/pdf-generator';
+import { RelatoriosKpiCards } from '@/components/relatorios/RelatoriosKpis';
+import { RelatoriosVisaoGeral } from '@/components/relatorios/RelatoriosVisaoGeral';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -333,86 +335,7 @@ export default function Relatorios() {
       </Card>
 
       {/* KPIs do Período */}
-      <motion.div 
-        className="grid grid-cols-2 lg:grid-cols-4 gap-4"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <motion.div variants={itemVariants}>
-          <Card className="bg-gradient-to-br from-success/10 to-success/5 border-success/20">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Receitas do Período</p>
-                  {loadingKpis ? (
-                    <Skeleton className="h-8 w-24 mt-1" />
-                  ) : (
-                    <p className="text-2xl font-bold text-success">{formatCurrency(totalReceitas)}</p>
-                  )}
-                </div>
-                <TrendingUp className="h-8 w-8 text-success/50" />
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <Card className="bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/20">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Despesas do Período</p>
-                  {loadingKpis ? (
-                    <Skeleton className="h-8 w-24 mt-1" />
-                  ) : (
-                    <p className="text-2xl font-bold text-destructive">{formatCurrency(totalDespesas)}</p>
-                  )}
-                </div>
-                <TrendingDown className="h-8 w-8 text-destructive/50" />
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Saldo do Período</p>
-                  {loadingKpis ? (
-                    <Skeleton className="h-8 w-24 mt-1" />
-                  ) : (
-                    <p className="text-2xl font-bold text-primary">{formatCurrency(saldoPeriodo)}</p>
-                  )}
-                </div>
-                <DollarSign className="h-8 w-8 text-primary/50" />
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <Card className="bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Crescimento</p>
-                  {loadingComparativo ? (
-                    <Skeleton className="h-8 w-16 mt-1" />
-                  ) : (
-                    <p className="text-2xl font-bold text-accent">
-                      {crescimento >= 0 ? '+' : ''}{crescimento.toFixed(1)}%
-                    </p>
-                  )}
-                </div>
-                <BarChart3 className="h-8 w-8 text-accent/50" />
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </motion.div>
+      <RelatoriosKpiCards totalReceitas={totalReceitas} totalDespesas={totalDespesas} saldoPeriodo={saldoPeriodo} crescimento={crescimento} loadingKpis={loadingKpis} loadingComparativo={loadingComparativo} />
 
       <Tabs defaultValue="visao-geral" className="space-y-6">
         <TabsList>
@@ -449,136 +372,7 @@ export default function Relatorios() {
 
         {/* Visão Geral */}
         <TabsContent value="visao-geral">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Fluxo Mensal */}
-            <Card className="h-[400px]">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Fluxo de Caixa Mensal</CardTitle>
-                <CardDescription>Receitas, despesas e saldo por mês</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[300px]">
-                {loadingFluxo ? (
-                  <div className="flex items-center justify-center h-full">
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  </div>
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <ComposedChart data={fluxoMensal || []}>
-                      <XAxis dataKey="mes" stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                      <YAxis tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                      <Tooltip 
-                        formatter={(v: number) => formatCurrency(v)}
-                        contentStyle={{ backgroundColor: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
-                      />
-                      <Legend />
-                      <Bar dataKey="receitas" name="Receitas" fill="hsl(var(--success))" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="despesas" name="Despesas" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
-                      <Line type="monotone" dataKey="saldo" name="Saldo" stroke="hsl(var(--primary))" strokeWidth={3} dot={{ r: 4 }} />
-                    </ComposedChart>
-                  </ResponsiveContainer>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Despesas por Categoria */}
-            <Card className="h-[400px]">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Despesas por Categoria</CardTitle>
-                <CardDescription>Distribuição de gastos</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[300px]">
-                {loadingDespesas ? (
-                  <div className="flex items-center justify-center h-full">
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  </div>
-                ) : (despesasPorCategoria || []).length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-                    <PieChartIcon className="h-12 w-12 mb-2 opacity-20" />
-                    <p>Sem dados de despesas</p>
-                  </div>
-                ) : (
-                  <div className="flex h-full">
-                    <div className="w-1/2">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie 
-                            data={despesasPorCategoria} 
-                            dataKey="valor" 
-                            nameKey="nome" 
-                            cx="50%" 
-                            cy="50%" 
-                            innerRadius={50} 
-                            outerRadius={80}
-                          >
-                            {(despesasPorCategoria || []).map((_, index) => (
-                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                            ))}
-                          </Pie>
-                          <Tooltip formatter={(v: number) => formatCurrency(v)} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-                    <div className="w-1/2 flex flex-col justify-center space-y-2">
-                      {(despesasPorCategoria || []).map((cat, i) => (
-                        <div key={cat.nome} className="flex items-center justify-between text-sm">
-                          <div className="flex items-center gap-2">
-                            <div className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS[i] }} />
-                            <span className="truncate">{cat.nome}</span>
-                          </div>
-                          <span className="font-medium">{cat.percentual.toFixed(1)}%</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Receitas por Cliente */}
-            <Card className="h-[400px]">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Receitas por Cliente</CardTitle>
-                <CardDescription>Top clientes do período</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={receitasPorCliente} layout="vertical">
-                    <XAxis type="number" tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                    <YAxis dataKey="cliente" type="category" width={100} stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                    <Tooltip 
-                      formatter={(v: number) => formatCurrency(v)}
-                      contentStyle={{ backgroundColor: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
-                    />
-                    <Bar dataKey="valor" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            {/* Inadimplência */}
-            <Card className="h-[400px]">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Evolução da Inadimplência</CardTitle>
-                <CardDescription>Taxa e valor em atraso por mês</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={inadimplenciaPorMes}>
-                    <XAxis dataKey="mes" stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                    <YAxis yAxisId="left" tickFormatter={(v) => `${v}%`} stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                    <YAxis yAxisId="right" orientation="right" tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                    <Tooltip 
-                      formatter={(v: number, name: string) => name === 'taxa' ? `${v}%` : formatCurrency(v)}
-                      contentStyle={{ backgroundColor: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
-                    />
-                    <Legend />
-                    <Bar yAxisId="right" dataKey="valor" name="Valor em Atraso" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
-                    <Line yAxisId="left" type="monotone" dataKey="taxa" name="Taxa (%)" stroke="hsl(var(--warning))" strokeWidth={3} dot={{ r: 4 }} />
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
+          <RelatoriosVisaoGeral fluxoMensal={fluxoMensal} despesasPorCategoria={despesasPorCategoria} receitasPorCliente={receitasPorCliente} inadimplenciaPorMes={inadimplenciaPorMes} loadingFluxo={loadingFluxo} loadingDespesas={loadingDespesas} />
         </TabsContent>
 
         {/* Comparativo */}
