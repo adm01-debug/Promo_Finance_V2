@@ -105,7 +105,8 @@ export function ContingenciaRuleDialog({ open, onOpenChange, formData, setFormDa
                 <div className="flex flex-wrap gap-2">
                   {DAYS_OF_WEEK.map((day) => (
                     <div key={day.value} className="flex items-center gap-1.5">
-                      <Checkbox checked={(formData.config.scheduleDays || []).includes(day.value)} onCheckedChange={(checked) => {
+                      <Checkbox checked={(formData.config.scheduleDays || []).includes(day.value)} onChange={() => {
+                        const checked = !(formData.config.scheduleDays || []).includes(day.value);
                         const days = formData.config.scheduleDays || [];
                         setFormData({ ...formData, config: { ...formData.config, scheduleDays: checked ? [...days, day.value] : days.filter(d => d !== day.value) } });
                       }} />

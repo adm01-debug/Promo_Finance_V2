@@ -42,12 +42,12 @@ export function ContingenciaPendingList({ pendingNFes, isOnline, isTransmitting,
                     <div>
                       <p className="font-medium">NF-e nº {nfe.numero}</p>
                       <p className="text-sm text-muted-foreground">{nfe.destinatario}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">Emitida em {formatDateTime(nfe.emitidaEm.toISOString())} • {nfe.tentativas} tentativa(s)</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">Emitida em {formatDateTime(nfe.dataEmissao.toISOString())} • {nfe.tentativas} tentativa(s)</p>
                       {nfe.erro && <p className="text-xs text-destructive mt-1">{nfe.erro}</p>}
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold">{formatCurrency(nfe.valor)}</p>
+                    <p className="font-bold">{formatCurrency(nfe.valorTotal)}</p>
                     <Badge variant="outline" className={nfe.status === 'autorizada' ? 'bg-success/10 text-success' : nfe.status === 'rejeitada' ? 'bg-destructive/10 text-destructive' : nfe.status === 'transmitindo' ? 'bg-primary/10 text-primary' : 'bg-warning/10 text-warning'}>
                       {nfe.status === 'autorizada' ? 'Autorizada' : nfe.status === 'rejeitada' ? 'Rejeitada' : nfe.status === 'transmitindo' ? 'Transmitindo...' : 'Pendente'}
                     </Badge>
