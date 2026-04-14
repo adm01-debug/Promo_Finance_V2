@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Activity, AlertTriangle, Clock, Database, RefreshCw, Zap, Trash2, Download, FileText, CalendarIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TelemetryCharts } from "@/components/admin/telemetry/TelemetryCharts";
+import { TelemetriaTable } from "./admin-telemetria/TelemetriaTable";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
