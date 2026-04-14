@@ -266,11 +266,3 @@ export function useConciliacaoPage() {
 }
 
 export type { TransacaoExtrato };
-type TransacaoExtrato = {
-  id: string;
-  data: Date;
-  descricao: string;
-  valor: number;
-  tipo: 'credito' | 'debito';
-  conciliada: boolean;
-};
