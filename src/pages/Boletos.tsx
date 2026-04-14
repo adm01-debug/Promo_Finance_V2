@@ -82,6 +82,7 @@ const BarcodeVisual = ({ code }: { code: string }) => {
 import { BoletoPreviewPanel } from '@/components/boletos/BoletoPreviewPanel';
 import { NovoBoletoForm } from '@/components/boletos/NovoBoletoForm';
 
+export default function Boletos() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('todos');
   const [selectedBoleto, setSelectedBoleto] = useState<Boleto | null>(null);
