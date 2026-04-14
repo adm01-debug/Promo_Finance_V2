@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
+import { ClientesTableRow } from '@/components/clientes/ClientesTableRow';
 import { EmptyState, HoverLift } from '@/components/ui/micro-interactions';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
 import {
