@@ -126,7 +126,7 @@ export function AutoContingenciaConfig() {
       <ContingenciaRuleDialog
         open={showRuleDialog}
         onOpenChange={setShowRuleDialog}
-        editingRule={editingRule}
+        isEditing={!!editingRule}
         formData={formData}
         setFormData={setFormData}
         onSave={handleSaveRule}
