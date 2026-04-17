@@ -40,7 +40,8 @@ export default function DashboardTributario() {
 
   const { resultado, parametros } = useSimulacaoRegimes({ empresaId });
   const { relatorio: relatorioElisao, isLoading: isLoadingElisao } = useOportunidadesElisao({ empresaId });
-  const { criticos = [], proximosVencimentos = [], isLoading: isLoadingAlertas } = useAlertasTributarios(empresaId);
+  const { alertas = [], proximosVencimentos = [], isLoading: isLoadingAlertas } = useAlertasTributarios(empresaId);
+  const criticos = useMemo(() => (alertas ?? []).filter((a) => a.prioridade === 'critica' || a.prioridade === 'alta'), [alertas]);
 
   const projecao2026 = useMemo(() => {
     if (!parametros?.faturamentoAnual) return null;
