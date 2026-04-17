@@ -1,68 +1,48 @@
 
-## Lote 2 — Motor Tributário: Elisão Fiscal + Inteligência
+## Lote 3 — Motor Tributário: Inteligência + Reforma 2026-2033
 
-Lote 1 entregou a fundação (RBT12, Fator R, 3 simuladores, decisão de regime, CRUD histórico). Agora avançamos para as **9 estratégias de elisão fiscal** + **alertas inteligentes** + **PDF executivo**.
+Lote 2 entregou elisão fiscal + PDF executivo. Agora fechamos as últimas peças do roadmap Claude.
 
-### 1. Migration — Catálogo de estratégias e benchmarks
-- `estrategias_elisao_catalogo` (codigo, nome, descricao, base_legal, risco, aplicavel_a regime[], requisitos jsonb).
-- Seed com 9 estratégias: MS LC 224/2025, JCP, Reintegra, Holding Patrimonial, PAT, Lei do Bem, Drawback, Subvenção ICMS, Bonificação.
-- `benchmarks_setoriais` (cnae_prefix, regime, carga_media_pct, margem_media_pct) — referência para alertas de desvio.
+### 1. Edge Function `gerar-alertas-tributarios` (cron diário)
+Cron 06:00 BRT via `pg_cron` + `pg_net`. Para cada empresa ativa:
+- **Sublimite Simples** próximo (RBT12 ≥ 90% de R$ 4.8M).
+- **Fator R** caindo abaixo de 0,28 (mudança Anexo III→V).
+- **Vencimento DAS/DARF** em 5 dias (cruza `apuracoes_tributarias`).
+- **Desvio de carga** vs `benchmarks_setoriais` (>20%).
+- **Dividendos PF** > R$ 50k/mês (alerta IRPFM 2026).
+Persiste em `alertas` (tipo `tributario`).
 
-### 2. Motor de Elisão (`src/lib/tributario/elisao/`)
-- `detectar-jcp.ts` — empresas Lucro Real com PL > 0 e lucro positivo → economia ≈ TJLP × PL × 25%.
-- `detectar-reintegra.ts` — empresas com receita_exportacao > 0 → 0,1% a 3% de crédito.
-- `detectar-ms-lc224.ts` — Simples Nacional próximo do sublimite estadual (R$ 3,6 mi).
-- `detectar-holding.ts` — sócios PF com dividendos > R$ 600k/ano (gatilho IRPFM Lei 15.270/2025).
-- `detectar-pat.ts` — Lucro Real com folha relevante → dedução até 4% IRPJ.
-- `detectar-lei-bem.ts` — Lucro Real com despesas P&D.
-- `detectar-drawback.ts` — empresas com importação + exportação.
-- `detectar-subvencao-icms.ts` — benefícios fiscais ICMS exclusos do lucro real.
-- `detectar-bonificacao.ts` — análise de operações com goodwill.
-- `orquestrador-elisao.ts` — roda todas, persiste em `oportunidades_elisao`, retorna ranking por economia.
+### 2. Motor IRPFM PF (Lei 15.270/2025)
+- `src/lib/tributario/irpfm.ts` — calcula imposto mínimo PF sobre dividendos > R$ 50k/mês com alíquota progressiva (0% a 10%).
+- Integrado ao detector de Holding e ao PDF executivo.
 
-### 3. Hook + Página de Oportunidades de Elisão
-- `useOportunidadesElisao(empresaId)` — lê `oportunidades_elisao`, dispara reanálise.
-- `src/pages/tributario/OportunidadesElisao.tsx` — cards por estratégia (economia estimada, risco, base legal), botão "Analisar agora".
+### 3. Projeção Reforma Tributária 2026-2033
+- `src/lib/tributario/projecao-reforma.ts` — aplica cronograma de transição CBS (0,9% → 8,8%) + IBS (0,1% → 17,7%) + redução proporcional PIS/COFINS/ICMS/ISS por ano.
+- `src/pages/tributario/ProjecaoReforma.tsx` — gráfico ano a ano da carga tributária 2026-2033 + impacto setorial.
 
-### 4. Alertas Tributários Inteligentes (cron)
-- Edge Function `gerar-alertas-tributarios` (cron diário 06:00):
-  - Sublimite Simples próximo (>90% RBT12).
-  - Fator R caindo abaixo de 0,28 (mudança Anexo III→V).
-  - Vencimento DAS/DARF em 5 dias.
-  - Desvio de carga vs benchmark setorial (>20%).
-  - Dividendos PF > R$ 50k/mês (alerta IRPFM 2026).
-- Persiste em `alertas` (tabela existente) com tipo `tributario`.
+### 4. Dashboard Consolidado Tributário
+- `src/pages/tributario/DashboardTributario.tsx` — painel unificado: regime atual, recomendado, top 3 oportunidades, alertas ativos, próximos vencimentos, projeção 2026.
+- Substitui ponto de entrada do menu "Tributação".
 
-### 5. PDF Executivo de Decisão
-- `src/lib/tributario/relatorio-pdf.ts` (jsPDF + autoTable) — gera relatório com:
-  - Capa, sumário executivo, comparativo 3 regimes, recomendação justificada, oportunidades de elisão, projeção 12m, base legal.
-- Botão "Exportar PDF Executivo" em `SimulacaoRegimes.tsx`.
-
-### 6. Integração no menu
-- Submenu Tributação → "Oportunidades de Elisão" (ícone Lightbulb).
+### 5. Testes + integração final
+- Testes unitários para IRPFM e projeção reforma.
+- Menu: novos itens "Projeção Reforma 2026" e "Dashboard Tributário".
+- `npx tsc --noEmit` limpo.
 
 ## Diagrama
 
 ```text
-   Histórico financeiro + Simulação atual
-                │
-                ▼
-   ┌────────────────────────────┐
-   │  Motor Elisão (9 detect.)  │
-   └──────────────┬─────────────┘
-                  ▼
-       Ranking por economia
-                  ▼
-       oportunidades_elisao
-                  ▼
-   UI Oportunidades + PDF Executivo
-                  +
-   Cron diário → alertas tributários
+   Dashboard Tributário (entrada)
+        │
+        ├── Simulação Regimes ──→ PDF Executivo
+        ├── Oportunidades Elisão ─→ IRPFM PF
+        ├── Projeção 2026-2033 ──→ CBS/IBS
+        └── Alertas (cron diário) ─→ tabela alertas
 ```
 
 ## Observações
 
+- Edge Function com `verify_jwt = true` + cron via `pg_cron`/`pg_net`.
 - Schema `public`, RLS por `empresa_id` + `has_any_role`.
-- Edge Function com `verify_jwt = true` + cron via `pg_cron`.
-- Lote 3 (próximo): IRPFM PF (Lei 15.270/2025), Reforma Tributária projeção 2026-2033 com CBS/IBS por NCM, dashboard consolidado.
-- Sem mexer em `client.ts`, `types.ts`, `supabase/config.toml` (apenas adicionar bloco da nova função se necessário).
+- Sem mexer em `client.ts`, `types.ts`, `supabase/config.toml` (só adicionar bloco da nova função).
+- Após este lote: roadmap Claude 100% coberto.
