@@ -35,6 +35,18 @@ const ALIQUOTA_COFINS_CUMULATIVO = 0.03;
 const ALIQUOTA_ICMS_PADRAO = 0.18;
 const ALIQUOTA_ISS_PADRAO = 0.05;
 
+/**
+ * Simula a carga tributária no regime **Lucro Presumido**.
+ *
+ * **Base legal:** Lei 9.249/95 (presunção 8% comércio / 32% serviços),
+ * Lei 9.430/96 (adicional 10% IRPJ acima de R$ 240k/ano),
+ * Lei 9.718/98 (PIS/COFINS cumulativo 0,65% + 3%).
+ *
+ * Empresas com faturamento > R$ 78 mi/ano são obrigatoriamente Lucro Real.
+ *
+ * @param params - Faturamento anual, mix serviços/comércio, folha.
+ * @returns Resultado com IRPJ/CSLL/PIS/COFINS/ICMS/ISS/CPP e elegibilidade.
+ */
 export function simularPresumido(params: ParametrosSimulacao): ResultadoCenario {
   const observacoes: string[] = [];
   const { faturamentoAnual, percentualServicos = 0 } = params;
