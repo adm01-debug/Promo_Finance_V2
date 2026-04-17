@@ -10,11 +10,13 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, Database, Upload } from 'lucide-react';
+import { Plus, Trash2, Database, Upload, Download } from 'lucide-react';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { useHistoricoFinanceiro } from '@/hooks/useHistoricoFinanceiro';
 import { formatCurrency } from '@/lib/formatters';
 import { toast } from 'sonner';
+import { CsvImportDialog } from '@/components/tributario/CsvImportDialog';
+import { downloadCsvTemplate, type FaturamentoRow, type FolhaRow } from '@/lib/csv-importer';
 
 const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
