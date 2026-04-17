@@ -2,7 +2,9 @@ import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { ClientesTableBody } from '@/pages/clientes/ClientesTableBody';
-import { EmptyState, HoverLift } from '@/components/ui/micro-interactions';
+import { ClientesKPIs } from '@/pages/clientes/ClientesKPIs';
+import { ClientesFiltersPanel } from '@/pages/clientes/ClientesFiltersPanel';
+import { EmptyState } from '@/components/ui/micro-interactions';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
 import {
   Plus,
@@ -264,158 +266,24 @@ export default function Clientes() {
         </motion.div>
 
         {/* KPI Cards */}
-        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <HoverLift>
-            <Card className="stat-card group h-full">
-              <CardContent className="p-5">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Total de Clientes</p>
-                    <p className="text-2xl font-bold font-display mt-1">{totalClientes}</p>
-                  </div>
-                  <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center transition-transform group-hover:scale-110">
-                    <User className="h-6 w-6" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </HoverLift>
-
-          <HoverLift>
-            <Card className="stat-card group h-full">
-              <CardContent className="p-5">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Clientes Ativos</p>
-                    <p className="text-2xl font-bold font-display mt-1">{clientesAtivos}</p>
-                  </div>
-                  <div className="h-12 w-12 rounded-xl bg-success/10 text-success flex items-center justify-center transition-transform group-hover:scale-110">
-                    <Star className="h-6 w-6" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </HoverLift>
-
-          <HoverLift>
-            <Card className="stat-card group h-full">
-              <CardContent className="p-5">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Limite Total</p>
-                    <p className="text-2xl font-bold font-display mt-1">{formatCurrency(limiteTotal)}</p>
-                  </div>
-                  <div className="h-12 w-12 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center transition-transform group-hover:scale-110">
-                    <Building2 className="h-6 w-6" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </HoverLift>
-        </motion.div>
+        <ClientesKPIs totalClientes={totalClientes} clientesAtivos={clientesAtivos} limiteTotal={limiteTotal} />
 
         {/* Filters */}
-        <motion.div variants={itemVariants}>
-          <Card className="card-base">
-            <CardContent className="p-4 space-y-4">
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar por razão social, nome fantasia, CNPJ ou e-mail..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              
-              {/* Advanced Filters */}
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Filter className="h-4 w-4" />
-                  Filtros:
-                </div>
-                
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-[130px] h-9">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos</SelectItem>
-                    <SelectItem value="ativo">Ativos</SelectItem>
-                    <SelectItem value="inativo">Inativos</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select value={estadoFilter} onValueChange={setEstadoFilter}>
-                  <SelectTrigger className="w-[130px] h-9">
-                    <SelectValue placeholder="Estado" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos</SelectItem>
-                    {estados.map((estado) => (
-                      <SelectItem key={estado} value={estado}>
-                        {estado}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select value={scoreFilter} onValueChange={setScoreFilter}>
-                  <SelectTrigger className="w-[140px] h-9">
-                    <SelectValue placeholder="Score" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos</SelectItem>
-                    <SelectItem value="excelente">
-                      <span className="flex items-center gap-2">
-                        <span className="h-2 w-2 rounded-full bg-success" />
-                        Excelente (800+)
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="bom">
-                      <span className="flex items-center gap-2">
-                        <span className="h-2 w-2 rounded-full bg-warning" />
-                        Bom (600-799)
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="regular">
-                      <span className="flex items-center gap-2">
-                        <span className="h-2 w-2 rounded-full bg-streak" />
-                        Regular (400-599)
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="critico">
-                      <span className="flex items-center gap-2">
-                        <span className="h-2 w-2 rounded-full bg-destructive" />
-                        Crítico (&lt;400)
-                      </span>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {hasActiveFilters && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={clearFilters}
-                    className="h-9 px-2 text-muted-foreground hover:text-foreground"
-                  >
-                    <X className="h-4 w-4 mr-1" />
-                    Limpar
-                  </Button>
-                )}
-                
-                <div className="flex items-center gap-4 ml-auto">
-                  <RankLegend />
-                  <span className="text-sm text-muted-foreground">
-                    {filteredClientes.length} de {clientes.length} clientes
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+        <ClientesFiltersPanel
+          searchTerm={searchTerm}
+          statusFilter={statusFilter}
+          estadoFilter={estadoFilter}
+          scoreFilter={scoreFilter}
+          estados={estados}
+          filteredCount={filteredClientes.length}
+          totalCount={clientes.length}
+          hasActiveFilters={hasActiveFilters}
+          onSearchChange={setSearchTerm}
+          onStatusChange={setStatusFilter}
+          onEstadoChange={setEstadoFilter}
+          onScoreChange={setScoreFilter}
+          onClearFilters={clearFilters}
+        />
 
         {/* Table */}
         <motion.div variants={itemVariants}>
