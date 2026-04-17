@@ -192,7 +192,11 @@ export default function ProjecaoReforma() {
         <CardHeader>
           <CardTitle>Carga Tributária Efetiva (% do faturamento)</CardTitle>
         </CardHeader>
-        <CardContent style={{ height: 360 }}>
+        <CardContent
+          style={{ height: 360 }}
+          role="img"
+          aria-label="Gráfico de linha: carga tributária efetiva ano a ano de 2026 a 2033"
+        >
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={dadosGrafico}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -212,7 +216,11 @@ export default function ProjecaoReforma() {
         <CardHeader>
           <CardTitle>Composição da Carga por Tributo</CardTitle>
         </CardHeader>
-        <CardContent style={{ height: 360 }}>
+        <CardContent
+          style={{ height: 360 }}
+          role="img"
+          aria-label="Gráfico de área: composição da carga tributária por tributo (CBS, IBS, Antigos)"
+        >
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={dadosGrafico}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
