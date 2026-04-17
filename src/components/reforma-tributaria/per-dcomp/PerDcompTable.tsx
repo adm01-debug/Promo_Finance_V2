@@ -23,7 +23,7 @@ interface Pedido {
   tributo_origem: string;
   competencia_origem: string;
   valor_original: number;
-  numero_recibo: string | null;
+  numero_recibo?: string | null;
   status: StatusPedido;
 }
 
