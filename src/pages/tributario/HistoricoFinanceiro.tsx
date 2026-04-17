@@ -391,6 +391,13 @@ function FolhaTab({ empresaId }: { empresaId: string }) {
           </Table>
         </div>
       </CardContent>
+      <CsvImportDialog
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        kind="folha"
+        empresaId={empresaId}
+        onImport={handleImport}
+      />
     </Card>
   );
 }
