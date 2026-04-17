@@ -15,6 +15,18 @@ const ALIQUOTA_COFINS_NAO_CUMULATIVO = 0.076;
 const ALIQUOTA_ICMS_PADRAO = 0.18;
 const ALIQUOTA_ISS_PADRAO = 0.05;
 
+/**
+ * Simula a carga tributária no regime **Lucro Real**.
+ *
+ * **Base legal:** Lei 9.430/96 (IRPJ/CSLL sobre lucro contábil ajustado),
+ * Leis 10.637/02 e 10.833/03 (PIS/COFINS não-cumulativo),
+ * Tema 779 STF (ICMS excluído da base de PIS/COFINS).
+ *
+ * Sempre elegível. Obrigatório para faturamento > R$ 78mi/ano ou atividades específicas.
+ *
+ * @param params - Faturamento, margem de lucro, créditos PIS/COFINS, folha.
+ * @returns Resultado com tributos federais + estaduais/municipais + observações.
+ */
 export function simularReal(params: ParametrosSimulacao): ResultadoCenario {
   const observacoes: string[] = [];
   const {

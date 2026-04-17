@@ -21,6 +21,17 @@ export interface RelatorioElisao {
   oportunidades: OportunidadeDetectada[];
 }
 
+/**
+ * Orquestra as 9 estratégias de elisão fiscal lícita e ranqueia por economia estimada.
+ *
+ * **Estratégias avaliadas:** JCP (Lei 9.249/95 art. 9º), REINTEGRA (Lei 13.043/14),
+ * Mandado de Segurança LC 224 (exclusão ICMS-ST da base PIS/COFINS), Holding Patrimonial,
+ * PAT (Lei 6.321/76), Lei do Bem (Lei 11.196/05), DRAWBACK (DL 37/66),
+ * Subvenção ICMS (LC 160/17) e Bonificação em mercadorias.
+ *
+ * @param ctx - Contexto da empresa (regime, faturamento, lucro, atividade, UF).
+ * @returns Relatório consolidado com oportunidades aplicáveis e economia total.
+ */
 export function analisarOportunidadesElisao(ctx: ContextoEmpresa): RelatorioElisao {
   const oportunidades: OportunidadeDetectada[] = [
     detectarJCP(ctx),

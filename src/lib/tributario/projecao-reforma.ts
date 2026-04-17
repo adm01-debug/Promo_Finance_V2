@@ -77,6 +77,25 @@ function redutorSetorial(setor: ParametrosProjecao['setor']): number {
   }
 }
 
+/**
+ * Projeta a carga tributária ano a ano durante a transição da Reforma Tributária (2026-2033).
+ *
+ * **Base legal:** EC 132/2023 + LC 214/2025.
+ *
+ * @param params - Faturamento, mix de receita, alíquotas atuais e setor.
+ * @returns `cargaAtual` (% pré-reforma), `projecoes` por ano, `economiaAcumulada` e `picoTributario`.
+ *
+ * @example
+ * ```ts
+ * const r = projetarReforma({
+ *   faturamentoAnual: 1_000_000,
+ *   percentualServicos: 100,
+ *   pisCofinsAtual: 9.25,
+ *   issAtual: 5,
+ * });
+ * console.log(r.projecoes.find(p => p.ano === 2033));
+ * ```
+ */
 export function projetarReforma(params: ParametrosProjecao): {
   cargaAtual: number;
   projecoes: ProjecaoAno[];
