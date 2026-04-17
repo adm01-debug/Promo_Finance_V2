@@ -20,6 +20,8 @@ import {
   ArrowRight,
   AlertTriangle,
   Scale,
+  CheckCircle2,
+  Target,
 } from 'lucide-react';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { useSimulacaoRegimes } from '@/hooks/useSimulacaoRegimes';
