@@ -27,8 +27,8 @@ import { formatCurrency } from '@/lib/formatters';
 import type { RegimeAplicavel, RiscoElisao } from '@/lib/tributario/elisao';
 
 const RISCO_BADGE: Record<RiscoElisao, string> = {
-  baixo: 'bg-emerald-500/10 text-emerald-700 border-emerald-200',
-  medio: 'bg-amber-500/10 text-amber-700 border-amber-200',
+  baixo: 'bg-success/10 text-success border-success/30',
+  medio: 'bg-warning/10 text-warning border-warning/30',
   alto: 'bg-destructive/10 text-destructive border-destructive/30',
 };
 
@@ -178,10 +178,10 @@ export default function OportunidadesElisao() {
             <CardTitle className="text-3xl">{relatorio.total_oportunidades}</CardTitle>
           </CardHeader>
         </Card>
-        <Card className="border-emerald-500/30 bg-emerald-500/5">
+        <Card className="border-success/30 bg-success/5">
           <CardHeader className="pb-2">
             <CardDescription>Aplicáveis ao seu perfil</CardDescription>
-            <CardTitle className="text-3xl text-emerald-600">{relatorio.total_aplicaveis}</CardTitle>
+            <CardTitle className="text-3xl text-success">{relatorio.total_aplicaveis}</CardTitle>
           </CardHeader>
         </Card>
         <Card className="border-primary/30 bg-primary/5">
@@ -212,7 +212,7 @@ export default function OportunidadesElisao() {
                   <div className="space-y-1">
                     <CardTitle className="flex items-center gap-2">
                       {o.aplicavel ? (
-                        <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                        <CheckCircle2 className="h-5 w-5 text-success" />
                       ) : (
                         <XCircle className="h-5 w-5 text-muted-foreground" />
                       )}
