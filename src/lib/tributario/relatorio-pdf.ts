@@ -62,7 +62,7 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
   const reco = opts.decisao.recomendado;
   const linhasSumario = [
     `Regime recomendado: ${NOME_REGIME[reco.regime] ?? reco.regime}`,
-    `Carga total estimada: ${fmt(reco.totalTributos)} (${pct(reco.aliquotaEfetiva)})`,
+    `Carga total estimada: ${fmt(reco.totalTributos)} (${pct(reco.cargaEfetiva)})`,
     opts.regimeAtual ? `Regime atual: ${NOME_REGIME[opts.regimeAtual] ?? opts.regimeAtual}` : null,
     opts.decisao.economiaAnualVsAtual != null
       ? `Economia anual estimada: ${fmt(opts.decisao.economiaAnualVsAtual)}`
@@ -92,7 +92,7 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
       NOME_REGIME[c.regime] ?? c.regime,
       c.elegivel ? 'Sim' : 'Não',
       fmt(c.totalTributos),
-      pct(c.aliquotaEfetiva),
+      pct(c.cargaEfetiva),
       c.regime === reco.regime ? '—' : fmt(c.totalTributos - reco.totalTributos),
     ]),
     headStyles: { fillColor: [20, 30, 60] },
