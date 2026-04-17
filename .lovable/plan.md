@@ -1,19 +1,19 @@
 
-Continuar a refatoração modular dos arquivos com mais de 400 linhas, próximo lote de 6 arquivos.
+Próximo lote de refatoração modular — 6 arquivos com mais de 400 linhas.
 
 ## Próximo lote
 
-1. **`Usuarios.tsx`** — extrair `UsuariosKPIs.tsx`, `UsuariosFilters.tsx` e `UsuariosTableRow.tsx`.
-2. **`ContasReceber.tsx`** — extrair `ContasReceberKPIs.tsx` e `ContasReceberFilters.tsx`.
-3. **`DashboardExecutivo.tsx`** — extrair `DashboardKPIsRow.tsx` e `DashboardChartsGrid.tsx`.
-4. **`RetencoesFonte.tsx`** — extrair `RetencoesKPIs.tsx` e `RetencoesTable.tsx`.
-5. **`SplitPaymentPanel.tsx`** — extrair `SplitConfigForm.tsx` e `SplitDistribuicaoView.tsx`.
-6. **`RelatoriosAgendados.tsx`** — extrair `AgendamentoForm.tsx` e `AgendamentosTable.tsx`.
+1. **`PrevisaoInadimplencia.tsx`** — extrair `PrevisaoKPIs.tsx` e `PrevisaoTable.tsx`.
+2. **`ContasPagarTableRow.tsx`** — extrair `ContaPagarRowActions.tsx` e `ContaPagarRowStatus.tsx`.
+3. **`FornecedorForm.tsx`** — extrair `FornecedorDadosBasicos.tsx`, `FornecedorEnderecoBancario.tsx` e `FornecedorObservacoes.tsx`.
+4. **`DashboardExecutivo.tsx`** — extrair `DashboardKPIsRow.tsx` e `DashboardChartsGrid.tsx`.
+5. **`RelatoriosAgendados.tsx`** — extrair `AgendamentoForm.tsx` e `AgendamentosTable.tsx`.
+6. **`ContasReceber.tsx`** — extrair `ContasReceberKPIs.tsx` e `ContasReceberFiltersPanel.tsx`.
 
 ## Abordagem
 
-- Para cada arquivo: ler, identificar blocos coesos (KPIs, filtros, tabelas, forms), mover para `src/components/<dominio>/<arquivo>/` ou `src/pages/<rota>/`.
-- Props mínimas, tipagem forte, preservar comportamento.
+- Ler cada arquivo, identificar blocos coesos (KPIs, filtros, tabelas, forms), extrair para `src/components/<dominio>/<arquivo>/` ou `src/pages/<rota>/`.
+- Props mínimas, tipagem forte, comportamento preservado.
 - Validar com `npx tsc --noEmit` ao final.
 
 ## Diagrama
@@ -21,8 +21,8 @@ Continuar a refatoração modular dos arquivos com mais de 400 linhas, próximo 
 ```text
 ArquivoOriginal.tsx (>400 linhas)
         │
-        ├── extrai → KPIs/Filters (header)
-        ├── extrai → Table/Form (conteúdo)
+        ├── extrai → KPIs/Filters
+        ├── extrai → Tabela/Form
         └── compõe sub-componentes
 ```
 
@@ -30,4 +30,4 @@ ArquivoOriginal.tsx (>400 linhas)
 
 - Não tocar em `src/integrations/supabase/*`.
 - Sem mudanças de comportamento, apenas reorganização estrutural.
-- Após este lote, restarão ~32 arquivos acima de 400 linhas — continuarei automaticamente nas próximas rodadas.
+- Após este lote, restarão ~30 arquivos acima de 400 linhas — continuarei nas próximas rodadas.
