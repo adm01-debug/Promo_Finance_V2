@@ -86,3 +86,6 @@ verify_jwt = false
 
 [functions.benchmarking-setorial]
 verify_jwt = false
+
+[functions.gerar-alertas-tributarios]
+verify_jwt = false
