@@ -4,21 +4,21 @@
 // ============================================
 
 import { useState, useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { IRPJCSLLCalculadora } from './irpj-csll/IRPJCSLLCalculadora';
+import { IRPJCSLLResumoCards } from './irpj-csll/IRPJCSLLResumoCards';
+import { IRPJCSLLApuracoesTable } from './irpj-csll/IRPJCSLLApuracoesTable';
+import { IRPJCSLLLalurTab } from './irpj-csll/IRPJCSLLLalurTab';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Calculator, Calendar, Plus, FileText, TrendingDown, DollarSign, AlertTriangle, CheckCircle2, Send } from 'lucide-react';
+import { Calculator, Plus } from 'lucide-react';
 import { useIRPJCSLL } from '@/hooks/useIRPJCSLL';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
-import { formatCurrency } from '@/lib/formatters';
 
 const trimestres = ['1º Trimestre', '2º Trimestre', '3º Trimestre', '4º Trimestre'];
 
@@ -200,55 +200,13 @@ export function ModuloIRPJCSLL() {
       </div>
 
       {/* Cards de Resumo */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">IRPJ Total</CardTitle>
-            <FileText className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-primary">{formatCurrency(totaisAno.irpj)}</div>
-            <p className="text-xs text-muted-foreground">Alíquota: {(ALIQUOTA_IRPJ * 100).toFixed(0)}% + {10}% adicional</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">CSLL Total</CardTitle>
-            <FileText className="h-4 w-4 text-success" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-success">{formatCurrency(totaisAno.csll)}</div>
-            <p className="text-xs text-muted-foreground">Alíquota: {(ALIQUOTA_CSLL * 100).toFixed(0)}%</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Tributos</CardTitle>
-            <DollarSign className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(totaisAno.total)}</div>
-            <p className="text-xs text-muted-foreground">{apuracoesAno.length} apurações</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-warning/20 bg-warning/5">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Prejuízos Fiscais</CardTitle>
-            <TrendingDown className="h-4 w-4 text-warning" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-warning">
-              {formatCurrency(saldoPrejuizos.irpj + saldoPrejuizos.csll)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              IRPJ: {formatCurrency(saldoPrejuizos.irpj)} | CSLL: {formatCurrency(saldoPrejuizos.csll)}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <IRPJCSLLResumoCards
+        totaisAno={totaisAno}
+        qtdApuracoes={apuracoesAno.length}
+        saldoPrejuizos={saldoPrejuizos}
+        aliquotaIRPJ={ALIQUOTA_IRPJ}
+        aliquotaCSLL={ALIQUOTA_CSLL}
+      />
 
       <Tabs defaultValue="apuracoes">
         <TabsList>
@@ -257,54 +215,12 @@ export function ModuloIRPJCSLL() {
           <TabsTrigger value="lalur">LALUR</TabsTrigger>
         </TabsList>
 
-        {/* Lista de Apurações */}
         <TabsContent value="apuracoes">
-          <Card>
-            <CardHeader>
-              <CardTitle>Apurações {anoSelecionado}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {apuracoesAno.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Período</TableHead>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead className="text-right">Lucro Real</TableHead>
-                      <TableHead className="text-right">IRPJ</TableHead>
-                      <TableHead className="text-right">CSLL</TableHead>
-                      <TableHead className="text-right">Total</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {apuracoesAno.map(ap => (
-                      <TableRow key={ap.id}>
-                        <TableCell>
-                          {ap.tipo_apuracao === 'trimestral' 
-                            ? `${ap.trimestre}º Trim/${ap.ano}`
-                            : `Anual ${ap.ano}`}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{ap.tipo_apuracao}</Badge>
-                        </TableCell>
-                        <TableCell className="text-right">{formatCurrency(ap.lucro_real)}</TableCell>
-                        <TableCell className="text-right text-primary">{formatCurrency(ap.irpj_total)}</TableCell>
-                        <TableCell className="text-right text-success">{formatCurrency(ap.csll_total)}</TableCell>
-                        <TableCell className="text-right font-bold">{formatCurrency(ap.total_tributos)}</TableCell>
-                        <TableCell>{getStatusBadge(ap.status)}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <div className="text-center py-12 text-muted-foreground">
-                  <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Nenhuma apuração para {anoSelecionado}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <IRPJCSLLApuracoesTable
+            apuracoesAno={apuracoesAno}
+            ano={anoSelecionado}
+            getStatusBadge={getStatusBadge}
+          />
         </TabsContent>
 
         <TabsContent value="calcular">
@@ -318,80 +234,8 @@ export function ModuloIRPJCSLL() {
           />
         </TabsContent>
 
-        {/* LALUR */}
         <TabsContent value="lalur">
-          <Card>
-            <CardHeader>
-              <CardTitle>LALUR - Livro de Apuração do Lucro Real</CardTitle>
-              <CardDescription>Parte A (Ajustes) e Parte B (Controle)</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="p-4 border rounded-lg">
-                  <h4 className="font-semibold mb-4 flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-success" />
-                    Parte A - Ajustes do Lucro Líquido
-                  </h4>
-                  <ul className="text-sm space-y-2 text-muted-foreground">
-                    <li>• Adições permanentes (despesas indedutíveis)</li>
-                    <li>• Adições temporárias (diferenças temporárias)</li>
-                    <li>• Exclusões permanentes (receitas não tributáveis)</li>
-                    <li>• Exclusões temporárias (realizações Parte B)</li>
-                    <li>• Compensação de prejuízos fiscais</li>
-                  </ul>
-                </div>
-
-                <div className="p-4 border rounded-lg">
-                  <h4 className="font-semibold mb-4 flex items-center gap-2">
-                    <AlertTriangle className="h-4 w-4 text-warning" />
-                    Parte B - Controle de Valores
-                  </h4>
-                  <ul className="text-sm space-y-2 text-muted-foreground">
-                    <li>• Saldo de prejuízos fiscais a compensar</li>
-                    <li>• Adições temporárias a realizar</li>
-                    <li>• Exclusões temporárias a realizar</li>
-                    <li>• Depreciação acelerada incentivada</li>
-                    <li>• Outros valores controlados</li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Lista de Prejuízos */}
-              <div className="mt-6">
-                <h4 className="font-semibold mb-3">Prejuízos Fiscais Acumulados</h4>
-                {prejuizos && prejuizos.length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Tipo</TableHead>
-                        <TableHead>Origem</TableHead>
-                        <TableHead className="text-right">Valor Original</TableHead>
-                        <TableHead className="text-right">Compensado</TableHead>
-                        <TableHead className="text-right">Saldo</TableHead>
-                        <TableHead>Status</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {prejuizos.map(p => (
-                        <TableRow key={p.id}>
-                          <TableCell><Badge variant="outline">{p.tipo}</Badge></TableCell>
-                          <TableCell>{p.trimestre_origem ? `${p.trimestre_origem}T/${p.ano_origem}` : p.ano_origem}</TableCell>
-                          <TableCell className="text-right">{formatCurrency(p.valor_original)}</TableCell>
-                          <TableCell className="text-right text-muted-foreground">{formatCurrency(p.valor_compensado)}</TableCell>
-                          <TableCell className="text-right font-medium text-warning">{formatCurrency(p.saldo_disponivel)}</TableCell>
-                          <TableCell><Badge variant="secondary">{p.status}</Badge></TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                ) : (
-                  <p className="text-sm text-muted-foreground text-center py-4">
-                    Nenhum prejuízo fiscal registrado
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <IRPJCSLLLalurTab prejuizos={prejuizos} />
         </TabsContent>
       </Tabs>
     </div>
