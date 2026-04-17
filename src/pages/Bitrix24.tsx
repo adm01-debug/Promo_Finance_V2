@@ -257,212 +257,27 @@ export default function Bitrix24() {
 
         {/* Mapeamento de Campos */}
         <TabsContent value="mapping">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Mapeamento de Campos</CardTitle>
-                  <CardDescription>
-                    Configure como os campos do Bitrix24 são convertidos para o sistema financeiro
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <div className="space-y-2">
-                  {[1, 2, 3].map(i => <Skeleton key={i} className="h-20 w-full" />)}
-                </div>
-              ) : fieldMappings && fieldMappings.length > 0 ? (
-                <div className="space-y-4">
-                  {['deal', 'contact', 'company'].map((entidade) => {
-                    const mappingsForEntity = fieldMappings.filter(m => m.entidade === entidade);
-                    if (mappingsForEntity.length === 0) return null;
-                    
-                    return (
-                      <div key={entidade} className="space-y-2">
-                        <h3 className="font-semibold text-lg capitalize flex items-center gap-2">
-                          {entidade === 'deal' && <DollarSign className="h-5 w-5" />}
-                          {entidade === 'contact' && <Users className="h-5 w-5" />}
-                          {entidade === 'company' && <Building2 className="h-5 w-5" />}
-                          {entidade === 'deal' ? 'Deals' : entidade === 'contact' ? 'Contatos' : 'Empresas'}
-                        </h3>
-                        {mappingsForEntity.map((mapping) => (
-                          <motion.div 
-                            key={mapping.id}
-                            variants={itemVariants}
-                            className={cn(
-                              "flex items-center gap-4 p-4 rounded-lg border transition-all",
-                              mapping.ativo ? "bg-card" : "bg-muted/50 opacity-60"
-                            )}
-                          >
-                            <div className="flex-1 grid grid-cols-3 gap-4 items-center">
-                              <div className="p-3 rounded-lg bg-secondary/10">
-                                <p className="text-xs text-muted-foreground mb-1">Bitrix24</p>
-                                <code className="font-mono text-sm font-medium">{mapping.campo_bitrix}</code>
-                              </div>
-                              
-                              <div className="flex items-center justify-center">
-                                <div className="flex items-center gap-2">
-                                  <div className="h-px w-8 bg-border" />
-                                  {mapping.transformacao ? (
-                                    <Badge variant="outline" className="text-xs">
-                                      {mapping.transformacao}
-                                    </Badge>
-                                  ) : (
-                                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                                  )}
-                                  <div className="h-px w-8 bg-border" />
-                                </div>
-                              </div>
-
-                              <div className="p-3 rounded-lg bg-success/10">
-                                <p className="text-xs text-muted-foreground mb-1">Sistema</p>
-                                <code className="font-mono text-sm font-medium">{mapping.campo_sistema}</code>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center gap-2">
-                              {mapping.obrigatorio && (
-                                <Badge variant="destructive" className="text-xs">Obrigatório</Badge>
-                              )}
-                              <Switch 
-                                checked={mapping.ativo}
-                                onCheckedChange={() => toggleMapping({ id: mapping.id, ativo: !mapping.ativo })}
-                                disabled={mapping.obrigatorio}
-                              />
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <ArrowLeftRight className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Nenhum mapeamento configurado</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <BitrixMappingTab
+            fieldMappings={fieldMappings}
+            isLoading={isLoading}
+            onToggleMapping={toggleMapping}
+          />
         </TabsContent>
-
-        {/* Histórico (already rendered above) */}
 
         {/* Configuração */}
         <TabsContent value="config">
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Conexão OAuth 2.0</CardTitle>
-                <CardDescription>
-                  Status da conexão com o Bitrix24
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className={cn(
-                  "p-4 rounded-lg border flex items-center gap-4",
-                  isConnected ? "border-success bg-success/5" : "border-destructive bg-destructive/5"
-                )}>
-                  {isConnected ? (
-                    <CheckCircle2 className="h-8 w-8 text-success" />
-                  ) : (
-                    <XCircle className="h-8 w-8 text-destructive" />
-                  )}
-                  <div>
-                    <p className="font-semibold">
-                      {isConnected ? 'Conectado ao Bitrix24' : 'Não conectado'}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {isConnected 
-                        ? 'OAuth 2.0 ativo e tokens válidos' 
-                        : 'Verifique as credenciais OAuth'}
-                    </p>
-                  </div>
-                </div>
-                
-                <Button className="w-full" onClick={handleTestConnection}>
-                  <CheckCircle2 className="h-4 w-4 mr-2" />
-                  Testar Conexão
-                </Button>
-
-                <Separator />
-
-                <div className="space-y-2">
-                  <h4 className="font-medium">Ações Manuais</h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button variant="outline" size="sm" onClick={() => syncDeals()}>
-                      <DollarSign className="h-4 w-4 mr-2" />
-                      Sync Deals
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => syncContacts()}>
-                      <Users className="h-4 w-4 mr-2" />
-                      Sync Contatos
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => syncCompanies()}>
-                      <Building2 className="h-4 w-4 mr-2" />
-                      Sync Empresas
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => exportPaymentStatus()}>
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Exportar Status
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Sincronização Automática</CardTitle>
-                <CardDescription>
-                  Configure a frequência de sincronização
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Sync Automática</p>
-                    <p className="text-sm text-muted-foreground">Sincronizar dados automaticamente</p>
-                  </div>
-                  <Switch 
-                    checked={autoSync}
-                    onCheckedChange={setAutoSync}
-                  />
-                </div>
-                <Separator />
-                <div className="grid gap-2">
-                  <Label>Intervalo de Sincronização</Label>
-                  <Select value={syncInterval} onValueChange={setSyncInterval}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="5">A cada 5 minutos</SelectItem>
-                      <SelectItem value="15">A cada 15 minutos</SelectItem>
-                      <SelectItem value="30">A cada 30 minutos</SelectItem>
-                      <SelectItem value="60">A cada 1 hora</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">
-                    * Configuração de cron job requer setup adicional no backend
-                  </p>
-                </div>
-                <div className="grid gap-2">
-                  <Label>Entidades para Sincronizar</Label>
-                  <div className="space-y-2">
-                    {['Deals → Contas a Receber', 'Contatos → Clientes', 'Empresas → Clientes', 'Status de Pagamento'].map(entity => (
-                      <div key={entity} className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
-                        <span className="text-sm">{entity}</span>
-                        <Switch defaultChecked />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <BitrixConfigTab
+            isConnected={isConnected}
+            autoSync={autoSync}
+            syncInterval={syncInterval}
+            onAutoSyncChange={setAutoSync}
+            onSyncIntervalChange={setSyncInterval}
+            onTestConnection={handleTestConnection}
+            onSyncDeals={() => syncDeals()}
+            onSyncContacts={() => syncContacts()}
+            onSyncCompanies={() => syncCompanies()}
+            onExportPaymentStatus={() => exportPaymentStatus()}
+          />
         </TabsContent>
       </Tabs>
     </div>
