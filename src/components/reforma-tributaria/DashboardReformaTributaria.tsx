@@ -14,7 +14,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell, AreaChart, Area,
 } from 'recharts';
-import useReformaTributaria from '@/hooks/useReformaTributaria';
+import useReformaTributaria, { normalizarEmpresaId } from '@/hooks/useReformaTributaria';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import useAlertasTributarios from '@/hooks/useAlertasTributarios';
 import { useApuracoesTributarias } from '@/hooks/useApuracoesTributarias';
@@ -61,18 +61,19 @@ const itemVariants = {
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--muted-foreground))'];
 
 export function DashboardReformaTributaria() {
+  const [activeTab, setActiveTab] = useState('visao-geral');
+  const [empresaId, setEmpresaId] = useState<string>('all');
+  const empresaIdFiltro = normalizarEmpresaId(empresaId);
+
   const {
     anoReferencia, setAnoReferencia, faseAtual, aliquotasAtuais,
     metricas, isLoadingMetricas,
-  } = useReformaTributaria();
-
-  const [activeTab, setActiveTab] = useState('visao-geral');
-  const [empresaId, setEmpresaId] = useState<string>('');
+  } = useReformaTributaria(empresaIdFiltro);
 
   // Dados reais
   const { data: empresas = [] } = useAllEmpresas();
-  const { alertas: alertasData } = useAlertasTributarios(empresaId || undefined);
-  const { apuracoes } = useApuracoesTributarias(empresaId || undefined);
+  const { alertas: alertasData } = useAlertasTributarios(empresaIdFiltro);
+  const { apuracoes } = useApuracoesTributarias(empresaIdFiltro);
 
   // Contagem real de alertas críticos
   const alertasCriticos = (alertasData || []).filter(
@@ -112,7 +113,7 @@ export function DashboardReformaTributaria() {
   }, []);
 
   // Verificar se é primeiro acesso (sem apurações e sem operações)
-  const isFirstAccess = !isLoadingMetricas && !apuracoes?.length && !empresaId;
+  const isFirstAccess = !isLoadingMetricas && !apuracoes?.length && !empresaIdFiltro;
 
   if (isLoadingMetricas) {
     return (
