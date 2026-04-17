@@ -104,6 +104,8 @@ const navGroups: NavGroup[] = [
     icon: FileText,
     items: [
       { label: 'Reforma Tributária', icon: Scale, href: '/reforma-tributaria', highlight: true },
+      { label: 'Simulação de Regimes', icon: Calculator, href: '/tributario/simulacao-regimes', highlight: true },
+      { label: 'Histórico Tributário', icon: FileSpreadsheet, href: '/tributario/historico-financeiro' },
       { label: 'Notas Fiscais', icon: FileText, href: '/notas-fiscais' },
       { label: 'Demonstrativos', icon: FileSpreadsheet, href: '/demonstrativos' },
       { label: 'Contratos', icon: FileCheck, href: '/contratos' },
