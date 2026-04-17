@@ -2,7 +2,8 @@
 // PÁGINA: Simulação Comparativa de Regimes Tributários
 // ============================================
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -11,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Award, AlertTriangle, Save, TrendingDown, Sparkles, Calculator, FileDown } from 'lucide-react';
+import { Award, AlertTriangle, Save, TrendingDown, Sparkles, Calculator, FileDown, RefreshCw, ArrowRight } from 'lucide-react';
 import { useSimulacaoRegimes } from '@/hooks/useSimulacaoRegimes';
 import { useOportunidadesElisao } from '@/hooks/useOportunidadesElisao';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
@@ -19,10 +20,13 @@ import { formatCurrency } from '@/lib/formatters';
 import type { RegimeTributario, ResultadoCenario } from '@/lib/tributario';
 import { baixarRelatorioPdf } from '@/lib/tributario/relatorio-pdf';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell, Tooltip } from 'recharts';
+import { toast } from 'sonner';
 
 export default function SimulacaoRegimes() {
+  const navigate = useNavigate();
   const { data: empresas = [] } = useAllEmpresas();
   const [empresaId, setEmpresaId] = useState<string | undefined>();
+  const [autoLoaded, setAutoLoaded] = useState(false);
 
   const {
     parametros,
@@ -33,14 +37,52 @@ export default function SimulacaoRegimes() {
     salvarSimulacao,
     temHistoricoSuficiente,
     historicoSimulacoes,
+    faturamentoMensal,
+    folhaMensal,
   } = useSimulacaoRegimes({ empresaId });
 
-  const { relatorio: relatorioElisao } = useOportunidadesElisao({
+  const { relatorio: relatorioElisao, persistirOportunidades } = useOportunidadesElisao({
     empresaId,
     contexto: { regime_atual: regimeAtual === 'lucro_real' ? 'real' : regimeAtual === 'lucro_presumido' ? 'presumido' : 'simples' },
   });
 
   const empresaSelecionada = empresas.find((e) => e.id === empresaId);
+
+  // Auto-popular parâmetros com histórico real (12m)
+  const popularDoHistorico = () => {
+    if (faturamentoMensal.length === 0) {
+      toast.error('Sem histórico de faturamento para esta empresa.');
+      return;
+    }
+    const ultimos12 = faturamentoMensal.slice(0, 12);
+    const ultimos12Folha = folhaMensal.slice(0, 12);
+    const faturamentoAnual = ultimos12.reduce((s, m) => s + Number(m.receita_bruta || 0), 0);
+    const totalServicos = ultimos12.reduce((s, m) => s + Number(m.receita_servicos || 0), 0);
+    const folhaAnual = ultimos12Folha.reduce((s, m) => s + Number(m.total_folha || 0), 0);
+    const percentualServicos = faturamentoAnual > 0 ? (totalServicos / faturamentoAnual) * 100 : parametros.percentualServicos;
+
+    setParametros({
+      ...parametros,
+      faturamentoAnual,
+      folhaAnual,
+      percentualServicos: Math.round(percentualServicos),
+    });
+    setAutoLoaded(true);
+    toast.success(`Parâmetros carregados de ${ultimos12.length} meses de histórico.`);
+  };
+
+  // Auto-load 1x quando empresa mudar e tiver histórico
+  useEffect(() => {
+    if (!empresaId) return;
+    setAutoLoaded(false);
+  }, [empresaId]);
+
+  useEffect(() => {
+    if (empresaId && !autoLoaded && faturamentoMensal.length >= 6) {
+      popularDoHistorico();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [empresaId, faturamentoMensal.length, folhaMensal.length]);
 
   const exportarPdf = () => {
     baixarRelatorioPdf({
@@ -50,7 +92,21 @@ export default function SimulacaoRegimes() {
       decisao: resultado,
       elisao: relatorioElisao,
       regimeAtual,
+      projetarReformaTimeline: true,
     });
+  };
+
+  const analisarElisao = async () => {
+    if (!empresaId) {
+      toast.error('Selecione uma empresa.');
+      return;
+    }
+    try {
+      await persistirOportunidades.mutateAsync();
+      navigate('/tributario/oportunidades-elisao');
+    } catch {
+      // toast já tratado
+    }
   };
 
   const corPorRegime = (r: RegimeTributario) =>
@@ -61,28 +117,60 @@ export default function SimulacaoRegimes() {
     .map((c) => ({ name: c.nome, valor: c.totalTributos, regime: c.regime }));
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto p-4 md:p-6 space-y-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-3">
-            <Calculator className="h-8 w-8 text-primary" />
+          <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
+            <Calculator className="h-7 w-7 md:h-8 md:w-8 text-primary" aria-hidden="true" />
             Simulação de Regimes Tributários
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-muted-foreground mt-1 text-sm md:text-base">
             Compare Simples Nacional, Lucro Presumido e Lucro Real e descubra o regime mais vantajoso.
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={exportarPdf} disabled={!empresaId}>
-            <FileDown className="h-4 w-4 mr-2" />
-            Exportar PDF Executivo
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={popularDoHistorico}
+            disabled={!empresaId || faturamentoMensal.length === 0}
+            aria-label="Recarregar parâmetros do histórico"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Histórico
           </Button>
-          <Button onClick={() => salvarSimulacao.mutate()} disabled={!empresaId || salvarSimulacao.isPending}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={analisarElisao}
+            disabled={!empresaId || persistirOportunidades.isPending}
+            aria-label="Analisar oportunidades de elisão fiscal"
+          >
+            <Sparkles className="h-4 w-4 mr-2" />
+            {persistirOportunidades.isPending ? 'Analisando…' : 'Elisão Fiscal'}
+            <ArrowRight className="h-3 w-3 ml-1" />
+          </Button>
+          <Button variant="outline" size="sm" onClick={exportarPdf} disabled={!empresaId} aria-label="Exportar PDF executivo">
+            <FileDown className="h-4 w-4 mr-2" />
+            PDF Executivo
+          </Button>
+          <Button size="sm" onClick={() => salvarSimulacao.mutate()} disabled={!empresaId || salvarSimulacao.isPending} aria-label="Salvar simulação no histórico">
             <Save className="h-4 w-4 mr-2" />
-            Salvar Simulação
+            Salvar
           </Button>
         </div>
       </div>
+
+      {empresaId && autoLoaded && (
+        <Alert>
+          <RefreshCw className="h-4 w-4" />
+          <AlertTitle>Dados carregados automaticamente</AlertTitle>
+          <AlertDescription>
+            Parâmetros preenchidos com base nos últimos {Math.min(faturamentoMensal.length, 12)} meses de histórico.
+            Você pode ajustar manualmente os valores abaixo.
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Coluna 1: Inputs */}

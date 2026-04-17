@@ -20,6 +20,8 @@ import {
   ArrowRight,
   AlertTriangle,
   Scale,
+  CheckCircle2,
+  Target,
 } from 'lucide-react';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { useSimulacaoRegimes } from '@/hooks/useSimulacaoRegimes';
@@ -93,8 +95,8 @@ export default function DashboardTributario() {
       )}
 
       {/* KPIs principais */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card className="border-primary/20">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" role="list" aria-label="Indicadores tributários">
+        <Card className="border-primary/20" role="listitem">
           <CardHeader className="pb-2">
             <CardDescription className="flex items-center gap-2"><Award className="h-4 w-4" /> Regime recomendado</CardDescription>
           </CardHeader>
@@ -152,7 +154,7 @@ export default function DashboardTributario() {
       </div>
 
       {/* Atalhos */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" role="list" aria-label="Atalhos do módulo tributário">
         <Card className="hover:shadow-md transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base"><Calculator className="h-5 w-5 text-primary" /> Simular Regimes</CardTitle>
@@ -187,6 +189,87 @@ export default function DashboardTributario() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Próximas Ações Consolidadas */}
+      {empresaId && (
+        <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-success/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target className="h-5 w-5 text-primary" aria-hidden="true" />
+              Próximas Ações Recomendadas
+            </CardTitle>
+            <CardDescription>Plano consolidado a partir das análises desta empresa.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ol className="space-y-3" aria-label="Lista de próximas ações">
+              {resultado?.recomendado && resultado.economiaAnualVsAtual && resultado.economiaAnualVsAtual > 0 && (
+                <li className="flex items-start gap-3 p-3 rounded-lg border bg-background">
+                  <span className="flex items-center justify-center h-7 w-7 rounded-full bg-primary text-primary-foreground text-xs font-bold flex-shrink-0">1</span>
+                  <div className="flex-1">
+                    <p className="font-semibold text-sm">Migrar para {REGIME_LABEL[resultado.recomendado.regime]}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Economia projetada: <span className="text-success font-semibold">{formatCurrency(resultado.economiaAnualVsAtual)}/ano</span>
+                    </p>
+                  </div>
+                  <Button asChild variant="ghost" size="sm">
+                    <Link to="/tributario/simulacao-regimes" aria-label="Ver simulação">
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </li>
+              )}
+              {top3Oportunidades.length > 0 && (
+                <li className="flex items-start gap-3 p-3 rounded-lg border bg-background">
+                  <span className="flex items-center justify-center h-7 w-7 rounded-full bg-primary text-primary-foreground text-xs font-bold flex-shrink-0">2</span>
+                  <div className="flex-1">
+                    <p className="font-semibold text-sm">Aplicar {top3Oportunidades.length} estratégia(s) de elisão</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Top: {top3Oportunidades[0].nome} — economia {formatCurrency(top3Oportunidades[0].economia_estimada)}/ano
+                    </p>
+                  </div>
+                  <Button asChild variant="ghost" size="sm">
+                    <Link to="/tributario/oportunidades-elisao" aria-label="Ver oportunidades">
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </li>
+              )}
+              {criticos.length > 0 && (
+                <li className="flex items-start gap-3 p-3 rounded-lg border border-destructive/30 bg-destructive/5">
+                  <span className="flex items-center justify-center h-7 w-7 rounded-full bg-destructive text-destructive-foreground text-xs font-bold flex-shrink-0">3</span>
+                  <div className="flex-1">
+                    <p className="font-semibold text-sm">Resolver {criticos.length} alerta(s) crítico(s)</p>
+                    <p className="text-xs text-muted-foreground mt-1">{criticos[0].titulo}</p>
+                  </div>
+                </li>
+              )}
+              {projecao2026 && (
+                <li className="flex items-start gap-3 p-3 rounded-lg border bg-background">
+                  <span className="flex items-center justify-center h-7 w-7 rounded-full bg-primary text-primary-foreground text-xs font-bold flex-shrink-0">{[resultado?.recomendado, top3Oportunidades.length, criticos.length].filter(Boolean).length + 1}</span>
+                  <div className="flex-1">
+                    <p className="font-semibold text-sm">Preparar empresa para Reforma 2026-2033</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Carga atual: {projecao2026.cargaAtual.toFixed(2)}% → 2033: {projecao2026.projecoes[projecao2026.projecoes.length - 1]?.cargaEfetiva.toFixed(2)}%
+                      {' '}({(projecao2026.projecoes[projecao2026.projecoes.length - 1]?.cargaEfetiva - projecao2026.cargaAtual).toFixed(2)} p.p.)
+                    </p>
+                  </div>
+                  <Button asChild variant="ghost" size="sm">
+                    <Link to="/tributario/projecao-reforma" aria-label="Ver projeção">
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </li>
+              )}
+              {!resultado?.economiaAnualVsAtual && top3Oportunidades.length === 0 && criticos.length === 0 && (
+                <li className="flex items-center gap-2 p-3 rounded-lg border bg-success/5 text-success">
+                  <CheckCircle2 className="h-5 w-5" />
+                  <span className="text-sm font-medium">Tudo em ordem — nenhuma ação prioritária identificada.</span>
+                </li>
+              )}
+            </ol>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Top 3 oportunidades */}
       {top3Oportunidades.length > 0 && (
