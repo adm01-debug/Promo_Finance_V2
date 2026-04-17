@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Upload, Download, AlertTriangle, CheckCircle2, FileText } from 'lucide-react';
 import { parseCsv, downloadCsvTemplate, type CsvKind, type FaturamentoRow, type FolhaRow } from '@/lib/csv-importer';
 import { formatCurrency } from '@/lib/formatters';
+import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 
 interface Props {
@@ -26,6 +27,7 @@ export function CsvImportDialog({ open, onOpenChange, kind, empresaId, onImport 
   const inputRef = useRef<HTMLInputElement>(null);
   const [parsing, setParsing] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [importProgress, setImportProgress] = useState(0);
   type ParseResult = Awaited<ReturnType<typeof parseCsv<FaturamentoRow | FolhaRow>>>;
   const [result, setResult] = useState<ParseResult | null>(null);
   const [filename, setFilename] = useState<string>('');
@@ -50,8 +52,14 @@ export function CsvImportDialog({ open, onOpenChange, kind, empresaId, onImport 
   const handleImport = async () => {
     if (!result || result.rows.length === 0 || !empresaId) return;
     setImporting(true);
+    setImportProgress(5);
+    // Animação leve durante a chamada (UPSERT é em lote — sem callback por linha)
+    const ticker = setInterval(() => {
+      setImportProgress((p) => (p < 85 ? p + 5 : p));
+    }, 120);
     try {
       await onImport(result.rows);
+      setImportProgress(100);
       toast.success(`${result.rows.length} registro(s) importado(s) com sucesso.`);
       onOpenChange(false);
       setResult(null);
@@ -59,7 +67,9 @@ export function CsvImportDialog({ open, onOpenChange, kind, empresaId, onImport 
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Falha na importação');
     } finally {
+      clearInterval(ticker);
       setImporting(false);
+      setImportProgress(0);
     }
   };
 
@@ -206,6 +216,16 @@ export function CsvImportDialog({ open, onOpenChange, kind, empresaId, onImport 
                 </Table>
               </div>
             )}
+          </div>
+        )}
+
+        {importing && (
+          <div className="space-y-2" role="status" aria-live="polite">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>Importando {result?.rows.length ?? 0} registro(s)…</span>
+              <span>{importProgress}%</span>
+            </div>
+            <Progress value={importProgress} className="h-2" />
           </div>
         )}
 

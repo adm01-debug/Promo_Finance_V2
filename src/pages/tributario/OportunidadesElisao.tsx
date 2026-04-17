@@ -20,7 +20,10 @@ import {
   XCircle,
   Scale,
   Banknote,
+  SearchX,
+  Upload,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useOportunidadesElisao } from '@/hooks/useOportunidadesElisao';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { formatCurrency } from '@/lib/formatters';
@@ -41,6 +44,7 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 export default function OportunidadesElisao() {
+  const navigate = useNavigate();
   const { data: empresas = [] } = useAllEmpresas();
   const [empresaId, setEmpresaId] = useState<string | undefined>();
   const [regimeAtual, setRegimeAtual] = useState<RegimeAplicavel>('simples');
@@ -202,6 +206,31 @@ export default function OportunidadesElisao() {
         </TabsList>
 
         <TabsContent value="analise" className="space-y-4 mt-4">
+          {relatorio.total_aplicaveis === 0 && relatorio.total_oportunidades > 0 && (
+            <Card className="border-dashed">
+              <CardContent className="flex flex-col items-center justify-center text-center py-12 space-y-4">
+                <div className="p-4 rounded-full bg-muted/50">
+                  <SearchX className="h-12 w-12 text-muted-foreground" aria-hidden="true" />
+                </div>
+                <div className="space-y-1 max-w-md">
+                  <h3 className="text-lg font-semibold">Nenhuma oportunidade aplicável encontrada</h3>
+                  <p className="text-sm text-muted-foreground">
+                    O motor avaliou {relatorio.total_oportunidades} estratégias, mas nenhuma se enquadra no perfil
+                    atual da empresa. Importe 12 meses de histórico de faturamento e folha para uma análise mais
+                    precisa.
+                  </p>
+                </div>
+                <Button
+                  onClick={() => navigate('/tributario/historico')}
+                  variant="outline"
+                  className="gap-2"
+                >
+                  <Upload className="h-4 w-4" aria-hidden="true" />
+                  Importar histórico tributário
+                </Button>
+              </CardContent>
+            </Card>
+          )}
           {relatorio.oportunidades.map((o) => (
             <Card
               key={o.estrategia}
