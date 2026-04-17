@@ -929,6 +929,45 @@ export type Database = {
         }
         Relationships: []
       }
+      benchmarks_setoriais: {
+        Row: {
+          ano_referencia: number
+          carga_media_pct: number
+          cnae_prefix: string
+          created_at: string
+          fonte: string | null
+          id: string
+          margem_media_pct: number
+          regime: string
+          setor: string
+          updated_at: string
+        }
+        Insert: {
+          ano_referencia?: number
+          carga_media_pct: number
+          cnae_prefix: string
+          created_at?: string
+          fonte?: string | null
+          id?: string
+          margem_media_pct: number
+          regime: string
+          setor: string
+          updated_at?: string
+        }
+        Update: {
+          ano_referencia?: number
+          carga_media_pct?: number
+          cnae_prefix?: string
+          created_at?: string
+          fonte?: string | null
+          id?: string
+          margem_media_pct?: number
+          regime?: string
+          setor?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bitrix_field_mappings: {
         Row: {
           ativo: boolean
@@ -2762,6 +2801,54 @@ export type Database = {
           regime_tributario?: string | null
           telefone?: string | null
           tipo_pessoa?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      estrategias_elisao_catalogo: {
+        Row: {
+          aplicavel_a: string[]
+          ativo: boolean
+          base_legal: string
+          codigo: string
+          created_at: string
+          descricao: string
+          economia_potencial_max: number | null
+          economia_potencial_min: number | null
+          id: string
+          nome: string
+          requisitos: Json
+          risco: string
+          updated_at: string
+        }
+        Insert: {
+          aplicavel_a?: string[]
+          ativo?: boolean
+          base_legal: string
+          codigo: string
+          created_at?: string
+          descricao: string
+          economia_potencial_max?: number | null
+          economia_potencial_min?: number | null
+          id?: string
+          nome: string
+          requisitos?: Json
+          risco: string
+          updated_at?: string
+        }
+        Update: {
+          aplicavel_a?: string[]
+          ativo?: boolean
+          base_legal?: string
+          codigo?: string
+          created_at?: string
+          descricao?: string
+          economia_potencial_max?: number | null
+          economia_potencial_min?: number | null
+          id?: string
+          nome?: string
+          requisitos?: Json
+          risco?: string
           updated_at?: string
         }
         Relationships: []
