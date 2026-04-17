@@ -301,12 +301,12 @@ export function DashboardReformaTributaria() {
       case 'metricas': return <DashboardMetricasTributarias />;
       case 'split-payment': return <SplitPaymentPanel />;
       case 'per-dcomp': return <PerDcompPanel />;
-      case 'conciliacao': return <ConciliacaoTributariaPanel empresaId={empresaId || 'default'} />;
-      case 'incentivos': return <IncentivosFiscaisPanel empresaId={empresaId || 'default'} />;
-      case 'auditoria': return <AuditoriaCompliancePanel empresaId={empresaId || 'default'} />;
+      case 'conciliacao': return <ConciliacaoTributariaPanel empresaId={empresaIdFiltro || 'default'} />;
+      case 'incentivos': return <IncentivosFiscaisPanel empresaId={empresaIdFiltro || 'default'} />;
+      case 'auditoria': return <AuditoriaCompliancePanel empresaId={empresaIdFiltro || 'default'} />;
       case 'comparativo': return <ComparativoRegimesPanel />;
       case 'cashback': return <CashbackSimuladorPanel />;
-      case 'importacao-xml': return <ImportacaoXMLPanel empresaId={empresaId || 'default'} />;
+      case 'importacao-xml': return <ImportacaoXMLPanel empresaId={empresaIdFiltro || 'default'} />;
       default: return null;
     }
   };
