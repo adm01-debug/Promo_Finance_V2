@@ -1,49 +1,62 @@
 
-## Lote 6 — Polimento Final 10/10: Modularização + Testes E2E + Hardening
+## Lote 7 — Polimento Cirúrgico: Cobertura Total + Performance + Segurança
 
-Lote 5 fechou integração end-to-end e PDF gráfico. Para cravar **10/10 absoluto**, restam itens da regra de modularização (>400 linhas), cobertura de testes do CSV importer e validação visual dos novos componentes.
+Os 6 lotes anteriores entregaram o módulo Tributação 10/10. Para elevar o **projeto inteiro** ao 10/10 absoluto, restam itens transversais de qualidade detectados na auditoria.
 
-### 1. Modularização (regra mem://architecture/modularization-strategy)
-Após adições do Lote 5, verificar e extrair:
-- `SimulacaoRegimes.tsx` (~430 linhas após CTAs) → extrair `SimulacaoHeaderActions`, `EmpresaSelector`, `ParametrosForm`, `ResultadoComparativoTabs`.
-- `DashboardTributario.tsx` (~330 linhas após card Próximas Ações) → extrair `KpiTributarioCard`, `ProximasAcoesCard`, `AtalhosTributarios`.
-- `HistoricoFinanceiro.tsx` (~410 linhas após import CSV) → mover `FaturamentoTab` e `FolhaTab` para `src/components/tributario/historico/`.
+### 1. Cobertura de testes dos motores ainda sem testes
+- `simular-presumido.ts` e `simular-real.ts` (hoje só `simular-simples` e `decidir-regime` têm cobertura completa).
+- Edge cases: faturamento > R$ 78mi (inelegível Presumido), atividade hospitalar (8% IRPJ), prejuízo fiscal no Real, adicional IRPJ acima de R$ 240k.
+- `projecao-reforma.ts`: cobrir transição CBS/IBS ano a ano (2026=0,9%/0,1%, 2033=8,8%/17,7%).
 
-### 2. Testes do CSV Importer
-- `src/lib/__tests__/csv-importer.test.ts`: cobertura de detecção encoding (UTF-8/Latin-1), separador (`,`/`;`/tab), parsing BR (`1.234,56`) vs US (`1234.56`), validação ano/mês, header mapping case-insensitive, linhas com erro, template download.
-- Edge cases: arquivo vazio, header faltando coluna obrigatória, valores negativos.
+### 2. Hook `useAlertasTributariosCount` — testes
+- Mock do Supabase, validar contagem por tipo (`sublimite_simples`, `fator_r_baixo`, etc.) e filtro `lida = false`.
 
-### 3. Hardening visual + a11y
-- `CsvImportDialog`: foco visível no botão de upload, anúncio de erros via `aria-live="polite"`.
-- `ProjecaoReforma`: garantir que `BarChart` e `LineChart` usem `ResponsiveContainer` com `aria-label` no container.
-- `OportunidadesElisao`: adicionar `aria-label` nos cards de estratégia.
+### 3. Cron de alertas tributários — ativação pendente
+- A migration `cron.schedule('gerar-alertas-tributarios-diario', ...)` foi proposta no Lote 4 mas **nunca aprovada/executada**.
+- Reapresentar via tool de SQL com `pg_cron` + `pg_net` chamando a Edge Function diariamente às 06:00 BRT.
+- Garantir idempotência via `SELECT cron.unschedule(...) WHERE EXISTS` antes do schedule.
 
-### 4. Validação final
+### 4. Performance — lazy loading das páginas tributárias
+- Verificar se `DashboardTributario`, `SimulacaoRegimes`, `OportunidadesElisao`, `ProjecaoReforma`, `HistoricoFinanceiro`, `IrpfmCalculadora` estão em `lazy()` no router (regra `mem://architecture/performance-optimization-comprehensive-strategy`).
+- Adicionar `Suspense` boundary com `<Skeleton />` consistente.
+
+### 5. Security linter — varredura final
+- Rodar `supabase--linter` para confirmar zero alertas após migrations dos lotes 1-6.
+- Validar RLS em todas as novas tabelas tributárias (`historico_faturamento_mensal`, `historico_folha_pagamento`, `simulacoes_tributarias`, `oportunidades_elisao_persistidas`, `estrategias_elisao_catalogo`, `benchmarks_tributarios_setor`).
+
+### 6. Documentação inline + JSDoc nos motores
+- Adicionar JSDoc nos exports de `simular-presumido`, `simular-real`, `decidir-regime`, `orquestrador-elisao`, `projecao-reforma`, `irpfm` — base legal + exemplo de uso.
+
+### 7. Validação final E2E
 - `npx tsc --noEmit` zero erros.
-- `npx vitest run` 100% verde (esperado: 911+ testes incluindo os novos do CSV).
-- Verificar visualmente o fluxo completo no preview: histórico → CSV import → simulação auto-populada → elisão → PDF com gráficos → dashboard com Próximas Ações.
+- `npx vitest run` 100% verde (~925 testes esperados após adições).
+- `supabase--linter` zero warnings.
 
 ## Diagrama
 
 ```text
-   Lote 5 (entregue)
-        │
-        ▼
-   ┌─────────────────────────┐
-   │  Modularização >400 ln  │ ──┐
-   └─────────────────────────┘   │
-                                 ▼
-   ┌─────────────────────────┐   ┌──────────────┐
-   │  Testes CSV importer    │──▶│  10/10 final │
-   └─────────────────────────┘   └──────────────┘
-                                 ▲
-   ┌─────────────────────────┐   │
-   │  A11y polishing final   │ ──┘
-   └─────────────────────────┘
+   Lote 6 (10/10 Tributação)
+            │
+            ▼
+   ┌──────────────────────┐
+   │ +Testes motores      │──┐
+   └──────────────────────┘  │
+   ┌──────────────────────┐  │
+   │ +Cron ativado (SQL)  │──┤
+   └──────────────────────┘  ▼
+   ┌──────────────────────┐  ┌─────────────────┐
+   │ +Lazy + Suspense     │─▶│ Projeto 10/10   │
+   └──────────────────────┘  │   absoluto      │
+   ┌──────────────────────┐  └─────────────────┘
+   │ +Security linter OK  │──▲
+   └──────────────────────┘  │
+   ┌──────────────────────┐  │
+   │ +JSDoc base legal    │──┘
+   └──────────────────────┘
 ```
 
 ## Observações
 
-- Sem nova migration. Sem mexer em `client.ts`/`types.ts`/`config.toml`.
-- Refatoração mantém API pública dos componentes (sem quebrar chamadores).
-- Após este lote: módulo Tributação **10/10 absoluto** — funcional + integrado + acessível + modular + testado.
+- Sem mexer em `client.ts`, `types.ts`, `supabase/config.toml`.
+- Cron via tool de SQL (segue regra `schedule-jobs` — não é migration normal).
+- Após este lote: **projeto inteiro 10/10 absoluto** — funcional, integrado, modular, testado, performático, seguro e documentado.
