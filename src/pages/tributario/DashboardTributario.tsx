@@ -95,8 +95,8 @@ export default function DashboardTributario() {
       )}
 
       {/* KPIs principais */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card className="border-primary/20">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" role="list" aria-label="Indicadores tributários">
+        <Card className="border-primary/20" role="listitem">
           <CardHeader className="pb-2">
             <CardDescription className="flex items-center gap-2"><Award className="h-4 w-4" /> Regime recomendado</CardDescription>
           </CardHeader>
@@ -154,7 +154,7 @@ export default function DashboardTributario() {
       </div>
 
       {/* Atalhos */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" role="list" aria-label="Atalhos do módulo tributário">
         <Card className="hover:shadow-md transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base"><Calculator className="h-5 w-5 text-primary" /> Simular Regimes</CardTitle>
