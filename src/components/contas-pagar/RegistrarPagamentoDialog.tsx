@@ -230,67 +230,29 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
             </div>
             Registrar Pagamento
           </DialogTitle>
-          <DialogDescription className="text-left">
-            <div className="mt-3 p-3 rounded-lg bg-muted/50">
-              <p className="font-medium text-foreground">{conta.fornecedor_nome}</p>
-              <p className="text-sm text-muted-foreground truncate">{conta.descricao}</p>
-              <div className="mt-2 flex items-center justify-between text-sm">
-                <span>Valor Total:</span>
-                <span className="font-semibold text-foreground">{formatCurrency(conta.valor)}</span>
-              </div>
-              {(conta.valor_pago || 0) > 0 && (
-                <>
-                  <div className="flex items-center justify-between text-sm mt-1">
-                    <span>Já Pago:</span>
-                    <span className="text-success font-medium">{formatCurrency(conta.valor_pago || 0)}</span>
-                  </div>
-                  <Progress value={percentualPago} className="h-2 mt-2" />
-                </>
-              )}
-              <div className="flex items-center justify-between text-sm mt-1 pt-2 border-t border-border">
-                <span className="font-medium">Saldo Restante:</span>
-                <span className="font-bold text-foreground">{formatCurrency(saldoRestante)}</span>
-              </div>
+          <DialogDescription className="text-left" asChild>
+            <div>
+              <PagamentoSummary
+                fornecedorNome={conta.fornecedor_nome}
+                descricao={conta.descricao}
+                valor={conta.valor}
+                valorPago={conta.valor_pago || 0}
+                saldoRestante={saldoRestante}
+                percentualPago={percentualPago}
+              />
             </div>
           </DialogDescription>
         </DialogHeader>
 
-        {/* Approval Status Alert */}
         {requerAprovacao && (
           <div className="space-y-3">
-            {estaAprovado ? (
-              <Alert className="border-success/50 bg-success/10">
-                <ShieldCheck className="h-4 w-4 text-success" />
-                <AlertTitle className="text-success">Pagamento Aprovado</AlertTitle>
-                <AlertDescription>
-                  Este pagamento foi aprovado e pode ser efetuado.
-                </AlertDescription>
-              </Alert>
-            ) : temSolicitacaoPendente ? (
-              <Alert className="border-warning/50 bg-warning/10">
-                <AlertTriangle className="h-4 w-4 text-warning" />
-                <AlertTitle className="text-warning">Aguardando Aprovação</AlertTitle>
-                <AlertDescription>
-                  Uma solicitação de aprovação foi enviada e está pendente de análise.
-                </AlertDescription>
-              </Alert>
-            ) : solicitacaoRejeitada ? (
-              <Alert variant="error">
-                <ShieldAlert className="h-4 w-4" />
-                <AlertTitle>Aprovação Rejeitada</AlertTitle>
-                <AlertDescription>
-                  A solicitação anterior foi rejeitada: {solicitacaoPendente?.motivo_rejeicao || 'Sem motivo informado'}
-                </AlertDescription>
-              </Alert>
-            ) : (
-              <Alert variant="error">
-                <ShieldAlert className="h-4 w-4" />
-                <AlertTitle>Aprovação Necessária</AlertTitle>
-                <AlertDescription>
-                  Pagamentos acima de {formatCurrency(configAprovacao?.valor_minimo_aprovacao || 0)} requerem aprovação prévia.
-                </AlertDescription>
-              </Alert>
-            )}
+            <PagamentoApprovalAlert
+              estaAprovado={estaAprovado}
+              temSolicitacaoPendente={temSolicitacaoPendente}
+              solicitacaoRejeitada={solicitacaoRejeitada}
+              motivoRejeicao={solicitacaoPendente?.motivo_rejeicao}
+              valorMinimoAprovacao={configAprovacao?.valor_minimo_aprovacao}
+            />
           </div>
         )}
 
