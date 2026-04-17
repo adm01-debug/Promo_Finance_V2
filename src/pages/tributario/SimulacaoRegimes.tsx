@@ -23,8 +23,10 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell, 
 import { toast } from 'sonner';
 
 export default function SimulacaoRegimes() {
+  const navigate = useNavigate();
   const { data: empresas = [] } = useAllEmpresas();
   const [empresaId, setEmpresaId] = useState<string | undefined>();
+  const [autoLoaded, setAutoLoaded] = useState(false);
 
   const {
     parametros,
@@ -35,14 +37,52 @@ export default function SimulacaoRegimes() {
     salvarSimulacao,
     temHistoricoSuficiente,
     historicoSimulacoes,
+    faturamentoMensal,
+    folhaMensal,
   } = useSimulacaoRegimes({ empresaId });
 
-  const { relatorio: relatorioElisao } = useOportunidadesElisao({
+  const { relatorio: relatorioElisao, persistirOportunidades } = useOportunidadesElisao({
     empresaId,
     contexto: { regime_atual: regimeAtual === 'lucro_real' ? 'real' : regimeAtual === 'lucro_presumido' ? 'presumido' : 'simples' },
   });
 
   const empresaSelecionada = empresas.find((e) => e.id === empresaId);
+
+  // Auto-popular parâmetros com histórico real (12m)
+  const popularDoHistorico = () => {
+    if (faturamentoMensal.length === 0) {
+      toast.error('Sem histórico de faturamento para esta empresa.');
+      return;
+    }
+    const ultimos12 = faturamentoMensal.slice(0, 12);
+    const ultimos12Folha = folhaMensal.slice(0, 12);
+    const faturamentoAnual = ultimos12.reduce((s, m) => s + Number(m.receita_bruta || 0), 0);
+    const totalServicos = ultimos12.reduce((s, m) => s + Number(m.receita_servicos || 0), 0);
+    const folhaAnual = ultimos12Folha.reduce((s, m) => s + Number(m.total_folha || 0), 0);
+    const percentualServicos = faturamentoAnual > 0 ? (totalServicos / faturamentoAnual) * 100 : parametros.percentualServicos;
+
+    setParametros({
+      ...parametros,
+      faturamentoAnual,
+      folhaAnual,
+      percentualServicos: Math.round(percentualServicos),
+    });
+    setAutoLoaded(true);
+    toast.success(`Parâmetros carregados de ${ultimos12.length} meses de histórico.`);
+  };
+
+  // Auto-load 1x quando empresa mudar e tiver histórico
+  useEffect(() => {
+    if (!empresaId) return;
+    setAutoLoaded(false);
+  }, [empresaId]);
+
+  useEffect(() => {
+    if (empresaId && !autoLoaded && faturamentoMensal.length >= 6) {
+      popularDoHistorico();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [empresaId, faturamentoMensal.length, folhaMensal.length]);
 
   const exportarPdf = () => {
     baixarRelatorioPdf({
@@ -52,7 +92,21 @@ export default function SimulacaoRegimes() {
       decisao: resultado,
       elisao: relatorioElisao,
       regimeAtual,
+      projetarReformaTimeline: true,
     });
+  };
+
+  const analisarElisao = async () => {
+    if (!empresaId) {
+      toast.error('Selecione uma empresa.');
+      return;
+    }
+    try {
+      await persistirOportunidades.mutateAsync();
+      navigate('/tributario/oportunidades-elisao');
+    } catch {
+      // toast já tratado
+    }
   };
 
   const corPorRegime = (r: RegimeTributario) =>
