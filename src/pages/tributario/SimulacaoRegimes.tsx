@@ -1,26 +1,26 @@
 // ============================================
 // PÁGINA: Simulação Comparativa de Regimes Tributários
+// Modularizada — sub-componentes em components/tributario/simulacao/
 // ============================================
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Award, AlertTriangle, Save, TrendingDown, Sparkles, Calculator, FileDown, RefreshCw, ArrowRight } from 'lucide-react';
+import { Award, AlertTriangle, TrendingDown, Sparkles, Calculator, RefreshCw } from 'lucide-react';
 import { useSimulacaoRegimes } from '@/hooks/useSimulacaoRegimes';
 import { useOportunidadesElisao } from '@/hooks/useOportunidadesElisao';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { formatCurrency } from '@/lib/formatters';
-import type { RegimeTributario, ResultadoCenario } from '@/lib/tributario';
+import type { RegimeTributario } from '@/lib/tributario';
 import { baixarRelatorioPdf } from '@/lib/tributario/relatorio-pdf';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell, Tooltip } from 'recharts';
 import { toast } from 'sonner';
+import { SimulacaoHeaderActions } from '@/components/tributario/simulacao/SimulacaoHeaderActions';
+import { ParametrosForm } from '@/components/tributario/simulacao/ParametrosForm';
+import { CenarioDetalhes } from '@/components/tributario/simulacao/CenarioDetalhes';
 
 export default function SimulacaoRegimes() {
   const navigate = useNavigate();
@@ -43,12 +43,14 @@ export default function SimulacaoRegimes() {
 
   const { relatorio: relatorioElisao, persistirOportunidades } = useOportunidadesElisao({
     empresaId,
-    contexto: { regime_atual: regimeAtual === 'lucro_real' ? 'real' : regimeAtual === 'lucro_presumido' ? 'presumido' : 'simples' },
+    contexto: {
+      regime_atual:
+        regimeAtual === 'lucro_real' ? 'real' : regimeAtual === 'lucro_presumido' ? 'presumido' : 'simples',
+    },
   });
 
   const empresaSelecionada = empresas.find((e) => e.id === empresaId);
 
-  // Auto-popular parâmetros com histórico real (12m)
   const popularDoHistorico = () => {
     if (faturamentoMensal.length === 0) {
       toast.error('Sem histórico de faturamento para esta empresa.');
@@ -59,7 +61,8 @@ export default function SimulacaoRegimes() {
     const faturamentoAnual = ultimos12.reduce((s, m) => s + Number(m.receita_bruta || 0), 0);
     const totalServicos = ultimos12.reduce((s, m) => s + Number(m.receita_servicos || 0), 0);
     const folhaAnual = ultimos12Folha.reduce((s, m) => s + Number(m.total_folha || 0), 0);
-    const percentualServicos = faturamentoAnual > 0 ? (totalServicos / faturamentoAnual) * 100 : parametros.percentualServicos;
+    const percentualServicos =
+      faturamentoAnual > 0 ? (totalServicos / faturamentoAnual) * 100 : parametros.percentualServicos;
 
     setParametros({
       ...parametros,
@@ -71,7 +74,6 @@ export default function SimulacaoRegimes() {
     toast.success(`Parâmetros carregados de ${ultimos12.length} meses de histórico.`);
   };
 
-  // Auto-load 1x quando empresa mudar e tiver histórico
   useEffect(() => {
     if (!empresaId) return;
     setAutoLoaded(false);
@@ -128,41 +130,20 @@ export default function SimulacaoRegimes() {
             Compare Simples Nacional, Lucro Presumido e Lucro Real e descubra o regime mais vantajoso.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={popularDoHistorico}
-            disabled={!empresaId || faturamentoMensal.length === 0}
-            aria-label="Recarregar parâmetros do histórico"
-          >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Histórico
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={analisarElisao}
-            disabled={!empresaId || persistirOportunidades.isPending}
-            aria-label="Analisar oportunidades de elisão fiscal"
-          >
-            <Sparkles className="h-4 w-4 mr-2" />
-            {persistirOportunidades.isPending ? 'Analisando…' : 'Elisão Fiscal'}
-            <ArrowRight className="h-3 w-3 ml-1" />
-          </Button>
-          <Button variant="outline" size="sm" onClick={exportarPdf} disabled={!empresaId} aria-label="Exportar PDF executivo">
-            <FileDown className="h-4 w-4 mr-2" />
-            PDF Executivo
-          </Button>
-          <Button size="sm" onClick={() => salvarSimulacao.mutate()} disabled={!empresaId || salvarSimulacao.isPending} aria-label="Salvar simulação no histórico">
-            <Save className="h-4 w-4 mr-2" />
-            Salvar
-          </Button>
-        </div>
+        <SimulacaoHeaderActions
+          empresaId={empresaId}
+          faturamentoCount={faturamentoMensal.length}
+          onRecarregarHistorico={popularDoHistorico}
+          onAnalisarElisao={analisarElisao}
+          onExportarPdf={exportarPdf}
+          onSalvar={() => salvarSimulacao.mutate()}
+          isAnalisandoElisao={persistirOportunidades.isPending}
+          isSalvando={salvarSimulacao.isPending}
+        />
       </div>
 
       {empresaId && autoLoaded && (
-        <Alert>
+        <Alert role="status" aria-live="polite">
           <RefreshCw className="h-4 w-4" />
           <AlertTitle>Dados carregados automaticamente</AlertTitle>
           <AlertDescription>
@@ -173,121 +154,31 @@ export default function SimulacaoRegimes() {
       )}
 
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Coluna 1: Inputs */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Parâmetros</CardTitle>
-            <CardDescription>Empresa e dados financeiros</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Empresa</Label>
-              <Select value={empresaId} onValueChange={setEmpresaId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecionar empresa" />
-                </SelectTrigger>
-                <SelectContent>
-                  {empresas.map((e) => (
-                    <SelectItem key={e.id} value={e.id}>
-                      {e.razao_social}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {empresaId && !temHistoricoSuficiente && (
-                <p className="text-xs text-warning">
-                  ⚠️ Sem 12 meses de histórico — usando estimativa.
-                </p>
-              )}
-            </div>
+        <ParametrosForm
+          empresas={empresas}
+          empresaId={empresaId}
+          setEmpresaId={setEmpresaId}
+          regimeAtual={regimeAtual}
+          setRegimeAtual={setRegimeAtual}
+          parametros={parametros}
+          setParametros={setParametros}
+          temHistoricoSuficiente={temHistoricoSuficiente}
+        />
 
-            <div className="space-y-2">
-              <Label>Regime Atual (opcional)</Label>
-              <Select value={regimeAtual} onValueChange={(v) => setRegimeAtual(v as RegimeTributario)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecionar" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="simples_nacional">Simples Nacional</SelectItem>
-                  <SelectItem value="lucro_presumido">Lucro Presumido</SelectItem>
-                  <SelectItem value="lucro_real">Lucro Real</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Faturamento Anual</Label>
-              <Input
-                type="number"
-                value={parametros.faturamentoAnual}
-                onChange={(e) => setParametros({ ...parametros, faturamentoAnual: Number(e.target.value) })}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-2">
-                <Label>Margem (%)</Label>
-                <Input
-                  type="number"
-                  value={parametros.margemLucro}
-                  onChange={(e) => setParametros({ ...parametros, margemLucro: Number(e.target.value) })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>% Serviços</Label>
-                <Input
-                  type="number"
-                  value={parametros.percentualServicos}
-                  onChange={(e) => setParametros({ ...parametros, percentualServicos: Number(e.target.value) })}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Folha Anual</Label>
-              <Input
-                type="number"
-                value={parametros.folhaAnual || 0}
-                onChange={(e) => setParametros({ ...parametros, folhaAnual: Number(e.target.value) })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Compras com Crédito (PIS/COFINS/ICMS)</Label>
-              <Input
-                type="number"
-                value={parametros.comprasComCredito || 0}
-                onChange={(e) => setParametros({ ...parametros, comprasComCredito: Number(e.target.value) })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Despesas Operacionais</Label>
-              <Input
-                type="number"
-                value={parametros.despesasOperacionais || 0}
-                onChange={(e) => setParametros({ ...parametros, despesasOperacionais: Number(e.target.value) })}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Colunas 2-3: Resultado */}
         <div className="lg:col-span-2 space-y-4">
-          {/* Recomendação destacada */}
           <Card className="border-success/30 bg-gradient-to-br from-success/5 to-primary/5">
             <CardContent className="pt-6">
               <div className="flex items-start gap-4">
                 <div className="p-3 rounded-full bg-success/10">
-                  <Award className="h-8 w-8 text-success" />
+                  <Award className="h-8 w-8 text-success" aria-hidden="true" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-muted-foreground">Regime Recomendado</p>
-                  <h2 className="text-3xl font-bold text-success">{resultado.recomendado.nome}</h2>
+                  <h2 className="text-2xl md:text-3xl font-bold text-success">{resultado.recomendado.nome}</h2>
                   <p className="text-sm text-muted-foreground mt-1">{resultado.justificativa}</p>
                   {resultado.economiaAnualVsAtual !== undefined && resultado.economiaAnualVsAtual > 0 && (
                     <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-success/10 text-success">
-                      <TrendingDown className="h-4 w-4" />
+                      <TrendingDown className="h-4 w-4" aria-hidden="true" />
                       <span className="font-semibold">
                         Economia: {formatCurrency(resultado.economiaAnualVsAtual)}/ano
                       </span>
@@ -298,7 +189,6 @@ export default function SimulacaoRegimes() {
             </CardContent>
           </Card>
 
-          {/* Alertas */}
           {resultado.alertas.length > 0 && (
             <Alert variant="default">
               <AlertTriangle className="h-4 w-4" />
@@ -313,13 +203,16 @@ export default function SimulacaoRegimes() {
             </Alert>
           )}
 
-          {/* Gráfico comparativo */}
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Comparativo de Carga Tributária</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-[220px]">
+              <div
+                className="h-[220px]"
+                role="img"
+                aria-label="Gráfico de barras comparando carga tributária dos regimes elegíveis"
+              >
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={dadosGrafico} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" />
@@ -337,13 +230,14 @@ export default function SimulacaoRegimes() {
             </CardContent>
           </Card>
 
-          {/* Detalhes por regime */}
           <Tabs defaultValue={resultado.recomendado.regime}>
             <TabsList className="grid w-full grid-cols-3">
               {resultado.cenarios.map((c) => (
                 <TabsTrigger key={c.regime} value={c.regime} disabled={!c.elegivel}>
                   {c.nome}
-                  {c.regime === resultado.recomendado.regime && <Sparkles className="h-3 w-3 ml-1 text-success" />}
+                  {c.regime === resultado.recomendado.regime && (
+                    <Sparkles className="h-3 w-3 ml-1 text-success" aria-hidden="true" />
+                  )}
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -354,7 +248,6 @@ export default function SimulacaoRegimes() {
             ))}
           </Tabs>
 
-          {/* Histórico */}
           {historicoSimulacoes.length > 0 && (
             <Card>
               <CardHeader>
@@ -382,75 +275,5 @@ export default function SimulacaoRegimes() {
         </div>
       </div>
     </div>
-  );
-}
-
-function CenarioDetalhes({ cenario }: { cenario: ResultadoCenario }) {
-  if (!cenario.elegivel) {
-    return (
-      <Card>
-        <CardContent className="pt-6">
-          <Alert variant="warning">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Regime não elegível</AlertTitle>
-            <AlertDescription>{cenario.motivoInelegibilidade}</AlertDescription>
-          </Alert>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const linhas = [
-    { label: 'IRPJ', valor: cenario.irpj },
-    { label: 'CSLL', valor: cenario.csll },
-    { label: 'PIS', valor: cenario.pis },
-    { label: 'COFINS', valor: cenario.cofins },
-    { label: 'CPP (INSS)', valor: cenario.cpp },
-    { label: 'ICMS', valor: cenario.icms },
-    { label: 'ISS', valor: cenario.iss },
-  ].filter((l) => l.valor > 0);
-
-  return (
-    <Card>
-      <CardContent className="pt-6 space-y-4">
-        <div className="grid gap-3 md:grid-cols-2">
-          {linhas.map((l) => (
-            <div key={l.label} className="p-3 rounded bg-muted/50">
-              <p className="text-xs text-muted-foreground">{l.label}</p>
-              <p className="text-lg font-semibold">{formatCurrency(l.valor)}</p>
-            </div>
-          ))}
-          <div className="p-3 rounded bg-primary/10 md:col-span-2">
-            <p className="text-xs text-muted-foreground">Total Anual</p>
-            <p className="text-2xl font-bold text-primary">{formatCurrency(cenario.totalTributos)}</p>
-            <p className="text-xs">Carga efetiva: {cenario.cargaEfetiva.toFixed(2)}%</p>
-          </div>
-        </div>
-
-        {(cenario.anexoAplicavel || cenario.faixaAplicavel) && (
-          <div className="flex gap-2 flex-wrap">
-            {cenario.anexoAplicavel && <Badge variant="outline">Anexo {cenario.anexoAplicavel}</Badge>}
-            {cenario.faixaAplicavel && <Badge variant="outline">Faixa {cenario.faixaAplicavel}</Badge>}
-            {cenario.fatorR !== undefined && (
-              <Badge variant="outline">Fator R: {(cenario.fatorR * 100).toFixed(2)}%</Badge>
-            )}
-            {cenario.aliquotaNominal !== undefined && (
-              <Badge variant="outline">Alíq. nominal: {cenario.aliquotaNominal.toFixed(2)}%</Badge>
-            )}
-          </div>
-        )}
-
-        {cenario.observacoes.length > 0 && (
-          <div className="text-sm space-y-1 p-3 rounded bg-muted/30">
-            <p className="font-medium">Observações:</p>
-            <ul className="list-disc pl-5 text-muted-foreground space-y-1">
-              {cenario.observacoes.map((o, i) => (
-                <li key={i}>{o}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </CardContent>
-    </Card>
   );
 }

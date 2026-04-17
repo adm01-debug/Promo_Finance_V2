@@ -206,6 +206,7 @@ export default function OportunidadesElisao() {
             <Card
               key={o.estrategia}
               className={o.aplicavel ? 'border-primary/30' : 'opacity-60'}
+              aria-label={`Estratégia ${o.nome} — ${o.aplicavel ? 'aplicável' : 'não aplicável'} — risco ${o.risco}`}
             >
               <CardHeader>
                 <div className="flex items-start justify-between gap-4">

@@ -113,12 +113,21 @@ export function CsvImportDialog({ open, onOpenChange, kind, empresaId, onImport 
             onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
             aria-label="Selecionar arquivo CSV"
           />
-          <Button onClick={() => inputRef.current?.click()} disabled={parsing}>
-            <Upload className="h-4 w-4 mr-2" />
+          <Button
+            onClick={() => inputRef.current?.click()}
+            disabled={parsing}
+            className="focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            aria-label="Escolher arquivo CSV"
+          >
+            <Upload className="h-4 w-4 mr-2" aria-hidden="true" />
             {parsing ? 'Lendo…' : 'Escolher arquivo CSV'}
           </Button>
-          <Button variant="outline" onClick={() => downloadCsvTemplate(kind)}>
-            <Download className="h-4 w-4 mr-2" />
+          <Button
+            variant="outline"
+            onClick={() => downloadCsvTemplate(kind)}
+            aria-label="Baixar template CSV"
+          >
+            <Download className="h-4 w-4 mr-2" aria-hidden="true" />
             Baixar template
           </Button>
           {filename && (
@@ -151,7 +160,7 @@ export function CsvImportDialog({ open, onOpenChange, kind, empresaId, onImport 
             </div>
 
             {result.errors.length > 0 && (
-              <Alert variant="error">
+              <Alert variant="error" role="alert" aria-live="polite">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertTitle>{result.errors.length} erro(s) de validação</AlertTitle>
                 <AlertDescription>
