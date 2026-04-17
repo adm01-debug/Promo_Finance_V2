@@ -8125,6 +8125,22 @@ export type Database = {
           username: string
         }[]
       }
+      get_cron_run_history: {
+        Args: { p_job_name?: string; p_limit?: number }
+        Returns: {
+          command: string
+          database: string
+          end_time: string
+          job_pid: number
+          jobid: number
+          jobname: string
+          return_message: string
+          runid: number
+          start_time: string
+          status: string
+          username: string
+        }[]
+      }
       get_lockout_details: {
         Args: { _email: string }
         Returns: {
