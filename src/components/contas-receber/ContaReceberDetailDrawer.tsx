@@ -1,25 +1,23 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Building2, Calendar, DollarSign, FileText, Clock, CheckCircle2,
-  AlertTriangle, Send, MessageCircle, Paperclip, History, Calculator,
-  ExternalLink, Copy, X, Banknote, QrCode, CreditCard, Wallet,
-  TrendingUp, Shield, Users, Scale,
+  DollarSign, FileText, Clock, CheckCircle2,
+  AlertTriangle, MessageCircle, Shield, Users, Scale,
+  Banknote, QrCode, CreditCard, Wallet, X, Building2,
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { CalculadoraJurosMulta } from './CalculadoraJurosMulta';
 import { DrawerDetailsTab } from './DrawerDetailsTab';
+import { DrawerTimelineTab } from './DrawerTimelineTab';
+import { DrawerCobrancasTab } from './DrawerCobrancasTab';
+import { DrawerAnexosTab } from './DrawerAnexosTab';
 import { supabase } from '@/integrations/supabase/client';
-import { formatCurrency, formatDate, formatDateTime, calculateOverdueDays, getEtapaCobrancaLabel } from '@/lib/formatters';
+import { formatCurrency, calculateOverdueDays } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
 import type { ContaReceberWithRelations } from './ContasReceberTableRow';
 
 interface ContaReceberDetailDrawerProps {
@@ -151,19 +149,6 @@ export function ContaReceberDetailDrawer({
   const etapa = conta.etapa_cobranca ? etapaConfig[conta.etapa_cobranca] : null;
   const TipoIcon = tipoCobrancaIcons[conta.tipo_cobranca || 'boleto'] || Banknote;
 
-  const handleCopyPix = () => {
-    if (conta.chave_pix) {
-      navigator.clipboard.writeText(conta.chave_pix);
-      toast.success('Chave PIX copiada!');
-    }
-  };
-
-  const operacaoLabels: Record<string, string> = {
-    INSERT: 'Criação',
-    UPDATE: 'Atualização',
-    DELETE: 'Exclusão',
-  };
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-lg p-0 flex flex-col">
@@ -243,89 +228,19 @@ export function ContaReceberDetailDrawer({
             </TabsContent>
 
             <TabsContent value="timeline" className="mt-0 space-y-1">
-              {auditHistory.length === 0 ? (
-                <div className="text-center py-8">
-                  <History className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">Nenhum histórico encontrado</p>
-                </div>
-              ) : (
-                <div className="relative">
-                  <div className="absolute left-4 top-0 bottom-0 w-px bg-border" />
-                  {auditHistory.map((item: any, i: number) => (
-                    <div key={item.id} className="relative pl-10 pb-4">
-                      <div className="absolute left-2.5 top-1 h-3 w-3 rounded-full bg-primary border-2 border-background" />
-                      <div className="text-sm">
-                        <p className="font-medium">{operacaoLabels[item.operacao] || item.operacao}</p>
-                        <p className="text-xs text-muted-foreground">{formatDateTime(item.created_at)}</p>
-                        {item.dados_novos && item.operacao === 'UPDATE' && (
-                          <div className="mt-1 p-2 rounded bg-muted/30 text-xs space-y-0.5">
-                            {Object.entries(item.dados_novos as Record<string, unknown>).slice(0, 5).map(([key, val]) => (
-                              <div key={key} className="flex gap-2">
-                                <span className="text-muted-foreground">{key}:</span>
-                                <span>{String(val)}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <DrawerTimelineTab auditHistory={auditHistory as any} />
             </TabsContent>
 
             <TabsContent value="cobrancas" className="mt-0 space-y-3">
-              {cobrancas.length === 0 ? (
-                <div className="text-center py-8">
-                  <Send className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">Nenhuma cobrança enviada</p>
-                  {conta.status !== 'pago' && conta.status !== 'cancelado' && (
-                    <Button size="sm" variant="outline" className="mt-3 gap-1.5" onClick={() => onEnviarCobranca(conta)}>
-                      <MessageCircle className="h-3.5 w-3.5" /> Enviar Cobrança
-                    </Button>
-                  )}
-                </div>
-              ) : cobrancas.map((c: any) => (
-                <div key={c.id} className="p-3 rounded-lg border bg-muted/20 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <Badge variant="outline" className="text-xs gap-1">
-                      {c.canal === 'whatsapp' && <MessageCircle className="h-3 w-3" />}
-                      {c.canal === 'email' && <Send className="h-3 w-3" />}
-                      {c.canal?.toUpperCase() || 'N/A'}
-                    </Badge>
-                    <Badge variant="outline" className={cn(
-                      "text-xs",
-                      c.status === 'enviado' ? 'text-success border-success/30' : 'text-destructive border-destructive/30'
-                    )}>
-                      {c.status}
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground">Etapa: {getEtapaCobrancaLabel(c.etapa || '')}</p>
-                  <p className="text-xs text-muted-foreground">{formatDateTime(c.created_at)}</p>
-                </div>
-              ))}
+              <DrawerCobrancasTab
+                cobrancas={cobrancas as any}
+                canEnviar={conta.status !== 'pago' && conta.status !== 'cancelado'}
+                onEnviarCobranca={() => onEnviarCobranca(conta)}
+              />
             </TabsContent>
 
             <TabsContent value="anexos" className="mt-0 space-y-3">
-              {anexos.length === 0 ? (
-                <div className="text-center py-8">
-                  <Paperclip className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">Nenhum anexo encontrado</p>
-                </div>
-              ) : anexos.map((a: any) => (
-                <div key={a.id} className="flex items-center gap-3 p-3 rounded-lg border bg-muted/20">
-                  <Paperclip className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{a.nome_arquivo}</p>
-                    <p className="text-xs text-muted-foreground">{formatDateTime(a.created_at)}</p>
-                  </div>
-                  {a.url && (
-                    <a href={a.url} target="_blank" rel="noopener noreferrer">
-                      <Button variant="ghost" size="icon-sm"><ExternalLink className="h-3.5 w-3.5" /></Button>
-                    </a>
-                  )}
-                </div>
-              ))}
+              <DrawerAnexosTab anexos={anexos as any} />
             </TabsContent>
           </ScrollArea>
         </Tabs>

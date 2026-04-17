@@ -3,40 +3,9 @@ import { motion } from 'framer-motion';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { EmptyState } from '@/components/ui/micro-interactions';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
-import {
-  Plus,
-  Search,
-  MoreHorizontal,
-  Eye,
-  Edit,
-  Trash2,
-  Truck,
-  Building2,
-  Mail,
-  Phone,
-  MapPin,
-  Filter,
-  X,
-  Package,
-} from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Plus, Package } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
 import {
   Table,
   TableBody,
@@ -45,22 +14,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { ExportMenu } from '@/components/ui/export-menu';
-import { LoadingSkeleton, TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
+import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useFornecedores, useFornecedoresPaginated, ExternalCliente } from '@/hooks/useFinancialData';
 import { fornecedoresColumns } from '@/lib/export-utils';
-import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { FornecedorForm } from '@/components/fornecedores/FornecedorForm';
 import { FornecedorDetailDialog } from '@/components/fornecedores/FornecedorDetailDialog';
@@ -68,6 +26,8 @@ import { TablePagination } from '@/components/ui/table-pagination';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { FornecedoresTableRow } from './fornecedores/FornecedoresTableRow';
+import { FornecedoresKPIs } from '@/components/fornecedores/FornecedoresKPIs';
+import { FornecedoresFiltersPanel } from '@/components/fornecedores/FornecedoresFiltersPanel';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -226,106 +186,22 @@ export default function Fornecedores() {
         </motion.div>
 
         {/* KPI Cards */}
-        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0, type: 'spring', stiffness: 300, damping: 24 }}>
-            <Card className="stat-card group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 h-full">
-              <CardContent className="p-3 sm:p-5">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="text-xs sm:text-sm font-medium text-muted-foreground">Total de Fornecedores</p>
-                    <p className="text-lg sm:text-2xl font-bold font-display mt-1">{totalFornecedores}</p>
-                  </div>
-                  <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-warning/10 text-warning flex items-center justify-center transition-transform group-hover:scale-110 shrink-0">
-                    <Truck className="h-5 w-5 sm:h-6 sm:w-6" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, type: 'spring', stiffness: 300, damping: 24 }}>
-            <Card className="stat-card group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 h-full">
-              <CardContent className="p-3 sm:p-5">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="text-xs sm:text-sm font-medium text-muted-foreground">Fornecedores Ativos</p>
-                    <p className="text-lg sm:text-2xl font-bold font-display mt-1">{fornecedoresAtivos}</p>
-                  </div>
-                  <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-success/10 text-success flex items-center justify-center transition-transform group-hover:scale-110 shrink-0">
-                    <Building2 className="h-5 w-5 sm:h-6 sm:w-6" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </motion.div>
+        <FornecedoresKPIs total={totalFornecedores} ativos={fornecedoresAtivos} />
 
         {/* Filters */}
-        <motion.div variants={itemVariants}>
-          <Card className="card-base">
-            <CardContent className="p-4 space-y-4">
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar por razão social, nome fantasia, CNPJ ou e-mail..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              
-              {/* Advanced Filters */}
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Filter className="h-4 w-4" />
-                  Filtros:
-                </div>
-                
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-[130px] h-9">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos</SelectItem>
-                    <SelectItem value="ativo">Ativos</SelectItem>
-                    <SelectItem value="inativo">Inativos</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select value={estadoFilter} onValueChange={setEstadoFilter}>
-                  <SelectTrigger className="w-[130px] h-9">
-                    <SelectValue placeholder="Estado" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos</SelectItem>
-                    {estados.map((estado) => (
-                      <SelectItem key={estado} value={estado}>
-                        {estado}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                {hasActiveFilters && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={clearFilters}
-                    className="h-9 px-2 text-muted-foreground hover:text-foreground"
-                  >
-                    <X className="h-4 w-4 mr-1" />
-                    Limpar
-                  </Button>
-                )}
-                
-                <div className="ml-auto text-sm text-muted-foreground">
-                  {filteredFornecedores.length} de {fornecedores.length} fornecedores
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+        <FornecedoresFiltersPanel
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          statusFilter={statusFilter}
+          onStatusChange={setStatusFilter}
+          estadoFilter={estadoFilter}
+          onEstadoChange={setEstadoFilter}
+          estados={estados}
+          hasActiveFilters={hasActiveFilters}
+          onClearFilters={clearFilters}
+          filteredCount={filteredFornecedores.length}
+          totalCount={fornecedores.length}
+        />
 
         {/* Table */}
         <motion.div variants={itemVariants}>
