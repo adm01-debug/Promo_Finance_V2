@@ -73,6 +73,8 @@ import { useToast } from '@/hooks/use-toast';
 import { EtapaReguaCobranca } from '@/types/financial';
 import { ReguaCobrancaTab } from '@/components/configuracoes/ReguaCobrancaTab';
 import { SistemaTab } from '@/components/configuracoes/SistemaTab';
+import { TemplatesTab } from '@/components/configuracoes/TemplatesTab';
+import { NotificacoesPreferencias } from '@/components/configuracoes/NotificacoesPreferencias';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -244,216 +246,17 @@ export default function Configuracoes() {
 
         {/* Templates de Mensagem */}
         <TabsContent value="templates">
-          <motion.div 
-            className="space-y-6"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Templates de Mensagem</CardTitle>
-                    <CardDescription>
-                      Crie e gerencie templates para e-mail, SMS e WhatsApp
-                    </CardDescription>
-                  </div>
-                  <Dialog open={templateDialogOpen} onOpenChange={setTemplateDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Novo Template
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-2xl">
-                      <DialogHeader>
-                        <DialogTitle>
-                          {selectedTemplate ? 'Editar Template' : 'Novo Template'}
-                        </DialogTitle>
-                      </DialogHeader>
-                      <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="grid gap-2">
-                            <Label>Nome do Template</Label>
-                            <Input placeholder="Ex: Lembrete de Vencimento" />
-                          </div>
-                          <div className="grid gap-2">
-                            <Label>Tipo</Label>
-                            <Select defaultValue="email">
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="email">E-mail</SelectItem>
-                                <SelectItem value="sms">SMS</SelectItem>
-                                <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-                        <div className="grid gap-2">
-                          <Label>Assunto (apenas e-mail)</Label>
-                          <Input placeholder="Assunto do e-mail" />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label>Conteúdo da Mensagem</Label>
-                          <Textarea 
-                            placeholder="Digite o conteúdo da mensagem..."
-                            className="min-h-[200px] font-mono text-sm"
-                          />
-                        </div>
-                        <div className="p-3 rounded-lg bg-muted">
-                          <p className="text-sm font-medium mb-2">Variáveis disponíveis:</p>
-                          <div className="flex flex-wrap gap-2">
-                            {['{{cliente}}', '{{valor}}', '{{data_vencimento}}', '{{link_pagamento}}', '{{empresa}}', '{{dias_atraso}}'].map(v => (
-                              <Badge key={v} variant="outline" className="cursor-pointer hover:bg-primary/10">
-                                {v}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                        <Button className="w-full">Salvar Template</Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4">
-                  {templates.map((template) => {
-                    const tipoConfig = {
-                      email: { icon: Mail, color: 'text-secondary', bg: 'bg-secondary/10' },
-                      sms: { icon: MessageSquare, color: 'text-success', bg: 'bg-success/10' },
-                      whatsapp: { icon: Phone, color: 'text-success', bg: 'bg-success/10' },
-                    }[template.tipo];
-                    const Icon = tipoConfig.icon;
-
-                    return (
-                      <motion.div 
-                        key={template.id}
-                        variants={itemVariants}
-                        className="p-4 rounded-lg border hover:shadow-md transition-all"
-                      >
-                        <div className="flex items-start gap-4">
-                          <div className={cn("p-2 rounded-lg", tipoConfig.bg)}>
-                            <Icon className={cn("h-5 w-5", tipoConfig.color)} />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <h4 className="font-medium">{template.nome}</h4>
-                              <Badge variant="secondary">{template.tipo.toUpperCase()}</Badge>
-                            </div>
-                            {template.assunto && (
-                              <p className="text-sm text-muted-foreground mt-1">
-                                Assunto: {template.assunto}
-                              </p>
-                            )}
-                            <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                              {template.conteudo}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Button variant="ghost" size="icon">
-                              <Copy className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon">
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="text-destructive">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+          <TemplatesTab
+            templates={templates}
+            templateDialogOpen={templateDialogOpen}
+            selectedTemplate={selectedTemplate}
+            onTemplateDialogChange={setTemplateDialogOpen}
+          />
         </TabsContent>
 
         {/* Notificações */}
         <TabsContent value="notificacoes">
-          <motion.div 
-            className="space-y-6"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {/* Push Notifications Config */}
-            <NotificacoesConfig />
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Preferências de Notificação</CardTitle>
-                <CardDescription>
-                  Configure como e quando deseja receber alertas do sistema
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <motion.div variants={itemVariants} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-secondary/10">
-                      <Mail className="h-5 w-5 text-secondary" />
-                    </div>
-                    <div>
-                      <p className="font-medium">Notificações por E-mail</p>
-                      <p className="text-sm text-muted-foreground">Receba alertas importantes por e-mail</p>
-                    </div>
-                  </div>
-                  <Switch 
-                    checked={preferencias.notificacoesEmail}
-                    onCheckedChange={(checked) => setPreferencias(p => ({ ...p, notificacoesEmail: checked }))}
-                  />
-                </motion.div>
-
-                <Separator />
-
-                <motion.div variants={itemVariants} className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-warning/10">
-                      <AlertTriangle className="h-5 w-5 text-warning" />
-                    </div>
-                    <div>
-                      <p className="font-medium">Alertas de Vencimento</p>
-                      <p className="text-sm text-muted-foreground">Dias de antecedência para alertar</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4 pl-12">
-                    <Slider 
-                      value={[preferencias.alertasVencimento]}
-                      onValueChange={([value]) => setPreferencias(p => ({ ...p, alertasVencimento: value }))}
-                      max={7}
-                      min={1}
-                      step={1}
-                      className="flex-1"
-                    />
-                    <span className="font-medium w-16">{preferencias.alertasVencimento} dias</span>
-                  </div>
-                </motion.div>
-
-                <Separator />
-
-                <motion.div variants={itemVariants} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-destructive/10">
-                      <CreditCard className="h-5 w-5 text-destructive" />
-                    </div>
-                    <div>
-                      <p className="font-medium">Alertas de Fluxo de Caixa</p>
-                      <p className="text-sm text-muted-foreground">Alertar quando saldo projetado ficar negativo</p>
-                    </div>
-                  </div>
-                  <Switch 
-                    checked={preferencias.alertasFluxoCaixa}
-                    onCheckedChange={(checked) => setPreferencias(p => ({ ...p, alertasFluxoCaixa: checked }))}
-                  />
-                </motion.div>
-              </CardContent>
-            </Card>
-          </motion.div>
+          <NotificacoesPreferencias preferencias={preferencias} onPreferenciasChange={setPreferencias} />
         </TabsContent>
 
         {/* Agendamentos / Cron Jobs */}
