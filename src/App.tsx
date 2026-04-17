@@ -49,6 +49,8 @@ const ReformaTributaria = lazy(() => import('./pages/ReformaTributaria'));
 const SimulacaoRegimes = lazy(() => import('./pages/tributario/SimulacaoRegimes'));
 const HistoricoFinanceiroTributario = lazy(() => import('./pages/tributario/HistoricoFinanceiro'));
 const OportunidadesElisao = lazy(() => import('./pages/tributario/OportunidadesElisao'));
+const ProjecaoReformaPage = lazy(() => import('./pages/tributario/ProjecaoReforma'));
+const DashboardTributario = lazy(() => import('./pages/tributario/DashboardTributario'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const Asaas = lazy(() => import('./pages/Asaas'));
 const BlingPage = lazy(() => import('./pages/Bling'));
@@ -114,6 +116,9 @@ function AppRoutes() {
             <Route path="/tributario/simulacao-regimes" element={<ProtectedRoute><SimulacaoRegimes /></ProtectedRoute>} />
             <Route path="/tributario/historico-financeiro" element={<ProtectedRoute><HistoricoFinanceiroTributario /></ProtectedRoute>} />
             <Route path="/tributario/oportunidades-elisao" element={<ProtectedRoute><OportunidadesElisao /></ProtectedRoute>} />
+            <Route path="/tributario/projecao-reforma" element={<ProtectedRoute><ProjecaoReformaPage /></ProtectedRoute>} />
+            <Route path="/tributario" element={<ProtectedRoute><DashboardTributario /></ProtectedRoute>} />
+            <Route path="/tributario/dashboard" element={<ProtectedRoute><DashboardTributario /></ProtectedRoute>} />
             <Route path="/asaas" element={<ProtectedRoute><Asaas /></ProtectedRoute>} />
             <Route path="/bling" element={<ProtectedRoute><BlingPage /></ProtectedRoute>} />
             <Route path="/vendedores" element={<ProtectedRoute><Vendedores /></ProtectedRoute>} />
