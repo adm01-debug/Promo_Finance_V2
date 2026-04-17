@@ -269,6 +269,7 @@ export default function Configuracoes() {
             initial="hidden"
             animate="visible"
           >
+            <CronJobsStatus />
             <CronJobsPanel />
           </motion.div>
         </TabsContent>
@@ -295,6 +296,7 @@ export default function Configuracoes() {
         {/* Segurança */}
         <TabsContent value="seguranca">
           <div className="space-y-6">
+            <SecurityStatusBanner />
             <BiometricSettings />
             <SecuritySettings />
           </div>
