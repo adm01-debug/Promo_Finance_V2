@@ -156,12 +156,19 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
 
   // ===== RODAPÉ =====
   const totalPages = doc.getNumberOfPages();
+  const geradoEm = new Date().toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
   for (let i = 1; i <= totalPages; i++) {
     doc.setPage(i);
     doc.setFontSize(8);
     doc.setTextColor(120, 120, 120);
     doc.text(
-      `Documento gerado automaticamente · Página ${i}/${totalPages} · Análise meramente indicativa — consulte profissional habilitado`,
+      `Motor Tributário Lovable · Gerado em ${geradoEm} · Página ${i}/${totalPages} · Análise indicativa — consulte profissional habilitado`,
       pageWidth / 2,
       doc.internal.pageSize.getHeight() - 8,
       { align: 'center' },
