@@ -1,22 +1,22 @@
 
-Continuar a refatoração do próximo lote de arquivos com mais de 400 linhas, seguindo a estratégia já estabelecida.
+Continuar a refatoração modular dos arquivos com mais de 400 linhas, finalizando as integrações pendentes do lote anterior e avançando com novos arquivos.
 
-## Próximo lote (6 arquivos)
+## Lote atual (próximos 6 arquivos + finalizações pendentes)
 
-Vou identificar e refatorar os 6 maiores arquivos restantes acima de 400 linhas. Com base no que já foi feito e nos arquivos visíveis, os candidatos prováveis são:
+**Finalizações pendentes:**
+1. **`Cobrancas.tsx`** — integrar `CobrancaKpis`, `ReguaCobrancaVisual` e `MetricasPorCanal` já criados.
+2. **`Bitrix24.tsx`** — concluir integração dos blocos restantes com `BitrixClientsTab`, `BitrixMappingTab`, `BitrixConfigTab`.
 
-1. **`Clientes.tsx`** (~511 linhas) — extrair seção de filtros/header para `ClientesFilters.tsx` e KPIs para `ClientesKPIs.tsx`.
-2. **`ContaReceberDetailDrawer.tsx`** (~335 linhas, mas com tabs ainda pesadas) — extrair `DrawerHistoricoTab.tsx` e `DrawerCobrancaTab.tsx`.
-3. **`AdminTelemetria.tsx`** (~417 linhas) — extrair `TelemetriaKPIs.tsx` e `TelemetriaFilters.tsx`.
-4. **`ModuloIRPJCSLL.tsx`** (~401 linhas) — extrair `IRPJCSLLResultado.tsx` e `IRPJCSLLHistorico.tsx`.
-5. **`ContaPagarForm.tsx`** / outro form pesado restante — extrair seções de recorrência/anexos.
-6. Mais um arquivo identificado durante a varredura (`Fornecedores.tsx`, `ApuracaoMensal.tsx`, ou similar) — extrair tabela/filtros.
+**Novos arquivos para refatorar:**
+3. **`ContaReceberDetailDrawer.tsx`** (~335 linhas com tabs ainda pesadas) — extrair `DrawerTimelineTab.tsx`, `DrawerCobrancasTab.tsx` e `DrawerAnexosTab.tsx`.
+4. **`AdminTelemetria.tsx`** (~417 linhas) — extrair `TelemetriaKPIs.tsx` e `TelemetriaFilters.tsx`.
+5. **`ModuloIRPJCSLL.tsx`** (~401 linhas) — extrair `IRPJCSLLResultadoCard.tsx` e `IRPJCSLLHistoricoTable.tsx`.
+6. **`Fornecedores.tsx`** — extrair `FornecedoresKPIs.tsx` e `FornecedoresFilters.tsx`.
 
-## Abordagem técnica
+## Abordagem
 
-- Para cada arquivo: ler conteúdo completo, identificar blocos coesos (tabs, dialogs, seções de form, tabelas) e mover para sub-componentes em pastas dedicadas (`src/components/<dominio>/<arquivo>/`).
-- Manter as props mínimas necessárias e tipagem forte.
-- Preservar comportamento, handlers e estilos.
+- Para cada arquivo: ler, identificar blocos coesos (tabs, dialogs, tabelas, KPIs), mover para `src/components/<dominio>/<arquivo>/` ou `src/pages/<rota>/`.
+- Props mínimas, tipagem forte, preservar comportamento.
 - Validar com `npx tsc --noEmit` ao final.
 
 ## Diagrama
@@ -24,13 +24,13 @@ Vou identificar e refatorar os 6 maiores arquivos restantes acima de 400 linhas.
 ```text
 ArquivoOriginal.tsx (>400 linhas)
         │
-        ├── extrai → SubComponenteA.tsx (UI/seção coesa)
-        ├── extrai → SubComponenteB.tsx (tab/dialog)
-        └── importa e compõe sub-componentes
+        ├── extrai → KPIs/Filters (header)
+        ├── extrai → Tabs/Dialogs (conteúdo)
+        └── compõe sub-componentes
 ```
 
 ## Observações
 
-- Não vou tocar em `src/integrations/supabase/*` nem em arquivos auto-gerados.
-- Após este lote, restarão ~40 arquivos acima de 400 linhas — continuarei nas próximas rodadas se solicitado.
+- Não tocar em `src/integrations/supabase/*`.
 - Sem mudanças de comportamento, apenas reorganização estrutural.
+- Após este lote, restarão ~38 arquivos acima de 400 linhas — continuarei automaticamente nas próximas rodadas conforme solicitado.
