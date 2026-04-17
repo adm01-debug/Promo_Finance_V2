@@ -19,7 +19,7 @@ import { toast } from 'sonner';
 const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
 export default function HistoricoFinanceiro() {
-  const { data: empresas = [] } = useEmpresas();
+  const { data: empresas = [] } = useAllEmpresas();
   const [empresaId, setEmpresaId] = useState<string | undefined>();
 
   return (

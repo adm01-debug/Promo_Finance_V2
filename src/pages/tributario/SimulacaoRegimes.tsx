@@ -19,7 +19,7 @@ import type { RegimeTributario, ResultadoCenario } from '@/lib/tributario';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell, Tooltip } from 'recharts';
 
 export default function SimulacaoRegimes() {
-  const { data: empresas = [] } = useEmpresas();
+  const { data: empresas = [] } = useAllEmpresas();
   const [empresaId, setEmpresaId] = useState<string | undefined>();
 
   const {
