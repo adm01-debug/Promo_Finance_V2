@@ -1,58 +1,57 @@
 
-Lote 7 já entregue (959 testes verdes, cron ativo, JSDoc, 0 erros TS). Agora **Lote 8 — Hardening Transversal do Projeto Inteiro** para fechar 10/10 absoluto fora do módulo Tributário.
+## Lote 9 — Excelência Operacional: Observabilidade + UX Polido + Resiliência
 
-## Lote 8 — Qualidade Transversal: Segurança, Performance e Testes Globais
+Lotes 1-8 entregaram tributação 10/10, segurança hardenizada (HIBP ON, RLS rate_limit corrigida), 973 testes verdes e cron ativo. Para o **10/10 absoluto sustentado**, atacar agora os 3 eixos restantes: observabilidade do cron, polimento de UX nos novos componentes e resiliência de Edge Functions.
 
-### 1. Resolver os 3 warnings do Security Linter
-- **`pg_net` em schema public** → mover para schema `extensions` (idempotente, sem quebrar cron já agendado).
-- **Leaked Password Protection** → documentar em `mem://security/manual-configuration-requirements` e criar banner de admin em `Configuracoes` apontando o passo manual.
-- **Postgres version** (se houver) → documentar como upgrade manual.
+### 1. Observabilidade do cron tributário
+- Criar `src/components/admin/CronJobsStatus.tsx` consumindo `cron.job_run_details` via RPC `get_cron_status` (security definer, admin-only).
+- Adicionar card em `Configuracoes` mostrando: última execução, status (success/failure), próxima execução, alertas gerados nas últimas 24h.
+- Migration: criar RPC `get_cron_run_history(job_name text)` com `SECURITY DEFINER` + `has_role('admin')`.
 
-### 2. Cobertura de testes para hooks críticos sem cobertura
-Auditar `src/hooks/__tests__/` e adicionar testes para os 3 hooks mais críticos sem cobertura:
-- `useDashboardMetrics` (consumido pelo Dashboard Executivo).
-- `useAlertasPreditivos` (IA + Realtime).
-- `useFluxoCaixa` (cálculos centrais).
+### 2. Banner admin para HIBP/pg_net (transparência)
+- `src/components/configuracoes/SecurityStatusBanner.tsx`: card visual confirmando HIBP=ON e documentando pg_net como dívida técnica aceita.
+- Visível apenas para `admin` via `useUserRole`.
 
-### 3. Performance — `manualChunks` no Vite
-- Verificar `vite.config.ts` e garantir split: `react-vendor`, `recharts`, `supabase`, `pdf` (jspdf+autotable), `radix-ui`.
-- Reduzir bundle inicial (regra `mem://architecture/performance-optimization-comprehensive-strategy`).
+### 3. Resiliência de Edge Functions tributárias
+- Auditar `gerar-alertas-tributarios`, `simular-regimes`, `analisar-elisao`: garantir try/catch top-level, structured logging (`console.log(JSON.stringify({level,event,...}))`), timeout em fetches externos (AbortController 30s).
+- Retry com exponential backoff em chamadas Supabase falhas (padrão `mem://integrations/bling-erp-v3-estrategia-e-resiliencia`).
 
-### 4. A11y global — auditoria final
-- `<Skeleton>` boundaries em todas as páginas lazy do router (não só tributárias).
-- `aria-label` em IconButtons soltos detectados via grep `<Button.*size="icon"` sem `aria-label`.
-- Foco visível padronizado em `index.css` via `:focus-visible` global.
+### 4. UX — feedback em ações longas
+- `SimulacaoRegimes`: progress indicator durante cálculo dos 3 regimes (Skeleton steps).
+- `OportunidadesElisao`: empty state ilustrado quando nenhuma oportunidade encontrada.
+- `CsvImportDialog`: barra de progresso por linha processada (já tem contagem, falta visual).
 
-### 5. Modularização — varredura final >400 linhas
-- `npx find src -name "*.tsx" -exec wc -l {} +` → refatorar qualquer arquivo restante acima do limite.
+### 5. Testes E2E dos motores de elisão
+- `orquestrador-elisao.test.ts`: cobertura de todas as 5+ estratégias (Lucro Real vs Presumido, PAT, Lei do Bem, Reorganização Societária).
+- Edge cases: empresa sem despesas dedutíveis, oportunidade < threshold mínimo (R$ 1k), múltiplas estratégias conflitantes.
 
-### 6. Validação E2E
+### 6. Validação final
 - `npx tsc --noEmit` zero erros.
-- `npx vitest run` 100% verde (~970 testes esperados).
-- `supabase--linter` zero warnings (após item 1).
+- `npx vitest run` 100% verde (~990 testes).
+- `supabase--linter` mantém 1 warning (pg_net documentado).
 
 ## Diagrama
 
 ```text
-   Lote 7 (Tributação 10/10)
+   Lote 8 (Projeto 10/10)
             │
             ▼
    ┌────────────────────────┐
-   │ Linter zero warnings   │──┐
-   └────────────────────────┘  │
-   ┌────────────────────────┐  ▼
-   │ +Tests hooks críticos  │──┐ ┌──────────────────┐
-   └────────────────────────┘  ├▶│ Projeto inteiro  │
-   ┌────────────────────────┐  │ │   10/10 absoluto │
-   │ +Bundle splitting      │──┤ └──────────────────┘
+   │ Cron observability UI  │──┐
    └────────────────────────┘  │
    ┌────────────────────────┐  │
-   │ +A11y global + modul.  │──┘
+   │ HIBP/security banner   │──┤
+   └────────────────────────┘  ▼
+   ┌────────────────────────┐  ┌──────────────────┐
+   │ Edge Fn resilience     │─▶│ 10/10 sustentado │
+   └────────────────────────┘  │  + observável    │
+   ┌────────────────────────┐  └──────────────────┘
+   │ UX progress + tests    │──▲
    └────────────────────────┘
 ```
 
 ## Observações
 
 - Sem mexer em `client.ts`, `types.ts`, `supabase/config.toml`.
-- Mover `pg_net` via migration cuidadosa (preservar cron `gerar-alertas-tributarios-diario`).
-- Após este lote: **projeto inteiro 10/10 absoluto** — segurança, performance, testes, a11y e modularidade no padrão máximo.
+- 1 migration nova: RPC `get_cron_run_history` (security definer + admin gate).
+- Após este lote: **10/10 absoluto sustentado** com observabilidade operacional do cron e UX premium nos novos fluxos.
