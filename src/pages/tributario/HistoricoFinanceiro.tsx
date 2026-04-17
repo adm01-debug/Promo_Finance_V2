@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Trash2, Database, Upload } from 'lucide-react';
-import { useEmpresas } from '@/hooks/useEmpresas';
+import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { useHistoricoFinanceiro } from '@/hooks/useHistoricoFinanceiro';
 import { formatCurrency } from '@/lib/formatters';
 import { toast } from 'sonner';

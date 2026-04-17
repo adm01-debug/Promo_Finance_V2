@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Award, AlertTriangle, Save, TrendingDown, Sparkles, Calculator } from 'lucide-react';
 import { useSimulacaoRegimes } from '@/hooks/useSimulacaoRegimes';
-import { useEmpresas } from '@/hooks/useEmpresas';
+import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { formatCurrency } from '@/lib/formatters';
 import type { RegimeTributario, ResultadoCenario } from '@/lib/tributario';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell, Tooltip } from 'recharts';
@@ -276,7 +276,7 @@ function CenarioDetalhes({ cenario }: { cenario: ResultadoCenario }) {
     return (
       <Card>
         <CardContent className="pt-6">
-          <Alert variant="destructive">
+          <Alert variant="warning">
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Regime não elegível</AlertTitle>
             <AlertDescription>{cenario.motivoInelegibilidade}</AlertDescription>
