@@ -230,12 +230,20 @@ function FaturamentoTab({ empresaId }: { empresaId: string }) {
           </Table>
         </div>
       </CardContent>
+      <CsvImportDialog
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        kind="faturamento"
+        empresaId={empresaId}
+        onImport={handleImport}
+      />
     </Card>
   );
 }
 
 function FolhaTab({ empresaId }: { empresaId: string }) {
   const { folha, upsertFolha, deleteFolha } = useHistoricoFinanceiro(empresaId);
+  const [importOpen, setImportOpen] = useState(false);
   const [novo, setNovo] = useState({
     ano: new Date().getFullYear(),
     mes: new Date().getMonth() + 1,
@@ -255,11 +263,30 @@ function FolhaTab({ empresaId }: { empresaId: string }) {
     upsertFolha.mutate({ empresa_id: empresaId, ...novo, total_folha: total });
   };
 
+  const handleImport = async (rows: (FaturamentoRow | FolhaRow)[]) => {
+    for (const r of rows as FolhaRow[]) {
+      const total = r.total_folha || r.salarios + r.pro_labore + r.encargos;
+      await upsertFolha.mutateAsync({ empresa_id: empresaId, ...r, total_folha: total });
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Folha de Pagamento Mensal</CardTitle>
-        <CardDescription>{folha.length} meses cadastrados (necessário para Fator R)</CardDescription>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <CardTitle className="text-base">Folha de Pagamento Mensal</CardTitle>
+            <CardDescription>{folha.length} meses cadastrados (necessário para Fator R)</CardDescription>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => downloadCsvTemplate('folha')} aria-label="Baixar template CSV de folha">
+              <Download className="h-4 w-4 mr-1" /> Template
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setImportOpen(true)} aria-label="Importar CSV de folha">
+              <Upload className="h-4 w-4 mr-1" /> Importar CSV
+            </Button>
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 md:grid-cols-7 gap-2 p-4 border rounded-lg bg-muted/30">
