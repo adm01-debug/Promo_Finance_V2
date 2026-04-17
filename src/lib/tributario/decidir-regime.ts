@@ -13,6 +13,17 @@ export interface OpcoesDecisao {
   regimeAtual?: RegimeTributario;
 }
 
+/**
+ * Decide o regime tributário ótimo entre Simples Nacional, Lucro Presumido e Lucro Real.
+ *
+ * Roda os 3 simuladores em paralelo, ranqueia por menor carga efetiva e gera justificativa.
+ *
+ * **Base legal:** LC 123/2006 (Simples), Lei 9.249/95 (Presumido), Lei 9.430/96 (Real).
+ *
+ * @param params - Parâmetros financeiros da empresa.
+ * @param opcoes - Opções de simulação (ex.: incluir/excluir Simples).
+ * @returns Cenários comparados, recomendação, economia e alertas.
+ */
 export function decidirRegime(
   params: ParametrosSimulacao,
   opcoes: OpcoesDecisao = {},
