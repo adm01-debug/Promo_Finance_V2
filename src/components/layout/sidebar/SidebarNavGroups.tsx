@@ -43,6 +43,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAprovacoesPendentesCount } from '@/hooks/useAprovacoesPendentesCount';
 import { useAlertasNaoLidos } from '@/hooks/useAlertas';
+import { useAlertasTributariosCount } from '@/hooks/useAlertasTributariosCount';
 import { useRealtimeAlertas } from '@/hooks/useRealtimeAlertas';
 
 interface NavItem {
@@ -103,7 +104,7 @@ const navGroups: NavGroup[] = [
     label: 'Fiscal & Documentos',
     icon: FileText,
     items: [
-      { label: 'Dashboard Tributário', icon: Scale, href: '/tributario', highlight: true },
+      { label: 'Dashboard Tributário', icon: Scale, href: '/tributario', highlight: true, badgeKey: 'tributario' },
       { label: 'Reforma Tributária', icon: Scale, href: '/reforma-tributaria' },
       { label: 'Simulação de Regimes', icon: Calculator, href: '/tributario/simulacao-regimes', highlight: true },
       { label: 'Oportunidades de Elisão', icon: Sparkles, href: '/tributario/oportunidades-elisao', highlight: true },
@@ -156,6 +157,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
   const location = useLocation();
   const { count: aprovacoesPendentes } = useAprovacoesPendentesCount();
   const { data: alertasNaoLidos = 0 } = useAlertasNaoLidos();
+  const { data: alertasTributarios = 0 } = useAlertasTributariosCount();
   useRealtimeAlertas();
 
   // Track which groups are open
@@ -184,6 +186,9 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
     }
     if (badgeKey === 'alertas' && alertasNaoLidos > 0) {
       return alertasNaoLidos;
+    }
+    if (badgeKey === 'tributario' && alertasTributarios > 0) {
+      return alertasTributarios;
     }
     return undefined;
   };

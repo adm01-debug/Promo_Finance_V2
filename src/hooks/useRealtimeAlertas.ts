@@ -20,6 +20,7 @@ export function useRealtimeAlertas() {
           // Invalidate queries so badge counts update
           queryClient.invalidateQueries({ queryKey: ['alertas'] });
           queryClient.invalidateQueries({ queryKey: ['alertas-nao-lidos-count'] });
+          queryClient.invalidateQueries({ queryKey: ['alertas-tributarios-count'] });
 
           const alerta = payload.new as {
             titulo?: string;
