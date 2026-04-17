@@ -117,28 +117,60 @@ export default function SimulacaoRegimes() {
     .map((c) => ({ name: c.nome, valor: c.totalTributos, regime: c.regime }));
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto p-4 md:p-6 space-y-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-3">
-            <Calculator className="h-8 w-8 text-primary" />
+          <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
+            <Calculator className="h-7 w-7 md:h-8 md:w-8 text-primary" aria-hidden="true" />
             Simulação de Regimes Tributários
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-muted-foreground mt-1 text-sm md:text-base">
             Compare Simples Nacional, Lucro Presumido e Lucro Real e descubra o regime mais vantajoso.
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={exportarPdf} disabled={!empresaId}>
-            <FileDown className="h-4 w-4 mr-2" />
-            Exportar PDF Executivo
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={popularDoHistorico}
+            disabled={!empresaId || faturamentoMensal.length === 0}
+            aria-label="Recarregar parâmetros do histórico"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Histórico
           </Button>
-          <Button onClick={() => salvarSimulacao.mutate()} disabled={!empresaId || salvarSimulacao.isPending}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={analisarElisao}
+            disabled={!empresaId || persistirOportunidades.isPending}
+            aria-label="Analisar oportunidades de elisão fiscal"
+          >
+            <Sparkles className="h-4 w-4 mr-2" />
+            {persistirOportunidades.isPending ? 'Analisando…' : 'Elisão Fiscal'}
+            <ArrowRight className="h-3 w-3 ml-1" />
+          </Button>
+          <Button variant="outline" size="sm" onClick={exportarPdf} disabled={!empresaId} aria-label="Exportar PDF executivo">
+            <FileDown className="h-4 w-4 mr-2" />
+            PDF Executivo
+          </Button>
+          <Button size="sm" onClick={() => salvarSimulacao.mutate()} disabled={!empresaId || salvarSimulacao.isPending} aria-label="Salvar simulação no histórico">
             <Save className="h-4 w-4 mr-2" />
-            Salvar Simulação
+            Salvar
           </Button>
         </div>
       </div>
+
+      {empresaId && autoLoaded && (
+        <Alert>
+          <RefreshCw className="h-4 w-4" />
+          <AlertTitle>Dados carregados automaticamente</AlertTitle>
+          <AlertDescription>
+            Parâmetros preenchidos com base nos últimos {Math.min(faturamentoMensal.length, 12)} meses de histórico.
+            Você pode ajustar manualmente os valores abaixo.
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Coluna 1: Inputs */}
