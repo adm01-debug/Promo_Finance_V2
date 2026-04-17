@@ -1,48 +1,63 @@
 
-## Lote 3 — Motor Tributário: Inteligência + Reforma 2026-2033
+## Lote 4 — Hardening, UX e Cobertura Total do Motor Tributário
 
-Lote 2 entregou elisão fiscal + PDF executivo. Agora fechamos as últimas peças do roadmap Claude.
+Os 3 lotes anteriores fecharam o roadmap funcional. Para chegar a **10/10** faltam: hardening de qualidade, integração entre módulos, UX premium e operacionalização do cron.
 
-### 1. Edge Function `gerar-alertas-tributarios` (cron diário)
-Cron 06:00 BRT via `pg_cron` + `pg_net`. Para cada empresa ativa:
-- **Sublimite Simples** próximo (RBT12 ≥ 90% de R$ 4.8M).
-- **Fator R** caindo abaixo de 0,28 (mudança Anexo III→V).
-- **Vencimento DAS/DARF** em 5 dias (cruza `apuracoes_tributarias`).
-- **Desvio de carga** vs `benchmarks_setoriais` (>20%).
-- **Dividendos PF** > R$ 50k/mês (alerta IRPFM 2026).
-Persiste em `alertas` (tipo `tributario`).
+### 1. Ativação automática do cron de alertas
+- Migration que executa `cron.schedule` para `gerar-alertas-tributarios` (06:00 BRT diário) usando `pg_cron` + `pg_net`.
+- Toggle administrativo em `/admin/cron-jobs` (já existe `get_cron_jobs`).
 
-### 2. Motor IRPFM PF (Lei 15.270/2025)
-- `src/lib/tributario/irpfm.ts` — calcula imposto mínimo PF sobre dividendos > R$ 50k/mês com alíquota progressiva (0% a 10%).
-- Integrado ao detector de Holding e ao PDF executivo.
+### 2. Realtime + badge de alertas tributários
+- `useRealtimeAlertas` já existe — adicionar filtro por `tipo IN ('sublimite_simples','fator_r_baixo','vencimento_darf','desvio_benchmark','irpfm_2026')`.
+- Badge no item "Tributação" do menu mostrando contagem de alertas críticos não lidos.
+- Toast em tempo real ao receber novo alerta tributário.
 
-### 3. Projeção Reforma Tributária 2026-2033
-- `src/lib/tributario/projecao-reforma.ts` — aplica cronograma de transição CBS (0,9% → 8,8%) + IBS (0,1% → 17,7%) + redução proporcional PIS/COFINS/ICMS/ISS por ano.
-- `src/pages/tributario/ProjecaoReforma.tsx` — gráfico ano a ano da carga tributária 2026-2033 + impacto setorial.
+### 3. Integração Histórico ↔ Simulação ↔ Elisão (fluxo end-to-end)
+- Auto-popular `SimulacaoRegimes` com dados reais de `faturamento_mensal` + `folha_pagamento` (hoje aceita só inputs manuais).
+- Botão "Analisar oportunidades" em `SimulacaoRegimes` que dispara `orquestrador-elisao` automaticamente após simular.
+- Card "Próximas ações" no `DashboardTributario` consolidando: regime recomendado + top 3 elisões + alertas + projeção 2026.
 
-### 4. Dashboard Consolidado Tributário
-- `src/pages/tributario/DashboardTributario.tsx` — painel unificado: regime atual, recomendado, top 3 oportunidades, alertas ativos, próximos vencimentos, projeção 2026.
-- Substitui ponto de entrada do menu "Tributação".
+### 4. PDF executivo enriquecido
+- Adicionar seções: gráfico de barras 3 regimes (canvas → PNG), timeline reforma 2026-2033, anexo IRPFM PF.
+- Capa com branding da empresa (busca `empresas.razao_social` + logo se existir).
+- Assinatura digital "Gerado por Motor Tributário Lovable em DD/MM/YYYY HH:mm".
 
-### 5. Testes + integração final
-- Testes unitários para IRPFM e projeção reforma.
-- Menu: novos itens "Projeção Reforma 2026" e "Dashboard Tributário".
-- `npx tsc --noEmit` limpo.
+### 5. Importação CSV robusta no Histórico Financeiro
+- Parser com detecção de encoding (UTF-8/Latin-1), separador (`,` `;` `\t`), validação de mês/ano, preview antes de importar, tratamento de duplicatas (UPSERT por empresa+ano+mes).
+- Template CSV downloadable (faturamento + folha).
+
+### 6. Hardening de testes + lint
+- Cobrir `decidir-regime.ts`, `orquestrador-elisao.ts`, `simular-presumido.ts`, `simular-real.ts` (hoje só simples e IRPFM têm testes completos).
+- Adicionar edge cases: empresa nova (<13 meses), exportação 100%, MEI, sublimite estourado.
+- `npx tsc --noEmit` + `npm test` limpos.
+
+### 7. Modularização (memória do projeto)
+- `SimulacaoRegimes.tsx` e `DashboardTributario.tsx` provavelmente passaram de 400 linhas — extrair sub-componentes (`RegimeCard`, `ProjecaoMiniChart`, `OportunidadesResumo`).
+
+### 8. Acessibilidade + responsividade
+- Todos os cards/charts com `aria-label`, `role`, foco visível.
+- Mobile: cards empilhados, gráficos responsivos com `ResponsiveContainer`.
 
 ## Diagrama
 
 ```text
-   Dashboard Tributário (entrada)
-        │
-        ├── Simulação Regimes ──→ PDF Executivo
-        ├── Oportunidades Elisão ─→ IRPFM PF
-        ├── Projeção 2026-2033 ──→ CBS/IBS
-        └── Alertas (cron diário) ─→ tabela alertas
+   Histórico Financeiro (CSV/manual)
+              │
+              ▼ (auto-load)
+       Simulação Regimes ──→ PDF Executivo (com gráficos)
+              │
+              ▼ (auto-trigger)
+       Orquestrador Elisão ──→ Oportunidades
+              │
+              ▼
+       Dashboard Tributário (consolidado)
+              │
+              ▼
+       Cron 06:00 → Alertas → Realtime Badge
 ```
 
 ## Observações
 
-- Edge Function com `verify_jwt = true` + cron via `pg_cron`/`pg_net`.
-- Schema `public`, RLS por `empresa_id` + `has_any_role`.
-- Sem mexer em `client.ts`, `types.ts`, `supabase/config.toml` (só adicionar bloco da nova função).
-- Após este lote: roadmap Claude 100% coberto.
+- Sem mexer em `client.ts`, `types.ts`.
+- Migration do cron via tool de SQL (não migration normal — segue regra `schedule-jobs`).
+- Após este lote: módulo Tributação 10/10 (funcional + UX + operacional + testado).
