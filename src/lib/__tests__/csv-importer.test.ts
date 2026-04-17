@@ -6,13 +6,22 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { parseCsv, downloadCsvTemplate, type FaturamentoRow, type FolhaRow } from '@/lib/csv-importer';
 
 function makeFile(content: string, name = 'test.csv', encoding: 'utf-8' | 'latin1' = 'utf-8'): File {
-  if (encoding === 'utf-8') {
-    return new File([content], name, { type: 'text/csv' });
+  const bytes =
+    encoding === 'utf-8'
+      ? new TextEncoder().encode(content)
+      : (() => {
+          const b = new Uint8Array(content.length);
+          for (let i = 0; i < content.length; i++) b[i] = content.charCodeAt(i) & 0xff;
+          return b;
+        })();
+  // jsdom não implementa File.arrayBuffer — polyfill local
+  const file = new File([bytes], name, { type: 'text/csv' });
+  if (typeof file.arrayBuffer !== 'function') {
+    Object.defineProperty(file, 'arrayBuffer', {
+      value: async () => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength),
+    });
   }
-  // Codifica como Latin-1
-  const bytes = new Uint8Array(content.length);
-  for (let i = 0; i < content.length; i++) bytes[i] = content.charCodeAt(i) & 0xff;
-  return new File([bytes], name, { type: 'text/csv' });
+  return file;
 }
 
 describe('csv-importer — faturamento', () => {
