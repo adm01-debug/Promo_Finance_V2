@@ -1,82 +1,68 @@
 
-## Análise dos documentos enviados
+## Lote 2 — Motor Tributário: Elisão Fiscal + Inteligência
 
-O documento descreve um **Motor Tributário completo em 20 etapas** focado em decisão de regime tributário (Simples/Presumido/Real), elisão fiscal, Reforma Tributária 2026-2033 e PF vinculada (Lei 15.270/2025). O módulo atual já cobre boa parte de Reforma Tributária, mas falta o coração: **simulação comparativa dos 3 regimes com motor de cálculo real**, **árvore de decisão** e **detecção de elisão**.
+Lote 1 entregou a fundação (RBT12, Fator R, 3 simuladores, decisão de regime, CRUD histórico). Agora avançamos para as **9 estratégias de elisão fiscal** + **alertas inteligentes** + **PDF executivo**.
 
-### Gap analysis (atual vs. roadmap Claude)
+### 1. Migration — Catálogo de estratégias e benchmarks
+- `estrategias_elisao_catalogo` (codigo, nome, descricao, base_legal, risco, aplicavel_a regime[], requisitos jsonb).
+- Seed com 9 estratégias: MS LC 224/2025, JCP, Reintegra, Holding Patrimonial, PAT, Lei do Bem, Drawback, Subvenção ICMS, Bonificação.
+- `benchmarks_setoriais` (cnae_prefix, regime, carga_media_pct, margem_media_pct) — referência para alertas de desvio.
 
-| Roadmap | Status atual | Gap |
-|---|---|---|
-| Simulador 3 regimes (Simples/Presumido/Real) | `useComparativoRegimes` existe mas simplificado | Falta motor real com 5 anexos, 6 faixas, Fator R, LC 224/2025, créditos PIS/COFINS |
-| RBT12 + Fator R | Não implementado | Crítico para Simples Nacional |
-| Decisão automática de regime | Parcial | Falta árvore com elegibilidade + ranking |
-| Faturamento mensal histórico | Não existe tabela | Necessário para RBT12 |
-| Folha de pagamento (Fator R) | Não existe tabela | Necessário Anexo III vs V |
-| 9 estratégias de elisão | Não implementado | MS LC224, JCP, Reintegra, Holding, etc. |
-| Alertas tributários inteligentes | Tabela existe, lógica fraca | Falta cron de geração automática |
-| PF vinculada (Lei 15.270/2025) | Não implementado | IRPFM sobre dividendos |
+### 2. Motor de Elisão (`src/lib/tributario/elisao/`)
+- `detectar-jcp.ts` — empresas Lucro Real com PL > 0 e lucro positivo → economia ≈ TJLP × PL × 25%.
+- `detectar-reintegra.ts` — empresas com receita_exportacao > 0 → 0,1% a 3% de crédito.
+- `detectar-ms-lc224.ts` — Simples Nacional próximo do sublimite estadual (R$ 3,6 mi).
+- `detectar-holding.ts` — sócios PF com dividendos > R$ 600k/ano (gatilho IRPFM Lei 15.270/2025).
+- `detectar-pat.ts` — Lucro Real com folha relevante → dedução até 4% IRPJ.
+- `detectar-lei-bem.ts` — Lucro Real com despesas P&D.
+- `detectar-drawback.ts` — empresas com importação + exportação.
+- `detectar-subvencao-icms.ts` — benefícios fiscais ICMS exclusos do lucro real.
+- `detectar-bonificacao.ts` — análise de operações com goodwill.
+- `orquestrador-elisao.ts` — roda todas, persiste em `oportunidades_elisao`, retorna ranking por economia.
 
-## Lote 1 — Fundação do Motor (executar agora)
+### 3. Hook + Página de Oportunidades de Elisão
+- `useOportunidadesElisao(empresaId)` — lê `oportunidades_elisao`, dispara reanálise.
+- `src/pages/tributario/OportunidadesElisao.tsx` — cards por estratégia (economia estimada, risco, base legal), botão "Analisar agora".
 
-Foco em destravar a base. Etapas pequenas, testáveis, sem quebrar nada do que já existe.
+### 4. Alertas Tributários Inteligentes (cron)
+- Edge Function `gerar-alertas-tributarios` (cron diário 06:00):
+  - Sublimite Simples próximo (>90% RBT12).
+  - Fator R caindo abaixo de 0,28 (mudança Anexo III→V).
+  - Vencimento DAS/DARF em 5 dias.
+  - Desvio de carga vs benchmark setorial (>20%).
+  - Dividendos PF > R$ 50k/mês (alerta IRPFM 2026).
+- Persiste em `alertas` (tabela existente) com tipo `tributario`.
 
-### 1. Migration: tabelas fundamentais do motor
-- `faturamento_mensal` (empresa_id, ano, mes, receita_bruta, receita_servicos, receita_revenda, receita_industria, receita_exportacao)
-- `folha_pagamento` (empresa_id, ano, mes, salarios, pro_labore, encargos, total_folha)
-- `regimes_simulados` (empresa_id, data_simulacao, regime_recomendado, cenarios jsonb, alertas jsonb, justificativa)
-- `oportunidades_elisao` (empresa_id, estrategia, aplicavel, economia_estimada, base_legal, risco, observacoes)
-- RLS por `empresa_id` + `has_any_role`.
+### 5. PDF Executivo de Decisão
+- `src/lib/tributario/relatorio-pdf.ts` (jsPDF + autoTable) — gera relatório com:
+  - Capa, sumário executivo, comparativo 3 regimes, recomendação justificada, oportunidades de elisão, projeção 12m, base legal.
+- Botão "Exportar PDF Executivo" em `SimulacaoRegimes.tsx`.
 
-### 2. Biblioteca de cálculo pura (`src/lib/tributario/`)
-- `rbt12.ts` — Receita Bruta dos últimos 12 meses (com regra <13 meses CGSN 140/2018 art.21).
-- `fator-r.ts` — (Folha 12m / RBT12) ≥ 0.28 → Anexo III, senão Anexo V.
-- `aliquotas-simples.ts` — 5 anexos × 6 faixas com PD (parcela a deduzir).
-- `simular-simples.ts` — DAS efetivo = ((RBT12 × aliq) − PD) / RBT12.
-- `simular-presumido.ts` — IRPJ/CSLL por presunção + PIS/COFINS cumulativo + ICMS/ISS.
-- `simular-real.ts` — Lucro real + PIS/COFINS não-cumulativo (Tema 779) + ICMS.
-- `decidir-regime.ts` — orquestrador: roda os 3, filtra elegibilidade, ranqueia por carga total.
-- Testes unitários em `__tests__/`.
-
-### 3. Hook + página de Simulação Comparativa
-- `useSimulacaoRegimes(empresaId)` — busca faturamento+folha, chama motor, retorna 3 cenários.
-- `src/pages/tributario/SimulacaoRegimes.tsx` — inputs (faturamento, folha, margem, % serviços) + 3 cards comparativos (carga total, alíquota efetiva, vantagem) + recomendação destacada.
-- Persistir resultado em `regimes_simulados` ao salvar.
-
-### 4. CRUD Faturamento + Folha
-- Página `src/pages/tributario/HistoricoFinanceiro.tsx` com 2 abas (Faturamento / Folha).
-- Importação CSV (mapeamento ano/mês/valores).
-- Validação: 12 meses obrigatórios para cálculo confiável.
-
-### 5. Integração no menu
-- Submenu "Tributação" → "Simulação de Regimes", "Histórico Financeiro" (além dos itens já existentes de Reforma Tributária).
+### 6. Integração no menu
+- Submenu Tributação → "Oportunidades de Elisão" (ícone Lightbulb).
 
 ## Diagrama
 
 ```text
-Inputs (Faturamento + Folha)
-        │
-        ▼
-┌──────────────────────────────┐
-│  Motor (lib/tributario/)     │
-│  ├── rbt12                   │
-│  ├── fator-r                 │
-│  ├── simular-simples         │
-│  ├── simular-presumido       │
-│  └── simular-real            │
-└──────────────┬───────────────┘
-               ▼
-       decidir-regime
-               ▼
-   3 cenários ranqueados + recomendação
-               ▼
-   Persistência em regimes_simulados
-               ▼
-       UI Simulação + Recomendação
+   Histórico financeiro + Simulação atual
+                │
+                ▼
+   ┌────────────────────────────┐
+   │  Motor Elisão (9 detect.)  │
+   └──────────────┬─────────────┘
+                  ▼
+       Ranking por economia
+                  ▼
+       oportunidades_elisao
+                  ▼
+   UI Oportunidades + PDF Executivo
+                  +
+   Cron diário → alertas tributários
 ```
 
 ## Observações
 
-- Cálculo no **frontend (lib pura)** — sem Edge Function nesta primeira rodada (mais rápido, testável, sem latência). Migrar para Edge Function só se precisar de batch/cron.
-- Schema `public` (não criar schema `tributario` separado — quebraria padrão atual e `types.ts` auto-gerado).
-- Lotes seguintes (após aprovação deste): elisão (9 estratégias), alertas com cron, PDF executivo, PF vinculada (IRPFM).
-- Sem mexer em `client.ts` / `types.ts` / `supabase/config.toml`.
+- Schema `public`, RLS por `empresa_id` + `has_any_role`.
+- Edge Function com `verify_jwt = true` + cron via `pg_cron`.
+- Lote 3 (próximo): IRPFM PF (Lei 15.270/2025), Reforma Tributária projeção 2026-2033 com CBS/IBS por NCM, dashboard consolidado.
+- Sem mexer em `client.ts`, `types.ts`, `supabase/config.toml` (apenas adicionar bloco da nova função se necessário).
