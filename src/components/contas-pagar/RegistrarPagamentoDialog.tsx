@@ -3,8 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
-import { Loader2, DollarSign, Calendar, Wallet, CreditCard, Building2, Banknote, QrCode, ShieldCheck, ShieldAlert, AlertTriangle } from 'lucide-react';
+import { Loader2, DollarSign, Calendar, Wallet, ShieldCheck } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useContasBancarias } from '@/hooks/useFinancialData';
 import { useConfiguracaoAprovacao, useCriarSolicitacaoAprovacao } from '@/hooks/useAprovacoes';
@@ -39,10 +38,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { PagamentoApprovalAlert } from './registrar-pagamento/PagamentoApprovalAlert';
+import { PagamentoSummary } from './registrar-pagamento/PagamentoSummary';
 
 interface ContaPagar {
   id: string;
