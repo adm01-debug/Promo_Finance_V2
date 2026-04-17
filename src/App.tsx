@@ -48,6 +48,7 @@ const Bitrix24 = lazy(() => import('./pages/Bitrix24'));
 const ReformaTributaria = lazy(() => import('./pages/ReformaTributaria'));
 const SimulacaoRegimes = lazy(() => import('./pages/tributario/SimulacaoRegimes'));
 const HistoricoFinanceiroTributario = lazy(() => import('./pages/tributario/HistoricoFinanceiro'));
+const OportunidadesElisao = lazy(() => import('./pages/tributario/OportunidadesElisao'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const Asaas = lazy(() => import('./pages/Asaas'));
 const BlingPage = lazy(() => import('./pages/Bling'));
@@ -112,6 +113,7 @@ function AppRoutes() {
             <Route path="/reforma-tributaria" element={<ProtectedRoute><ReformaTributaria /></ProtectedRoute>} />
             <Route path="/tributario/simulacao-regimes" element={<ProtectedRoute><SimulacaoRegimes /></ProtectedRoute>} />
             <Route path="/tributario/historico-financeiro" element={<ProtectedRoute><HistoricoFinanceiroTributario /></ProtectedRoute>} />
+            <Route path="/tributario/oportunidades-elisao" element={<ProtectedRoute><OportunidadesElisao /></ProtectedRoute>} />
             <Route path="/asaas" element={<ProtectedRoute><Asaas /></ProtectedRoute>} />
             <Route path="/bling" element={<ProtectedRoute><BlingPage /></ProtectedRoute>} />
             <Route path="/vendedores" element={<ProtectedRoute><Vendedores /></ProtectedRoute>} />

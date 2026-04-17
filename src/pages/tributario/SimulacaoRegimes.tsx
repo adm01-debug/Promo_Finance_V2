@@ -11,11 +11,13 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Award, AlertTriangle, Save, TrendingDown, Sparkles, Calculator } from 'lucide-react';
+import { Award, AlertTriangle, Save, TrendingDown, Sparkles, Calculator, FileDown } from 'lucide-react';
 import { useSimulacaoRegimes } from '@/hooks/useSimulacaoRegimes';
+import { useOportunidadesElisao } from '@/hooks/useOportunidadesElisao';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { formatCurrency } from '@/lib/formatters';
 import type { RegimeTributario, ResultadoCenario } from '@/lib/tributario';
+import { baixarRelatorioPdf } from '@/lib/tributario/relatorio-pdf';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell, Tooltip } from 'recharts';
 
 export default function SimulacaoRegimes() {
@@ -32,6 +34,24 @@ export default function SimulacaoRegimes() {
     temHistoricoSuficiente,
     historicoSimulacoes,
   } = useSimulacaoRegimes({ empresaId });
+
+  const { relatorio: relatorioElisao } = useOportunidadesElisao({
+    empresaId,
+    contexto: { regime_atual: regimeAtual === 'lucro_real' ? 'real' : regimeAtual === 'lucro_presumido' ? 'presumido' : 'simples' },
+  });
+
+  const empresaSelecionada = empresas.find((e) => e.id === empresaId);
+
+  const exportarPdf = () => {
+    baixarRelatorioPdf({
+      empresaNome: empresaSelecionada?.razao_social ?? 'Empresa',
+      cnpj: empresaSelecionada?.cnpj ?? undefined,
+      parametros,
+      decisao: resultado,
+      elisao: relatorioElisao,
+      regimeAtual,
+    });
+  };
 
   const corPorRegime = (r: RegimeTributario) =>
     r === 'simples_nacional' ? 'hsl(160 84% 39%)' : r === 'lucro_presumido' ? 'hsl(258 90% 66%)' : 'hsl(217 91% 60%)';
@@ -52,10 +72,16 @@ export default function SimulacaoRegimes() {
             Compare Simples Nacional, Lucro Presumido e Lucro Real e descubra o regime mais vantajoso.
           </p>
         </div>
-        <Button onClick={() => salvarSimulacao.mutate()} disabled={!empresaId || salvarSimulacao.isPending}>
-          <Save className="h-4 w-4 mr-2" />
-          Salvar Simulação
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={exportarPdf} disabled={!empresaId}>
+            <FileDown className="h-4 w-4 mr-2" />
+            Exportar PDF Executivo
+          </Button>
+          <Button onClick={() => salvarSimulacao.mutate()} disabled={!empresaId || salvarSimulacao.isPending}>
+            <Save className="h-4 w-4 mr-2" />
+            Salvar Simulação
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
