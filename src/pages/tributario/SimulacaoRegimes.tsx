@@ -35,6 +35,24 @@ export default function SimulacaoRegimes() {
     historicoSimulacoes,
   } = useSimulacaoRegimes({ empresaId });
 
+  const { relatorio: relatorioElisao } = useOportunidadesElisao({
+    empresaId,
+    contexto: { regime_atual: regimeAtual === 'lucro_real' ? 'real' : regimeAtual === 'lucro_presumido' ? 'presumido' : 'simples' },
+  });
+
+  const empresaSelecionada = empresas.find((e) => e.id === empresaId);
+
+  const exportarPdf = () => {
+    baixarRelatorioPdf({
+      empresaNome: empresaSelecionada?.razao_social ?? 'Empresa',
+      cnpj: empresaSelecionada?.cnpj ?? undefined,
+      parametros,
+      decisao: resultado,
+      elisao: relatorioElisao,
+      regimeAtual,
+    });
+  };
+
   const corPorRegime = (r: RegimeTributario) =>
     r === 'simples_nacional' ? 'hsl(160 84% 39%)' : r === 'lucro_presumido' ? 'hsl(258 90% 66%)' : 'hsl(217 91% 60%)';
 
@@ -54,10 +72,16 @@ export default function SimulacaoRegimes() {
             Compare Simples Nacional, Lucro Presumido e Lucro Real e descubra o regime mais vantajoso.
           </p>
         </div>
-        <Button onClick={() => salvarSimulacao.mutate()} disabled={!empresaId || salvarSimulacao.isPending}>
-          <Save className="h-4 w-4 mr-2" />
-          Salvar Simulação
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={exportarPdf} disabled={!empresaId}>
+            <FileDown className="h-4 w-4 mr-2" />
+            Exportar PDF Executivo
+          </Button>
+          <Button onClick={() => salvarSimulacao.mutate()} disabled={!empresaId || salvarSimulacao.isPending}>
+            <Save className="h-4 w-4 mr-2" />
+            Salvar Simulação
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
