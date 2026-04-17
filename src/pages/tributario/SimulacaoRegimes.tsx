@@ -2,7 +2,8 @@
 // PÁGINA: Simulação Comparativa de Regimes Tributários
 // ============================================
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -11,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Award, AlertTriangle, Save, TrendingDown, Sparkles, Calculator, FileDown } from 'lucide-react';
+import { Award, AlertTriangle, Save, TrendingDown, Sparkles, Calculator, FileDown, RefreshCw, ArrowRight } from 'lucide-react';
 import { useSimulacaoRegimes } from '@/hooks/useSimulacaoRegimes';
 import { useOportunidadesElisao } from '@/hooks/useOportunidadesElisao';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
@@ -19,6 +20,7 @@ import { formatCurrency } from '@/lib/formatters';
 import type { RegimeTributario, ResultadoCenario } from '@/lib/tributario';
 import { baixarRelatorioPdf } from '@/lib/tributario/relatorio-pdf';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell, Tooltip } from 'recharts';
+import { toast } from 'sonner';
 
 export default function SimulacaoRegimes() {
   const { data: empresas = [] } = useAllEmpresas();
