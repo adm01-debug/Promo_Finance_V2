@@ -63,8 +63,8 @@ describe('E2E orquestrador-elisao — cobertura das 9 estratégias', () => {
   it('JCP só é aplicável em Lucro Real com PL e lucro suficientes', () => {
     const real = analisarOportunidadesElisao(baseLucroReal);
     const sim = analisarOportunidadesElisao(baseSimples);
-    const jcpReal = real.oportunidades.find((o) => o.estrategia === 'jcp');
-    const jcpSim = sim.oportunidades.find((o) => o.estrategia === 'jcp');
+    const jcpReal = real.oportunidades.find((o) => o.estrategia === 'JCP');
+    const jcpSim = sim.oportunidades.find((o) => o.estrategia === 'JCP');
     expect(jcpReal?.aplicavel).toBe(true);
     expect(jcpSim?.aplicavel).toBe(false);
   });
@@ -72,13 +72,13 @@ describe('E2E orquestrador-elisao — cobertura das 9 estratégias', () => {
   it('REINTEGRA aplicável apenas com receita de exportação > 0', () => {
     const comExp = analisarOportunidadesElisao(baseLucroReal);
     const semExp = analisarOportunidadesElisao({ ...baseLucroReal, receita_exportacao: 0 });
-    expect(comExp.oportunidades.find((o) => o.estrategia === 'reintegra')?.aplicavel).toBe(true);
-    expect(semExp.oportunidades.find((o) => o.estrategia === 'reintegra')?.aplicavel).toBe(false);
+    expect(comExp.oportunidades.find((o) => o.estrategia === 'REINTEGRA')?.aplicavel).toBe(true);
+    expect(semExp.oportunidades.find((o) => o.estrategia === 'REINTEGRA')?.aplicavel).toBe(false);
   });
 
   it('PAT é aplicável quando há folha relevante', () => {
     const r = analisarOportunidadesElisao(baseLucroReal);
-    const pat = r.oportunidades.find((o) => o.estrategia === 'pat');
+    const pat = r.oportunidades.find((o) => o.estrategia === 'PAT');
     expect(pat).toBeDefined();
     expect(pat?.base_legal).toMatch(/6\.?321/);
   });
@@ -87,30 +87,30 @@ describe('E2E orquestrador-elisao — cobertura das 9 estratégias', () => {
     const com = analisarOportunidadesElisao(baseLucroReal);
     const sem = analisarOportunidadesElisao({ ...baseLucroReal, despesas_pd: 0 });
     const pres = analisarOportunidadesElisao({ ...baseLucroPresumido, despesas_pd: 500_000 });
-    expect(com.oportunidades.find((o) => o.estrategia === 'lei_bem')?.aplicavel).toBe(true);
-    expect(sem.oportunidades.find((o) => o.estrategia === 'lei_bem')?.aplicavel).toBe(false);
-    expect(pres.oportunidades.find((o) => o.estrategia === 'lei_bem')?.aplicavel).toBe(false);
+    expect(com.oportunidades.find((o) => o.estrategia === 'LEI_BEM')?.aplicavel).toBe(true);
+    expect(sem.oportunidades.find((o) => o.estrategia === 'LEI_BEM')?.aplicavel).toBe(false);
+    expect(pres.oportunidades.find((o) => o.estrategia === 'LEI_BEM')?.aplicavel).toBe(false);
   });
 
   it('DRAWBACK aplicável quando há importação relevante', () => {
     const com = analisarOportunidadesElisao(baseLucroReal);
     const sem = analisarOportunidadesElisao({ ...baseLucroReal, receita_importacao: 0 });
-    expect(com.oportunidades.find((o) => o.estrategia === 'drawback')?.aplicavel).toBe(true);
-    expect(sem.oportunidades.find((o) => o.estrategia === 'drawback')?.aplicavel).toBe(false);
+    expect(com.oportunidades.find((o) => o.estrategia === 'DRAWBACK')?.aplicavel).toBe(true);
+    expect(sem.oportunidades.find((o) => o.estrategia === 'DRAWBACK')?.aplicavel).toBe(false);
   });
 
   it('Subvenção ICMS exige benefício ICMS > 0 e Lucro Real', () => {
     const r = analisarOportunidadesElisao(baseLucroReal);
     const sem = analisarOportunidadesElisao({ ...baseLucroReal, beneficio_icms_anual: 0 });
-    expect(r.oportunidades.find((o) => o.estrategia === 'subvencao_icms')?.aplicavel).toBe(true);
-    expect(sem.oportunidades.find((o) => o.estrategia === 'subvencao_icms')?.aplicavel).toBe(false);
+    expect(r.oportunidades.find((o) => o.estrategia === 'SUBVENCAO_ICMS')?.aplicavel).toBe(true);
+    expect(sem.oportunidades.find((o) => o.estrategia === 'SUBVENCAO_ICMS')?.aplicavel).toBe(false);
   });
 
   it('Holding patrimonial aplicável quando dividendos PF > teto IRPFM', () => {
     const r = analisarOportunidadesElisao(baseLucroReal);
     const sem = analisarOportunidadesElisao({ ...baseLucroReal, dividendos_pf_anual: 100_000 });
-    expect(r.oportunidades.find((o) => o.estrategia === 'holding')?.aplicavel).toBe(true);
-    expect(sem.oportunidades.find((o) => o.estrategia === 'holding')?.aplicavel).toBe(false);
+    expect(r.oportunidades.find((o) => o.estrategia === 'HOLDING')?.aplicavel).toBe(true);
+    expect(sem.oportunidades.find((o) => o.estrategia === 'HOLDING')?.aplicavel).toBe(false);
   });
 });
 
@@ -165,8 +165,8 @@ describe('E2E orquestrador-elisao — edge cases', () => {
     const aplicaveisReal = new Set(real.oportunidades.filter((o) => o.aplicavel).map((o) => o.estrategia));
     const aplicaveisPres = new Set(presumido.oportunidades.filter((o) => o.aplicavel).map((o) => o.estrategia));
     // Estratégias exclusivas do Real (JCP, Lei do Bem, Subvenção ICMS) saem do conjunto de Presumido
-    expect(aplicaveisReal.has('jcp')).toBe(true);
-    expect(aplicaveisPres.has('jcp')).toBe(false);
+    expect(aplicaveisReal.has('JCP')).toBe(true);
+    expect(aplicaveisPres.has('JCP')).toBe(false);
   });
 
   it('soma da economia total = soma individual das aplicáveis (invariante)', () => {
