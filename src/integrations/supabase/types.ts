@@ -3091,6 +3091,62 @@ export type Database = {
           },
         ]
       }
+      faturamento_mensal: {
+        Row: {
+          ano: number
+          created_at: string
+          created_by: string | null
+          empresa_id: string
+          id: string
+          mes: number
+          observacoes: string | null
+          receita_bruta: number
+          receita_exportacao: number
+          receita_industria: number
+          receita_revenda: number
+          receita_servicos: number
+          updated_at: string
+        }
+        Insert: {
+          ano: number
+          created_at?: string
+          created_by?: string | null
+          empresa_id: string
+          id?: string
+          mes: number
+          observacoes?: string | null
+          receita_bruta?: number
+          receita_exportacao?: number
+          receita_industria?: number
+          receita_revenda?: number
+          receita_servicos?: number
+          updated_at?: string
+        }
+        Update: {
+          ano?: number
+          created_at?: string
+          created_by?: string | null
+          empresa_id?: string
+          id?: string
+          mes?: number
+          observacoes?: string | null
+          receita_bruta?: number
+          receita_exportacao?: number
+          receita_industria?: number
+          receita_revenda?: number
+          receita_servicos?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "faturamento_mensal_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feedback_conciliacao_ia: {
         Row: {
           acao: string
@@ -3261,6 +3317,62 @@ export type Database = {
             columns: ["template_id"]
             isOneToOne: false
             referencedRelation: "templates_cobranca"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      folha_pagamento: {
+        Row: {
+          ano: number
+          created_at: string
+          created_by: string | null
+          empresa_id: string
+          encargos: number
+          id: string
+          mes: number
+          numero_funcionarios: number | null
+          observacoes: string | null
+          pro_labore: number
+          salarios: number
+          total_folha: number
+          updated_at: string
+        }
+        Insert: {
+          ano: number
+          created_at?: string
+          created_by?: string | null
+          empresa_id: string
+          encargos?: number
+          id?: string
+          mes: number
+          numero_funcionarios?: number | null
+          observacoes?: string | null
+          pro_labore?: number
+          salarios?: number
+          total_folha?: number
+          updated_at?: string
+        }
+        Update: {
+          ano?: number
+          created_at?: string
+          created_by?: string | null
+          empresa_id?: string
+          encargos?: number
+          id?: string
+          mes?: number
+          numero_funcionarios?: number | null
+          observacoes?: string | null
+          pro_labore?: number
+          salarios?: number
+          total_folha?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "folha_pagamento_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
             referencedColumns: ["id"]
           },
         ]
@@ -4701,6 +4813,71 @@ export type Database = {
           },
         ]
       }
+      oportunidades_elisao: {
+        Row: {
+          aplicavel: boolean
+          base_legal: string | null
+          categoria: string | null
+          created_at: string
+          created_by: string | null
+          data_identificacao: string
+          data_implementacao: string | null
+          economia_estimada: number | null
+          empresa_id: string
+          estrategia: string
+          id: string
+          observacoes: string | null
+          responsavel: string | null
+          risco: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          aplicavel?: boolean
+          base_legal?: string | null
+          categoria?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_identificacao?: string
+          data_implementacao?: string | null
+          economia_estimada?: number | null
+          empresa_id: string
+          estrategia: string
+          id?: string
+          observacoes?: string | null
+          responsavel?: string | null
+          risco?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          aplicavel?: boolean
+          base_legal?: string | null
+          categoria?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_identificacao?: string
+          data_implementacao?: string | null
+          economia_estimada?: number | null
+          empresa_id?: string
+          estrategia?: string
+          id?: string
+          observacoes?: string | null
+          responsavel?: string | null
+          risco?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oportunidades_elisao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pagamentos_recorrentes: {
         Row: {
           ativo: boolean | null
@@ -5959,6 +6136,74 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "regimes_especiais_empresa_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      regimes_simulados: {
+        Row: {
+          alertas: Json
+          ano_referencia: number
+          cenarios: Json
+          created_at: string
+          created_by: string | null
+          data_simulacao: string
+          economia_anual_estimada: number | null
+          empresa_id: string
+          fator_r: number | null
+          folha_12m: number
+          id: string
+          justificativa: string | null
+          parametros: Json | null
+          rbt12: number
+          regime_atual: string | null
+          regime_recomendado: string
+          updated_at: string
+        }
+        Insert: {
+          alertas?: Json
+          ano_referencia: number
+          cenarios?: Json
+          created_at?: string
+          created_by?: string | null
+          data_simulacao?: string
+          economia_anual_estimada?: number | null
+          empresa_id: string
+          fator_r?: number | null
+          folha_12m?: number
+          id?: string
+          justificativa?: string | null
+          parametros?: Json | null
+          rbt12?: number
+          regime_atual?: string | null
+          regime_recomendado: string
+          updated_at?: string
+        }
+        Update: {
+          alertas?: Json
+          ano_referencia?: number
+          cenarios?: Json
+          created_at?: string
+          created_by?: string | null
+          data_simulacao?: string
+          economia_anual_estimada?: number | null
+          empresa_id?: string
+          fator_r?: number | null
+          folha_12m?: number
+          id?: string
+          justificativa?: string | null
+          parametros?: Json | null
+          rbt12?: number
+          regime_atual?: string | null
+          regime_recomendado?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regimes_simulados_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
