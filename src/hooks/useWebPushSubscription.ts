@@ -58,15 +58,23 @@ export function useWebPushSubscription() {
         toast({ title: "Service Worker indisponível", variant: "destructive" });
         return;
       }
+      const keyBytes = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+        applicationServerKey: keyBytes.buffer.slice(
+          keyBytes.byteOffset,
+          keyBytes.byteOffset + keyBytes.byteLength,
+        ) as ArrayBuffer,
       });
       const json = sub.toJSON();
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) throw new Error("Usuário não autenticado");
-      const { error } = await supabase
-        .from("push_subscriptions" as never)
+      const { error } = await (supabase as unknown as {
+        from: (t: string) => {
+          upsert: (v: Record<string, unknown>, o: { onConflict: string }) => Promise<{ error: Error | null }>;
+        };
+      })
+        .from("push_subscriptions")
         .upsert({
           user_id: u.user.id,
           endpoint: sub.endpoint,
@@ -92,8 +100,14 @@ export function useWebPushSubscription() {
       const reg = await navigator.serviceWorker.getRegistration();
       const sub = await reg?.pushManager.getSubscription();
       if (sub) {
-        await supabase
-          .from("push_subscriptions" as never)
+        await (supabase as unknown as {
+          from: (t: string) => {
+            update: (v: Record<string, unknown>) => {
+              eq: (c: string, v: string) => Promise<{ error: Error | null }>;
+            };
+          };
+        })
+          .from("push_subscriptions")
           .update({ ativo: false })
           .eq("endpoint", sub.endpoint);
         await sub.unsubscribe();
