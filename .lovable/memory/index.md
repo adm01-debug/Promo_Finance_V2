@@ -61,3 +61,6 @@ type: reference
 - [Navigation UX](mem://ux/navigation-system-and-shortcuts) — `BackButton` with `parentRouteMap` and keyboard/swipe shortcuts
 - [Manual Security Config](mem://security/manual-configuration-requirements) — Supabase 'Leaked Password Protection' requires manual cloud setup
 - [Modularization Strategy](mem://architecture/modularization-strategy) — Obligatory refactoring of files > 400 lines into sub-components
+- [Centro Privacidade LGPD](mem://features/centro-privacidade-lgpd) — Página /configuracoes/privacidade + edge processar-solicitacao-lgpd
+- [Health Score Operacional](mem://features/health-score-operacional) — Score 0-100 com 6 dimensões + insights IA, snapshot em health_scores_operacionais
+- [Detector Anomalias](mem://features/detector-anomalias-tempo-real) — 5 detectores estatísticos populando anomalias_detectadas (tab admin)
