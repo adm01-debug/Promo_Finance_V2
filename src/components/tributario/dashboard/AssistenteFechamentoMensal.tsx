@@ -142,9 +142,9 @@ export function AssistenteFechamentoMensal({ empresaId, ano, mes, isAdmin }: Pro
             <AlertTitle>Período fechado</AlertTitle>
             <AlertDescription>
               Score conformidade:{" "}
-              <strong>{Number(fechamento?.score_conformidade ?? 0).toFixed(0)}/100</strong>
+              <strong>{Number(fechamentoData?.score_conformidade ?? 0).toFixed(0)}/100</strong>
               {" • "}Total apurado:{" "}
-              <strong>R$ {Number(fechamento?.total_apurado ?? 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</strong>
+              <strong>R$ {Number(fechamentoData?.total_apurado ?? 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</strong>
             </AlertDescription>
           </Alert>
         )}
