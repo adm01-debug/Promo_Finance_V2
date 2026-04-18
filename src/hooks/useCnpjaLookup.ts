@@ -36,8 +36,14 @@ export interface CnpjaData {
   raw: unknown;
 }
 
+export interface CnpjaLookupResult {
+  data: CnpjaData;
+  cached: boolean;
+  cachedAt?: string;
+}
+
 export function useCnpjaLookup() {
-  return useMutation<CnpjaData, Error, string>({
+  return useMutation<CnpjaLookupResult, Error, string>({
     mutationFn: async (cnpj: string) => {
       const cleaned = (cnpj || '').replace(/\D/g, '');
       if (cleaned.length !== 14) {
@@ -48,17 +54,41 @@ export function useCnpjaLookup() {
         body: { cnpj: cleaned },
       });
 
-      if (error) throw new Error(error.message || 'Falha ao consultar CNPJ');
+      if (error) {
+        // Tentar extrair detalhe (rate limit etc.) do contexto da resposta
+        const ctx = (error as { context?: Response }).context;
+        if (ctx && typeof ctx.json === 'function') {
+          try {
+            const payload = await ctx.json();
+            if (ctx.status === 429) {
+              throw new Error(payload?.error || 'Limite de consultas atingido. Tente mais tarde.');
+            }
+            if (payload?.error) throw new Error(payload.error);
+          } catch (parseErr) {
+            if (parseErr instanceof Error && parseErr.message) throw parseErr;
+          }
+        }
+        throw new Error(error.message || 'Falha ao consultar CNPJ');
+      }
+
       if (!data?.data) throw new Error('CNPJá não retornou dados');
 
-      return data.data as CnpjaData;
+      return {
+        data: data.data as CnpjaData,
+        cached: !!data.cached,
+        cachedAt: data.cached_at,
+      };
     },
-    onSuccess: (data) => {
-      toast.success(`Dados encontrados: ${data.razaoSocial || data.cnpj}`);
+    onSuccess: (result) => {
+      if (result.cached) {
+        toast.success(`Dados em cache: ${result.data.razaoSocial || result.data.cnpj}`);
+      } else {
+        toast.success(`Dados encontrados: ${result.data.razaoSocial || result.data.cnpj}`);
+      }
     },
     onError: (error) => {
       logger.error('[useCnpjaLookup] erro:', error);
-      toast.error(`Erro ao consultar CNPJ: ${error.message}`);
+      toast.error(error.message || 'Erro ao consultar CNPJ');
     },
   });
 }

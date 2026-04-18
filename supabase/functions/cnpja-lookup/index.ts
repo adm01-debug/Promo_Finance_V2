@@ -1,6 +1,6 @@
 // Edge Function: cnpja-lookup
 // Consulta dados cadastrais e tributários de CNPJ via API CNPJá Plus.
-// Padrões: validação manual de JWT, retry exponencial, cache em memória 1h.
+// P3: cache persistente em cnpja_cache + rate limit por usuário.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { createLogger } from "../_shared/observability.ts";
@@ -12,13 +12,9 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-interface CnpjaCacheEntry {
-  data: unknown;
-  expiresAt: number;
-}
-
-const cache = new Map<string, CnpjaCacheEntry>();
-const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hora
+const CACHE_TTL_DAYS = 30;
+const RATE_LIMIT_MAX = 10;
+const RATE_LIMIT_WINDOW_MIN = 60;
 
 function sanitizeCnpj(raw: string): string {
   return (raw || "").replace(/\D/g, "");
@@ -88,7 +84,6 @@ Deno.serve(async (req: Request) => {
   logger.info("fn_start");
 
   try {
-    // Validação manual do JWT
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
       return new Response(
@@ -102,7 +97,8 @@ Deno.serve(async (req: Request) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
-    if (!supabaseUrl || !supabaseAnonKey) {
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseUrl || !supabaseAnonKey || !serviceRoleKey) {
       return new Response(
         JSON.stringify({ error: "Configuração Supabase ausente" }),
         {
@@ -112,13 +108,13 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    const userClient = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     });
 
     const token = authHeader.replace("Bearer ", "");
     const { data: claims, error: claimsError } =
-      await supabase.auth.getClaims(token);
+      await userClient.auth.getClaims(token);
     if (claimsError || !claims?.claims) {
       return new Response(
         JSON.stringify({ error: "Token inválido" }),
@@ -128,6 +124,8 @@ Deno.serve(async (req: Request) => {
         },
       );
     }
+
+    const userId = claims.claims.sub as string;
 
     if (req.method !== "POST") {
       return new Response(
@@ -152,11 +150,30 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Cache
-    const cached = cache.get(cnpj);
-    if (cached && cached.expiresAt > Date.now()) {
+    // Cliente admin para cache e rate limit
+    const admin = createClient(supabaseUrl, serviceRoleKey);
+
+    // 1) Cache persistente
+    const { data: cached } = await admin
+      .from("cnpja_cache")
+      .select("data, fetched_at, expires_at")
+      .eq("cnpj", cnpj)
+      .gt("expires_at", new Date().toISOString())
+      .maybeSingle();
+
+    if (cached) {
+      logger.info("cache_hit", {
+        duration_ms: Date.now() - t0,
+        status_code: 200,
+        context: { cnpj, fetched_at: cached.fetched_at },
+      });
+      await logger.flush();
       return new Response(
-        JSON.stringify({ data: cached.data, cached: true }),
+        JSON.stringify({
+          data: cached.data,
+          cached: true,
+          cached_at: cached.fetched_at,
+        }),
         {
           status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -164,6 +181,41 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    logger.info("cache_miss", { context: { cnpj } });
+
+    // 2) Rate limit antes de chamada externa
+    const { data: allowed, error: rlError } = await admin.rpc(
+      "cnpja_check_rate_limit",
+      {
+        _user_id: userId,
+        _max: RATE_LIMIT_MAX,
+        _window_minutes: RATE_LIMIT_WINDOW_MIN,
+      },
+    );
+
+    if (rlError) {
+      logger.warn("rate_limit_check_failed", {
+        error_message: rlError.message,
+        context: { userId },
+      });
+    } else if (allowed === false) {
+      logger.warn("rate_limit_exceeded", {
+        status_code: 429,
+        context: { userId, max: RATE_LIMIT_MAX, window_min: RATE_LIMIT_WINDOW_MIN },
+      });
+      await logger.flush();
+      return new Response(
+        JSON.stringify({
+          error: `Limite de ${RATE_LIMIT_MAX} consultas por ${RATE_LIMIT_WINDOW_MIN} minutos atingido. Tente novamente mais tarde.`,
+        }),
+        {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    // 3) Chamada externa
     const apiKey = Deno.env.get("CNPJA_API_KEY");
     if (!apiKey) {
       return new Response(
@@ -175,8 +227,14 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    const tApi = Date.now();
     const res = await fetchCnpjaWithRetry(cnpj, apiKey.trim());
     const text = await res.text();
+    logger.info("external_api_call", {
+      duration_ms: Date.now() - tApi,
+      status_code: res.status,
+      context: { cnpj, provider: "cnpja" },
+    });
 
     if (!res.ok) {
       return new Response(
@@ -204,7 +262,6 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Normalização para formato consumível pelo frontend
     const company = raw?.company ?? {};
     const address = raw?.address ?? {};
     const mainActivity = raw?.mainActivity ?? {};
@@ -252,16 +309,34 @@ Deno.serve(async (req: Request) => {
       raw,
     };
 
-    cache.set(cnpj, { data: normalized, expiresAt: Date.now() + CACHE_TTL_MS });
+    // 4) Persistir cache
+    const fetchedAt = new Date();
+    const expiresAt = new Date(
+      fetchedAt.getTime() + CACHE_TTL_DAYS * 24 * 60 * 60 * 1000,
+    );
+    const { error: upsertError } = await admin.from("cnpja_cache").upsert({
+      cnpj,
+      data: normalized,
+      situacao_cadastral: normalized.situacaoCadastral,
+      fetched_at: fetchedAt.toISOString(),
+      expires_at: expiresAt.toISOString(),
+    });
+    if (upsertError) {
+      logger.warn("cache_upsert_failed", { error_message: upsertError.message });
+    }
 
     logger.info("fn_success", {
       duration_ms: Date.now() - t0,
       status_code: 200,
-      context: { cnpj },
+      context: { cnpj, cached: false },
     });
     await logger.flush();
     return new Response(
-      JSON.stringify({ data: normalized, cached: false }),
+      JSON.stringify({
+        data: normalized,
+        cached: false,
+        cached_at: fetchedAt.toISOString(),
+      }),
       {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
