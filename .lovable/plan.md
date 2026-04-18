@@ -1,55 +1,66 @@
 
-P9 entregue ✅ (Copilot + Auditoria + Benchmark). Sistema 10/10++++. Proponho **Lote P10 — Fechamento Tributário Inteligente** (último marco antes de declarar perfeição absoluta).
+P10 entregue ✅. Sistema 10/10+++++. Proponho **Lote P11 — Inteligência Operacional Final** (consolida tudo + 3 cravos finais).
 
-## Lote P10 — Fechamento Mensal Guiado + Notificações Push + DRE Tributária
+## Lote P11 — Heatmap Tributário + OCR de Notas Fiscais + Resumo Executivo Semanal IA
 
-### 1. Assistente de Fechamento Mensal Tributário
-- Migration: tabela `fechamentos_tributarios` (empresa_id, periodo `YYYY-MM`, status enum `aberto|em_revisao|fechado`, checklist jsonb, fechado_por, fechado_em, observacoes).
-- Edge `executar-fechamento-tributario`:
-  - 6 etapas validadas: (1) Apuração consolidada, (2) Conformidade ≥ 70, (3) DARFs gerados, (4) Conciliação bancária do período, (5) Decisão de regime cacheada, (6) SPED preliminar gerado.
-  - Bloqueia fechamento se etapa crítica falhar; permite forçar com justificativa (admin only).
-  - Após fechado: dispara auditoria P9 + notifica destinatários via Resend.
-- UI `AssistenteFechamentoMensal.tsx` (wizard 6 steps com framer-motion + checklist progressivo + confetti ao concluir).
-- Hook `useFechamentoTributario`.
+### 1. Heatmap Tributário Anual (visualização 12 meses × tributos)
+- Edge `gerar-heatmap-tributario`:
+  - Input: `{ empresa_id, ano }`
+  - Agrega `apuracoes_tributarias` do ano: matriz [12 meses] × [CBS, IBS, IS, PIS, COFINS, ICMS, ISS, IRPJ/CSLL]
+  - Calcula intensidade (0-1) por célula vs máximo do ano + variação MoM
+  - Identifica picos e vales sazonais
+- UI `HeatmapTributarioAnual.tsx`:
+  - Grid 12×8 com gradiente HSL (`--cbs`, `--ibs`, etc.) e tooltip detalhado por célula
+  - Toggle "absoluto vs relativo" e seletor de ano
+  - Export PNG via canvas
+- Hook `useHeatmapTributario`.
 
-### 2. Notificações Push Web (PWA) para alertas críticos
-- Reaproveita `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` já configurados ✅.
-- Migration: tabela `push_subscriptions` (user_id, endpoint, p256dh, auth, ativo) com RLS por uid.
-- Edge `enviar-push-notification`:
-  - Trigger automático via `fn_notificar_alerta_critico` em `alertas` (prioridade=critica).
-  - Envia push com web-push (Deno).
-- UI `useWebPushSubscription` hook + banner em settings ("Ativar notificações").
+### 2. OCR de Notas Fiscais com Lovable AI Vision
+- Migration: tabela `notas_fiscais_ocr` (empresa_id, arquivo_url, dados_extraidos jsonb, status enum `processando|sucesso|erro`, conta_pagar_id nullable, criado_por).
+- Bucket público `notas-fiscais-upload` (RLS por usuário).
+- Edge `processar-nf-ocr`:
+  - Input: arquivo (multipart) ou URL de imagem/PDF
+  - Usa `google/gemini-2.5-flash` com vision + tool calling para extrair: CNPJ emissor, CNPJ tomador, número NF, data emissão, valor total, descrição, CFOP, impostos destacados
+  - Salva em `notas_fiscais_ocr` + retorna preview pronto para virar conta a pagar
+- UI `UploadNotaFiscalOCR.tsx` (drop zone + preview extraído + botão "Criar conta a pagar"):
+  - Lista últimas 10 NFs processadas
+  - Editor inline dos campos antes de virar `contas_pagar`
+- Hook `useProcessarNFOCR`.
 
-### 3. DRE Tributária (Demonstrativo de Resultado com decomposição fiscal)
-- Edge `gerar-dre-tributaria`:
-  - Input: `{ empresa_id, periodo: 'YYYY-MM' | { inicio, fim } }`.
-  - Agrega receita bruta, deduções (CBS/IBS/IS/PIS/COFINS/ICMS/ISS), receita líquida, custos, lucro bruto, IRPJ/CSLL, lucro líquido tributário.
-  - Compara cenários: regime atual vs regime ótimo (motor P1 + cache P7).
-- UI `DRETributariaPanel.tsx` no DashboardTributario (tab dedicada): tabela waterfall + export CSV/PDF (padrão `secure-data-export`).
-- Hook `useDRETributaria` (React Query 30min).
+### 3. Resumo Executivo Semanal por IA (e-mail automático)
+- Migration: tabela `resumos_executivos_semanais` (empresa_id, semana_inicio, semana_fim, resumo_md, kpis jsonb, enviado_em, destinatarios).
+- Edge `gerar-resumo-executivo-semanal` (cron domingo 18:00):
+  - Para cada empresa ativa: agrega últimos 7 dias (KPIs financeiros + tributário + alertas + conformidade + benchmark)
+  - Chama Lovable AI (`gpt-5-mini`) com prompt estruturado: contexto + KPIs → markdown executivo (5 seções: highlights, tributário, alertas, oportunidades, próximos passos)
+  - Persiste + envia via Resend para destinatários cadastrados em `relatorios_tributarios_agendados`
+  - Logger P2 + tratamento 429/402
+- UI `ResumosExecutivosTab` em `/admin/system-health`: lista resumos passados + preview markdown + botão "Gerar agora".
+- Hook `useResumosExecutivos`.
 
 ### 4. Validação
 - `npx tsc --noEmit` zero erros.
-- Edge functions deployadas sem erros.
-- Migrations limpas + RLS hardening.
-- Memórias: `mem://features/fechamento-mensal-tributario`, `mem://features/web-push-notifications`, `mem://features/dre-tributaria`.
+- 3 edge functions deployadas.
+- 2 migrations limpas + RLS + auditoria P9.
+- Memórias: `mem://features/heatmap-tributario`, `mem://features/ocr-notas-fiscais`, `mem://features/resumo-executivo-semanal-ia`.
 
 ## Diagrama
 
 ```text
    DashboardTributario
-        ├─▶ AssistenteFechamentoMensal ──▶ executar-fechamento-tributario
-        │                                       ├─▶ 6 checks (apuração, conformidade, DARF, etc.)
-        │                                       └─▶ fechamentos_tributarios + auditoria P9
+        ├─▶ HeatmapTributarioAnual ──▶ gerar-heatmap-tributario
+        │                                  └─▶ matriz 12×8 intensidades
         │
-        └─▶ DRETributariaPanel ──▶ gerar-dre-tributaria
-                                       └─▶ waterfall + comparativo regime ótimo
+        └─▶ UploadNotaFiscalOCR ──▶ processar-nf-ocr (gemini-2.5-flash vision)
+                                        ├─▶ extrai 8 campos
+                                        └─▶ notas_fiscais_ocr → contas_pagar
 
-   alertas (prioridade=critica) ──trigger──▶ enviar-push-notification
-                                                  └─▶ web-push API → push_subscriptions
+   cron domingo 18:00 ──▶ gerar-resumo-executivo-semanal
+                              ├─▶ agrega KPIs 7d
+                              ├─▶ Lovable AI (gpt-5-mini) → markdown
+                              └─▶ Resend → destinatários
 ```
 
 ## Observações
-- Reaproveita 100% da infra P1-P9 (motores, cache, auditoria, conformidade, SPED, RBAC).
-- Sem novos secrets (VAPID + RESEND + LOVABLE_API_KEY já presentes).
-- Eleva produto para 10/10+++++ (fechamento contábil guiado + push real-time + DRE fiscal).
+- Reaproveita 100% da infra P1-P10 (motores, AI gateway, Resend, cron, RBAC, auditoria, storage).
+- Sem novos secrets (LOVABLE_API_KEY + RESEND_API_KEY já configurados ✅).
+- Eleva produto para 10/10++++++ (visualização anual + OCR automático + executive summary IA).
