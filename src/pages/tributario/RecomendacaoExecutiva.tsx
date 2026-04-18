@@ -11,9 +11,10 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Award, TrendingDown, AlertTriangle, FileText, ArrowRight, CheckCircle2, Scale } from 'lucide-react';
+import { Award, TrendingDown, AlertTriangle, FileText, ArrowRight, CheckCircle2, Scale, Send, Loader2 } from 'lucide-react';
 import { useSimulacaoRegimes } from '@/hooks/useSimulacaoRegimes';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
+import { useGerarPdfTributario, useEnviarBitrix24Tributario } from '@/hooks/usePdfTributario';
 import { baixarRelatorioPdf } from '@/lib/tributario/relatorio-pdf';
 import { toast } from 'sonner';
 import type { RegimeTributario, ResultadoCenario } from '@/lib/tributario';
@@ -35,6 +36,8 @@ export default function RecomendacaoExecutiva() {
   const [empresaId, setEmpresaId] = useState<string | undefined>();
   const { resultado, regimeAtual, setRegimeAtual, parametros, salvarSimulacao } =
     useSimulacaoRegimes({ empresaId });
+  const gerarPdf = useGerarPdfTributario();
+  const enviarBitrix = useEnviarBitrix24Tributario();
 
   const cenariosOrdenados: ResultadoCenario[] = [...resultado.cenarios]
     .filter((c) => c.elegivel)
@@ -269,6 +272,64 @@ export default function RecomendacaoExecutiva() {
           })}
         </div>
       </section>
+
+      {/* Ações Server-Side (PDF executivo + Bitrix24) */}
+      <Card className="border-primary/20">
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <FileText className="h-4 w-4" aria-hidden />
+            Relatório executivo & CRM
+          </CardTitle>
+          <CardDescription>
+            Gere PDF completo (server-side) e envie para o pipeline comercial Bitrix24.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col sm:flex-row gap-2">
+          <Button
+            variant="default"
+            disabled={!empresaId || gerarPdf.isPending}
+            onClick={() =>
+              gerarPdf.mutate({
+                empresaId: empresaId!,
+                anoReferencia: new Date().getFullYear(),
+                mesReferencia: new Date().getMonth() + 1,
+              })
+            }
+          >
+            {gerarPdf.isPending ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden />
+            ) : (
+              <FileText className="h-4 w-4 mr-2" aria-hidden />
+            )}
+            Baixar PDF Executivo
+          </Button>
+          <Button
+            variant="outline"
+            disabled={!gerarPdf.data || enviarBitrix.isPending}
+            onClick={() => {
+              if (!gerarPdf.data) {
+                toast.error('Gere o PDF primeiro');
+                return;
+              }
+              enviarBitrix.mutate({
+                empresaId: empresaId!,
+                signedUrl: gerarPdf.data.signedUrl,
+                empresaNome: gerarPdf.data.empresaNome,
+                periodo: gerarPdf.data.periodo,
+                regimeRecomendado: gerarPdf.data.regimeRecomendado,
+                economiaAnual: gerarPdf.data.economiaAnual,
+              });
+            }}
+          >
+            {enviarBitrix.isPending ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden />
+            ) : (
+              <Send className="h-4 w-4 mr-2" aria-hidden />
+            )}
+            Enviar para CRM Bitrix24
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* Próximos passos */}
       <Card>
