@@ -9,10 +9,11 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Scale, TrendingDown, Sparkles, Calendar, Heart, FileDown, Loader2 } from 'lucide-react';
+import { Scale, TrendingDown, Sparkles, Calendar, Heart, FileDown, Loader2, FileCode2 } from 'lucide-react';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { useDashboardTributario } from '@/hooks/useDashboardTributario';
 import { useRelatorioAnual } from '@/hooks/useRelatorioAnual';
+import { useExportarSped } from '@/hooks/useExportarSped';
 import { formatCurrency } from '@/lib/formatters';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -22,6 +23,8 @@ import { OportunidadesElisaoWidget } from '@/components/tributario/dashboard/Opo
 import { ProximosVencimentosTimeline } from '@/components/tributario/dashboard/ProximosVencimentosTimeline';
 import { AlertasAtivosResumo } from '@/components/tributario/dashboard/AlertasAtivosResumo';
 import { RelatoriosAgendadosCard } from '@/components/tributario/dashboard/RelatoriosAgendadosCard';
+import { PrevisaoTributariaIA } from '@/components/tributario/dashboard/PrevisaoTributariaIA';
+import { ConformidadeFiscalCard } from '@/components/tributario/dashboard/ConformidadeFiscalCard';
 
 const REGIME_LABEL: Record<string, string> = {
   simples_nacional: 'Simples Nacional',
@@ -45,6 +48,7 @@ export default function DashboardTributario() {
     relatorioOpen ? empresaId : undefined,
     relatorioOpen ? anoRelatorio : undefined
   );
+  const exportarSped = useExportarSped();
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -96,6 +100,23 @@ export default function DashboardTributario() {
               {REGIME_LABEL[empresaSelecionada.regime_tributario] ?? empresaSelecionada.regime_tributario}
             </Badge>
           )}
+
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={!empresaId || exportarSped.isPending}
+            onClick={() =>
+              empresaId &&
+              exportarSped.mutate({
+                empresaId,
+                periodo: new Date().toISOString().slice(0, 7),
+              })
+            }
+            className="gap-2"
+          >
+            {exportarSped.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileCode2 className="h-4 w-4" />}
+            SPED
+          </Button>
 
           <Dialog open={relatorioOpen} onOpenChange={setRelatorioOpen}>
             <DialogTrigger asChild>
@@ -196,6 +217,12 @@ export default function DashboardTributario() {
             </motion.div>
             <motion.div variants={itemVariants}>
               <RelatoriosAgendadosCard empresaId={empresaId} />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <PrevisaoTributariaIA empresaId={empresaId} serieReal={serie} />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <ConformidadeFiscalCard empresaId={empresaId} />
             </motion.div>
           </motion.div>
         </>
