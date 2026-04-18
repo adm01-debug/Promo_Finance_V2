@@ -1,49 +1,53 @@
 
-Lote 9 itens 1-2 já entregues. Restam itens 3-5 do Lote 9 para fechar 10/10 sustentado.
+Lote 9 100% concluído. 988 testes verdes, observabilidade do cron ativa, Edge Function `gerar-alertas-tributarios` resiliente, UX polido. Para sustentar o 10/10 e cravar excelência operacional contínua, proponho **Lote 10 — Excelência Contínua: PWA + Telemetria + Acessibilidade WCAG AA**.
 
-## Lote 9 (continuação) — Resiliência + UX + Testes E2E
+## Lote 10 — PWA + Telemetria + WCAG AA
 
-### 3. Resiliência das Edge Functions tributárias
-- Auditar `gerar-alertas-tributarios`, `simular-regimes`, `analisar-elisao` (verificar se existem):
-  - `try/catch` top-level com retorno 500 + CORS sempre.
-  - Structured logging: `console.log(JSON.stringify({level, event, fn, ...ctx}))`.
-  - `AbortController` com timeout 30s em fetches externos.
-  - Retry com exponential backoff (3 tentativas: 500ms, 1s, 2s) em chamadas Supabase falhas — padrão `mem://integrations/bling-erp-v3-estrategia-e-resiliencia`.
+### 1. PWA — Offline-first para campo
+- `vite-plugin-pwa` já instalado? Se não, configurar `manifest.json` + service worker com cache strategy `NetworkFirst` para APIs e `CacheFirst` para assets.
+- Ícones 192/512, theme color alinhado ao design system (HSL primary).
+- Banner "Instalar app" reutilizável via `useInstallPrompt` hook.
 
-### 4. UX — feedback visual em ações longas
-- **`SimulacaoRegimes.tsx`**: progress indicator com 3 steps (Simples → Presumido → Real) durante cálculo, usando Skeleton + label do regime atual.
-- **`OportunidadesElisao.tsx`**: empty state ilustrado (ícone + texto + CTA "Importar histórico") quando nenhuma oportunidade.
-- **`CsvImportDialog.tsx`**: barra de progresso visual (`<Progress>`) por linha processada — já tem contagem numérica, falta visual.
+### 2. Telemetria de erros frontend
+- Criar `src/lib/telemetry.ts`: wrapper sobre `window.onerror` + `unhandledrejection` que persiste em tabela `frontend_error_logs` (RLS: usuário só vê os próprios; admin vê todos).
+- Migration: tabela `frontend_error_logs` (id, user_id, message, stack, url, user_agent, created_at).
+- Componente `ErrorBoundary` global no `App.tsx` que reporta para a telemetria.
 
-### 5. Testes E2E do orquestrador de elisão
-- `src/lib/tributario/elisao/__tests__/orquestrador-elisao.e2e.test.ts`:
-  - Cobertura das 5+ estratégias: Lucro Real vs Presumido, PAT, Lei do Bem, Reorganização Societária, Diferimento ICMS.
-  - Edge cases: empresa sem despesas dedutíveis, oportunidade < R$ 1k (threshold mínimo), múltiplas estratégias conflitantes (priorização por economia).
+### 3. Acessibilidade WCAG AA — auditoria final
+- Rodar `axe-core` programático em testes Vitest: criar `src/test/a11y.test.tsx` que renderiza páginas críticas (Dashboard, Tributário, Configurações) e valida zero violações WCAG AA.
+- Corrigir contrastes detectados, labels faltantes, focus traps em modais.
 
-### 6. Validação final
+### 4. Documentação operacional
+- `docs/RUNBOOK.md`: procedimentos de incident response (cron falhou, Edge Function timeout, RLS bloqueando user legítimo).
+- `docs/ARCHITECTURE.md`: diagrama Mermaid do fluxo Tributação ponta a ponta.
+
+### 5. Validação final
 - `npx tsc --noEmit` zero erros.
-- `npx vitest run` 100% verde (~985 testes).
+- `npx vitest run` 100% verde (~1000 testes).
+- Lighthouse score ≥ 90 em todas as categorias (PWA, Performance, A11y, Best Practices, SEO).
 
 ## Diagrama
 
 ```text
-   Lote 9 itens 1-2 ✅
+   Lote 9 ✅ (988 testes, observability, resiliência)
             │
             ▼
    ┌─────────────────────────┐
-   │ Edge Fns resilientes    │──┐
-   │ (timeout+retry+log)     │  │
-   └─────────────────────────┘  ▼
-   ┌─────────────────────────┐  ┌──────────────────┐
-   │ UX progress + empty     │─▶│ 10/10 sustentado │
-   │ state + progress bar    │  │   completo       │
-   └─────────────────────────┘  └──────────────────┘
-   ┌─────────────────────────┐  ▲
-   │ E2E orquestrador elisão │──┘
+   │  PWA offline-first      │──┐
+   └─────────────────────────┘  │
+   ┌─────────────────────────┐  ▼
+   │  Telemetria erros       │  ┌──────────────────────┐
+   │  (ErrorBoundary global) │─▶│ Excelência contínua  │
+   └─────────────────────────┘  │  10/10 sustentado    │
+   ┌─────────────────────────┐  │  + observável        │
+   │  WCAG AA + axe-core     │──│  + offline-ready     │
+   └─────────────────────────┘  │  + documentado       │
+   ┌─────────────────────────┐  └──────────────────────┘
+   │  Runbook + Architecture │──▲
    └─────────────────────────┘
 ```
 
 ## Observações
-- Sem migrations novas. Sem mexer em `client.ts`/`types.ts`/`config.toml`.
-- Edge Functions inexistentes serão puladas (apenas as que existem).
-- Após este lote: Lote 9 100% concluído.
+- 1 migration nova: `frontend_error_logs` com RLS estrita.
+- Sem mexer em `client.ts`/`types.ts`/`config.toml`.
+- Após este lote: projeto entra em modo manutenção excelente — qualquer regressão é detectada via telemetria + a11y tests.
