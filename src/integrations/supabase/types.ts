@@ -2733,6 +2733,42 @@ export type Database = {
           },
         ]
       }
+      edge_function_logs: {
+        Row: {
+          context: Json | null
+          created_at: string
+          duration_ms: number | null
+          error_message: string | null
+          event: string
+          function_name: string
+          id: string
+          level: string
+          status_code: number | null
+        }
+        Insert: {
+          context?: Json | null
+          created_at?: string
+          duration_ms?: number | null
+          error_message?: string | null
+          event: string
+          function_name: string
+          id?: string
+          level: string
+          status_code?: number | null
+        }
+        Update: {
+          context?: Json | null
+          created_at?: string
+          duration_ms?: number | null
+          error_message?: string | null
+          event?: string
+          function_name?: string
+          id?: string
+          level?: string
+          status_code?: number | null
+        }
+        Relationships: []
+      }
       empresas: {
         Row: {
           ativo: boolean
@@ -7841,6 +7877,18 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      vw_edge_health: {
+        Row: {
+          error_count: number | null
+          error_rate_pct: number | null
+          function_name: string | null
+          last_call_at: string | null
+          p50_ms: number | null
+          p95_ms: number | null
+          total_calls: number | null
+        }
+        Relationships: []
       }
       vw_fluxo_caixa: {
         Row: {

@@ -4,6 +4,7 @@
 // e persiste em regimes_simulados.
 // ============================================
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { createLogger } from '../_shared/observability.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -234,6 +235,10 @@ function decidirRegime(p: ParametrosSimulacao, ano: number, mes: number, regimeA
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
+  const logger = createLogger('decidir-regime');
+  const t0 = Date.now();
+  logger.info('fn_start');
+
   try {
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
@@ -341,12 +346,24 @@ Deno.serve(async (req) => {
       simulacaoId = ins?.id ?? null;
     }
 
+    logger.info('fn_success', {
+      duration_ms: Date.now() - t0,
+      status_code: 200,
+      context: { empresaId, ano, mes, regime: resultado.recomendado.regime },
+    });
+    await logger.flush();
     return new Response(JSON.stringify({ ...resultado, simulacaoId, params }), {
       status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (err) {
-    console.error('[decidir-regime] error', err);
-    return new Response(JSON.stringify({ error: (err as Error).message || 'Erro interno' }), {
+    const msg = (err as Error).message || 'Erro interno';
+    logger.error('fn_failure', {
+      duration_ms: Date.now() - t0,
+      status_code: 500,
+      error_message: msg,
+    });
+    await logger.flush();
+    return new Response(JSON.stringify({ error: msg }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }

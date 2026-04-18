@@ -310,6 +310,21 @@ Deno.serve(async (req) => {
       duration_ms,
     });
 
+    // Persistência em edge_function_logs (não-bloqueante)
+    try {
+      await supabase.from('edge_function_logs').insert({
+        function_name: FN_NAME,
+        level: 'info',
+        event: 'fn_success',
+        duration_ms,
+        status_code: 200,
+        context: {
+          empresas_processadas: empresas?.length ?? 0,
+          alertas_inseridos: inseridos,
+        },
+      });
+    } catch { /* observability nunca derruba */ }
+
     return new Response(
       JSON.stringify({
         ok: true,
@@ -321,12 +336,27 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );
   } catch (e) {
-    log('error', 'fn_failure', {
-      error: e instanceof Error ? e.message : String(e),
-      duration_ms: Date.now() - startedAt,
-    });
+    const duration_ms = Date.now() - startedAt;
+    const error_message = e instanceof Error ? e.message : String(e);
+    log('error', 'fn_failure', { error: error_message, duration_ms });
+
+    try {
+      const sb = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      );
+      await sb.from('edge_function_logs').insert({
+        function_name: FN_NAME,
+        level: 'error',
+        event: 'fn_failure',
+        duration_ms,
+        status_code: 500,
+        error_message,
+      });
+    } catch { /* noop */ }
+
     return new Response(
-      JSON.stringify({ ok: false, error: e instanceof Error ? e.message : String(e) }),
+      JSON.stringify({ ok: false, error: error_message }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );
   }

@@ -3,6 +3,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import { jsPDF } from 'https://esm.sh/jspdf@2.5.1';
 import autoTable from 'https://esm.sh/jspdf-autotable@3.8.2';
+import { createLogger } from '../_shared/observability.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -30,6 +31,10 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+
+  const logger = createLogger('gerar-pdf-tributario');
+  const t0 = Date.now();
+  logger.info('fn_start');
 
   try {
     const authHeader = req.headers.get('Authorization');
@@ -271,6 +276,12 @@ Deno.serve(async (req) => {
     // Base64 também (para download direto)
     const base64 = btoa(String.fromCharCode(...pdfBytes));
 
+    logger.info('fn_success', {
+      duration_ms: Date.now() - t0,
+      status_code: 200,
+      context: { empresaId: body.empresaId, periodo },
+    });
+    await logger.flush();
     return new Response(
       JSON.stringify({
         success: true,
@@ -289,7 +300,12 @@ Deno.serve(async (req) => {
     );
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Erro desconhecido';
-    console.error('[gerar-pdf-tributario] erro:', msg);
+    logger.error('fn_failure', {
+      duration_ms: Date.now() - t0,
+      status_code: 500,
+      error_message: msg,
+    });
+    await logger.flush();
     return new Response(JSON.stringify({ error: msg }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
