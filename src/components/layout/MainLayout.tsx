@@ -18,6 +18,8 @@ import { MobileBottomNav } from './sidebar/MobileBottomNav';
 import { MobileSidebarDrawer } from './sidebar/MobileSidebarDrawer';
 import { useSwipeBack } from '@/hooks/useSwipeBack';
 import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
+import { CopilotGlobalFloat } from '@/components/copilot/CopilotGlobalFloat';
+import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -46,6 +48,9 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
       {/* Guided Tour for new users */}
       <GuidedTour />
+
+      {/* Onboarding Tour P14 (react-joyride) */}
+      <OnboardingTour />
       
       {/* Offline Banner */}
       <OfflineBanner position="top" />
@@ -109,6 +114,9 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       {isMobile && (
         <MobileBottomNav onMenuClick={() => setMobileMenuOpen(true)} />
       )}
+
+      {/* Copilot Global IA P14 */}
+      <CopilotGlobalFloat />
     </div>
   );
 };

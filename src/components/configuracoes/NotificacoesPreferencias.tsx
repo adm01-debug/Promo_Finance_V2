@@ -3,9 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Separator } from '@/components/ui/separator';
-import { Mail, AlertTriangle, CreditCard } from 'lucide-react';
+import { Mail, AlertTriangle, CreditCard, RotateCcw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { NotificacoesConfig } from '@/components/configuracoes/NotificacoesConfig';
 import { PushNotificationsBanner } from '@/components/settings/PushNotificationsBanner';
+import { useOnboardingProgress } from '@/hooks/useOnboardingProgress';
+import { toast } from 'sonner';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -36,10 +39,30 @@ interface Props {
 }
 
 export function NotificacoesPreferencias({ preferencias, onPreferenciasChange }: Props) {
+  const { reiniciar } = useOnboardingProgress();
+
+  const handleReiniciarTour = async () => {
+    await reiniciar();
+    toast.success('Tour reiniciado! Recarregando...');
+    setTimeout(() => window.location.assign('/'), 800);
+  };
+
   return (
     <motion.div className="space-y-6" variants={containerVariants} initial="hidden" animate="visible">
       <PushNotificationsBanner />
       <NotificacoesConfig />
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Tour guiado</CardTitle>
+          <CardDescription>Refaça o passo a passo dos módulos principais.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button variant="outline" onClick={handleReiniciarTour}>
+            <RotateCcw className="h-4 w-4 mr-2" /> Reiniciar tour
+          </Button>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

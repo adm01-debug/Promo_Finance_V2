@@ -14,6 +14,7 @@ import { AuditoriaTributariaTab } from '@/components/admin/AuditoriaTributariaTa
 import { ResumosExecutivosTab } from '@/components/admin/ResumosExecutivosTab';
 import { AnomaliasDetectadasPanel } from '@/components/admin/AnomaliasDetectadasPanel';
 import { AutomacoesTab } from '@/components/admin/AutomacoesTab';
+import { SLOPanel } from '@/components/admin/SLOPanel';
 import { logger } from '@/lib/logger';
 
 interface HealthRow {
@@ -142,6 +143,7 @@ export default function AdminSystemHealth() {
           <TabsTrigger value="resumos">Resumos executivos</TabsTrigger>
           <TabsTrigger value="anomalias">Anomalias</TabsTrigger>
           <TabsTrigger value="automacoes">Automações</TabsTrigger>
+          <TabsTrigger value="slo">SLO/SLA</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -215,6 +217,10 @@ export default function AdminSystemHealth() {
 
         <TabsContent value="automacoes">
           <AutomacoesTab />
+        </TabsContent>
+
+        <TabsContent value="slo">
+          <SLOPanel />
         </TabsContent>
       </Tabs>
     </div>
