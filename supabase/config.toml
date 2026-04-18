@@ -89,3 +89,12 @@ verify_jwt = false
 
 [functions.gerar-alertas-tributarios]
 verify_jwt = false
+
+[functions.gerar-pdf-tributario]
+verify_jwt = false
+
+[functions.enviar-bitrix24-tributario]
+verify_jwt = false
+
+[functions.decidir-regime]
+verify_jwt = false
