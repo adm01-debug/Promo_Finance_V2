@@ -1,50 +1,71 @@
 
-Lote 10 entregue (telemetria + runbook + arquitetura). Restam PWA e a11y axe-core. Proponho **Lote 11 — PWA Offline-First + WCAG AA Automatizado**.
+Usuário enviou os 6 arquivos do Roadmap Motor Tributário (README + 5 fases, 20 etapas). Esse é um escopo enorme (32-50h estimadas) com 20 etapas sequenciais. O projeto atual já tem MUITO do módulo tributário implementado (Lotes 1-11 entregues: simulações de regimes, elisão com 9 estratégias, alertas, cron, telemetria, a11y, etc.).
 
-## Lote 11 — PWA + Acessibilidade WCAG AA
+Preciso fazer um gap analysis entre o roadmap enviado e o que já existe, então propor lotes incrementais para fechar lacunas — não reimplementar o que já está pronto.
 
-### 1. PWA — Offline-first
-- Instalar `vite-plugin-pwa` e configurar em `vite.config.ts`:
-  - `registerType: 'autoUpdate'`, manifest com nome "Promo Finance", theme_color HSL primary, ícones 192/512.
-  - Workbox: `NetworkFirst` para `/rest/v1/*` e `/functions/v1/*` (Supabase) com fallback offline; `CacheFirst` para assets estáticos (fontes, imagens).
-- Substituir o `sw.js` manual atual por SW gerado pelo plugin.
-- Hook `useInstallPrompt` (`src/hooks/useInstallPrompt.ts`) que captura `beforeinstallprompt` e expõe `{ canInstall, promptInstall }`.
-- Componente `PWAInstallBanner` (top-right discreto, dismissable via localStorage).
+## Plano — Auditoria do Roadmap vs. Estado Atual + Lotes de Convergência
 
-### 2. Acessibilidade WCAG AA — auditoria automatizada
-- Instalar `vitest-axe` + `axe-core`.
-- Criar `src/test/a11y/critical-pages.test.tsx`: renderiza Dashboard, Tributário (Simulação), Configurações com providers mock e valida zero violações WCAG 2.1 AA (`@axe-core/react` rules: color-contrast, label, aria-*, region).
-- Corrigir violações detectadas (labels faltantes em modais, contrast em badges secundários, skip-link no header).
-- Adicionar `<a href="#main" className="sr-only focus:not-sr-only">Pular para conteúdo</a>` no AppLayout.
+### Etapa 0 — Gap Analysis (próxima execução)
+Mapear cada uma das 20 etapas do roadmap contra o código atual:
+- Tabelas existentes no schema `tributario` vs. exigidas
+- Edge Functions deployadas vs. exigidas (`calcular-rbt12`, `calcular-fator-r`, `simular-simples/presumido/real`, `decidir-regime`, `identificar-elisao`, `gerar-alertas`, `gerar-pdf`, `enviar-bitrix24`)
+- Telas (`/empresa`, `/simulacao`, `/recomendacao`, `/faturamento`, `/folha`, `/dashboard`, `/elisao`, `/reforma`, `/pf-vinculada`, `/alertas`)
+- Seeds fiscais (alíquotas Simples 5 anexos × 6 faixas, NCMs brindes, CNAEs Fator R)
 
-### 3. Validação final
-- `npx tsc --noEmit` zero erros.
-- `npx vitest run` 100% verde (~1000 testes incluindo a11y).
-- Build: `vite build` gera `manifest.webmanifest` + `sw.js` Workbox válidos.
+### Lotes propostos (ordem de prioridade)
+
+**Lote 12 — Fechamento Motor de Cálculo (FASE 2)**
+Garantir 5 Edge Functions canônicas com fórmulas oficiais, tratamento RBT12 < 13 meses (Resolução CGSN 140/2018 art. 21), Fator R com CNAEs sujeitos, Anexo V→III por Fator R ≥ 28%, LC 224/2025 no Presumido, créditos PIS/COFINS Tema 779 STF no Real. Testes unitários por faixa.
+
+**Lote 13 — Decisão e UI (FASE 3 gaps)**
+Edge Function `decidir-regime` orquestradora + tela `/recomendacao` com Resumo Executivo (regime ótimo + 3 cenários ranqueados + justificativa legal) + CRUD `/faturamento` e `/folha` com importação CSV + Dashboard final com gráficos comparativos.
+
+**Lote 14 — Reforma Tributária + PF Vinculada (FASE 4 gaps)**
+Módulo `/reforma` projetando CBS+IBS 2026-2033 com cronograma de transição + módulo `/pf-vinculada` aplicando Lei 15.270/2025 (IRPFM 10% sobre dividendos > R$ 50k/mês).
+
+**Lote 15 — Produtização (FASE 5)**
+Geração de PDF executivo (`gerar-pdf` Edge Function via jsPDF/autoTable seguindo padrão `mem://features/advanced-corporate-reporting-engine`) + integração Bitrix24 (Edge Function proxy seguindo `mem://architecture/external-api-proxy-pattern`).
+
+**Lote 16 — Onboarding CNPJá (FASE 1 Etapa 03)**
+Integração com API CNPJá no onboarding para autopreencher dados da empresa via CNPJ.
+
+### Validações por lote
+- `npx tsc --noEmit` zero erros
+- `npx vitest run` 100% verde
+- Migrations idempotentes
+- RLS estrita em todas as tabelas novas
 
 ## Diagrama
 
 ```text
-   Lote 10 ✅ (telemetria + docs)
+   Roadmap 20 etapas (uploads)
             │
             ▼
-   ┌──────────────────────────┐
-   │ vite-plugin-pwa          │──┐
-   │ + manifest + workbox     │  │
-   └──────────────────────────┘  │
-   ┌──────────────────────────┐  ▼
-   │ useInstallPrompt +       │  ┌────────────────────┐
-   │ PWAInstallBanner         │─▶│ 10/10 absoluto     │
-   └──────────────────────────┘  │  + offline-ready   │
-   ┌──────────────────────────┐  │  + WCAG AA testado │
-   │ vitest-axe critical pgs  │──│                    │
-   └──────────────────────────┘  └────────────────────┘
-   ┌──────────────────────────┐  ▲
-   │ Skip-link + label fixes  │──┘
-   └──────────────────────────┘
+   ┌─────────────────────┐
+   │ Lote 12: Gap Motor  │──┐
+   │ (FASE 2 cálculo)    │  │
+   └─────────────────────┘  │
+   ┌─────────────────────┐  │
+   │ Lote 13: Decisão+UI │──┤
+   └─────────────────────┘  ▼
+   ┌─────────────────────┐  ┌────────────────┐
+   │ Lote 14: Reforma+PF │─▶│ Roadmap 100%   │
+   └─────────────────────┘  │ executado      │
+   ┌─────────────────────┐  │ + base atual   │
+   │ Lote 15: PDF+Bitrix │──┤ preservada     │
+   └─────────────────────┘  │                │
+   ┌─────────────────────┐  │                │
+   │ Lote 16: CNPJá      │──┘                │
+   └─────────────────────┘                   │
+                                             ▼
+                              ┌─────────────────────────┐
+                              │ Sistema 10/10 absoluto  │
+                              │ + roadmap completo      │
+                              └─────────────────────────┘
 ```
 
 ## Observações
-- Sem migrations. Sem mexer em `client.ts`/`types.ts`/`config.toml`.
-- SW via Workbox substitui o `public/sw.js` manual (mais robusto, atualização automática).
-- Após este lote: projeto entra em **modo manutenção excelente** — qualquer regressão a11y ou crash é detectado automaticamente.
+- Reaproveitar 100% do código existente (Lotes 1-11). NUNCA reimplementar.
+- Secrets necessários para Lote 15-16: `BITRIX24_WEBHOOK_URL`, `CNPJA_API_KEY` — solicitarei via `add_secret` no momento certo.
+- Sem mexer em `client.ts`/`types.ts`/`config.toml`.
+- Próxima ação ao aprovar: executar gap analysis detalhado e iniciar Lote 12.
