@@ -29,10 +29,15 @@ export function DashboardMetricasTributarias() {
   const [periodoMeses, setPeriodoMeses] = useState(6);
 
   const { data: empresas = [] } = useAllEmpresas();
-  const { apuracoes } = useApuracoesTributarias(empresaId || undefined);
-  const { creditos } = useCreditosTributarios(empresaId || undefined);
-  const { operacoes } = useOperacoesTributaveis(empresaId || undefined);
-  const { criticos } = useAlertasTributarios(empresaId || undefined);
+  const { apuracoes: apuracoesData } = useApuracoesTributarias(empresaId || undefined);
+  const { creditos: creditosData } = useCreditosTributarios(empresaId || undefined);
+  const { operacoes: operacoesData } = useOperacoesTributaveis(empresaId || undefined);
+  const { criticos: criticosData } = useAlertasTributarios(empresaId || undefined);
+
+  const apuracoes = apuracoesData ?? [];
+  const creditos = creditosData ?? [];
+  const operacoes = operacoesData ?? [];
+  const criticos = criticosData ?? 0;
 
   const periodoInicio = format(subMonths(new Date(), periodoMeses), 'yyyy-MM');
   const periodoFim = format(new Date(), 'yyyy-MM');
