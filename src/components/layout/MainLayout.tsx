@@ -18,6 +18,8 @@ import { MobileBottomNav } from './sidebar/MobileBottomNav';
 import { MobileSidebarDrawer } from './sidebar/MobileSidebarDrawer';
 import { useSwipeBack } from '@/hooks/useSwipeBack';
 import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
+import { CopilotGlobalFloat } from '@/components/copilot/CopilotGlobalFloat';
+import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
 
 interface MainLayoutProps {
   children: React.ReactNode;
