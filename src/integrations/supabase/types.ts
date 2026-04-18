@@ -7913,6 +7913,60 @@ export type Database = {
         }
         Relationships: []
       }
+      verificacoes_conformidade: {
+        Row: {
+          checks_aprovados: number
+          created_at: string
+          empresa_id: string
+          id: string
+          itens: Json
+          nivel: string
+          periodo: string
+          score: number
+          total_checks: number
+          updated_at: string
+        }
+        Insert: {
+          checks_aprovados?: number
+          created_at?: string
+          empresa_id: string
+          id?: string
+          itens?: Json
+          nivel: string
+          periodo: string
+          score: number
+          total_checks?: number
+          updated_at?: string
+        }
+        Update: {
+          checks_aprovados?: number
+          created_at?: string
+          empresa_id?: string
+          id?: string
+          itens?: Json
+          nivel?: string
+          periodo?: string
+          score?: number
+          total_checks?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verificacoes_conformidade_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "verificacoes_conformidade_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       webauthn_credentials: {
         Row: {
           counter: number
