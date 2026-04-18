@@ -3547,6 +3547,81 @@ export type Database = {
           },
         ]
       }
+      fechamentos_tributarios: {
+        Row: {
+          ano: number
+          checklist: Json
+          created_at: string
+          created_by: string | null
+          empresa_id: string
+          fechado_em: string | null
+          fechado_por: string | null
+          forcado: boolean
+          id: string
+          justificativa_forcado: string | null
+          mes: number
+          observacoes: string | null
+          periodo: string | null
+          score_conformidade: number | null
+          status: Database["public"]["Enums"]["status_fechamento_tributario"]
+          total_apurado: number | null
+          updated_at: string
+        }
+        Insert: {
+          ano: number
+          checklist?: Json
+          created_at?: string
+          created_by?: string | null
+          empresa_id: string
+          fechado_em?: string | null
+          fechado_por?: string | null
+          forcado?: boolean
+          id?: string
+          justificativa_forcado?: string | null
+          mes: number
+          observacoes?: string | null
+          periodo?: string | null
+          score_conformidade?: number | null
+          status?: Database["public"]["Enums"]["status_fechamento_tributario"]
+          total_apurado?: number | null
+          updated_at?: string
+        }
+        Update: {
+          ano?: number
+          checklist?: Json
+          created_at?: string
+          created_by?: string | null
+          empresa_id?: string
+          fechado_em?: string | null
+          fechado_por?: string | null
+          forcado?: boolean
+          id?: string
+          justificativa_forcado?: string | null
+          mes?: number
+          observacoes?: string | null
+          periodo?: string | null
+          score_conformidade?: number | null
+          status?: Database["public"]["Enums"]["status_fechamento_tributario"]
+          total_apurado?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fechamentos_tributarios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fechamentos_tributarios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       feedback_conciliacao_ia: {
         Row: {
           acao: string
@@ -9046,6 +9121,11 @@ export type Database = {
         | "juridico"
       frequencia_relatorio: "mensal" | "trimestral" | "anual"
       prioridade_alerta: "baixa" | "media" | "alta" | "critica"
+      status_fechamento_tributario:
+        | "aberto"
+        | "em_revisao"
+        | "fechado"
+        | "reaberto"
       status_nfe:
         | "autorizada"
         | "pendente"
@@ -9209,6 +9289,12 @@ export const Constants = {
       ],
       frequencia_relatorio: ["mensal", "trimestral", "anual"],
       prioridade_alerta: ["baixa", "media", "alta", "critica"],
+      status_fechamento_tributario: [
+        "aberto",
+        "em_revisao",
+        "fechado",
+        "reaberto",
+      ],
       status_nfe: [
         "autorizada",
         "pendente",
