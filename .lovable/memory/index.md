@@ -64,3 +64,4 @@ type: reference
 - [Centro Privacidade LGPD](mem://features/centro-privacidade-lgpd) — Página /configuracoes/privacidade + edge processar-solicitacao-lgpd
 - [Health Score Operacional](mem://features/health-score-operacional) — Score 0-100 com 6 dimensões + insights IA, snapshot em health_scores_operacionais
 - [Detector Anomalias](mem://features/detector-anomalias-tempo-real) — 5 detectores estatísticos populando anomalias_detectadas (tab admin)
+- [P13 Automação Total](mem://features/p13-automacao-total) — 6 cron jobs P13 + Centro de Ações IA (acoes_recomendadas) + trigger push automático em alertas críticos
