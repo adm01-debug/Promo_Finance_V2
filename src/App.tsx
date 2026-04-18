@@ -71,6 +71,7 @@ const BenchmarkingSetorial = lazy(() => import('./pages/BenchmarkingSetorial'));
 const AdminTelemetria = lazy(() => import('./pages/AdminTelemetria'));
 const AdminEdgeHealth = lazy(() => import('./pages/AdminEdgeHealth'));
 const AdminSystemHealth = lazy(() => import('./pages/AdminSystemHealth'));
+const CentroPrivacidadeLGPD = lazy(() => import('./pages/CentroPrivacidadeLGPD'));
 const ContadorReadonly = lazy(() => import('./pages/ContadorReadonly'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
@@ -145,6 +146,7 @@ function AppRoutes() {
             <Route path="/admin/telemetria" element={<ProtectedRoute><AdminTelemetria /></ProtectedRoute>} />
             <Route path="/admin/edge-health" element={<ProtectedRoute><AdminEdgeHealth /></ProtectedRoute>} />
             <Route path="/admin/system-health" element={<ProtectedRoute><AdminSystemHealth /></ProtectedRoute>} />
+            <Route path="/configuracoes/privacidade" element={<ProtectedRoute><CentroPrivacidadeLGPD /></ProtectedRoute>} />
             
             {/* 404 */}
             <Route path="*" element={<NotFound />} />

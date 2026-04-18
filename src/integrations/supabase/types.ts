@@ -437,6 +437,60 @@ export type Database = {
         }
         Relationships: []
       }
+      anomalias_detectadas: {
+        Row: {
+          created_at: string
+          dados: Json | null
+          descricao: string
+          detectada_em: string
+          empresa_id: string | null
+          entidade_id: string | null
+          entidade_tipo: string
+          id: string
+          observacoes: string | null
+          resolvida_em: string | null
+          resolvida_por: string | null
+          severidade: Database["public"]["Enums"]["severidade_anomalia"]
+          status: Database["public"]["Enums"]["status_anomalia"]
+          tipo_anomalia: Database["public"]["Enums"]["tipo_anomalia"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          dados?: Json | null
+          descricao: string
+          detectada_em?: string
+          empresa_id?: string | null
+          entidade_id?: string | null
+          entidade_tipo: string
+          id?: string
+          observacoes?: string | null
+          resolvida_em?: string | null
+          resolvida_por?: string | null
+          severidade?: Database["public"]["Enums"]["severidade_anomalia"]
+          status?: Database["public"]["Enums"]["status_anomalia"]
+          tipo_anomalia: Database["public"]["Enums"]["tipo_anomalia"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          dados?: Json | null
+          descricao?: string
+          detectada_em?: string
+          empresa_id?: string | null
+          entidade_id?: string | null
+          entidade_tipo?: string
+          id?: string
+          observacoes?: string | null
+          resolvida_em?: string | null
+          resolvida_por?: string | null
+          severidade?: Database["public"]["Enums"]["severidade_anomalia"]
+          status?: Database["public"]["Enums"]["status_anomalia"]
+          tipo_anomalia?: Database["public"]["Enums"]["tipo_anomalia"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       apuracoes_irpj_csll: {
         Row: {
           adicoes_permanentes: number | null
@@ -4083,6 +4137,57 @@ export type Database = {
         }
         Relationships: []
       }
+      health_scores_operacionais: {
+        Row: {
+          created_at: string
+          detalhes: Json | null
+          empresa_id: string | null
+          id: string
+          insights_md: string | null
+          score_cadastros: number
+          score_engajamento: number
+          score_financeiro: number
+          score_lgpd: number
+          score_operacional: number
+          score_total: number
+          score_tributario: number
+          snapshot_data: string
+          tendencia_pct: number | null
+        }
+        Insert: {
+          created_at?: string
+          detalhes?: Json | null
+          empresa_id?: string | null
+          id?: string
+          insights_md?: string | null
+          score_cadastros?: number
+          score_engajamento?: number
+          score_financeiro?: number
+          score_lgpd?: number
+          score_operacional?: number
+          score_total: number
+          score_tributario?: number
+          snapshot_data?: string
+          tendencia_pct?: number | null
+        }
+        Update: {
+          created_at?: string
+          detalhes?: Json | null
+          empresa_id?: string | null
+          id?: string
+          insights_md?: string | null
+          score_cadastros?: number
+          score_engajamento?: number
+          score_financeiro?: number
+          score_lgpd?: number
+          score_operacional?: number
+          score_total?: number
+          score_tributario?: number
+          snapshot_data?: string
+          tendencia_pct?: number | null
+        }
+        Relationships: []
+      }
       historico_analises_preditivas: {
         Row: {
           alertas_gerados: number | null
@@ -7553,6 +7658,51 @@ export type Database = {
           },
         ]
       }
+      solicitacoes_lgpd: {
+        Row: {
+          atendida_em: string | null
+          atendida_por: string | null
+          created_at: string
+          id: string
+          justificativa: string | null
+          payload_resposta: Json | null
+          status: Database["public"]["Enums"]["status_solicitacao_lgpd"]
+          tipo: Database["public"]["Enums"]["tipo_solicitacao_lgpd"]
+          updated_at: string
+          url_dump: string | null
+          user_email: string
+          user_id: string
+        }
+        Insert: {
+          atendida_em?: string | null
+          atendida_por?: string | null
+          created_at?: string
+          id?: string
+          justificativa?: string | null
+          payload_resposta?: Json | null
+          status?: Database["public"]["Enums"]["status_solicitacao_lgpd"]
+          tipo: Database["public"]["Enums"]["tipo_solicitacao_lgpd"]
+          updated_at?: string
+          url_dump?: string | null
+          user_email: string
+          user_id: string
+        }
+        Update: {
+          atendida_em?: string | null
+          atendida_por?: string | null
+          created_at?: string
+          id?: string
+          justificativa?: string | null
+          payload_resposta?: Json | null
+          status?: Database["public"]["Enums"]["status_solicitacao_lgpd"]
+          tipo?: Database["public"]["Enums"]["tipo_solicitacao_lgpd"]
+          updated_at?: string
+          url_dump?: string | null
+          user_email?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       split_payment_transacoes: {
         Row: {
           cbs_retido: number | null
@@ -9255,6 +9405,8 @@ export type Database = {
         | "juridico"
       frequencia_relatorio: "mensal" | "trimestral" | "anual"
       prioridade_alerta: "baixa" | "media" | "alta" | "critica"
+      severidade_anomalia: "baixa" | "media" | "alta" | "critica"
+      status_anomalia: "nova" | "investigando" | "falso_positivo" | "confirmada"
       status_fechamento_tributario:
         | "aberto"
         | "em_revisao"
@@ -9274,7 +9426,24 @@ export type Database = {
         | "parcial"
         | "cancelado"
         | "atrasado"
+      status_solicitacao_lgpd:
+        | "aberta"
+        | "em_analise"
+        | "atendida"
+        | "rejeitada"
+      tipo_anomalia:
+        | "movimentacao_outlier"
+        | "pagamento_duplicado"
+        | "conta_pagar_alta"
+        | "conciliacao_atrasada"
+        | "mudanca_regime_brusca"
       tipo_cobranca: "boleto" | "pix" | "cartao" | "transferencia" | "dinheiro"
+      tipo_solicitacao_lgpd:
+        | "acesso"
+        | "portabilidade"
+        | "exclusao"
+        | "retificacao"
+        | "anonimizacao"
       tipo_transacao: "receita" | "despesa"
     }
     CompositeTypes: {
@@ -9424,6 +9593,8 @@ export const Constants = {
       ],
       frequencia_relatorio: ["mensal", "trimestral", "anual"],
       prioridade_alerta: ["baixa", "media", "alta", "critica"],
+      severidade_anomalia: ["baixa", "media", "alta", "critica"],
+      status_anomalia: ["nova", "investigando", "falso_positivo", "confirmada"],
       status_fechamento_tributario: [
         "aberto",
         "em_revisao",
@@ -9446,7 +9617,27 @@ export const Constants = {
         "cancelado",
         "atrasado",
       ],
+      status_solicitacao_lgpd: [
+        "aberta",
+        "em_analise",
+        "atendida",
+        "rejeitada",
+      ],
+      tipo_anomalia: [
+        "movimentacao_outlier",
+        "pagamento_duplicado",
+        "conta_pagar_alta",
+        "conciliacao_atrasada",
+        "mudanca_regime_brusca",
+      ],
       tipo_cobranca: ["boleto", "pix", "cartao", "transferencia", "dinheiro"],
+      tipo_solicitacao_lgpd: [
+        "acesso",
+        "portabilidade",
+        "exclusao",
+        "retificacao",
+        "anonimizacao",
+      ],
       tipo_transacao: ["receita", "despesa"],
     },
   },
