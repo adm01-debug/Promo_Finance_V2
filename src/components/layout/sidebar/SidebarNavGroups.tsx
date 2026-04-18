@@ -140,6 +140,7 @@ const navGroups: NavGroup[] = [
       { label: 'Aprovações', icon: ShieldCheck, href: '/aprovacoes', badgeKey: 'aprovacoes' },
       { label: 'Segurança', icon: Shield, href: '/seguranca', highlight: true },
       { label: 'Logs de Auditoria', icon: ScrollText, href: '/audit-logs' },
+      { label: 'Privacidade & LGPD', icon: Shield, href: '/configuracoes/privacidade', highlight: true },
       { label: 'Usuários', icon: UserCog, href: '/usuarios' },
       { label: 'Bitrix24', icon: Zap, href: '/bitrix24' },
       { label: 'Bling ERP', icon: Package, href: '/bling', highlight: true },
