@@ -5125,6 +5125,80 @@ export type Database = {
           },
         ]
       }
+      notas_fiscais_ocr: {
+        Row: {
+          arquivo_nome: string | null
+          arquivo_tipo: string | null
+          arquivo_url: string
+          conta_pagar_id: string | null
+          created_at: string
+          criado_por: string | null
+          dados_extraidos: Json | null
+          empresa_id: string | null
+          id: string
+          mensagem_erro: string | null
+          status: Database["public"]["Enums"]["status_nf_ocr"]
+          updated_at: string
+        }
+        Insert: {
+          arquivo_nome?: string | null
+          arquivo_tipo?: string | null
+          arquivo_url: string
+          conta_pagar_id?: string | null
+          created_at?: string
+          criado_por?: string | null
+          dados_extraidos?: Json | null
+          empresa_id?: string | null
+          id?: string
+          mensagem_erro?: string | null
+          status?: Database["public"]["Enums"]["status_nf_ocr"]
+          updated_at?: string
+        }
+        Update: {
+          arquivo_nome?: string | null
+          arquivo_tipo?: string | null
+          arquivo_url?: string
+          conta_pagar_id?: string | null
+          created_at?: string
+          criado_por?: string | null
+          dados_extraidos?: Json | null
+          empresa_id?: string | null
+          id?: string
+          mensagem_erro?: string | null
+          status?: Database["public"]["Enums"]["status_nf_ocr"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notas_fiscais_ocr_conta_pagar_id_fkey"
+            columns: ["conta_pagar_id"]
+            isOneToOne: false
+            referencedRelation: "contas_pagar"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notas_fiscais_ocr_conta_pagar_id_fkey"
+            columns: ["conta_pagar_id"]
+            isOneToOne: false
+            referencedRelation: "vw_contas_pagar_painel"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notas_fiscais_ocr_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notas_fiscais_ocr_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       open_finance_consents: {
         Row: {
           access_token: string | null
@@ -7156,6 +7230,66 @@ export type Database = {
           },
         ]
       }
+      resumos_executivos_semanais: {
+        Row: {
+          created_at: string
+          destinatarios: string[]
+          empresa_id: string | null
+          enviado_em: string | null
+          erro_envio: string | null
+          id: string
+          kpis: Json
+          modelo_ia: string | null
+          resumo_md: string
+          semana_fim: string
+          semana_inicio: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          destinatarios?: string[]
+          empresa_id?: string | null
+          enviado_em?: string | null
+          erro_envio?: string | null
+          id?: string
+          kpis?: Json
+          modelo_ia?: string | null
+          resumo_md: string
+          semana_fim: string
+          semana_inicio: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          destinatarios?: string[]
+          empresa_id?: string | null
+          enviado_em?: string | null
+          erro_envio?: string | null
+          id?: string
+          kpis?: Json
+          modelo_ia?: string | null
+          resumo_md?: string
+          semana_fim?: string
+          semana_inicio?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resumos_executivos_semanais_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resumos_executivos_semanais_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       retencoes_fonte: {
         Row: {
           aliquota: number
@@ -9126,6 +9260,7 @@ export type Database = {
         | "em_revisao"
         | "fechado"
         | "reaberto"
+      status_nf_ocr: "processando" | "sucesso" | "erro"
       status_nfe:
         | "autorizada"
         | "pendente"
@@ -9295,6 +9430,7 @@ export const Constants = {
         "fechado",
         "reaberto",
       ],
+      status_nf_ocr: ["processando", "sucesso", "erro"],
       status_nfe: [
         "autorizada",
         "pendente",

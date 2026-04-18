@@ -29,6 +29,8 @@ import { BenchmarkSetorialCard } from '@/components/tributario/dashboard/Benchma
 import { CopilotTributarioFloat } from '@/components/tributario/dashboard/CopilotTributarioFloat';
 import { DRETributariaPanel } from '@/components/tributario/dashboard/DRETributariaPanel';
 import { AssistenteFechamentoMensal } from '@/components/tributario/dashboard/AssistenteFechamentoMensal';
+import { HeatmapTributarioAnual } from '@/components/tributario/dashboard/HeatmapTributarioAnual';
+import { UploadNotaFiscalOCR } from '@/components/tributario/dashboard/UploadNotaFiscalOCR';
 
 const REGIME_LABEL: Record<string, string> = {
   simples_nacional: 'Simples Nacional',
@@ -240,6 +242,12 @@ export default function DashboardTributario() {
                 ano={new Date().getFullYear()}
                 mes={new Date().getMonth() + 1}
               />
+            </motion.div>
+            <motion.div variants={itemVariants} className="lg:col-span-3">
+              <HeatmapTributarioAnual empresaId={empresaId} />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <UploadNotaFiscalOCR empresaId={empresaId} />
             </motion.div>
           </motion.div>
         </>
