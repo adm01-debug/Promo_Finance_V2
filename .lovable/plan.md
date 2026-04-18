@@ -1,55 +1,64 @@
 
-Lote 13 fechado (gráficos de evolução). Restam 3 lotes do roadmap. Próximo: **Lote 14 — Edge Function `decidir-regime` (FASE 3 final)**.
+Lote 14 entregue (Edge Function `decidir-regime` + PF Vinculada). Bitrix24 já tem secrets configurados (`BITRIX24_ACCESS_TOKEN`, `BITRIX24_DOMAIN`, etc.). Próximo: **Lote 15 — PDF Executivo + Bitrix24 Push**.
 
-## Lote 14 — Edge Function `decidir-regime` + Reforma Tributária + PF Vinculada
+## Lote 15 — PDF Executivo + Envio Bitrix24
 
-### 1. Edge Function `decidir-regime` (orquestradora server-side)
-- `supabase/functions/decidir-regime/index.ts` com `verify_jwt = true` (padrão).
-- Recebe `{ empresaId, anoReferencia, mesReferencia, parametrosOverride? }`, valida JWT manual, lê `faturamento_mensal` + `folha_pagamento` via service role, executa `decidirRegime()` (importado de `_shared/tributario.ts` — copy-paste de `src/lib/tributario`), persiste em `regimes_simulados` e retorna resultado completo.
-- CORS sempre, try/catch top-level com 500 + structured logging.
-- Hook `useDecidirRegimeServer` para chamar via `supabase.functions.invoke` (alternativa server-side ao cálculo client-side).
+### 1. Edge Function `gerar-pdf-tributario`
+- `supabase/functions/gerar-pdf-tributario/index.ts`, `verify_jwt = false` com validação manual JWT.
+- Recebe `{ empresaId, anoReferencia, mesReferencia }`, chama `decidir-regime` internamente, gera PDF executivo via `jspdf` + `jspdf-autotable` (Deno via esm.sh):
+  - Capa: nome empresa, CNPJ, período, regime recomendado.
+  - Página 1: Resumo executivo com economia anual estimada.
+  - Página 2: Comparativo Simples × Presumido × Real (tabela autoTable).
+  - Página 3: Justificativa legal (CGSN 140/2018, LC 224/2025, Tema 779 STF).
+  - Página 4: Cronograma reforma 2026-2033 (CBS+IBS).
+- Retorna PDF base64 + URL temporária via Storage bucket `relatorios-tributarios`.
+- Migration: criar bucket privado com RLS por `empresa_id`.
 
-### 2. Módulo Reforma Tributária (`/tributario/reforma`)
-- Página `ReformaTributaria.tsx` projetando CBS+IBS sobre faturamento real:
-  - Cronograma de transição EC 132/2023 + LC 214/2025: 2026 (teste 0,9%+0,1%), 2027 (CBS plena, extinção PIS/COFINS), 2029-2032 (IBS gradual), 2033 (IBS pleno, fim ICMS/ISS).
-  - Comparativo "Hoje vs. 2033" com economia/aumento estimado.
-  - Tokens semânticos `--cbs` e `--ibs` já existentes.
-  - Tabela de alíquotas projetadas + gráfico de barras empilhadas.
+### 2. Edge Function `enviar-bitrix24-tributario`
+- `supabase/functions/enviar-bitrix24-tributario/index.ts`, `verify_jwt = false` + validação manual.
+- Recebe `{ empresaId, pdfUrl, dealId? }`, usa `BITRIX24_ACCESS_TOKEN` + `BITRIX24_DOMAIN`.
+- Cria/atualiza Deal no Bitrix24 com:
+  - Título: "Recomendação Tributária — {empresa} — {periodo}"
+  - Anexo: PDF via `disk.folder.uploadfile`
+  - Comentário com resumo executivo (regime + economia)
+- Resiliência: retry exponencial em 429/500 (padrão `mem://integrations/bling-erp-v3-estrategia-e-resiliencia`).
+- Refresh token automático se 401 (usa `BITRIX24_REFRESH_TOKEN` + `BITRIX24_CLIENT_ID/SECRET`).
 
-### 3. Módulo PF Vinculada — Lei 15.270/2025 (`/tributario/pf-vinculada`)
-- Página `PfVinculada.tsx` calculando IRPFM (Imposto de Renda PF Mínimo):
-  - Input: dividendos mensais distribuídos ao sócio.
-  - Aplica 10% sobre parcela > R$ 50.000/mês (Lei 15.270/2025).
-  - Compara cenário "distribuição via PJ" vs. "pró-labore + PF" para otimização.
-  - Alerta se sócio cair na faixa de IRPFM.
+### 3. UI — Botões de ação na `/tributario/recomendacao`
+- Hook `useGerarPdfTributario` + `useEnviarBitrix24Tributario`.
+- Card de ações com 2 botões:
+  - "Baixar PDF Executivo" (download direto do base64)
+  - "Enviar para CRM Bitrix24" (toast com link do deal criado)
+- Loading states + error toasts.
 
-### 4. Rotas + Validação
-- Registrar `/tributario/reforma` e `/tributario/pf-vinculada` em `App.tsx` (lazy-loaded).
+### 4. Validação
 - `npx tsc --noEmit` zero erros.
-- Edge function deploy automático.
+- `supabase/config.toml`: declarar `verify_jwt = false` para as 2 functions.
+- Edge functions com CORS completo + try/catch top-level.
 
 ## Diagrama
 
 ```text
-   Lote 13 ✅ (CRUD + CSV + gráficos)
+   Lote 14 ✅ (decidir-regime + PF)
             │
             ▼
-   ┌────────────────────────────┐
-   │ Edge Function              │──┐
-   │ decidir-regime (server)    │  │
-   └────────────────────────────┘  │
-   ┌────────────────────────────┐  ▼
-   │ /tributario/reforma        │  ┌────────────────────┐
-   │ (CBS+IBS 2026-2033)        │─▶│ Roadmap FASE 3+4   │
-   └────────────────────────────┘  │  fechado           │
-   ┌────────────────────────────┐  └────────────────────┘
-   │ /tributario/pf-vinculada   │  ▲
-   │ (Lei 15.270/2025 IRPFM)    │──┘
-   └────────────────────────────┘
+   ┌──────────────────────────┐
+   │ Storage bucket           │
+   │ relatorios-tributarios   │
+   └──────────────────────────┘
+            │
+   ┌──────────────────────────┐
+   │ Edge: gerar-pdf-         │──┐
+   │ tributario (jsPDF)       │  │
+   └──────────────────────────┘  ▼
+   ┌──────────────────────────┐  ┌────────────────────┐
+   │ Edge: enviar-bitrix24-   │  │ /tributario/       │
+   │ tributario (CRM push)    │─▶│ recomendacao       │
+   └──────────────────────────┘  │ + 2 botões ação    │
+                                 └────────────────────┘
 ```
 
 ## Observações
-- Sem migrations (reaproveita `regimes_simulados`).
-- Edge Function copia `src/lib/tributario` para `_shared/` (padrão de projetos independentes).
-- Tokens `--cbs` e `--ibs` já existem (`mem://design/extended-semantic-tokens`).
-- Restam após este lote: Lote 15 (PDF + Bitrix24) e Lote 16 (CNPJá onboarding).
+- Bitrix24 secrets já existem (zero setup adicional).
+- 1 migration: bucket `relatorios-tributarios` privado com RLS por `empresa_id`.
+- Resta após este lote: Lote 16 (CNPJá onboarding — exige `CNPJA_API_KEY`).
