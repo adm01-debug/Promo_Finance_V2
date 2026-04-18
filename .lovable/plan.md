@@ -1,62 +1,67 @@
 
-P7 entregue ✅. Sistema em 10/10++. Proponho **Lote P8 — Inteligência Preditiva Tributária** (3 melhorias finais que cravam 10/10+++).
+P8 entregue ✅. Sistema em 10/10+++. Proponho **Lote P9 — Inteligência Conversacional + Auditoria Total** (3 melhorias finais que cravam 10/10++++ definitivo).
 
-## Lote P8 — Inteligência Preditiva + Conformidade Total
+## Lote P9 — Copilot Tributário + Auditoria + Benchmarking
 
-### 1. Previsão tributária com IA (Lovable AI Gateway)
-- Nova edge `prever-carga-tributaria` (gemini-2.5-flash, sem secrets):
-  - Input: `{ empresa_id, meses_historico: 12 }`
-  - Consulta `vw_tributario_dashboard` + `regime_decision_cache`
-  - Prompt estruturado pede previsão dos próximos 3 meses + 2 cenários (conservador/agressivo) + 3 ações recomendadas
-  - Retorna JSON tipado validado com Zod
-  - Logger P2 + RBAC P4
-- Hook `usePrevisaoTributaria(empresaId)` com React Query (staleTime 30min)
-- Widget novo `PrevisaoTributariaIA.tsx` no DashboardTributario (P5):
-  - Card glassmorphism com chart de linha (real vs previsto)
-  - Lista de ações com badge de impacto estimado
-  - Botão "Regenerar análise" com loader
+### 1. Copilot Tributário conversacional (chat IA streaming)
+- Nova edge `copilot-tributario` (gemini-2.5-flash, streaming SSE):
+  - Contexto rico: dashboard da empresa, regime ótimo, oportunidades top 3, conformidade score, previsão IA
+  - Tool calling: `consultar_apuracao`, `simular_regime`, `listar_oportunidades`, `verificar_conformidade`
+  - System prompt especialista em CBS/IBS/IS + Reforma Tributária + LC 214/25
+  - JWT manual + RBAC (admin/financeiro/visualizador)
+  - Logger P2 + tratamento 429/402
+- UI `CopilotTributarioFloat.tsx`: botão flutuante no DashboardTributario que abre painel lateral (sheet) com:
+  - Streaming token-a-token (sem bibliotecas extras, SSE manual)
+  - Sugestões iniciais ("Qual meu regime ideal?", "Top 3 economias", "Conformidade do mês")
+  - Markdown render seguro (`escapeHtml` + parser leve)
+  - Histórico em sessionStorage (não persiste em DB)
 
-### 2. Validador de conformidade fiscal automático
-- Migration: tabela `verificacoes_conformidade` (empresa_id, periodo, score, itens jsonb, criado_em).
-- Nova edge `verificar-conformidade-fiscal`:
-  - 8 checks automáticos: NF emitidas vs apuração, DARF vencidos, certidões negativas próximas a vencer, divergência regime ótimo > 10%, alertas críticos abertos > 5, apurações em atraso, dividendos > teto IRPFM (Lei 15.270/25), RBT12 próximo do sublimite Simples
-  - Score 0-100 ponderado por criticidade
-  - Persiste resultado e dispara alerta se score < 70
-- UI `ConformidadeFiscalCard.tsx` no dashboard tributário com gauge animado + lista de pendências.
+### 2. Trilha de auditoria tributária dedicada
+- Migration: tabela `auditoria_tributaria` (id, empresa_id, user_id, acao enum, entidade_tipo, entidade_id, payload jsonb, ip, user_agent, criado_em).
+- Trigger automático em `apuracoes_tributarias`, `regime_decision_cache`, `verificacoes_conformidade`, `relatorios_tributarios_agendados` (insert/update/delete).
+- View `vw_auditoria_tributaria_recente` com join em `profiles` (nome do usuário).
+- UI `AuditoriaTributariaTab.tsx` em `/admin/system-health` (tab nova): filtros por empresa/usuário/ação/data, exportação CSV (padrão `secure-data-export`).
+- RLS: leitura admin-only.
 
-### 3. Exportação SPED Fiscal preliminar (EFD-Contribuições)
-- Nova edge `exportar-sped-contribuicoes`:
-  - Input: `{ empresa_id, periodo: 'YYYY-MM' }`
-  - Gera arquivo TXT layout EFD-Contribuições (registros 0000, 0001, 0140, M100, M105, M200, M210, 9999)
-  - Reutiliza `apuracoes_tributarias` + dados da empresa
-  - Upload bucket `relatorios-tributarios/sped/`
-  - Retorna URL assinada (24h)
-- Botão "Exportar SPED" no dashboard tributário (admin/financeiro/contador_readonly).
+### 3. Benchmarking setorial (compara empresa vs mediana)
+- Migration: view materializada `mv_benchmark_setorial` agregando `vw_tributario_dashboard` por CNAE (mediana, p25, p75 de carga efetiva).
+- Refresh agendado via `pg_cron` semanal (domingo 03:00).
+- Nova edge `comparar-benchmark-setorial`:
+  - Input: `{ empresa_id }`
+  - Lê CNAE da empresa, compara carga efetiva últimos 12m vs mediana setorial
+  - Retorna posição percentil + diferença em R$ + 3 insights
+- Hook `useBenchmarkSetorial` + widget `BenchmarkSetorialCard.tsx` no dashboard:
+  - Gauge mostrando posição vs mediana (verde se < p25, amarelo entre p25-p75, vermelho > p75)
+  - Lista de insights e oportunidade de economia para alcançar a mediana
 
 ### 4. Validação
 - `npx tsc --noEmit` zero erros.
 - Edge functions deployadas sem erros.
-- Memórias: `mem://features/previsao-tributaria-ia`, `mem://features/conformidade-fiscal-validator`, `mem://features/sped-contribuicoes-export`.
+- Migrations limpas (RLS hardening).
+- Memórias: `mem://features/copilot-tributario-streaming`, `mem://features/auditoria-tributaria`, `mem://features/benchmark-setorial`.
 
 ## Diagrama
 
 ```text
-   DashboardTributario (P5)
+   DashboardTributario
         │
-        ├─▶ PrevisaoTributariaIA ──▶ prever-carga-tributaria (gemini-2.5-flash)
-        │                                 │
-        │                                 └─▶ vw_tributario_dashboard + regime_cache
+        ├─▶ CopilotTributarioFloat ──▶ copilot-tributario (SSE)
+        │                                 ├─▶ contexto rico (dashboard+regime+conformidade)
+        │                                 └─▶ gemini-2.5-flash + tool calling
         │
-        ├─▶ ConformidadeFiscalCard ──▶ verificar-conformidade-fiscal
-        │                                 │
-        │                                 └─▶ 8 checks → score 0-100 → alerta se <70
+        └─▶ BenchmarkSetorialCard ──▶ comparar-benchmark-setorial
+                                          └─▶ mv_benchmark_setorial (refresh semanal)
+
+   Triggers AUDIT (4 tabelas tributárias)
         │
-        └─▶ Botão "Exportar SPED" ──▶ exportar-sped-contribuicoes
-                                          │
-                                          └─▶ TXT EFD → bucket → URL assinada 24h
+        ▼
+   auditoria_tributaria ──▶ vw_auditoria_tributaria_recente
+        │
+        ▼
+   /admin/system-health → AuditoriaTributariaTab (filtros + CSV)
 ```
 
 ## Observações
-- Reaproveita 100% da infra P1-P7 (views, cache, observability, RBAC, bucket).
+- Reaproveita 100% da infra P1-P8 (motores, views, cache, RBAC, logger).
 - Sem novos secrets (LOVABLE_API_KEY já configurado).
-- Eleva produto para 10/10+++ (inteligência preditiva + conformidade automática + entrega SPED).
+- Eleva produto para 10/10++++ (conversacional + rastreabilidade total + comparação de mercado).
