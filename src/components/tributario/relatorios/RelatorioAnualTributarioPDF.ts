@@ -208,21 +208,24 @@ export function gerarRelatorioAnualPDF(p: RelatorioAnualPayload): jsPDF {
   doc.setTextColor(0, 0, 0);
   doc.text('3. Oportunidades de Elisão Fiscal', 15, 25);
 
+  const regimeMap: Record<string, ContextoEmpresa['regime_atual']> = {
+    simples_nacional: 'simples',
+    lucro_presumido: 'presumido',
+    lucro_real: 'real',
+  };
   const ctxElisao: ContextoEmpresa = {
-    regime_atual:
-      (p.empresa.regime_atual as ContextoEmpresa['regime_atual']) ??
-      'lucro_real',
+    empresa_id: '',
+    regime_atual: regimeMap[p.empresa.regime_atual] ?? 'real',
+    rbt12: p.kpis.faturamento_anual,
     faturamento_anual: p.kpis.faturamento_anual,
     lucro_liquido: p.kpis.faturamento_anual * 0.1,
     patrimonio_liquido: p.kpis.faturamento_anual * 0.3,
-    folha_pagamento_anual: p.kpis.faturamento_anual * 0.15,
+    folha_total_anual: p.kpis.faturamento_anual * 0.15,
     receita_exportacao: 0,
     receita_importacao: 0,
     despesas_pd: 0,
     beneficio_icms_anual: 0,
     dividendos_pf_anual: 0,
-    uf: 'SP',
-    cnae_principal: '',
   };
   const elisao = analisarOportunidadesElisao(ctxElisao);
 
@@ -233,7 +236,7 @@ export function gerarRelatorioAnualPDF(p: RelatorioAnualPayload): jsPDF {
       o.estrategia,
       o.aplicavel ? 'Sim' : 'Não',
       fmtBRL(o.economia_estimada),
-      o.risco_classificacao ?? '—',
+      o.risco ?? '—',
     ]),
     headStyles: { fillColor: [37, 99, 235] },
     styles: { fontSize: 9 },
