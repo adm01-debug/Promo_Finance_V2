@@ -16,6 +16,7 @@ import { formatCurrency } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { CsvImportDialog } from '@/components/tributario/CsvImportDialog';
 import { downloadCsvTemplate, type FaturamentoRow, type FolhaRow } from '@/lib/csv-importer';
+import { EvolucaoChart } from '@/components/tributario/historico/EvolucaoChart';
 
 const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
@@ -195,6 +196,16 @@ export function FolhaTab({ empresaId }: { empresaId: string }) {
         empresaId={empresaId}
         onImport={handleImport}
       />
+      {folha.length > 0 && (
+        <CardContent className="pt-0">
+          <EvolucaoChart
+            titulo="Evolução da Folha Total"
+            descricao="Últimos 24 meses — base para Fator R"
+            pontos={folha.map((f) => ({ ano: f.ano, mes: f.mes, valor: f.total_folha }))}
+            corHsl="var(--accent)"
+          />
+        </CardContent>
+      )}
     </Card>
   );
 }
