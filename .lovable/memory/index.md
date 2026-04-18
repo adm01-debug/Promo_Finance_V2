@@ -66,3 +66,4 @@ type: reference
 - [Detector Anomalias](mem://features/detector-anomalias-tempo-real) — 5 detectores estatísticos populando anomalias_detectadas (tab admin)
 - [P13 Automação Total](mem://features/p13-automacao-total) — 6 cron jobs P13 + Centro de Ações IA (acoes_recomendadas) + trigger push automático em alertas críticos
 - [P14 Copilot Global + Onboarding + SLO](mem://features/p14-copilot-onboarding-slo) — Copilot IA contextual, tour react-joyride, painel SLO/SLA admin (snapshot diário 23:55)
+- [Auditoria Testes P15](mem://quality/auditoria-testes-p15) — Baseline 1.012 testes (100%), 0 erros TS, 4 RLS críticas corrigidas (notas_fiscais_ocr, resumos_executivos, acoes_recomendadas, storage relatorios-tributarios)
