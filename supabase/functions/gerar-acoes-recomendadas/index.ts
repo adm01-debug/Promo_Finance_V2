@@ -45,9 +45,9 @@ serve(async (req) => {
             .eq("empresa_id", emp.id).eq("status", "nova")
             .in("severidade", ["alta", "critica"]).limit(10),
           supabase.from("health_scores_operacionais")
-            .select("score_total, dimensoes")
+            .select("score_total")
             .eq("empresa_id", emp.id)
-            .order("snapshot_em", { ascending: false }).limit(1).maybeSingle(),
+            .order("created_at", { ascending: false }).limit(1).maybeSingle(),
           supabase.from("alertas_tributarios")
             .select("id, titulo, prioridade")
             .eq("empresa_id", emp.id).eq("lido", false)
