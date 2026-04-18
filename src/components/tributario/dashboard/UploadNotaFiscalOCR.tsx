@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useProcessarNFOCR, type DadosExtraidosNF } from '@/hooks/useProcessarNFOCR';
 import { Upload, FileText, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { formatCurrency } from '@/lib/format';
+import { formatCurrency } from '@/lib/formatters';
 
 interface Props {
   empresaId?: string;

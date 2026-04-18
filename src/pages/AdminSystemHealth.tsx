@@ -11,6 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Activity, Database, Mail, Shield, Zap, ExternalLink } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AuditoriaTributariaTab } from '@/components/admin/AuditoriaTributariaTab';
+import { ResumosExecutivosTab } from '@/components/admin/ResumosExecutivosTab';
 import { logger } from '@/lib/logger';
 
 interface HealthRow {
@@ -136,6 +137,7 @@ export default function AdminSystemHealth() {
         <TabsList>
           <TabsTrigger value="overview">Visão geral</TabsTrigger>
           <TabsTrigger value="auditoria">Auditoria tributária</TabsTrigger>
+          <TabsTrigger value="resumos">Resumos executivos</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -197,6 +199,10 @@ export default function AdminSystemHealth() {
 
         <TabsContent value="auditoria">
           <AuditoriaTributariaTab />
+        </TabsContent>
+
+        <TabsContent value="resumos">
+          <ResumosExecutivosTab />
         </TabsContent>
       </Tabs>
     </div>
