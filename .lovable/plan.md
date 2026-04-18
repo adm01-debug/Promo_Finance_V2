@@ -1,66 +1,70 @@
 
-P10 entregue ✅. Sistema 10/10+++++. Proponho **Lote P11 — Inteligência Operacional Final** (consolida tudo + 3 cravos finais).
+P11 entregue ✅. Sistema 10/10++++++. Proponho **Lote P12 — Excelência Operacional Final** (3 melhorias que cravam o estado da arte: governança LGPD + operação contínua + monitoramento ativo).
 
-## Lote P11 — Heatmap Tributário + OCR de Notas Fiscais + Resumo Executivo Semanal IA
+## Lote P12 — Compliance LGPD + Health Score IA + Anomalias em Tempo Real
 
-### 1. Heatmap Tributário Anual (visualização 12 meses × tributos)
-- Edge `gerar-heatmap-tributario`:
-  - Input: `{ empresa_id, ano }`
-  - Agrega `apuracoes_tributarias` do ano: matriz [12 meses] × [CBS, IBS, IS, PIS, COFINS, ICMS, ISS, IRPJ/CSLL]
-  - Calcula intensidade (0-1) por célula vs máximo do ano + variação MoM
-  - Identifica picos e vales sazonais
-- UI `HeatmapTributarioAnual.tsx`:
-  - Grid 12×8 com gradiente HSL (`--cbs`, `--ibs`, etc.) e tooltip detalhado por célula
-  - Toggle "absoluto vs relativo" e seletor de ano
-  - Export PNG via canvas
-- Hook `useHeatmapTributario`.
+### 1. Centro de Privacidade LGPD (direitos do titular)
+- Migration: tabela `solicitacoes_lgpd` (id, user_id, tipo enum `acesso|portabilidade|exclusao|retificacao|anonimizacao`, status enum `aberta|em_analise|atendida|rejeitada`, justificativa, payload_resposta jsonb, atendida_em, atendida_por). RLS: usuário vê suas solicitações; admin vê todas e atende.
+- Edge `processar-solicitacao-lgpd`:
+  - `acesso`: gera dump JSON de todos os dados do titular (profiles, alertas, audit_logs, solicitações).
+  - `portabilidade`: mesmo dump em CSV agrupado por entidade, upload em `relatorios-tributarios/lgpd/`, retorna URL assinada 24h.
+  - `exclusao`: anonimiza profile (nome → "Titular removido", email → hash) e audit logs do usuário; mantém integridade referencial.
+  - Gera entrada em `auditoria_tributaria` (P9) para rastreabilidade.
+- UI `/configuracoes/privacidade` (`CentroPrivacidadeLGPD.tsx`): cards explicando cada direito + formulário de solicitação + lista das suas solicitações com status + download de dump.
+- Hook `useSolicitacoesLGPD`.
 
-### 2. OCR de Notas Fiscais com Lovable AI Vision
-- Migration: tabela `notas_fiscais_ocr` (empresa_id, arquivo_url, dados_extraidos jsonb, status enum `processando|sucesso|erro`, conta_pagar_id nullable, criado_por).
-- Bucket público `notas-fiscais-upload` (RLS por usuário).
-- Edge `processar-nf-ocr`:
-  - Input: arquivo (multipart) ou URL de imagem/PDF
-  - Usa `google/gemini-2.5-flash` com vision + tool calling para extrair: CNPJ emissor, CNPJ tomador, número NF, data emissão, valor total, descrição, CFOP, impostos destacados
-  - Salva em `notas_fiscais_ocr` + retorna preview pronto para virar conta a pagar
-- UI `UploadNotaFiscalOCR.tsx` (drop zone + preview extraído + botão "Criar conta a pagar"):
-  - Lista últimas 10 NFs processadas
-  - Editor inline dos campos antes de virar `contas_pagar`
-- Hook `useProcessarNFOCR`.
+### 2. Health Score Operacional com IA (visão 360°)
+- Edge `calcular-health-score-operacional`:
+  - Agrega 6 dimensões por empresa (peso configurável):
+    1. Saúde tributária (conformidade P8 + apuração em dia) — 25%
+    2. Saúde financeira (saldo + DRE positivo + inadimplência) — 25%
+    3. Operacional (conciliação bancária % conciliada) — 15%
+    4. Compliance LGPD (solicitações abertas <7d) — 10%
+    5. Cadastros (% empresas com regime + CNAE) — 10%
+    6. Engajamento (alertas atendidos / total) — 15%
+  - Calcula score 0-100 + tendência vs 7 dias atrás.
+  - Chama `gemini-2.5-flash` para gerar 3 insights priorizados em markdown.
+  - Persiste em `health_scores_operacionais` (snapshot diário via cron 07:00).
+- UI `HealthScoreCard.tsx` no DashboardExecutivo: gauge animado + breakdown por dimensão + insights IA + tendência.
+- Hook `useHealthScoreOperacional`.
 
-### 3. Resumo Executivo Semanal por IA (e-mail automático)
-- Migration: tabela `resumos_executivos_semanais` (empresa_id, semana_inicio, semana_fim, resumo_md, kpis jsonb, enviado_em, destinatarios).
-- Edge `gerar-resumo-executivo-semanal` (cron domingo 18:00):
-  - Para cada empresa ativa: agrega últimos 7 dias (KPIs financeiros + tributário + alertas + conformidade + benchmark)
-  - Chama Lovable AI (`gpt-5-mini`) com prompt estruturado: contexto + KPIs → markdown executivo (5 seções: highlights, tributário, alertas, oportunidades, próximos passos)
-  - Persiste + envia via Resend para destinatários cadastrados em `relatorios_tributarios_agendados`
-  - Logger P2 + tratamento 429/402
-- UI `ResumosExecutivosTab` em `/admin/system-health`: lista resumos passados + preview markdown + botão "Gerar agora".
-- Hook `useResumosExecutivos`.
+### 3. Detector de Anomalias em Tempo Real (movimentações suspeitas)
+- Migration: tabela `anomalias_detectadas` (entidade_tipo, entidade_id, tipo_anomalia enum, severidade enum, descricao, dados jsonb, status enum `nova|investigando|falso_positivo|confirmada`, detectada_em, resolvida_em).
+- Edge `detectar-anomalias-financeiras` (cron a cada 30 min):
+  - 5 detectores estatísticos:
+    1. Movimentação > 3σ vs média 30 dias
+    2. Pagamento duplicado (mesmo fornecedor + valor + dia)
+    3. Conta a pagar > p95 da empresa
+    4. Conciliação > 30 dias atrasada
+    5. Mudança brusca de regime (variação carga > 30%)
+  - Persiste em `anomalias_detectadas` + dispara push P10 (severidade=critica).
+- UI `AnomaliasDetectadasPanel.tsx` em `/admin/system-health` (4ª tab): lista filtrada + ações (marcar como falso positivo / investigar / confirmar).
+- Hook `useAnomaliasDetectadas`.
 
 ### 4. Validação
 - `npx tsc --noEmit` zero erros.
-- 3 edge functions deployadas.
-- 2 migrations limpas + RLS + auditoria P9.
-- Memórias: `mem://features/heatmap-tributario`, `mem://features/ocr-notas-fiscais`, `mem://features/resumo-executivo-semanal-ia`.
+- 3 edge functions deployadas + 2 cron jobs (health 07:00, anomalias */30min).
+- 3 migrations limpas + RLS hardening + auditoria P9.
+- Memórias: `mem://features/centro-privacidade-lgpd`, `mem://features/health-score-operacional`, `mem://features/detector-anomalias-tempo-real`.
 
 ## Diagrama
 
 ```text
-   DashboardTributario
-        ├─▶ HeatmapTributarioAnual ──▶ gerar-heatmap-tributario
-        │                                  └─▶ matriz 12×8 intensidades
-        │
-        └─▶ UploadNotaFiscalOCR ──▶ processar-nf-ocr (gemini-2.5-flash vision)
-                                        ├─▶ extrai 8 campos
-                                        └─▶ notas_fiscais_ocr → contas_pagar
+   /configuracoes/privacidade ──▶ processar-solicitacao-lgpd
+                                       ├─▶ acesso/portabilidade → dump JSON/CSV
+                                       └─▶ exclusao → anonimização + auditoria P9
 
-   cron domingo 18:00 ──▶ gerar-resumo-executivo-semanal
-                              ├─▶ agrega KPIs 7d
-                              ├─▶ Lovable AI (gpt-5-mini) → markdown
-                              └─▶ Resend → destinatários
+   cron 07:00 ──▶ calcular-health-score-operacional
+                      ├─▶ 6 dimensões ponderadas → score 0-100
+                      └─▶ gemini-2.5-flash → 3 insights
+                            └─▶ health_scores_operacionais → HealthScoreCard
+
+   cron */30min ──▶ detectar-anomalias-financeiras
+                          ├─▶ 5 detectores estatísticos
+                          └─▶ anomalias_detectadas → push P10 + tab admin
 ```
 
 ## Observações
-- Reaproveita 100% da infra P1-P10 (motores, AI gateway, Resend, cron, RBAC, auditoria, storage).
-- Sem novos secrets (LOVABLE_API_KEY + RESEND_API_KEY já configurados ✅).
-- Eleva produto para 10/10++++++ (visualização anual + OCR automático + executive summary IA).
+- Reaproveita 100% da infra P1-P11 (auditoria, conformidade, push, AI gateway, Resend, storage).
+- Sem novos secrets necessários ✅.
+- Eleva produto para 10/10+++++++ definitivo (LGPD + saúde 360° + vigilância contínua).
