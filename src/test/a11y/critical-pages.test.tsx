@@ -1,15 +1,17 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
-import 'vitest-axe/extend-expect';
 import { axe } from 'vitest-axe';
+import * as axeMatchers from 'vitest-axe/matchers';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SkipLinks } from '@/components/accessibility/SkipLinks';
 
+expect.extend(axeMatchers as never);
+
 const axeConfig = {
   rules: {
-    // jsdom não calcula contraste — desabilitar nesta camada (validado em e2e/Lighthouse)
+    // jsdom não calcula contraste — validado em e2e/Lighthouse
     'color-contrast': { enabled: false },
     region: { enabled: false },
   },
