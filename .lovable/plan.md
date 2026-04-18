@@ -1,67 +1,55 @@
 
-P8 entregue ✅. Sistema em 10/10+++. Proponho **Lote P9 — Inteligência Conversacional + Auditoria Total** (3 melhorias finais que cravam 10/10++++ definitivo).
+P9 entregue ✅ (Copilot + Auditoria + Benchmark). Sistema 10/10++++. Proponho **Lote P10 — Fechamento Tributário Inteligente** (último marco antes de declarar perfeição absoluta).
 
-## Lote P9 — Copilot Tributário + Auditoria + Benchmarking
+## Lote P10 — Fechamento Mensal Guiado + Notificações Push + DRE Tributária
 
-### 1. Copilot Tributário conversacional (chat IA streaming)
-- Nova edge `copilot-tributario` (gemini-2.5-flash, streaming SSE):
-  - Contexto rico: dashboard da empresa, regime ótimo, oportunidades top 3, conformidade score, previsão IA
-  - Tool calling: `consultar_apuracao`, `simular_regime`, `listar_oportunidades`, `verificar_conformidade`
-  - System prompt especialista em CBS/IBS/IS + Reforma Tributária + LC 214/25
-  - JWT manual + RBAC (admin/financeiro/visualizador)
-  - Logger P2 + tratamento 429/402
-- UI `CopilotTributarioFloat.tsx`: botão flutuante no DashboardTributario que abre painel lateral (sheet) com:
-  - Streaming token-a-token (sem bibliotecas extras, SSE manual)
-  - Sugestões iniciais ("Qual meu regime ideal?", "Top 3 economias", "Conformidade do mês")
-  - Markdown render seguro (`escapeHtml` + parser leve)
-  - Histórico em sessionStorage (não persiste em DB)
+### 1. Assistente de Fechamento Mensal Tributário
+- Migration: tabela `fechamentos_tributarios` (empresa_id, periodo `YYYY-MM`, status enum `aberto|em_revisao|fechado`, checklist jsonb, fechado_por, fechado_em, observacoes).
+- Edge `executar-fechamento-tributario`:
+  - 6 etapas validadas: (1) Apuração consolidada, (2) Conformidade ≥ 70, (3) DARFs gerados, (4) Conciliação bancária do período, (5) Decisão de regime cacheada, (6) SPED preliminar gerado.
+  - Bloqueia fechamento se etapa crítica falhar; permite forçar com justificativa (admin only).
+  - Após fechado: dispara auditoria P9 + notifica destinatários via Resend.
+- UI `AssistenteFechamentoMensal.tsx` (wizard 6 steps com framer-motion + checklist progressivo + confetti ao concluir).
+- Hook `useFechamentoTributario`.
 
-### 2. Trilha de auditoria tributária dedicada
-- Migration: tabela `auditoria_tributaria` (id, empresa_id, user_id, acao enum, entidade_tipo, entidade_id, payload jsonb, ip, user_agent, criado_em).
-- Trigger automático em `apuracoes_tributarias`, `regime_decision_cache`, `verificacoes_conformidade`, `relatorios_tributarios_agendados` (insert/update/delete).
-- View `vw_auditoria_tributaria_recente` com join em `profiles` (nome do usuário).
-- UI `AuditoriaTributariaTab.tsx` em `/admin/system-health` (tab nova): filtros por empresa/usuário/ação/data, exportação CSV (padrão `secure-data-export`).
-- RLS: leitura admin-only.
+### 2. Notificações Push Web (PWA) para alertas críticos
+- Reaproveita `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` já configurados ✅.
+- Migration: tabela `push_subscriptions` (user_id, endpoint, p256dh, auth, ativo) com RLS por uid.
+- Edge `enviar-push-notification`:
+  - Trigger automático via `fn_notificar_alerta_critico` em `alertas` (prioridade=critica).
+  - Envia push com web-push (Deno).
+- UI `useWebPushSubscription` hook + banner em settings ("Ativar notificações").
 
-### 3. Benchmarking setorial (compara empresa vs mediana)
-- Migration: view materializada `mv_benchmark_setorial` agregando `vw_tributario_dashboard` por CNAE (mediana, p25, p75 de carga efetiva).
-- Refresh agendado via `pg_cron` semanal (domingo 03:00).
-- Nova edge `comparar-benchmark-setorial`:
-  - Input: `{ empresa_id }`
-  - Lê CNAE da empresa, compara carga efetiva últimos 12m vs mediana setorial
-  - Retorna posição percentil + diferença em R$ + 3 insights
-- Hook `useBenchmarkSetorial` + widget `BenchmarkSetorialCard.tsx` no dashboard:
-  - Gauge mostrando posição vs mediana (verde se < p25, amarelo entre p25-p75, vermelho > p75)
-  - Lista de insights e oportunidade de economia para alcançar a mediana
+### 3. DRE Tributária (Demonstrativo de Resultado com decomposição fiscal)
+- Edge `gerar-dre-tributaria`:
+  - Input: `{ empresa_id, periodo: 'YYYY-MM' | { inicio, fim } }`.
+  - Agrega receita bruta, deduções (CBS/IBS/IS/PIS/COFINS/ICMS/ISS), receita líquida, custos, lucro bruto, IRPJ/CSLL, lucro líquido tributário.
+  - Compara cenários: regime atual vs regime ótimo (motor P1 + cache P7).
+- UI `DRETributariaPanel.tsx` no DashboardTributario (tab dedicada): tabela waterfall + export CSV/PDF (padrão `secure-data-export`).
+- Hook `useDRETributaria` (React Query 30min).
 
 ### 4. Validação
 - `npx tsc --noEmit` zero erros.
 - Edge functions deployadas sem erros.
-- Migrations limpas (RLS hardening).
-- Memórias: `mem://features/copilot-tributario-streaming`, `mem://features/auditoria-tributaria`, `mem://features/benchmark-setorial`.
+- Migrations limpas + RLS hardening.
+- Memórias: `mem://features/fechamento-mensal-tributario`, `mem://features/web-push-notifications`, `mem://features/dre-tributaria`.
 
 ## Diagrama
 
 ```text
    DashboardTributario
+        ├─▶ AssistenteFechamentoMensal ──▶ executar-fechamento-tributario
+        │                                       ├─▶ 6 checks (apuração, conformidade, DARF, etc.)
+        │                                       └─▶ fechamentos_tributarios + auditoria P9
         │
-        ├─▶ CopilotTributarioFloat ──▶ copilot-tributario (SSE)
-        │                                 ├─▶ contexto rico (dashboard+regime+conformidade)
-        │                                 └─▶ gemini-2.5-flash + tool calling
-        │
-        └─▶ BenchmarkSetorialCard ──▶ comparar-benchmark-setorial
-                                          └─▶ mv_benchmark_setorial (refresh semanal)
+        └─▶ DRETributariaPanel ──▶ gerar-dre-tributaria
+                                       └─▶ waterfall + comparativo regime ótimo
 
-   Triggers AUDIT (4 tabelas tributárias)
-        │
-        ▼
-   auditoria_tributaria ──▶ vw_auditoria_tributaria_recente
-        │
-        ▼
-   /admin/system-health → AuditoriaTributariaTab (filtros + CSV)
+   alertas (prioridade=critica) ──trigger──▶ enviar-push-notification
+                                                  └─▶ web-push API → push_subscriptions
 ```
 
 ## Observações
-- Reaproveita 100% da infra P1-P8 (motores, views, cache, RBAC, logger).
-- Sem novos secrets (LOVABLE_API_KEY já configurado).
-- Eleva produto para 10/10++++ (conversacional + rastreabilidade total + comparação de mercado).
+- Reaproveita 100% da infra P1-P9 (motores, cache, auditoria, conformidade, SPED, RBAC).
+- Sem novos secrets (VAPID + RESEND + LOVABLE_API_KEY já presentes).
+- Eleva produto para 10/10+++++ (fechamento contábil guiado + push real-time + DRE fiscal).
