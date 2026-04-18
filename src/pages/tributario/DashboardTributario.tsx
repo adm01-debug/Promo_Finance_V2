@@ -5,11 +5,14 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Scale, TrendingDown, Sparkles, Calendar, Heart } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Scale, TrendingDown, Sparkles, Calendar, Heart, FileDown, Loader2 } from 'lucide-react';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { useDashboardTributario } from '@/hooks/useDashboardTributario';
+import { useRelatorioAnual } from '@/hooks/useRelatorioAnual';
 import { formatCurrency } from '@/lib/formatters';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -31,10 +34,16 @@ export default function DashboardTributario() {
   const { data: empresas = [] } = useAllEmpresas();
   const [empresaId, setEmpresaId] = useState<string | undefined>();
   const [periodo, setPeriodo] = useState<Periodo>(12);
+  const [relatorioOpen, setRelatorioOpen] = useState(false);
+  const [anoRelatorio, setAnoRelatorio] = useState<number>(new Date().getFullYear());
 
   const empresaSelecionada = empresas.find((e) => e.id === empresaId);
   const { kpis, serie, simulacao, oportunidades, vencimentos, alertas, isLoading } =
     useDashboardTributario(empresaId, periodo);
+  const { isLoading: loadingRelatorio, gerarPDF } = useRelatorioAnual(
+    relatorioOpen ? empresaId : undefined,
+    relatorioOpen ? anoRelatorio : undefined
+  );
 
   const containerVariants = {
     hidden: { opacity: 0 },
