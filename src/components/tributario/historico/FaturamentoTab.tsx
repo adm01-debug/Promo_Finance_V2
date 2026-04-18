@@ -16,6 +16,7 @@ import { formatCurrency } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { CsvImportDialog } from '@/components/tributario/CsvImportDialog';
 import { downloadCsvTemplate, type FaturamentoRow, type FolhaRow } from '@/lib/csv-importer';
+import { EvolucaoChart } from '@/components/tributario/historico/EvolucaoChart';
 
 const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
@@ -193,6 +194,16 @@ export function FaturamentoTab({ empresaId }: { empresaId: string }) {
         empresaId={empresaId}
         onImport={handleImport}
       />
+      {faturamento.length > 0 && (
+        <CardContent className="pt-0">
+          <EvolucaoChart
+            titulo="Evolução da Receita Bruta"
+            descricao="Últimos 24 meses (cronológico)"
+            pontos={faturamento.map((f) => ({ ano: f.ano, mes: f.mes, valor: f.receita_bruta }))}
+            corHsl="var(--primary)"
+          />
+        </CardContent>
+      )}
     </Card>
   );
 }
