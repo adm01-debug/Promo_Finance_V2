@@ -1,6 +1,5 @@
 // ============================================
 // COMPONENT: AssistenteFechamentoMensal (P10)
-// Wizard de checklist + execução
 // ============================================
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -19,14 +18,25 @@ interface Props {
   isAdmin?: boolean;
 }
 
+interface CheckItem {
+  id: string;
+  label: string;
+  ok: boolean;
+  critical: boolean;
+  detail: string;
+}
+
 export function AssistenteFechamentoMensal({ empresaId, ano, mes, isAdmin }: Props) {
   const { fechamento, executar, executando, ultimoResultado } = useFechamentoTributario(empresaId, ano, mes);
   const [observacoes, setObservacoes] = useState("");
   const [justificativa, setJustificativa] = useState("");
   const [showForce, setShowForce] = useState(false);
 
-  const checks = (ultimoResultado?.checks ?? (fechamento?.checklist as typeof ultimoResultado.checks)) ?? [];
-  const status = (ultimoResultado?.status ?? fechamento?.status) as string | undefined;
+  const fechamentoData = (fechamento ?? null) as Record<string, unknown> | null;
+  const checks: CheckItem[] = (ultimoResultado?.checks
+    ?? (fechamentoData?.checklist as CheckItem[] | undefined)
+    ?? []);
+  const status = ultimoResultado?.status ?? (fechamentoData?.status as string | undefined);
   const isFechado = status === "fechado";
   const criticalFails = checks.filter((c) => c.critical && !c.ok);
 
@@ -48,7 +58,7 @@ export function AssistenteFechamentoMensal({ empresaId, ano, mes, isAdmin }: Pro
           {isFechado ? <Lock className="h-5 w-5 text-success" /> : <ShieldAlert className="h-5 w-5 text-primary" />}
           Assistente de Fechamento Mensal — {String(mes).padStart(2, "0")}/{ano}
           {status && (
-            <Badge variant={isFechado ? "default" : status === "em_revisao" ? "destructive" : "secondary"}>
+            <Badge variant={isFechado ? "default" : "secondary"}>
               {status}
             </Badge>
           )}
@@ -85,7 +95,7 @@ export function AssistenteFechamentoMensal({ empresaId, ano, mes, isAdmin }: Pro
         )}
 
         {ultimoResultado?.message && !isFechado && (
-          <Alert variant="destructive">
+          <Alert>
             <AlertTitle>Bloqueado</AlertTitle>
             <AlertDescription>{ultimoResultado.message}</AlertDescription>
           </Alert>
