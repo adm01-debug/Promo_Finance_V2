@@ -43,7 +43,7 @@ async function flushQueue(): Promise<void> {
       url: p.url ?? window.location.href,
       user_agent: p.user_agent ?? navigator.userAgent,
       severity: p.severity ?? 'error',
-      context: p.context ?? null,
+      context: (p.context ?? null) as never,
     }));
 
     const { error } = await supabase.from('frontend_error_logs').insert(rows);
