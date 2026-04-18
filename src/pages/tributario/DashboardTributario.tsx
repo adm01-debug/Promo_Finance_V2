@@ -1,34 +1,23 @@
 // ============================================
-// DASHBOARD CONSOLIDADO TRIBUTÁRIO
-// Painel unificado: regime, oportunidades, alertas, projeção, IRPFM
+// DASHBOARD TRIBUTÁRIO V2 — Bento Grid Premium
 // ============================================
-
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Calculator,
-  Sparkles,
-  TrendingUp,
-  Bell,
-  Award,
-  ArrowRight,
-  AlertTriangle,
-  Scale,
-  CheckCircle2,
-  Target,
-} from 'lucide-react';
+import { Scale, TrendingDown, Sparkles, Calendar, Heart } from 'lucide-react';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
-import { useSimulacaoRegimes } from '@/hooks/useSimulacaoRegimes';
-import { useOportunidadesElisao } from '@/hooks/useOportunidadesElisao';
-import useAlertasTributarios from '@/hooks/useAlertasTributarios';
+import { useDashboardTributario } from '@/hooks/useDashboardTributario';
 import { formatCurrency } from '@/lib/formatters';
-import { projetarReforma } from '@/lib/tributario/projecao-reforma';
+import { format, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { EvolucaoCargaChart } from '@/components/tributario/dashboard/EvolucaoCargaChart';
+import { ComparativoRegimes } from '@/components/tributario/dashboard/ComparativoRegimes';
+import { OportunidadesElisaoWidget } from '@/components/tributario/dashboard/OportunidadesElisaoWidget';
+import { ProximosVencimentosTimeline } from '@/components/tributario/dashboard/ProximosVencimentosTimeline';
+import { AlertasAtivosResumo } from '@/components/tributario/dashboard/AlertasAtivosResumo';
 
 const REGIME_LABEL: Record<string, string> = {
   simples_nacional: 'Simples Nacional',
@@ -36,292 +25,162 @@ const REGIME_LABEL: Record<string, string> = {
   lucro_real: 'Lucro Real',
 };
 
+type Periodo = 3 | 6 | 12;
+
 export default function DashboardTributario() {
   const { data: empresas = [] } = useAllEmpresas();
   const [empresaId, setEmpresaId] = useState<string | undefined>();
+  const [periodo, setPeriodo] = useState<Periodo>(12);
 
-  const { resultado, parametros } = useSimulacaoRegimes({ empresaId });
-  const { relatorio: relatorioElisao, isLoading: isLoadingElisao } = useOportunidadesElisao({ empresaId });
-  const { alertas = [], proximosVencimentos = [], isLoading: isLoadingAlertas } = useAlertasTributarios(empresaId);
-  const criticos = useMemo(() => (alertas ?? []).filter((a) => a.prioridade === 'critica' || a.prioridade === 'alta'), [alertas]);
+  const empresaSelecionada = empresas.find((e) => e.id === empresaId);
+  const { kpis, serie, simulacao, oportunidades, vencimentos, alertas, isLoading } =
+    useDashboardTributario(empresaId, periodo);
 
-  const projecao2026 = useMemo(() => {
-    if (!parametros?.faturamentoAnual) return null;
-    return projetarReforma({
-      faturamentoAnual: parametros.faturamentoAnual,
-      percentualServicos: parametros.percentualServicos ?? 50,
-      pisCofinsAtual: 9.25,
-      icmsAtual: 18,
-      issAtual: 5,
-    });
-  }, [parametros]);
-
-  const top3Oportunidades = (relatorioElisao?.oportunidades ?? [])
-    .filter((o) => o.aplicavel)
-    .slice(0, 3);
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { staggerChildren: 0.08 } },
+  };
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+  };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="container mx-auto p-4 sm:p-6 space-y-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-3">
-            <Scale className="h-8 w-8 text-primary" />
+          <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-3">
+            <Scale className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
             Dashboard Tributário
           </h1>
-          <p className="text-muted-foreground mt-1">
-            Visão consolidada: regime ideal, elisão fiscal, alertas e projeção 2026-2033.
+          <p className="text-muted-foreground mt-1 text-sm">
+            Visão consolidada · Reforma Tributária · Elisão fiscal
           </p>
         </div>
-        <div className="w-full md:w-72">
+
+        <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
           <Select value={empresaId} onValueChange={setEmpresaId}>
-            <SelectTrigger><SelectValue placeholder="Selecionar empresa" /></SelectTrigger>
+            <SelectTrigger className="w-full sm:w-64">
+              <SelectValue placeholder="Selecionar empresa" />
+            </SelectTrigger>
             <SelectContent>
               {empresas.map((e) => (
                 <SelectItem key={e.id} value={e.id}>{e.razao_social}</SelectItem>
               ))}
             </SelectContent>
           </Select>
+
+          <Select value={String(periodo)} onValueChange={(v) => setPeriodo(Number(v) as Periodo)}>
+            <SelectTrigger className="w-full sm:w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="3">3 meses</SelectItem>
+              <SelectItem value="6">6 meses</SelectItem>
+              <SelectItem value="12">12 meses</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {empresaSelecionada?.regime_tributario && (
+            <Badge variant="secondary" className="self-center">
+              {REGIME_LABEL[empresaSelecionada.regime_tributario] ?? empresaSelecionada.regime_tributario}
+            </Badge>
+          )}
         </div>
       </div>
 
-      {!empresaId && (
-        <Alert>
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Selecione uma empresa</AlertTitle>
-          <AlertDescription>
-            Escolha uma empresa para ver o panorama tributário consolidado.
-          </AlertDescription>
-        </Alert>
-      )}
+      {!empresaId ? (
+        <Card className="p-12 text-center border-dashed">
+          <p className="text-muted-foreground">Selecione uma empresa para visualizar o dashboard</p>
+        </Card>
+      ) : isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
+        </div>
+      ) : (
+        <>
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+          >
+            <motion.div variants={itemVariants}>
+              <KpiCard icon={<TrendingDown className="h-4 w-4" />} label="Carga Tributária Efetiva" value={`${kpis.cargaEfetiva.toFixed(2)}%`} hint="Sobre faturamento" accent="primary" />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <KpiCard icon={<Sparkles className="h-4 w-4" />} label="Economia Estimada" value={formatCurrency(kpis.totalEconomizado)} hint="Estratégias de elisão" accent="success" />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <KpiCard
+                icon={<Calendar className="h-4 w-4" />}
+                label="Próximo Vencimento"
+                value={kpis.proximoVencimento?.data ? format(parseISO(kpis.proximoVencimento.data), 'dd/MM', { locale: ptBR }) : '—'}
+                hint={kpis.proximoVencimento?.descricao ?? 'Sem vencimentos'}
+                accent="warning"
+              />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <KpiCard
+                icon={<Heart className="h-4 w-4" />}
+                label="Saúde Fiscal"
+                value={`${kpis.saudeFiscal}/100`}
+                hint={kpis.saudeFiscal >= 80 ? 'Excelente' : kpis.saudeFiscal >= 60 ? 'Boa' : 'Atenção'}
+                accent={kpis.saudeFiscal >= 80 ? 'success' : kpis.saudeFiscal >= 60 ? 'warning' : 'destructive'}
+              />
+            </motion.div>
+          </motion.div>
 
-      {/* KPIs principais */}
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" role="list" aria-label="Indicadores tributários">
-        <Card className="border-primary/20" role="listitem">
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-2"><Award className="h-4 w-4" /> Regime recomendado</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {resultado?.recomendado ? REGIME_LABEL[resultado.recomendado.regime] : '—'}
-            </div>
-            {resultado?.economiaAnualVsAtual && resultado.economiaAnualVsAtual > 0 && (
-              <p className="text-xs text-success mt-1">
-                Economia anual: {formatCurrency(resultado.economiaAnualVsAtual)}
-              </p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-2"><Sparkles className="h-4 w-4" /> Oportunidades</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {isLoadingElisao ? <Skeleton className="h-7 w-12" /> : (relatorioElisao?.oportunidades.filter((o) => o.aplicavel).length ?? 0)}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Economia potencial: {formatCurrency(relatorioElisao?.economia_total_estimada ?? 0)}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-2"><Bell className="h-4 w-4" /> Alertas críticos</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-destructive">
-              {isLoadingAlertas ? <Skeleton className="h-7 w-12" /> : criticos.length}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">{proximosVencimentos.length} vencimentos próximos</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-2"><TrendingUp className="h-4 w-4" /> Carga 2026 (CBS/IBS)</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {projecao2026 ? `${projecao2026.projecoes[0].cargaEfetiva.toFixed(2)}%` : '—'}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              vs atual: {projecao2026 ? `${projecao2026.cargaAtual.toFixed(2)}%` : '—'}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Atalhos */}
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" role="list" aria-label="Atalhos do módulo tributário">
-        <Card className="hover:shadow-md transition-shadow">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base"><Calculator className="h-5 w-5 text-primary" /> Simular Regimes</CardTitle>
-            <CardDescription>Compare Simples, Presumido e Real.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild variant="outline" className="w-full">
-              <Link to="/tributario/simulacao-regimes">Abrir simulador <ArrowRight className="h-4 w-4 ml-2" /></Link>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card className="hover:shadow-md transition-shadow">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base"><Sparkles className="h-5 w-5 text-primary" /> Elisão Fiscal</CardTitle>
-            <CardDescription>9 estratégias com base legal.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild variant="outline" className="w-full">
-              <Link to="/tributario/oportunidades-elisao">Ver oportunidades <ArrowRight className="h-4 w-4 ml-2" /></Link>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card className="hover:shadow-md transition-shadow">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base"><TrendingUp className="h-5 w-5 text-primary" /> Projeção 2026-2033</CardTitle>
-            <CardDescription>Cronograma CBS/IBS ano a ano.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild variant="outline" className="w-full">
-              <Link to="/tributario/projecao-reforma">Ver projeção <ArrowRight className="h-4 w-4 ml-2" /></Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Próximas Ações Consolidadas */}
-      {empresaId && (
-        <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-success/5">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-primary" aria-hidden="true" />
-              Próximas Ações Recomendadas
-            </CardTitle>
-            <CardDescription>Plano consolidado a partir das análises desta empresa.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ol className="space-y-3" aria-label="Lista de próximas ações">
-              {resultado?.recomendado && resultado.economiaAnualVsAtual && resultado.economiaAnualVsAtual > 0 && (
-                <li className="flex items-start gap-3 p-3 rounded-lg border bg-background">
-                  <span className="flex items-center justify-center h-7 w-7 rounded-full bg-primary text-primary-foreground text-xs font-bold flex-shrink-0">1</span>
-                  <div className="flex-1">
-                    <p className="font-semibold text-sm">Migrar para {REGIME_LABEL[resultado.recomendado.regime]}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Economia projetada: <span className="text-success font-semibold">{formatCurrency(resultado.economiaAnualVsAtual)}/ano</span>
-                    </p>
-                  </div>
-                  <Button asChild variant="ghost" size="sm">
-                    <Link to="/tributario/simulacao-regimes" aria-label="Ver simulação">
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </li>
-              )}
-              {top3Oportunidades.length > 0 && (
-                <li className="flex items-start gap-3 p-3 rounded-lg border bg-background">
-                  <span className="flex items-center justify-center h-7 w-7 rounded-full bg-primary text-primary-foreground text-xs font-bold flex-shrink-0">2</span>
-                  <div className="flex-1">
-                    <p className="font-semibold text-sm">Aplicar {top3Oportunidades.length} estratégia(s) de elisão</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Top: {top3Oportunidades[0].nome} — economia {formatCurrency(top3Oportunidades[0].economia_estimada)}/ano
-                    </p>
-                  </div>
-                  <Button asChild variant="ghost" size="sm">
-                    <Link to="/tributario/oportunidades-elisao" aria-label="Ver oportunidades">
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </li>
-              )}
-              {criticos.length > 0 && (
-                <li className="flex items-start gap-3 p-3 rounded-lg border border-destructive/30 bg-destructive/5">
-                  <span className="flex items-center justify-center h-7 w-7 rounded-full bg-destructive text-destructive-foreground text-xs font-bold flex-shrink-0">3</span>
-                  <div className="flex-1">
-                    <p className="font-semibold text-sm">Resolver {criticos.length} alerta(s) crítico(s)</p>
-                    <p className="text-xs text-muted-foreground mt-1">{criticos[0].titulo}</p>
-                  </div>
-                </li>
-              )}
-              {projecao2026 && (
-                <li className="flex items-start gap-3 p-3 rounded-lg border bg-background">
-                  <span className="flex items-center justify-center h-7 w-7 rounded-full bg-primary text-primary-foreground text-xs font-bold flex-shrink-0">{[resultado?.recomendado, top3Oportunidades.length, criticos.length].filter(Boolean).length + 1}</span>
-                  <div className="flex-1">
-                    <p className="font-semibold text-sm">Preparar empresa para Reforma 2026-2033</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Carga atual: {projecao2026.cargaAtual.toFixed(2)}% → 2033: {projecao2026.projecoes[projecao2026.projecoes.length - 1]?.cargaEfetiva.toFixed(2)}%
-                      {' '}({(projecao2026.projecoes[projecao2026.projecoes.length - 1]?.cargaEfetiva - projecao2026.cargaAtual).toFixed(2)} p.p.)
-                    </p>
-                  </div>
-                  <Button asChild variant="ghost" size="sm">
-                    <Link to="/tributario/projecao-reforma" aria-label="Ver projeção">
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </li>
-              )}
-              {!resultado?.economiaAnualVsAtual && top3Oportunidades.length === 0 && criticos.length === 0 && (
-                <li className="flex items-center gap-2 p-3 rounded-lg border bg-success/5 text-success">
-                  <CheckCircle2 className="h-5 w-5" />
-                  <span className="text-sm font-medium">Tudo em ordem — nenhuma ação prioritária identificada.</span>
-                </li>
-              )}
-            </ol>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Top 3 oportunidades */}
-      {top3Oportunidades.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Top 3 oportunidades de elisão</CardTitle>
-            <CardDescription>Maior economia estimada anual.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {top3Oportunidades.map((o) => (
-              <div key={o.estrategia} className="flex items-start justify-between gap-4 p-3 rounded-lg border hover:bg-muted/30">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-semibold">{o.nome}</h4>
-                    <Badge variant={o.risco === 'baixo' ? 'secondary' : o.risco === 'medio' ? 'default' : 'destructive'}>
-                      Risco {o.risco}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">{o.justificativa}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{o.base_legal}</p>
-                </div>
-                <div className="text-right">
-                  <div className="text-lg font-bold text-success">{formatCurrency(o.economia_estimada)}</div>
-                  <div className="text-xs text-muted-foreground">economia/ano</div>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Alertas críticos */}
-      {criticos.length > 0 && (
-        <Card className="border-destructive/30">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-destructive">
-              <AlertTriangle className="h-5 w-5" /> Alertas tributários críticos
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {criticos.slice(0, 5).map((a) => (
-              <div key={a.id} className="flex items-start justify-between p-3 rounded-lg border border-destructive/20 bg-destructive/5">
-                <div className="flex-1">
-                  <h4 className="font-semibold text-sm">{a.titulo}</h4>
-                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{a.mensagem}</p>
-                </div>
-                <Badge variant="destructive">{a.prioridade}</Badge>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+          <motion.div variants={containerVariants} initial="hidden" animate="show" className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <motion.div variants={itemVariants} className="lg:col-span-2">
+              <EvolucaoCargaChart serie={serie} />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <ComparativoRegimes resultado={simulacao} />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <OportunidadesElisaoWidget oportunidades={oportunidades} />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <ProximosVencimentosTimeline vencimentos={vencimentos} />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <AlertasAtivosResumo alertas={alertas} />
+            </motion.div>
+          </motion.div>
+        </>
       )}
     </div>
+  );
+}
+
+interface KpiProps {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  hint: string;
+  accent: 'primary' | 'success' | 'warning' | 'destructive';
+}
+
+function KpiCard({ icon, label, value, hint, accent }: KpiProps) {
+  const accentMap = {
+    primary: 'text-primary bg-primary/10',
+    success: 'text-success bg-success/10',
+    warning: 'text-warning bg-warning/10',
+    destructive: 'text-destructive bg-destructive/10',
+  };
+  return (
+    <Card className="backdrop-blur-sm bg-card/60 border-border/50 hover-scale transition-all">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-xs font-medium text-muted-foreground">{label}</CardTitle>
+        <div className={`h-7 w-7 rounded-lg flex items-center justify-center ${accentMap[accent]}`}>
+          {icon}
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{value}</div>
+        <p className="text-xs text-muted-foreground mt-1 truncate">{hint}</p>
+      </CardContent>
+    </Card>
   );
 }
