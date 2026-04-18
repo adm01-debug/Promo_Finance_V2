@@ -2,7 +2,7 @@
 // PÁGINA: PF Vinculada — Lei 15.270/2025 (IRPFM)
 // Imposto Mínimo PF sobre dividendos > R$ 50k/mês
 // ============================================
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,7 +17,6 @@ import {
   IRPFM_LIMITE_ISENCAO_MENSAL,
 } from '@/lib/tributario';
 import { formatCurrency } from '@/lib/formatters';
-import { Helmet } from 'react-helmet-async';
 
 const MESES = [
   'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
