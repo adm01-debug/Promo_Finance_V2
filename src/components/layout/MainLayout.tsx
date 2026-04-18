@@ -48,6 +48,9 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
       {/* Guided Tour for new users */}
       <GuidedTour />
+
+      {/* Onboarding Tour P14 (react-joyride) */}
+      <OnboardingTour />
       
       {/* Offline Banner */}
       <OfflineBanner position="top" />
@@ -111,6 +114,9 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       {isMobile && (
         <MobileBottomNav onMenuClick={() => setMobileMenuOpen(true)} />
       )}
+
+      {/* Copilot Global IA P14 */}
+      <CopilotGlobalFloat />
     </div>
   );
 };
