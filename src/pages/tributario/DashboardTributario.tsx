@@ -95,6 +95,43 @@ export default function DashboardTributario() {
               {REGIME_LABEL[empresaSelecionada.regime_tributario] ?? empresaSelecionada.regime_tributario}
             </Badge>
           )}
+
+          <Dialog open={relatorioOpen} onOpenChange={setRelatorioOpen}>
+            <DialogTrigger asChild>
+              <Button variant="default" size="sm" disabled={!empresaId} className="gap-2">
+                <FileDown className="h-4 w-4" /> Relatório Anual
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Gerar Relatório Anual Tributário</DialogTitle>
+                <DialogDescription>
+                  PDF executivo com sumário, apuração mensal, oportunidades de elisão e recomendações.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-3 py-2">
+                <label className="text-sm font-medium">Ano de referência</label>
+                <Select value={String(anoRelatorio)} onValueChange={(v) => setAnoRelatorio(Number(v))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 3 }).map((_, i) => {
+                      const y = new Date().getFullYear() - i;
+                      return <SelectItem key={y} value={String(y)}>{y}</SelectItem>;
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setRelatorioOpen(false)}>Cancelar</Button>
+                <Button onClick={gerarPDF} disabled={loadingRelatorio} className="gap-2">
+                  {loadingRelatorio ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
+                  Baixar PDF
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
