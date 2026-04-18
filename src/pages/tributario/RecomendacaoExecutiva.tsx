@@ -13,8 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { Award, TrendingDown, AlertTriangle, FileText, ArrowRight, CheckCircle2, Scale } from 'lucide-react';
 import { useSimulacaoRegimes } from '@/hooks/useSimulacaoRegimes';
-import { useEmpresas } from '@/hooks/useEmpresas';
-import { gerarRelatorioPDF } from '@/lib/tributario/relatorio-pdf';
+import { useAllEmpresas } from '@/hooks/useEmpresas';
+import { baixarRelatorioPdf } from '@/lib/tributario/relatorio-pdf';
 import { toast } from 'sonner';
 import type { RegimeTributario, ResultadoCenario } from '@/lib/tributario';
 
@@ -31,18 +31,26 @@ const formatPct = (n: number) => `${n.toFixed(2)}%`;
 
 export default function RecomendacaoExecutiva() {
   const navigate = useNavigate();
-  const { empresas } = useEmpresas();
+  const { data: empresas = [] } = useAllEmpresas();
   const [empresaId, setEmpresaId] = useState<string | undefined>();
-  const { resultado, regimeAtual, setRegimeAtual, salvarSimulacao } = useSimulacaoRegimes({ empresaId });
+  const { resultado, regimeAtual, setRegimeAtual, parametros, salvarSimulacao } =
+    useSimulacaoRegimes({ empresaId });
 
   const cenariosOrdenados: ResultadoCenario[] = [...resultado.cenarios]
     .filter((c) => c.elegivel)
     .sort((a, b) => a.totalTributos - b.totalTributos);
 
-  const handleExportPDF = async () => {
+  const empresaSelecionada = empresas.find((e) => e.id === empresaId);
+
+  const handleExportPDF = () => {
     try {
-      await gerarRelatorioPDF(resultado, {
-        empresaNome: empresas?.find((e) => e.id === empresaId)?.razao_social,
+      baixarRelatorioPdf({
+        empresaNome: empresaSelecionada?.razao_social ?? 'Empresa',
+        cnpj: empresaSelecionada?.cnpj ?? undefined,
+        parametros,
+        decisao: resultado,
+        regimeAtual,
+        projetarReformaTimeline: true,
       });
       toast.success('Relatório PDF gerado');
     } catch (e) {
