@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Building2, CheckCircle2, FileSearch, Loader2, Search, SkipForward } from 'lucide-react';
-import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -80,8 +79,7 @@ export default function OnboardingTributario() {
   };
 
   return (
-    <AppLayout>
-      <div className="container mx-auto py-8 max-w-4xl space-y-8">
+    <div className="container mx-auto py-8 max-w-4xl space-y-8">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -288,8 +286,7 @@ export default function OnboardingTributario() {
             </CardContent>
           </Card>
         )}
-      </div>
-    </AppLayout>
+    </div>
   );
 }
 
