@@ -1,30 +1,23 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell } from 'recharts';
 import { formatCurrency } from '@/lib/formatters';
+import type { ResultadoDecisao } from '@/lib/tributario';
 
 interface Props {
-  simulacao: {
-    simples?: { total: number };
-    presumido?: { total: number };
-    real?: { total: number };
-    melhor?: string;
-  } | null;
+  resultado: ResultadoDecisao | null | undefined;
 }
 
-const LABELS: Record<string, string> = {
-  simples: 'Simples Nacional',
-  presumido: 'Lucro Presumido',
-  real: 'Lucro Real',
-};
+export function ComparativoRegimes({ resultado }: Props) {
+  const cenarios = resultado?.cenarios ?? [];
+  const data = cenarios
+    .filter((c) => c.elegivel)
+    .map((c) => ({
+      regime: c.regime,
+      label: c.nome,
+      valor: c.totalTributos,
+    }));
 
-export function ComparativoRegimes({ simulacao }: Props) {
-  const data = [
-    { regime: 'simples', label: LABELS.simples, valor: simulacao?.simples?.total ?? 0 },
-    { regime: 'presumido', label: LABELS.presumido, valor: simulacao?.presumido?.total ?? 0 },
-    { regime: 'real', label: LABELS.real, valor: simulacao?.real?.total ?? 0 },
-  ].filter((d) => d.valor > 0);
-
-  const melhor = simulacao?.melhor;
+  const melhor = resultado?.recomendado?.regime;
 
   return (
     <Card className="backdrop-blur-sm bg-card/60 border-border/50">
