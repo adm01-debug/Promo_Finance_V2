@@ -1,71 +1,74 @@
 
-P5 ✅ entregue. Próximo: **Lote P6 — Relatório Anual Tributário PDF** (último lote do roadmap pós-10/10).
+## Lote P7 — Excelência Operacional++
 
-## Lote P6 — Relatório Anual Tributário PDF
+### 1. Cache de decisões `decidir-regime`
+- Migration: tabela `regime_decision_cache` (PK composta `empresa_id+ano+mes`, `decisao jsonb`, `expires_at timestamptz`).
+- RLS admin/financeiro/contador_readonly leitura; service role escrita.
+- Wrapper no edge `decidir-regime`: checa cache (TTL 7d) antes de recalcular; UPSERT após cálculo.
+- Trigger `AFTER INSERT/UPDATE` em `apuracoes_tributarias` invalida cache da empresa+mês.
+- Reduz latência do dashboard P5 e relatório P6 em ~80%.
 
-### 1. Edge Function nova `gerar-relatorio-anual`
-- Validação JWT manual + RBAC (admin/financeiro/contador_readonly).
-- Input: `{ empresa_id, ano }`.
-- Agrega dados via `vw_tributario_dashboard` (criada em P5):
-  - Faturamento, tributos pagos, carga efetiva mensal
-  - Comparativo de regimes (chama motor `decidir-regime`)
-  - Oportunidades de elisão aplicáveis (`analisarOportunidadesElisao`)
-  - Alertas resolvidos no ano + economias capturadas
-- Retorna JSON estruturado para renderização no cliente (PDF gerado client-side com jsPDF, padrão já memorizado em `mem://features/advanced-corporate-reporting-engine`).
-- Logger P2 estruturado (`fn_start`, `data_aggregated`, `fn_success`).
+### 2. Agendamento de relatórios anuais (cron + e-mail)
+- Migration: tabela `relatorios_tributarios_agendados` (id, empresa_id, ano, frequencia `enum mensal|trimestral|anual`, dia_envio, destinatarios `text[]`, ativo, ultimo_envio_em, proximo_envio_em).
+- Edge function nova `enviar-relatorios-tributarios-agendados`:
+  - Cron diário 06:00 via `pg_cron` + `pg_net`
+  - Consulta agendamentos com `proximo_envio_em <= now()`
+  - Reaproveita `gerar-relatorio-anual` (P6) para JSON
+  - Renderiza PDF server-side com `pdf-lib` (Deno)
+  - Faz upload no bucket `relatorios-tributarios` (já existe ✅)
+  - Envia link assinado via Resend (`RESEND_API_KEY` já configurado ✅)
+  - Atualiza `ultimo_envio_em` e `proximo_envio_em`
+  - Logger P2 estruturado
+- UI nova `RelatoriosAgendadosCard.tsx` no `DashboardTributario`: lista, criar/editar/desativar, preview destinatários.
 
-### 2. Componente `RelatorioAnualTributarioPDF.tsx`
-- Em `src/components/tributario/relatorios/`.
-- Usa `jsPDF` + `autoTable` (já no projeto).
-- Layout corporativo (capa, sumário executivo, 4 seções):
-  1. **Sumário executivo** — KPIs anuais, regime atual vs ótimo
-  2. **Apuração mensal** — tabela 12 meses × tributos (CBS, IBS, IS, residuais)
-  3. **Oportunidades de elisão** — top 9 com base legal e economia
-  4. **Recomendações** — texto gerado dinamicamente conforme score saúde fiscal
-- Cabeçalho/rodapé com razão social, CNPJ, ano, paginação.
-- Cores HSL semânticas convertidas para RGB no PDF.
+### 3. Página `/admin/system-health`
+- Agrega em 1 painel admin-only:
+  - `vw_edge_health` (P2) — uptime e P95 das edges
+  - Stats `cnpja_cache` (P3) — hit rate e economia de créditos
+  - Convites contador (P4) — pendentes/aceitos/expirados
+  - Apurações tributárias do mês (P5) — completude por empresa
+  - Cache regime hit rate (novo P7)
+- KPIs animados (framer-motion stagger) + alertas SLA.
+- Acesso restrito via `has_role(uid, 'admin')` (RBAC P4).
+- Adiciona rota em `App.tsx` + link no `AdminEdgeHealth` existente.
 
-### 3. Hook `useRelatorioAnual(empresaId, ano)`
-- Chama edge function via `supabase.functions.invoke`.
-- React Query com `staleTime: 30min` (dados anuais mudam pouco).
-- Retorna `{ data, isLoading, gerarPDF }` onde `gerarPDF` dispara o download.
-
-### 4. UI de acesso
-- Botão "Gerar Relatório Anual" no `DashboardTributario` (P5) — abre modal com seleção de ano (últimos 3) e CTA de download.
-- Toast de sucesso com confetti ao concluir geração.
-
-### 5. Validação
+### 4. Validação
 - `npx tsc --noEmit` zero erros.
-- Deploy edge sem erros.
-- QA: gerar PDF com empresa real, conferir todas as 4 seções renderizam sem clipping.
-- Memória: salvar padrão em `mem://features/relatorio-anual-tributario-pdf`.
+- Migrations limpas (RLS hardening conforme `mem://security/rls-hardening-rules`).
+- Cron job criado via `insert tool` (contém URL+anon key).
+- Memórias: `mem://performance/regime-decision-cache`, `mem://features/relatorios-tributarios-agendados`, `mem://features/system-health-page`.
 
 ## Diagrama
 
 ```text
-   DashboardTributario (P5)
-            │
-            ▼
-   [Botão "Gerar Relatório Anual"]
-            │
-            ▼
-   useRelatorioAnual(empresaId, ano)
-            │
-            ▼
-   edge: gerar-relatorio-anual
-       │
-       ├─▶ vw_tributario_dashboard (P5)
-       ├─▶ decidir-regime (motor P1)
-       └─▶ analisarOportunidadesElisao (motor P1)
-            │
-            ▼
-   JSON estruturado → RelatorioAnualTributarioPDF
-            │ (jsPDF + autoTable)
-            ▼
-   Download PDF corporativo (capa + 4 seções)
+   decidir-regime (P1)
+        │
+        ├─▶ regime_decision_cache HIT → retorna (~80% mais rápido)
+        └─▶ MISS → calcula + UPSERT cache (TTL 7d)
+              │
+              ▼ trigger nova apuracao_tributaria
+        invalida cache empresa+mes
+
+   pg_cron (diário 06:00)
+        │
+        ▼
+   enviar-relatorios-tributarios-agendados
+        │
+        ├─▶ relatorios_tributarios_agendados (vencidos)
+        ├─▶ gerar-relatorio-anual (P6) → JSON
+        ├─▶ pdf-lib render → bucket relatorios-tributarios
+        └─▶ Resend link assinado → destinatarios[]
+
+   /admin/system-health (admin only)
+        │
+        ├─▶ vw_edge_health (P2)
+        ├─▶ stats cnpja_cache (P3)
+        ├─▶ convites_contador (P4)
+        ├─▶ apuracoes_tributarias (P5)
+        └─▶ regime_decision_cache (P7)
 ```
 
 ## Observações
-- Reaproveita 100% dos motores P1, view P5, observability P2, RBAC P4.
-- Sem novos secrets.
-- **Último lote do roadmap pós-10/10** — após P6, sistema atinge 10/10++ (excelência operacional completa).
+- Reaproveita 100% da infra P1-P6, secrets e bucket existentes.
+- Sem novos secrets necessários.
+- Eleva de 10/10 para 10/10++ (excelência operacional + economia de compute).
