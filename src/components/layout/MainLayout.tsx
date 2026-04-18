@@ -12,6 +12,8 @@ import { GuidedTour } from '@/components/onboarding/GuidedTour';
 import { ContextualBreadcrumbs } from '@/components/navigation/ContextualBreadcrumbs';
 import { OfflineBanner } from '@/components/offline/OfflineBanner';
 import { InstallPWA } from '@/components/pwa/InstallPWA';
+import { PWAInstallBanner } from '@/components/pwa/PWAInstallBanner';
+import { SkipLinks } from '@/components/accessibility/SkipLinks';
 import { MobileBottomNav } from './sidebar/MobileBottomNav';
 import { MobileSidebarDrawer } from './sidebar/MobileSidebarDrawer';
 import { useSwipeBack } from '@/hooks/useSwipeBack';
@@ -36,6 +38,12 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Skip links para acessibilidade WCAG AA */}
+      <SkipLinks />
+
+      {/* Banner de instalação PWA (só aparece se beforeinstallprompt disparou) */}
+      <PWAInstallBanner />
+
       {/* Guided Tour for new users */}
       <GuidedTour />
       
