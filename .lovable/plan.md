@@ -1,70 +1,52 @@
 
-P11 entregue ✅. Sistema 10/10++++++. Proponho **Lote P12 — Excelência Operacional Final** (3 melhorias que cravam o estado da arte: governança LGPD + operação contínua + monitoramento ativo).
+P12 entregue ✅ (LGPD + Health Score + Anomalias). Sistema 10/10+++++++. Proponho **Lote P13 — Automação Total + Inteligência Conectada** (3 cravos finais que conectam toda a infra construída).
 
-## Lote P12 — Compliance LGPD + Health Score IA + Anomalias em Tempo Real
+## Lote P13 — Cron Jobs Automáticos + Insights Cruzados + Centro de Ações
 
-### 1. Centro de Privacidade LGPD (direitos do titular)
-- Migration: tabela `solicitacoes_lgpd` (id, user_id, tipo enum `acesso|portabilidade|exclusao|retificacao|anonimizacao`, status enum `aberta|em_analise|atendida|rejeitada`, justificativa, payload_resposta jsonb, atendida_em, atendida_por). RLS: usuário vê suas solicitações; admin vê todas e atende.
-- Edge `processar-solicitacao-lgpd`:
-  - `acesso`: gera dump JSON de todos os dados do titular (profiles, alertas, audit_logs, solicitações).
-  - `portabilidade`: mesmo dump em CSV agrupado por entidade, upload em `relatorios-tributarios/lgpd/`, retorna URL assinada 24h.
-  - `exclusao`: anonimiza profile (nome → "Titular removido", email → hash) e audit logs do usuário; mantém integridade referencial.
-  - Gera entrada em `auditoria_tributaria` (P9) para rastreabilidade.
-- UI `/configuracoes/privacidade` (`CentroPrivacidadeLGPD.tsx`): cards explicando cada direito + formulário de solicitação + lista das suas solicitações com status + download de dump.
-- Hook `useSolicitacoesLGPD`.
+### 1. Cron jobs para automações P10-P12 (operação contínua)
+Hoje várias edges existem mas dependem de execução manual. Vou ativar via `pg_cron` + `pg_net`:
+- `calcular-health-score-operacional` → diário 07:00
+- `detectar-anomalias-financeiras` → a cada 30 minutos
+- `gerar-resumo-executivo-semanal` → domingo 18:00 (P11 ainda manual)
+- `refresh_mv_benchmark_setorial` → semanal segunda 03:00
+- Migration cria os 4 schedules + função wrapper que chama edge via `net.http_post` autenticado pelo service-role.
+- UI: nova seção "Automações" no `/admin/system-health` com status (último run, próximo run, sucesso/erro) consumindo `get_cron_run_history`.
 
-### 2. Health Score Operacional com IA (visão 360°)
-- Edge `calcular-health-score-operacional`:
-  - Agrega 6 dimensões por empresa (peso configurável):
-    1. Saúde tributária (conformidade P8 + apuração em dia) — 25%
-    2. Saúde financeira (saldo + DRE positivo + inadimplência) — 25%
-    3. Operacional (conciliação bancária % conciliada) — 15%
-    4. Compliance LGPD (solicitações abertas <7d) — 10%
-    5. Cadastros (% empresas com regime + CNAE) — 10%
-    6. Engajamento (alertas atendidos / total) — 15%
-  - Calcula score 0-100 + tendência vs 7 dias atrás.
-  - Chama `gemini-2.5-flash` para gerar 3 insights priorizados em markdown.
-  - Persiste em `health_scores_operacionais` (snapshot diário via cron 07:00).
-- UI `HealthScoreCard.tsx` no DashboardExecutivo: gauge animado + breakdown por dimensão + insights IA + tendência.
-- Hook `useHealthScoreOperacional`.
+### 2. Centro de Ações Inteligentes (insights cruzados P1-P12)
+- Edge `gerar-acoes-recomendadas`:
+  - Cruza dados de **5 fontes** (anomalias críticas + health score < 70 + alertas não lidos + apurações atrasadas + solicitações LGPD pendentes).
+  - Chama `gemini-2.5-flash` para gerar **top 5 ações priorizadas** com: título, impacto estimado (R$ ou % score), urgência, link para resolução.
+  - Persiste em nova tabela `acoes_recomendadas` (TTL 24h via cron diário 06:00).
+- UI `CentroAcoesInteligentes.tsx`: card destaque no `DashboardExecutivo` com lista de 5 ações + botão "Resolver" que navega ao módulo correto.
+- Hook `useAcoesRecomendadas`.
 
-### 3. Detector de Anomalias em Tempo Real (movimentações suspeitas)
-- Migration: tabela `anomalias_detectadas` (entidade_tipo, entidade_id, tipo_anomalia enum, severidade enum, descricao, dados jsonb, status enum `nova|investigando|falso_positivo|confirmada`, detectada_em, resolvida_em).
-- Edge `detectar-anomalias-financeiras` (cron a cada 30 min):
-  - 5 detectores estatísticos:
-    1. Movimentação > 3σ vs média 30 dias
-    2. Pagamento duplicado (mesmo fornecedor + valor + dia)
-    3. Conta a pagar > p95 da empresa
-    4. Conciliação > 30 dias atrasada
-    5. Mudança brusca de regime (variação carga > 30%)
-  - Persiste em `anomalias_detectadas` + dispara push P10 (severidade=critica).
-- UI `AnomaliasDetectadasPanel.tsx` em `/admin/system-health` (4ª tab): lista filtrada + ações (marcar como falso positivo / investigar / confirmar).
-- Hook `useAnomaliasDetectadas`.
-
-### 4. Validação
-- `npx tsc --noEmit` zero erros.
-- 3 edge functions deployadas + 2 cron jobs (health 07:00, anomalias */30min).
-- 3 migrations limpas + RLS hardening + auditoria P9.
-- Memórias: `mem://features/centro-privacidade-lgpd`, `mem://features/health-score-operacional`, `mem://features/detector-anomalias-tempo-real`.
+### 3. Tela de Privacidade no menu lateral + integração Push P10
+- Adiciona item "Privacidade & LGPD" no `Sidebar.tsx` (ícone Shield).
+- Adiciona banner "Ative notificações push" (`PushNotificationsBanner` P10) na nova seção "Notificações" do `/configuracoes`.
+- Trigger SQL `fn_notificar_alerta_critico_push` em `alertas` (prioridade=critica): chama edge `enviar-push-notification` automaticamente.
+- Validação: `npx tsc --noEmit` zero erros + edges deployadas.
 
 ## Diagrama
-
 ```text
-   /configuracoes/privacidade ──▶ processar-solicitacao-lgpd
-                                       ├─▶ acesso/portabilidade → dump JSON/CSV
-                                       └─▶ exclusao → anonimização + auditoria P9
+   pg_cron schedules (4 jobs)
+      ├─▶ 07:00 daily ──▶ calcular-health-score-operacional
+      ├─▶ */30min ─────▶ detectar-anomalias-financeiras
+      ├─▶ Sun 18:00 ──▶ gerar-resumo-executivo-semanal
+      └─▶ Mon 03:00 ──▶ refresh_mv_benchmark_setorial
 
-   cron 07:00 ──▶ calcular-health-score-operacional
-                      ├─▶ 6 dimensões ponderadas → score 0-100
-                      └─▶ gemini-2.5-flash → 3 insights
-                            └─▶ health_scores_operacionais → HealthScoreCard
+   /admin/system-health
+      └─▶ AutomacoesTab (status + último run via get_cron_run_history)
 
-   cron */30min ──▶ detectar-anomalias-financeiras
-                          ├─▶ 5 detectores estatísticos
-                          └─▶ anomalias_detectadas → push P10 + tab admin
+   DashboardExecutivo
+      └─▶ CentroAcoesInteligentes ──▶ gerar-acoes-recomendadas
+                                          ├─▶ cruza 5 fontes (P9 anomalias + P12 health + alertas + apurações + LGPD)
+                                          └─▶ gemini-2.5-flash → top 5 ações
+
+   alertas (critica) ──trigger──▶ enviar-push-notification (P10)
 ```
 
 ## Observações
-- Reaproveita 100% da infra P1-P11 (auditoria, conformidade, push, AI gateway, Resend, storage).
-- Sem novos secrets necessários ✅.
-- Eleva produto para 10/10+++++++ definitivo (LGPD + saúde 360° + vigilância contínua).
+- Reaproveita 100% da infra P1-P12. Sem secrets novos (todos já configurados ✅).
+- Cron jobs são o "cimento" que faltava: sistema passa a operar 24/7 sem intervenção.
+- Centro de Ações é o "cockpit" que conecta toda a inteligência num só lugar.
+- Eleva produto para **10/10++++++++ definitivo** (autonomia operacional + cockpit unificado).
