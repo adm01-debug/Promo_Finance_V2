@@ -5,11 +5,14 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Scale, TrendingDown, Sparkles, Calendar, Heart } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Scale, TrendingDown, Sparkles, Calendar, Heart, FileDown, Loader2 } from 'lucide-react';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { useDashboardTributario } from '@/hooks/useDashboardTributario';
+import { useRelatorioAnual } from '@/hooks/useRelatorioAnual';
 import { formatCurrency } from '@/lib/formatters';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -31,10 +34,16 @@ export default function DashboardTributario() {
   const { data: empresas = [] } = useAllEmpresas();
   const [empresaId, setEmpresaId] = useState<string | undefined>();
   const [periodo, setPeriodo] = useState<Periodo>(12);
+  const [relatorioOpen, setRelatorioOpen] = useState(false);
+  const [anoRelatorio, setAnoRelatorio] = useState<number>(new Date().getFullYear());
 
   const empresaSelecionada = empresas.find((e) => e.id === empresaId);
   const { kpis, serie, simulacao, oportunidades, vencimentos, alertas, isLoading } =
     useDashboardTributario(empresaId, periodo);
+  const { isLoading: loadingRelatorio, gerarPDF } = useRelatorioAnual(
+    relatorioOpen ? empresaId : undefined,
+    relatorioOpen ? anoRelatorio : undefined
+  );
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -86,6 +95,43 @@ export default function DashboardTributario() {
               {REGIME_LABEL[empresaSelecionada.regime_tributario] ?? empresaSelecionada.regime_tributario}
             </Badge>
           )}
+
+          <Dialog open={relatorioOpen} onOpenChange={setRelatorioOpen}>
+            <DialogTrigger asChild>
+              <Button variant="default" size="sm" disabled={!empresaId} className="gap-2">
+                <FileDown className="h-4 w-4" /> Relatório Anual
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Gerar Relatório Anual Tributário</DialogTitle>
+                <DialogDescription>
+                  PDF executivo com sumário, apuração mensal, oportunidades de elisão e recomendações.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-3 py-2">
+                <label className="text-sm font-medium">Ano de referência</label>
+                <Select value={String(anoRelatorio)} onValueChange={(v) => setAnoRelatorio(Number(v))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 3 }).map((_, i) => {
+                      const y = new Date().getFullYear() - i;
+                      return <SelectItem key={y} value={String(y)}>{y}</SelectItem>;
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setRelatorioOpen(false)}>Cancelar</Button>
+                <Button onClick={gerarPDF} disabled={loadingRelatorio} className="gap-2">
+                  {loadingRelatorio ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
+                  Baixar PDF
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
