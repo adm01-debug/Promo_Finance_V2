@@ -98,3 +98,6 @@ verify_jwt = false
 
 [functions.decidir-regime]
 verify_jwt = false
+
+[functions.cnpja-lookup]
+verify_jwt = false
