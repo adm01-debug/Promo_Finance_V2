@@ -70,6 +70,7 @@ const OrcamentoEvento = lazy(() => import('./pages/OrcamentoEvento'));
 const BenchmarkingSetorial = lazy(() => import('./pages/BenchmarkingSetorial'));
 const AdminTelemetria = lazy(() => import('./pages/AdminTelemetria'));
 const AdminEdgeHealth = lazy(() => import('./pages/AdminEdgeHealth'));
+const ContadorReadonly = lazy(() => import('./pages/ContadorReadonly'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Inner app component that can use routing hooks
@@ -86,6 +87,7 @@ function AppRoutes() {
             {/* Public Routes */}
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/contador/:token" element={<ContadorReadonly />} />
             
             {/* Protected Routes */}
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />

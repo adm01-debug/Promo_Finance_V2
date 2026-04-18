@@ -32,20 +32,20 @@ interface ConfettiOptions {
 }
 
 // Confetti color palette (hex required by canvas-confetti library)
-const CONFETTI_COLORS = {
+const CONFETTI_COLORS: Record<string, string[]> = {
   success: ['#10b981', '#16a34a', '#22c55e', '#4ade80'],
   primary: ['#3b82f6', '#6366f1', '#8b5cf6'],
   warning: ['#fbbf24', '#f59e0b', '#d97706'],
   celebration: ['#ec4899', '#f43f5e', '#a855f7'],
   mixed: ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ec4899'],
-} as const;
+};
 
 export function celebrateSuccess(options: ConfettiOptions = {}) {
   const defaults = {
     particleCount: 100,
     spread: 70,
     origin: { x: 0.5, y: 0.6 },
-    colors: CONFETTI_COLORS.mixed,
+    colors: [...CONFETTI_COLORS.mixed],
   };
   
   confetti({ ...defaults, ...options });
@@ -73,7 +73,7 @@ export function celebrateGoal() {
     particleCount: 150,
     spread: 180,
     origin: { y: 0.2 },
-    colors: CONFETTI_COLORS.warning,
+    colors: [...CONFETTI_COLORS.warning],
     shapes: ['star'],
     ticks: 200,
   });
