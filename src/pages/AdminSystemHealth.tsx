@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Activity, Database, Mail, Shield, Zap, ExternalLink } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AuditoriaTributariaTab } from '@/components/admin/AuditoriaTributariaTab';
 import { logger } from '@/lib/logger';
 
 interface HealthRow {
