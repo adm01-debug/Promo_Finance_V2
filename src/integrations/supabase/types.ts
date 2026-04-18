@@ -1613,6 +1613,48 @@ export type Database = {
           },
         ]
       }
+      cnpja_cache: {
+        Row: {
+          cnpj: string
+          data: Json
+          expires_at: string
+          fetched_at: string
+          situacao_cadastral: string | null
+        }
+        Insert: {
+          cnpj: string
+          data: Json
+          expires_at: string
+          fetched_at?: string
+          situacao_cadastral?: string | null
+        }
+        Update: {
+          cnpj?: string
+          data?: Json
+          expires_at?: string
+          fetched_at?: string
+          situacao_cadastral?: string | null
+        }
+        Relationships: []
+      }
+      cnpja_rate_limit: {
+        Row: {
+          request_count: number
+          user_id: string
+          window_start: string
+        }
+        Insert: {
+          request_count?: number
+          user_id: string
+          window_start: string
+        }
+        Update: {
+          request_count?: number
+          user_id?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       conciliacoes: {
         Row: {
           conta_bancaria_id: string
@@ -8171,6 +8213,10 @@ export type Database = {
         Returns: string
       }
       check_account_lockout: { Args: { _email: string }; Returns: boolean }
+      cnpja_check_rate_limit: {
+        Args: { _max?: number; _user_id: string; _window_minutes?: number }
+        Returns: boolean
+      }
       confirmar_conciliacao: {
         Args: {
           p_conta_pagar_id?: string

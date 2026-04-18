@@ -33,7 +33,8 @@ export default function OnboardingTributario() {
   );
 
   const handleBuscar = async () => {
-    const data = await lookup.mutateAsync(cnpjInput);
+    const result = await lookup.mutateAsync(cnpjInput);
+    const data = result?.data;
     setCnpjData(data);
     if (data) {
       const existente = (empresas || []).find(

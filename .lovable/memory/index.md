@@ -18,6 +18,7 @@ type: reference
 
 ## Memories
 - [Edge Function Observability](mem://observability/edge-function-logging-pattern) — `_shared/observability.ts` + `edge_function_logs` + `vw_edge_health` + `/admin/edge-health`
+- [CNPJá Cache + Rate Limit](mem://integrations/cnpja-cache-and-rate-limit) — `cnpja_cache` (TTL 30d) + `cnpja_check_rate_limit` (10/h por user) na edge `cnpja-lookup`
 - [Independent Projects](mem://architecture/independent-projects-strategy) — Document reusable utils for copy-paste instead of shared dependencies
 - [Role-Based Access Control](mem://auth/rbac-4-role-system) — 4 roles (admin, financeiro, operacional, visualizador) and auto-admin
 - [Approval Workflow](mem://features/approval-workflow-system) — Explains `valor_minimo_aprovacao` threshold and observer notes
