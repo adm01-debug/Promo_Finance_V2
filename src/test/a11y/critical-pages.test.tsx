@@ -1,12 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
-import { axe, toHaveNoViolations } from 'vitest-axe';
+import 'vitest-axe/extend-expect';
+import { axe } from 'vitest-axe';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SkipLinks } from '@/components/accessibility/SkipLinks';
-
-expect.extend({ toHaveNoViolations: toHaveNoViolations as never });
 
 const axeConfig = {
   rules: {
