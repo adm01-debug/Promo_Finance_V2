@@ -971,6 +971,51 @@ export type Database = {
         }
         Relationships: []
       }
+      auditoria_tributaria: {
+        Row: {
+          acao: Database["public"]["Enums"]["acao_auditoria_tributaria"]
+          criado_em: string
+          empresa_id: string | null
+          entidade_id: string | null
+          entidade_tipo: string
+          id: string
+          ip_address: string | null
+          payload_anterior: Json | null
+          payload_novo: Json | null
+          user_agent: string | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          acao: Database["public"]["Enums"]["acao_auditoria_tributaria"]
+          criado_em?: string
+          empresa_id?: string | null
+          entidade_id?: string | null
+          entidade_tipo: string
+          id?: string
+          ip_address?: string | null
+          payload_anterior?: Json | null
+          payload_novo?: Json | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          acao?: Database["public"]["Enums"]["acao_auditoria_tributaria"]
+          criado_em?: string
+          empresa_id?: string | null
+          entidade_id?: string | null
+          entidade_tipo?: string
+          id?: string
+          ip_address?: string | null
+          payload_anterior?: Json | null
+          payload_novo?: Json | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       benchmarks_setoriais: {
         Row: {
           ano_referencia: number
@@ -8125,6 +8170,35 @@ export type Database = {
       }
     }
     Views: {
+      mv_benchmark_setorial: {
+        Row: {
+          amostra: number | null
+          atualizado_em: string | null
+          media: number | null
+          mediana: number | null
+          p25: number | null
+          p75: number | null
+          regime: string | null
+        }
+        Relationships: []
+      }
+      vw_auditoria_tributaria_recente: {
+        Row: {
+          acao: Database["public"]["Enums"]["acao_auditoria_tributaria"] | null
+          criado_em: string | null
+          empresa_id: string | null
+          empresa_nome: string | null
+          entidade_id: string | null
+          entidade_tipo: string | null
+          id: string | null
+          payload_anterior: Json | null
+          payload_novo: Json | null
+          user_email: string | null
+          user_id: string | null
+          user_nome: string | null
+        }
+        Relationships: []
+      }
       vw_contas_pagar_painel: {
         Row: {
           aprovado_em: string | null
@@ -8945,6 +9019,7 @@ export type Database = {
           total_sem_contato: number
         }[]
       }
+      refresh_mv_benchmark_setorial: { Args: never; Returns: undefined }
       reset_failed_attempts: { Args: { _email: string }; Returns: undefined }
       toggle_cron_job: {
         Args: { is_active: boolean; job_id: number }
@@ -8952,6 +9027,7 @@ export type Database = {
       }
     }
     Enums: {
+      acao_auditoria_tributaria: "insert" | "update" | "delete"
       app_role: "admin" | "financeiro" | "operacional" | "visualizador"
       audit_action:
         | "INSERT"
@@ -9112,6 +9188,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      acao_auditoria_tributaria: ["insert", "update", "delete"],
       app_role: ["admin", "financeiro", "operacional", "visualizador"],
       audit_action: [
         "INSERT",
