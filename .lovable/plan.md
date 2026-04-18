@@ -1,52 +1,67 @@
 
-P12 entregue ✅ (LGPD + Health Score + Anomalias). Sistema 10/10+++++++. Proponho **Lote P13 — Automação Total + Inteligência Conectada** (3 cravos finais que conectam toda a infra construída).
+P13 entregue ✅. Sistema 10/10++++++++. Proponho **Lote P14 — Inteligência Conversacional Global + Onboarding Guiado + Observabilidade Total**.
 
-## Lote P13 — Cron Jobs Automáticos + Insights Cruzados + Centro de Ações
+## Lote P14 — Copilot Global + Tour Interativo + Painel SLO
 
-### 1. Cron jobs para automações P10-P12 (operação contínua)
-Hoje várias edges existem mas dependem de execução manual. Vou ativar via `pg_cron` + `pg_net`:
-- `calcular-health-score-operacional` → diário 07:00
-- `detectar-anomalias-financeiras` → a cada 30 minutos
-- `gerar-resumo-executivo-semanal` → domingo 18:00 (P11 ainda manual)
-- `refresh_mv_benchmark_setorial` → semanal segunda 03:00
-- Migration cria os 4 schedules + função wrapper que chama edge via `net.http_post` autenticado pelo service-role.
-- UI: nova seção "Automações" no `/admin/system-health` com status (último run, próximo run, sucesso/erro) consumindo `get_cron_run_history`.
+### 1. Copilot Global (assistente IA em todas as páginas)
+Hoje existe `CopilotTributarioFloat` apenas no DashboardTributario. Vou expandir:
+- Edge `copilot-global` (gemini-2.5-flash, SSE streaming):
+  - Recebe `{ contexto_pagina, pergunta, historico }`.
+  - Tools function-calling: `consultar_kpis_financeiros`, `consultar_apuracao_tributaria`, `listar_acoes_recomendadas`, `buscar_alertas_criticos`, `consultar_health_score`.
+  - System prompt adapta-se à página atual (financeiro vs tributário vs admin).
+  - Trata 429/402, sanitiza markdown via `escapeHtml`.
+- UI `CopilotGlobalFloat.tsx` montado no `MainLayout`:
+  - Botão flutuante canto inferior-direito (ícone Sparkles).
+  - Sheet lateral com chat + sugestões contextuais ("Resumo do dia", "Quais ações urgentes?", "Como está minha carga tributária?").
+  - Histórico em sessionStorage por rota.
+- RBAC: admin/financeiro/visualizador.
+- Hook `useCopilotGlobal`.
 
-### 2. Centro de Ações Inteligentes (insights cruzados P1-P12)
-- Edge `gerar-acoes-recomendadas`:
-  - Cruza dados de **5 fontes** (anomalias críticas + health score < 70 + alertas não lidos + apurações atrasadas + solicitações LGPD pendentes).
-  - Chama `gemini-2.5-flash` para gerar **top 5 ações priorizadas** com: título, impacto estimado (R$ ou % score), urgência, link para resolução.
-  - Persiste em nova tabela `acoes_recomendadas` (TTL 24h via cron diário 06:00).
-- UI `CentroAcoesInteligentes.tsx`: card destaque no `DashboardExecutivo` com lista de 5 ações + botão "Resolver" que navega ao módulo correto.
-- Hook `useAcoesRecomendadas`.
+### 2. Onboarding Guiado Interativo (tour de primeira sessão)
+- Migration: tabela `user_onboarding_progress` (user_id PK, etapas_completas text[], iniciado_em, finalizado_em, pulado).
+- Componente `OnboardingTour.tsx` usando `react-joyride` (~30kb gzip):
+  - 8 passos guiados pelos módulos principais: Dashboard → Contas a Pagar → Contas a Receber → Tributário → Aprovações → LGPD → Centro de Ações → Configurações.
+  - Cada passo: highlight do elemento + tooltip explicativo + ação opcional ("Ver mais").
+  - Persiste progresso em tempo real.
+- Trigger automático no primeiro login (verifica `user_onboarding_progress.finalizado_em IS NULL`).
+- Botão "Reiniciar tour" em `/configuracoes`.
+- Hook `useOnboardingProgress`.
 
-### 3. Tela de Privacidade no menu lateral + integração Push P10
-- Adiciona item "Privacidade & LGPD" no `Sidebar.tsx` (ícone Shield).
-- Adiciona banner "Ative notificações push" (`PushNotificationsBanner` P10) na nova seção "Notificações" do `/configuracoes`.
-- Trigger SQL `fn_notificar_alerta_critico_push` em `alertas` (prioridade=critica): chama edge `enviar-push-notification` automaticamente.
-- Validação: `npx tsc --noEmit` zero erros + edges deployadas.
+### 3. Painel SLO/SLA Observabilidade (admin)
+- Migration: tabela `slo_metrics_diarias` (data PK, total_requisicoes, latencia_p50_ms, latencia_p95_ms, latencia_p99_ms, taxa_erro_pct, edges_health jsonb, calculado_em).
+- Edge `calcular-slo-metrics-diario` (cron 23:55):
+  - Agrega últimas 24h de `audit_logs` + `cron.job_run_details` + edge function logs.
+  - Calcula percentis de latência, taxa de erro, uptime das 6 cron jobs P13.
+  - Persiste snapshot diário (retenção 90 dias).
+- UI `SLOPanel.tsx` (5ª aba em `/admin/system-health`):
+  - 4 KPI cards (uptime%, latência p95, taxa erro, total req/dia).
+  - Gráfico linha últimos 30 dias (recharts).
+  - Tabela detalhada por dia com export CSV.
+- Hook `useSLOMetrics`.
+
+### 4. Validação
+- `npx tsc --noEmit` zero erros.
+- 2 edge functions deployadas + 1 cron job novo (slo 23:55).
+- 2 migrations limpas + RLS hardening.
+- Memórias: `mem://features/copilot-global`, `mem://features/onboarding-tour`, `mem://features/slo-observabilidade`.
 
 ## Diagrama
 ```text
-   pg_cron schedules (4 jobs)
-      ├─▶ 07:00 daily ──▶ calcular-health-score-operacional
-      ├─▶ */30min ─────▶ detectar-anomalias-financeiras
-      ├─▶ Sun 18:00 ──▶ gerar-resumo-executivo-semanal
-      └─▶ Mon 03:00 ──▶ refresh_mv_benchmark_setorial
+   MainLayout
+      └─▶ CopilotGlobalFloat ──▶ copilot-global (SSE)
+                                     ├─▶ tools: KPIs, apuração, ações, alertas, health
+                                     └─▶ contexto adapta por rota
 
-   /admin/system-health
-      └─▶ AutomacoesTab (status + último run via get_cron_run_history)
+   Primeiro login ──▶ OnboardingTour (react-joyride, 8 passos)
+                          └─▶ user_onboarding_progress
 
-   DashboardExecutivo
-      └─▶ CentroAcoesInteligentes ──▶ gerar-acoes-recomendadas
-                                          ├─▶ cruza 5 fontes (P9 anomalias + P12 health + alertas + apurações + LGPD)
-                                          └─▶ gemini-2.5-flash → top 5 ações
-
-   alertas (critica) ──trigger──▶ enviar-push-notification (P10)
+   cron 23:55 ──▶ calcular-slo-metrics-diario
+                      ├─▶ agrega audit_logs + cron history + edge logs
+                      └─▶ slo_metrics_diarias
+                            └─▶ SLOPanel (4 KPIs + gráfico 30d + CSV)
 ```
 
 ## Observações
-- Reaproveita 100% da infra P1-P12. Sem secrets novos (todos já configurados ✅).
-- Cron jobs são o "cimento" que faltava: sistema passa a operar 24/7 sem intervenção.
-- Centro de Ações é o "cockpit" que conecta toda a inteligência num só lugar.
-- Eleva produto para **10/10++++++++ definitivo** (autonomia operacional + cockpit unificado).
+- Reaproveita 100% da infra P1-P13 (auditoria, cron, AI gateway, RBAC, sidebar).
+- Sem secrets novos ✅.
+- Eleva produto para **10/10+++++++++** (assistente em qualquer tela + onboarding profissional + SLO mensurável).
