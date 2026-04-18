@@ -3,6 +3,7 @@
 // Padrões: validação manual de JWT, retry exponencial, cache em memória 1h.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { createLogger } from "../_shared/observability.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -81,6 +82,10 @@ Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  const logger = createLogger("cnpja-lookup");
+  const t0 = Date.now();
+  logger.info("fn_start");
 
   try {
     // Validação manual do JWT
@@ -249,6 +254,12 @@ Deno.serve(async (req: Request) => {
 
     cache.set(cnpj, { data: normalized, expiresAt: Date.now() + CACHE_TTL_MS });
 
+    logger.info("fn_success", {
+      duration_ms: Date.now() - t0,
+      status_code: 200,
+      context: { cnpj },
+    });
+    await logger.flush();
     return new Response(
       JSON.stringify({ data: normalized, cached: false }),
       {
@@ -258,7 +269,12 @@ Deno.serve(async (req: Request) => {
     );
   } catch (err) {
     const message = err instanceof Error ? err.message : "Erro inesperado";
-    console.error("[cnpja-lookup] erro:", message);
+    logger.error("fn_failure", {
+      duration_ms: Date.now() - t0,
+      status_code: 500,
+      error_message: message,
+    });
+    await logger.flush();
     return new Response(
       JSON.stringify({ error: message }),
       {

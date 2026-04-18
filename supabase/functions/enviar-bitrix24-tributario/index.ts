@@ -1,6 +1,7 @@
 // Edge Function: enviar-bitrix24-tributario
 // Cria Deal no Bitrix24 + anexa PDF tributário + comentário com resumo
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { createLogger } from '../_shared/observability.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -55,6 +56,10 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+
+  const logger = createLogger('enviar-bitrix24-tributario');
+  const t0 = Date.now();
+  logger.info('fn_start');
 
   try {
     const authHeader = req.headers.get('Authorization');
@@ -134,6 +139,12 @@ Deno.serve(async (req) => {
 
     const dealUrl = `https://${Deno.env.get('BITRIX24_DOMAIN')}/crm/deal/details/${dealId}/`;
 
+    logger.info('fn_success', {
+      duration_ms: Date.now() - t0,
+      status_code: 200,
+      context: { dealId, empresaId: body.empresaId },
+    });
+    await logger.flush();
     return new Response(
       JSON.stringify({ success: true, dealId, dealUrl }),
       {
@@ -143,7 +154,12 @@ Deno.serve(async (req) => {
     );
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Erro desconhecido';
-    console.error('[enviar-bitrix24-tributario] erro:', msg);
+    logger.error('fn_failure', {
+      duration_ms: Date.now() - t0,
+      status_code: 500,
+      error_message: msg,
+    });
+    await logger.flush();
     return new Response(JSON.stringify({ error: msg }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
