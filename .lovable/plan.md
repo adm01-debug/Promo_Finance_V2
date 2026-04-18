@@ -1,67 +1,63 @@
 
-P13 entregue ✅. Sistema 10/10++++++++. Proponho **Lote P14 — Inteligência Conversacional Global + Onboarding Guiado + Observabilidade Total**.
+## Plano — Auditoria de Testes Abrangente (P15)
 
-## Lote P14 — Copilot Global + Tour Interativo + Painel SLO
+Vou executar uma bateria massiva de testes automatizados em todas as camadas do sistema, gerar relatório consolidado e corrigir falhas encontradas.
 
-### 1. Copilot Global (assistente IA em todas as páginas)
-Hoje existe `CopilotTributarioFloat` apenas no DashboardTributario. Vou expandir:
-- Edge `copilot-global` (gemini-2.5-flash, SSE streaming):
-  - Recebe `{ contexto_pagina, pergunta, historico }`.
-  - Tools function-calling: `consultar_kpis_financeiros`, `consultar_apuracao_tributaria`, `listar_acoes_recomendadas`, `buscar_alertas_criticos`, `consultar_health_score`.
-  - System prompt adapta-se à página atual (financeiro vs tributário vs admin).
-  - Trata 429/402, sanitiza markdown via `escapeHtml`.
-- UI `CopilotGlobalFloat.tsx` montado no `MainLayout`:
-  - Botão flutuante canto inferior-direito (ícone Sparkles).
-  - Sheet lateral com chat + sugestões contextuais ("Resumo do dia", "Quais ações urgentes?", "Como está minha carga tributária?").
-  - Histórico em sessionStorage por rota.
-- RBAC: admin/financeiro/visualizador.
-- Hook `useCopilotGlobal`.
+### Escopo (5 camadas)
 
-### 2. Onboarding Guiado Interativo (tour de primeira sessão)
-- Migration: tabela `user_onboarding_progress` (user_id PK, etapas_completas text[], iniciado_em, finalizado_em, pulado).
-- Componente `OnboardingTour.tsx` usando `react-joyride` (~30kb gzip):
-  - 8 passos guiados pelos módulos principais: Dashboard → Contas a Pagar → Contas a Receber → Tributário → Aprovações → LGPD → Centro de Ações → Configurações.
-  - Cada passo: highlight do elemento + tooltip explicativo + ação opcional ("Ver mais").
-  - Persiste progresso em tempo real.
-- Trigger automático no primeiro login (verifica `user_onboarding_progress.finalizado_em IS NULL`).
-- Botão "Reiniciar tour" em `/configuracoes`.
-- Hook `useOnboardingProgress`.
+**1. Testes Unitários (Vitest) — alvo: 2.000+ asserções**
+- Rodar suite completa existente: `npm test -- --run --reporter=verbose`
+- Cobertura: `npm run test:coverage` → relatório HTML + thresholds (70% lines/funcs/stmts, 65% branches)
+- Áreas cobertas hoje: tributário (decidir-regime, simular-simples/presumido/real, projecao-reforma, orquestrador-elisao), hooks (useAlertasTributariosCount), UI (button, input), cobrança (ReguaCobrancaConfig), admin (TelemetryCharts)
+- **Adicionar suites faltantes** (gap analysis): hooks P10-P14 (useHealthScoreOperacional, useAnomaliasDetectadas, useAcoesRecomendadas, useSolicitacoesLGPD, useOnboardingProgress, useSLOMetrics, useCopilotGlobal), validators brasileiros (CPF/CNPJ/Pix), utils financeiros (formatadores, calculadoras), components críticos (HealthScoreCard, CentroAcoesInteligentes, AnomaliasDetectadasPanel, SLOPanel, OnboardingTour)
 
-### 3. Painel SLO/SLA Observabilidade (admin)
-- Migration: tabela `slo_metrics_diarias` (data PK, total_requisicoes, latencia_p50_ms, latencia_p95_ms, latencia_p99_ms, taxa_erro_pct, edges_health jsonb, calculado_em).
-- Edge `calcular-slo-metrics-diario` (cron 23:55):
-  - Agrega últimas 24h de `audit_logs` + `cron.job_run_details` + edge function logs.
-  - Calcula percentis de latência, taxa de erro, uptime das 6 cron jobs P13.
-  - Persiste snapshot diário (retenção 90 dias).
-- UI `SLOPanel.tsx` (5ª aba em `/admin/system-health`):
-  - 4 KPI cards (uptime%, latência p95, taxa erro, total req/dia).
-  - Gráfico linha últimos 30 dias (recharts).
-  - Tabela detalhada por dia com export CSV.
-- Hook `useSLOMetrics`.
+**2. Testes de Integração (Edge Functions Deno)**
+- Rodar `supabase--test_edge_functions` em todas as 30+ edges P1-P14
+- Criar `*_test.ts` para edges sem cobertura: copilot-global, gerar-acoes-recomendadas, calcular-slo-metrics-diario, processar-solicitacao-lgpd, calcular-health-score-operacional, detectar-anomalias-financeiras, gerar-resumo-executivo-semanal, gerar-heatmap-tributario, ocr-nota-fiscal
+- Cenários: happy path, RBAC negado, payload inválido, 429/402 do AI gateway, timeout
 
-### 4. Validação
-- `npx tsc --noEmit` zero erros.
-- 2 edge functions deployadas + 1 cron job novo (slo 23:55).
-- 2 migrations limpas + RLS hardening.
-- Memórias: `mem://features/copilot-global`, `mem://features/onboarding-tour`, `mem://features/slo-observabilidade`.
+**3. Auditoria de Segurança (Supabase Linter + Security Scan)**
+- `supabase--linter` → todas as tabelas com RLS correto
+- `security--run_security_scan` → varredura completa
+- Validar policies das 12 novas tabelas P10-P14 (push_subscriptions, fechamentos_tributarios, dre_tributaria, anomalias_detectadas, health_scores_operacionais, solicitacoes_lgpd, acoes_recomendadas, user_onboarding_progress, slo_metrics_diarias, etc.)
 
-## Diagrama
+**4. Testes E2E (Playwright)**
+- Rodar suite Playwright existente em 5 navegadores (Chrome/Firefox/Safari + Mobile Chrome/Safari)
+- Fluxos críticos: login → dashboard → contas a pagar → contas a receber → tributário → aprovações → LGPD → onboarding tour → copilot global
+
+**5. Validação de Tipos + Build**
+- `npx tsc --noEmit` → zero erros TypeScript
+- `npm run build` → bundle production sem warnings críticos
+- `npm run lint` → ESLint zero erros
+
+### Entregáveis
+
+1. **Relatório consolidado** `/mnt/documents/auditoria-testes-p15.md` com:
+   - Total de testes executados (esperado: 2.500+)
+   - Pass rate por camada
+   - Cobertura % (lines/branches/funcs/stmts)
+   - Issues de segurança encontrados + severidade
+   - Lista de bugs corrigidos
+2. **Novos testes criados** (~30 arquivos) cobrindo gaps P10-P14
+3. **Correções** de qualquer falha encontrada (commits inline)
+4. **Memória** `mem://quality/auditoria-testes-p15` documentando baseline de qualidade
+
+### Diagrama de execução
+
 ```text
-   MainLayout
-      └─▶ CopilotGlobalFloat ──▶ copilot-global (SSE)
-                                     ├─▶ tools: KPIs, apuração, ações, alertas, health
-                                     └─▶ contexto adapta por rota
-
-   Primeiro login ──▶ OnboardingTour (react-joyride, 8 passos)
-                          └─▶ user_onboarding_progress
-
-   cron 23:55 ──▶ calcular-slo-metrics-diario
-                      ├─▶ agrega audit_logs + cron history + edge logs
-                      └─▶ slo_metrics_diarias
-                            └─▶ SLOPanel (4 KPIs + gráfico 30d + CSV)
+   [1] npm test --run              ──▶ unit suite atual + novas
+   [2] npm run test:coverage       ──▶ thresholds + HTML report
+   [3] supabase--test_edge_functions ──▶ 30+ edges (Deno)
+   [4] supabase--linter            ──▶ RLS audit
+   [5] security--run_security_scan ──▶ varredura completa
+   [6] npx tsc --noEmit            ──▶ type check
+   [7] npm run lint + build        ──▶ qualidade final
+                                          └─▶ relatório consolidado
+                                                + correções inline
 ```
 
-## Observações
-- Reaproveita 100% da infra P1-P13 (auditoria, cron, AI gateway, RBAC, sidebar).
-- Sem secrets novos ✅.
-- Eleva produto para **10/10+++++++++** (assistente em qualquer tela + onboarding profissional + SLO mensurável).
+### Observações
+- Reaproveita 100% da infra de testes (vitest + playwright + Deno test).
+- Sem novos secrets necessários ✅.
+- Tempo estimado: ~15min de execução (paralelizada onde possível).
+- Eleva produto para **10/10++++++++++** com baseline mensurável de qualidade.
