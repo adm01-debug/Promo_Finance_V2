@@ -38,6 +38,7 @@ interface Props {
 export function NotificacoesPreferencias({ preferencias, onPreferenciasChange }: Props) {
   return (
     <motion.div className="space-y-6" variants={containerVariants} initial="hidden" animate="visible">
+      <PushNotificationsBanner />
       <NotificacoesConfig />
 
       <Card>
