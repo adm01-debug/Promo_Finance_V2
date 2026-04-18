@@ -1,74 +1,62 @@
 
-## Lote P7 — Excelência Operacional++
+P7 entregue ✅. Sistema em 10/10++. Proponho **Lote P8 — Inteligência Preditiva Tributária** (3 melhorias finais que cravam 10/10+++).
 
-### 1. Cache de decisões `decidir-regime`
-- Migration: tabela `regime_decision_cache` (PK composta `empresa_id+ano+mes`, `decisao jsonb`, `expires_at timestamptz`).
-- RLS admin/financeiro/contador_readonly leitura; service role escrita.
-- Wrapper no edge `decidir-regime`: checa cache (TTL 7d) antes de recalcular; UPSERT após cálculo.
-- Trigger `AFTER INSERT/UPDATE` em `apuracoes_tributarias` invalida cache da empresa+mês.
-- Reduz latência do dashboard P5 e relatório P6 em ~80%.
+## Lote P8 — Inteligência Preditiva + Conformidade Total
 
-### 2. Agendamento de relatórios anuais (cron + e-mail)
-- Migration: tabela `relatorios_tributarios_agendados` (id, empresa_id, ano, frequencia `enum mensal|trimestral|anual`, dia_envio, destinatarios `text[]`, ativo, ultimo_envio_em, proximo_envio_em).
-- Edge function nova `enviar-relatorios-tributarios-agendados`:
-  - Cron diário 06:00 via `pg_cron` + `pg_net`
-  - Consulta agendamentos com `proximo_envio_em <= now()`
-  - Reaproveita `gerar-relatorio-anual` (P6) para JSON
-  - Renderiza PDF server-side com `pdf-lib` (Deno)
-  - Faz upload no bucket `relatorios-tributarios` (já existe ✅)
-  - Envia link assinado via Resend (`RESEND_API_KEY` já configurado ✅)
-  - Atualiza `ultimo_envio_em` e `proximo_envio_em`
-  - Logger P2 estruturado
-- UI nova `RelatoriosAgendadosCard.tsx` no `DashboardTributario`: lista, criar/editar/desativar, preview destinatários.
+### 1. Previsão tributária com IA (Lovable AI Gateway)
+- Nova edge `prever-carga-tributaria` (gemini-2.5-flash, sem secrets):
+  - Input: `{ empresa_id, meses_historico: 12 }`
+  - Consulta `vw_tributario_dashboard` + `regime_decision_cache`
+  - Prompt estruturado pede previsão dos próximos 3 meses + 2 cenários (conservador/agressivo) + 3 ações recomendadas
+  - Retorna JSON tipado validado com Zod
+  - Logger P2 + RBAC P4
+- Hook `usePrevisaoTributaria(empresaId)` com React Query (staleTime 30min)
+- Widget novo `PrevisaoTributariaIA.tsx` no DashboardTributario (P5):
+  - Card glassmorphism com chart de linha (real vs previsto)
+  - Lista de ações com badge de impacto estimado
+  - Botão "Regenerar análise" com loader
 
-### 3. Página `/admin/system-health`
-- Agrega em 1 painel admin-only:
-  - `vw_edge_health` (P2) — uptime e P95 das edges
-  - Stats `cnpja_cache` (P3) — hit rate e economia de créditos
-  - Convites contador (P4) — pendentes/aceitos/expirados
-  - Apurações tributárias do mês (P5) — completude por empresa
-  - Cache regime hit rate (novo P7)
-- KPIs animados (framer-motion stagger) + alertas SLA.
-- Acesso restrito via `has_role(uid, 'admin')` (RBAC P4).
-- Adiciona rota em `App.tsx` + link no `AdminEdgeHealth` existente.
+### 2. Validador de conformidade fiscal automático
+- Migration: tabela `verificacoes_conformidade` (empresa_id, periodo, score, itens jsonb, criado_em).
+- Nova edge `verificar-conformidade-fiscal`:
+  - 8 checks automáticos: NF emitidas vs apuração, DARF vencidos, certidões negativas próximas a vencer, divergência regime ótimo > 10%, alertas críticos abertos > 5, apurações em atraso, dividendos > teto IRPFM (Lei 15.270/25), RBT12 próximo do sublimite Simples
+  - Score 0-100 ponderado por criticidade
+  - Persiste resultado e dispara alerta se score < 70
+- UI `ConformidadeFiscalCard.tsx` no dashboard tributário com gauge animado + lista de pendências.
+
+### 3. Exportação SPED Fiscal preliminar (EFD-Contribuições)
+- Nova edge `exportar-sped-contribuicoes`:
+  - Input: `{ empresa_id, periodo: 'YYYY-MM' }`
+  - Gera arquivo TXT layout EFD-Contribuições (registros 0000, 0001, 0140, M100, M105, M200, M210, 9999)
+  - Reutiliza `apuracoes_tributarias` + dados da empresa
+  - Upload bucket `relatorios-tributarios/sped/`
+  - Retorna URL assinada (24h)
+- Botão "Exportar SPED" no dashboard tributário (admin/financeiro/contador_readonly).
 
 ### 4. Validação
 - `npx tsc --noEmit` zero erros.
-- Migrations limpas (RLS hardening conforme `mem://security/rls-hardening-rules`).
-- Cron job criado via `insert tool` (contém URL+anon key).
-- Memórias: `mem://performance/regime-decision-cache`, `mem://features/relatorios-tributarios-agendados`, `mem://features/system-health-page`.
+- Edge functions deployadas sem erros.
+- Memórias: `mem://features/previsao-tributaria-ia`, `mem://features/conformidade-fiscal-validator`, `mem://features/sped-contribuicoes-export`.
 
 ## Diagrama
 
 ```text
-   decidir-regime (P1)
+   DashboardTributario (P5)
         │
-        ├─▶ regime_decision_cache HIT → retorna (~80% mais rápido)
-        └─▶ MISS → calcula + UPSERT cache (TTL 7d)
-              │
-              ▼ trigger nova apuracao_tributaria
-        invalida cache empresa+mes
-
-   pg_cron (diário 06:00)
+        ├─▶ PrevisaoTributariaIA ──▶ prever-carga-tributaria (gemini-2.5-flash)
+        │                                 │
+        │                                 └─▶ vw_tributario_dashboard + regime_cache
         │
-        ▼
-   enviar-relatorios-tributarios-agendados
+        ├─▶ ConformidadeFiscalCard ──▶ verificar-conformidade-fiscal
+        │                                 │
+        │                                 └─▶ 8 checks → score 0-100 → alerta se <70
         │
-        ├─▶ relatorios_tributarios_agendados (vencidos)
-        ├─▶ gerar-relatorio-anual (P6) → JSON
-        ├─▶ pdf-lib render → bucket relatorios-tributarios
-        └─▶ Resend link assinado → destinatarios[]
-
-   /admin/system-health (admin only)
-        │
-        ├─▶ vw_edge_health (P2)
-        ├─▶ stats cnpja_cache (P3)
-        ├─▶ convites_contador (P4)
-        ├─▶ apuracoes_tributarias (P5)
-        └─▶ regime_decision_cache (P7)
+        └─▶ Botão "Exportar SPED" ──▶ exportar-sped-contribuicoes
+                                          │
+                                          └─▶ TXT EFD → bucket → URL assinada 24h
 ```
 
 ## Observações
-- Reaproveita 100% da infra P1-P6, secrets e bucket existentes.
-- Sem novos secrets necessários.
-- Eleva de 10/10 para 10/10++ (excelência operacional + economia de compute).
+- Reaproveita 100% da infra P1-P7 (views, cache, observability, RBAC, bucket).
+- Sem novos secrets (LOVABLE_API_KEY já configurado).
+- Eleva produto para 10/10+++ (inteligência preditiva + conformidade automática + entrega SPED).
