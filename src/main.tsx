@@ -3,6 +3,10 @@ import App from "./App.tsx";
 import "./index.css";
 import "./styles/high-contrast.css";
 import { logger } from "@/lib/logger";
+import { initTelemetry } from "@/lib/telemetry";
+
+// Inicializa telemetria de erros frontend (window.onerror + unhandledrejection)
+initTelemetry();
 
 // Register service worker for PWA
 if ('serviceWorker' in navigator) {
