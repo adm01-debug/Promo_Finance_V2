@@ -21,6 +21,7 @@ import { ComparativoRegimes } from '@/components/tributario/dashboard/Comparativ
 import { OportunidadesElisaoWidget } from '@/components/tributario/dashboard/OportunidadesElisaoWidget';
 import { ProximosVencimentosTimeline } from '@/components/tributario/dashboard/ProximosVencimentosTimeline';
 import { AlertasAtivosResumo } from '@/components/tributario/dashboard/AlertasAtivosResumo';
+import { RelatoriosAgendadosCard } from '@/components/tributario/dashboard/RelatoriosAgendadosCard';
 
 const REGIME_LABEL: Record<string, string> = {
   simples_nacional: 'Simples Nacional',
@@ -192,6 +193,9 @@ export default function DashboardTributario() {
             </motion.div>
             <motion.div variants={itemVariants}>
               <AlertasAtivosResumo alertas={alertas} />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <RelatoriosAgendadosCard empresaId={empresaId} />
             </motion.div>
           </motion.div>
         </>

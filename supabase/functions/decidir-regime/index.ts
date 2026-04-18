@@ -324,7 +324,44 @@ Deno.serve(async (req) => {
       });
     }
 
+    // ---------- CACHE LOOKUP (P7) ----------
+    // Apenas usa cache se não houver overrides (parâmetros customizados invalidam cache)
+    const cacheable = !parametrosOverride || Object.keys(parametrosOverride).length === 0;
+    if (cacheable) {
+      const { data: cached } = await sb
+        .from('regime_decision_cache')
+        .select('decisao, expires_at')
+        .eq('empresa_id', empresaId)
+        .eq('ano', ano)
+        .eq('mes', mes)
+        .gt('expires_at', new Date().toISOString())
+        .maybeSingle();
+      if (cached?.decisao) {
+        logger.info('cache_hit', {
+          duration_ms: Date.now() - t0,
+          status_code: 200,
+          context: { empresaId, ano, mes },
+        });
+        await logger.flush();
+        return new Response(JSON.stringify({ ...(cached.decisao as object), simulacaoId: null, params, fromCache: true }), {
+          status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
     const resultado = decidirRegime(params, ano, mes, regimeAtual);
+
+    // ---------- CACHE WRITE (P7) ----------
+    if (cacheable) {
+      await sb.from('regime_decision_cache').upsert({
+        empresa_id: empresaId,
+        ano,
+        mes,
+        decisao: resultado as unknown as Record<string, unknown>,
+        computed_at: new Date().toISOString(),
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      });
+    }
 
     let simulacaoId: string | null = null;
     if (persist) {

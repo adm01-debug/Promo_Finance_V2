@@ -6587,6 +6587,48 @@ export type Database = {
           },
         ]
       }
+      regime_decision_cache: {
+        Row: {
+          ano: number
+          computed_at: string
+          decisao: Json
+          empresa_id: string
+          expires_at: string
+          mes: number
+        }
+        Insert: {
+          ano: number
+          computed_at?: string
+          decisao: Json
+          empresa_id: string
+          expires_at?: string
+          mes: number
+        }
+        Update: {
+          ano?: number
+          computed_at?: string
+          decisao?: Json
+          empresa_id?: string
+          expires_at?: string
+          mes?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regime_decision_cache_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "regime_decision_cache_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       regimes_especiais_empresa: {
         Row: {
           ativo: boolean | null
@@ -6927,6 +6969,66 @@ export type Database = {
           },
           {
             foreignKeyName: "relatorios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
+      relatorios_tributarios_agendados: {
+        Row: {
+          ano: number
+          ativo: boolean
+          created_at: string
+          created_by: string | null
+          destinatarios: string[]
+          dia_envio: number
+          empresa_id: string
+          frequencia: Database["public"]["Enums"]["frequencia_relatorio"]
+          id: string
+          proximo_envio_em: string
+          ultimo_envio_em: string | null
+          updated_at: string
+        }
+        Insert: {
+          ano: number
+          ativo?: boolean
+          created_at?: string
+          created_by?: string | null
+          destinatarios?: string[]
+          dia_envio?: number
+          empresa_id: string
+          frequencia?: Database["public"]["Enums"]["frequencia_relatorio"]
+          id?: string
+          proximo_envio_em?: string
+          ultimo_envio_em?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ano?: number
+          ativo?: boolean
+          created_at?: string
+          created_by?: string | null
+          destinatarios?: string[]
+          dia_envio?: number
+          empresa_id?: string
+          frequencia?: Database["public"]["Enums"]["frequencia_relatorio"]
+          id?: string
+          proximo_envio_em?: string
+          ultimo_envio_em?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "relatorios_tributarios_agendados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "relatorios_tributarios_agendados_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_tributario_dashboard"
@@ -8812,6 +8914,7 @@ export type Database = {
         | "cobranca"
         | "negociacao"
         | "juridico"
+      frequencia_relatorio: "mensal" | "trimestral" | "anual"
       prioridade_alerta: "baixa" | "media" | "alta" | "critica"
       status_nfe:
         | "autorizada"
@@ -8973,6 +9076,7 @@ export const Constants = {
         "negociacao",
         "juridico",
       ],
+      frequencia_relatorio: ["mensal", "trimestral", "anual"],
       prioridade_alerta: ["baixa", "media", "alta", "critica"],
       status_nfe: [
         "autorizada",
