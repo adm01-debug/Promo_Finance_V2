@@ -18,6 +18,7 @@ import { TopClientesLeaderboard } from './TopClientesLeaderboard';
 import { StatusContasPieChart } from './StatusContasPieChart';
 import { TopCentrosCustoChart } from './TopCentrosCustoChart';
 import { DraggableDashboard } from './DraggableDashboard';
+import { CentroAcoesInteligentes } from './CentroAcoesInteligentes';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -215,6 +216,11 @@ export const DashboardExecutivo = () => {
           aprovacoesPendentes={metrics.aprovacoesPendentes}
           vencidasTotal={metrics.vencidasReceber.length + metrics.vencidasPagar.length}
         />
+      </motion.div>
+
+      {/* P13: Centro de Ações Inteligentes */}
+      <motion.div variants={itemVariants}>
+        <CentroAcoesInteligentes empresaId={empresaFilter !== 'all' ? empresaFilter : undefined} />
       </motion.div>
 
       {/* Section: Customizable Widgets */}

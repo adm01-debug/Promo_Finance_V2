@@ -47,6 +47,72 @@ export type Database = {
         }
         Relationships: []
       }
+      acoes_recomendadas: {
+        Row: {
+          created_at: string
+          descricao: string
+          empresa_id: string | null
+          expires_at: string
+          fonte: string
+          gerado_em: string
+          id: string
+          impacto_estimado: number | null
+          impacto_tipo: string | null
+          link_resolucao: string | null
+          metadata: Json | null
+          ordem: number
+          titulo: string
+          urgencia: string
+        }
+        Insert: {
+          created_at?: string
+          descricao: string
+          empresa_id?: string | null
+          expires_at?: string
+          fonte: string
+          gerado_em?: string
+          id?: string
+          impacto_estimado?: number | null
+          impacto_tipo?: string | null
+          link_resolucao?: string | null
+          metadata?: Json | null
+          ordem?: number
+          titulo: string
+          urgencia?: string
+        }
+        Update: {
+          created_at?: string
+          descricao?: string
+          empresa_id?: string | null
+          expires_at?: string
+          fonte?: string
+          gerado_em?: string
+          id?: string
+          impacto_estimado?: number | null
+          impacto_tipo?: string | null
+          link_resolucao?: string | null
+          metadata?: Json | null
+          ordem?: number
+          titulo?: string
+          urgencia?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "acoes_recomendadas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "acoes_recomendadas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       acordos_parcelamento: {
         Row: {
           cliente_email: string | null

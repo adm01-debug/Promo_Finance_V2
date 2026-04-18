@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AuditoriaTributariaTab } from '@/components/admin/AuditoriaTributariaTab';
 import { ResumosExecutivosTab } from '@/components/admin/ResumosExecutivosTab';
 import { AnomaliasDetectadasPanel } from '@/components/admin/AnomaliasDetectadasPanel';
+import { AutomacoesTab } from '@/components/admin/AutomacoesTab';
 import { logger } from '@/lib/logger';
 
 interface HealthRow {
@@ -140,6 +141,7 @@ export default function AdminSystemHealth() {
           <TabsTrigger value="auditoria">Auditoria tributária</TabsTrigger>
           <TabsTrigger value="resumos">Resumos executivos</TabsTrigger>
           <TabsTrigger value="anomalias">Anomalias</TabsTrigger>
+          <TabsTrigger value="automacoes">Automações</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -209,6 +211,10 @@ export default function AdminSystemHealth() {
 
         <TabsContent value="anomalias">
           <AnomaliasDetectadasPanel />
+        </TabsContent>
+
+        <TabsContent value="automacoes">
+          <AutomacoesTab />
         </TabsContent>
       </Tabs>
     </div>

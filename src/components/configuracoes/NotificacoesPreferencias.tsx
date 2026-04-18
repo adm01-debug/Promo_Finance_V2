@@ -5,6 +5,7 @@ import { Slider } from '@/components/ui/slider';
 import { Separator } from '@/components/ui/separator';
 import { Mail, AlertTriangle, CreditCard } from 'lucide-react';
 import { NotificacoesConfig } from '@/components/configuracoes/NotificacoesConfig';
+import { PushNotificationsBanner } from '@/components/settings/PushNotificationsBanner';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -37,6 +38,7 @@ interface Props {
 export function NotificacoesPreferencias({ preferencias, onPreferenciasChange }: Props) {
   return (
     <motion.div className="space-y-6" variants={containerVariants} initial="hidden" animate="visible">
+      <PushNotificationsBanner />
       <NotificacoesConfig />
 
       <Card>
