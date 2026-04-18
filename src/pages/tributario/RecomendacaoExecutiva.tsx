@@ -36,6 +36,8 @@ export default function RecomendacaoExecutiva() {
   const [empresaId, setEmpresaId] = useState<string | undefined>();
   const { resultado, regimeAtual, setRegimeAtual, parametros, salvarSimulacao } =
     useSimulacaoRegimes({ empresaId });
+  const gerarPdf = useGerarPdfTributario();
+  const enviarBitrix = useEnviarBitrix24Tributario();
 
   const cenariosOrdenados: ResultadoCenario[] = [...resultado.cenarios]
     .filter((c) => c.elegivel)
