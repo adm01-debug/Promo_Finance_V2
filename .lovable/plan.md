@@ -1,59 +1,55 @@
 
-Lote 12 entregue. Restam 4 lotes do roadmap. Proponho continuar com **Lote 13 — CRUDs Faturamento + Folha (FASE 3)**, que destrava UX real para usuário alimentar o motor sem editar JSON.
+Lote 13 fechado (gráficos de evolução). Restam 3 lotes do roadmap. Próximo: **Lote 14 — Edge Function `decidir-regime` (FASE 3 final)**.
 
-## Lote 13 — CRUDs `/faturamento` e `/folha` + Importação CSV
+## Lote 14 — Edge Function `decidir-regime` + Reforma Tributária + PF Vinculada
 
-### 1. Schema (migration)
-- `tributario_faturamento_mensal` (empresa_id, ano, mes, receita_bruta, receita_servicos, receita_revenda, receita_industria, receita_exportacao, observacoes)
-- `tributario_folha_mensal` (empresa_id, ano, mes, salarios, encargos, pro_labore, observacoes)
-- RLS estrita: `auth.uid()` via `empresa_id` → `user_empresas`
-- Índice composto `(empresa_id, ano, mes)` único
+### 1. Edge Function `decidir-regime` (orquestradora server-side)
+- `supabase/functions/decidir-regime/index.ts` com `verify_jwt = true` (padrão).
+- Recebe `{ empresaId, anoReferencia, mesReferencia, parametrosOverride? }`, valida JWT manual, lê `faturamento_mensal` + `folha_pagamento` via service role, executa `decidirRegime()` (importado de `_shared/tributario.ts` — copy-paste de `src/lib/tributario`), persiste em `regimes_simulados` e retorna resultado completo.
+- CORS sempre, try/catch top-level com 500 + structured logging.
+- Hook `useDecidirRegimeServer` para chamar via `supabase.functions.invoke` (alternativa server-side ao cálculo client-side).
 
-### 2. Hooks
-- `useFaturamentoMensal(empresaId)`: list/upsert/delete via React Query, queryKeys centralizados
-- `useFolhaMensal(empresaId)`: idem
-- Cálculo automático de RBT12 derivado dos últimos 12 meses
+### 2. Módulo Reforma Tributária (`/tributario/reforma`)
+- Página `ReformaTributaria.tsx` projetando CBS+IBS sobre faturamento real:
+  - Cronograma de transição EC 132/2023 + LC 214/2025: 2026 (teste 0,9%+0,1%), 2027 (CBS plena, extinção PIS/COFINS), 2029-2032 (IBS gradual), 2033 (IBS pleno, fim ICMS/ISS).
+  - Comparativo "Hoje vs. 2033" com economia/aumento estimado.
+  - Tokens semânticos `--cbs` e `--ibs` já existentes.
+  - Tabela de alíquotas projetadas + gráfico de barras empilhadas.
 
-### 3. Páginas
-- `/tributario/faturamento`: tabela editável (12 meses), totais, gráfico linha, importar CSV
-- `/tributario/folha`: tabela editável, Fator R calculado em tempo real, importar CSV
-- Importador CSV reaproveita `src/lib/csv-importer.ts`
+### 3. Módulo PF Vinculada — Lei 15.270/2025 (`/tributario/pf-vinculada`)
+- Página `PfVinculada.tsx` calculando IRPFM (Imposto de Renda PF Mínimo):
+  - Input: dividendos mensais distribuídos ao sócio.
+  - Aplica 10% sobre parcela > R$ 50.000/mês (Lei 15.270/2025).
+  - Compara cenário "distribuição via PJ" vs. "pró-labore + PF" para otimização.
+  - Alerta se sócio cair na faixa de IRPFM.
 
-### 4. Integração com motor
-- `useSimulacaoRegimes` lê automaticamente dos CRUDs quando empresa selecionada (fallback para parâmetros manuais)
-
-### 5. Validação
-- `npx tsc --noEmit` zero erros
-- Testes unitários dos hooks (mock supabase)
-- A11y: labels, ARIA em tabelas editáveis
+### 4. Rotas + Validação
+- Registrar `/tributario/reforma` e `/tributario/pf-vinculada` em `App.tsx` (lazy-loaded).
+- `npx tsc --noEmit` zero erros.
+- Edge function deploy automático.
 
 ## Diagrama
 
 ```text
-   Lote 12 ✅ (/recomendacao)
+   Lote 13 ✅ (CRUD + CSV + gráficos)
             │
             ▼
-   ┌──────────────────────┐
-   │ Migration:           │
-   │ faturamento + folha  │
-   └──────────────────────┘
-            │
-   ┌──────────────────────┐
-   │ Hooks CRUD + RBT12   │──┐
-   └──────────────────────┘  │
-                             ▼
-   ┌──────────────────────┐  ┌────────────────────┐
-   │ /tributario/         │  │ Motor alimentado   │
-   │ faturamento + folha  │─▶│ por dados reais    │
-   └──────────────────────┘  │ persistidos        │
-            │                └────────────────────┘
-   ┌──────────────────────┐
-   │ Importador CSV       │
-   └──────────────────────┘
+   ┌────────────────────────────┐
+   │ Edge Function              │──┐
+   │ decidir-regime (server)    │  │
+   └────────────────────────────┘  │
+   ┌────────────────────────────┐  ▼
+   │ /tributario/reforma        │  ┌────────────────────┐
+   │ (CBS+IBS 2026-2033)        │─▶│ Roadmap FASE 3+4   │
+   └────────────────────────────┘  │  fechado           │
+   ┌────────────────────────────┐  └────────────────────┘
+   │ /tributario/pf-vinculada   │  ▲
+   │ (Lei 15.270/2025 IRPFM)    │──┘
+   └────────────────────────────┘
 ```
 
 ## Observações
-- 1 migration nova, 2 tabelas, RLS estrita.
-- Reaproveita `csv-importer.ts`, `queryClient.ts`, padrão de hooks existente.
-- Sem mexer em `client.ts`/`types.ts`/`config.toml`.
-- Próximos lotes restantes após este: Lote 14 (Edge `decidir-regime` opcional), Lote 15 (Bitrix24 — precisa secret), Lote 16 (CNPJá — precisa secret).
+- Sem migrations (reaproveita `regimes_simulados`).
+- Edge Function copia `src/lib/tributario` para `_shared/` (padrão de projetos independentes).
+- Tokens `--cbs` e `--ibs` já existem (`mem://design/extended-semantic-tokens`).
+- Restam após este lote: Lote 15 (PDF + Bitrix24) e Lote 16 (CNPJá onboarding).
