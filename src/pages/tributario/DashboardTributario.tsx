@@ -27,6 +27,8 @@ import { PrevisaoTributariaIA } from '@/components/tributario/dashboard/Previsao
 import { ConformidadeFiscalCard } from '@/components/tributario/dashboard/ConformidadeFiscalCard';
 import { BenchmarkSetorialCard } from '@/components/tributario/dashboard/BenchmarkSetorialCard';
 import { CopilotTributarioFloat } from '@/components/tributario/dashboard/CopilotTributarioFloat';
+import { DRETributariaPanel } from '@/components/tributario/dashboard/DRETributariaPanel';
+import { AssistenteFechamentoMensal } from '@/components/tributario/dashboard/AssistenteFechamentoMensal';
 
 const REGIME_LABEL: Record<string, string> = {
   simples_nacional: 'Simples Nacional',
@@ -228,6 +230,16 @@ export default function DashboardTributario() {
             </motion.div>
             <motion.div variants={itemVariants}>
               <BenchmarkSetorialCard empresaId={empresaId} />
+            </motion.div>
+            <motion.div variants={itemVariants} className="lg:col-span-2">
+              <DRETributariaPanel empresaId={empresaId} />
+            </motion.div>
+            <motion.div variants={itemVariants} className="lg:col-span-2">
+              <AssistenteFechamentoMensal
+                empresaId={empresaId}
+                ano={new Date().getFullYear()}
+                mes={new Date().getMonth() + 1}
+              />
             </motion.div>
           </motion.div>
         </>
