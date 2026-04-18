@@ -74,15 +74,27 @@ export default function PfVinculada() {
     if (v > 0) setLinhas(Array.from({ length: 12 }, () => ({ dividendos: v, irrf: 0 })));
   };
 
+  useEffect(() => {
+    const prev = document.title;
+    document.title = 'PF Vinculada — IRPFM Lei 15.270/2025 | Promo Finance';
+    let meta = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+    const prevDesc = meta?.content;
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.name = 'description';
+      document.head.appendChild(meta);
+    }
+    meta.content =
+      'Calcule o Imposto Mínimo PF (IRPFM) sobre dividendos da Lei 15.270/2025 e compare com pró-labore.';
+    return () => {
+      document.title = prev;
+      if (meta && prevDesc !== undefined) meta.content = prevDesc;
+    };
+  }, []);
+
   return (
     <>
-      <Helmet>
-        <title>PF Vinculada — IRPFM Lei 15.270/2025 | Promo Finance</title>
-        <meta
-          name="description"
-          content="Calcule o Imposto Mínimo PF (IRPFM) sobre dividendos da Lei 15.270/2025 e compare com cenários de pró-labore."
-        />
-      </Helmet>
+
 
       <div className="container mx-auto p-6 space-y-6">
         <header>
