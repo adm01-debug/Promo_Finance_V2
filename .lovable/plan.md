@@ -1,59 +1,71 @@
 
-P4 ✅ entregue. Próximo: **Lote P5 — Dashboard Tributário v2**.
+P5 ✅ entregue. Próximo: **Lote P6 — Relatório Anual Tributário PDF** (último lote do roadmap pós-10/10).
 
-## Lote P5 — Dashboard Tributário v2
+## Lote P6 — Relatório Anual Tributário PDF
 
-### 1. Refatorar `src/pages/tributario/DashboardTributario.tsx`
-- Layout Bento Grid premium (glassmorphism + tokens HSL semânticos `--cbs`/`--ibs`).
-- Header com seletor de empresa + período (3/6/12 meses) + badge do regime atual.
-- 4 KPIs animados (framer-motion stagger):
-  - Carga tributária efetiva (% sobre receita)
-  - Total economizado (estratégias de elisão aplicadas)
-  - Próximo vencimento (DARF/DAS)
-  - Saúde fiscal (score 0-100 baseado em alertas ativos)
+### 1. Edge Function nova `gerar-relatorio-anual`
+- Validação JWT manual + RBAC (admin/financeiro/contador_readonly).
+- Input: `{ empresa_id, ano }`.
+- Agrega dados via `vw_tributario_dashboard` (criada em P5):
+  - Faturamento, tributos pagos, carga efetiva mensal
+  - Comparativo de regimes (chama motor `decidir-regime`)
+  - Oportunidades de elisão aplicáveis (`analisarOportunidadesElisao`)
+  - Alertas resolvidos no ano + economias capturadas
+- Retorna JSON estruturado para renderização no cliente (PDF gerado client-side com jsPDF, padrão já memorizado em `mem://features/advanced-corporate-reporting-engine`).
+- Logger P2 estruturado (`fn_start`, `data_aggregated`, `fn_success`).
 
-### 2. Novos widgets (componentes em `src/components/tributario/dashboard/`)
-- `EvolucaoCargaChart.tsx` — área chart (recharts) com carga tributária mês a mês + linha de referência do regime ótimo.
-- `ComparativoRegimes.tsx` — barras agrupadas Simples vs Presumido vs Real (consome `decidir-regime`).
-- `OportunidadesElisaoWidget.tsx` — top 3 oportunidades do `analisarOportunidadesElisao` com economia estimada e CTA.
-- `ProximosVencimentosTimeline.tsx` — timeline vertical dos próximos 30d (DARF, DAS, DCTFWeb).
-- `AlertasAtivosResumo.tsx` — lista compacta dos alertas tributários ativos (consome tabela `alertas_tributarios`).
+### 2. Componente `RelatorioAnualTributarioPDF.tsx`
+- Em `src/components/tributario/relatorios/`.
+- Usa `jsPDF` + `autoTable` (já no projeto).
+- Layout corporativo (capa, sumário executivo, 4 seções):
+  1. **Sumário executivo** — KPIs anuais, regime atual vs ótimo
+  2. **Apuração mensal** — tabela 12 meses × tributos (CBS, IBS, IS, residuais)
+  3. **Oportunidades de elisão** — top 9 com base legal e economia
+  4. **Recomendações** — texto gerado dinamicamente conforme score saúde fiscal
+- Cabeçalho/rodapé com razão social, CNPJ, ano, paginação.
+- Cores HSL semânticas convertidas para RGB no PDF.
 
-### 3. Novo hook `useDashboardTributario(empresaId, periodoMeses)`
-- Agrega em paralelo: KPIs, série temporal, oportunidades, vencimentos, alertas.
-- React Query com `staleTime: 5min`.
-- Retorna `{ kpis, serie, oportunidades, vencimentos, alertas, isLoading }`.
+### 3. Hook `useRelatorioAnual(empresaId, ano)`
+- Chama edge function via `supabase.functions.invoke`.
+- React Query com `staleTime: 30min` (dados anuais mudam pouco).
+- Retorna `{ data, isLoading, gerarPDF }` onde `gerarPDF` dispara o download.
 
-### 4. View materializada (migration)
-- `vw_tributario_dashboard` (security_invoker=true) agregando faturamento mensal × tributos calculados por empresa.
-- Índice para acelerar consultas por `empresa_id, ano, mes`.
+### 4. UI de acesso
+- Botão "Gerar Relatório Anual" no `DashboardTributario` (P5) — abre modal com seleção de ano (últimos 3) e CTA de download.
+- Toast de sucesso com confetti ao concluir geração.
 
 ### 5. Validação
 - `npx tsc --noEmit` zero erros.
-- Mobile-first: grid colapsa em 1 coluna < 640px.
-- Memória: salvar padrão em `mem://features/dashboard-tributario-v2`.
+- Deploy edge sem erros.
+- QA: gerar PDF com empresa real, conferir todas as 4 seções renderizam sem clipping.
+- Memória: salvar padrão em `mem://features/relatorio-anual-tributario-pdf`.
 
 ## Diagrama
 
 ```text
-   /tributario/dashboard (v2)
+   DashboardTributario (P5)
+            │
+            ▼
+   [Botão "Gerar Relatório Anual"]
+            │
+            ▼
+   useRelatorioAnual(empresaId, ano)
+            │
+            ▼
+   edge: gerar-relatorio-anual
        │
-       ├─ Header: empresa + período + regime
-       ├─ KPIs (4 cards animados)
-       ├─ Bento Grid:
-       │    ├─ EvolucaoCargaChart (área 12m)
-       │    ├─ ComparativoRegimes (barras)
-       │    ├─ OportunidadesElisao (top 3)
-       │    ├─ ProximosVencimentos (timeline)
-       │    └─ AlertasAtivosResumo (lista)
-       │
-       └─ useDashboardTributario
-              │
-              ▼
-         vw_tributario_dashboard (view otimizada)
+       ├─▶ vw_tributario_dashboard (P5)
+       ├─▶ decidir-regime (motor P1)
+       └─▶ analisarOportunidadesElisao (motor P1)
+            │
+            ▼
+   JSON estruturado → RelatorioAnualTributarioPDF
+            │ (jsPDF + autoTable)
+            ▼
+   Download PDF corporativo (capa + 4 seções)
 ```
 
 ## Observações
-- Reaproveita motores P1 (testados): `decidir-regime`, `orquestrador-elisao`.
-- Sem novos secrets, sem novas edges.
-- Próximo lote: P6 (relatório anual PDF).
+- Reaproveita 100% dos motores P1, view P5, observability P2, RBAC P4.
+- Sem novos secrets.
+- **Último lote do roadmap pós-10/10** — após P6, sistema atinge 10/10++ (excelência operacional completa).
