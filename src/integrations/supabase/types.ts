@@ -7670,6 +7670,48 @@ export type Database = {
         }
         Relationships: []
       }
+      slo_metrics_diarias: {
+        Row: {
+          calculado_em: string
+          cron_jobs_falha: number
+          cron_jobs_sucesso: number
+          data: string
+          edges_health: Json
+          latencia_p50_ms: number
+          latencia_p95_ms: number
+          latencia_p99_ms: number
+          taxa_erro_pct: number
+          total_requisicoes: number
+          uptime_pct: number
+        }
+        Insert: {
+          calculado_em?: string
+          cron_jobs_falha?: number
+          cron_jobs_sucesso?: number
+          data: string
+          edges_health?: Json
+          latencia_p50_ms?: number
+          latencia_p95_ms?: number
+          latencia_p99_ms?: number
+          taxa_erro_pct?: number
+          total_requisicoes?: number
+          uptime_pct?: number
+        }
+        Update: {
+          calculado_em?: string
+          cron_jobs_falha?: number
+          cron_jobs_sucesso?: number
+          data?: string
+          edges_health?: Json
+          latencia_p50_ms?: number
+          latencia_p95_ms?: number
+          latencia_p99_ms?: number
+          taxa_erro_pct?: number
+          total_requisicoes?: number
+          uptime_pct?: number
+        }
+        Relationships: []
+      }
       solicitacoes_aprovacao: {
         Row: {
           aprovado_em: string | null
@@ -8286,6 +8328,33 @@ export type Database = {
             referencedColumns: ["empresa_id"]
           },
         ]
+      }
+      user_onboarding_progress: {
+        Row: {
+          etapas_completas: string[]
+          finalizado_em: string | null
+          iniciado_em: string
+          pulado: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          etapas_completas?: string[]
+          finalizado_em?: string | null
+          iniciado_em?: string
+          pulado?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          etapas_completas?: string[]
+          finalizado_em?: string | null
+          iniciado_em?: string
+          pulado?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
