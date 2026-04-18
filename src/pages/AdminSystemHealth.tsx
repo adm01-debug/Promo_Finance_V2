@@ -132,60 +132,73 @@ export default function AdminSystemHealth() {
         </Badge>
       </div>
 
-      <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <motion.div variants={item}>
-          <KpiCard icon={<Zap className="h-4 w-4" />} label="Edge — chamadas 7d" value={totalCalls.toLocaleString('pt-BR')} hint={`${errorRate}% erros`} />
-        </motion.div>
-        <motion.div variants={item}>
-          <KpiCard icon={<Activity className="h-4 w-4" />} label="Edge — pior p95" value={`${maxP95} ms`} hint={maxP95 < 1000 ? 'Excelente' : maxP95 < 3000 ? 'Aceitável' : 'Lento'} />
-        </motion.div>
-        <motion.div variants={item}>
-          <KpiCard icon={<Database className="h-4 w-4" />} label="CNPJá cache" value={`${cnpjaHitRate}%`} hint={`${cnpjaCacheStats?.validos ?? 0}/${cnpjaCacheStats?.total ?? 0} válidos`} />
-        </motion.div>
-        <motion.div variants={item}>
-          <KpiCard icon={<Shield className="h-4 w-4" />} label="Cache regime" value={String(regimeCacheStats?.ativos ?? 0)} hint="entradas ativas (TTL 7d)" />
-        </motion.div>
-      </motion.div>
+      <Tabs defaultValue="overview" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="overview">Visão geral</TabsTrigger>
+          <TabsTrigger value="auditoria">Auditoria tributária</TabsTrigger>
+        </TabsList>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Mail className="h-4 w-4" />
-              Relatórios agendados
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{agendamentosStats?.ativos ?? 0}</p>
-            <p className="text-sm text-muted-foreground">
-              ativos · {agendamentosStats?.total ?? 0} totais
-            </p>
-          </CardContent>
-        </Card>
+        <TabsContent value="overview" className="space-y-6">
+          <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <motion.div variants={item}>
+              <KpiCard icon={<Zap className="h-4 w-4" />} label="Edge — chamadas 7d" value={totalCalls.toLocaleString('pt-BR')} hint={`${errorRate}% erros`} />
+            </motion.div>
+            <motion.div variants={item}>
+              <KpiCard icon={<Activity className="h-4 w-4" />} label="Edge — pior p95" value={`${maxP95} ms`} hint={maxP95 < 1000 ? 'Excelente' : maxP95 < 3000 ? 'Aceitável' : 'Lento'} />
+            </motion.div>
+            <motion.div variants={item}>
+              <KpiCard icon={<Database className="h-4 w-4" />} label="CNPJá cache" value={`${cnpjaHitRate}%`} hint={`${cnpjaCacheStats?.validos ?? 0}/${cnpjaCacheStats?.total ?? 0} válidos`} />
+            </motion.div>
+            <motion.div variants={item}>
+              <KpiCard icon={<Shield className="h-4 w-4" />} label="Cache regime" value={String(regimeCacheStats?.ativos ?? 0)} hint="entradas ativas (TTL 7d)" />
+            </motion.div>
+          </motion.div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Subsistemas</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Button asChild variant="outline" className="w-full justify-between">
-              <Link to="/admin/edge-health">
-                Edge Functions detalhado <ExternalLink className="h-4 w-4" />
-              </Link>
-            </Button>
-            <Button asChild variant="outline" className="w-full justify-between">
-              <Link to="/admin/telemetria">
-                Telemetria <ExternalLink className="h-4 w-4" />
-              </Link>
-            </Button>
-            <Button asChild variant="outline" className="w-full justify-between">
-              <Link to="/audit-logs">
-                Auditoria <ExternalLink className="h-4 w-4" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Mail className="h-4 w-4" />
+                  Relatórios agendados
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold">{agendamentosStats?.ativos ?? 0}</p>
+                <p className="text-sm text-muted-foreground">
+                  ativos · {agendamentosStats?.total ?? 0} totais
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Subsistemas</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button asChild variant="outline" className="w-full justify-between">
+                  <Link to="/admin/edge-health">
+                    Edge Functions detalhado <ExternalLink className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="w-full justify-between">
+                  <Link to="/admin/telemetria">
+                    Telemetria <ExternalLink className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="w-full justify-between">
+                  <Link to="/audit-logs">
+                    Auditoria geral <ExternalLink className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="auditoria">
+          <AuditoriaTributariaTab />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
