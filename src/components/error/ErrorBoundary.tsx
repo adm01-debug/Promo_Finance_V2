@@ -3,6 +3,7 @@ import { RefreshCw, Home, Bug, MessageCircle, Copy, Check, AlertTriangle } from 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardFooter } from '@/components/ui/card';
 import { reportErrorToTracker, errorTracker } from '@/lib/error-tracking';
+import { reportError as reportToTelemetry } from '@/lib/telemetry';
 import { motion } from 'framer-motion';
 
 interface Props {
@@ -41,7 +42,19 @@ export class ErrorBoundary extends Component<Props, State> {
     
     // Report to error tracking service
     reportErrorToTracker(error, errorInfo.componentStack || undefined);
-    
+
+    // Persist to backend telemetry (frontend_error_logs)
+    reportToTelemetry({
+      message: error.message,
+      stack: error.stack,
+      severity: 'critical',
+      context: {
+        name: error.name,
+        componentStack: errorInfo.componentStack?.slice(0, 2000),
+        source: 'ErrorBoundary',
+      },
+    });
+
     // Add breadcrumb for context
     errorTracker.addBreadcrumb({
       category: 'error-boundary',
