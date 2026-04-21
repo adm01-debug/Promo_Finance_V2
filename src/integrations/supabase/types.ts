@@ -3265,6 +3265,45 @@ export type Database = {
         }
         Relationships: []
       }
+      evidencias_pacotes: {
+        Row: {
+          created_at: string
+          escopos: string[]
+          gerado_por: string | null
+          gerado_por_email: string | null
+          id: string
+          manifest: Json
+          periodo_fim: string
+          periodo_inicio: string
+          storage_path: string
+          tamanho_bytes: number | null
+        }
+        Insert: {
+          created_at?: string
+          escopos: string[]
+          gerado_por?: string | null
+          gerado_por_email?: string | null
+          id?: string
+          manifest?: Json
+          periodo_fim: string
+          periodo_inicio: string
+          storage_path: string
+          tamanho_bytes?: number | null
+        }
+        Update: {
+          created_at?: string
+          escopos?: string[]
+          gerado_por?: string | null
+          gerado_por_email?: string | null
+          id?: string
+          manifest?: Json
+          periodo_fim?: string
+          periodo_inicio?: string
+          storage_path?: string
+          tamanho_bytes?: number | null
+        }
+        Relationships: []
+      }
       execucoes_cobranca: {
         Row: {
           canal: string
