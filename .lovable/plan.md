@@ -1,69 +1,72 @@
 
 
-## Plano — Reestruturar `/contabilidade` com 6 abas
+## Plano — Destacar desequilíbrio do Balanço com diferença em R$
 
 ### Estado atual
 
-A rota `/contabilidade` já existe (`src/pages/Contabilidade.tsx`, protegida para `admin`/`financeiro`) com **4 abas**: Plano, Lançamentos, SPED ECD, SPED ECF. Os hooks `usePlanoContas`, `useLancamentosContabeis` e `useSpedContabil` já consomem as tabelas reais (`plano_contas`, `lancamentos_contabeis`, `partidas_contabeis`). Faltam apenas as **2 abas novas**: Razão & Diário e DRE & Balanço.
+A aba `DreBalancoTab` (criada recentemente) já calcula totais de Ativo e Passivo + PL e exibe um indicador visual quando há divergência maior que R$ 0,01. Falta, porém:
+
+- Destaque visual mais forte (não só um badge discreto).
+- Mostrar a **diferença exata em R$** (com sinal indicando o lado que está maior).
+- Rodapé fixo da aba consolidando o status do balanço.
+- Pista de qual lado está faltando (Ativo > Passivo+PL ou vice-versa).
+
+O componente legado `src/components/demonstrativos/BalancoPatrimonial.tsx` (rota `/demonstrativos`) tem lógica parecida e também só mostra um badge "Equilibrado / Divergência" sem o valor da diferença — vale aplicar o mesmo padrão lá para consistência.
 
 ### O que será implementado
 
-**1. Nova aba `RazaoDiarioTab.tsx`** (`src/components/contabilidade/`)
+**1. `src/components/contabilidade/DreBalancoTab.tsx` (editado)**
 
-Aba única com sub-toggle (segmented) entre **Diário** e **Razão**, compartilhando filtros.
+Adicionar, no modo Balanço, um **rodapé sticky** dentro do card com:
 
-- **Filtros no topo**: data início/fim (default = ano corrente), select de conta opcional (do `plano_contas` da empresa), busca textual em histórico.
-- **Modo Diário**: tabela cronológica achatada — `Data | Nº | Histórico | Conta (código + nome) | Débito | Crédito`. Totais de débito/crédito no rodapé (devem bater).
-- **Modo Razão**: agrupado por conta. Para cada conta com movimento:
-  - cabeçalho (código · nome · saldo inicial)
-  - linhas `Data | Histórico | Débito | Crédito | Saldo acumulado`
-  - saldo final
-  - Saldo inicial = soma de partidas anteriores ao `dataInicio` (calculado client-side a partir do mesmo dataset).
-- Botão **Exportar** (dropdown CSV/PDF) com `exportToCSV/exportToPDF` de `@/lib/export-utils`, nome `diario-{período}` ou `razao-{período}`.
-- Empty/loading com `Skeleton`.
+- **Estado equilibrado** (|Ativo − (Passivo+PL)| ≤ 0,01):
+  - Faixa verde discreta (`bg-emerald-500/10 border-emerald-500/30`).
+  - Ícone `CheckCircle2` + texto "Balanço equilibrado · Ativo = Passivo + PL = R$ X,XX".
 
-**2. Nova aba `DreBalancoTab.tsx`** (`src/components/contabilidade/`)
+- **Estado desequilibrado**:
+  - Faixa de alerta (`bg-destructive/10 border-destructive/40 text-destructive`).
+  - Ícone `AlertTriangle` pulsante (animação leve).
+  - Linha 1: "Balanço desequilibrado".
+  - Linha 2 em grid de 3 colunas: **Ativo** · **Passivo + PL** · **Diferença** (cada um com label + valor formatado em `formatCurrency`).
+  - A "Diferença" em destaque (texto maior, negrito, com sinal):
+    - Se Ativo > Passivo+PL → `+R$ X,XX (Ativo maior)`.
+    - Se Passivo+PL > Ativo → `-R$ X,XX (Passivo+PL maior)`.
+  - Texto auxiliar pequeno: "Verifique lançamentos em aberto, contas sem mapeamento de natureza ou diferenças de arredondamento."
 
-Sub-toggle entre **DRE** e **Balanço Patrimonial**, calculados a partir de `usePlanoContas` + `useLancamentosContabeis`.
+Reforço adicional nas linhas de total da tabela (TOTAL ATIVO / TOTAL PASSIVO+PL) quando desequilibrado: borda vermelha à esquerda (`border-l-4 border-destructive`) e cor do valor em `text-destructive`.
 
-- **Filtros**: período (default ano corrente).
-- **DRE** agrupada por natureza:
-  - (+) Receitas (soma C − D em contas `natureza='receita'`)
-  - (−) Despesas (soma D − C em `natureza='despesa'`)
-  - (=) Resultado do período
-  - Hierarquia respeitando `parent_id` (recuo `paddingLeft = nivel * 16`).
-- **Balanço** em duas colunas:
-  - Ativo (`natureza='ativo'`, D − C)
-  - Passivo (`natureza='passivo'`, C − D) + Patrimônio (`natureza='patrimonio'`, C − D + resultado do exercício)
-  - Indicador de equilíbrio (Ativo vs Passivo+PL); se diferir > R$ 0,01, alerta amarelo.
-- Cálculo 100% client-side num `useMemo`.
-- **Exportar PDF** via `jsPDF` + `autoTable` (já no projeto), com cabeçalho da empresa e período, seguindo o padrão de `advanced-corporate-reporting-engine`.
+A diferença entra também no PDF exportado: nova linha ao final "Diferença: R$ X,XX" colorida quando ≠ 0.
 
-**3. Atualizar `src/pages/Contabilidade.tsx`**
+**2. `src/components/demonstrativos/BalancoPatrimonial.tsx` (editado)**
 
-- Trocar `TabsList` para 6 colunas (`grid-cols-3 md:grid-cols-6`), na ordem:
-  Plano · Lançamentos · **Razão & Diário** · **DRE & Balanço** · SPED ECD · SPED ECF
-- Importar e renderizar as duas novas abas; passar `empresaId` e `ano` do header.
-- Header existente (Empresa/Ano) preservado — filtros internos de cada nova aba refinam o período.
+Substituir o card central "✓ Equilibrado / ✗ Divergência" por um bloco que, no caso de divergência, exibe o valor exato da diferença (mesmo padrão visual do item 1, em escala compacta). Manter os outros dois cards (Ativo Total / Passivo+PL).
+
+### Detalhe técnico
+
+```ts
+const diferenca = totalAtivo - totalPassivoPL;
+const equilibrado = Math.abs(diferenca) <= 0.01;
+const ladoMaior = diferenca > 0 ? 'Ativo' : 'Passivo + PL';
+```
+
+Tolerância fixa de R$ 0,01 (centavo) para absorver arredondamentos de soma em ponto flutuante. Cores via tokens semânticos (`destructive`, `emerald` apenas inline pois não há token de sucesso global) — mantendo o padrão atual do projeto.
 
 ### Arquivos
 
-- ✏️ `src/pages/Contabilidade.tsx`
-- ➕ `src/components/contabilidade/RazaoDiarioTab.tsx`
-- ➕ `src/components/contabilidade/DreBalancoTab.tsx`
+- ✏️ `src/components/contabilidade/DreBalancoTab.tsx`
+- ✏️ `src/components/demonstrativos/BalancoPatrimonial.tsx`
 
 ### O que NÃO muda
 
-- Sem migration, sem nova edge function, sem novo hook.
-- Rota e RBAC já configurados.
-- Hooks existentes reutilizados sem alteração.
+- Sem migration, sem novo hook, sem nova edge function.
+- Lógica de cálculo do balanço permanece igual; só muda a apresentação.
+- Rotas e RBAC inalterados.
 
 ### Critério de pronto
 
-1. `/contabilidade` mostra 6 abas funcionais com a empresa do header.
-2. Diário lista todas as partidas do período em ordem cronológica e fecha débitos = créditos.
-3. Razão agrupa por conta com saldo inicial → movimentos → saldo final corretos.
-4. DRE soma receitas − despesas mostrando resultado, com hierarquia preservada.
-5. Balanço sinaliza Ativo = Passivo + PL e alerta em caso de desequilíbrio.
-6. Exportação CSV/PDF funciona em Razão/Diário e PDF em DRE/Balanço.
+1. Em `/contabilidade` → aba "DRE & Balanço" → modo "Balanço": com balanço equilibrado, rodapé verde discreto confirma o status.
+2. Quando há divergência, rodapé vermelho exibe Ativo, Passivo+PL e a **diferença em R$** com sinal e indicação do lado maior.
+3. Linhas de total ganham destaque vermelho quando desequilibrado.
+4. PDF exportado inclui linha "Diferença".
+5. `/demonstrativos` → Balanço aplica o mesmo padrão no card central.
 
