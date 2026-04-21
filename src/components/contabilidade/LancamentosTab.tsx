@@ -146,7 +146,8 @@ export function LancamentosTab({ empresaId, ano }: Props) {
                 <Button onClick={handleSalvar} disabled={!balanceado || !historico || criar.isPending} className="w-full">Salvar lançamento</Button>
               </div>
             </DialogContent>
-          </Dialog>
+            </Dialog>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
