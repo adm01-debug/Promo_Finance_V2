@@ -449,6 +449,7 @@ export function SugestoesMatchIA({
         onMotivoChange={setMotivoRejeicao}
         onConfirmar={confirmarRejeicao}
         onCancelar={() => { setRejeicaoPendente(null); setMotivoRejeicao(''); }}
+        isPending={registrarHistorico.isPending || registrarFeedback.isPending}
       />
 
       <HistoricoConciliacaoDialog
