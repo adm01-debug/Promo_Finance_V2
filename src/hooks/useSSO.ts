@@ -58,6 +58,7 @@ export interface SSOLoginAttempt {
   user_agent: string | null;
   duration_ms: number | null;
   created_at: string;
+  context?: Record<string, unknown> | null;
 }
 
 export function useSSOProviders() {
