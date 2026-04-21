@@ -52,7 +52,13 @@ export default function SSOJitEvents() {
           e.user_email,
           e.details,
           nd.provider_nome,
+          nd.provider_id,
+          nd.provider_tipo,
           nd.matched_group,
+          nd.role,
+          nd.default_role,
+          nd.via,
+          nd.empresa_id,
           ...(nd.groups_received ?? []),
         ]
           .filter(Boolean)
@@ -129,7 +135,7 @@ export default function SSOJitEvents() {
               <div className="relative md:col-span-2">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Buscar usuário, provider, grupo..."
+                  placeholder="Buscar usuário, provider, ID, role, grupo..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="pl-9"
