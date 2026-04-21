@@ -18,7 +18,15 @@ import {
   Loader2,
   RefreshCw,
   Microscope,
+  ListChecks,
 } from "lucide-react";
+import { Link } from "react-router-dom";
+import {
+  useAnomaliasDetectadas,
+  type Anomalia,
+} from "@/hooks/useAnomaliasDetectadas";
+import { usePendingAnomaliasQueue } from "@/hooks/useAnomaliasDetectadas";
+import { AnomaliasReviewQueue } from "./AnomaliasReviewQueue";
 import { Link } from "react-router-dom";
 import {
   useAnomaliasDetectadas,
