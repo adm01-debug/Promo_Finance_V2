@@ -1,6 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useLogAudit } from "./useAuditLog";
+
+const SEVERIDADE_ORDEM: Record<string, number> = {
+  critica: 0,
+  alta: 1,
+  media: 2,
+  baixa: 3,
+};
 
 export interface Anomalia {
   id: string;
