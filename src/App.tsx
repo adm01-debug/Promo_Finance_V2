@@ -77,6 +77,7 @@ const SSOAdmin = lazy(() => import('./pages/admin/SSOAdmin'));
 const InsightsIA = lazy(() => import('./pages/admin/InsightsIA'));
 const AnomaliaDetalhe = lazy(() => import('./pages/admin/AnomaliaDetalhe'));
 const ComplianceAuditoria = lazy(() => import('./pages/admin/ComplianceAuditoria'));
+const Contabilidade = lazy(() => import('./pages/Contabilidade'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Inner app component that can use routing hooks
@@ -122,6 +123,7 @@ function AppRoutes() {
             <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
             <Route path="/seguranca" element={<ProtectedRoute><Seguranca /></ProtectedRoute>} />
             <Route path="/demonstrativos" element={<ProtectedRoute><Demonstrativos /></ProtectedRoute>} />
+            <Route path="/contabilidade" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><Contabilidade /></ProtectedRoute>} />
             <Route path="/pagamentos-recorrentes" element={<ProtectedRoute><PagamentosRecorrentes /></ProtectedRoute>} />
             <Route path="/bitrix24" element={<ProtectedRoute><Bitrix24 /></ProtectedRoute>} />
             <Route path="/reforma-tributaria" element={<ProtectedRoute><ReformaTributaria /></ProtectedRoute>} />

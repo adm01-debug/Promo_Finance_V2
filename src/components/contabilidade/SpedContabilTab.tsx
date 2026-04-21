@@ -125,7 +125,8 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                       </Button>
                     </TableCell>
                   </TableRow>
-                ))}
+                  );
+                })}
               </TableBody>
             </Table>
           )}
