@@ -62,6 +62,7 @@ Deno.serve(async (req) => {
       state,
       code_verifier_hash: verifierHash,
       expires_at,
+      app_redirect: redirect_to ?? null,
     });
 
     const callback = `${SUPABASE_URL}/functions/v1/sso-callback`;
