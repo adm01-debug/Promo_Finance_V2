@@ -212,6 +212,13 @@ export default function Conciliacao() {
                       setSearchTerm={setSearchTerm}
                       filters={filters}
                       setFilters={setFilters}
+                      sort={sort}
+                      setSort={setSort}
+                      visibleCols={visibleCols}
+                      setVisibleCols={setVisibleCols}
+                      activePresetId={activePresetId}
+                      onLoadPreset={handleLoadPreset}
+                      onClearPreset={handleClearPreset}
                     />
                   </div>
                 </CardContent>
