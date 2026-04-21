@@ -138,11 +138,21 @@ export function SugestoesMatchIA({
     if (!rejeicaoPendente) return;
     const { transacaoId, transacaoDescricao, sugestao } = rejeicaoPendente;
     setMatchesRejeitados(prev => new Set([...prev, `${transacaoId}-${sugestao.lancamentoId}`]));
-    await registrarHistorico.mutateAsync({ transacaoId, lancamentoId: sugestao.lancamentoId, tipoLancamento: sugestao.lancamentoTipo, score: sugestao.score, confianca: sugestao.confianca, motivos: sugestao.motivos, analiseIA: sugestao.analiseIA, acao: 'rejeitado' });
-    await registrarFeedback.mutateAsync({ transacaoDescricao, lancamentoEntidade: sugestao.lancamento?.entidade || '', lancamentoDescricao: sugestao.lancamento?.descricao, tipoLancamento: sugestao.lancamentoTipo, scoreOriginal: sugestao.score, acao: 'rejeitado', motivoRejeicao: motivoRejeicao || undefined });
-    onRejeitarMatch(transacaoId, sugestao.lancamentoId);
-    setRejeicaoPendente(null);
-    setMotivoRejeicao('');
+    try {
+      await registrarHistorico.mutateAsync({ transacaoId, lancamentoId: sugestao.lancamentoId, tipoLancamento: sugestao.lancamentoTipo, score: sugestao.score, confianca: sugestao.confianca, motivos: sugestao.motivos, analiseIA: sugestao.analiseIA, acao: 'rejeitado' });
+      await registrarFeedback.mutateAsync({ transacaoDescricao, lancamentoEntidade: sugestao.lancamento?.entidade || '', lancamentoDescricao: sugestao.lancamento?.descricao, tipoLancamento: sugestao.lancamentoTipo, scoreOriginal: sugestao.score, acao: 'rejeitado', motivoRejeicao: motivoRejeicao || undefined });
+      onRejeitarMatch(transacaoId, sugestao.lancamentoId);
+      if (motivoRejeicao.trim()) {
+        toast.success('Rejeição registrada — IA aprenderá com este feedback');
+      } else {
+        toast.info('Rejeição registrada');
+      }
+    } catch {
+      toast.error('Erro ao registrar rejeição');
+    } finally {
+      setRejeicaoPendente(null);
+      setMotivoRejeicao('');
+    }
   };
 
   const handleAprovarTodos = async () => {
