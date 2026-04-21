@@ -306,7 +306,7 @@ describe('/auth/corporate — CorporateOnboarding', () => {
   });
 
   it('falha no sso-initiate exibe tela de erro e permite fallback para /auth com senha', async () => {
-    invokeMock.mockResolvedValue({ data: null, error: { message: 'IdP indisponível' } });
+    invokeMock.mockResolvedValue({ data: null, error: new Error('IdP indisponível') });
     setResolver({ providers: [baseProvider], domain: 'acme.com' });
     renderPage();
     await submitEmail('dave@acme.com');
