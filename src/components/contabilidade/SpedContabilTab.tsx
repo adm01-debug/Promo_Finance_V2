@@ -97,11 +97,13 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {historicoTipo.map((h: {
-                  id: string; ano_calendario: number; created_at: string; total_lancamentos: number; total_linhas: number;
-                  status: string; hash_sha256: string | null; storage_path: string;
-                  validacoes: { erros: string[]; avisos: string[] };
-                }) => (
+                {historicoTipo.map((row) => {
+                  const h = row as unknown as {
+                    id: string; ano_calendario: number; created_at: string; total_lancamentos: number; total_linhas: number;
+                    status: string; hash_sha256: string | null; storage_path: string;
+                    validacoes: { erros: string[]; avisos: string[] };
+                  };
+                  return (
                   <TableRow key={h.id}>
                     <TableCell className="font-medium">{h.ano_calendario}</TableCell>
                     <TableCell>{format(new Date(h.created_at), 'dd/MM/yyyy HH:mm')}</TableCell>
