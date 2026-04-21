@@ -19,6 +19,7 @@ import { CommandPalette } from '@/components/command-palette/CommandPalette';
 // Lazy load pages for better performance
 const Index = lazy(() => import('./pages/Index'));
 const Auth = lazy(() => import('./pages/Auth'));
+const CorporateOnboarding = lazy(() => import('./pages/auth/CorporateOnboarding'));
 const ContasPagar = lazy(() => import('./pages/ContasPagar'));
 const ContasReceber = lazy(() => import('./pages/ContasReceber'));
 const DashboardReceber = lazy(() => import('./pages/DashboardReceber'));
@@ -93,6 +94,7 @@ function AppRoutes() {
           <Routes>
             {/* Public Routes */}
             <Route path="/auth" element={<Auth />} />
+            <Route path="/auth/corporate" element={<CorporateOnboarding />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/contador/:token" element={<ContadorReadonly />} />
             
