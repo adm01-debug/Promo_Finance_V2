@@ -5,8 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Copy, ExternalLink, Info } from 'lucide-react';
+import { Copy, ExternalLink, Info, Loader2, CheckCircle2, XCircle, PlugZap } from 'lucide-react';
 import { toast } from 'sonner';
+import { useState } from 'react';
 
 const SCIM_BASE = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scim-server/scim/v2`;
 
@@ -40,7 +41,70 @@ function CopyField({ label, value }: { label: string; value: string }) {
   );
 }
 
+type TestResult =
+  | { ok: true; status: number; latencyMs: number }
+  | { ok: false; status?: number; latencyMs?: number; message: string; hint?: string };
+
+const SCIM_SP_CONFIG_SCHEMA = 'urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig';
+
 export function ScimSetupGuide() {
+  const [testing, setTesting] = useState(false);
+  const [result, setResult] = useState<TestResult | null>(null);
+
+  const handleTest = async () => {
+    setTesting(true);
+    setResult(null);
+    const url = `${SCIM_BASE}/ServiceProviderConfig`;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const start = performance.now();
+    try {
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: { Accept: 'application/scim+json' },
+        signal: controller.signal,
+      });
+      const latencyMs = Math.round(performance.now() - start);
+      if (!res.ok) {
+        setResult({
+          ok: false,
+          status: res.status,
+          latencyMs,
+          message: `Endpoint respondeu HTTP ${res.status} ${res.statusText}`,
+          hint: res.status >= 500 ? 'Servidor SCIM com falha — verifique logs da edge function scim-server.' : undefined,
+        });
+        return;
+      }
+      const json = await res.json().catch(() => null);
+      const schemas: string[] = Array.isArray(json?.schemas) ? json.schemas : [];
+      if (!schemas.includes(SCIM_SP_CONFIG_SCHEMA)) {
+        setResult({
+          ok: false,
+          status: res.status,
+          latencyMs,
+          message: 'Resposta 200 mas o payload não é um ServiceProviderConfig SCIM 2.0 válido.',
+          hint: 'Verifique se a URL aponta para /scim/v2/ServiceProviderConfig.',
+        });
+        return;
+      }
+      setResult({ ok: true, status: res.status, latencyMs });
+    } catch (err) {
+      const latencyMs = Math.round(performance.now() - start);
+      const isAbort = (err as Error)?.name === 'AbortError';
+      setResult({
+        ok: false,
+        latencyMs,
+        message: isAbort ? 'Timeout: o endpoint não respondeu em 8s.' : `Falha ao conectar: ${(err as Error).message}`,
+        hint: isAbort
+          ? 'Tente novamente ou verifique a saúde da edge function scim-server.'
+          : 'Se o erro for de CORS/rede, lembre que IdPs (Azure AD, Okta) chamam o endpoint a partir de servidores externos — esse teste local pode falhar mesmo com endpoint saudável em produção.',
+      });
+    } finally {
+      clearTimeout(timeout);
+      setTesting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Alert>
@@ -62,6 +126,60 @@ export function ScimSetupGuide() {
           <div className="grid grid-cols-2 gap-3 pt-2">
             <Badge variant="outline" className="justify-center py-2">SCIM 2.0</Badge>
             <Badge variant="outline" className="justify-center py-2">Bearer auth</Badge>
+          </div>
+
+          <div className="pt-2 space-y-3 border-t">
+            <div className="flex items-center justify-between gap-3 pt-3">
+              <div>
+                <p className="text-sm font-medium">Testar conexão</p>
+                <p className="text-xs text-muted-foreground">
+                  Faz um <code>GET /ServiceProviderConfig</code> sem token para validar se o endpoint está online.
+                </p>
+              </div>
+              <Button onClick={handleTest} disabled={testing} variant="outline">
+                {testing ? (
+                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Testando…</>
+                ) : (
+                  <><PlugZap className="h-4 w-4 mr-2" />Testar conexão</>
+                )}
+              </Button>
+            </div>
+
+            {result?.ok && (
+              <Alert variant="success" title="Endpoint SCIM acessível">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-xs">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    <span>HTTP {result.status} • {result.latencyMs} ms • schema SCIM 2.0 válido</span>
+                  </div>
+                  <div className="text-xs space-y-1 pt-1">
+                    <p className="font-medium">Status esperado por IdP:</p>
+                    <ul className="list-disc list-inside text-muted-foreground space-y-0.5">
+                      <li><strong>Azure AD:</strong> "Test Connection" deve retornar <code>200 OK</code>.</li>
+                      <li><strong>Okta:</strong> "Test Connector Configuration" deve ficar todo verde.</li>
+                    </ul>
+                    <p className="text-muted-foreground pt-1">
+                      Lembre-se que ações autenticadas (criação de usuários) ainda exigem um token SCIM válido.
+                    </p>
+                  </div>
+                </div>
+              </Alert>
+            )}
+
+            {result && result.ok === false && (
+              <Alert variant="error" title="Não foi possível validar o endpoint">
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2 text-xs">
+                    <XCircle className="h-3.5 w-3.5" />
+                    <span>
+                      {result.message}
+                      {result.latencyMs !== undefined && ` • ${result.latencyMs} ms`}
+                    </span>
+                  </div>
+                  {result.hint && <p className="text-xs text-muted-foreground">{result.hint}</p>}
+                </div>
+              </Alert>
+            )}
           </div>
         </CardContent>
       </Card>
