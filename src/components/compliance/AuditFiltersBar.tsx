@@ -9,12 +9,15 @@ export interface FiltrosState {
   fim: string;
   busca: string;
   acao: string;
+  usuario?: string;
 }
 
 interface Props {
   value: FiltrosState;
   onChange: (v: FiltrosState) => void;
   acoes?: { value: string; label: string }[];
+  usuarios?: string[];
+  mostrarUsuario?: boolean;
 }
 
 const PRESETS: { label: string; dias: number }[] = [
@@ -28,7 +31,7 @@ function isoDays(dias: number) {
   return d.toISOString().slice(0, 10);
 }
 
-export function AuditFiltersBar({ value, onChange, acoes }: Props) {
+export function AuditFiltersBar({ value, onChange, acoes, usuarios, mostrarUsuario = true }: Props) {
   const [busca, setBusca] = useState(value.busca);
 
   return (
@@ -67,6 +70,27 @@ export function AuditFiltersBar({ value, onChange, acoes }: Props) {
             />
           </form>
         </div>
+        {mostrarUsuario && usuarios && usuarios.length > 0 && (
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Usuário</label>
+            <Select
+              value={value.usuario || "todos"}
+              onValueChange={(v) => onChange({ ...value, usuario: v === "todos" ? "" : v })}
+            >
+              <SelectTrigger className="w-52">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                {usuarios.map((u) => (
+                  <SelectItem key={u} value={u}>
+                    {u}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
         {acoes && (
           <div>
             <label className="text-xs text-muted-foreground block mb-1">Ação</label>
@@ -102,7 +126,7 @@ export function AuditFiltersBar({ value, onChange, acoes }: Props) {
           variant="ghost"
           onClick={() => {
             setBusca("");
-            onChange({ inicio: "", fim: "", busca: "", acao: "todas" });
+            onChange({ inicio: "", fim: "", busca: "", acao: "todas", usuario: "" });
           }}
         >
           <RotateCcw className="h-3 w-3" />
