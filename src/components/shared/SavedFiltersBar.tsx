@@ -183,11 +183,9 @@ export function SavedFiltersBar<T>({
               <Checkbox
                 id="default"
                 checked={makeDefault}
-                onCheckedChange={(v) => setMakeDefault(!!v)}
+                onChange={(e) => setMakeDefault(e.target.checked)}
+                label="Aplicar automaticamente ao abrir esta tela"
               />
-              <Label htmlFor="default" className="text-sm font-normal">
-                Aplicar automaticamente ao abrir esta tela
-              </Label>
             </div>
           </div>
           <DialogFooter>

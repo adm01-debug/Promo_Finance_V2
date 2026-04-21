@@ -7,7 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
-import { Columns3 } from "lucide-react";
+import { Columns } from "lucide-react";
 
 export interface ColumnDef {
   key: string;
@@ -37,7 +37,7 @@ export function ColumnVisibilityMenu({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" className="gap-1.5">
-          <Columns3 className="h-3.5 w-3.5" />
+          <Columns className="h-3.5 w-3.5" />
           Campos
         </Button>
       </DropdownMenuTrigger>
