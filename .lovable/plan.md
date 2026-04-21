@@ -1,114 +1,89 @@
 
 
-## Plano — Log de auditoria do onboarding corporativo SSO
+## Plano — Cobertura de testes para `/auth/corporate`
 
 ### Diagnóstico
 
-Hoje, em `src/pages/auth/CorporateOnboarding.tsx`, todo o fluxo SSO acontece sem registro persistente do que o usuário viu/escolheu:
+`src/pages/auth/CorporateOnboarding.tsx` orquestra todo o fluxo SSO corporativo (resolver de domínio → auto-redirect / escolha manual / fallback de senha → cancelamento → erro). Hoje não há **nenhum** teste cobrindo esse arquivo, apesar de:
 
-- O domínio detectado (`useSsoDomainResolver`) e os providers retornados ficam apenas em memória.
-- O auto-redirect, escolha manual, cancelamento, fallback de erro e "continuar com senha" não geram trilha de auditoria.
-- Quando um usuário abre ticket de suporte ("não consigo entrar via SSO"), não há histórico do que ele tentou — apenas o `sso_login_attempts` da Edge Function `sso-initiate`, que só cobre tentativas que chegaram a invocar o backend.
+- Ser o ponto de entrada principal de logins corporativos.
+- Ter ramificações complexas (force-SSO, cancelamento, retry, fallback de senha).
+- Recentemente ganhou auditoria via `useSsoOnboardingAudit` que precisa ser disparada nos pontos certos.
 
-A tabela `sso_login_attempts` já existe (vista em `useSSO.ts` e `sso-initiate/index.ts`) com `provider_id`, `email`, `success`, `error_code`, `error_message`, `ip_address`, `user_agent`, `duration_ms`, `created_at`. Falta um campo para classificar a etapa do onboarding e armazenar contexto (domínio, motivo, ação do usuário).
+O projeto já tem Vitest + Testing Library configurados (`vitest.config.ts`, `src/test/setup.ts`, `src/test/test-utils.tsx`) e padrão estabelecido de mockar Supabase via `vi.mock('@/integrations/supabase/client', …)` (visto em 4 testes existentes).
 
-### Mudanças
+### Escopo dos testes
 
-#### 1. Banco — estender `sso_login_attempts` (migration)
+Novo arquivo único: `src/pages/auth/__tests__/CorporateOnboarding.test.tsx`
 
-Adicionar 2 colunas opcionais (não-quebra retrocompat):
+**Mocks padronizados** (no topo do arquivo):
 
-- `event_type text` — enum lógico em texto: `domain_resolved`, `auto_redirect_started`, `auto_redirect_cancelled`, `manual_provider_selected`, `redirect_dispatched`, `redirect_failed`, `password_fallback_used`, `redirect_succeeded` (este último só registrado pós-callback — fora do escopo desta task; cobrir os 7 primeiros).
-- `context jsonb` — `{ domain, provider_nome, provider_tipo, force_sso, providers_count, reason }` etc.
+- `@/integrations/supabase/client` → expõe `supabase.from(...).select().eq().contains().order()` retornando providers controláveis por teste, e `supabase.functions.invoke('sso-initiate', …)` retornando `{ redirect_url, verifier, state }`. Também `supabase.rpc('log_sso_onboarding_event', …)` no-op com sucesso.
+- `react-router-dom` → mock parcial: preserva tudo, substitui `useNavigate` por `vi.fn()` (capturado via `mockNavigate`).
+- `sonner` → `toast.error/info` como `vi.fn()`.
+- `window.location.href` → substituído por um setter espionado (descritor configurável) para validar redirect sem realmente navegar.
+- `sessionStorage.setItem` (já mockado no setup global).
 
-Índice `(email, created_at desc)` e `(event_type, created_at desc)` para suporte filtrar rapidamente.
+**Helpers**:
 
-RLS: já é admin-only para SELECT. Manter. Insert pelo cliente: criar política para permitir `authenticated` E `anon` inserirem **somente** linhas com `success=false` e `event_type` definido (eventos de telemetria não-sensíveis), OU expor uma RPC `log_sso_onboarding_event(email, event_type, context, provider_id)` `SECURITY DEFINER` que faz o insert sanitizado. **Preferir a RPC** — controle melhor, evita abuso de policy ampla.
+- `renderPage()` que monta `<CorporateOnboarding />` dentro do wrapper do projeto (`render` de `src/test/test-utils.tsx`).
+- `setProviders(list)` para configurar o retorno do resolver no próximo render.
+- `typeEmail(email)` que digita o e-mail e dá blur para acionar `submittedEmail`.
 
-#### 2. RPC — `log_sso_onboarding_event` (migration)
+### Casos cobertos
 
-```sql
-CREATE OR REPLACE FUNCTION public.log_sso_onboarding_event(
-  _email text,
-  _event_type text,
-  _provider_id uuid DEFAULT NULL,
-  _context jsonb DEFAULT '{}'::jsonb,
-  _success boolean DEFAULT true,
-  _error_code text DEFAULT NULL,
-  _error_message text DEFAULT NULL
-) RETURNS uuid
-LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
-DECLARE v_id uuid;
-BEGIN
-  -- Validar event_type contra lista permitida
-  IF _event_type NOT IN (
-    'domain_resolved','auto_redirect_started','auto_redirect_cancelled',
-    'manual_provider_selected','redirect_dispatched','redirect_failed',
-    'password_fallback_used'
-  ) THEN
-    RAISE EXCEPTION 'event_type inválido: %', _event_type;
-  END IF;
+1. **Estado inicial** — renderiza título "Acesso corporativo", input vazio, sem providers visíveis. Sem chamada a `functions.invoke`.
 
-  INSERT INTO public.sso_login_attempts(
-    provider_id, email, success, error_code, error_message,
-    event_type, context
-  ) VALUES (
-    _provider_id, lower(trim(_email)), _success, _error_code, _error_message,
-    _event_type, COALESCE(_context, '{}'::jsonb)
-  ) RETURNING id INTO v_id;
-  RETURN v_id;
-END;
-$$;
+2. **Domínio sem match em `allowed_domains`** — `from(...).contains([domain])` resolve `[]`. Após digitar e-mail e submeter:
+   - Aparece o alerta "Nenhum provedor SSO encontrado para …" com link "Continuar com senha".
+   - Clicar no link chama `navigate('/auth?email=foo%40acme.com')`.
+   - `supabase.rpc` foi chamado com `event_type='domain_resolved'` e `providers_count: 0`, e com `event_type='password_fallback_used'`.
+   - Não houve `functions.invoke('sso-initiate', …)`.
 
-GRANT EXECUTE ON FUNCTION public.log_sso_onboarding_event TO anon, authenticated;
-```
+3. **Domínio com match SEM `force_sso_for_domains`** (escolha manual):
+   - Lista de providers aparece com botão "Entrar com {nome}".
+   - Auto-redirect NÃO dispara (sem countdown, sem `invoke`).
+   - Clicar no botão chama `invoke('sso-initiate', { provider_id, redirect_to })` e atribui `window.location.href` ao `redirect_url` retornado.
+   - `sessionStorage.setItem` foi chamado com `pkce:<state>` e o `verifier`.
+   - `rpc` registrou `manual_provider_selected` e `redirect_dispatched`.
 
-#### 3. Frontend — hook `useSsoOnboardingAudit`
+4. **Domínio com `force_sso_for_domains` (auto-redirect)**:
+   - Após o resolver, a tela "Redirecionando para …" aparece com botão "Cancelar redirecionamento".
+   - Avançando timers fake (`vi.useFakeTimers()` + `act(() => vi.advanceTimersByTime(...))`) o countdown chega a 0 e `invoke('sso-initiate', …)` é chamado.
+   - `window.location.href` recebe o `redirect_url`.
+   - `rpc` registrou `auto_redirect_started` e `redirect_dispatched`.
 
-Novo arquivo `src/hooks/useSsoOnboardingAudit.ts`:
+5. **Cancelar auto-redirect durante countdown**:
+   - Click em "Cancelar redirecionamento" antes do countdown zerar volta para a tela de escolha manual.
+   - Aparece alerta "Redirecionamento automático cancelado…".
+   - Lista de providers fica visível mesmo com `force_sso_for_domains` ativo.
+   - Avançar o timer não dispara `invoke` (auto-redirect suprimido).
+   - `rpc` registrou `auto_redirect_cancelled` com `phase: 'countdown'`.
 
-- Função `logEvent({ eventType, email, providerId?, context?, success?, errorCode?, errorMessage? })` que chama `supabase.rpc('log_sso_onboarding_event', …)`.
-- Fire-and-forget (não bloqueia UX). Falhas só vão para `logger.warn` — nunca quebram o fluxo de login.
-- Sem React Query (é write-only telemetria) — função simples + `useCallback`.
+6. **Falha em `sso-initiate` → tela de erro + retry + fallback**:
+   - `invoke` resolve com `error: { message: 'IdP indisponível' }`.
+   - Tela "Não foi possível iniciar o login SSO" aparece com a mensagem.
+   - Botão "Tentar novamente" re-invoca `sso-initiate`.
+   - Botão "Continuar com senha" navega para `/auth?email=…` e registra `password_fallback_used` com `after_error: true`.
+   - `rpc` registrou `redirect_failed` com `success: false`.
 
-#### 4. Instrumentação em `CorporateOnboarding.tsx`
+### Detalhes técnicos
 
-Adicionar chamadas em pontos-chave (todos via hook, não-bloqueantes):
-
-| Momento | event_type | context |
-|---|---|---|
-| `useSsoDomainResolver` resolve um domínio com providers | `domain_resolved` | `{ domain, providers_count, force_sso, autoRedirectProvider?: nome }` |
-| `useEffect` de auto-redirect dispara `triggerSso` | `auto_redirect_started` | `{ domain, provider_nome, provider_tipo, countdown_skipped? }` |
-| `handleCancelRedirect` invocado | `auto_redirect_cancelled` | `{ domain, provider_nome, phase: 'countdown'|'connecting' }` |
-| `handleManualSso` (escolha manual) | `manual_provider_selected` | `{ domain, provider_nome, provider_tipo }` |
-| `triggerSso` antes do `window.location.href` (sucesso) | `redirect_dispatched` | `{ domain, provider_nome, provider_tipo }` |
-| `triggerSso` falha (catch) | `redirect_failed` (`success=false`) | `{ domain, provider_nome }` + `error_message` |
-| `handleUsePassword` | `password_fallback_used` | `{ domain, provider_nome?, after_error: boolean }` |
-
-Email sempre é o `submittedEmail` corrente. `provider_id` quando disponível.
-
-#### 5. Visualização (opcional, fora do escopo principal)
-
-A trilha já fica visível em `/admin/sso` via `useSSOLoginAttempts` (definido em `useSSO.ts`). Estender o componente que renderiza esses attempts para mostrar `event_type` e `context` resumido em um popover/accordion — pequeno ajuste de UI no painel admin SSO existente. **Marcar como follow-up se a tela atual não for trivial de localizar** — o valor primário é ter o dado persistido.
-
-### O que NÃO muda
-
-- `sso-initiate`, `sso-callback`, `useSsoDomainResolver`, lógica de auto-redirect/cancelamento/fallback.
-- Schema das demais tabelas auth/SSO.
-- Não envia eventos para serviço externo — tudo fica no banco.
+- **Timers**: `vi.useFakeTimers({ shouldAdvanceTime: true })` no `beforeEach` para controlar o debounce de 400 ms do `useSsoDomainResolver` e o countdown de 3 s. `vi.useRealTimers()` no `afterEach`.
+- **`window.location`**: `Object.defineProperty(window, 'location', { value: { ...window.location, href: '', assign: vi.fn() }, writable: true, configurable: true })` no `beforeEach`, restaurado depois. Asserções via `expect(window.location.href).toBe(...)`.
+- **Builder do mock supabase**: a chain `from('sso_providers').select(...).eq(...).contains(...).order(...)` precisa retornar `{ data, error: null }` no final. Padrão: cada método retorna `this` exceto `order` que retorna a Promise. Reset entre testes via `vi.clearAllMocks()` + setter `setProviders()`.
+- **`logEvent` deduplicação**: o hook deduplica eventos idênticos por 1.5 s. Como cada teste usa um novo render + mocks limpos, isso não interfere; mas para asserções de "duas chamadas distintas" basta diferenciar o `event_type`.
+- **Sem teste do `sso-callback`**: fora do escopo (essa tela não está em `/auth/corporate`).
 
 ### Critério de pronto
 
-1. Migration aplicada: `sso_login_attempts` ganha `event_type` e `context`; RPC `log_sso_onboarding_event` existe e é executável por `anon`/`authenticated`.
-2. Ao digitar e-mail em domínio com SSO, aparece linha `domain_resolved` em `sso_login_attempts`.
-3. Auto-redirect, cancelamento, escolha manual, fallback de senha e erro SSO geram suas respectivas linhas com `event_type` correto e `context` populado.
-4. Nenhum evento bloqueia ou atrasa o fluxo (falhas no RPC são silenciadas com `logger.warn`).
-5. Admin consegue rodar `SELECT email, event_type, context, created_at FROM sso_login_attempts WHERE email='x@y.com' ORDER BY created_at DESC` para reconstruir a sessão de onboarding de um usuário.
-6. Sem regressão visual ou comportamental no `CorporateOnboarding`.
+1. Arquivo `src/pages/auth/__tests__/CorporateOnboarding.test.tsx` existe e roda via `npm test -- CorporateOnboarding`.
+2. Todos os 6 casos passam de forma determinística (sem `flaky` por timers ou promessas pendentes).
+3. Cobertura local de `CorporateOnboarding.tsx` sobe acima de 80 % (ramos principais: sem providers, manual, auto-redirect, cancel, erro, fallback).
+4. `npx tsc --noEmit` continua sem erros nos arquivos de teste novos.
+5. Sem regressão nos demais testes (`npm test` completo verde).
 
 ### Arquivos
 
-- 🆕 Migration SQL (colunas + RPC + índices)
-- 🆕 `src/hooks/useSsoOnboardingAudit.ts`
-- ✏️ `src/pages/auth/CorporateOnboarding.tsx`
+- 🆕 `src/pages/auth/__tests__/CorporateOnboarding.test.tsx`
 
