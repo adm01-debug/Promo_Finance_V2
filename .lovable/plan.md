@@ -1,49 +1,63 @@
 
 
-## Plano — Adicionar `/contabilidade` ao menu lateral
+## Plano — Navegação por abas sincronizada em `/contabilidade`
 
-### Contexto
+### Diagnóstico
 
-A rota `/contabilidade` já existe em `src/App.tsx` (protegida com roles `admin`/`financeiro`) e a página `Contabilidade.tsx` já contém as abas internas (Plano, Lançamentos, Razão & Diário, DRE & Balanço, **SPED ECD**, **SPED ECF**). Falta apenas o link de navegação na sidebar — hoje só `/demonstrativos` aparece no grupo Fiscal.
+O componente `Tabs` do shadcn já alterna entre as 6 abas (Plano, Lançamentos, Razão & Diário, DRE & Balanço, **SPED ECD**, **SPED ECF**). Cada aba SPED já consome:
 
-A pergunta sobre "alternar para o módulo de SPED quando aplicável" já é resolvida pela própria página: ao clicar no link e abrir `/contabilidade`, o usuário vê todas as abas, incluindo SPED ECD e SPED ECF. Não precisa de rota separada.
+- O **mesmo `empresaId`** (Select global no header)
+- O **mesmo `ano`** (Input global no header)
+- Os **mesmos hooks** de validação/histórico (`useSpedEcdValidacao`, `useSpedEcfValidacao`, `useGerarSpedContabil`, `useSpedContabilHistorico`) — todos com `queryKey` parametrizado por `empresaId`
 
-### Mudança
+Portanto **as validações e o histórico já estão sincronizados por construção**: trocar empresa/ano no header recarrega tudo via React Query.
 
-**`src/components/layout/sidebar/SidebarNavGroups.tsx`** — duas pequenas edições:
+O que falta para a navegação ECD ↔ ECF ser de fato útil:
 
-1. **Importar o ícone** `BookOpen` no bloco de imports do `lucide-react` (mesmo ícone usado no header da página `Contabilidade`).
+1. **Persistência da aba ativa** — hoje, F5 ou voltar pela Recents cai em "Plano".
+2. **Deep-link por URL** — `/contabilidade?tab=ecd&ano=2024` para favoritos, alertas tributários e dashboard linkar direto.
+3. **Hint visual ECD→ECF** — a ECF exige ECD do mesmo período já gerada. Mostrar um badge no trigger ECF quando a ECD do `ano` selecionado ainda **não** existe no histórico.
 
-2. **Adicionar o item de menu** dentro do grupo `'fiscal'` (id `Fiscal & Documentos`), logo após `Demonstrativos`:
+### Mudanças
 
-   ```ts
-   { label: 'Contabilidade & SPED', icon: BookOpen, href: '/contabilidade' },
+**`src/pages/Contabilidade.tsx`** (única edição)
+
+1. **Tabs controlado + URL sync** via `useSearchParams`:
+   ```tsx
+   const [searchParams, setSearchParams] = useSearchParams();
+   const tab = searchParams.get('tab') ?? 'plano';
+   const setTab = (v: string) => setSearchParams(prev => {
+     const next = new URLSearchParams(prev);
+     next.set('tab', v);
+     return next;
+   }, { replace: true });
    ```
+   Usar `<Tabs value={tab} onValueChange={setTab}>`.
 
-### Por que neste grupo e nesta posição
+2. **Sincronizar `ano` e `empresaId` na URL** (mesmo padrão), para que o deep-link reproduza o estado completo: `?tab=ecd&ano=2024&empresa=<uuid>`. Inicialização lê da URL; setters propagam. Se a URL está vazia, mantém defaults atuais (aba `plano`, ano = ano anterior, empresa vazia).
 
-- **Grupo Fiscal & Documentos** já agrega Notas Fiscais, Demonstrativos, Tributário — Contabilidade/SPED é continuação natural.
-- **Após Demonstrativos** porque DRE/Balanço da página Demonstrativos espelham os dados contábeis; quem está em Demonstrativos provavelmente quer o livro contábil completo a seguir.
+3. **Badge "ECD pendente" no trigger SPED ECF**:
+   - Reusar `useSpedContabilHistorico(empresaId)` (já existe).
+   - `temEcdNoAno = historico.some(h => h.tipo === 'ECD' && h.ano_calendario === ano && h.status !== 'rejeitado')`.
+   - Quando `empresaId && !temEcdNoAno`, renderizar `<Badge variant="warning">!</Badge>` no `TabsTrigger` da ECF, com `title="Gere a SPED ECD do mesmo ano antes da ECF"`.
 
-### Comportamento herdado (sem código extra)
+### O que NÃO muda
 
-- O item já fica **destacado quando ativo** (`bg-primary/10 text-primary` via lógica `isActive` existente).
-- O grupo Fiscal **abre automaticamente** quando o usuário entra em `/contabilidade` (graças ao `hasActiveItem` no `useState` inicial dos grupos).
-- Em modo **collapsed**, aparece tooltip "Contabilidade & SPED" no hover do ícone.
-- Usuários sem role `admin`/`financeiro` veem o link, mas ao clicar caem na tela "Acesso Negado" do `ProtectedRoute` (consistente com o resto do app — não filtramos itens por role na sidebar hoje).
-- A subnavegação SPED ECD/ECF é feita via **Tabs internas** da página, não via rota dedicada (alinhado ao padrão atual).
+- `SpedContabilTab.tsx`, `SpedEcdWizard`, `SpedEcfWizard`, hooks de validação/histórico — intactos. A sincronização já vinha das `queryKey` parametrizadas.
+- Componentes das demais abas (Plano, Lançamentos, Razão, DRE) — sem mudança.
+- Roteamento — continua uma única rota `/contabilidade` com tabs internas (alinhado ao padrão do app combinado na sidebar).
 
 ### Critério de pronto
 
-1. Sidebar mostra "Contabilidade & SPED" em **Fiscal & Documentos**, com ícone livro.
-2. Clicar leva a `/contabilidade` e a aba "Plano" abre por padrão.
-3. As abas internas permitem alternar para SPED ECD e SPED ECF sem sair da rota.
-4. Em rota ativa, o item fica destacado e o grupo Fiscal aparece expandido.
-5. No modo collapsed da sidebar, tooltip exibe o nome correto.
-6. `NavigationTracker` já registra "Contabilidade & SPED" em Recentes (entrada adicionada no turno anterior).
-7. Sem regressão em outros grupos do menu.
+1. Trocar de aba reflete na URL como `?tab=<id>` sem recarregar a página.
+2. F5 em `/contabilidade?tab=ecd` mantém a aba SPED ECD aberta.
+3. `/contabilidade?tab=ecd&ano=2024&empresa=<uuid>` abre direto a ECD daquela empresa/ano.
+4. Selecionar um ano sem ECD gerada → trigger "SPED ECF" exibe badge amarelo de aviso com tooltip.
+5. Trocar empresa ou ano no header recalcula validações, histórico e o badge ECF imediatamente.
+6. Default antes de qualquer interação: aba `plano`, ano = ano anterior, empresa vazia (mesma UX de hoje).
+7. Sem regressão nas demais 4 abas e zero mudança em componentes SPED filhos.
 
 ### Arquivos
 
-- ✏️ `src/components/layout/sidebar/SidebarNavGroups.tsx` — adiciona import `BookOpen` e o item de menu
+- ✏️ `src/pages/Contabilidade.tsx` — Tabs controlado + URL sync + badge ECD-pendente
 
