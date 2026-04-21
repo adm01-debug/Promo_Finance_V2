@@ -74,9 +74,9 @@ vi.mock('@/hooks/useSsoDomainResolver', () => ({
   },
 }));
 
+const auditApi = { logEvent: hoisted.logEventMock };
 vi.mock('@/hooks/useSsoOnboardingAudit', () => ({
-  useSsoOnboardingAudit: () => ({ logEvent: hoisted.logEventMock }),
-}));
+  useSsoOnboardingAudit: () => auditApi,
 
 // IdP presets — não precisamos do conteúdo real
 vi.mock('@/components/admin/sso/IdpPresets', () => ({ IDP_PRESETS: [] }));
