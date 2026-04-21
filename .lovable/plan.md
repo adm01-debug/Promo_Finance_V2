@@ -1,39 +1,31 @@
 
 
-## Plano — "Investigar" abre página de drill-down completa
+## Plano — Abrir tela completa da entidade com destaque
 
-A página de drill-down já existe e está completa: `src/pages/admin/AnomaliaDetalhe.tsx` (rota `/admin/insights-ia/anomalia/:id`, registrada em `App.tsx`). Ela renderiza, via `useAnomaliaDetalhe`, todos os blocos pedidos:
+A maior parte já existe: `useAnomaliaDetalhe` carrega automaticamente o registro da entidade relacionada (movimentação, conta a pagar, conta a receber, transação bancária) via `SELECT *` na tabela correta com `.maybeSingle()`, e `EntidadeRelacionadaCard` mostra os campos e expõe um botão "Abrir tela completa".
 
-- `AnomaliaHeader` — severidade, tipo, descrição, status.
-- `EntidadeRelacionadaCard` — registro de origem (movimentação / conta a pagar / transação).
-- `HistoricoContextualCard` — série dos últimos 30 dias.
-- `DetectoresContribuintesCard` — XAI: regra, observado vs. esperado, payload bruto.
-- `AnomaliasRelacionadasCard` — outras anomalias da mesma entidade/empresa.
-- `AcoesSugeridasCard` — playbook por tipo + textarea de parecer.
-
-O que falta é apenas o gesto pedido: o botão **"Investigar"** em `AnomaliasDetectadasPanel` hoje só muda o status para `investigando` e mantém o usuário na lista. Vamos fazê-lo também navegar para a página completa.
+Falta apenas que esse botão leve para a tela com o **registro destacado**, em vez da listagem genérica.
 
 ### Mudança única
 
-`src/components/admin/AnomaliasDetectadasPanel.tsx`:
+**`src/hooks/useAnomaliaDetalhe.ts`** — em `carregarEntidade`, substituir `rotaUI: cfg.rota` (que retorna `/contas-pagar`, `/movimentacoes`, etc., sem identificar o registro) por `rotaUI: getEntidadeUrl(tipo, id, "")` — função já existente em `src/lib/anomalia-routes.ts` que monta:
 
-- Importar `useNavigate` de `react-router-dom` (já importa `Link`).
-- No handler do botão "Investigar" (anomalias com `status === 'nova'`), após chamar `atualizarStatus.mutate({ id, status: 'investigando' })`, fazer `navigate('/admin/insights-ia/anomalia/' + a.id)`.
-- Sem mudança visual: rótulo, ícone (`Search`) e variante permanecem.
+- `movimentacao` → `/movimentacoes?highlight=<id>`
+- `conta_pagar` → `/contas-pagar?highlight=<id>`
+- `conta_receber` → `/contas-receber?highlight=<id>`
+- `transacao_bancaria` → `/conciliacao?txId=<id>`
 
-### Por que não criar nada novo
-
-- A rota, a página, todos os cards XAI/histórico/ações e o hook de dados já existem e estão em produção (chamados pelo "Drill-down" do drawer e pela ação "Página completa").
-- A intenção do usuário ao clicar "Investigar" é exatamente abrir a investigação completa — basta encaminhar para lá.
+Sem mudança na UI: o botão "Abrir tela completa" no `EntidadeRelacionadaCard` simplesmente passa a navegar para a URL com query string. Cada uma dessas telas já trata o parâmetro de destaque (já é usado pelos toasts realtime e pelo deep-link do drawer).
 
 ### Detalhes técnicos
 
-- A mutation roda em paralelo à navegação; a página de destino lê pelo id e mostrará o status já como `investigando` após o realtime/refetch (o badge no `AnomaliaHeader` reflete isso).
-- O drawer rápido (`AnomaliaDrillDownDrawer`) e o link "Drill-down" continuam como atalho leve para inspeção sem sair da lista.
-- Nada no schema ou em edge functions muda.
+- O hook continua retornando `EntidadeRelacionada { tipo, encontrada, registro, rotaUI }` — apenas o valor de `rotaUI` muda.
+- `getEntidadeUrl` já tem fallback para `/admin/insights-ia/anomalia/<id>` quando o tipo é desconhecido — comportamento idêntico ao atual.
+- `conta_receber` já está mapeado tanto em `tabelaPorTipo` quanto em `getEntidadeUrl` (verificado).
 
 ### Fora de escopo
 
-- Reescrever ou expandir os cards existentes (já cobrem histórico, XAI e ações).
-- Adicionar deep-link com filtro de aba — a página é única por design.
+- Mudar a UI dos campos exibidos (a grade já lista 10 atributos com truncamento — suficiente).
+- Implementar destaque visual nas listas (já implementado em iterações anteriores via `?highlight=`).
+- Página dedicada por tipo de entidade — o link já entrega o usuário no contexto certo.
 
