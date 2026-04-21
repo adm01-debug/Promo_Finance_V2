@@ -84,6 +84,53 @@ export default function Conciliacao() {
     toggleSelect, toggleSelectAll,
   } = useConciliacaoPage();
 
+  // Saved filter presets / sort / column visibility
+  const { defaultFilter } = useSavedFilters<ConciliacaoFilterState>('conciliacao_transacoes');
+  const [sort, setSort] = useState<ConciliacaoSort>(CONCILIACAO_DEFAULT_SORT);
+  const [visibleCols, setVisibleCols] = useState<string[]>(CONCILIACAO_DEFAULT_VISIBLE);
+  const [activePresetId, setActivePresetId] = useState<string | null>(null);
+  const [bootstrapped, setBootstrapped] = useState(false);
+
+  useEffect(() => {
+    if (bootstrapped || !defaultFilter) return;
+    const p = defaultFilter.filters;
+    if (p?.filters) setFilters(p.filters);
+    if (p?.sort) setSort(p.sort as ConciliacaoSort);
+    if (p?.columns) setVisibleCols(p.columns);
+    setActivePresetId(defaultFilter.id);
+    setBootstrapped(true);
+  }, [defaultFilter, bootstrapped, setFilters]);
+
+  const handleLoadPreset = (preset: { id: string; payload: SavedFilterPayload<ConciliacaoFilterState> }) => {
+    if (preset.payload.filters) setFilters(preset.payload.filters);
+    if (preset.payload.sort) setSort(preset.payload.sort as ConciliacaoSort);
+    if (preset.payload.columns) setVisibleCols(preset.payload.columns);
+    setActivePresetId(preset.id);
+  };
+  const handleClearPreset = () => setActivePresetId(null);
+
+  const sortedTransacoes = useMemo(() => {
+    const arr = [...filteredTransacoes];
+    const dir = sort.dir === 'asc' ? 1 : -1;
+    arr.sort((a, b) => {
+      switch (sort.key) {
+        case 'data':
+          return (new Date(a.data).getTime() - new Date(b.data).getTime()) * dir;
+        case 'valor':
+          return (a.valor - b.valor) * dir;
+        case 'descricao':
+          return a.descricao.localeCompare(b.descricao, 'pt-BR') * dir;
+        case 'tipo':
+          return a.tipo.localeCompare(b.tipo) * dir;
+        default:
+          return 0;
+      }
+    });
+    return arr;
+  }, [filteredTransacoes, sort]);
+
+  const showCol = (key: string) => visibleCols.includes(key);
+
   return (
     <MainLayout>
       <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
@@ -165,6 +212,13 @@ export default function Conciliacao() {
                       setSearchTerm={setSearchTerm}
                       filters={filters}
                       setFilters={setFilters}
+                      sort={sort}
+                      setSort={setSort}
+                      visibleCols={visibleCols}
+                      setVisibleCols={setVisibleCols}
+                      activePresetId={activePresetId}
+                      onLoadPreset={handleLoadPreset}
+                      onClearPreset={handleClearPreset}
                     />
                   </div>
                 </CardContent>
@@ -183,7 +237,7 @@ export default function Conciliacao() {
 
               <div className="space-y-2">
                 <AnimatePresence mode="popLayout">
-                  {filteredTransacoes.map((transacao, index) => {
+                  {sortedTransacoes.map((transacao, index) => {
                     const isCredito = transacao.tipo === 'credito';
                     const isSelected = selectedIds.has(transacao.id);
                     return (
@@ -192,12 +246,16 @@ export default function Conciliacao() {
                           <CardContent className="p-4">
                             <div className="flex items-center gap-3">
                               {!transacao.conciliada && <Checkbox checked={isSelected} onChange={() => toggleSelect(transacao.id)} className="flex-shrink-0" />}
-                              <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0", isCredito ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive")}>
-                                {isCredito ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
-                              </div>
+                              {showCol('tipo') && (
+                                <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0", isCredito ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive")}>
+                                  {isCredito ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
+                                </div>
+                              )}
                               <div className="flex-1 min-w-0">
                                 <p className="font-medium text-sm truncate">{transacao.descricao}</p>
-                                <div className="flex items-center gap-2 mt-0.5"><Calendar className="h-3 w-3 text-muted-foreground" /><span className="text-xs text-muted-foreground">{formatDate(transacao.data)}</span></div>
+                                {showCol('data') && (
+                                  <div className="flex items-center gap-2 mt-0.5"><Calendar className="h-3 w-3 text-muted-foreground" /><span className="text-xs text-muted-foreground">{formatDate(transacao.data)}</span></div>
+                                )}
                               </div>
                               <p className={cn("font-bold text-base whitespace-nowrap", isCredito ? "text-success" : "text-destructive")}>{isCredito ? '+' : ''}{formatCurrency(transacao.valor)}</p>
                               {transacao.conciliada && <Badge className="bg-success/10 text-success border-success/20 gap-1 flex-shrink-0"><CheckCircle2 className="h-3 w-3" />Conciliada</Badge>}
