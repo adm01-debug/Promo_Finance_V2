@@ -147,20 +147,23 @@ export function EvidenciasTab() {
             O pacote ZIP contém um CSV por escopo, um <code>manifest.json</code> com hashes SHA-256 para validação de
             integridade e um <code>README.txt</code> com instruções. URL assinada válida por 7 dias.
           </div>
-          <Button
-            onClick={() => gerar.mutate({ periodo_inicio: inicio, periodo_fim: fim, escopos })}
-            disabled={gerar.isPending || escopos.length === 0 || !inicio || !fim}
-          >
-            {gerar.isPending ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Gerando pacote...
-              </>
-            ) : (
-              <>
-                <FileArchive className="h-4 w-4 mr-2" /> Gerar pacote
-              </>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              onClick={handleGerar}
+              disabled={stream.status === "running" || escopos.length === 0 || !inicio || !fim}
+            >
+              {stream.status === "running" ? (
+                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Gerando pacote...</>
+              ) : (
+                <><FileArchive className="h-4 w-4 mr-2" /> Gerar pacote</>
+              )}
+            </Button>
+            {(stream.status === "success" || stream.status === "error") && (
+              <Button variant="outline" onClick={() => setStatusOpen(true)}>
+                Ver último status
+              </Button>
             )}
-          </Button>
+          </div>
         </CardContent>
       </Card>
 
