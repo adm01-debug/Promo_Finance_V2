@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { lovable } from '@/integrations/lovable/index';
 import { toast } from 'sonner';
+import { SsoLoginButtons } from '@/components/admin/sso/SsoLoginButtons';
 
 interface LoginFormProps {
   email: string;
@@ -232,6 +233,8 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(function Log
             </p>
           </>
         )}
+
+        <SsoLoginButtons email={email} />
 
         <div className="text-center">
           <button

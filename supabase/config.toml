@@ -104,3 +104,12 @@ verify_jwt = false
 
 [functions.validar-token-contador]
 verify_jwt = false
+
+[functions.sso-initiate]
+verify_jwt = false
+
+[functions.sso-callback]
+verify_jwt = false
+
+[functions.scim-server]
+verify_jwt = false
