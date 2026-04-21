@@ -10,8 +10,10 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useEmpresas } from '@/hooks/useFinancialData';
 import { useScimTokens, useCreateScimToken, useRevokeScimToken } from '@/hooks/useScimTokens';
+import { ScimSetupGuide } from './ScimSetupGuide';
 import { toast } from 'sonner';
 
 const SCIM_BASE = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scim-server/scim/v2`;
@@ -40,7 +42,13 @@ export function ScimTokensTab() {
   };
 
   return (
-    <div className="space-y-6">
+    <Tabs defaultValue="tokens" className="space-y-6">
+      <TabsList>
+        <TabsTrigger value="tokens">Tokens</TabsTrigger>
+        <TabsTrigger value="guide">Como configurar</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="tokens" className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><ShieldCheck className="h-5 w-5" />Endpoint SCIM 2.0</CardTitle>
@@ -159,6 +167,11 @@ export function ScimTokensTab() {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+      </TabsContent>
+
+      <TabsContent value="guide">
+        <ScimSetupGuide />
+      </TabsContent>
+    </Tabs>
   );
 }
