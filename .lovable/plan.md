@@ -1,55 +1,48 @@
 
 
-## Plano — Logout SSO (Single Logout) seguro
+## Plano — Sandbox de testes SSO end-to-end
 
-Hoje o "Sair" do header só chama `supabase.auth.signOut()` — usuários SSO continuam logados no IdP (Azure AD / Okta / Google Workspace), o que é uma falha de segurança em estações compartilhadas. Este plano fecha o ciclo: encerra a sessão local **e** redireciona para o `end_session_endpoint` do IdP quando o usuário entrou via SSO.
+Nova aba **"Sandbox"** em `/admin/sso` que permite ao administrador simular um login SSO completo sem efeitos colaterais (sem criar usuário, sem session). Hoje o backend `sso-test-login` já existe mas não tem UI. Este plano expõe o sandbox e amplia a função para responder se o usuário **seria** criado ou já existe.
 
-### Estado atual
+### Componentes
 
-- `useAuth.signOut()` → apenas `supabase.auth.signOut()` local.
-- `Header.tsx` chama `signOut()` e redireciona para `/auth`.
-- `sso_providers.slo_url` já existe no schema mas nunca é consumido.
-- `user_metadata.sso_provider_id` é gravado em todo login SSO (callback) — permite identificar usuários SSO no logout.
-- Tokens IdP (`id_token`) **não** são persistidos hoje, então não temos `id_token_hint` para enviar ao `end_session_endpoint` (a maioria dos IdPs aceita logout sem ele, apenas com `post_logout_redirect_uri`).
+**1. Edge function `sso-test-login` ampliada** (`supabase/functions/sso-test-login/index.ts`)
+- Aceita opcionalmente `provider_id` no payload.
+- Quando presente, com auth Bearer do admin (validação via `getClaims`), busca o provider e usa seus campos reais (`claim_mapping`, `role_mappings`, `default_role`, `allowed_domains`, `auto_provision_users`) — admin não precisa repetir nada.
+- Verifica em `auth.users` (via service role) se o email resultante já existe → retorna `user_exists: true|false` e `would_jit_provision: boolean` (existing OR auto_provision).
+- Mantém compatibilidade com chamada manual (sem `provider_id`).
+- Nunca cria usuário, nunca grava em `sso_login_attempts`, nunca emite token.
 
-### Mudanças
+**2. Nova aba `SSOSandboxPanel.tsx`** (`src/components/admin/sso/SSOSandboxPanel.tsx`)
+- **Seletor de provider** (dropdown com providers ativos via `useSSOProviders`).
+- **Botão "Carregar exemplo"** com 3 presets de claims por tipo de IdP (Azure AD, Okta, Google), gerados a partir de `IDP_PRESETS`.
+- **Editor JSON** (`<Textarea>` monoespaçado) para `mock_claims` com validação JSON em tempo real e badge "JSON válido / inválido".
+- **Toggle "Usar config do provider"**: quando ativo, o backend ignora os campos manuais; quando desativo, mostra editores extras de `claim_mapping`, `default_role`, `allowed_domains` (chips), e `role_mappings` (lista editável grupo→role).
+- **Botão "Simular login"** chama `useTestSSOLogin`.
+- **Resultado em cards verticais (timeline)** com ícone ✓/✗ por etapa:
+  1. Parsing de claims → email, full_name, grupos extraídos.
+  2. Validação de domínio → permitido / bloqueado (com domínio mostrado).
+  3. Resolução de papel → `default_role` ou grupo casado (mostra qual).
+  4. Provisionamento → "Usuário já existe (id mascarado)" / "Seria criado via JIT" / "Bloqueado: auto_provision desabilitado".
+  - Bloco final com JSON cru da resposta (collapsible) para debug.
+- Toast de sucesso/erro ao simular.
 
-**1. Nova edge function `sso-logout`** (`supabase/functions/sso-logout/index.ts`)
-- Recebe `{ provider_id }` autenticado via JWT do usuário.
-- Resolve `end_session_endpoint`:
-  - OIDC: `provider.slo_url` ou descoberto via `discovery_url` (`end_session_endpoint`).
-  - SAML: `provider.slo_url` (HTTP-Redirect binding com `SAMLRequest` LogoutRequest assinado é fora de escopo nesta versão; usa redirect simples).
-- Monta URL com `post_logout_redirect_uri=${origin}/auth?slo=ok` e `client_id`.
-- Registra evento `logout` em `sso_login_attempts` (success=true, error_code='slo_initiated').
-- Retorna `{ logout_url }`.
-- `verify_jwt = false` no código + validação manual via `getClaims()` (padrão do projeto).
-
-**2. `useAuth.signOut()` enriquecido** (`src/hooks/useAuth.tsx`)
-- Antes de `supabase.auth.signOut()`, lê `user.user_metadata.sso_provider_id`.
-- Se existe: invoca `sso-logout`, faz `signOut()` local (revoga sessão Supabase), depois `window.location.href = logout_url` (não usa `navigate` porque o IdP precisa de full redirect).
-- Se não existe (login normal): comportamento atual.
-- Falha do `sso-logout` não bloqueia: faz logout local e mostra toast "Sessão local encerrada — finalize manualmente no IdP".
-
-**3. `Auth.tsx` — feedback de SLO** (já existente)
-- Detecta `?slo=ok` na URL e exibe toast "Você saiu de todas as sessões corporativas".
-- Limpa o query param após mostrar.
-
-**4. UI do provider** (`src/components/admin/sso/SSOWizardDialog.tsx`)
-- Adicionar campo "URL de logout (SLO)" — opcional para OIDC (usa discovery), recomendado para SAML.
-- Tooltip explicando que sem `slo_url` e sem `discovery_url.end_session_endpoint`, o logout só será local.
+**3. Wiring em `SSOAdmin.tsx`**
+- Adiciona `<TabsTrigger value="sandbox">` com ícone `FlaskConical` entre "SCIM" e "Monitoramento".
+- `<TabsContent value="sandbox">` renderiza `<SSOSandboxPanel />`.
 
 ### Detalhes técnicos
 
-- **Sem `id_token_hint`**: aceitável pelos 3 IdPs principais (Azure, Okta, Google) quando `client_id` + `post_logout_redirect_uri` estão presentes.
-- **`post_logout_redirect_uri` allowlist**: o admin precisa cadastrar `${origin}/auth` no IdP (mesma lista do `redirect_uri` do callback). Documentar no `ScimSetupGuide` futuramente — fora desta entrega.
-- **Multi-tab**: `onAuthStateChange` propaga o `SIGNED_OUT` para outras abas Supabase. O logout do IdP já é global por natureza.
-- **CORS**: `sso-logout` retorna JSON; o redirect final é navegação top-level no browser, sem preocupações de CORS.
-- **Auditoria**: além de `sso_login_attempts`, grava em `audit_logs` (`action='LOGOUT'`, `details='SSO SLO via {provider.nome}'`).
+- **Segurança**: `sso-test-login` exige Bearer token e `has_role(uid, 'admin')` quando `provider_id` é fornecido (impede que usuário comum vaze `claim_mapping` de outros). Sem `provider_id`, função fica stateless e pública (já é hoje).
+- **Email mascarado**: na resposta de existência, retorna apenas `j****@empresa.com` para evitar enumeração lateral.
+- **Sem side effects**: nenhuma escrita em `sso_login_attempts`, `audit_logs`, `auth.users`, `user_roles` ou `user_empresas`.
+- **Validação JSON**: erro de parse mostra inline com linha/coluna; botão "Simular" fica disabled.
+- **Presets de mock**: por exemplo Azure AD usa `{ email, name, oid, groups: ["admins-grupo"], preferred_username }`; Okta usa `{ email, name, groups }`; Google usa `{ email, name, hd, picture }`.
 
 ### Fora de escopo
 
-- SAML LogoutRequest assinado (HTTP-Redirect/POST binding com `SignatureAlgorithm`) — exige biblioteca XML signing no Deno, complexidade alta.
-- Back-channel logout (RP-initiated logout via webhook do IdP avisando o app).
-- Revogação ativa de refresh tokens IdP via endpoint de revocation.
-- Logout global multi-tenant (usuário em várias empresas — hoje a sessão Supabase é única).
+- Simulação real de OAuth handshake (PKCE/exchange) — o sandbox foca no pós-callback (mapping + JIT), que é onde 95% dos erros acontecem.
+- Salvar histórico de simulações.
+- Exportar relatório de simulação em PDF.
+- Sandbox para SCIM (já há painel separado de tokens).
 
