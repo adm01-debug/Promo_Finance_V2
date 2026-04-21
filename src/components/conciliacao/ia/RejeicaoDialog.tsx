@@ -67,11 +67,11 @@ export function RejeicaoDialog({ rejeicaoPendente, motivoRejeicao, onMotivoChang
         )}
 
         <DialogFooter>
-          <Button variant="outline" onClick={onCancelar}>
+          <Button variant="outline" onClick={onCancelar} disabled={isPending}>
             Cancelar
           </Button>
-          <Button variant="destructive" onClick={onConfirmar}>
-            <ThumbsDown className="h-4 w-4 mr-2" />
+          <Button variant="destructive" onClick={onConfirmar} disabled={isPending}>
+            {isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <ThumbsDown className="h-4 w-4 mr-2" />}
             Rejeitar
           </Button>
         </DialogFooter>
