@@ -27,6 +27,8 @@ import {
   type Anomalia,
 } from "@/hooks/useAnomaliasDetectadas";
 import { AnomaliasReviewQueue } from "./AnomaliasReviewQueue";
+import { AnomaliaDrillDownDrawer } from "./AnomaliaDrillDownDrawer";
+import { dispatchOpenAnomaliaDrawer } from "@/lib/anomalia-routes";
 
 function severidadeBadge(s: Anomalia["severidade"]) {
   if (s === "critica") return "destructive";
@@ -126,9 +128,16 @@ export function AnomaliasDetectadasPanel() {
                     )}
                   </div>
                   <div className="flex flex-col gap-1 shrink-0">
-                    <Button asChild size="sm" variant="secondary">
-                      <Link to={`/admin/insights-ia/anomalia/${a.id}`}>
-                        <Microscope className="h-3 w-3 mr-1" /> Drill-down
+                    <Button
+                      size="sm"
+                      variant="default"
+                      onClick={() => dispatchOpenAnomaliaDrawer(a.id)}
+                    >
+                      <Microscope className="h-3 w-3 mr-1" /> Drill-down
+                    </Button>
+                    <Button asChild size="sm" variant="ghost">
+                      <Link to={`/admin/insights-ia/anomalia/${a.id}`} target="_blank">
+                        <Microscope className="h-3 w-3 mr-1" /> Nova aba
                       </Link>
                     </Button>
                   </div>
@@ -172,6 +181,7 @@ export function AnomaliasDetectadasPanel() {
         </CardContent>
       </Card>
       <AnomaliasReviewQueue open={reviewOpen} onOpenChange={setReviewOpen} />
+      <AnomaliaDrillDownDrawer />
     </div>
   );
 }
