@@ -116,10 +116,19 @@ Deno.serve(async (req) => {
 
     // JIT provisioning: cria/atualiza usuário
     let userId: string | null = null;
+    let jitCreated = false;
     const { data: existing } = await admin.auth.admin.listUsers();
     const found = existing.users.find(u => u.email?.toLowerCase() === email);
     if (found) {
       userId = found.id;
+      // Atualiza full_name se IdP enviou um valor diferente do armazenado
+      const currentName = (found.user_metadata as Record<string, unknown> | null)?.full_name as string | undefined;
+      if (fullName && fullName !== email && currentName !== fullName) {
+        await admin.auth.admin.updateUserById(found.id, {
+          user_metadata: { ...(found.user_metadata || {}), full_name: fullName, sso_provider_id: provider.id },
+        });
+        await admin.from("profiles").update({ full_name: fullName }).eq("id", found.id);
+      }
     } else if (provider.auto_provision_users) {
       const created = await admin.auth.admin.createUser({
         email,
@@ -131,6 +140,7 @@ Deno.serve(async (req) => {
         return redirectErr(req, "create_user_failed");
       }
       userId = created.data.user!.id;
+      jitCreated = true;
     } else {
       await logAttempt(admin, provider.id, email, false, "user_not_provisioned", null, t0);
       return redirectErr(req, "user_not_provisioned");
@@ -138,11 +148,12 @@ Deno.serve(async (req) => {
 
     // Resolve papel via sso_role_mappings
     let role = provider.default_role || "visualizador";
+    let matchedGroup: string | null = null;
     if (groups.length) {
       const { data: maps } = await admin.from("sso_role_mappings")
         .select("idp_group, app_role").eq("provider_id", provider.id).order("ordem");
       const match = maps?.find(m => groups.includes(m.idp_group));
-      if (match) role = match.app_role;
+      if (match) { role = match.app_role; matchedGroup = match.idp_group; }
     }
 
     // Vincula à empresa do provedor (se houver)
@@ -159,7 +170,30 @@ Deno.serve(async (req) => {
     // Garante user_roles compat (papel global = papel mais alto)
     await admin.from("user_roles").upsert({ user_id: userId, role }, { onConflict: "user_id,role" });
 
-    await logAttempt(admin, provider.id, email, true, null, null, t0);
+    // Auditoria explícita: criação JIT e atribuição de papel via grupo do IdP
+    if (jitCreated) {
+      await admin.from("audit_logs").insert({
+        user_id: userId,
+        user_email: email,
+        action: "INSERT",
+        table_name: "auth.users",
+        record_id: userId,
+        new_data: { email, full_name: fullName, provisioned_via: "sso", provider_id: provider.id, provider_nome: provider.nome },
+        details: `JIT provisioning via SSO (${provider.nome}); role=${role}${matchedGroup ? `; group=${matchedGroup}` : ""}`,
+      });
+    } else if (matchedGroup) {
+      await admin.from("audit_logs").insert({
+        user_id: userId,
+        user_email: email,
+        action: "UPDATE",
+        table_name: "user_roles",
+        record_id: userId,
+        new_data: { role, matched_group: matchedGroup, provider_id: provider.id },
+        details: `SSO role mapping aplicado (${provider.nome}): ${matchedGroup} → ${role}`,
+      });
+    }
+
+    await logAttempt(admin, provider.id, email, true, null, jitCreated ? "jit_provisioned" : null, t0);
 
     // Gera magic link e redireciona
     const link = await admin.auth.admin.generateLink({
