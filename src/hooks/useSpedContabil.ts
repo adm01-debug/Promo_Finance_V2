@@ -13,6 +13,26 @@ export interface SpedValidacaoResult {
   validacoes: { erros: string[]; avisos: string[] };
 }
 
+export interface EcdReferencia {
+  id: string;
+  hash_sha256: string | null;
+  recibo_transmissao: string | null;
+  status: string;
+  created_at: string;
+}
+
+export interface ApuracaoPreview {
+  lucro_liquido: number;
+  base_irpj: number;
+  irpj: number;
+  csll: number;
+}
+
+export interface SpedEcfValidacaoResult extends SpedValidacaoResult {
+  ecd_referencia: EcdReferencia | null;
+  apuracao_preview: ApuracaoPreview;
+}
+
 export interface SpedGeracaoResult {
   url: string;
   file_name: string;
@@ -23,6 +43,7 @@ export interface SpedGeracaoResult {
   validacoes: { erros: string[]; avisos: string[] };
   empresa: { cnpj: string; razao_social: string };
   periodo: { inicio: string; fim: string };
+  arquivo_id?: string;
 }
 
 export function useSpedContabilHistorico(empresaId?: string) {
@@ -57,6 +78,20 @@ export function useSpedEcdValidacao() {
   });
 }
 
+export function useSpedEcfValidacao() {
+  return useMutation({
+    mutationFn: async ({ empresaId, anoCalendario }: { empresaId: string; anoCalendario: number }) => {
+      const { data, error } = await supabase.functions.invoke('gerar-sped-ecf', {
+        body: { empresa_id: empresaId, ano_calendario: anoCalendario, mode: 'validate' },
+      });
+      if (error) throw error;
+      if (data?.error && !data?.checklist) throw new Error(data.error);
+      return data as SpedEcfValidacaoResult;
+    },
+    onError: (e: Error) => toast.error(`Falha na validação ECF: ${e.message}`),
+  });
+}
+
 export function useGerarSpedContabil() {
   const qc = useQueryClient();
   return useMutation({
@@ -84,5 +119,23 @@ export function useGerarSpedContabil() {
       if (!data._silent) window.open(data.url, '_blank');
     },
     onError: (e: Error) => toast.error(`Falha ao gerar SPED: ${e.message}`),
+  });
+}
+
+export function useRegistrarTransmissaoSped() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ arquivoId, recibo }: { arquivoId: string; recibo: string }) => {
+      const { error } = await supabase
+        .from('sped_contabil_arquivos')
+        .update({ status: 'transmitido', recibo_transmissao: recibo })
+        .eq('id', arquivoId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['sped-contabil-historico'] });
+      toast.success('Transmissão registrada');
+    },
+    onError: (e: Error) => toast.error(`Falha: ${e.message}`),
   });
 }

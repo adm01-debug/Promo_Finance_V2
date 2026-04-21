@@ -16,6 +16,8 @@ async function sha256(text: string): Promise<string> {
   return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+interface ChecklistItem { id: string; label: string; status: 'ok' | 'warn' | 'error'; detail?: string; itens?: string[] }
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
@@ -39,6 +41,7 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const empresa_id: string = body.empresa_id;
     const ano_calendario: number = body.ano_calendario;
+    const mode: 'validate' | 'generate' = body.mode === 'validate' ? 'validate' : 'generate';
     if (!empresa_id || !ano_calendario) {
       return new Response(JSON.stringify({ error: 'empresa_id e ano_calendario são obrigatórios' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
@@ -60,10 +63,9 @@ Deno.serve(async (req) => {
       .lte('data_lancamento', periodo_fim);
     const lancamentos = (lancsRaw || []) as unknown as Array<{ id: string; numero_lancamento: number; data_lancamento: string; historico: string; valor_total: number; partidas: Array<{ conta_id: string; tipo: 'D'|'C'; valor: number }> }>;
 
-    // Tenta recuperar recibo ECD do mesmo período
     const { data: ecdAnterior } = await supabase
       .from('sped_contabil_arquivos')
-      .select('recibo_transmissao, hash_sha256')
+      .select('id, recibo_transmissao, hash_sha256, status, created_at')
       .eq('empresa_id', empresa_id)
       .eq('tipo', 'ECD')
       .eq('ano_calendario', ano_calendario)
@@ -81,15 +83,102 @@ Deno.serve(async (req) => {
     const irpj = base_irpj * 0.15 + Math.max(0, base_irpj - 240000) * 0.10;
     const csll = base_irpj * 0.09;
 
-    // Validações
-    const erros: string[] = [];
-    const avisos: string[] = [];
-    if (lancamentos.length === 0) erros.push('Nenhum lançamento contábil no período');
-    if (!ecdAnterior) avisos.push('ECD do período não localizado — gere a ECD antes de transmitir a ECF');
-    const semRef = plano.filter(p => p.tipo==='analitica' && !p.codigo_referencial).length;
-    if (semRef > 0) avisos.push(`${semRef} contas analíticas sem código referencial`);
+    // ===== Checklist =====
+    const checklist: ChecklistItem[] = [];
 
-    // Geração
+    checklist.push({
+      id: 'empresa',
+      label: 'Dados da empresa (CNPJ + Razão Social)',
+      status: empresa.cnpj && empresa.razao_social ? 'ok' : 'error',
+      detail: empresa.cnpj && empresa.razao_social ? `${empresa.razao_social} · CNPJ ${empresa.cnpj}` : 'Dados ausentes',
+    });
+
+    checklist.push({
+      id: 'lancs',
+      label: 'Pelo menos 1 lançamento contábil no período',
+      status: lancamentos.length > 0 ? 'ok' : 'error',
+      detail: `${lancamentos.length} lançamento(s) em ${ano_calendario}`,
+    });
+
+    checklist.push({
+      id: 'ecd_ref',
+      label: 'ECD do mesmo período localizada (cross-check)',
+      status: ecdAnterior ? 'ok' : 'error',
+      detail: ecdAnterior
+        ? `ECD #${ecdAnterior.id.substring(0,8)} · hash ${(ecdAnterior.hash_sha256||'').substring(0,12)}…${ecdAnterior.recibo_transmissao ? ` · recibo ${ecdAnterior.recibo_transmissao}` : ' · sem recibo'}`
+        : 'Gere a ECD do período antes de transmitir a ECF',
+    });
+
+    const analiticas = plano.filter(p => p.tipo === 'analitica');
+    const semRef = analiticas.filter(p => !p.codigo_referencial);
+    const pctRef = analiticas.length > 0 ? Math.round(((analiticas.length - semRef.length) / analiticas.length) * 100) : 100;
+    checklist.push({
+      id: 'cfc',
+      label: 'Contas analíticas com código referencial CFC',
+      status: semRef.length === 0 ? 'ok' : 'warn',
+      detail: `${pctRef}% mapeadas (${analiticas.length - semRef.length}/${analiticas.length})`,
+      itens: semRef.slice(0,20).map(c => `${c.codigo} — ${c.nome||c.descricao}`),
+    });
+
+    const temMovimento = receitas !== 0 || despesas !== 0;
+    checklist.push({
+      id: 'lucro',
+      label: 'Lucro líquido coerente com movimentação',
+      status: !temMovimento || lucro_liquido !== 0 ? 'warn' : 'warn',
+      detail: temMovimento
+        ? `Lucro líquido: R$ ${lucro_liquido.toFixed(2)} (Rec ${receitas.toFixed(2)} − Desp ${despesas.toFixed(2)})`
+        : 'Sem movimento de receita/despesa no período',
+    });
+
+    // K355 vs L100 cross-check (saldo patrimonial)
+    let k355Total = 0, l100Total = 0;
+    for (const c of plano.filter(p => ['receita','despesa','resultado'].includes(p.natureza))) {
+      const total = lancamentos.flatMap(l=>l.partidas).filter(p => idToCodigo.get(p.conta_id)===c.codigo).reduce((s,p)=>s+(p.tipo==='C'?Number(p.valor):-Number(p.valor)),0);
+      k355Total += Math.abs(total);
+    }
+    for (const c of plano.filter(p => ['ativo','passivo','patrimonio'].includes(p.natureza))) {
+      const saldo = lancamentos.flatMap(l=>l.partidas).filter(p => idToCodigo.get(p.conta_id)===c.codigo).reduce((s,p)=>s+(p.tipo==='D'?Number(p.valor):-Number(p.valor)),0);
+      l100Total += Math.abs(saldo);
+    }
+    checklist.push({
+      id: 'cross_k355_l100',
+      label: 'Cross-check K355 (resultado) vs L100 (balanço)',
+      status: 'warn',
+      detail: `K355 total: R$ ${k355Total.toFixed(2)} · L100 total: R$ ${l100Total.toFixed(2)}`,
+    });
+
+    checklist.push({
+      id: 'apuracao',
+      label: 'Apuração IRPJ/CSLL com base ≥ 0',
+      status: base_irpj >= 0 ? 'ok' : 'error',
+      detail: `Base R$ ${base_irpj.toFixed(2)} · IRPJ R$ ${irpj.toFixed(2)} · CSLL R$ ${csll.toFixed(2)}`,
+    });
+
+    const erros = checklist.filter(c => c.status === 'error').map(c => c.detail || c.label);
+    const avisos = checklist.filter(c => c.status === 'warn').map(c => c.detail || c.label);
+
+    if (mode === 'validate') {
+      return new Response(JSON.stringify({
+        mode: 'validate',
+        empresa: { cnpj: empresa.cnpj, razao_social: empresa.razao_social },
+        periodo: { inicio: periodo_inicio, fim: periodo_fim },
+        total_lancamentos: lancamentos.length,
+        checklist,
+        validacoes: { erros, avisos },
+        ecd_referencia: ecdAnterior || null,
+        apuracao_preview: { lucro_liquido, base_irpj, irpj, csll },
+      }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    if (erros.length > 0) {
+      return new Response(JSON.stringify({
+        error: 'Validações bloqueiam a geração do arquivo',
+        checklist,
+        validacoes: { erros, avisos },
+      }), { status: 422, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    // ===== Geração TXT =====
     const linhas: string[] = [];
     const bc = new Map<string, number>();
     const push = (l: string) => { linhas.push(l); const t = l.split('|')[1]; if (t) { const b = t[0]; bc.set(b, (bc.get(b)||0)+1); } };
@@ -164,18 +253,21 @@ Deno.serve(async (req) => {
     await supabase.storage.from('relatorios-tributarios').upload(storage_path, new Blob([conteudo], { type: 'text/plain' }), { upsert: true, contentType: 'text/plain' });
     const { data: signed } = await supabase.storage.from('relatorios-tributarios').createSignedUrl(storage_path, 60*60*24*7);
 
-    await supabase.from('sped_contabil_arquivos').insert({
+    const { data: inserted } = await supabase.from('sped_contabil_arquivos').insert({
       empresa_id, tipo: 'ECF', ano_calendario, periodo_inicio, periodo_fim,
       storage_path, hash_sha256: hash, total_linhas: linhas.length,
       total_lancamentos: lancamentos.length, validacoes: { erros, avisos },
       status: erros.length>0 ? 'rejeitado' : 'gerado', gerado_por: user.id,
-    });
+    }).select('id').maybeSingle();
 
     return new Response(JSON.stringify({
       url: signed?.signedUrl, file_name, total_linhas: linhas.length,
       total_lancamentos: lancamentos.length, hash_sha256: hash,
-      validacoes: { erros, avisos },
+      checklist, validacoes: { erros, avisos },
+      empresa: { cnpj: empresa.cnpj, razao_social: empresa.razao_social },
+      periodo: { inicio: periodo_inicio, fim: periodo_fim },
       apuracao: { lucro_liquido, base_irpj, irpj, csll },
+      arquivo_id: inserted?.id,
       observacao: 'Arquivo PRELIMINAR — validar no PVA-ECF da RFB antes da transmissão.',
     }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   } catch (e) {

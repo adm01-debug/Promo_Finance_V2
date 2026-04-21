@@ -1,17 +1,24 @@
 import { useState, useEffect } from 'react';
-import { CheckCircle2, AlertTriangle, XCircle, Loader2, Download, FileArchive, Copy, ChevronRight, ShieldAlert, RefreshCw } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, XCircle, Loader2, Download, FileArchive, Copy, ChevronRight, ShieldAlert, RefreshCw, Link2, Send } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Alert } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Progress } from '@/components/ui/progress';
-import { useSpedEcdValidacao, useGerarSpedContabil, type SpedGeracaoResult } from '@/hooks/useSpedContabil';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  useSpedEcfValidacao,
+  useGerarSpedContabil,
+  useRegistrarTransmissaoSped,
+  type SpedGeracaoResult,
+} from '@/hooks/useSpedContabil';
 import { baixarSpedZip } from '@/lib/sped-zip';
 import { SpedChecklistRow } from './SpedChecklistRow';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
 
 interface Props {
   open: boolean;
@@ -22,16 +29,19 @@ interface Props {
 
 type Step = 1 | 2 | 3;
 
-export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: Props) {
+export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: Props) {
   const [step, setStep] = useState<Step>(1);
-  const [resultado, setResultado] = useState<SpedGeracaoResult | null>(null);
-  const validar = useSpedEcdValidacao();
+  const [resultado, setResultado] = useState<(SpedGeracaoResult & { arquivo_id?: string }) | null>(null);
+  const [recibo, setRecibo] = useState('');
+  const validar = useSpedEcfValidacao();
   const gerar = useGerarSpedContabil();
+  const transmitir = useRegistrarTransmissaoSped();
 
   useEffect(() => {
     if (open && empresaId && anoCalendario) {
       setStep(1);
       setResultado(null);
+      setRecibo('');
       validar.mutate({ empresaId, anoCalendario });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -44,11 +54,11 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
 
   const handleGerar = async () => {
     try {
-      const r = await gerar.mutateAsync({ empresaId, anoCalendario, tipo: 'ECD', silent: true });
+      const r = await gerar.mutateAsync({ empresaId, anoCalendario, tipo: 'ECF', silent: true });
       setResultado(r);
       setStep(3);
     } catch {
-      // erro tratado pelo onError do hook
+      // tratado pelo onError
     }
   };
 
@@ -73,25 +83,32 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
       });
       toast.success('ZIP baixado');
     } catch (e) {
-      toast.error(`Falha ao gerar ZIP: ${e instanceof Error ? e.message : 'erro'}`);
+      toast.error(`Falha: ${e instanceof Error ? e.message : 'erro'}`);
     }
   };
 
+  const handleRegistrar = async () => {
+    if (!resultado?.arquivo_id || !recibo.trim()) return;
+    await transmitir.mutateAsync({ arquivoId: resultado.arquivo_id, recibo: recibo.trim() });
+    setRecibo('');
+  };
+
   const progresso = step === 1 ? 33 : step === 2 ? 66 : 100;
+  const ecd = data?.ecd_referencia;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Wizard SPED ECD · {anoCalendario}</DialogTitle>
-          <DialogDescription>Validação completa antes da geração do arquivo</DialogDescription>
+          <DialogTitle>Wizard SPED ECF · {anoCalendario}</DialogTitle>
+          <DialogDescription>Validação cruzada com a ECD do mesmo período</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-2">
           <div className="flex justify-between text-xs text-muted-foreground">
-            <span className={cn(step >= 1 && 'text-foreground font-medium')}>1. Período</span>
+            <span className={cn(step >= 1 && 'text-foreground font-medium')}>1. Período & ECD</span>
             <span className={cn(step >= 2 && 'text-foreground font-medium')}>2. Validações</span>
-            <span className={cn(step >= 3 && 'text-foreground font-medium')}>3. Download</span>
+            <span className={cn(step >= 3 && 'text-foreground font-medium')}>3. Download & Transmissão</span>
           </div>
           <Progress value={progresso} className="h-1.5" />
         </div>
@@ -126,6 +143,41 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                 </div>
               </CardContent>
             </Card>
+
+            {ecd ? (
+              <Card className="border-emerald-500/40 bg-emerald-500/5">
+                <CardContent className="pt-6 space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <Link2 className="h-4 w-4 text-emerald-600" /> ECD vinculada localizada
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div>
+                      <p className="text-muted-foreground">Gerada em</p>
+                      <p className="font-mono">{format(new Date(ecd.created_at), 'dd/MM/yyyy HH:mm')}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Status</p>
+                      <Badge variant={ecd.status === 'transmitido' ? 'default' : 'secondary'}>{ecd.status}</Badge>
+                    </div>
+                    <div className="col-span-2">
+                      <p className="text-muted-foreground">Hash SHA-256</p>
+                      <code className="text-xs font-mono">{(ecd.hash_sha256 || '').substring(0, 32)}…</code>
+                    </div>
+                    {ecd.recibo_transmissao && (
+                      <div className="col-span-2">
+                        <p className="text-muted-foreground">Recibo de transmissão</p>
+                        <p className="font-mono text-xs">{ecd.recibo_transmissao}</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Alert variant="error" title="ECD do período não localizada">
+                Gere e (idealmente) transmita a SPED ECD do mesmo ano-calendário antes de prosseguir com a ECF.
+              </Alert>
+            )}
+
             <div className="flex gap-2">
               <div className="flex-1" />
               <Button onClick={() => setStep(2)}>
@@ -154,6 +206,30 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               {data.checklist.map((item) => <SpedChecklistRow key={item.id} item={item} />)}
             </div>
 
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-sm font-medium mb-3">Apuração preliminar (Lucro Real)</p>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <p className="text-muted-foreground text-xs">Lucro líquido</p>
+                    <p className="font-mono font-medium">R$ {data.apuracao_preview.lucro_liquido.toFixed(2)}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground text-xs">Base IRPJ</p>
+                    <p className="font-mono font-medium">R$ {data.apuracao_preview.base_irpj.toFixed(2)}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground text-xs">IRPJ (15% + adicional)</p>
+                    <p className="font-mono font-medium">R$ {data.apuracao_preview.irpj.toFixed(2)}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground text-xs">CSLL (9%)</p>
+                    <p className="font-mono font-medium">R$ {data.apuracao_preview.csll.toFixed(2)}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             {erros > 0 && (
               <Alert variant="error" title="Geração bloqueada">
                 Corrija os {erros} erro(s) acima antes de gerar o arquivo.
@@ -165,7 +241,7 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               <div className="flex-1" />
               <Button onClick={handleGerar} disabled={!podeGerar || gerar.isPending}>
                 {gerar.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Download className="h-4 w-4 mr-1" />}
-                Gerar arquivo SPED ECD
+                Gerar arquivo SPED ECF
               </Button>
             </div>
           </div>
@@ -173,10 +249,8 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
 
         {step === 3 && resultado && (
           <div className="space-y-4">
-            <Alert className="border-emerald-500/40 bg-emerald-500/10">
-              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-              <AlertTitle>Arquivo gerado com sucesso</AlertTitle>
-              <AlertDescription>{resultado.file_name}</AlertDescription>
+            <Alert variant="success" title="Arquivo gerado com sucesso">
+              {resultado.file_name}
             </Alert>
 
             <Card>
@@ -195,10 +269,8 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               </CardContent>
             </Card>
 
-            <Alert>
-              <ShieldAlert className="h-4 w-4" />
-              <AlertTitle>Arquivo preliminar</AlertTitle>
-              <AlertDescription>Sempre valide no PVA-ECD da Receita Federal antes da transmissão oficial.</AlertDescription>
+            <Alert variant="warning" title="Arquivo preliminar">
+              Sempre valide no PVA-ECF da Receita Federal antes da transmissão oficial.
             </Alert>
 
             <div className="flex flex-wrap gap-2">
@@ -208,6 +280,37 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               <Button variant="outline" onClick={baixarZip} className="gap-2">
                 <FileArchive className="h-4 w-4" /> Baixar .zip (com README)
               </Button>
+            </div>
+
+            {resultado.arquivo_id && (
+              <Card className="border-primary/30 bg-primary/5">
+                <CardContent className="pt-6 space-y-3">
+                  <p className="text-sm font-medium flex items-center gap-2">
+                    <Send className="h-4 w-4 text-primary" /> Registrar transmissão à Receita Federal
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Após transmitir o arquivo no PVA-ECF, cole aqui o nº do recibo gerado para marcar como transmitido no histórico.
+                  </p>
+                  <div className="space-y-2">
+                    <Label htmlFor="recibo-ecf" className="text-xs">Nº do recibo de transmissão</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="recibo-ecf"
+                        value={recibo}
+                        onChange={e => setRecibo(e.target.value)}
+                        placeholder="Ex.: 12345678901234567890"
+                        className="font-mono text-xs"
+                      />
+                      <Button onClick={handleRegistrar} disabled={!recibo.trim() || transmitir.isPending} size="sm">
+                        {transmitir.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Marcar como transmitido'}
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="flex">
               <div className="flex-1" />
               <Button variant="ghost" onClick={() => onOpenChange(false)}>Fechar</Button>
             </div>
