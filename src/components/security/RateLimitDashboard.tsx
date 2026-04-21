@@ -18,10 +18,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { BlockedIPsTab } from './rate-limit/BlockedIPsTab';
+import { maskIp, matchesIpFilter } from '@/lib/ip-mask';
+import { useIpMaskPreference } from '@/hooks/useIpMaskPreference';
+import { IpMaskToggle } from '@/components/admin/IpMaskToggle';
 
 const SEVERITY_COLORS: Record<string, string> = { low: 'hsl(var(--chart-2))', medium: 'hsl(var(--chart-3))', high: 'hsl(var(--chart-4))', critical: 'hsl(var(--destructive))' };
 
 export function RateLimitDashboard() {
+  const { enabled: maskIpsEnabled } = useIpMaskPreference();
   const { logs, blockedIPs, stats, isLoading, blockIP, unblockIP, clearOldLogs } = useRateLimitLogs();
   const { alerts, unresolvedCount, resolveAlert } = useSecurityAlerts();
   const [searchTerm, setSearchTerm] = useState('');
@@ -42,7 +46,7 @@ export function RateLimitDashboard() {
   const handleUnblock = async (id: string) => { try { await unblockIP(id); toast.success('IP desbloqueado'); } catch (error: unknown) { logger.error('Erro ao desbloquear IP:', error); toast.error('Erro ao desbloquear IP'); } };
   const handleClearOldLogs = async () => { try { await clearOldLogs(30); toast.success('Logs antigos removidos'); } catch (error: unknown) { logger.error('Erro ao limpar logs:', error); toast.error('Erro ao limpar logs'); } };
 
-  const filteredLogs = logs.filter(log => log.ip_address.includes(searchTerm) || log.endpoint.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredLogs = logs.filter(log => matchesIpFilter(log.ip_address, searchTerm) || log.endpoint.toLowerCase().includes(searchTerm.toLowerCase()));
   const severityData = Object.entries(alerts.reduce((acc, alert) => { acc[alert.severity] = (acc[alert.severity] || 0) + 1; return acc; }, {} as Record<string, number>)).map(([name, value]) => ({ name, value }));
 
   if (isLoading) return <div className="flex items-center justify-center p-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
@@ -73,11 +77,11 @@ export function RateLimitDashboard() {
         <TabsContent value="blocked" className="mt-4"><BlockedIPsTab blockedIPs={blockedIPs} searchTerm={searchTerm} onSearchChange={setSearchTerm} onBlockNew={() => setShowBlockDialog(true)} onUnblock={handleUnblock} /></TabsContent>
 
         <TabsContent value="logs" className="mt-4">
-          <Card><CardHeader><div className="flex items-center justify-between"><div><CardTitle>Logs de Rate Limit</CardTitle><CardDescription>Histórico de requisições e limites atingidos</CardDescription></div><Button variant="outline" onClick={handleClearOldLogs}><Trash2 className="h-4 w-4 mr-2" />Limpar Antigos</Button></div></CardHeader>
+          <Card><CardHeader><div className="flex items-center justify-between gap-3 flex-wrap"><div><CardTitle>Logs de Rate Limit</CardTitle><CardDescription>Histórico de requisições e limites atingidos</CardDescription></div><div className="flex items-center gap-3"><IpMaskToggle /><Button variant="outline" onClick={handleClearOldLogs}><Trash2 className="h-4 w-4 mr-2" />Limpar Antigos</Button></div></div></CardHeader>
             <CardContent>
               <div className="relative mb-4"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Buscar por IP ou endpoint..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" /></div>
               <div className="max-h-[400px] overflow-auto"><Table><TableHeader><TableRow><TableHead>IP</TableHead><TableHead>Endpoint</TableHead><TableHead>Requisições</TableHead><TableHead>Status</TableHead><TableHead>Data</TableHead></TableRow></TableHeader>
-                <TableBody>{filteredLogs.slice(0, 100).map((log) => <TableRow key={log.id}><TableCell className="font-mono text-sm">{log.ip_address}</TableCell><TableCell className="max-w-[200px] truncate">{log.endpoint}</TableCell><TableCell>{log.requests_count}</TableCell><TableCell>{log.blocked ? <Badge variant="destructive">Bloqueado</Badge> : <Badge variant="secondary">OK</Badge>}</TableCell><TableCell className="text-sm text-muted-foreground">{formatDistanceToNow(new Date(log.created_at), { addSuffix: true, locale: ptBR })}</TableCell></TableRow>)}</TableBody></Table></div>
+                <TableBody>{filteredLogs.slice(0, 100).map((log) => <TableRow key={log.id}><TableCell className="font-mono text-sm">{maskIp(log.ip_address, maskIpsEnabled)}</TableCell><TableCell className="max-w-[200px] truncate">{log.endpoint}</TableCell><TableCell>{log.requests_count}</TableCell><TableCell>{log.blocked ? <Badge variant="destructive">Bloqueado</Badge> : <Badge variant="secondary">OK</Badge>}</TableCell><TableCell className="text-sm text-muted-foreground">{formatDistanceToNow(new Date(log.created_at), { addSuffix: true, locale: ptBR })}</TableCell></TableRow>)}</TableBody></Table></div>
             </CardContent></Card>
         </TabsContent>
 

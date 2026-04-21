@@ -19,6 +19,9 @@ import { toast } from 'sonner';
 import type { DateRange } from 'react-day-picker';
 import { AuditSecurityAlerts } from '@/components/audit/AuditSecurityAlerts';
 import { AuditLogTable } from '@/components/audit/AuditLogTable';
+import { IpMaskToggle } from '@/components/admin/IpMaskToggle';
+import { useIpMaskPreference } from '@/hooks/useIpMaskPreference';
+import { maskIp } from '@/lib/ip-mask';
 
 type AuditAction = 'INSERT' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'LOGOUT' | 'EXPORT' | 'APPROVE' | 'REJECT';
 
@@ -41,6 +44,7 @@ const actionConfig: Record<AuditAction, { label: string; color: string }> = {
 };
 
 export default function AuditLogs() {
+  const { enabled: maskIpsEnabled } = useIpMaskPreference();
   const [searchTerm, setSearchTerm] = useState('');
   const [actionFilter, setActionFilter] = useState<string>('all');
   const [tableFilter, setTableFilter] = useState<string>('all');
@@ -95,7 +99,7 @@ export default function AuditLogs() {
     { key: 'action', header: 'Ação', formatter: (v) => typeof v === 'string' ? (actionConfig[v as AuditAction]?.label || v) : String(v) },
     { key: 'table_name', header: 'Tabela', formatter: (v) => typeof v === 'string' ? v : '-' },
     { key: 'details', header: 'Detalhes', formatter: (v) => typeof v === 'string' ? v : '-' },
-    { key: 'ip_address', header: 'IP', formatter: (v) => typeof v === 'string' ? v : '-' },
+    { key: 'ip_address', header: 'IP', formatter: (v) => maskIp(typeof v === 'string' ? v : null, maskIpsEnabled) },
   ];
 
   const handleExportCSV = () => { if (!filteredLogs?.length) { toast.error('Nenhum registro para exportar'); return; } exportToCSV(filteredLogs, auditColumns, 'logs_auditoria'); toast.success('Exportado para CSV com sucesso!'); };
@@ -126,7 +130,10 @@ export default function AuditLogs() {
               <Select value={userFilter} onValueChange={setUserFilter}><SelectTrigger><SelectValue placeholder="Usuário" /></SelectTrigger><SelectContent><SelectItem value="all">Todos os Usuários</SelectItem>{uniqueUsers.map((u) => <SelectItem key={u} value={u!}>{u}</SelectItem>)}</SelectContent></Select>
               <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("justify-start text-left font-normal", !dateRange && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{dateRange?.from ? (dateRange.to ? <>{format(dateRange.from, "dd/MM/yy")} - {format(dateRange.to, "dd/MM/yy")}</> : format(dateRange.from, "dd/MM/yyyy")) : <span>Selecionar período</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} locale={ptBR as unknown as Record<string, unknown>} /></PopoverContent></Popover>
             </div>
-            <div className="flex gap-2 mt-4"><Button variant="outline" size="sm" onClick={clearFilters}><X className="h-4 w-4 mr-1" /> Limpar Filtros</Button></div>
+            <div className="flex items-center justify-between gap-2 mt-4 flex-wrap">
+              <Button variant="outline" size="sm" onClick={clearFilters}><X className="h-4 w-4 mr-1" /> Limpar Filtros</Button>
+              <IpMaskToggle />
+            </div>
           </CardContent>
         </Card>
 
