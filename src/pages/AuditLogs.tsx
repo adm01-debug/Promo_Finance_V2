@@ -109,7 +109,10 @@ export default function AuditLogs() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        <div className="flex flex-col gap-2"><h1 className="text-3xl font-bold tracking-tight">Logs de Auditoria</h1><p className="text-muted-foreground">Histórico completo de ações realizadas no sistema</p></div>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-2"><h1 className="text-3xl font-bold tracking-tight">Logs de Auditoria</h1><p className="text-muted-foreground">Histórico completo de ações realizadas no sistema</p></div>
+          <Button asChild variant="outline" size="sm"><a href="/admin/sso-jit-events">Ver eventos JIT (SSO)</a></Button>
+        </div>
 
         {/* Stats */}
         <div className="grid gap-4 md:grid-cols-4">
