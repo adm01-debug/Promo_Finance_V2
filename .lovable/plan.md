@@ -1,48 +1,51 @@
 
 
-## Plano — Sandbox de testes SSO end-to-end
+## Plano — Modo de revisão em fila para anomalias pendentes
 
-Nova aba **"Sandbox"** em `/admin/sso` que permite ao administrador simular um login SSO completo sem efeitos colaterais (sem criar usuário, sem session). Hoje o backend `sso-test-login` já existe mas não tem UI. Este plano expõe o sandbox e amplia a função para responder se o usuário **seria** criado ou já existe.
+Hoje o `AnomaliasDetectadasPanel` lista anomalias e oferece botões inline (Investigar / Falso+ / Confirmar) sem exigir comentário. Este plano adiciona um **modo de revisão sequencial**: o admin entra numa fila de pendentes (`nova` + `investigando`), revisa uma por vez em modal cheio com contexto, e precisa escrever um comentário (≥10 chars) antes de Confirmar ou Rejeitar.
 
-### Componentes
+### Mudanças
 
-**1. Edge function `sso-test-login` ampliada** (`supabase/functions/sso-test-login/index.ts`)
-- Aceita opcionalmente `provider_id` no payload.
-- Quando presente, com auth Bearer do admin (validação via `getClaims`), busca o provider e usa seus campos reais (`claim_mapping`, `role_mappings`, `default_role`, `allowed_domains`, `auto_provision_users`) — admin não precisa repetir nada.
-- Verifica em `auth.users` (via service role) se o email resultante já existe → retorna `user_exists: true|false` e `would_jit_provision: boolean` (existing OR auto_provision).
-- Mantém compatibilidade com chamada manual (sem `provider_id`).
-- Nunca cria usuário, nunca grava em `sso_login_attempts`, nunca emite token.
+**1. Novo componente `AnomaliasReviewQueue.tsx`** (`src/components/admin/`)
+- Botão "Iniciar revisão em fila" no topo do `AnomaliasDetectadasPanel` mostrando `{N} pendentes`.
+- Abre `<Dialog>` em modo wizard que percorre as anomalias com status `nova` ou `investigando`, ordenadas por severidade (`critica → alta → media → baixa`) e depois `detectada_em ASC` (mais antigas primeiro — SLA).
+- Para cada anomalia exibe:
+  - Header: badge severidade + tipo + tempo decorrido ("há 2 dias").
+  - Descrição completa + observações existentes.
+  - Card "Dados" com `<pre>` do `dados` jsonb (collapsible).
+  - Link "Abrir drill-down completo" (`/admin/insights-ia/anomalia/{id}`, target=_blank).
+- Footer com:
+  - `<Textarea>` "Comentário de revisão" obrigatório, label "Comentário (mínimo 10 caracteres)", contador.
+  - 3 botões: **Confirmar como problema real** (verde), **Marcar como falso positivo** (cinza), **Pular** (sem ação, vai pra próxima).
+  - Confirmar/Rejeitar ficam `disabled` enquanto comentário < 10 chars.
+- Indicador de progresso "Revisando 3 de 12".
+- Após ação salva, avança automaticamente para a próxima; ao chegar ao fim, mostra estado de sucesso "Fila concluída — X confirmadas, Y rejeitadas, Z puladas" com botão "Fechar".
+- Tecla `Esc` fecha dialog; `Ctrl+Enter` aciona Confirmar quando válido.
 
-**2. Nova aba `SSOSandboxPanel.tsx`** (`src/components/admin/sso/SSOSandboxPanel.tsx`)
-- **Seletor de provider** (dropdown com providers ativos via `useSSOProviders`).
-- **Botão "Carregar exemplo"** com 3 presets de claims por tipo de IdP (Azure AD, Okta, Google), gerados a partir de `IDP_PRESETS`.
-- **Editor JSON** (`<Textarea>` monoespaçado) para `mock_claims` com validação JSON em tempo real e badge "JSON válido / inválido".
-- **Toggle "Usar config do provider"**: quando ativo, o backend ignora os campos manuais; quando desativo, mostra editores extras de `claim_mapping`, `default_role`, `allowed_domains` (chips), e `role_mappings` (lista editável grupo→role).
-- **Botão "Simular login"** chama `useTestSSOLogin`.
-- **Resultado em cards verticais (timeline)** com ícone ✓/✗ por etapa:
-  1. Parsing de claims → email, full_name, grupos extraídos.
-  2. Validação de domínio → permitido / bloqueado (com domínio mostrado).
-  3. Resolução de papel → `default_role` ou grupo casado (mostra qual).
-  4. Provisionamento → "Usuário já existe (id mascarado)" / "Seria criado via JIT" / "Bloqueado: auto_provision desabilitado".
-  - Bloco final com JSON cru da resposta (collapsible) para debug.
-- Toast de sucesso/erro ao simular.
+**2. Hook `useAnomaliasDetectadas` ampliado**
+- Adicionar `revisar`: mutation que aceita `{ id, status: 'confirmada' | 'falso_positivo', observacoes: string }`, valida `observacoes.trim().length >= 10` no client, grava `resolvida_por = auth.uid()` (já temos `resolvida_em`), invalida cache.
+- Adicionar query auxiliar `usePendingAnomaliasQueue()` que retorna apenas as pendentes ordenadas por severidade + data, usada exclusivamente pelo modal (cache separado do painel para evitar reordenação visual durante revisão).
 
-**3. Wiring em `SSOAdmin.tsx`**
-- Adiciona `<TabsTrigger value="sandbox">` com ícone `FlaskConical` entre "SCIM" e "Monitoramento".
-- `<TabsContent value="sandbox">` renderiza `<SSOSandboxPanel />`.
+**3. Integração em `AnomaliasDetectadasPanel.tsx`**
+- Adicionar botão no header: `<Button>Revisar em fila ({pendentes})</Button>` com ícone `ListChecks`, abre `<AnomaliasReviewQueue />`.
+- Pendentes = anomalias com status em `('nova','investigando')`.
+- Botão fica `disabled` quando 0 pendentes.
+
+**4. Auditoria**
+- O hook existente `useLogAudit` (via `log_audit` RPC) é chamado dentro de `revisar` com `action='APPROVE'` (confirmada) ou `action='REJECT'` (falso_positivo), `tableName='anomalias_detectadas'`, `recordId={id}`, `details={observacoes}`. Gera trilha consultável em `/admin/compliance-auditoria`.
 
 ### Detalhes técnicos
 
-- **Segurança**: `sso-test-login` exige Bearer token e `has_role(uid, 'admin')` quando `provider_id` é fornecido (impede que usuário comum vaze `claim_mapping` de outros). Sem `provider_id`, função fica stateless e pública (já é hoje).
-- **Email mascarado**: na resposta de existência, retorna apenas `j****@empresa.com` para evitar enumeração lateral.
-- **Sem side effects**: nenhuma escrita em `sso_login_attempts`, `audit_logs`, `auth.users`, `user_roles` ou `user_empresas`.
-- **Validação JSON**: erro de parse mostra inline com linha/coluna; botão "Simular" fica disabled.
-- **Presets de mock**: por exemplo Azure AD usa `{ email, name, oid, groups: ["admins-grupo"], preferred_username }`; Okta usa `{ email, name, groups }`; Google usa `{ email, name, hd, picture }`.
+- **Sem migração**: `observacoes` e `resolvida_por` já existem; aproveitamos `resolvida_em` que o hook já preenche.
+- **Validação**: 10 chars é o mínimo prático para forçar comentário substantivo (ex.: "Confirmado, fornecedor X duplicou NF" tem 38). Trim aplicado antes do count.
+- **Ordenação por severidade**: feita client-side com map `{critica:0, alta:1, media:2, baixa:3}` após o fetch (Supabase não ordena enum por critério custom sem case).
+- **UX de "pular"**: avança index local sem mutation; anomalia continua `nova`/`investigando` na próxima sessão.
+- **Concorrência**: se outro admin já resolveu, o update retorna 0 rows afetadas — exibimos toast "Já revisada por outro usuário" e avançamos.
+- **A11y**: foco automático no `<Textarea>` ao abrir cada anomalia; `aria-live="polite"` no contador de progresso.
 
 ### Fora de escopo
 
-- Simulação real de OAuth handshake (PKCE/exchange) — o sandbox foca no pós-callback (mapping + JIT), que é onde 95% dos erros acontecem.
-- Salvar histórico de simulações.
-- Exportar relatório de simulação em PDF.
-- Sandbox para SCIM (já há painel separado de tokens).
+- Atribuição de revisor (assign-to) — fila é compartilhada, primeiro a abrir vê todas.
+- Bulk approve/reject sem comentário (intencionalmente proibido).
+- Export do log de revisões (já disponível via `audit_logs`).
 
