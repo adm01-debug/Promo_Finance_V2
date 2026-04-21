@@ -128,7 +128,7 @@ export function EvidenciasTab() {
                   key={e.value}
                   className="flex items-center gap-2 p-2 border rounded cursor-pointer hover:bg-muted/30"
                 >
-                  <Checkbox checked={escopos.includes(e.value)} onCheckedChange={() => toggleEscopo(e.value)} />
+                  <Checkbox checked={escopos.includes(e.value)} onChange={() => toggleEscopo(e.value)} />
                   <span className="text-sm">{e.label}</span>
                 </label>
               ))}
