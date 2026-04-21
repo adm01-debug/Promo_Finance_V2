@@ -1,84 +1,70 @@
 
 
-## Plano — Painel de Insights de IA (Anomalias + Conciliação)
+## Plano — Drill-down de Anomalia
 
-Nova rota `/admin/insights-ia` consolidando os dois motores de IA já existentes no backend (`detectar-anomalias-financeiras` + `conciliacao-ia` + `feedback_conciliacao_ia`) numa experiência unificada de revisão, histórico e feedback.
-
-### Por que faz sentido agora
-
-- **Backend pronto**: `anomalias_detectadas` (5 detectores estatísticos), `feedback_conciliacao_ia`, `regras_conciliacao` e edge `conciliacao-ia` já existem e rodam.
-- **UI fragmentada**: anomalias só aparecem como 4ª aba dentro de `/admin/system-health`; feedback de IA da conciliação só vive embutido no fluxo de match — não há **visão consolidada** com histórico, métricas de aprendizado e curadoria.
-- **Gap apontado** no `GAPS_ENTERPRISE.md`: falta cockpit de IA explicável (XAI) com auditoria de decisões.
+Nova página `/admin/insights-ia/anomalia/:id` acessada por um botão "Investigar" em cada card de anomalia no painel atual.
 
 ### Estrutura da página
 
 ```text
-/admin/insights-ia
-├── Header: KPIs (anomalias 24h, taxa acerto IA, regras aprendidas, valor sob revisão)
-├── Tab 1 · Anomalias Detectadas
-│   ├── Filtros: severidade, tipo, status, período
-│   ├── Tabela com badges + drill-down
-│   ├── Ações: marcar falso positivo / confirmar / investigar + observações
-│   └── Botão "Executar detecção agora"
-├── Tab 2 · Conciliação IA — Histórico
-│   ├── Lista de matches sugeridos (últimos 90d) com score e confiança
-│   ├── Ação confirmou/rejeitou + motivo
-│   └── Visualização lado-a-lado (transação ↔ lançamento)
-├── Tab 3 · Aprendizado & Métricas
-│   ├── Recharts: taxa de acerto IA ao longo do tempo (linha)
-│   ├── Pie: distribuição confirmado/rejeitado/pendente
-│   ├── Bar: regras aprendidas mais aplicadas (top 10)
-│   └── Heatmap simples: anomalias por tipo × semana
-└── Tab 4 · Auditoria de Decisões (XAI)
-    ├── Timeline cronológica de todas decisões IA
-    ├── Para cada: input → score → motivos → output → feedback humano
-    └── Export CSV
+/admin/insights-ia/anomalia/:id
+├── Header: badge severidade + tipo + data + status + botões (Falso+, Confirmar, Investigar)
+├── Card 1 · Resumo da anomalia (descrição + dados JSON formatado)
+├── Card 2 · Entidade relacionada (drill na tabela origem)
+│   └── Se entidade_tipo = movimentacao/conta_pagar/conta_receber/transacao_bancaria
+│       → Busca o registro + mostra dados-chave + link "Abrir tela completa"
+├── Card 3 · Histórico contextual (últimos 30 dias)
+│   ├── Para movimentação: outras movs do mesmo fornecedor/conta
+│   ├── Para conta_pagar/receber: histórico do fornecedor/cliente
+│   └── Recharts LineChart de evolução de valor
+├── Card 4 · Detectores que contribuíram (XAI)
+│   ├── Lista os critérios estatísticos da função detectar-anomalias
+│   ├── Para cada: nome do detector, regra (ex: "valor > 3σ"), valor observado vs esperado
+│   └── Score de contribuição visual (barras)
+├── Card 5 · Outras anomalias da mesma entidade (timeline)
+└── Card 6 · Ações sugeridas
+    ├── Contextuais por tipo (ex: pagamento_duplicado → "Ver pagamento original" + "Cancelar duplicata")
+    ├── Adicionar observação/parecer
+    └── Marcar como falso positivo / confirmar com observação
 ```
 
 ### Arquivos a criar
 
-**Página + componentes**
-- `src/pages/admin/InsightsIA.tsx` — orquestra 4 tabs
-- `src/components/insights-ia/InsightsIAKpis.tsx` — header com 4 KPIs
-- `src/components/insights-ia/AnomaliasTab.tsx` — reusa lógica do `AnomaliasDetectadasPanel` existente, expandida com filtros
-- `src/components/insights-ia/ConciliacaoHistoricoTab.tsx` — query em `feedback_conciliacao_ia` + join com transações/lançamentos
-- `src/components/insights-ia/AprendizadoMetricasTab.tsx` — Recharts (LineChart, PieChart, BarChart)
-- `src/components/insights-ia/AuditoriaDecisoesTab.tsx` — timeline + export
-- `src/components/insights-ia/FeedbackDialog.tsx` — modal de marcar feedback com motivo
+- `src/pages/admin/AnomaliaDetalhe.tsx` — orquestra os 6 cards
+- `src/components/insights-ia/anomalia/AnomaliaHeader.tsx` — header com ações
+- `src/components/insights-ia/anomalia/EntidadeRelacionadaCard.tsx` — fetch dinâmico por entidade_tipo
+- `src/components/insights-ia/anomalia/HistoricoContextualCard.tsx` — série + tabela
+- `src/components/insights-ia/anomalia/DetectoresContribuintesCard.tsx` — XAI dos 5 detectores
+- `src/components/insights-ia/anomalia/AnomaliasRelacionadasCard.tsx` — timeline mesma entidade
+- `src/components/insights-ia/anomalia/AcoesSugeridasCard.tsx` — playbook por tipo + observação
+- `src/hooks/useAnomaliaDetalhe.ts` — busca anomalia + entidade + histórico + relacionadas em paralelo
 
-**Hooks**
-- `src/hooks/useInsightsIA.ts` — agrega KPIs (anomalias 24h, taxa acerto, regras ativas, valor pendente)
-- `src/hooks/useFeedbackConciliacaoHistorico.ts` — lista paginada de feedbacks + mutation para registrar novo
-- `src/hooks/useMetricasAprendizadoIA.ts` — séries temporais agregadas
+### Mudanças em arquivos existentes
 
-### Schema (sem mudanças destrutivas)
+- `src/components/admin/AnomaliasDetectadasPanel.tsx`: adicionar botão **"Drill-down"** (ícone `Microscope`) em cada item, navegando para `/admin/insights-ia/anomalia/${a.id}`
+- `src/App.tsx`: registrar nova rota lazy
 
-Tabelas existentes já cobrem 95%. Apenas **2 índices novos** para performance:
-```sql
-CREATE INDEX IF NOT EXISTS idx_feedback_concil_created ON feedback_conciliacao_ia(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_anomalias_detectada_severidade ON anomalias_detectadas(severidade, status, detectada_em DESC);
+### Detectores e ações sugeridas (mapa estático)
+
+```text
+movimentacao_outlier  → "Valor > 3σ vs média 30d"        → [Ver série, Adicionar à exclusão]
+pagamento_duplicado   → "Mesmo fornec+valor+venc"        → [Ver originais, Cancelar duplicata]
+conta_pagar_alta      → "Valor > 1.5×p95 da empresa"     → [Comparar histórico fornecedor]
+conciliacao_atrasada  → "Não conciliada > 30d"           → [Abrir conciliação, Buscar match IA]
+mudanca_regime_brusca → "Variação MoM > 30%"             → [Ver carga tributária, Recalcular]
 ```
-
-Sem novas tabelas, sem RLS extra (políticas admin-only já existem em ambas).
-
-### Roteamento e navegação
-
-- Adicionar rota `/admin/insights-ia` em `src/App.tsx` (lazy) com guard `<RequireRole role="admin">`
-- Adicionar item "Insights de IA" no menu admin lateral com ícone `Brain` (lucide)
-- Cross-link: card no `/admin/system-health` apontando para a nova página
 
 ### Detalhes técnicos
 
-- **Realtime**: subscription em `anomalias_detectadas` (INSERT) → toast "Nova anomalia crítica" + invalidação de query
-- **Refetch**: 60s para KPIs, manual nas demais tabs
-- **Empty states**: ilustração + CTA "Executar detecção agora" quando não houver dados
-- **Loading**: Skeleton em todos os cards/tabelas
-- **Acessibilidade**: tabs com `aria-label`, contraste AA nas badges de severidade
-- **Performance**: paginação server-side (20/página) nas tabs 2 e 4; queries com `.limit()` + cursor
+- Fetch único `useAnomaliaDetalhe` com `Promise.all` para anomalia + entidade origem + histórico + outras anomalias da mesma entidade
+- Resolução dinâmica da entidade: switch sobre `entidade_tipo` → seleciona tabela (`movimentacoes`, `contas_pagar`, `contas_receber`, `transacoes_bancarias`)
+- Atalho de volta para `/admin/insights-ia` via `BackButton`
+- Loading skeleton por card; empty states quando entidade não encontrada
+- Persistência de observação reutiliza a mutation `atualizarStatus` já existente em `useAnomaliasDetectadas`
 
 ### Fora de escopo
 
-- Treinamento/retrain de modelo (apenas curadoria + feedback)
-- Edição de regras de conciliação (já existe em `/conciliacao`)
-- Notificações por e-mail de novas anomalias (cron já cobre via `enviar-alerta-email`)
+- Edição da anomalia além de status/observação
+- Re-execução do detector específico (botão "Detectar agora" continua global no painel)
+- Notificação por e-mail das ações tomadas
 
