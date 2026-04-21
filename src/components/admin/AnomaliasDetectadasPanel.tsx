@@ -33,7 +33,7 @@ import {
   Filter,
   ArrowUpDown,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   useAnomaliasDetectadas,
   usePendingAnomaliasQueue,
@@ -123,6 +123,7 @@ export function AnomaliasDetectadasPanel() {
   const [reviewOpen, setReviewOpen] = useState(false);
   const [prefsOpen, setPrefsOpen] = useState(false);
   const { data: criticasCount = 0 } = useAnomaliasCriticasCount();
+  const navigate = useNavigate();
   const [filters, setFilters] = useState<AnomaliaFilters>(DEFAULT_FILTERS);
   const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" }>({
     key: "detectada_em",
@@ -487,12 +488,13 @@ export function AnomaliasDetectadasPanel() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() =>
+                        onClick={() => {
                           atualizarStatus.mutate({
                             id: a.id,
                             status: "investigando",
-                          })
-                        }
+                          });
+                          navigate(`/admin/insights-ia/anomalia/${a.id}`);
+                        }}
                         disabled={atualizarStatus.isPending}
                       >
                         <Search className="h-3 w-3 mr-1" /> Investigar
