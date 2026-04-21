@@ -13,6 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useEvidenciasPacotes } from "@/hooks/useEvidenciasPack";
+import { useGerarEvidenciasStream } from "@/hooks/useGerarEvidenciasStream";
+import { EvidenciaStatusDialog } from "./EvidenciaStatusDialog";
 import { AuditFiltersBar, type FiltrosState } from "./AuditFiltersBar";
 import { exportToCSV, exportToPDF, type ExportColumn } from "@/lib/export-utils";
 import { toast } from "sonner";
@@ -38,7 +40,14 @@ export function EvidenciasTab() {
   const [inicio, setInicio] = useState(isoDays(30));
   const [fim, setFim] = useState(isoDays(0));
   const [escopos, setEscopos] = useState<string[]>(["financeiro", "tributario", "sistema", "conformidade"]);
-  const { data, isLoading, gerar, baixar } = useEvidenciasPacotes();
+  const { data, isLoading, baixar } = useEvidenciasPacotes();
+  const stream = useGerarEvidenciasStream();
+  const [statusOpen, setStatusOpen] = useState(false);
+
+  const handleGerar = () => {
+    setStatusOpen(true);
+    stream.start({ periodo_inicio: inicio, periodo_fim: fim, escopos });
+  };
 
   const [filtros, setFiltros] = useState<FiltrosState>({
     inicio: "",
@@ -138,20 +147,23 @@ export function EvidenciasTab() {
             O pacote ZIP contém um CSV por escopo, um <code>manifest.json</code> com hashes SHA-256 para validação de
             integridade e um <code>README.txt</code> com instruções. URL assinada válida por 7 dias.
           </div>
-          <Button
-            onClick={() => gerar.mutate({ periodo_inicio: inicio, periodo_fim: fim, escopos })}
-            disabled={gerar.isPending || escopos.length === 0 || !inicio || !fim}
-          >
-            {gerar.isPending ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Gerando pacote...
-              </>
-            ) : (
-              <>
-                <FileArchive className="h-4 w-4 mr-2" /> Gerar pacote
-              </>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              onClick={handleGerar}
+              disabled={stream.status === "running" || escopos.length === 0 || !inicio || !fim}
+            >
+              {stream.status === "running" ? (
+                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Gerando pacote...</>
+              ) : (
+                <><FileArchive className="h-4 w-4 mr-2" /> Gerar pacote</>
+              )}
+            </Button>
+            {(stream.status === "success" || stream.status === "error") && (
+              <Button variant="outline" onClick={() => setStatusOpen(true)}>
+                Ver último status
+              </Button>
             )}
-          </Button>
+          </div>
         </CardContent>
       </Card>
 
@@ -222,6 +234,19 @@ export function EvidenciasTab() {
           )}
         </CardContent>
       </Card>
+
+      <EvidenciaStatusDialog
+        open={statusOpen}
+        onOpenChange={setStatusOpen}
+        status={stream.status}
+        events={stream.events}
+        current={stream.current}
+        percent={stream.percent}
+        result={stream.result}
+        error={stream.error}
+        onRetry={stream.retry}
+        onCancel={stream.cancel}
+      />
     </div>
   );
 }
