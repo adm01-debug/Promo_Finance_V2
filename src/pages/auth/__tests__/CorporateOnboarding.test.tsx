@@ -11,22 +11,32 @@ import { MemoryRouter } from 'react-router-dom';
 
 // ---------- Mocks ----------
 
-const mockNavigate = vi.fn();
+const hoisted = vi.hoisted(() => ({
+  mockNavigate: vi.fn(),
+  toastErrorMock: vi.fn(),
+  toastInfoMock: vi.fn(),
+  invokeMock: vi.fn(),
+  logEventMock: vi.fn(),
+}));
+const { mockNavigate, toastErrorMock, toastInfoMock, invokeMock, logEventMock } = hoisted;
+
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
-  return { ...actual, useNavigate: () => mockNavigate };
+  return { ...actual, useNavigate: () => hoisted.mockNavigate };
 });
 
-const toastErrorMock = vi.fn();
-const toastInfoMock = vi.fn();
 vi.mock('sonner', () => ({
-  toast: { error: toastErrorMock, info: toastInfoMock, success: vi.fn(), warning: vi.fn() },
+  toast: {
+    error: hoisted.toastErrorMock,
+    info: hoisted.toastInfoMock,
+    success: vi.fn(),
+    warning: vi.fn(),
+  },
 }));
 
-const invokeMock = vi.fn();
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
-    functions: { invoke: (...args: unknown[]) => invokeMock(...args) },
+    functions: { invoke: (...args: unknown[]) => hoisted.invokeMock(...args) },
     rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
   },
 }));
