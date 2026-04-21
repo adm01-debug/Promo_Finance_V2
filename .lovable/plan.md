@@ -1,87 +1,76 @@
+` direto.
 
+<lov-plan>
 
-## Plano — Mascaramento opcional de `ip_address` em listas e detalhes
+## Plano — Trilha explícita de JIT provisioning no `audit_logs`
 
 ### Diagnóstico
 
-Hoje o campo `ip_address` é exibido **em texto puro** em várias telas administrativas/segurança:
+A função `sso-callback` (`applyPipeline`, linhas 269-298) **já grava** alguma trilha, mas é incompleta:
 
-- `src/components/audit/AuditLogTable.tsx` — coluna "Usuário" e bloco "Detalhes".
-- `src/pages/AuditLogs.tsx` — coluna "IP" e exportações CSV/PDF.
-- `src/components/security/rate-limit/BlockedIPsTab.tsx` — coluna principal e filtragem por substring.
-- `src/components/security/RateLimitDashboard.tsx` — filtragem `log.ip_address.includes(...)` e listas.
-- `src/components/auth/MFASettings.tsx` — sessões ativas do próprio usuário.
-- `src/components/compliance/AuditDetailDialog.tsx` — metadata grid mostra `ip_address` cru.
+- **Caminho JIT** (linhas 270-287): registra `INSERT` em `auth.users` com `provider_id`, `provider_nome` e a role no `details` (string livre). Faltam dados estruturados úteis: `empresa_id`, `default_role`, lista de `groups` recebidos, se houve match de grupo ou foi fallback.
+- **Caminho não-JIT com role mapping** (linhas 288-297): registra `UPDATE user_roles` apenas se `matchedGroup` foi resolvido — usuários SSO existentes que caem no `default_role` não geram nada.
+- O `details` mistura informações em string livre, dificultando filtros na tela `/audit-logs` (que indexa por `action` e `table_name`).
+- Não existe um **evento dedicado** que um admin possa filtrar para responder "quem foi provisionado por JIT no último mês".
 
-A filtragem em todas essas telas é **substring** (`.includes`/`.ilike`) e o requisito é manter o filtro funcionando contra o IP **original** mesmo quando a exibição estiver mascarada.
+### Comportamento
 
-### Abordagem
+Adicionar um **registro estruturado e único** em `audit_logs` toda vez que `applyPipeline` provisiona um usuário via JIT (OIDC criou aqui, ou SAML broker criou agora). O insert existente de role mapping (`UPDATE user_roles`) para usuários já existentes fica preservado.
 
-**1. Helper compartilhado e testável**
+Estrutura do novo registro:
 
-`src/lib/ip-mask.ts` com:
+```jsonc
+{
+  action: "INSERT",
+  table_name: "sso_jit_provisioning",   // tag estável para filtragem
+  record_id: <userId>,
+  user_id: <userId>,
+  user_email: <email>,
+  details: "JIT via {providerNome}: role={role}{matchedGroup ? \" (grupo {matchedGroup})\" : \" (default)\"}",
+  new_data: {
+    provider_id, provider_nome, provider_tipo,    // contexto do IdP
+    empresa_id,                                   // empresa-alvo do vínculo
+    role,                                         // role efetivamente aplicada
+    default_role,                                 // role default do provider (fallback)
+    matched_group,                                // grupo IdP que casou (null = default)
+    groups_received: [...],                       // todos os grupos vindos do IdP
+    full_name,
+    via: "oidc-jit" | "saml-broker-jit"
+  }
+}
+```
 
-- `maskIp(ip: string | null | undefined, enabled: boolean): string` — quando `enabled`, mascara os 2 últimos octetos para IPv4 (`192.168.*.*`) e os 4 últimos hextets para IPv6 (`2001:db8:1234:5678:****:****:****:****`). Quando `enabled=false`, retorna o IP original. `null/undefined` → `'-'`.
-- `matchesIpFilter(ip: string | null, term: string): boolean` — busca **sempre na string original** (lowercase), garantindo "filtro por substring continua funcionando mesmo com mascaramento".
+`table_name = "sso_jit_provisioning"` é uma **convenção de tag** (não tabela real). Vira chave indexável que aparece automaticamente no `Select` "Tabela" da tela `/audit-logs`.
 
-Testes unitários novos em `src/lib/__tests__/ip-mask.test.ts` cobrindo IPv4, IPv6, null, e o requisito de filtro com mask ON.
-
-**2. Preferência persistida por usuário**
-
-`src/hooks/useIpMaskPreference.ts`:
-
-- localStorage key `lov:ip-mask-enabled` (default `false`).
-- Expõe `{ enabled, setEnabled, toggle }`.
-- Sincronização entre abas via evento `storage`.
-
-Sem tabela nova — é preferência local do operador (apenas um boolean).
-
-**3. Componente toggle reutilizável**
-
-`src/components/admin/IpMaskToggle.tsx`:
-
-- `Switch` shadcn + ícone `Eye`/`EyeOff` + label "Mascarar IPs".
-- Tooltip: "Os filtros continuam funcionando com o IP original."
-
-**4. Aplicação nas telas**
-
-Em cada tela que lista IPs:
-
-- **`AuditLogs.tsx`** — toggle ao lado dos filtros existentes; coluna IP e exportação CSV/PDF passam por `maskIp`.
-- **`AuditLogTable.tsx`** — render de IP (linha + bloco expandido) usa `maskIp`.
-- **`BlockedIPsTab.tsx`** — toggle no header; coluna IP via `maskIp`; filtragem trocada para `matchesIpFilter`.
-- **`RateLimitDashboard.tsx`** — toggle ao lado do search; `filteredLogs` usa `matchesIpFilter`; render usa `maskIp`.
-- **`MFASettings.tsx`** — toggle no card de sessões; `session.ip_address` renderizado via `maskIp`.
-- **`AuditDetailDialog.tsx`** — pós-processamento no `Object.entries(registro)`: se `key === 'ip_address'` e toggle ativo, exibe mascarado.
+Cobertura:
+- **OIDC** (linhas 192-222): `jitCreated = true` quando `createUser` roda — já existe.
+- **SAML finalize**: o broker SAML cria o usuário antes do pipeline rodar, então `existingUserId` chega preenchido e `jitCreated` fica `false` hoje. Para detectar JIT no caminho SAML, após `getUserById` (linha 225) comparar `u.user.created_at` com `Date.now() - 60_000`; se mais novo, marcar `jitCreated = true` e `via = "saml-broker-jit"`.
 
 ### Detalhes técnicos
 
-- IPv4 detectado por regex `^(\d{1,3}\.){3}\d{1,3}$`.
-- IPv6: pega os 4 primeiros hextets, substitui o resto por `****`.
-- Strings que não casam com nenhum dos dois (ex.: hostnames) retornam o valor original — mascarar só faz sentido para IPs reais.
-- Helper é puro (sem dependências React) → trivial de testar.
-- Sem mudanças em backend, RLS, edge functions ou tipos do Supabase. O dado bruto continua no DB; mascaramento é puramente de exibição/exportação.
-- Filtros por servidor (caso existam) continuam usando o IP original — só renderização e CSV/PDF respeitam o toggle.
+**Arquivo único de backend**: `supabase/functions/sso-callback/index.ts`
+
+1. Em `applyPipeline`, após o bloco de role mapping (linha 257), montar payload com `groups`, `defaultRole`, `empresaId`, `matchedGroup`, `role`, `provider.tipo`.
+2. Substituir o bloco de audit atual (linhas 270-298) por:
+   - Se `jitCreated === true` → insert único em `audit_logs` com `table_name = "sso_jit_provisioning"` e payload completo acima.
+   - Caso contrário, manter o insert existente de `UPDATE user_roles` quando `matchedGroup` for resolvido (sem regressão).
+3. No caminho SAML (linhas 224-241), após o `getUserById`, checar `created_at` para detectar criação recente (< 60s) e setar `jitCreated = true` antes do bloco de auditoria.
+4. Falhas no insert de audit engolidas com `logger.warn` (já existe no arquivo) — auditoria nunca derruba o login.
+
+**Sem migrações**: `audit_logs` aceita `table_name TEXT` arbitrário, `new_data JSONB`, `details TEXT`. RLS já permite SELECT para admin e INSERT via `service_role` (cliente `admin` da edge function).
+
+**Frontend** — alteração trivial em `src/components/audit/AuditLogTable.tsx`: adicionar entrada `sso_jit_provisioning: 'Provisionamento SSO (JIT)'` em `tableNameLabels` para leitura amigável. O `Select` de filtro de tabela em `/audit-logs` já é populado dinamicamente a partir dos logs, então passa a listar a nova tag automaticamente.
 
 ### Critério de pronto
 
-1. Toggle "Mascarar IPs" presente em: AuditLogs, BlockedIPsTab, RateLimitDashboard, MFASettings.
-2. Quando ativo, IPs aparecem como `192.168.*.*` em listas, detalhes (`AuditDetailDialog`, expansão de log) e exportações de `AuditLogs`.
-3. Buscar "192.168" continua trazendo o IP `192.168.1.42` mesmo com mascaramento ativo.
-4. Preferência persiste entre reloads (localStorage) e sincroniza entre abas.
-5. Testes unitários de `maskIp` e `matchesIpFilter` passam (`npm test -- ip-mask`).
-6. `tsc --noEmit` continua verde; sem regressão visual.
+1. Toda vez que `sso-callback` provisiona um usuário novo via JIT (OIDC ou SAML broker), surge em `audit_logs` um registro com `table_name = "sso_jit_provisioning"` e payload completo (provider, empresa, role efetiva, default_role, matched_group, groups_received, via).
+2. Admin filtra `/audit-logs → Tabela: Provisionamento SSO (JIT)` e vê toda a trilha do período.
+3. Comportamento existente de `UPDATE user_roles` para usuários SSO já existentes com grupo mapeado continua funcionando.
+4. Falha no insert de audit não bloqueia o login.
+5. Sem alterações de schema, RLS ou outros componentes além do `sso-callback` e do label amigável.
 
 ### Arquivos
 
-- 🆕 `src/lib/ip-mask.ts`
-- 🆕 `src/lib/__tests__/ip-mask.test.ts`
-- 🆕 `src/hooks/useIpMaskPreference.ts`
-- 🆕 `src/components/admin/IpMaskToggle.tsx`
-- ✏️ `src/components/audit/AuditLogTable.tsx`
-- ✏️ `src/pages/AuditLogs.tsx` (toggle + exportação)
-- ✏️ `src/components/security/rate-limit/BlockedIPsTab.tsx`
-- ✏️ `src/components/security/RateLimitDashboard.tsx`
-- ✏️ `src/components/auth/MFASettings.tsx`
-- ✏️ `src/components/compliance/AuditDetailDialog.tsx`
+- ✏️ `supabase/functions/sso-callback/index.ts` (refator do bloco de audit em `applyPipeline` + detecção JIT-via-SAML)
+- ✏️ `src/components/audit/AuditLogTable.tsx` (1 linha em `tableNameLabels`)
 
