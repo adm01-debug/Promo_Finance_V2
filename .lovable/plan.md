@@ -1,63 +1,103 @@
+`.
 
+<lov-plan>
 
-## Plano — Navegação por abas sincronizada em `/contabilidade`
+## Plano — Seleção de empresa pós-login (SSO dinâmico já está pronto)
 
 ### Diagnóstico
 
-O componente `Tabs` do shadcn já alterna entre as 6 abas (Plano, Lançamentos, Razão & Diário, DRE & Balanço, **SPED ECD**, **SPED ECF**). Cada aba SPED já consome:
+**SSO dinâmico por domínio — já implementado.** Não precisa mexer.
 
-- O **mesmo `empresaId`** (Select global no header)
-- O **mesmo `ano`** (Input global no header)
-- Os **mesmos hooks** de validação/histórico (`useSpedEcdValidacao`, `useSpedEcfValidacao`, `useGerarSpedContabil`, `useSpedContabilHistorico`) — todos com `queryKey` parametrizado por `empresaId`
+`src/pages/Auth.tsx` → `LoginForm` → renderiza `<SsoLoginButtons email={email} />`, que:
+- Observa o email digitado, extrai o domínio
+- Consulta `sso_providers` ativos com `allowed_domains` contendo aquele domínio
+- Renderiza um botão "Entrar com {provider}" para cada match, com logo do `IDP_PRESETS`
+- Ao clicar, chama a edge function `sso-initiate` e redireciona para o IdP
 
-Portanto **as validações e o histórico já estão sincronizados por construção**: trocar empresa/ano no header recarrega tudo via React Query.
+Já existe também o hook `useSsoDomainResolver` com auto-redirect quando `force_sso_for_domains=true` (refinamento futuro, fora do escopo).
 
-O que falta para a navegação ECD ↔ ECF ser de fato útil:
+**Seleção de empresa — parcialmente implementada.** `useUserEmpresas` lê de `user_empresas` (vínculos N:N usuário↔empresa com role/is_default). `EmpresaSwitcher` no header permite trocar entre vínculos. Hoje:
+- 1 empresa: switcher oculto, default automática. ✅
+- N empresas: a `is_default` é selecionada **silenciosamente** — o usuário só descobre o switcher explorando o header.
+- 0 empresas: cai no app sem empresa, telas ficam vazias sem explicação.
 
-1. **Persistência da aba ativa** — hoje, F5 ou voltar pela Recents cai em "Plano".
-2. **Deep-link por URL** — `/contabilidade?tab=ecd&ano=2024` para favoritos, alertas tributários e dashboard linkar direto.
-3. **Hint visual ECD→ECF** — a ECF exige ECD do mesmo período já gerada. Mostrar um badge no trigger ECF quando a ECD do `ano` selecionado ainda **não** existe no histórico.
+### O que falta
+
+Uma **etapa pós-login bloqueante** que aparece **apenas** quando faz sentido — usuário com 2+ empresas sem escolha persistida nesta sessão.
 
 ### Mudanças
 
-**`src/pages/Contabilidade.tsx`** (única edição)
+**1. ➕ `src/components/auth/EmpresaSelectionGate.tsx`**
 
-1. **Tabs controlado + URL sync** via `useSearchParams`:
-   ```tsx
-   const [searchParams, setSearchParams] = useSearchParams();
-   const tab = searchParams.get('tab') ?? 'plano';
-   const setTab = (v: string) => setSearchParams(prev => {
-     const next = new URLSearchParams(prev);
-     next.set('tab', v);
-     return next;
-   }, { replace: true });
-   ```
-   Usar `<Tabs value={tab} onValueChange={setTab}>`.
+Card centralizado com cards-radio dos vínculos:
 
-2. **Sincronizar `ano` e `empresaId` na URL** (mesmo padrão), para que o deep-link reproduza o estado completo: `?tab=ecd&ano=2024&empresa=<uuid>`. Inicialização lê da URL; setters propagam. Se a URL está vazia, mantém defaults atuais (aba `plano`, ano = ano anterior, empresa vazia).
+```text
+┌─────────────────────────────────────┐
+│  Escolha a empresa para acessar     │
+│  Você está vinculado a 3 empresas   │
+│                                     │
+│  ◉ ACME Eventos LTDA                │
+│    CNPJ 12.345.678/0001-90          │
+│    Role: financeiro · Padrão        │
+│  ○ Beta Promoções LTDA              │
+│    CNPJ 98.765.432/0001-10 · admin  │
+│                                     │
+│  [ ] Definir como padrão            │
+│  [Sair]            [Continuar →]   │
+└─────────────────────────────────────┘
+```
 
-3. **Badge "ECD pendente" no trigger SPED ECF**:
-   - Reusar `useSpedContabilHistorico(empresaId)` (já existe).
-   - `temEcdNoAno = historico.some(h => h.tipo === 'ECD' && h.ano_calendario === ano && h.status !== 'rejeitado')`.
-   - Quando `empresaId && !temEcdNoAno`, renderizar `<Badge variant="warning">!</Badge>` no `TabsTrigger` da ECF, com `title="Gere a SPED ECD do mesmo ano antes da ECF"`.
+- Lê `useUserEmpresas()`.
+- Cards clicáveis; destaca o selecionado.
+- Checkbox "Definir como padrão" — ao Continuar, executa mutation `useDefinirEmpresaPadrao` (zera `is_default` dos demais vínculos do usuário e marca o selecionado).
+- "Continuar" chama `setCurrentEmpresaId(empresa_id)` e libera o `children`.
+- "Sair" chama `signOut()`.
+- Se `vinculos.length === 0`: mensagem "Você ainda não está vinculado a nenhuma empresa. Solicite acesso ao administrador." + botão Sair.
+
+**2. ➕ `src/components/auth/EmpresaGuard.tsx`**
+
+Wrapper aplicado dentro de `ProtectedRoute`:
+- `isLoading` → spinner.
+- `vinculos.length === 1` → `setCurrentEmpresaId` automaticamente, renderiza `children`.
+- `vinculos.length === 0` → renderiza `<EmpresaSelectionGate>` em modo "sem vínculos".
+- `vinculos.length > 1`:
+  - Já existe `getCurrentEmpresaId()` apontando para um vínculo válido → renderiza `children`.
+  - Caso contrário → renderiza `<EmpresaSelectionGate>`.
+
+**3. ✏️ `src/components/auth/ProtectedRoute.tsx`**
+
+Após a checagem de role, envolver children:
+```tsx
+return <EmpresaGuard>{children}</EmpresaGuard>;
+```
+Toda rota protegida passa pelo gate sem mexer em `App.tsx`.
+
+**4. ✏️ `src/hooks/useUserEmpresas.ts`**
+
+Adicionar `useDefinirEmpresaPadrao(linkId)` — mutation com dois UPDATEs (zera `is_default` para o user, marca o link escolhido) + invalida `['user-empresas']`.
 
 ### O que NÃO muda
 
-- `SpedContabilTab.tsx`, `SpedEcdWizard`, `SpedEcfWizard`, hooks de validação/histórico — intactos. A sincronização já vinha das `queryKey` parametrizadas.
-- Componentes das demais abas (Plano, Lançamentos, Razão, DRE) — sem mudança.
-- Roteamento — continua uma única rota `/contabilidade` com tabs internas (alinhado ao padrão do app combinado na sidebar).
+- `src/pages/Auth.tsx`, `LoginForm.tsx`, `SsoLoginButtons.tsx`, `useSsoDomainResolver.ts` — SSO dinâmico já está conforme pedido.
+- `EmpresaSwitcher.tsx` (header) — segue para troca rápida no dia a dia.
+- `App.tsx` — sem rota nova.
+- Tabelas `user_empresas` e `sso_providers` — sem migration.
 
 ### Critério de pronto
 
-1. Trocar de aba reflete na URL como `?tab=<id>` sem recarregar a página.
-2. F5 em `/contabilidade?tab=ecd` mantém a aba SPED ECD aberta.
-3. `/contabilidade?tab=ecd&ano=2024&empresa=<uuid>` abre direto a ECD daquela empresa/ano.
-4. Selecionar um ano sem ECD gerada → trigger "SPED ECF" exibe badge amarelo de aviso com tooltip.
-5. Trocar empresa ou ano no header recalcula validações, histórico e o badge ECF imediatamente.
-6. Default antes de qualquer interação: aba `plano`, ano = ano anterior, empresa vazia (mesma UX de hoje).
-7. Sem regressão nas demais 4 abas e zero mudança em componentes SPED filhos.
+1. Usuário com 1 empresa: login → vai direto para `/`, sem tela extra.
+2. Usuário com 2+ empresas sem escolha persistida: vê tela de seleção bloqueante.
+3. "Definir como padrão" + Continuar atualiza `is_default` no banco; sessões futuras pré-selecionam.
+4. Logins seguintes no mesmo navegador (com `current-empresa-id` salvo) pulam o gate.
+5. Usuário sem vínculos vê mensagem clara + botão Sair.
+6. SSO dinâmico continua: digitar `usuario@empresa.com` mostra botões "Entrar com {provider}" para domínios cadastrados.
+7. `EmpresaSwitcher` no header segue funcionando para troca pós-login.
+8. Sem regressão em rotas públicas (`/auth`, `/auth/corporate`, `/reset-password`, `/contador/:token`).
 
 ### Arquivos
 
-- ✏️ `src/pages/Contabilidade.tsx` — Tabs controlado + URL sync + badge ECD-pendente
+- ➕ `src/components/auth/EmpresaSelectionGate.tsx`
+- ➕ `src/components/auth/EmpresaGuard.tsx`
+- ✏️ `src/components/auth/ProtectedRoute.tsx`
+- ✏️ `src/hooks/useUserEmpresas.ts`
 
