@@ -1,139 +1,202 @@
 
 
-## Plano — Compliance & Auditoria
+## Plano — Emissão e Gestão de SPED ECD/ECF
 
-Nova rota admin `/admin/compliance` que consolida as 3 trilhas existentes (`audit_logs`, `auditoria_financeira`, `auditoria_tributaria`) + verificações de conformidade fiscal numa cockpit única com filtros avançados e exportação de evidências.
+Novo fluxo contábil completo para gerar, validar, transmitir e arquivar **SPED ECD** (Escrituração Contábil Digital) e **SPED ECF** (Escrituração Contábil Fiscal), apoiado em plano de contas + lançamentos contábeis (partidas dobradas) e relatórios DRE/Balanço gerados a partir dessa base contábil — não mais inferidos de `contas_pagar/receber`.
 
-### Por que faz sentido agora
+### Estado atual
 
-- **Backend pronto**: tabelas `audit_logs`, `auditoria_financeira`, `auditoria_tributaria` e `verificacoes_conformidade` já existem com triggers populando dados.
-- **UI fragmentada**: hoje cada trilha aparece em rotas separadas (`/audit-logs`, aba dentro de `/admin/system-health`, embutida no tributário). Falta visão consolidada para auditor externo / contador.
-- **Gap apontado** em `GAPS_ENTERPRISE.md`: ausência de "evidence pack" exportável para auditoria externa (SOX, BACEN, contadores).
+- `ObrigacoesAcessorias.tsx` lista ECD/ECF apenas como cards de calendário — sem geração real.
+- `sped-generator.ts` cobre EFD-IBS/CBS e EFD-Contribuições (não ECD/ECF).
+- `DREStatement` e `BalancoPatrimonial` derivam de contas a pagar/receber — não da contabilidade.
+- Não existem tabelas de plano de contas nem lançamentos contábeis.
 
-### Estrutura da página
+### Estrutura da nova área
 
 ```text
-/admin/compliance
-├── Header: KPIs (eventos 24h, score conformidade médio, ações críticas pendentes, evidências exportadas mês)
-├── Tab 1 · Trilha Financeira
-│   └── auditoria_financeira: tabela + filtros (tabela, operação, usuário, período)
-├── Tab 2 · Trilha Tributária
-│   └── auditoria_tributaria: tabela + filtros (empresa, ação, entidade, período)
-├── Tab 3 · Trilha de Sistema
-│   └── audit_logs: ações de usuário (LOGIN, EXPORT, APPROVE...) + filtros
-├── Tab 4 · Conformidade Fiscal
-│   └── verificacoes_conformidade: histórico de scores + drill nos itens reprovados
-└── Tab 5 · Pacote de Evidências
-    ├── Wizard de seleção: período + escopo (financeiro/tributário/sistema/conformidade)
-    ├── Geração de ZIP com CSVs assinados (hash SHA-256) + manifest.json
-    └── Histórico de pacotes gerados (downloads anteriores)
+/contabilidade
+├── Header: empresa, ano-calendário, status ECD/ECF do exercício
+├── Tab 1 · Plano de Contas         (CRUD + import padrão CFC + busca)
+├── Tab 2 · Lançamentos Contábeis   (partidas dobradas + import lote + filtros)
+├── Tab 3 · Razão & Diário          (relatórios contábeis navegáveis)
+├── Tab 4 · DRE & Balanço           (gerados da contabilidade real)
+├── Tab 5 · SPED ECD                (wizard + validação + download + histórico)
+└── Tab 6 · SPED ECF                (wizard + validação + download + histórico)
 ```
-
-### Arquivos a criar
-
-**Página + componentes**
-- `src/pages/admin/ComplianceAuditoria.tsx` — orquestra 5 tabs
-- `src/components/compliance/ComplianceKpis.tsx` — header com 4 KPIs
-- `src/components/compliance/TrilhaFinanceiraTab.tsx`
-- `src/components/compliance/TrilhaTributariaTab.tsx`
-- `src/components/compliance/TrilhaSistemaTab.tsx`
-- `src/components/compliance/ConformidadeFiscalTab.tsx`
-- `src/components/compliance/EvidenciasTab.tsx` — wizard + lista de pacotes
-- `src/components/compliance/AuditFiltersBar.tsx` — filtros reutilizáveis (período, usuário, busca)
-- `src/components/compliance/AuditDetailDialog.tsx` — modal universal mostrando diff antigo→novo
-
-**Hooks**
-- `src/hooks/useComplianceKpis.ts` — agrega 4 KPIs
-- `src/hooks/useTrilhaAuditoria.ts` — query genérica paginada (recebe tabela + filtros)
-- `src/hooks/useEvidenciasPack.ts` — geração + listagem de pacotes
-
-**Edge function (1 nova)**
-- `supabase/functions/gerar-pacote-evidencias/index.ts`
-  - Valida JWT + role admin
-  - Recebe: `{ periodo_inicio, periodo_fim, escopos: ['financeiro'|'tributario'|'sistema'|'conformidade'][] }`
-  - Gera CSVs por escopo, calcula SHA-256 de cada um, monta `manifest.json` (totais, hashes, gerado_por, timestamp)
-  - Empacota em ZIP via `JSZip`, sobe para bucket `relatorios-tributarios/evidencias/` com signed URL 7 dias
-  - Persiste registro em `evidencias_pacotes` (nova tabela)
 
 ### Schema (migração)
 
-Nova tabela `evidencias_pacotes` para histórico:
+Quatro tabelas novas + bucket de armazenamento.
+
 ```sql
-CREATE TABLE public.evidencias_pacotes (
-  id UUID PK DEFAULT gen_random_uuid(),
-  gerado_por UUID REFERENCES auth.users(id),
-  gerado_por_email TEXT,
-  periodo_inicio DATE NOT NULL,
-  periodo_fim DATE NOT NULL,
-  escopos TEXT[] NOT NULL,
-  storage_path TEXT NOT NULL,
-  manifest JSONB NOT NULL, -- { totais, hashes, contagens }
-  tamanho_bytes BIGINT,
-  created_at TIMESTAMPTZ DEFAULT now()
+-- 1. Plano de contas (referencial CFC)
+CREATE TABLE public.plano_contas (
+  id UUID PK,
+  empresa_id UUID REFERENCES empresas(id),
+  codigo TEXT NOT NULL,           -- ex 1.1.01.001
+  nome TEXT NOT NULL,
+  natureza TEXT CHECK (natureza IN ('ativo','passivo','patrimonio','receita','despesa','resultado')),
+  tipo TEXT CHECK (tipo IN ('sintetica','analitica')),
+  conta_pai_id UUID REFERENCES plano_contas(id),
+  centro_resultado TEXT,          -- mapeamento DRE/BP
+  codigo_referencial TEXT,        -- código CFC oficial p/ ECD bloco I050
+  ativo BOOLEAN DEFAULT true,
+  UNIQUE(empresa_id, codigo)
 );
-ALTER TABLE evidencias_pacotes ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "admin select" ON evidencias_pacotes FOR SELECT TO authenticated USING (has_role(auth.uid(), 'admin'));
-CREATE POLICY "admin insert" ON evidencias_pacotes FOR INSERT TO authenticated WITH CHECK (has_role(auth.uid(), 'admin'));
 
-CREATE INDEX idx_evidencias_pacotes_created ON evidencias_pacotes(created_at DESC);
-CREATE INDEX idx_audit_logs_created ON audit_logs(created_at DESC);
-CREATE INDEX idx_auditoria_financeira_created ON auditoria_financeira(created_at DESC);
-CREATE INDEX idx_auditoria_tributaria_criado ON auditoria_tributaria(criado_em DESC);
+-- 2. Lançamentos contábeis (cabeçalho)
+CREATE TABLE public.lancamentos_contabeis (
+  id UUID PK,
+  empresa_id UUID,
+  numero_lancamento BIGINT,        -- sequencial por exercício
+  data_lancamento DATE NOT NULL,
+  historico TEXT NOT NULL,
+  origem TEXT,                     -- manual|conta_pagar|conta_receber|movimentacao|importacao
+  origem_id UUID,
+  valor_total NUMERIC(15,2),
+  status TEXT CHECK (status IN ('rascunho','confirmado','cancelado')) DEFAULT 'confirmado',
+  created_by UUID, created_at TIMESTAMPTZ
+);
+
+-- 3. Partidas (debits/credits) — partidas dobradas
+CREATE TABLE public.partidas_contabeis (
+  id UUID PK,
+  lancamento_id UUID REFERENCES lancamentos_contabeis(id) ON DELETE CASCADE,
+  conta_id UUID REFERENCES plano_contas(id),
+  tipo CHAR(1) CHECK (tipo IN ('D','C')),
+  valor NUMERIC(15,2) NOT NULL CHECK (valor > 0),
+  historico_complementar TEXT
+);
+-- Trigger: garante soma D = soma C por lancamento
+
+-- 4. SPED contábil gerado (ECD/ECF)
+CREATE TABLE public.sped_contabil_arquivos (
+  id UUID PK,
+  empresa_id UUID,
+  tipo TEXT CHECK (tipo IN ('ECD','ECF')),
+  ano_calendario INT,
+  periodo_inicio DATE, periodo_fim DATE,
+  storage_path TEXT,
+  hash_sha256 TEXT,
+  total_linhas INT,
+  total_lancamentos INT,
+  validacoes JSONB,                -- { erros:[], avisos:[] }
+  status TEXT CHECK (status IN ('gerado','validado','transmitido','rejeitado')),
+  recibo_transmissao TEXT,
+  gerado_por UUID, created_at TIMESTAMPTZ
+);
 ```
 
-Sem novos triggers. RLS admin-only nas existentes já está aplicada.
+RLS admin/financeiro nas 4 tabelas. Trigger valida `Σdébitos = Σcréditos` em `partidas_contabeis`. Trigger preenche `numero_lancamento` por exercício. Bucket existente `relatorios-tributarios` reutilizado em subpasta `sped-contabil/`.
 
-### Filtros padrão (todas as tabs de trilha)
+### Geração ECD (`src/lib/sped-ecd-generator.ts`)
 
-- Período: presets (hoje, 7d, 30d, 90d, ano) + datepicker custom
-- Usuário: combo com busca em `profiles.email`
-- Operação/Ação: multi-select por enum
-- Entidade/Tabela: select dinâmico
-- Busca livre: descrição/detalhes
-- Paginação server-side: 50/página
+Layout oficial 2024 (versão 9). Registros emitidos:
 
-### Exportação por tab
+- **Bloco 0**: 0000 (abertura), 0001, 0007, 0020 (escrituração), 0150 (participantes consolidados), 0990
+- **Bloco I**: I001, I010 (livro), I012 (livros auxiliares), I030 (termo abertura), I050 (plano de contas), I052 (códigos referenciais), I100 (centros), I150 (saldos periódicos), I155 (detalhe), I200 (lançamentos cabeçalho), I250 (partidas), I300 (balancetes), I310 (detalhamento), I350 (DRE), I355 (detalhamento DRE), I990
+- **Bloco J**: J001, J005 (DRE), J100 (BP), J150 (DRE consolidado), J800 (RTF), J900 (termo encerramento), J990
+- **Bloco 9**: 9001, 9900 (registro de registros), 9990, 9999
 
-- Botão "Exportar CSV" (BOM UTF-8) usando `ExportMenu` existente
-- "Exportar PDF" do filtro atual
-- Cada exportação registra evento em `audit_logs` (action=EXPORT) automaticamente
+### Geração ECF (`src/lib/sped-ecf-generator.ts`)
 
-### Pacote de Evidências (cockpit forense)
+Layout 10. Registros principais:
 
-Wizard 3 passos:
-1. **Período** — datepicker
-2. **Escopos** — checkboxes (financeiro/tributário/sistema/conformidade)
-3. **Revisão & geração** — preview de contagens + botão "Gerar pacote"
+- **Bloco 0**: 0000, 0010, 0020, 0030
+- **Bloco C**: C001, C040, C050, C051, C053, C100, C150, C155, C157, C990 (recupera ECD)
+- **Bloco J**: J001, J050 (plano referencial), J051, J100, J990
+- **Bloco K**: K001, K030, K155 (saldos), K156, K355 (DRE), K356, K990
+- **Bloco L**: L001, L030 (identificação), L100 (BP), L200 (DRE), L210, L300, L990
+- **Bloco M**: M001, M010, M300 (LALUR-A), M350 (LACS-A), M990
+- **Bloco N**: N001, N500, N620 (CSLL), N630, N650, N660, N670, N990
+- **Bloco 9**: 9001, 9100, 9900, 9990, 9999
 
-Pacote ZIP contém:
+### Validações automáticas (cliente + servidor)
+
+Pré-geração roda checklist e bloqueia download se `erros.length>0`:
+
+- Plano de contas: códigos referenciais CFC preenchidos para contas analíticas
+- Lançamentos: `Σdébitos = Σcréditos` por lançamento e por período
+- Saldos: balancete fecha (ativo = passivo + PL)
+- DRE: receitas − despesas = resultado do exercício
+- Datas: todos os lançamentos dentro do período de escrituração
+- Sequência: numeração sem gaps no exercício
+- ECF: totais batem com ECD do mesmo período (cross-check)
+
+Avisos não bloqueiam: contas sem movimento, partidas sem histórico complementar etc.
+
+### Edge functions
+
+1. **`gerar-sped-ecd`** — admin/financeiro. Body `{ empresa_id, ano_calendario }`. Lê plano + lançamentos + partidas, monta TXT layout 9, calcula SHA-256, sobe ZIP em `sped-contabil/ECD-{cnpj}-{ano}.txt`, persiste em `sped_contabil_arquivos`, retorna URL assinada 7d + lista de validações.
+2. **`gerar-sped-ecf`** — análogo, layout 10, recupera ECD do mesmo período via `recibo_transmissao`.
+3. **`importar-plano-contas-padrao`** — popula plano padrão CFC para empresa nova (≈ 200 contas).
+
+Padrões: CORS oficial, validação JWT, Zod no body, logger P2.
+
+### Hooks novos
+
+- `usePlanoContas(empresaId)` — CRUD + cache 30min
+- `useLancamentosContabeis(empresaId, periodo)` — paginação 50/pg
+- `useGerarSpedContabil()` — mutation única, recebe `tipo: 'ECD'|'ECF'`
+- `useSpedContabilHistorico(empresaId)` — lista arquivos gerados
+- `useDREContabil(empresaId, periodo)` / `useBalancoContabil(empresaId, periodo)` — gerados de partidas
+
+### DRE & Balanço da contabilidade
+
+`DREStatement` e `BalancoPatrimonial` ganham flag `fonte: 'caixa' | 'competencia'`:
+- `caixa` (atual) — derivado de `contas_pagar/receber` 
+- `competencia` (novo, default quando há lançamentos) — agregado de `partidas_contabeis` por `centro_resultado`
+
+Mantém retrocompat para empresas que ainda não usam contabilidade.
+
+### Componentes a criar
+
 ```
-auditoria-evidencias-2026-01-01_2026-04-21.zip
-├── manifest.json           (hashes SHA-256, totais, gerado_por, timestamp ISO)
-├── trilha-financeira.csv
-├── trilha-tributaria.csv
-├── trilha-sistema.csv
-├── conformidade-fiscal.csv
-└── README.txt              (instruções de validação)
+src/pages/Contabilidade.tsx                      (orquestra 6 tabs)
+src/components/contabilidade/
+  PlanoContasTab.tsx + PlanoContaForm.tsx
+  LancamentosContabeisTab.tsx + LancamentoForm.tsx (partidas dobradas inline)
+  RazaoDiarioTab.tsx
+  DREBalancoTab.tsx                              (reusa DREStatement com fonte=competencia)
+  SpedECDTab.tsx + SpedECFTab.tsx
+  SpedHistoricoTable.tsx                         (compartilhado ECD/ECF)
+  ValidacoesPreSpedDialog.tsx                    (modal com erros/avisos)
+  ImportLancamentosCSVDialog.tsx
+src/lib/sped-ecd-generator.ts + __tests__
+src/lib/sped-ecf-generator.ts + __tests__
+src/hooks/usePlanoContas.ts
+src/hooks/useLancamentosContabeis.ts
+src/hooks/useSpedContabil.ts
+src/hooks/useDREContabil.ts
+src/hooks/useBalancoContabil.ts
 ```
 
 ### Roteamento e navegação
 
-- Adicionar rota `/admin/compliance` em `src/App.tsx` (lazy)
-- Cross-link no `/admin/system-health` apontando para a nova página
-- Item "Compliance & Auditoria" no menu admin lateral com ícone `ShieldCheck`
+- Nova rota `/contabilidade` (lazy, ProtectedRoute admin/financeiro)
+- Item "Contabilidade & SPED" no menu lateral com ícone `BookOpen`
+- Cross-link: `ObrigacoesAcessorias` ao clicar em ECD/ECF → abre `/contabilidade?tab=sped-ecd`
+- Botão "Gerar SPED contábil" no header do `Demonstrativos.tsx`
+
+### Exportação dos relatórios contábeis
+
+- DRE/Balanço: PDF (jsPDF/autoTable, padrão `ExportDemonstrativoPDF`) + CSV BOM-UTF-8
+- Razão/Diário: PDF paginado por conta + CSV
+- Cada exportação grava `audit_logs` action=EXPORT (gancho já existente)
 
 ### Detalhes técnicos
 
-- **Realtime**: subscription em `audit_logs` (INSERT) → toast "Nova ação crítica" se `action IN ('DELETE','APPROVE','REJECT')`
-- **Performance**: paginação cursor + índices novos garantem queries < 100ms em 100k linhas
-- **Diff visual**: `AuditDetailDialog` mostra `payload_anterior` vs `payload_novo` lado-a-lado com destaque por chave alterada
-- **Loading**: Skeleton em todas as tabelas
-- **Acessibilidade**: tabelas com `caption`, badges contraste AA
-- **Segurança**: edge function valida JWT + `has_role admin` antes de ler qualquer trilha
+- **Padrão SPED**: encoding `latin1` (ISO-8859-1) com line ending CRLF, separador `|` no início e fim de cada linha
+- **Hash de integridade**: SHA-256 calculado e exibido pós-geração para conferência no PVA-ECD/PVA-ECF
+- **Validador local**: porta da rotina `validarArquivoSPED` existente, estendida para checar contagem de blocos (registros 9900) e totalizadores (9999)
+- **Performance**: lançamentos paginados via cursor; geração ECD em stream chunk de 5k partidas para não estourar memória da edge function
+- **Acessibilidade**: tabelas com `caption`, badges de status (`gerado`, `validado`, `transmitido`) com contraste AA
+- **Aviso preliminar**: arquivos são PRELIMINARES — sempre validar no PVA-ECD/PVA-ECF da RFB antes da transmissão oficial
 
 ### Fora de escopo
 
-- Assinatura digital criptográfica do pacote (apenas hash SHA-256 nesta versão)
-- Retenção/purge automático de logs antigos (separar em P17)
-- Integração com SOC externos (Splunk, Datadog) — só CSV/PDF nesta entrega
+- Transmissão automática via web service da RFB (apenas geração + download)
+- Importação reversa de ECD/ECF de exercícios anteriores
+- Conciliação automática ECD ↔ ECF (apenas cross-check de totais)
+- Apuração automática IRPJ/CSLL (Bloco N alimentado por valores já apurados em `apuracoes_tributarias`)
 
