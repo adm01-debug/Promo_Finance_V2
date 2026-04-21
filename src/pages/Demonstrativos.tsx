@@ -9,7 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DREStatement } from '@/components/demonstrativos/DREStatement';
 import { BalancoPatrimonial } from '@/components/demonstrativos/BalancoPatrimonial';
 import { FluxoCaixaContabil } from '@/components/demonstrativos/FluxoCaixaContabil';
+import { FonteDadosToggle } from '@/components/demonstrativos/FonteDadosToggle';
 import { useEmpresas } from '@/hooks/useFinancialData';
+import { useDemonstrativosContabeis, type FonteDemonstrativo } from '@/hooks/useDemonstrativosContabeis';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -29,7 +31,18 @@ const Demonstrativos = () => {
   const [mes, setMes] = useState(new Date().getMonth().toString());
   const [ano, setAno] = useState(new Date().getFullYear().toString());
   const [empresaId, setEmpresaId] = useState<string>('todas');
+  const [fonte, setFonte] = useState<FonteDemonstrativo>('competencia');
   const { data: empresas } = useEmpresas();
+
+  // Detecta cobertura de contabilidade para o período (decide se permite competência)
+  const { cobertura } = useDemonstrativosContabeis({
+    empresaId,
+    ano: parseInt(ano),
+    mes: parseInt(mes),
+    fonte: 'competencia',
+  });
+  const hasContabilidade = cobertura.totalPartidas > 0;
+  const fonteEfetiva: FonteDemonstrativo = hasContabilidade ? fonte : 'caixa';
 
   const meses = [
     'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
@@ -113,6 +126,16 @@ const Demonstrativos = () => {
           </div>
         </motion.div>
 
+        {/* Toggle Fonte de Dados */}
+        <motion.div variants={itemVariants}>
+          <FonteDadosToggle
+            value={fonteEfetiva}
+            onChange={setFonte}
+            totalPartidas={cobertura.totalPartidas}
+            hasContabilidade={hasContabilidade}
+          />
+        </motion.div>
+
         {/* Main Content */}
         <motion.div variants={itemVariants}>
           <Tabs defaultValue="dre" className="space-y-6">
@@ -132,20 +155,22 @@ const Demonstrativos = () => {
             </TabsList>
 
             <TabsContent value="dre">
-              <DREStatement 
-                periodo={periodo} 
-                mes={parseInt(mes)} 
-                ano={parseInt(ano)} 
+              <DREStatement
+                periodo={periodo}
+                mes={parseInt(mes)}
+                ano={parseInt(ano)}
                 empresaId={empresaId}
+                fonte={fonteEfetiva}
               />
             </TabsContent>
 
             <TabsContent value="balanco">
-              <BalancoPatrimonial 
-                periodo={periodo} 
-                mes={parseInt(mes)} 
-                ano={parseInt(ano)} 
+              <BalancoPatrimonial
+                periodo={periodo}
+                mes={parseInt(mes)}
+                ano={parseInt(ano)}
                 empresaId={empresaId}
+                fonte={fonteEfetiva}
               />
             </TabsContent>
 
