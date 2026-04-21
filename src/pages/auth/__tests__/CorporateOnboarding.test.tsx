@@ -74,9 +74,8 @@ vi.mock('@/hooks/useSsoDomainResolver', () => ({
   },
 }));
 
-const logEventMock = vi.fn();
 vi.mock('@/hooks/useSsoOnboardingAudit', () => ({
-  useSsoOnboardingAudit: () => ({ logEvent: logEventMock }),
+  useSsoOnboardingAudit: () => ({ logEvent: hoisted.logEventMock }),
 }));
 
 // IdP presets — não precisamos do conteúdo real
