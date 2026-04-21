@@ -120,6 +120,7 @@ const DEFAULT_PAYLOAD: SavedFilterPayload<AnomaliaFilters> = {
 
 export function AnomaliasDetectadasPanel() {
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [prefsOpen, setPrefsOpen] = useState(false);
   const [filters, setFilters] = useState<AnomaliaFilters>(DEFAULT_FILTERS);
   const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" }>({
     key: "detectada_em",
@@ -524,6 +525,7 @@ export function AnomaliasDetectadasPanel() {
         </CardContent>
       </Card>
       <AnomaliasReviewQueue open={reviewOpen} onOpenChange={setReviewOpen} />
+      <AnomaliaPreferencesDialog open={prefsOpen} onOpenChange={setPrefsOpen} />
       <AnomaliaDrillDownDrawer />
     </div>
   );
