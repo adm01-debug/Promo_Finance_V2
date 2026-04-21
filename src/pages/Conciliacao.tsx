@@ -84,6 +84,53 @@ export default function Conciliacao() {
     toggleSelect, toggleSelectAll,
   } = useConciliacaoPage();
 
+  // Saved filter presets / sort / column visibility
+  const { defaultFilter } = useSavedFilters<ConciliacaoFilterState>('conciliacao_transacoes');
+  const [sort, setSort] = useState<ConciliacaoSort>(CONCILIACAO_DEFAULT_SORT);
+  const [visibleCols, setVisibleCols] = useState<string[]>(CONCILIACAO_DEFAULT_VISIBLE);
+  const [activePresetId, setActivePresetId] = useState<string | null>(null);
+  const [bootstrapped, setBootstrapped] = useState(false);
+
+  useEffect(() => {
+    if (bootstrapped || !defaultFilter) return;
+    const p = defaultFilter.filters;
+    if (p?.filters) setFilters(p.filters);
+    if (p?.sort) setSort(p.sort as ConciliacaoSort);
+    if (p?.columns) setVisibleCols(p.columns);
+    setActivePresetId(defaultFilter.id);
+    setBootstrapped(true);
+  }, [defaultFilter, bootstrapped, setFilters]);
+
+  const handleLoadPreset = (preset: { id: string; payload: SavedFilterPayload<ConciliacaoFilterState> }) => {
+    if (preset.payload.filters) setFilters(preset.payload.filters);
+    if (preset.payload.sort) setSort(preset.payload.sort as ConciliacaoSort);
+    if (preset.payload.columns) setVisibleCols(preset.payload.columns);
+    setActivePresetId(preset.id);
+  };
+  const handleClearPreset = () => setActivePresetId(null);
+
+  const sortedTransacoes = useMemo(() => {
+    const arr = [...filteredTransacoes];
+    const dir = sort.dir === 'asc' ? 1 : -1;
+    arr.sort((a, b) => {
+      switch (sort.key) {
+        case 'data':
+          return (new Date(a.data).getTime() - new Date(b.data).getTime()) * dir;
+        case 'valor':
+          return (a.valor - b.valor) * dir;
+        case 'descricao':
+          return a.descricao.localeCompare(b.descricao, 'pt-BR') * dir;
+        case 'tipo':
+          return a.tipo.localeCompare(b.tipo) * dir;
+        default:
+          return 0;
+      }
+    });
+    return arr;
+  }, [filteredTransacoes, sort]);
+
+  const showCol = (key: string) => visibleCols.includes(key);
+
   return (
     <MainLayout>
       <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
