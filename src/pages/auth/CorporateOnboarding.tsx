@@ -22,15 +22,21 @@ export default function CorporateOnboarding() {
   const [redirecting, setRedirecting] = useState<ResolvedSsoProvider | null>(null);
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS);
   const [ssoError, setSsoError] = useState<{ provider: ResolvedSsoProvider; message: string } | null>(null);
+  const [userCancelled, setUserCancelled] = useState(false);
   const cancelRef = useRef(false);
+
+  // Reset cancelamento quando o e-mail/domínio muda — novo domínio merece novo auto-redirect
+  useEffect(() => {
+    setUserCancelled(false);
+  }, [submittedEmail]);
 
   // Quando descobrimos provider com force, inicia contagem regressiva e dispara
   useEffect(() => {
-    if (!autoRedirectProvider || redirecting || ssoError) return;
+    if (!autoRedirectProvider || redirecting || ssoError || userCancelled) return;
     cancelRef.current = false;
     setRedirecting(autoRedirectProvider);
     setCountdown(COUNTDOWN_SECONDS);
-  }, [autoRedirectProvider, redirecting, ssoError]);
+  }, [autoRedirectProvider, redirecting, ssoError, userCancelled]);
 
   useEffect(() => {
     if (!redirecting) return;
@@ -48,13 +54,18 @@ export default function CorporateOnboarding() {
       const { data, error } = await supabase.functions.invoke('sso-initiate', {
         body: { provider_id: p.id, redirect_to: window.location.origin },
       });
+      // Aborta se o usuário cancelou enquanto a chamada estava em flight
+      if (cancelRef.current) return;
       if (error) throw error;
       if (!data?.redirect_url) throw new Error('Resposta inválida do provedor (sem redirect_url)');
       if (data?.verifier && data?.state) {
         sessionStorage.setItem(`pkce:${data.state}`, data.verifier);
       }
+      // Última verificação antes de sair da página
+      if (cancelRef.current) return;
       window.location.href = data.redirect_url;
     } catch (e) {
+      if (cancelRef.current) return;
       const message = e instanceof Error ? e.message : 'Erro desconhecido';
       toast.error('Falha ao iniciar SSO', { description: message });
       setRedirecting(null);
@@ -64,6 +75,8 @@ export default function CorporateOnboarding() {
 
   const handleManualSso = async (p: ResolvedSsoProvider) => {
     setSsoError(null);
+    setUserCancelled(false);
+    cancelRef.current = false;
     setRedirecting(p);
     setCountdown(0);
     await triggerSso(p);
@@ -71,8 +84,12 @@ export default function CorporateOnboarding() {
 
   const handleCancelRedirect = () => {
     cancelRef.current = true;
+    setUserCancelled(true);
     setRedirecting(null);
     setCountdown(COUNTDOWN_SECONDS);
+    toast.info('Redirecionamento cancelado', {
+      description: 'Escolha um método de login manualmente.',
+    });
   };
 
   const handleResetEmail = () => {
@@ -222,17 +239,16 @@ export default function CorporateOnboarding() {
                   ? `Iniciando em ${countdown}s…`
                   : `Conectando ao ${redirecting.nome}…`}
               </div>
-              {countdown > 0 && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full gap-2"
-                  onClick={handleCancelRedirect}
-                >
-                  <X className="h-4 w-4" />
-                  Cancelar redirecionamento
-                </Button>
-              )}
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full gap-2"
+                onClick={handleCancelRedirect}
+                aria-label="Cancelar redirecionamento e voltar à escolha manual"
+              >
+                <X className="h-4 w-4" />
+                {countdown > 0 ? 'Cancelar redirecionamento' : 'Cancelar e voltar'}
+              </Button>
             </CardContent>
           </Card>
         </motion.div>
@@ -295,6 +311,14 @@ export default function CorporateOnboarding() {
               </Button>
             </form>
 
+            {userCancelled && providers.length > 0 && (
+              <Alert variant="warning">
+                <AlertDescription className="text-sm">
+                  Redirecionamento automático cancelado. Escolha um método de login abaixo.
+                </AlertDescription>
+              </Alert>
+            )}
+
             {submittedEmail && !loading && providers.length === 0 && (
               <Alert>
                 <AlertDescription className="text-sm">
@@ -311,7 +335,7 @@ export default function CorporateOnboarding() {
               </Alert>
             )}
 
-            {providers.length > 0 && !autoRedirectProvider && (
+            {providers.length > 0 && (!autoRedirectProvider || userCancelled) && (
               <div className="space-y-2 pt-2 border-t">
                 <p className="text-xs text-center text-muted-foreground uppercase tracking-wide">
                   Provedores disponíveis
