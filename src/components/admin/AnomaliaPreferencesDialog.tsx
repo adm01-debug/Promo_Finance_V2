@@ -232,9 +232,9 @@ export function AnomaliaPreferencesDialog({ open, onOpenChange }: Props) {
                   >
                     <Checkbox
                       checked={ccs.includes(cc.id)}
-                      onCheckedChange={(v) =>
+                      onChange={(e) =>
                         setCcs(
-                          v
+                          e.target.checked
                             ? [...ccs, cc.id]
                             : ccs.filter((x) => x !== cc.id),
                         )
@@ -262,9 +262,9 @@ export function AnomaliaPreferencesDialog({ open, onOpenChange }: Props) {
                 >
                   <Checkbox
                     checked={tipos.includes(t.value)}
-                    onCheckedChange={(v) =>
+                    onChange={(e) =>
                       setTipos(
-                        v
+                        e.target.checked
                           ? [...tipos, t.value]
                           : tipos.filter((x) => x !== t.value),
                       )
