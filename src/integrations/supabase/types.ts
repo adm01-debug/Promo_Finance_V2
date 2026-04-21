@@ -7908,6 +7908,193 @@ export type Database = {
           },
         ]
       }
+      sso_login_attempts: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          email: string | null
+          error_code: string | null
+          error_message: string | null
+          id: string
+          ip_address: string | null
+          provider_id: string | null
+          success: boolean
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          email?: string | null
+          error_code?: string | null
+          error_message?: string | null
+          id?: string
+          ip_address?: string | null
+          provider_id?: string | null
+          success?: boolean
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          email?: string | null
+          error_code?: string | null
+          error_message?: string | null
+          id?: string
+          ip_address?: string | null
+          provider_id?: string | null
+          success?: boolean
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sso_login_attempts_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "sso_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sso_providers: {
+        Row: {
+          allowed_domains: string[]
+          ativo: boolean
+          authorization_endpoint: string | null
+          auto_provision_users: boolean
+          claim_mapping: Json
+          client_id: string | null
+          client_secret_ref: string | null
+          created_at: string
+          created_by: string | null
+          default_role: Database["public"]["Enums"]["app_role"]
+          discovery_url: string | null
+          entity_id_idp: string | null
+          force_sso_for_domains: boolean
+          id: string
+          jwks_uri: string | null
+          metadata_xml: string | null
+          name_id_format: string | null
+          nome: string
+          ordem: number
+          preset: string | null
+          scopes: string[] | null
+          signature_algorithm: string | null
+          slo_url: string | null
+          sso_url: string | null
+          tipo: Database["public"]["Enums"]["sso_tipo"]
+          token_endpoint: string | null
+          ultimo_teste_em: string | null
+          ultimo_teste_mensagem: string | null
+          ultimo_teste_sucesso: boolean | null
+          updated_at: string
+          userinfo_endpoint: string | null
+          x509_cert: string | null
+        }
+        Insert: {
+          allowed_domains?: string[]
+          ativo?: boolean
+          authorization_endpoint?: string | null
+          auto_provision_users?: boolean
+          claim_mapping?: Json
+          client_id?: string | null
+          client_secret_ref?: string | null
+          created_at?: string
+          created_by?: string | null
+          default_role?: Database["public"]["Enums"]["app_role"]
+          discovery_url?: string | null
+          entity_id_idp?: string | null
+          force_sso_for_domains?: boolean
+          id?: string
+          jwks_uri?: string | null
+          metadata_xml?: string | null
+          name_id_format?: string | null
+          nome: string
+          ordem?: number
+          preset?: string | null
+          scopes?: string[] | null
+          signature_algorithm?: string | null
+          slo_url?: string | null
+          sso_url?: string | null
+          tipo: Database["public"]["Enums"]["sso_tipo"]
+          token_endpoint?: string | null
+          ultimo_teste_em?: string | null
+          ultimo_teste_mensagem?: string | null
+          ultimo_teste_sucesso?: boolean | null
+          updated_at?: string
+          userinfo_endpoint?: string | null
+          x509_cert?: string | null
+        }
+        Update: {
+          allowed_domains?: string[]
+          ativo?: boolean
+          authorization_endpoint?: string | null
+          auto_provision_users?: boolean
+          claim_mapping?: Json
+          client_id?: string | null
+          client_secret_ref?: string | null
+          created_at?: string
+          created_by?: string | null
+          default_role?: Database["public"]["Enums"]["app_role"]
+          discovery_url?: string | null
+          entity_id_idp?: string | null
+          force_sso_for_domains?: boolean
+          id?: string
+          jwks_uri?: string | null
+          metadata_xml?: string | null
+          name_id_format?: string | null
+          nome?: string
+          ordem?: number
+          preset?: string | null
+          scopes?: string[] | null
+          signature_algorithm?: string | null
+          slo_url?: string | null
+          sso_url?: string | null
+          tipo?: Database["public"]["Enums"]["sso_tipo"]
+          token_endpoint?: string | null
+          ultimo_teste_em?: string | null
+          ultimo_teste_mensagem?: string | null
+          ultimo_teste_sucesso?: boolean | null
+          updated_at?: string
+          userinfo_endpoint?: string | null
+          x509_cert?: string | null
+        }
+        Relationships: []
+      }
+      sso_role_mappings: {
+        Row: {
+          app_role: Database["public"]["Enums"]["app_role"]
+          created_at: string
+          id: string
+          idp_group: string
+          ordem: number
+          provider_id: string
+        }
+        Insert: {
+          app_role: Database["public"]["Enums"]["app_role"]
+          created_at?: string
+          id?: string
+          idp_group: string
+          ordem?: number
+          provider_id: string
+        }
+        Update: {
+          app_role?: Database["public"]["Enums"]["app_role"]
+          created_at?: string
+          id?: string
+          idp_group?: string
+          ordem?: number
+          provider_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sso_role_mappings_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "sso_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       templates_cobranca: {
         Row: {
           assunto: string | null
@@ -9541,6 +9728,7 @@ export type Database = {
       frequencia_relatorio: "mensal" | "trimestral" | "anual"
       prioridade_alerta: "baixa" | "media" | "alta" | "critica"
       severidade_anomalia: "baixa" | "media" | "alta" | "critica"
+      sso_tipo: "oidc" | "saml"
       status_anomalia: "nova" | "investigando" | "falso_positivo" | "confirmada"
       status_fechamento_tributario:
         | "aberto"
@@ -9729,6 +9917,7 @@ export const Constants = {
       frequencia_relatorio: ["mensal", "trimestral", "anual"],
       prioridade_alerta: ["baixa", "media", "alta", "critica"],
       severidade_anomalia: ["baixa", "media", "alta", "critica"],
+      sso_tipo: ["oidc", "saml"],
       status_anomalia: ["nova", "investigando", "falso_positivo", "confirmada"],
       status_fechamento_tributario: [
         "aberto",
