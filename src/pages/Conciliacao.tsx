@@ -237,7 +237,7 @@ export default function Conciliacao() {
 
               <div className="space-y-2">
                 <AnimatePresence mode="popLayout">
-                  {filteredTransacoes.map((transacao, index) => {
+                  {sortedTransacoes.map((transacao, index) => {
                     const isCredito = transacao.tipo === 'credito';
                     const isSelected = selectedIds.has(transacao.id);
                     return (
