@@ -44,6 +44,7 @@ const tableNameLabels: Record<string, string> = {
   contas_bancarias: 'Contas Bancárias', centros_custo: 'Centros de Custo',
   user_roles: 'Perfis de Usuário', profiles: 'Perfis',
   sso_jit_provisioning: 'Provisionamento SSO (JIT)',
+  sso_profile_sync: 'Sincronização de Perfil (SSO)',
 };
 
 interface Props {

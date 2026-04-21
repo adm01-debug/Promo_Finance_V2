@@ -157,11 +157,51 @@ async function safeJson(req: Request) {
  * Aplica o pipeline pós-autenticação (provisioning + vínculo + roles + audit).
  * Compartilhado entre OIDC callback e SAML finalize.
  */
+/**
+ * Normaliza valor de claim: trim, vazio vira null, valores idênticos ao email
+ * são descartados (heurística para evitar fallback "name=email").
+ */
+function normalizeClaim(v: unknown, email: string): string | null {
+  if (v === null || v === undefined) return null;
+  const s = String(v).trim();
+  if (!s) return null;
+  if (s.toLowerCase() === email.toLowerCase()) return null;
+  return s;
+}
+
+/**
+ * Calcula o delta entre o estado atual do perfil e os claims recebidos.
+ * Só inclui campos cujo valor incoming é não-nulo E diferente do current.
+ * Nunca sobrescreve com vazio.
+ */
+function buildProfileSyncDelta(
+  current: { full_name: string | null; avatar_url: string | null; telefone: string | null },
+  incoming: { full_name?: string | null; avatar_url?: string | null; telefone?: string | null },
+): {
+  changes: Record<string, { from: unknown; to: unknown }>;
+  updates: Record<string, string>;
+} {
+  const changes: Record<string, { from: unknown; to: unknown }> = {};
+  const updates: Record<string, string> = {};
+  const fields: Array<keyof typeof incoming> = ["full_name", "avatar_url", "telefone"];
+  for (const f of fields) {
+    const next = incoming[f];
+    if (next === null || next === undefined) continue;
+    const curr = current[f] ?? null;
+    if (curr === next) continue;
+    changes[f] = { from: curr, to: next };
+    updates[f] = next;
+  }
+  return { changes, updates };
+}
+
 async function applyPipeline(opts: {
   admin: Admin;
   provider: Record<string, unknown>;
   email: string;
   fullName: string;
+  avatarUrl?: string | null;
+  telefone?: string | null;
   groups: string[];
   existingUserId?: string | null; // SAML: já existe (broker criou); OIDC: descoberto/criado aqui
   allowJit: boolean;
@@ -171,7 +211,7 @@ async function applyPipeline(opts: {
   matchedGroup: string | null;
   jitCreated: boolean;
 } | { error: string; details?: string }> {
-  const { admin, provider, email, fullName, groups, existingUserId, allowJit } = opts;
+  const { admin, provider, email, fullName, avatarUrl, telefone, groups, existingUserId, allowJit } = opts;
   const providerId = provider.id as string;
   const providerNome = provider.nome as string;
   const empresaId = (provider.empresa_id as string | null) ?? null;
@@ -186,46 +226,54 @@ async function applyPipeline(opts: {
     }
   }
 
+  // Normaliza claims recebidos (vazio/email → null)
+  const incomingFullName = normalizeClaim(fullName, email);
+  const incomingAvatarUrl = normalizeClaim(avatarUrl, email);
+  const incomingTelefone = normalizeClaim(telefone, email);
+
   // Resolve usuário (SAML traz existingUserId; OIDC busca/cria)
   let userId: string | null = existingUserId ?? null;
   let jitCreated = false;
+  let existingAuthUser: { user_metadata?: Record<string, unknown> | null } | null = null;
+
   if (!userId) {
     const found = await findUserByEmail(admin, email);
     if (found) {
       userId = found.id;
-      const currentName = (found.user_metadata as Record<string, unknown> | null)?.full_name as
-        | string
-        | undefined;
-      if (fullName && fullName !== email && currentName !== fullName) {
-        await admin.auth.admin.updateUserById(found.id, {
-          user_metadata: {
-            ...(found.user_metadata || {}),
-            full_name: fullName,
-            sso_provider_id: providerId,
-          },
-        });
-        await admin.from("profiles").update({ full_name: fullName }).eq("id", found.id);
-      }
+      existingAuthUser = found;
     } else if (allowJit) {
+      const jitMeta: Record<string, unknown> = { sso_provider_id: providerId };
+      if (incomingFullName) jitMeta.full_name = incomingFullName;
+      if (incomingAvatarUrl) jitMeta.avatar_url = incomingAvatarUrl;
+      if (incomingTelefone) jitMeta.phone = incomingTelefone;
       const created = await admin.auth.admin.createUser({
         email,
         email_confirm: true,
-        user_metadata: { full_name: fullName, sso_provider_id: providerId },
+        user_metadata: jitMeta,
       });
       if (created.error || !created.data.user) {
         return { error: "create_user_failed", details: created.error?.message };
       }
       userId = created.data.user.id;
       jitCreated = true;
+
+      // Persiste avatar/telefone em profiles (handle_new_user só preenche full_name)
+      const jitProfileUpdates: Record<string, string> = {};
+      if (incomingFullName) jitProfileUpdates.full_name = incomingFullName;
+      if (incomingAvatarUrl) jitProfileUpdates.avatar_url = incomingAvatarUrl;
+      if (incomingTelefone) jitProfileUpdates.telefone = incomingTelefone;
+      if (Object.keys(jitProfileUpdates).length > 0) {
+        await admin.from("profiles").update(jitProfileUpdates).eq("id", userId);
+      }
     } else {
       return { error: "user_not_provisioned" };
     }
   } else {
-    // SAML: garante metadata sso_provider_id atualizado
+    // SAML: usuário já existe (broker criou)
     const { data: u } = await admin.auth.admin.getUserById(userId);
     if (u?.user) {
+      existingAuthUser = u.user;
       // Heurística JIT-via-SAML: usuário criado pelo broker SAML há < 60s
-      // entra como "primeira passagem pelo pipeline" e merece trilha JIT.
       const createdAtStr = (u.user as { created_at?: string }).created_at;
       if (createdAtStr) {
         const createdMs = Date.parse(createdAtStr);
@@ -233,18 +281,66 @@ async function applyPipeline(opts: {
           jitCreated = true;
         }
       }
-      const currentName = (u.user.user_metadata as Record<string, unknown> | null)?.full_name as
-        | string
-        | undefined;
-      const meta = u.user.user_metadata || {};
-      const needsUpdate =
-        (fullName && fullName !== email && currentName !== fullName) ||
-        (meta as Record<string, unknown>).sso_provider_id !== providerId;
-      if (needsUpdate) {
-        await admin.auth.admin.updateUserById(userId, {
-          user_metadata: { ...meta, full_name: fullName, sso_provider_id: providerId },
+    }
+  }
+
+  // Sincronização de perfil para usuários existentes (não-JIT)
+  // Compara claims do IdP com profiles atuais e atualiza apenas o que mudou.
+  if (userId && !jitCreated && existingAuthUser) {
+    const { data: currentProfile } = await admin
+      .from("profiles")
+      .select("full_name, avatar_url, telefone")
+      .eq("id", userId)
+      .maybeSingle();
+
+    const current = {
+      full_name: (currentProfile?.full_name ?? null) as string | null,
+      avatar_url: (currentProfile?.avatar_url ?? null) as string | null,
+      telefone: (currentProfile?.telefone ?? null) as string | null,
+    };
+    const { changes, updates } = buildProfileSyncDelta(current, {
+      full_name: incomingFullName,
+      avatar_url: incomingAvatarUrl,
+      telefone: incomingTelefone,
+    });
+
+    const meta = (existingAuthUser.user_metadata || {}) as Record<string, unknown>;
+    const metaProviderId = meta.sso_provider_id as string | undefined;
+    const needsMetaSync = metaProviderId !== providerId || Object.keys(updates).length > 0;
+
+    if (needsMetaSync) {
+      const newMeta: Record<string, unknown> = { ...meta, sso_provider_id: providerId };
+      if (updates.full_name) newMeta.full_name = updates.full_name;
+      if (updates.avatar_url) newMeta.avatar_url = updates.avatar_url;
+      if (updates.telefone) newMeta.phone = updates.telefone;
+      await admin.auth.admin.updateUserById(userId, { user_metadata: newMeta });
+    }
+    if (Object.keys(updates).length > 0) {
+      await admin.from("profiles").update(updates).eq("id", userId);
+
+      // Trilha de auditoria — só quando houve alteração real
+      try {
+        const fieldsChanged = Object.keys(changes);
+        await admin.from("audit_logs").insert({
+          user_id: userId,
+          user_email: email,
+          action: "UPDATE",
+          table_name: "sso_profile_sync",
+          record_id: userId,
+          new_data: {
+            provider_id: providerId,
+            provider_nome: providerNome,
+            provider_tipo: (provider.tipo as string) ?? null,
+            changes,
+            fields_changed: fieldsChanged,
+          },
+          details: `Sincronização SSO (${providerNome}): ${fieldsChanged.length} campo(s) atualizado(s) — ${fieldsChanged.join(", ")}`,
         });
-        await admin.from("profiles").update({ full_name: fullName }).eq("id", userId);
+      } catch (err) {
+        console.warn(
+          "[sso-callback] falha ao registrar audit_logs sso_profile_sync:",
+          err instanceof Error ? err.message : String(err)
+        );
       }
     }
   }
@@ -404,6 +500,19 @@ async function handleSamlFinalize(req: Request): Promise<Response> {
         email,
     ) || email;
 
+  const avatarUrl =
+    (meta[cm.avatar_url || "picture"] as string | undefined) ??
+    (meta.picture as string | undefined) ??
+    (meta.avatar_url as string | undefined) ??
+    (appMeta[cm.avatar_url || "picture"] as string | undefined) ??
+    null;
+  const telefone =
+    (meta[cm.telefone || "phone_number"] as string | undefined) ??
+    (meta.phone_number as string | undefined) ??
+    (meta.phone as string | undefined) ??
+    (appMeta[cm.telefone || "phone_number"] as string | undefined) ??
+    null;
+
   const rawGroups =
     meta[cm.groups || "groups"] ??
     appMeta[cm.groups || "groups"] ??
@@ -420,6 +529,8 @@ async function handleSamlFinalize(req: Request): Promise<Response> {
     provider,
     email,
     fullName,
+    avatarUrl,
+    telefone,
     groups,
     existingUserId: userId, // SAML: usuário já existe (broker criou)
     allowJit: false,
@@ -582,6 +693,15 @@ Deno.serve(async (req) => {
     const cm = (provider.claim_mapping || {}) as Record<string, string>;
     const email = String(claims[cm.email || "email"] || claims.email || "").toLowerCase();
     const fullName = String(claims[cm.full_name || "name"] || claims.name || email);
+    const avatarUrl =
+      (claims[cm.avatar_url || "picture"] as string | undefined) ??
+      (claims.picture as string | undefined) ??
+      null;
+    const telefone =
+      (claims[cm.telefone || "phone_number"] as string | undefined) ??
+      (claims.phone_number as string | undefined) ??
+      (claims.phone as string | undefined) ??
+      null;
     const groups: string[] = Array.isArray(claims[cm.groups || "groups"])
       ? (claims[cm.groups || "groups"] as string[])
       : [];
@@ -599,6 +719,8 @@ Deno.serve(async (req) => {
       provider,
       email,
       fullName,
+      avatarUrl,
+      telefone,
       groups,
       existingUserId: null,
       allowJit: !!provider.auto_provision_users,
