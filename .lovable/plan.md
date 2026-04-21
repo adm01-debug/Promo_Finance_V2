@@ -1,73 +1,41 @@
 
 
-## Plano — Onboarding corporativo com auto-redirect SSO por domínio
+## Plano — Guia de provisionamento SCIM 2.0 para Azure AD e Okta
 
-Nova tela `/auth/corporate` (e hook reutilizável) que detecta o domínio do e-mail e, se houver um provedor SSO ativo com `force_sso_for_domains=true` ou marcação de auto-redirect, dispara `sso-initiate` automaticamente — sem o usuário precisar clicar em botão de senha ou de provider.
+O backend SCIM já está 100% funcional: endpoint `/scim/v2/Users` (GET/POST/PUT/PATCH/DELETE) e `/Groups` (GET) com auth Bearer, escopo por empresa, JIT em `auth.users`, vínculo em `user_empresas` (`provisioned_via='scim'`), filtros `eq` para `userName`/`externalId`, audit em `scim_operations_log`, e UI de geração/revogação de tokens.
 
-### Fluxo
+O que falta para fechar o fluxo de ponta a ponta é **um guia operacional copy-paste** dentro do próprio app, para que o admin configure Azure AD ou Okta sem sair da plataforma.
 
-```text
-1. Usuário acessa /auth/corporate
-2. Digita e-mail → blur/Enter
-3. Frontend consulta sso_providers ativos
-   onde allowed_domains contém o domínio
-4. Se houver provider e (force_sso_for_domains=true OU auto_redirect=true):
-     → mostra "Redirecionando para {provider.nome}..."
-     → invoca sso-initiate
-     → window.location = redirect_url
-5. Senão, oferece escolha:
-     - Botões SSO (se houver providers sem force)
-     - "Continuar com senha" → vai para /auth com email pré-preenchido
-6. Se nenhum provider casar, vai direto para /auth com email pré-preenchido
-```
+### Escopo
+
+Adicionar uma nova sub-aba "Como configurar" dentro da aba **SCIM** do `/admin/sso`, com 3 seções tabuladas: Azure AD, Okta e Mapeamento de atributos.
 
 ### Arquivos novos
 
-- **`src/pages/auth/CorporateOnboarding.tsx`** — página standalone (sem layout), card centralizado, logo, campo de e-mail único, estado de loading "Redirecionando…", fallback gracioso.
-- **`src/hooks/useSsoDomainResolver.ts`** — hook que recebe um e-mail (com debounce 400ms), retorna `{ providers, autoRedirectProvider, loading }`. Reaproveita a query já usada em `SsoLoginButtons`.
-- **`src/components/auth/SsoAutoRedirectCard.tsx`** — sub-componente com 3 estados visuais: `idle` (form), `resolving` (skeleton), `redirecting` (spinner + nome do IdP).
+- **`src/components/admin/sso/ScimSetupGuide.tsx`** — guia completo:
+  - Card "Endpoint do servidor SCIM" com `Tenant URL` e `Authorization header` (campos somente leitura + botão copiar).
+  - Tabs Azure AD / Okta / Mapeamento.
+  - Azure AD: passo-a-passo (Enterprise applications → Custom non-gallery → Provisioning Automatic → Tenant URL + Secret Token → Test Connection → Mappings → Scope → Assignments).
+  - Okta: passo-a-passo (Create App Integration → Enable SCIM → Integration tab → Base URL + Bearer auth → Test Connector → "To App" actions → Assignments).
+  - Mapeamento de atributos: tabela com `userName`, `name.formatted`, `emails`, `externalId`, `active` mapeados para campos do Azure AD/Okta, com badge obrigatório/opcional.
+  - Links externos para a documentação oficial.
+  - Aviso explicando que novos usuários entram como `visualizador` e que mapeamento de papéis usa `sso_role_mappings`.
 
 ### Arquivos editados
 
-- **`src/App.tsx`** — registrar rota pública `/auth/corporate` (lazy-loaded, fora de `ProtectedRoute`).
-- **`src/pages/Auth.tsx`** — aceitar query param `?email=` para pré-preencher campo (vindo do fallback do onboarding).
-- **`src/components/auth/LoginForm.tsx`** — adicionar link discreto "Acesso corporativo (SSO)" abaixo do "Esqueci minha senha", apontando para `/auth/corporate`.
-
-### Lógica de auto-redirect
-
-Critério para disparar redirect automático (sem clique):
-
-```ts
-const auto = providers.find(p => 
-  p.force_sso_for_domains === true
-);
-// se mais de um, escolhe o de menor `ordem`
-```
-
-Não vamos adicionar nova coluna no banco — `force_sso_for_domains` já existe em `sso_providers` e é exatamente a semântica desejada ("para este domínio, SSO é obrigatório"). Providers que aparecem no domínio mas sem `force` continuam exibidos como botões opcionais.
-
-### UX / Acessibilidade
-
-- Input com `autoFocus`, `inputMode="email"`, `autoComplete="username"`.
-- Mensagem aria-live para o estado "Redirecionando para {provider}…".
-- Botão "Cancelar redirecionamento" visível por 3s antes do `window.location` (evita armadilha se o usuário digitou e-mail errado).
-- Suporte a Enter no campo de e-mail.
-- Contraste AA, sem dependência de cor para sinalizar estado.
+- **`src/components/admin/sso/ScimTokensTab.tsx`** — converter o conteúdo atual em sub-aba "Tokens" e adicionar sub-aba "Como configurar" que renderiza `<ScimSetupGuide />`. Manter o select de empresa fora das sub-abas.
 
 ### Detalhes técnicos
 
-- Debounce de 400ms na consulta para evitar flood ao digitar.
-- Query usa `.contains('allowed_domains', [dominio])` + `.eq('ativo', true)` + `.order('ordem')` (mesmo padrão de `SsoLoginButtons`).
-- PKCE verifier salvo em `sessionStorage[`pkce:${state}`]` (idêntico ao fluxo existente em `SsoLoginButtons.handleSSO`).
-- `sso-initiate` é chamada com `redirect_to: window.location.origin` para que o callback retorne ao app.
-- Domínios são normalizados para lowercase + trim antes da query.
-- Se `sso-initiate` falhar, mostra toast e cai automaticamente no modo "escolha manual" (não trava o usuário).
-- Página é renderizada sem `Sidebar`/`Header` (layout tipo `Auth.tsx`).
+- O endpoint SCIM já trata todas as operações que Azure AD/Okta enviam (POST/PUT/PATCH/DELETE em `/Users`). Nenhum trabalho de backend é necessário.
+- A `Tenant URL` exibida usa `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scim-server/scim/v2` (mesmo formato já usado em `ScimTokensTab`).
+- `ServiceProviderConfig` já é público e responde com `patch.supported=true`, `filter.supported=true`, o que faz o "Test Connection" do Azure AD passar.
+- O parser de filtro do servidor já cobre `userName eq` e `externalId eq` — ambos exigidos pelo Azure AD/Okta para idempotência.
+- Acessibilidade: todos os botões de copiar têm `aria-label`; tabela usa cabeçalhos semânticos.
 
 ### Fora de escopo
 
-- Memorizar último IdP usado por usuário (cookie/localStorage).
-- Fluxo de "magic link" como fallback quando SSO falha.
-- Whitelabel de logo do provider na tela de redirect (usa apenas `preset.logo` já existente em `IDP_PRESETS`).
-- Discovery automático de IdP via `.well-known/openid-configuration` no domínio do e-mail.
+- Suporte a operações de Group write via SCIM (atualmente retorna 501; mapeamento de papel continua via `sso_role_mappings` no painel de Providers).
+- Webhooks de notificação para sync (Azure AD/Okta operam por polling).
+- Suporte a `co`, `sw`, `pr` no parser de filtro SCIM (mantido o subset `eq` + `and`).
 
