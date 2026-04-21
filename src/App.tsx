@@ -73,6 +73,7 @@ const AdminEdgeHealth = lazy(() => import('./pages/AdminEdgeHealth'));
 const AdminSystemHealth = lazy(() => import('./pages/AdminSystemHealth'));
 const CentroPrivacidadeLGPD = lazy(() => import('./pages/CentroPrivacidadeLGPD'));
 const ContadorReadonly = lazy(() => import('./pages/ContadorReadonly'));
+const SSOAdmin = lazy(() => import('./pages/admin/SSOAdmin'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Inner app component that can use routing hooks
@@ -146,6 +147,7 @@ function AppRoutes() {
             <Route path="/admin/telemetria" element={<ProtectedRoute><AdminTelemetria /></ProtectedRoute>} />
             <Route path="/admin/edge-health" element={<ProtectedRoute><AdminEdgeHealth /></ProtectedRoute>} />
             <Route path="/admin/system-health" element={<ProtectedRoute><AdminSystemHealth /></ProtectedRoute>} />
+            <Route path="/admin/sso" element={<ProtectedRoute><SSOAdmin /></ProtectedRoute>} />
             <Route path="/configuracoes/privacidade" element={<ProtectedRoute><CentroPrivacidadeLGPD /></ProtectedRoute>} />
             
             {/* 404 */}

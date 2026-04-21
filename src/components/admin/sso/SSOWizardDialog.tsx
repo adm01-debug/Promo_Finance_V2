@@ -385,7 +385,7 @@ export function SSOWizardDialog({ open, onOpenChange, editing }: Props) {
             </div>
 
             {testResult && (
-              <Alert variant={testResult.valid ? 'default' : 'destructive'}>
+              <Alert variant={testResult.valid ? 'success' : 'error'}>
                 <AlertDescription className="flex items-center gap-2">
                   {testResult.valid ? <Check className="h-4 w-4 text-success" /> : <X className="h-4 w-4" />}
                   {testResult.message}
