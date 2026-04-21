@@ -21,6 +21,8 @@ async function sha256(text: string): Promise<string> {
   return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+interface ChecklistItem { id: string; label: string; status: 'ok' | 'warn' | 'error'; detail?: string; itens?: string[] }
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
@@ -44,6 +46,7 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const empresa_id: string = body.empresa_id;
     const ano_calendario: number = body.ano_calendario;
+    const mode: 'validate' | 'generate' = body.mode === 'validate' ? 'validate' : 'generate';
     if (!empresa_id || !ano_calendario) {
       return new Response(JSON.stringify({ error: 'empresa_id e ano_calendario são obrigatórios' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
@@ -51,15 +54,12 @@ Deno.serve(async (req) => {
     const periodo_inicio = `${ano_calendario}-01-01`;
     const periodo_fim = `${ano_calendario}-12-31`;
 
-    // Carrega empresa
     const { data: empresa } = await supabase.from('empresas').select('cnpj, razao_social, estado, inscricao_estadual').eq('id', empresa_id).maybeSingle<Empresa>();
     if (!empresa) return new Response(JSON.stringify({ error: 'Empresa não encontrada' }), { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
-    // Plano de contas
     const { data: planoRaw } = await supabase.from('plano_contas').select('id, codigo, nome, descricao, natureza, tipo, codigo_referencial').or(`empresa_id.eq.${empresa_id},empresa_id.is.null`).order('codigo');
     const plano = (planoRaw || []) as Conta[];
 
-    // Lançamentos do ano
     const { data: lancsRaw } = await supabase
       .from('lancamentos_contabeis')
       .select('id, numero_lancamento, data_lancamento, historico, valor_total, partidas:partidas_contabeis(conta_id, tipo, valor, historico_complementar)')
@@ -69,22 +69,116 @@ Deno.serve(async (req) => {
       .order('data_lancamento');
     const lancamentos = (lancsRaw || []) as unknown as Lancamento[];
 
-    // Mapa conta_id -> codigo
     const idToCodigo = new Map(plano.map(c => [c.id, c.codigo]));
 
-    // Validações
-    const erros: string[] = [];
-    const avisos: string[] = [];
-    if (lancamentos.length === 0) erros.push('Nenhum lançamento contábil no período');
+    // ===== Checklist =====
+    const checklist: ChecklistItem[] = [];
+
+    checklist.push({
+      id: 'empresa',
+      label: 'Dados da empresa (CNPJ + Razão Social)',
+      status: empresa.cnpj && empresa.razao_social ? 'ok' : 'error',
+      detail: empresa.cnpj && empresa.razao_social ? `${empresa.razao_social} · CNPJ ${empresa.cnpj}` : 'CNPJ ou razão social ausentes',
+    });
+
+    const analiticas = plano.filter(p => p.tipo === 'analitica');
+    checklist.push({
+      id: 'plano',
+      label: 'Plano de contas com contas analíticas',
+      status: analiticas.length > 0 ? 'ok' : 'error',
+      detail: `${analiticas.length} contas analíticas em ${plano.length} totais`,
+    });
+
+    checklist.push({
+      id: 'lancs',
+      label: 'Pelo menos 1 lançamento no período',
+      status: lancamentos.length > 0 ? 'ok' : 'error',
+      detail: `${lancamentos.length} lançamentos encontrados em ${ano_calendario}`,
+    });
+
+    const desbalanceados: string[] = [];
+    let totalDeb = 0, totalCre = 0;
     for (const l of lancamentos) {
       const d = l.partidas.filter(p => p.tipo === 'D').reduce((s, p) => s + Number(p.valor), 0);
       const c = l.partidas.filter(p => p.tipo === 'C').reduce((s, p) => s + Number(p.valor), 0);
-      if (Math.abs(d - c) > 0.01) erros.push(`Lançamento #${l.numero_lancamento}: débitos ≠ créditos`);
+      totalDeb += d; totalCre += c;
+      if (Math.abs(d - c) > 0.01) desbalanceados.push(`#${l.numero_lancamento} (${l.data_lancamento}): D=${d.toFixed(2)} C=${c.toFixed(2)}`);
     }
-    const semRef = plano.filter(p => p.tipo === 'analitica' && !p.codigo_referencial).length;
-    if (semRef > 0) avisos.push(`${semRef} contas analíticas sem código referencial CFC`);
+    checklist.push({
+      id: 'partidas',
+      label: 'Partidas dobradas (débito = crédito) em cada lançamento',
+      status: desbalanceados.length === 0 ? 'ok' : 'error',
+      detail: desbalanceados.length === 0 ? 'Todos os lançamentos balanceados' : `${desbalanceados.length} lançamento(s) desbalanceado(s)`,
+      itens: desbalanceados.slice(0, 20),
+    });
 
-    // Geração TXT
+    const foraPeriodo: string[] = [];
+    for (const l of lancamentos) {
+      if (l.data_lancamento < periodo_inicio || l.data_lancamento > periodo_fim) {
+        foraPeriodo.push(`#${l.numero_lancamento}: ${l.data_lancamento}`);
+      }
+    }
+    checklist.push({
+      id: 'periodo',
+      label: 'Lançamentos dentro do período',
+      status: foraPeriodo.length === 0 ? 'ok' : 'error',
+      detail: foraPeriodo.length === 0 ? 'OK' : `${foraPeriodo.length} fora do período`,
+      itens: foraPeriodo.slice(0, 20),
+    });
+
+    const balanceteOk = Math.abs(totalDeb - totalCre) < 0.01;
+    checklist.push({
+      id: 'balancete',
+      label: 'Balancete consolidado (∑ débitos = ∑ créditos)',
+      status: balanceteOk ? 'ok' : 'error',
+      detail: `D: ${totalDeb.toFixed(2)} · C: ${totalCre.toFixed(2)} · Δ: ${Math.abs(totalDeb - totalCre).toFixed(2)}`,
+    });
+
+    const nums = lancamentos.map(l => l.numero_lancamento).sort((a, b) => a - b);
+    const gaps: string[] = [];
+    for (let i = 1; i < nums.length; i++) if (nums[i] !== nums[i - 1] + 1) gaps.push(`#${nums[i - 1]} → #${nums[i]}`);
+    checklist.push({
+      id: 'sequencial',
+      label: 'Numeração sequencial dos lançamentos',
+      status: gaps.length === 0 ? 'ok' : 'warn',
+      detail: gaps.length === 0 ? 'Sequência contínua' : `${gaps.length} gap(s) encontrado(s)`,
+      itens: gaps.slice(0, 20),
+    });
+
+    const semRef = analiticas.filter(p => !p.codigo_referencial);
+    const pctRef = analiticas.length > 0 ? Math.round(((analiticas.length - semRef.length) / analiticas.length) * 100) : 100;
+    checklist.push({
+      id: 'cfc',
+      label: 'Contas analíticas com código referencial CFC',
+      status: semRef.length === 0 ? 'ok' : 'warn',
+      detail: `${pctRef}% mapeadas (${analiticas.length - semRef.length}/${analiticas.length})`,
+      itens: semRef.slice(0, 20).map(c => `${c.codigo} — ${c.nome || c.descricao}`),
+    });
+
+    const erros = checklist.filter(c => c.status === 'error').map(c => c.detail || c.label);
+    const avisos = checklist.filter(c => c.status === 'warn').map(c => c.detail || c.label);
+
+    if (mode === 'validate') {
+      return new Response(JSON.stringify({
+        mode: 'validate',
+        empresa: { cnpj: empresa.cnpj, razao_social: empresa.razao_social },
+        periodo: { inicio: periodo_inicio, fim: periodo_fim },
+        total_lancamentos: lancamentos.length,
+        checklist,
+        validacoes: { erros, avisos },
+      }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    // ===== Bloqueio se houver erros =====
+    if (erros.length > 0) {
+      return new Response(JSON.stringify({
+        error: 'Validações bloqueiam a geração do arquivo',
+        checklist,
+        validacoes: { erros, avisos },
+      }), { status: 422, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    // ===== Geração TXT =====
     const linhas: string[] = [];
     const blocoCount = new Map<string, number>();
     const push = (l: string) => {
@@ -170,7 +264,9 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({
       url: signed?.signedUrl, file_name, total_linhas: linhas.length,
       total_lancamentos: lancamentos.length, hash_sha256: hash,
-      validacoes: { erros, avisos },
+      checklist, validacoes: { erros, avisos },
+      empresa: { cnpj: empresa.cnpj, razao_social: empresa.razao_social },
+      periodo: { inicio: periodo_inicio, fim: periodo_fim },
       observacao: 'Arquivo PRELIMINAR — validar no PVA-ECD da RFB antes da transmissão.',
     }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   } catch (e) {
