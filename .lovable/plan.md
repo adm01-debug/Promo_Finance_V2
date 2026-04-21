@@ -1,108 +1,103 @@
 
 
-## Plano — Execução de detecção com fila/lock e progresso em tempo real
+## Plano — Preferências de alerta para anomalias críticas (silenciar por usuário e por centro de custo)
 
-Hoje, o botão **"Detectar agora"** em `AnomaliasDetectadasPanel` apenas chama `supabase.functions.invoke('detectar-anomalias-financeiras')` e mostra um toast no fim. Problemas:
+Hoje, `useRealtimeAnomalias` já dispara toast no canto inferior para **toda** anomalia `critica`/`alta` que entra na tabela `anomalias_detectadas`, para **todos** os admins logados, sem nenhuma forma de calar. Falta também um **badge** persistente no sidebar mostrando quantas críticas estão `nova`/`investigando`. Este plano adiciona as duas pontas.
 
-- **Sem lock**: dois admins clicando ao mesmo tempo (ou colisão com o cron */30min) disparam 2 execuções concorrentes, cada uma percorrendo até 7.500 registros e fazendo 5× `select... maybeSingle()` por candidata → desperdício de invocações + risco de inserir duplicatas que escapam do anti-dedupe de 24h.
-- **Sem progresso**: a edge roda 5 detectores em série; o usuário fica olhando um spinner por 10–60s sem saber em que estágio está nem quantas anomalias já foram encontradas.
-- **Sem histórico**: não há registro de quem disparou, quanto tempo levou, quantas foram inseridas — só o toast efêmero.
+### O que muda
 
-Este plano resolve as três pontas com uma tabela de execuções, lock advisório no Postgres e Realtime para empurrar progresso ao painel.
+**1. Tabela `user_anomalia_preferences`** (nova migration)
 
-### Mudanças
-
-**1. Nova tabela `anomalia_detection_runs`** (migration)
-
-Colunas:
+Por usuário:
 - `id uuid pk default gen_random_uuid()`
-- `triggered_by uuid` (auth.uid() — null para cron)
-- `trigger_source text` (`'manual' | 'cron'`, default `'manual'`)
-- `status text` (`'queued' | 'running' | 'completed' | 'failed' | 'cancelled'`, default `'queued'`)
-- `current_step text` (ex: `'detector_outlier'`, `'detector_duplicado'`, `'persistindo'`)
-- `step_index int default 0`, `total_steps int default 5`
-- `candidatas int default 0`, `inseridas int default 0`
-- `started_at timestamptz`, `finished_at timestamptz`, `duration_ms int`
-- `error_message text`
-- `created_at timestamptz default now()`
+- `user_id uuid not null references auth.users(id) on delete cascade`
+- `toast_enabled bool default true` — liga/desliga toast global
+- `toast_min_severidade text default 'critica'` — `critica` | `alta` | `media`
+- `silenciar_ate timestamptz` — soneca temporária (snooze 1h/8h/24h)
+- `centros_custo_silenciados uuid[] default '{}'` — IDs de `centros_custo` cujas anomalias NÃO disparam toast nem entram no badge
+- `tipos_silenciados text[] default '{}'` — opcional, ex: `['conciliacao_atrasada']`
+- `created_at`, `updated_at` (trigger `update_updated_at`)
+- Unique(`user_id`)
 
-RLS: admin-only para SELECT/INSERT/UPDATE (mesma policy do `anomalias_detectadas`). Realtime habilitado via `ALTER PUBLICATION supabase_realtime ADD TABLE`.
+RLS: cada usuário só lê/escreve seu próprio registro (`user_id = auth.uid()`).
 
-**2. Lock cooperativo na edge `detectar-anomalias-financeiras`**
+**2. Resolver centro de custo da anomalia (server-side)**
 
-No início da função, antes de qualquer detector:
-- `SELECT pg_try_advisory_lock(hashtext('detectar-anomalias-financeiras'))`. Se retornar `false` → responder `409 { ok:false, reason:'already_running', current_run_id }` (busca o `runs` com `status in ('queued','running')` mais recente).
-- Se a função já foi chamada com `body.run_id`, atualiza esse registro; senão, INSERT de um novo `runs` row com `status='running'`, `started_at=now()`, `trigger_source` derivado do header `x-trigger-source` (cron envia `'cron'`).
-- Entre cada um dos 5 detectores, faz `UPDATE anomalia_detection_runs SET current_step=..., step_index=..., candidatas=running_total WHERE id=run_id`. Realtime propaga.
-- No `finally`: `pg_advisory_unlock(...)` + `UPDATE` final com `status`, `inseridas`, `duration_ms`, `finished_at`.
-- Em catch: `status='failed'`, `error_message=e.message`.
+Anomalia hoje só guarda `entidade_tipo` + `entidade_id`. Para filtrar por CC, precisamos do CC associado.
 
-**3. Hook `useAnomaliaDetectionRun`** (`src/hooks/useAnomaliaDetectionRun.ts`)
+- Adicionar coluna `centro_custo_id uuid` em `anomalias_detectadas` (nullable, sem FK rígida — entidade pode ser de domínio sem CC, como `transacao_bancaria`).
+- Na edge `detectar-anomalias-financeiras`, ao montar cada `AnomaliaInsert`:
+  - Para `entidade_tipo='conta_pagar'`: já lemos `contas_pagar`; passar a selecionar também `centro_custo_id` e popular o campo.
+  - Para `entidade_tipo='movimentacao'`: passar a selecionar `centro_custo_id` da `movimentacoes`.
+  - Demais (`transacao_bancaria`, `regime_decision_cache`): `null` → não silenciável por CC.
+- Backfill simples na migration: `UPDATE anomalias_detectadas a SET centro_custo_id = cp.centro_custo_id FROM contas_pagar cp WHERE a.entidade_tipo='conta_pagar' AND a.entidade_id::uuid = cp.id;` (idem para movimentações).
 
-- `useQuery(['anomalia-runs','active'])`: busca o run com status in (`queued`,`running`) — staleTime curto.
-- `useEffect` com canal Realtime `anomalia_detection_runs` (filtro `status=in.(running,completed,failed)`) → invalida a query e, no `completed`, invalida `['anomalias-detectadas']` para refletir as novas anomalias.
-- `disparar()` mutation: cria a row `queued` via insert e invoca a edge passando `run_id`. Se a edge responder `409 already_running`, exibe toast informativo apontando para o run em curso (sem erro).
-- Retorna: `{ activeRun, disparar, isPending }`.
+**3. Hook `useAnomaliaPreferences`** (novo, `src/hooks/useAnomaliaPreferences.ts`)
 
-**4. Componente `DetectionRunProgress`** (`src/components/admin/DetectionRunProgress.tsx`)
+- `useQuery(['anomalia-preferences', user.id])` — busca/insere row default na primeira leitura (upsert).
+- `update` mutation com optimistic update.
+- Helper puro `shouldNotify(pref, anomalia): boolean` que consolida:
+  - `toast_enabled` ligado
+  - `silenciar_ate` no passado (ou null)
+  - Severidade ≥ `toast_min_severidade` (rank crítica>alta>media>baixa)
+  - `anomalia.centro_custo_id` ∉ `centros_custo_silenciados`
+  - `anomalia.tipo_anomalia` ∉ `tipos_silenciados`
 
-- Mostra apenas quando `activeRun` existe.
-- `<Progress value={(step_index/total_steps)*100} />` da shadcn.
-- Linha de status: "Etapa X/5 — {label do current_step} · {candidatas} candidatas · {elapsed}s".
-- Labels amigáveis para cada `current_step` (mapa pt-BR).
-- Acessível: `aria-live="polite"`, `role="status"`.
+**4. `useRealtimeAnomalias` — aplicar preferências**
 
-**5. Atualização de `AnomaliasDetectadasPanel.tsx`**
+- Buscar `preferences` no início (via `useAnomaliaPreferences`).
+- Antes de chamar `toast.error/warning`, rodar `shouldNotify(prefs, payload.new)`. Se `false` → só invalida queries (badge atualiza), pula o toast.
+- Mantém todo o resto (drawer, deduplicação `seenIds`).
 
-- Substitui `detectar` (do hook antigo) por `useAnomaliaDetectionRun`.
-- Botão "Detectar agora": `disabled={!!activeRun || isPending}`. Quando há `activeRun`, label vira "Detecção em andamento…" com spinner.
-- Renderiza `<DetectionRunProgress />` logo abaixo do header da Card, antes da lista.
-- Mantém o toast antigo de "X novas anomalias" — agora disparado pelo Realtime quando `status` transita para `completed`.
+**5. Hook + Badge `useAnomaliasCriticasCount`** (novo)
 
-**6. Atualização do cron (apenas documentação)**
+- `useQuery(['anomalias-criticas-count'])`: `count(*)` em `anomalias_detectadas` com `severidade in ('critica','alta')` e `status in ('nova','investigando')`, **respeitando** `centros_custo_silenciados` e `tipos_silenciados` da preferência (filtro client-side sobre uma busca pequena, já limitada a 200 nesta área).
+- Realtime já invalida via `useRealtimeAnomalias`.
+- Badge vermelho ao lado do item "System Health" (ou "Insights IA") na sidebar — reusa o padrão de `useAlertasTributariosCount` que já mostra contagem.
 
-O cron job que invoca a edge a cada 30min passa a também respeitar o lock (a função em si recusa). Sem mudança de schedule. Adicionar header `x-trigger-source: cron` no `net.http_post` via SQL update do cron job (instrução manual no card de mudanças).
+**6. UI de preferências — `AnomaliaPreferencesDialog`**
 
-### Arquitetura
+Componente novo aberto a partir de:
+- Botão "⚙ Preferências de alerta" no header de `AnomaliasDetectadasPanel.tsx` (ao lado de "Detectar agora").
+- Item "Silenciar alertas…" no menu do toast (ação adicional via `cancel`/`action` extra — sonner suporta).
+
+Conteúdo do diálogo:
+- Switch "Receber toasts de novas anomalias" (`toast_enabled`).
+- Select "Severidade mínima" (Crítica / Alta / Média).
+- Botões rápidos "Silenciar por 1h / 8h / 24h" → grava `silenciar_ate = now() + Xh`. Status "Silenciado até HH:mm" + botão "Reativar agora".
+- MultiSelect "Centros de custo silenciados" (carrega de `centros_custo` ativos) — chips removíveis.
+- MultiSelect "Tipos de anomalia silenciados" (5 tipos do enum existente).
+- Botão "Salvar" (mutation upsert).
+
+Acessibilidade: `Dialog` shadcn já tem `Esc`, focus trap, `aria-labelledby`.
+
+### Arquitetura de fluxo
 
 ```text
-[Admin clica "Detectar agora"]
+INSERT anomalias_detectadas (com centro_custo_id resolvido pela edge)
         │
-        ▼
-useAnomaliaDetectionRun.disparar()
-   ├─ INSERT runs (status='queued', triggered_by=auth.uid())
-   └─ supabase.functions.invoke('detectar-anomalias-financeiras', { body:{run_id} })
-        │
-        ▼
-edge: pg_try_advisory_lock
-   ├─ false → 409 { current_run_id }  ──▶ toast "já em execução"
-   └─ true  → UPDATE status='running'
-              ├─ Detector 1 → UPDATE step_index=1, current_step, candidatas+=N
-              │      │
-              │      ▼ Realtime
-              │   useAnomaliaDetectionRun ◀──┐
-              │      │                       │
-              │      ▼                       │
-              │   <DetectionRunProgress />   │
-              ├─ Detector 2..5  ─────────────┘
-              └─ UPDATE status='completed', inseridas, duration_ms
-                     │
-                     ▼ Realtime → invalidate ['anomalias-detectadas']
+        ▼ Realtime postgres_changes
+useRealtimeAnomalias
+   ├─ invalida ['anomalias-detectadas'] e ['anomalias-criticas-count']  ──▶ Badge sidebar
+   │       (badge respeita silêncios via shouldNotify aplicado na contagem)
+   └─ shouldNotify(prefs, anomalia)?
+        ├─ false → fim (silencioso)
+        └─ true  → toast.error/warning com Drill-down + "Silenciar alertas"
 ```
 
 ### Detalhes técnicos
 
-- **Lock**: `pg_try_advisory_lock(bigint)` é não-bloqueante e auto-libera ao fim da sessão Postgres da edge — duplo seguro além do `finally`.
-- **Sem race no INSERT do run**: se dois clicks paralelos criam dois `queued`, o segundo vê `409` da edge e o registro `queued` órfão é varrido por `UPDATE ... WHERE status='queued' AND created_at < now()-interval '5min' SET status='cancelled'` no início de cada nova execução (limpeza barata).
-- **RLS**: nova tabela usa `has_role(auth.uid(),'admin')` (padrão já existente no projeto).
-- **Realtime**: a tabela é admin-only por RLS, então o canal só entrega eventos para sessões admin — sem vazamento.
-- **`useAnomaliasDetectadas`**: mantém o método `detectar` legado por compatibilidade, mas o painel passa a usar o novo hook.
-- **Não-quebrante**: cron continua funcionando; se a coluna `run_id` não vier no body, a edge cria seu próprio run com `trigger_source='cron'`.
+- Severidades em rank: `{critica:0, alta:1, media:2, baixa:3}` — `toast_min_severidade='alta'` notifica `critica` e `alta`.
+- `silenciar_ate` é simples e expira sozinho (sem cron) — comparação no client.
+- Preferências são por usuário; outro admin com preferências diferentes recebe normalmente.
+- Sem nova permissão necessária (RLS já restringe a tabela `anomalias_detectadas` a admins; preferências têm RLS própria).
+- Backfill da coluna `centro_custo_id` em anomalias antigas é best-effort; novas já vêm preenchidas.
+- Badge usa o mesmo padrão visual de `useAlertasTributariosCount` para consistência.
 
 ### Fora de escopo
 
-- Cancelar uma execução em andamento (UI de "abortar") — o lock impede dano, mas matar a edge no meio exigiria SIGTERM handler.
-- Histórico paginado de runs antigas (`/admin/system-health` aba dedicada) — fica para próxima iteração; por ora apenas o run ativo é exibido.
-- Backpressure por empresa (cada admin de empresa diferente disparando o seu) — hoje a edge é global, então o lock global é o comportamento certo.
-- Push notification (web-push) ao concluir — o toast + Realtime já cobre quem está na tela.
+- Preferências por **empresa** (RBAC multi-empresa) — só `centro_custo` e `tipo` nesta iteração.
+- Push notification do SO obedecendo as preferências (a edge `send-push-notification` ainda dispara para todos os admins) — fica para próxima iteração.
+- Página dedicada `/configuracoes/alertas` com agrupamento por canal (toast/push/email) — por ora um único diálogo cobre o caso.
+- Auditar quem silenciou o quê (não há requisito).
 
