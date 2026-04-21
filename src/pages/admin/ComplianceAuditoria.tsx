@@ -1,0 +1,65 @@
+import { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ShieldCheck, Banknote, Receipt, Activity, ClipboardCheck, Package } from "lucide-react";
+import { MainLayout } from "@/components/layout/MainLayout";
+import { ComplianceKpis } from "@/components/compliance/ComplianceKpis";
+import { TrilhaFinanceiraTab } from "@/components/compliance/TrilhaFinanceiraTab";
+import { TrilhaTributariaTab } from "@/components/compliance/TrilhaTributariaTab";
+import { TrilhaSistemaTab } from "@/components/compliance/TrilhaSistemaTab";
+import { ConformidadeFiscalTab } from "@/components/compliance/ConformidadeFiscalTab";
+import { EvidenciasTab } from "@/components/compliance/EvidenciasTab";
+
+export default function ComplianceAuditoria() {
+  const [tab, setTab] = useState("financeira");
+
+  return (
+    <MainLayout>
+      <div className="container max-w-7xl mx-auto py-6 space-y-6">
+        <div className="flex items-center gap-3">
+          <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+            <ShieldCheck className="h-6 w-6" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold font-display">Compliance & Auditoria</h1>
+            <p className="text-sm text-muted-foreground">
+              Trilhas de auditoria financeira, tributária e de sistema · pacotes de evidências exportáveis
+            </p>
+          </div>
+        </div>
+
+        <ComplianceKpis />
+
+        <Tabs value={tab} onValueChange={setTab} className="space-y-4">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
+            <TabsTrigger value="financeira" className="gap-2">
+              <Banknote className="h-4 w-4" />
+              <span className="hidden sm:inline">Financeira</span>
+            </TabsTrigger>
+            <TabsTrigger value="tributaria" className="gap-2">
+              <Receipt className="h-4 w-4" />
+              <span className="hidden sm:inline">Tributária</span>
+            </TabsTrigger>
+            <TabsTrigger value="sistema" className="gap-2">
+              <Activity className="h-4 w-4" />
+              <span className="hidden sm:inline">Sistema</span>
+            </TabsTrigger>
+            <TabsTrigger value="conformidade" className="gap-2">
+              <ClipboardCheck className="h-4 w-4" />
+              <span className="hidden sm:inline">Conformidade</span>
+            </TabsTrigger>
+            <TabsTrigger value="evidencias" className="gap-2">
+              <Package className="h-4 w-4" />
+              <span className="hidden sm:inline">Evidências</span>
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="financeira"><TrilhaFinanceiraTab /></TabsContent>
+          <TabsContent value="tributaria"><TrilhaTributariaTab /></TabsContent>
+          <TabsContent value="sistema"><TrilhaSistemaTab /></TabsContent>
+          <TabsContent value="conformidade"><ConformidadeFiscalTab /></TabsContent>
+          <TabsContent value="evidencias"><EvidenciasTab /></TabsContent>
+        </Tabs>
+      </div>
+    </MainLayout>
+  );
+}
