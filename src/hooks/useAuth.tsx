@@ -2,6 +2,7 @@ import { useState, useEffect, createContext, useContext, ReactNode } from 'react
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
+import { getCurrentEmpresaId } from '@/hooks/useUserEmpresas';
 
 type AppRole = 'admin' | 'financeiro' | 'operacional' | 'visualizador';
 
@@ -16,7 +17,12 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   profile: Profile | null;
+  /** Role global em `user_roles` (fallback) */
   role: AppRole | null;
+  /** Role do vínculo `user_empresas` para a empresa atualmente selecionada */
+  roleAtual: AppRole | null;
+  /** Empresa atualmente ativa (sincronizada com getCurrentEmpresaId) */
+  currentEmpresaId: string | null;
   isLoading: boolean;
   isAdmin: boolean;
   isFinanceiro: boolean;
@@ -33,11 +39,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
+  const [roleAtual, setRoleAtual] = useState<AppRole | null>(null);
+  const [currentEmpresaId, setCurrentEmpresaIdState] = useState<string | null>(getCurrentEmpresaId());
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
     try {
-      // Fetch profile
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
@@ -50,7 +57,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setProfile(profileData);
       }
 
-      // Fetch role
       const { data: roleData, error: roleError } = await supabase
         .from('user_roles')
         .select('role')
@@ -63,31 +69,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRole(roleData.role as AppRole);
       }
     } catch {
-      // Silently fail - profile/role will remain null
+      // silently fail
+    }
+  };
+
+  const fetchRoleForEmpresa = async (userId: string, empresaId: string | null) => {
+    if (!empresaId) {
+      setRoleAtual(null);
+      return;
+    }
+    try {
+      const { data, error } = await (supabase as any)
+        .from('user_empresas')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('empresa_id', empresaId)
+        .eq('ativo', true)
+        .maybeSingle();
+      if (error) {
+        logger.error('[useAuth] Error fetching role per empresa:', error);
+        setRoleAtual(null);
+        return;
+      }
+      setRoleAtual((data?.role as AppRole | undefined) ?? null);
+    } catch {
+      setRoleAtual(null);
     }
   };
 
   const refreshProfile = async () => {
     if (user) {
       await fetchProfile(user.id);
+      await fetchRoleForEmpresa(user.id, currentEmpresaId);
     }
   };
 
   useEffect(() => {
-    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
-        
-        // Defer profile fetch to avoid deadlock
+
         if (session?.user) {
           setTimeout(() => {
             fetchProfile(session.user.id);
+            fetchRoleForEmpresa(session.user.id, getCurrentEmpresaId());
           }, 0);
 
-          // SAML finalize: quando o broker nativo do Supabase autentica via SAML,
-          // disparamos o pipeline de JIT/vínculo/role mapping.
           if (event === 'SIGNED_IN') {
             const provider = (session.user.app_metadata as Record<string, unknown> | undefined)?.provider as string | undefined;
             const ssoProviderId = (session.user.user_metadata as Record<string, unknown> | undefined)?.sso_provider_id as string | undefined;
@@ -103,29 +131,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           setProfile(null);
           setRole(null);
+          setRoleAtual(null);
         }
-        
+
         setIsLoading(false);
       }
     );
 
-    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      
+
       if (session?.user) {
         fetchProfile(session.user.id);
+        fetchRoleForEmpresa(session.user.id, getCurrentEmpresaId());
       }
-      
+
       setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  // Sincroniza com mudanças de empresa disparadas pelo EmpresaSwitcher / EmpresaGuard
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<string>).detail;
+      const next = typeof detail === 'string' ? detail : getCurrentEmpresaId();
+      setCurrentEmpresaIdState(next);
+      if (user) fetchRoleForEmpresa(user.id, next);
+    };
+    window.addEventListener('current-empresa-changed', handler);
+    return () => window.removeEventListener('current-empresa-changed', handler);
+  }, [user]);
+
   const signOut = async () => {
-    // Detecta login via SSO (gravado em user_metadata pelo sso-callback)
     const ssoProviderId = (user?.user_metadata as Record<string, unknown> | undefined)?.sso_provider_id as string | undefined;
     let ssoLogoutUrl: string | null = null;
 
@@ -145,16 +185,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSession(null);
     setProfile(null);
     setRole(null);
+    setRoleAtual(null);
 
     if (ssoLogoutUrl) {
-      // Full redirect ao IdP para encerrar a sessão corporativa
       window.location.href = ssoLogoutUrl;
     }
   };
 
+  const effectiveRole: AppRole | null = roleAtual ?? role;
+
   const hasRole = (roles: AppRole[]) => {
-    if (!role) return false;
-    return roles.includes(role);
+    if (!effectiveRole) return false;
+    return roles.includes(effectiveRole);
   };
 
   const value: AuthContextType = {
@@ -162,10 +204,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     session,
     profile,
     role,
+    roleAtual,
+    currentEmpresaId,
     isLoading,
-    isAdmin: role === 'admin',
-    isFinanceiro: role === 'financeiro' || role === 'admin',
-    isOperacional: role === 'operacional' || role === 'financeiro' || role === 'admin',
+    isAdmin: effectiveRole === 'admin',
+    isFinanceiro: effectiveRole === 'financeiro' || effectiveRole === 'admin',
+    isOperacional: effectiveRole === 'operacional' || effectiveRole === 'financeiro' || effectiveRole === 'admin',
     hasRole,
     signOut,
     refreshProfile,

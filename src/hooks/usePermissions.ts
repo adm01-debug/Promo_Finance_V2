@@ -11,7 +11,8 @@ interface Permission {
 }
 
 export function usePermissions() {
-  const { user, role, isAdmin } = useAuth();
+  const { user, role, roleAtual, currentEmpresaId, isAdmin } = useAuth();
+  const effectiveRole = roleAtual ?? role;
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [userPermissions, setUserPermissions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,12 +43,12 @@ export function usePermissions() {
         return;
       }
 
-      // Fetch user's role permissions
-      if (role) {
+      // Fetch user's role permissions (usa role da empresa atual quando disponível)
+      if (effectiveRole) {
         const { data: rolePerms, error: roleError } = await supabase
           .from('role_permissions')
           .select('permission_id, permissions(name)')
-          .eq('role', role);
+          .eq('role', effectiveRole);
 
         if (roleError) {
           logger.error('Erro ao buscar permissões do role:', roleError);
@@ -70,7 +71,7 @@ export function usePermissions() {
     } finally {
       setIsLoading(false);
     }
-  }, [user, role, isAdmin]);
+  }, [user, effectiveRole, currentEmpresaId, isAdmin]);
 
   useEffect(() => {
     fetchPermissions();

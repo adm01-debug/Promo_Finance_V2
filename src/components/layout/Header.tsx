@@ -6,7 +6,6 @@ import {
   Moon,
   Sun,
   ChevronDown,
-  Building2,
   LogOut,
   User,
   Settings,
@@ -26,13 +25,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/components/theme/ThemeProvider';
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { useEmpresas } from '@/hooks/useFinancialData';
 import { useAlertas } from '@/hooks/useAlertas';
 import { KeyboardShortcutsDialog } from './KeyboardShortcutsDialog';
+import { EmpresaSwitcher } from './EmpresaSwitcher';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface HeaderProps {
@@ -76,17 +75,10 @@ function getInitialsFromName(name?: string | null, email?: string | null): strin
 
 export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }, ref) => {
   const { theme, setTheme, isDark } = useTheme();
-  const { user, profile, role, signOut } = useAuth();
+  const { user, profile, role, roleAtual, signOut } = useAuth();
   const navigate = useNavigate();
-  const { data: empresas = [] } = useEmpresas();
   const { data: alertas = [] } = useAlertas();
-  const [selectedEmpresaId, setSelectedEmpresaId] = useState<string | null>(null);
-  
-  const selectedEmpresa = useMemo(() => {
-    if (selectedEmpresaId) return empresas.find(e => e.id === selectedEmpresaId);
-    return empresas[0];
-  }, [selectedEmpresaId, empresas]);
-  
+
   const unreadAlerts = useMemo(() => alertas.filter((a) => !a.lido).length, [alertas]);
 
   const handleSignOut = async () => {
@@ -106,7 +98,8 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
   };
 
   const ThemeIcon = getThemeIcon();
-  const roleInfo = role ? roleLabels[role] : null;
+  const effectiveRole = roleAtual ?? role;
+  const roleInfo = effectiveRole ? roleLabels[effectiveRole] : null;
 
   return (
     <header
@@ -131,35 +124,8 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
 
         {/* Right: Actions */}
         <div className="flex items-center gap-2">
-          {/* CNPJ Selector */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="h-10 gap-2 bg-card hover:bg-muted">
-                <Building2 className="h-4 w-4 text-primary" />
-                <span className="hidden sm:inline text-sm font-medium">
-                  {selectedEmpresa?.nome_fantasia || selectedEmpresa?.razao_social || 'Selecionar'}
-                </span>
-                <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64 bg-popover">
-              <DropdownMenuLabel>Selecionar Empresa</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {empresas.map((empresa) => (
-                <DropdownMenuItem
-                  key={empresa.id}
-                  onClick={() => setSelectedEmpresaId(empresa.id)}
-                  className={cn(
-                    'flex flex-col items-start gap-0.5 cursor-pointer',
-                    selectedEmpresa?.id === empresa.id && 'bg-primary/10'
-                  )}
-                >
-                  <span className="font-medium">{empresa.nome_fantasia || empresa.razao_social}</span>
-                  <span className="text-xs text-muted-foreground">{empresa.cnpj}</span>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Empresa atual (vínculos do usuário) */}
+          <EmpresaSwitcher />
 
           {/* Keyboard Shortcuts */}
           <KeyboardShortcutsDialog />
