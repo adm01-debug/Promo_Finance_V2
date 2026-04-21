@@ -1,73 +1,66 @@
 
 
-## Plano — Documento Executivo de Funcionalidades (FUNCIONALIDADES_SISTEMA.md)
+## Plano — Documento de "Funcionalidades sem UI completa" (FUNCIONALIDADES_SEM_UI.md)
 
-Vou criar um documento `.md` exaustivo e categorizado mapeando **100% das funcionalidades** do Promo Finance, com base na análise completa do codebase atual (54 páginas, 51 edge functions, 130+ tabelas, 130+ hooks, 60+ pastas de componentes, P1→P15).
+Após análise minuciosa do codebase (130+ hooks, 54 páginas, 51 edges, 100+ componentes), identifiquei o que **existe em código mas não tem interface visual completa exposta ao usuário final**. Vou gerar um `.md` executivo categorizando os gaps.
 
 ### Localização
-- `/mnt/documents/FUNCIONALIDADES_SISTEMA.md` (download imediato)
-- `docs/FUNCIONALIDADES_SISTEMA.md` (versionado no GitHub via sync bidirecional)
+- `/mnt/documents/FUNCIONALIDADES_SEM_UI.md` (download imediato)
+- `docs/FUNCIONALIDADES_SEM_UI.md` (versionado no GitHub)
 
-### Estrutura do documento (15 seções)
+### Achados consolidados (resumo)
 
-**1. Visão geral & arquitetura**
-Stack (React 18 + Vite + TS + Lovable Cloud), 4 camadas (apresentação/domínio/dados/backend), RBAC 4 papéis, multi-empresa.
+**🔴 Gap crítico (hook 100% pronto, ZERO UI):**
+1. **`useBudget`** (298 linhas) — sistema completo de orçamentos por categoria com `Budget`, `BudgetSummary`, alertas, projeções, status under/warning/over. **Nenhuma página/componente** consome. Pronto para virar `pages/Orcamentos.tsx` ou widget no Dashboard.
 
-**2. Autenticação & segurança**
-Login/signup, MFA TOTP, WebAuthn biométrico, recuperação senha, HIBP, account lockout exponencial, IP/Geo restriction, known devices, sessões ativas, audit logs, rate limiting, XSS sanitization.
+**🟡 Gaps parciais (renderizado em local secundário, sem rota dedicada):**
+2. **Reforma Tributária — 11 painéis** (`SplitPaymentPanel`, `ConciliacaoTributariaPanel`, `IncentivosFiscaisPanel`, `AuditoriaCompliancePanel`, `ComparativoRegimesPanel`, `CashbackSimuladorPanel`, `ImportacaoXMLPanel`, `ExportacaoSPED`, `RelatoriosContabeisTributarios`, `PerDcompPanel`, `RetencoesFonte`) — só acessíveis via troca interna de tab no `DashboardReformaTributaria` (`case` de switch). Sem rotas próprias, sem links no sidebar, sem deep-link.
+3. **`AssistenteFechamentoMensal`** — usado só no `DashboardTributario`; não há página `/tributario/fechamento-mensal`.
+4. **`ScoringClientesPanel`** — componente existe mas só renderizado dentro de `pages/Clientes.tsx` (sem destaque/aba própria).
+5. **`MetasFinanceirasPanel`** — só aparece como widget opcional no Dashboard (precisa habilitar).
+6. **`PortalClientePanel`** — só renderizado dentro do detalhe de cliente; sem visão consolidada de tokens ativos por admin.
+7. **`AlertasPreditivosPanel`** — só widget opcional no Dashboard.
+8. **`HealthScoreCard`** + **`CentroAcoesInteligentes`** — embutidos no `DashboardExecutivo`; sem página `/inteligencia` dedicada.
 
-**3. Financeiro core**
-Contas a pagar (cadastro, agendamento, recorrência, anexos), Contas a receber (régua cobrança, scoring), Boletos (emissão, registro, código de barras), Pix Hub (templates, QR, split), Tesouraria, Movimentações, Transferências, Categorias, Plano de contas, Centros de custo, Pagamentos recorrentes.
+**🟢 Edge Functions sem UI dedicada (rodam por cron/trigger):**
+9. **`gerar-resumo-executivo-semanal`** — só visualizável no admin (`ResumosExecutivosTab`). Usuário comum não vê/recebe via UI.
+10. **`calcular-slo-metrics-diario`** — restrito a admin.
+11. **`enviar-relatorios-tributarios-agendados`** — sem painel de "histórico de envios" para o usuário.
+12. **`detectar-anomalias-financeiras`** — resultados só no admin (`AnomaliasDetectadasPanel`); usuário financeiro não vê suas próprias anomalias.
 
-**4. Cobranças & inadimplência**
-Régua automatizada (email/WhatsApp/SMS), acordos de parcelamento, protestos, negativações, fila de cobranças, histórico WhatsApp IA, scoring de clientes, inadimplência segmentada, simulador de antecipação, cashback.
+**🔵 Hooks utilitários (intencionalmente sem UI — corretos):**
+- `useDebounce`, `useLocalStorage`, `useMediaQuery`, `useBreakpoint`, `useDeviceDetection`, `useKeyboardShortcuts`, `useNetworkStatus`, `useInstallPrompt`, `useOfflineSync`, `useConfetti`, `useSoundFeedback`, `useSwipeBack`, `usePrefetchRoutes`, `useCountUp`, `usePagination`, `useFilters`, `useZodForm`, `useTableOptimization`, `useOptimizedQueries`, `useViews`, `useMeta`, `usePermissions`, `useAuditLog`, `useReauth`. Não precisam de UI — são primitivas.
 
-**5. Conciliação bancária**
-Extrato bancário, regras automáticas, conciliação IA (match), conciliações parciais, feedback IA, histórico, webhooks de extrato.
+### Estrutura do documento (6 seções)
 
-**6. Fluxo de caixa & dashboards**
-Dashboard executivo (Bento grid premium), DashboardEmpresa, DashboardReceber, FluxoCaixa (cenários, Monte Carlo), Hero KPIs animados, Top clientes/centros custo, Status pie chart, Saldos por banco, Drag & drop layout, BI page.
-
-**7. Tributário & Reforma 2026 (P1-P9)**
-Decidir regime (cache 7d), Simulador (Simples/Presumido/Real), Apuração mensal/trimestral, IRPJ/CSLL (LALUR, prejuízos), CBS/IBS/Imposto Seletivo, Split payment, Retenções de fonte, Créditos tributários, PER/DCOMP, DARFs, Incentivos fiscais, Regimes especiais, 9 estratégias de elisão paralelas, Conformidade fiscal validator, Auditoria tributária, Importação XML NFe, Exportação SPED Contribuições, DRE Tributária, Heatmap anual 12×8, Previsão IA 3 meses, Relatório anual PDF, Wizard onboarding tributário, Cronograma transição, Glossário, Benchmark setorial, Comparativo regimes, Cashback simulador, Obrigações acessórias.
-
-**8. NFe & SEFAZ**
-Emissão NFe, Cancelamento, Contingência, Alertas rejeição, SEFAZ Monitor/Analytics, OCR de notas fiscais (P11), Comprovante OCR.
-
-**9. Aprovações & workflow**
-Solicitações por alçada (`valor_minimo_aprovacao`), workflow multi-aprovador, observadores, notificações.
-
-**10. Integrações**
-Bling ERP v3 (resiliência exponencial), ASAAS (boletos/Pix/cartão), Bitrix24 CRM (sync + webhooks), Open Finance (saldos/extratos), CNPJa lookup, Resend (emails), WhatsApp IA proativo, Proxy Supabase externo (clientes/fornecedores), Assinatura digital, Portal cliente (token), Convite contador (read-only).
-
-**11. IA & assistentes (P11→P14)**
-EXPERT Agent (15 ações), Copilot Tributário, Copilot Global SSE (4 tools), Análise preditiva ML, Categorização despesa IA, Conciliação IA, Análise fluxo IA, Insights relatório, Previsão tributária IA, Resumo executivo semanal IA, OCR NF IA, Recomendações de metas IA.
-
-**12. Inteligência operacional (P10-P13)**
-Health Score Operacional, Detector anomalias 5 detectores (cron 30min), Centro de Ações Inteligentes (top 5 cruzando 5 fontes), Alertas preditivos, Push notifications (VAPID + trigger crítico), Real-time alertas, Quick create, Command palette, Recent items, Favoritos.
-
-**13. Compliance & LGPD (P12)**
-Centro Privacidade LGPD (acesso/portabilidade/exclusão/retificação/anonimização), Auditoria compliance, Auditoria financeira/tributária, Audit logs page, Conformidade fiscal.
-
-**14. Observabilidade & admin (P13-P15)**
-/admin/system-health (5 abas: Edge Health, Telemetry, Anomalias, Automações, SLO), 6 cron jobs P13, SLO panel (p50/p95/p99 + uptime + 30d), Edge function logs, Frontend error logs, Query telemetry, Rate limit dashboard, Webhooks log, RLS hardening (4 críticas P15).
-
-**15. UX & qualidade**
-Onboarding tour (8 passos react-joyride), PWA install prompt, Offline sync, Network status, Skeletons, ErrorBoundary, A11y WCAG AA, Keyboard shortcuts, Swipe back, Confetti, Sound feedback, Theme dark/light, Premium aesthetic (glassmorphism), Validators BR (CPF/CNPJ/Pix), Export CSV/PDF, Importação CSV/Excel, Virtual lists, Versionamento, Duplicação, Filtros avançados/salvos, Bulk actions, Search debounce.
-
-### Métricas finais
-- Páginas: 54
-- Edge Functions: 51
-- Tabelas Supabase: 130+
-- Hooks customizados: 130+
-- Pastas de componentes: 60+
-- Migrações SQL: 102
-- Testes unitários: 1.012/1.012 (100% pass)
-- Lotes evolutivos: P1→P15
+1. **Resumo executivo** — 1 gap crítico, 7 gaps parciais, 4 edges sem UI usuário, 24 utilitários OK.
+2. **🔴 Hook órfão crítico** — tabela detalhada do `useBudget` (capacidades, sugestão de UI: nova página `/orcamentos` com cards por categoria + gráfico Recharts + dialog CRUD).
+3. **🟡 Componentes ocultos em sub-tabs** — tabela: componente · localização atual · sugestão de exposição (rota dedicada, item sidebar, deep-link).
+4. **🟢 Edge Functions sem UI usuário** — tabela: edge · cron/trigger · sugestão (painel histórico, notificação, aba self-service).
+5. **🔵 Hooks utilitários (sem necessidade de UI)** — lista justificada.
+6. **Roadmap sugerido P16** — priorização por impacto:
+   - **Alto:** `useBudget` → página `/orcamentos`; expor 11 painéis tributários como rotas (`/tributario/split-payment`, `/tributario/incentivos`, etc.) + sidebar.
+   - **Médio:** página `/inteligencia` consolidando HealthScore + Anomalias + Centro de Ações para usuário comum (não só admin); painel "Meus resumos semanais" em `/relatorios`.
+   - **Baixo:** Aba dedicada de scoring em `/clientes`; histórico de envios de relatórios agendados.
 
 ### Formato
-Cabeçalhos H2 por seção, tabelas Markdown (Funcionalidade | Descrição | Localização técnica | Status), badges de status (✅ Produção / 🧪 Beta / 🤖 IA), índice clicável no topo, diagrama Mermaid de arquitetura final, footer com link para `/admin/system-health` e GitHub.
+
+- Tabelas Markdown (Hook/Componente · Linhas de código · Localização · Status UI · Sugestão).
+- Badges: 🔴 Crítico · 🟡 Parcial · 🟢 Edge · 🔵 Utilitário OK.
+- Diagrama ASCII do "mapa de cobertura" (% UI exposta vs código pronto).
+- Footer com link para `/admin/system-health` e referência ao `FUNCIONALIDADES_SISTEMA.md`.
+
+### Métricas a incluir
+
+| Camada | Total | Com UI | Sem UI completa | % Cobertura |
+|---|---|---|---|---|
+| Hooks de domínio | ~95 | ~94 | 1 (`useBudget`) | 98.9% |
+| Componentes-painel | ~110 | ~99 | 11 (tributário sub-tabs) | 90.0% |
+| Edge Functions usuário | 51 | 47 | 4 (cron-only sem painel) | 92.2% |
+| Hooks utilitários | 24 | N/A (não precisam) | N/A | 100% |
+| **Total geral** | **~280** | **~265** | **~15** | **~94.6%** |
 
 ### Entrega
-Após gerar, emito `<lov-artifact>` para download imediato. O arquivo em `docs/` sincroniza automaticamente no GitHub via integração bidirecional do Lovable.
+
+Após gerar, emito `<lov-artifact>` para download. Arquivo em `docs/` sincroniza automaticamente no GitHub.
 
