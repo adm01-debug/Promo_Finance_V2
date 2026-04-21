@@ -1,0 +1,2 @@
+CREATE INDEX IF NOT EXISTS idx_feedback_concil_created ON public.feedback_conciliacao_ia(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_anomalias_detectada_sev_status ON public.anomalias_detectadas(severidade, status, detectada_em DESC);
