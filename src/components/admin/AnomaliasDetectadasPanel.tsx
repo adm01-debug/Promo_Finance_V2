@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import { AnomaliaPreferencesDialog } from "./AnomaliaPreferencesDialog";
+import { BellOff } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -218,12 +220,12 @@ export function AnomaliasDetectadasPanel() {
             <div className="flex items-center gap-2 flex-wrap">
               <Button
                 size="sm"
-                variant="default"
-                onClick={() => setReviewOpen(true)}
-                disabled={pendentes.length === 0}
+                variant="ghost"
+                onClick={() => setPrefsOpen(true)}
+                title="Preferências de alerta"
               >
-                <ListChecks className="h-3 w-3 mr-1" />
-                Revisar em fila ({pendentes.length})
+                <BellOff className="h-3 w-3 mr-1" />
+                Preferências
               </Button>
               <Button
                 size="sm"
