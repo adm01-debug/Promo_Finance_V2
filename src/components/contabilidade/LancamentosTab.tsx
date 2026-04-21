@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { format } from 'date-fns';
-import { Plus, Trash2 } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { format, startOfMonth, endOfMonth, startOfYear, endOfYear, subDays, startOfDay, endOfDay } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Plus, Trash2, Search, CalendarIcon, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,13 +10,18 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 import { useLancamentosContabeis, useCriarLancamento } from '@/hooks/useLancamentosContabeis';
 import { usePlanoContas } from '@/hooks/usePlanoContas';
 import { formatCurrency } from '@/lib/formatters';
+import { cn } from '@/lib/utils';
 
 interface Props { empresaId?: string; ano: number }
 
 interface PartidaForm { conta_id: string; tipo: 'D' | 'C'; valor: number }
+
+type DatePreset = 'all' | 'today' | 'last7' | 'last30' | 'mes' | 'ano' | 'custom';
 
 export function LancamentosTab({ empresaId, ano }: Props) {
   const [open, setOpen] = useState(false);
@@ -26,6 +32,12 @@ export function LancamentosTab({ empresaId, ano }: Props) {
     { conta_id: '', tipo: 'C', valor: 0 },
   ]);
 
+  // Filtros
+  const [busca, setBusca] = useState('');
+  const [preset, setPreset] = useState<DatePreset>('all');
+  const [dataInicio, setDataInicio] = useState<Date | undefined>();
+  const [dataFim, setDataFim] = useState<Date | undefined>();
+
   const { data: lancs = [], isLoading } = useLancamentosContabeis(empresaId, ano);
   const { data: plano = [] } = usePlanoContas(empresaId);
   const criar = useCriarLancamento();
@@ -34,6 +46,39 @@ export function LancamentosTab({ empresaId, ano }: Props) {
   const totalD = partidas.filter(p => p.tipo === 'D').reduce((s, p) => s + p.valor, 0);
   const totalC = partidas.filter(p => p.tipo === 'C').reduce((s, p) => s + p.valor, 0);
   const balanceado = Math.abs(totalD - totalC) < 0.01 && totalD > 0;
+
+  const handlePreset = (p: DatePreset) => {
+    setPreset(p);
+    const hoje = new Date();
+    switch (p) {
+      case 'all': setDataInicio(undefined); setDataFim(undefined); break;
+      case 'today': setDataInicio(startOfDay(hoje)); setDataFim(endOfDay(hoje)); break;
+      case 'last7': setDataInicio(startOfDay(subDays(hoje, 6))); setDataFim(endOfDay(hoje)); break;
+      case 'last30': setDataInicio(startOfDay(subDays(hoje, 29))); setDataFim(endOfDay(hoje)); break;
+      case 'mes': setDataInicio(startOfMonth(hoje)); setDataFim(endOfMonth(hoje)); break;
+      case 'ano': setDataInicio(startOfYear(new Date(ano, 0, 1))); setDataFim(endOfYear(new Date(ano, 0, 1))); break;
+      case 'custom': break;
+    }
+  };
+
+  const limparFiltros = () => { setBusca(''); setPreset('all'); setDataInicio(undefined); setDataFim(undefined); };
+  const filtrosAtivos = busca !== '' || dataInicio !== undefined || dataFim !== undefined;
+
+  const lancsFiltrados = useMemo(() => {
+    const termo = busca.trim().toLowerCase();
+    return lancs.filter((l: { data_lancamento: string; historico: string; numero_lancamento: number }) => {
+      if (dataInicio || dataFim) {
+        const dl = new Date(l.data_lancamento + 'T00:00:00');
+        if (dataInicio && dl < dataInicio) return false;
+        if (dataFim && dl > dataFim) return false;
+      }
+      if (termo) {
+        const hay = `${l.historico} ${l.numero_lancamento}`.toLowerCase();
+        if (!hay.includes(termo)) return false;
+      }
+      return true;
+    });
+  }, [lancs, busca, dataInicio, dataFim]);
 
   const handleSalvar = async () => {
     if (!empresaId || !balanceado) return;
@@ -101,9 +146,70 @@ export function LancamentosTab({ empresaId, ano }: Props) {
           </Dialog>
         </div>
       </CardHeader>
-      <CardContent>
-        {isLoading ? <p className="text-sm text-muted-foreground">Carregando...</p> : lancs.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nenhum lançamento contábil em {ano}.</p>
+      <CardContent className="space-y-4">
+        {/* Filtros */}
+        <div className="flex flex-wrap gap-2 items-center">
+          <div className="relative flex-1 min-w-[220px] max-w-sm">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por histórico ou nº..."
+              value={busca}
+              onChange={e => setBusca(e.target.value)}
+              className="pl-8"
+            />
+          </div>
+          <Select value={preset} onValueChange={v => handlePreset(v as DatePreset)}>
+            <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todo o período</SelectItem>
+              <SelectItem value="today">Hoje</SelectItem>
+              <SelectItem value="last7">Últimos 7 dias</SelectItem>
+              <SelectItem value="last30">Últimos 30 dias</SelectItem>
+              <SelectItem value="mes">Este mês</SelectItem>
+              <SelectItem value="ano">Ano de {ano}</SelectItem>
+              <SelectItem value="custom">Personalizado</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className={cn('gap-2', !dataInicio && 'text-muted-foreground')}>
+                <CalendarIcon className="h-4 w-4" />
+                {dataInicio ? format(dataInicio, 'dd/MM/yyyy', { locale: ptBR }) : 'Início'}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar mode="single" selected={dataInicio} onSelect={d => { setDataInicio(d); setPreset('custom'); }} initialFocus className={cn('p-3 pointer-events-auto')} />
+            </PopoverContent>
+          </Popover>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className={cn('gap-2', !dataFim && 'text-muted-foreground')}>
+                <CalendarIcon className="h-4 w-4" />
+                {dataFim ? format(dataFim, 'dd/MM/yyyy', { locale: ptBR }) : 'Fim'}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar mode="single" selected={dataFim} onSelect={d => { setDataFim(d); setPreset('custom'); }} initialFocus className={cn('p-3 pointer-events-auto')} />
+            </PopoverContent>
+          </Popover>
+
+          {filtrosAtivos && (
+            <Button variant="ghost" size="sm" onClick={limparFiltros} className="gap-1">
+              <X className="h-3.5 w-3.5" />Limpar
+            </Button>
+          )}
+
+          <div className="ml-auto text-xs text-muted-foreground">
+            {lancsFiltrados.length} de {lancs.length} {lancs.length === 1 ? 'lançamento' : 'lançamentos'}
+          </div>
+        </div>
+
+        {isLoading ? <p className="text-sm text-muted-foreground">Carregando...</p> : lancsFiltrados.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            {lancs.length === 0 ? `Nenhum lançamento contábil em ${ano}.` : 'Nenhum lançamento corresponde aos filtros aplicados.'}
+          </p>
         ) : (
           <Table>
             <TableHeader>
@@ -113,7 +219,7 @@ export function LancamentosTab({ empresaId, ano }: Props) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {lancs.slice(0, 100).map((l: { id: string; numero_lancamento: number; data_lancamento: string; historico: string; origem: string; valor_total: number; status: string }) => (
+              {lancsFiltrados.slice(0, 100).map((l: { id: string; numero_lancamento: number; data_lancamento: string; historico: string; origem: string; valor_total: number; status: string }) => (
                 <TableRow key={l.id}>
                   <TableCell className="font-mono">{l.numero_lancamento}</TableCell>
                   <TableCell>{format(new Date(l.data_lancamento + 'T00:00:00'), 'dd/MM/yyyy')}</TableCell>
@@ -126,7 +232,7 @@ export function LancamentosTab({ empresaId, ano }: Props) {
             </TableBody>
           </Table>
         )}
-        {lancs.length > 100 && <p className="text-xs text-muted-foreground mt-2">Exibindo 100 de {lancs.length}</p>}
+        {lancsFiltrados.length > 100 && <p className="text-xs text-muted-foreground mt-2">Exibindo 100 de {lancsFiltrados.length}</p>}
       </CardContent>
     </Card>
   );
