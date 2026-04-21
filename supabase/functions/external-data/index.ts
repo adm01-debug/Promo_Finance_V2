@@ -84,7 +84,7 @@ async function emitTelemetry(opts: {
   }
 }
 
-// ── Main handler ────────────────────────────────────────────────────────
+// ── Main handler (v2: graceful fallback when EXTERNAL_* secrets missing) ──
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
