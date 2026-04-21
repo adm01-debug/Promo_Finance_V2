@@ -1,194 +1,127 @@
 
 
-## Plano — Análise de Gaps Enterprise (GAPS_ENTERPRISE.md)
+## Plano — Tela de Configuração de SSO Empresarial (OIDC/SAML)
 
-Vou criar `docs/GAPS_ENTERPRISE.md` + `/mnt/documents/GAPS_ENTERPRISE.md` comparando o **Promo Finance** com benchmarks **enterprise de classe mundial** no segmento ERP financeiro brasileiro: **SAP S/4HANA Finance, Oracle NetSuite, Totvs Protheus, Omie, Conta Azul Pro, QuickBooks Enterprise, Sage Intacct, Workday Financial Management**.
+Tela admin em `/admin/sso` para configurar provedores de identidade corporativos (Azure AD, Okta, Google Workspace, OneLogin, JumpCloud, ADFS) via OIDC ou SAML 2.0.
 
-### Metodologia
-Análise comparativa em **12 domínios funcionais**, classificando cada gap por:
-- **Prioridade:** 🔴 Crítico (bloqueia venda enterprise) · 🟡 Alto · 🟢 Médio · 🔵 Diferencial
-- **Esforço:** S (≤1 sprint) · M (1-2 meses) · L (3-6 meses) · XL (>6 meses)
-- **ROI:** receita/retenção/competitividade
+### ⚠️ Aviso importante sobre escopo
 
-### Estrutura do documento (12 domínios + roadmap)
+A **autenticação SSO real funcional** (validação de token SAML/OIDC, criação de sessão Supabase) tem dois caminhos:
 
-**1. 🏢 Multi-empresa & Consolidação Contábil** *(gap real)*
-- ❌ Consolidação contábil multi-empresa (eliminação de saldos intercompany)
-- ❌ Conversão multi-moeda automática (USD/EUR + variação cambial)
-- ❌ Plano de contas unificado vs por empresa
-- ❌ Fechamento contábil centralizado matriz/filial
-- ✅ Tem multi-tenant por `empresa_id`
+1. **Caminho nativo Lovable Cloud** — apenas SAML é nativamente suportado, e a configuração efetiva é feita pelo **suporte Lovable Cloud** (não há API self-service para criar IdPs SAML por tenant via Edge Function). OIDC corporativo (Azure AD, Okta) **não é nativamente suportado** pelo Lovable Cloud — exigiria conectar uma instância Supabase própria.
 
-**2. 📒 Contabilidade plena** *(maior gap)*
-- ❌ Contabilidade dupla (débito/crédito automático em todo lançamento)
-- ❌ Razão geral, livro diário, balancete de verificação
-- ❌ Geração de SPED ECD (Escrituração Contábil Digital)
-- ❌ Geração de SPED ECF (Escrituração Contábil Fiscal)
-- ❌ DRE contábil (atual só tem DRE Tributária)
-- ❌ Balanço Patrimonial (ativo/passivo/PL)
-- ❌ DFC (Demonstração de Fluxo de Caixa) método indireto
-- ❌ DMPL/DLPA (mutações do patrimônio líquido)
-- ✅ Tem plano de contas + centros de custo
+2. **Caminho desta tela** — vou construir a **camada de configuração e gestão** (UI + persistência + validação + métricas + claim mapping + domain restriction + audit) que **gerencia a intenção de SSO** e gera os artefatos (Entity ID, ACS URL, metadata XML, callback URLs) que o admin usa para configurar tanto no IdP quanto para abrir ticket no Lovable Cloud (SAML) ou para uma futura migração.
 
-**3. 📦 Estoque, Custos & Cadeia de Suprimentos**
-- ❌ Gestão de estoque própria (depende do Bling)
-- ❌ Custeio (PEPS, UEPS, médio ponderado)
-- ❌ Inventário cíclico/rotativo
-- ❌ Ordem de compra (Purchase Order) com workflow
-- ❌ Recebimento de mercadorias (NFe entrada → estoque automático)
-- ❌ Cotação de fornecedores (RFQ)
+Esta tela entrega **80% do trabalho enterprise** (governança, multi-IdP, claim mapping, auto-provisioning de roles, allowed domains, monitoramento) — a ativação final do handshake fica documentada como passo manual via suporte Lovable Cloud até evolução do produto.
 
-**4. 👥 Folha de Pagamento & RH**
-- ❌ Folha de pagamento completa (CLT, encargos, INSS, FGTS, IRRF)
-- ❌ eSocial (envio S-1000 a S-5013)
-- ❌ DCTFWeb / DARF folha
-- ❌ Férias, 13º, rescisões automatizadas
-- ❌ Holerite digital (portal funcionário)
-- ❌ Ponto eletrônico integrado
-- ✅ Tem aba "Folha" no Histórico Financeiro Tributário (apenas valores agregados)
+### Escopo desta entrega
 
-**5. 🛒 CRM & Vendas avançado**
-- ❌ Pipeline de vendas próprio (depende do Bitrix24)
-- ❌ Cotação/Proposta comercial → conversão em pedido
-- ❌ Catálogo de produtos/serviços com tabela de preços por cliente
-- ❌ Comissionamento de vendedores (regras complexas)
-- ❌ CPQ (Configure-Price-Quote)
-- ✅ Tem cadastro de vendedores + integração Bitrix24
+**1. Banco de dados** (migração)
+- Tabela `sso_providers`:
+  - `id`, `nome`, `tipo` (`oidc`|`saml`), `ativo`, `ordem`
+  - **OIDC:** `client_id`, `client_secret_ref` (nome do secret), `discovery_url`, `authorization_endpoint`, `token_endpoint`, `userinfo_endpoint`, `jwks_uri`, `scopes[]`
+  - **SAML:** `entity_id_idp`, `sso_url`, `slo_url`, `x509_cert`, `metadata_xml`, `name_id_format`, `signature_algorithm`
+  - **Comum:** `allowed_domains[]` (ex: `["empresa.com.br"]`), `claim_mapping` JSONB (`{email, full_name, groups, role}`), `default_role` (`visualizador`|`operacional`|`financeiro`|`admin`), `auto_provision_users` bool, `force_sso_for_domains` bool
+- Tabela `sso_login_attempts`: `provider_id`, `email`, `success`, `error_code`, `ip`, `user_agent`, `created_at` — para métricas e auditoria
+- Tabela `sso_role_mappings`: `provider_id`, `idp_group_or_claim`, `app_role` — mapeamento grupo IdP → role RBAC
+- RLS hardenizada: apenas `admin` pode CRUD; service role lê para o handshake
+- Trigger `fn_audit_sso_changes` registra em `audit_logs`
+- Validação trigger: `force_sso_for_domains` requer `allowed_domains` não vazio
 
-**6. 💼 Gestão de Projetos & Centros de Resultado**
-- ❌ Project Accounting (orçado vs realizado por projeto)
-- ❌ Timesheet → faturamento
-- ❌ Milestones / faturamento por entrega
-- ❌ Margem de contribuição por projeto
-- ❌ WIP (Work In Progress)
-- ✅ Tem `OrcamentoEvento` (caso pontual)
+**2. Edge Functions** (3 novas)
+- `sso-validate-config` — testa conectividade: faz GET no `discovery_url` (OIDC) ou parseia metadata XML (SAML), valida certs, retorna campos descobertos
+- `sso-generate-metadata` — gera **Service Provider Metadata XML** (SAML) ou retorna **redirect URIs** (OIDC) que o admin cola no IdP
+- `sso-test-login` — simula fluxo de claim mapping com payload mockado e retorna como o usuário seria criado/mapeado (sem efetivar login)
 
-**7. 🏦 Tesouraria avançada**
-- ❌ Gestão de aplicações financeiras (CDB, LCI, fundos)
-- ❌ Hedge cambial / derivativos
-- ❌ Cash pooling intercompany
-- ❌ Conciliação automática de cartões (taxas adquirente)
-- ❌ Antecipação automática de recebíveis (FIDC)
-- ❌ Política de crédito automatizada (limite por cliente)
-- ✅ Tem Tesouraria básica + saldos consolidados
+**3. UI — `/admin/sso`** (página com 4 abas)
 
-**8. 📊 BI, Analytics & Data Warehouse**
-- ❌ Cubo OLAP / drill-down ilimitado
-- ❌ Dashboards customizáveis pelo usuário (atual só drag&drop)
-- ❌ Construtor de relatórios visual (drag-and-drop fields)
-- ❌ Exportação para Power BI / Tableau / Looker (conector ODBC/REST)
-- ❌ Data warehouse com histórico longo (>2 anos)
-- ❌ Forecasting com modelos ARIMA/Prophet (atual usa só LLM)
-- ✅ Tem BI page + Recharts + insights IA
+**Aba 1 — Provedores configurados**
+- Lista cards com: logo do IdP (Azure/Okta/Google ícones), nome, tipo (OIDC/SAML badge), status (ativo/inativo toggle), domínios permitidos, último login bem-sucedido, taxa de sucesso 7d
+- Botões: testar conexão, editar, duplicar, excluir, baixar metadata SP
+- CTA primário: "+ Adicionar provedor"
 
-**9. 🔐 Segurança Enterprise (compliance)**
-- ❌ SSO corporativo (SAML 2.0, OIDC, Azure AD, Okta)
-- ❌ SCIM 2.0 (provisionamento automático de usuários)
-- ❌ Permissões granulares por campo (field-level security)
-- ❌ Segregação de funções (SoD) — matriz de conflitos
-- ❌ Certificação SOC 2 Type II / ISO 27001
-- ❌ Data residency (escolher região de armazenamento)
-- ❌ Audit log imutável (write-once com hash blockchain)
-- ✅ Tem MFA, WebAuthn, RBAC 4 papéis, RLS, audit_logs
+**Aba 2 — Wizard de configuração** (Dialog stepper 4 passos)
+- **Passo 1 — Tipo:** cards visuais (OIDC vs SAML) + presets rápidos (Azure AD, Okta, Google Workspace, OneLogin, JumpCloud, ADFS, Custom)
+- **Passo 2 — Conexão:**
+  - OIDC: cola `discovery_url` → botão "Auto-descobrir" preenche todos os endpoints + secret reference
+  - SAML: upload do `metadata.xml` do IdP OU cola URL de metadata OU campos manuais (Entity ID, SSO URL, certificado X.509)
+- **Passo 3 — Mapeamento:**
+  - Editor visual de claim mapping: dropdowns para email/nome/grupos
+  - Tabela de role mapping: `[grupo IdP] → [role RBAC]` com preview
+  - Domínios permitidos (multi-input com chips)
+  - Auto-provisionamento on/off + role default para usuários novos
+- **Passo 4 — Validação & ativação:**
+  - Botão "Testar configuração" chama `sso-validate-config`
+  - Mostra metadata SP gerada para copiar/baixar
+  - Mostra **callback URL** com botão de cópia (para colar no IdP)
+  - Toggle "Forçar SSO para domínios permitidos" (block password login)
 
-**10. 🌐 Internacionalização & Multi-país**
-- ❌ i18n completo (PT/EN/ES) — atual só pt-BR
-- ❌ Multi-moeda em todos os módulos
-- ❌ Localizações fiscais não-BR (IVA México, VAT EU)
-- ❌ IFRS reporting (além de BR GAAP)
-- ❌ Timezone por usuário
+**Aba 3 — Monitoramento & métricas**
+- KPIs: total logins SSO 7d/30d, taxa de sucesso %, tempo médio de handshake, usuários únicos
+- Gráfico Recharts: logins SSO/senha por dia (linha)
+- Tabela últimas 50 tentativas: timestamp, email, provedor, status, erro (se houver)
+- Distribuição por provedor (pie chart)
 
-**11. 🔌 Plataforma & Extensibilidade**
-- ❌ API pública REST/GraphQL documentada (OpenAPI 3.0)
-- ❌ Webhooks de saída configuráveis pelo cliente
-- ❌ App marketplace / plugins de terceiros
-- ❌ Workflow builder visual (no-code, ex: Zapier-like interno)
-- ❌ Custom fields por entidade (sem migração)
-- ❌ Custom objects (criar tabelas via UI)
-- ❌ Sandbox environment separado de produção
-- ✅ Tem 51 edges customizadas (mas internas)
+**Aba 4 — Documentação & onboarding**
+- Cards passo-a-passo por IdP (Azure AD, Okta, Google) com screenshots-guia textuais
+- Snippet de metadata SP pronto para copiar
+- **Aviso destacado:** "Após salvar a configuração, abra um ticket no suporte Lovable Cloud com a metadata XML para finalizar a ativação SAML server-side" (com link)
+- Link para `/admin/audit-logs?filter=sso` (eventos SSO)
 
-**12. 🛡️ Operações Enterprise (NOC/SRE)**
-- ❌ SLA contratual com créditos (uptime 99.9%)
-- ❌ Disaster Recovery (RPO/RTO documentados)
-- ❌ Backup point-in-time pelo cliente (self-service restore)
-- ❌ Status page pública (status.promofinance.com)
-- ❌ On-call/PagerDuty integration
-- ❌ Tenant isolation físico (não só lógico via RLS)
-- ✅ Tem `/admin/system-health` + SLO panel + cron monitoring
+**4. Integrações com sistema existente**
+- Na página `/auth`: se houver provedor SSO ativo + email digitado pertence a `allowed_domains`, mostrar banner "Sua organização usa SSO — Entrar com [Provedor]" antes do campo de senha. Se `force_sso_for_domains=true`, esconde campo de senha.
+- Hook `useSSO` consumido por `/auth` e `/admin/sso`
+- Item no sidebar admin: "SSO Empresarial" (ícone `KeyRound`) sob grupo "Segurança"
+- Botão de atalho em `/seguranca` aba "Configurações" → "Configurar SSO"
+- Item no command palette (Ctrl+K): "Configurar SSO"
 
-### Sumário quantitativo de gaps
+**5. Segurança & compliance**
+- Client secrets nunca trafegam para o frontend (referenciados por nome via `sso_providers.client_secret_ref` → resolvidos no Edge Function)
+- Quando admin cadastra um secret OIDC, instrui-se a adicionar via Lovable Cloud secrets (vou usar `add_secret` quando necessário durante uso real)
+- Certificado X.509 SAML armazenado em texto (público por natureza)
+- Toda alteração em `sso_providers` gera registro em `audit_logs` com `_old_data` e `_new_data` redacted (secrets removidos)
+- RLS: somente `admin` lê/escreve `sso_providers`; `sso_login_attempts` somente admin
+- Rate limit no `sso-validate-config` (5 testes/min por admin)
 
-| Domínio | Gaps críticos 🔴 | Gaps altos 🟡 | Total | Cobertura atual |
-|---|---:|---:|---:|---:|
-| Contabilidade plena | 7 | 1 | 8 | ~10% |
-| Folha & RH | 4 | 2 | 6 | ~5% |
-| Estoque & Suprimentos | 3 | 3 | 6 | ~15% |
-| Multi-empresa/Consolidação | 2 | 2 | 4 | ~30% |
-| Tesouraria avançada | 2 | 4 | 6 | ~25% |
-| Segurança Enterprise | 3 | 4 | 7 | ~50% |
-| BI / Analytics | 1 | 5 | 6 | ~60% |
-| Plataforma/API | 2 | 5 | 7 | ~20% |
-| CRM/Vendas | 1 | 4 | 5 | ~40% |
-| Projetos | 0 | 5 | 5 | ~10% |
-| Internacionalização | 1 | 4 | 5 | ~5% |
-| Operações Enterprise | 1 | 5 | 6 | ~50% |
-| **TOTAL** | **27** | **44** | **71** | **~26%** |
-
-### Roadmap sugerido (P16 → P25)
-
-**Fase 1 — Fundação Enterprise (P16-P18, 3 meses):**
-1. SSO SAML/OIDC + SCIM
-2. API pública REST + OpenAPI 3.0 + webhooks de saída
-3. i18n EN/ES + multi-moeda
-4. Custom fields por entidade
-5. Status page + SLA documentado
-
-**Fase 2 — Contabilidade & Fiscal (P19-P21, 4 meses):**
-6. Contabilidade dupla automática
-7. SPED ECD + ECF
-8. DRE contábil + Balanço + DFC
-9. Consolidação multi-empresa com eliminação intercompany
-
-**Fase 3 — Operacional (P22-P24, 4 meses):**
-10. Folha de pagamento + eSocial
-11. Estoque + custeio + ordem de compra
-12. Project accounting + timesheet
-
-**Fase 4 — Diferenciação (P25+):**
-13. Workflow builder visual
-14. App marketplace
-15. Hedge cambial + tesouraria avançada
-16. Tenant isolation físico + SOC 2 Type II
-
-### Posicionamento competitivo (matriz)
+### Arquivos criados/editados
 
 ```
-                    Promo Finance vs Concorrentes
-
-Capacidade IA          ████████████████████░  Promo: LIDERANÇA (vs todos)
-Reforma Tributária 2026 ███████████████████░  Promo: LIDERANÇA (vs Omie/Conta Azul)
-UX/Design moderno      ████████████████████░  Promo: LIDERANÇA
-Financeiro core        ████████████████░░░░░  Promo: PARIDADE (Omie/Conta Azul)
-Contabilidade plena    ███░░░░░░░░░░░░░░░░░░  Promo: ATRÁS (Totvs/SAP/NetSuite)
-Folha & RH             █░░░░░░░░░░░░░░░░░░░░  Promo: GAP TOTAL (Totvs/Senior)
-Estoque & Cadeia       ████░░░░░░░░░░░░░░░░░  Promo: ATRÁS (delegado a Bling)
-Plataforma/API         ████░░░░░░░░░░░░░░░░░  Promo: ATRÁS (NetSuite/SAP)
-Multi-país/i18n        █░░░░░░░░░░░░░░░░░░░░  Promo: GAP (NetSuite/SAP)
-Compliance Enterprise  ██████████░░░░░░░░░░░  Promo: PARCIAL (sem SOC2)
+supabase/migrations/{ts}_sso_providers.sql                  (nova tabela + RLS + audit trigger)
+supabase/functions/sso-validate-config/index.ts             (descoberta OIDC + parse SAML)
+supabase/functions/sso-generate-metadata/index.ts           (gera SP metadata XML)
+supabase/functions/sso-test-login/index.ts                  (simula claim mapping)
+src/pages/admin/SSOAdmin.tsx                                (página principal, 4 tabs)
+src/components/admin/sso/SSOProvidersList.tsx               (aba 1)
+src/components/admin/sso/SSOWizardDialog.tsx                (aba 2 - stepper)
+src/components/admin/sso/steps/StepTipo.tsx
+src/components/admin/sso/steps/StepConexao.tsx
+src/components/admin/sso/steps/StepMapeamento.tsx
+src/components/admin/sso/steps/StepValidacao.tsx
+src/components/admin/sso/SSOMetricsPanel.tsx                (aba 3 - Recharts)
+src/components/admin/sso/SSODocumentacao.tsx                (aba 4)
+src/components/admin/sso/IdpPresets.ts                      (Azure/Okta/Google defaults)
+src/hooks/useSSO.ts                                         (CRUD + métricas + test)
+src/components/auth/SSOLoginBanner.tsx                      (banner em /auth)
+src/pages/Auth.tsx                                          (editar: integrar banner)
+src/App.tsx                                                 (editar: rota /admin/sso)
+src/components/layout/Sidebar.tsx                           (editar: item sidebar admin)
 ```
 
-### Conclusão
+### Acessibilidade & UX
+- Stepper com indicador visual de progresso, botões "Voltar/Avançar" sticky
+- Validação Zod em cada step antes de avançar
+- Confetti ao completar wizard com sucesso (consistente com onboarding atual)
+- Tokens semânticos HSL (sem cores hardcoded)
+- Animações Framer Motion nos cards e transições de aba
+- Estados de loading (Skeleton) em todas as queries
+- Empty state ilustrado quando nenhum provedor configurado
 
-**Posicionamento atual:** Promo Finance é **best-in-class para PMEs brasileiras com foco tributário/IA**, competindo de igual para igual com Omie e Conta Azul, e **superando todos em IA e Reforma Tributária 2026**. 
+### Testes
+- Vitest: validação Zod do schema de provedor, parser de metadata SAML, claim mapping puro
+- Smoke test do edge `sso-validate-config` com mock de discovery URL
 
-**Para virar enterprise** (competir com Totvs/SAP/NetSuite), precisa fechar **27 gaps críticos** em **3 frentes prioritárias**: Contabilidade plena, Folha de pagamento e Plataforma/API. Estimativa: **~12 meses de roadmap (P16→P24)** para atingir paridade enterprise.
-
-### Formato
-
-Tabelas Markdown, badges 🔴🟡🟢🔵, diagrama ASCII de posicionamento, estimativas S/M/L/XL, ROI estimado por gap. Footer com referências aos concorrentes analisados.
-
-### Entrega
-
-Após gerar, emito `<lov-artifact>` para download. Sincroniza no GitHub via `docs/`.
+### Não incluído nesta entrega
+- Handshake SAML/OIDC real server-side (depende de evolução do Lovable Cloud ou migração para Supabase próprio com `gotrue` SAML enabled) — documentado como próximo passo
+- SCIM 2.0 (provisionamento automático de usuários) — sugerido como tarefa separada P17
+- Just-In-Time (JIT) provisioning real — preparado no schema (`auto_provision_users`), mas a criação efetiva do usuário depende do callback server-side acima
 
