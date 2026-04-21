@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Brain, AlertTriangle, History, BarChart3, ScrollText } from 'lucide-react';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { MainLayout } from '@/components/layout/MainLayout';
 import { InsightsIAKpis } from '@/components/insights-ia/InsightsIAKpis';
 import { AnomaliasDetectadasPanel } from '@/components/admin/AnomaliasDetectadasPanel';
 import { ConciliacaoHistoricoTab } from '@/components/insights-ia/ConciliacaoHistoricoTab';
