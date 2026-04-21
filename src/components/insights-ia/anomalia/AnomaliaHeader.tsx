@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, Eye, Search } from "lucide-react";
 import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
 import { useAnomaliasDetectadas } from "@/hooks/useAnomaliasDetectadas";
+import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
 import { ReabrirAnomaliaDialog } from "./ReabrirAnomaliaDialog";
 
 const TIPO_LABEL: Record<Anomalia["tipo_anomalia"], string> = {
@@ -16,6 +17,18 @@ const TIPO_LABEL: Record<Anomalia["tipo_anomalia"], string> = {
 
 export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
   const { atualizarStatus } = useAnomaliasDetectadas();
+  const sincronizar = useSincronizarAnomaliaBitrix();
+
+  const revisarComBitrix = (status: "confirmada" | "falso_positivo") => {
+    atualizarStatus.mutate(
+      { id: anomalia.id, status },
+      {
+        onSuccess: () =>
+          sincronizar.mutate({ anomaliaId: anomalia.id, evento: status }),
+      },
+    );
+  };
+
   const sevVariant =
     anomalia.severidade === "critica" || anomalia.severidade === "alta"
       ? "destructive"
@@ -31,6 +44,11 @@ export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
             <Badge variant={sevVariant}>{anomalia.severidade}</Badge>
             <Badge variant="outline">{TIPO_LABEL[anomalia.tipo_anomalia]}</Badge>
             <Badge variant="outline" className="capitalize">{anomalia.status}</Badge>
+            {anomalia.bitrix_task_id && (
+              <Badge variant="secondary" className="text-xs">
+                Bitrix24 #{anomalia.bitrix_task_id}
+              </Badge>
+            )}
             <span className="text-xs text-muted-foreground">
               Detectada em {new Date(anomalia.detectada_em).toLocaleString("pt-BR")}
             </span>
@@ -59,17 +77,13 @@ export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
               <Button
                 size="sm"
                 variant="ghost"
-                onClick={() =>
-                  atualizarStatus.mutate({ id: anomalia.id, status: "falso_positivo" })
-                }
+                onClick={() => revisarComBitrix("falso_positivo")}
               >
                 <Eye className="h-3 w-3 mr-1" /> Falso positivo
               </Button>
               <Button
                 size="sm"
-                onClick={() =>
-                  atualizarStatus.mutate({ id: anomalia.id, status: "confirmada" })
-                }
+                onClick={() => revisarComBitrix("confirmada")}
               >
                 <CheckCircle2 className="h-3 w-3 mr-1" /> Confirmar
               </Button>

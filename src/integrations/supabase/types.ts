@@ -505,6 +505,7 @@ export type Database = {
       }
       anomalias_detectadas: {
         Row: {
+          bitrix_task_id: string | null
           centro_custo_id: string | null
           created_at: string
           dados: Json | null
@@ -523,6 +524,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          bitrix_task_id?: string | null
           centro_custo_id?: string | null
           created_at?: string
           dados?: Json | null
@@ -541,6 +543,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          bitrix_task_id?: string | null
           centro_custo_id?: string | null
           created_at?: string
           dados?: Json | null

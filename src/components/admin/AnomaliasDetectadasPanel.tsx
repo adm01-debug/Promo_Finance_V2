@@ -39,6 +39,7 @@ import {
   usePendingAnomaliasQueue,
   type Anomalia,
 } from "@/hooks/useAnomaliasDetectadas";
+import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
 import { AnomaliasReviewQueue } from "./AnomaliasReviewQueue";
 import { AnomaliaDrillDownDrawer } from "./AnomaliaDrillDownDrawer";
 import { ReabrirAnomaliaDialog } from "@/components/insights-ia/anomalia/ReabrirAnomaliaDialog";
@@ -152,6 +153,7 @@ export function AnomaliasDetectadasPanel() {
   const { data, isLoading, atualizarStatus, detectar } = useAnomaliasDetectadas(
     filters.status === "todas" ? undefined : filters.status,
   );
+  const sincronizar = useSincronizarAnomaliaBitrix();
   const { data: pendentes = [] } = usePendingAnomaliasQueue();
 
   const lista = useMemo(() => {
@@ -504,10 +506,16 @@ export function AnomaliasDetectadasPanel() {
                         size="sm"
                         variant="ghost"
                         onClick={() =>
-                          atualizarStatus.mutate({
-                            id: a.id,
-                            status: "falso_positivo",
-                          })
+                          atualizarStatus.mutate(
+                            { id: a.id, status: "falso_positivo" },
+                            {
+                              onSuccess: () =>
+                                sincronizar.mutate({
+                                  anomaliaId: a.id,
+                                  evento: "falso_positivo",
+                                }),
+                            },
+                          )
                         }
                       >
                         <Eye className="h-3 w-3 mr-1" /> Falso +
@@ -519,10 +527,16 @@ export function AnomaliasDetectadasPanel() {
                       <Button
                         size="sm"
                         onClick={() =>
-                          atualizarStatus.mutate({
-                            id: a.id,
-                            status: "confirmada",
-                          })
+                          atualizarStatus.mutate(
+                            { id: a.id, status: "confirmada" },
+                            {
+                              onSuccess: () =>
+                                sincronizar.mutate({
+                                  anomaliaId: a.id,
+                                  evento: "confirmada",
+                                }),
+                            },
+                          )
                         }
                       >
                         <CheckCircle2 className="h-3 w-3 mr-1" /> Confirmar

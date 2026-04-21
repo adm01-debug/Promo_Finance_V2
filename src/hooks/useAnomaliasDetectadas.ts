@@ -28,6 +28,7 @@ export interface Anomalia {
   detectada_em: string;
   resolvida_em: string | null;
   observacoes: string | null;
+  bitrix_task_id: string | null;
 }
 
 export function useAnomaliasDetectadas(filtroStatus?: Anomalia["status"]) {

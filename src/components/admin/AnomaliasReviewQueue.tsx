@@ -26,6 +26,7 @@ import {
   useRevisarAnomalia,
   type Anomalia,
 } from "@/hooks/useAnomaliasDetectadas";
+import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
 import { toast } from "sonner";
 
 const TIPO_LABEL: Record<Anomalia["tipo_anomalia"], string> = {
@@ -60,6 +61,7 @@ interface Props {
 export function AnomaliasReviewQueue({ open, onOpenChange }: Props) {
   const { data: fila = [], isLoading } = usePendingAnomaliasQueue();
   const revisar = useRevisarAnomalia();
+  const sincronizar = useSincronizarAnomaliaBitrix();
 
   const [snapshot, setSnapshot] = useState<Anomalia[]>([]);
   const [index, setIndex] = useState(0);
@@ -112,6 +114,7 @@ export function AnomaliasReviewQueue({ open, onOpenChange }: Props) {
         status,
         observacoes: comentarioTrim,
       });
+      sincronizar.mutate({ anomaliaId: atual.id, evento: status });
       setStats((s) => ({
         ...s,
         confirmadas: status === "confirmada" ? s.confirmadas + 1 : s.confirmadas,
