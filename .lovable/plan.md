@@ -1,61 +1,76 @@
 
 
-## Plano — Realtime para anomalias críticas + drill-down inline
+## Plano — Personalização de colunas, ordenação e filtros salvos (Anomalias + Conciliação)
 
-Hoje quem está em `/admin/system-health` (aba **Anomalias**) ou `/admin/insights-ia` só descobre uma nova anomalia ao recarregar (refetch 60s). E o "drill-down" exige sair da tela navegando para `/admin/insights-ia/anomalia/{id}`. Este plano resolve as duas pontas: **push em tempo real** quando uma anomalia `critica`/`alta` é inserida, e **drawer lateral** com o drill-down sem perder o contexto da fila.
+Hoje:
+- A tabela `public.saved_filters` (já criada e com RLS por `user_id`) **nunca foi consumida** — `ConciliacaoFilters` mantém estado em memória e perde tudo ao recarregar.
+- O painel de anomalias (`AnomaliasDetectadasPanel`) só tem filtro por `status` (single select) e mostra cards fixos sem controle de colunas/ordenação.
+- A lista de transações de conciliação (`ConciliacaoTransactionList`) é card-based fixa, sem ordenação nem escolha de campos.
+
+Este plano entrega 3 capacidades reutilizáveis em ambas as telas: **filtros salvos**, **ordenação configurável** e **seleção de colunas/campos visíveis**.
 
 ### Mudanças
 
-**1. Habilitar realtime na tabela** (migração)
-```sql
-ALTER TABLE public.anomalias_detectadas REPLICA IDENTITY FULL;
-ALTER PUBLICATION supabase_realtime ADD TABLE public.anomalias_detectadas;
-```
+**1. Hook genérico `useSavedFilters`** (`src/hooks/useSavedFilters.ts`)
+- Wrappa a tabela `saved_filters` com React Query.
+- API: `useSavedFilters<T>(entityType: string)` retorna:
+  - `filters` (lista de presets do usuário para a entidade)
+  - `defaultFilter` (o `is_default=true`, se houver)
+  - `save({ name, payload, isDefault })` — upsert por `(user_id, entity_type, name)`
+  - `update(id, patch)` / `remove(id)` / `setDefault(id)`
+- O `payload` JSONB armazena tudo: `{ filters, sort: {key, dir}, columns: string[] }` — schema versionado com `v: 1` para migração futura.
+- RLS por `user_id` já existe; nada novo no backend.
 
-**2. Novo hook `useRealtimeAnomalias.ts`** (`src/hooks/`)
-- Subscribe em `postgres_changes` INSERT em `anomalias_detectadas`.
-- Filtro client-side: apenas `severidade in ('critica','alta')` dispara toast.
-- Para cada nova anomalia:
-  - Invalida `["anomalias-detectadas"]` e `["anomalias-detectadas","pending-queue"]`.
-  - Toast `error` (crítica) ou `warning` (alta), `duration: 12000`, com 2 ações:
-    - **"Drill-down"** → `window.dispatchEvent(new CustomEvent('open-anomalia-drawer', { detail: { id } }))`.
-    - **"Abrir página"** → navega para `/admin/insights-ia/anomalia/{id}`.
-- Anti-spam: `Set` ref dedupando por id (Realtime ocasionalmente reentrega).
-- Cleanup do canal no unmount; só faz subscribe se `isAdmin`.
+**2. Componente reutilizável `SavedFiltersBar`** (`src/components/shared/SavedFiltersBar.tsx`)
+- Barra horizontal com:
+  - Dropdown "Carregar preset" listando `filters` (estrela no padrão).
+  - Botão **"Salvar como…"** abre `<Dialog>` com input de nome + checkbox "Definir como padrão".
+  - Botão **"Salvar atual"** (visível quando um preset está carregado e foi modificado).
+  - Botão lixeira para remover preset ativo.
+- Recebe `entityType`, `currentState` (objeto serializável) e `onLoad(state)`.
+- Detecta "modificado" por shallow-equal entre `currentState` e o preset carregado.
 
-**3. Wiring global em `SidebarNavGroups.tsx`**
-- Adicionar `useRealtimeAnomalias()` ao lado de `useRealtimeAlertas()` para que toasts apareçam em qualquer rota admin.
+**3. Componente reutilizável `ColumnVisibilityMenu`** (`src/components/shared/ColumnVisibilityMenu.tsx`)
+- DropdownMenu com checkbox por coluna disponível.
+- Props: `columns: { key, label, locked? }[]`, `visible: string[]`, `onChange`.
+- Colunas com `locked: true` (ex.: descrição, valor) não podem ser ocultadas.
 
-**4. Novo componente `AnomaliaDrillDownDrawer.tsx`** (`src/components/admin/`)
-- Usa `<Sheet>` (shadcn) lado direito, `sm:max-w-2xl`.
-- Listener global `open-anomalia-drawer` no mount — qualquer parte da app pode abrir.
-- Conteúdo: monta `useAnomaliaDetalhe(id)` (já existe) e renderiza versão compacta dos cards do `/admin/insights-ia/anomalia/[id]`:
-  - `AnomaliaHeader`
-  - `EntidadeRelacionadaCard` com botão **"Abrir transação completa"** que faz deep-link para a entidade real (mapeamento por `entidade_tipo`).
-  - `AcoesSugeridasCard` (Confirmar / Falso positivo direto do drawer, reusando `useRevisarAnomalia`).
-- Footer: **"Abrir página completa"** (`/admin/insights-ia/anomalia/{id}`) e **"Fechar"**.
-- Skeleton durante load; mensagem caso anomalia removida.
+**4. Hook `useTablePreferences`** (`src/hooks/useTablePreferences.ts`)
+- Combina filtros + sort + colunas num único state controlado, com persistência local (localStorage por `entityType`) como fallback antes do usuário criar preset.
+- Sincroniza com `defaultFilter` do `useSavedFilters` no mount: se existir default, aplica; senão usa localStorage; senão usa initial.
 
-**5. Integração inline em `AnomaliasDetectadasPanel.tsx`**
-- Cada linha ganha botão `<Button variant="ghost" size="sm">Drill-down</Button>` que dispara o evento (sem `<Link>`, preserva filtro/scroll).
-- Mantém o link `Microscope` original como atalho discreto "Abrir em nova aba".
-- `<AnomaliaDrillDownDrawer />` montado uma vez no fim do painel.
+**5. Aplicação em **Anomalias** (`AnomaliasDetectadasPanel`)**
+- entityType = `"anomalias_detectadas"`.
+- Novos filtros (além de status que já existe):
+  - **Severidade** (multi-check: critica/alta/media/baixa).
+  - **Período** (`detectada_em` início/fim, date inputs).
+  - **Tipo de anomalia** (multi-check com 5 tipos).
+- **Ordenação** configurável: `detectada_em` (default desc), `severidade` (rank custom critica→baixa), `tipo_anomalia`.
+- **Colunas/campos visíveis** (controla quais badges/blocos aparecem em cada card): `severidade` (locked), `tipo` (locked), `data`, `descricao` (locked), `observacoes`, `entidade_relacionada`, `acoes_inline`.
+- `SavedFiltersBar` posicionada acima do select de status atual; o select vira parte do estado serializado.
+
+**6. Aplicação em **Conciliação** (`ConciliacaoTransactionList` + `ConciliacaoFilters`)**
+- entityType = `"conciliacao_transacoes"`.
+- Estende `ConciliacaoFilterState` existente com:
+  - `severidade` derivada da confiança IA (renomeação visual: "Severidade do match" mapeado para `confiancaIA`).
+- **Ordenação** nova: `data` (default desc), `valor`, `confiancaIA`, `tipo`. Header com `SortableHeader` reaproveitado (`src/components/ui/sortable-header.tsx`, já existe).
+- **Colunas visíveis** no card: `data`, `descricao` (locked), `valor` (locked), `tipo`, `confianca_badge`, `acoes` (locked).
+- `SavedFiltersBar` adicionada na linha do header acima do search/filter atual.
 
 ### Detalhes técnicos
 
-- **Permissões realtime**: `anomalias_detectadas` já tem RLS admin-only — payloads só chegam para admins. `REPLICA IDENTITY FULL` é necessário para o INSERT entregar a linha completa.
-- **Deep link da transação** (util `lib/anomalia-routes.ts`):
-  - `movimentacao` → `/movimentacoes?highlight={id}`
-  - `conta_pagar` → `/contas-pagar?highlight={id}`
-  - `transacao_bancaria` → `/conciliacao?txId={id}`
-  - `regime_decision_cache` → `/admin/insights-ia/anomalia/{id}` (sem entidade direta)
-- **Filtro server-side** por severidade no Realtime do Supabase não suporta enums confiavelmente; ficamos no client (volume baixo).
-- **A11y**: toast já é `aria-live="assertive"`; Sheet fecha com `Esc`.
-- **Sem conflito com `useRealtimeAlertas`**: canais distintos.
+- **Sem mudança de schema**: `saved_filters` já existe com RLS, índices `(user_id, entity_type)` e trigger de `is_default` único.
+- **Tipagem do payload**: `interface SavedFilterPayload<T> { v: 1; filters: T; sort?: { key: string; dir: 'asc'|'desc' }; columns?: string[] }` exportada de `useSavedFilters`.
+- **Migração suave**: estado existente em `Conciliacao.tsx` continua funcionando; o `useTablePreferences` é opt-in e a forma do `filters` no payload é o próprio `ConciliacaoFilterState`.
+- **Concorrência**: trigger `ensure_single_default_filter` já garante 1 default por (user, entity).
+- **Performance**: índice parcial `idx_saved_filters_default WHERE is_default=true` já criado — query de bootstrap é `O(1)` por entidade.
+- **Ordenação por severidade** (anomalias): aplicada client-side com map `{critica:0, alta:1, media:2, baixa:3}` (mesmo padrão do `AnomaliasReviewQueue`).
+- **A11y**: `SavedFiltersBar` usa `<DropdownMenu>` shadcn (já a11y-compliant); `ColumnVisibilityMenu` com `role="menuitemcheckbox"`.
 
 ### Fora de escopo
 
-- Push notification de SO (web-push) — pode ser plugado depois reutilizando `send-push-notification`.
-- Marcar como "vista" automaticamente ao abrir drawer (mantém `status='nova'` para a fila de revisão).
-- Filtro configurável de quais severidades disparam toast (hard-coded `critica`/`alta`).
+- Compartilhar presets entre usuários da mesma empresa (RLS atual é por `user_id`).
+- Drag-to-reorder de colunas (apenas show/hide).
+- Filtros salvos em outras telas (contas a pagar/receber/movimentações) — esses ficam para um próximo passo, mas o hook é genérico e está pronto para ser plugado lá.
+- Export do preset como JSON.
 
