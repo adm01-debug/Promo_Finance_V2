@@ -79,7 +79,12 @@ export function RateLimitDashboard() {
         <TabsContent value="logs" className="mt-4">
           <Card><CardHeader><div className="flex items-center justify-between gap-3 flex-wrap"><div><CardTitle>Logs de Rate Limit</CardTitle><CardDescription>Histórico de requisições e limites atingidos</CardDescription></div><div className="flex items-center gap-3"><IpMaskToggle /><Button variant="outline" onClick={handleClearOldLogs}><Trash2 className="h-4 w-4 mr-2" />Limpar Antigos</Button></div></div></CardHeader>
             <CardContent>
-              <div className="relative mb-4"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Buscar por IP ou endpoint..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" /></div>
+              <div className="mb-4 space-y-1">
+                <div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Buscar por IP ou endpoint..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" /></div>
+                {maskIpsEnabled && (
+                  <p className="text-xs text-muted-foreground pl-1">A busca casa com o IP original — você pode pesquisar por <span className="font-mono">192.168.1.42</span> mesmo com mascaramento ativo.</p>
+                )}
+              </div>
               <div className="max-h-[400px] overflow-auto"><Table><TableHeader><TableRow><TableHead>IP</TableHead><TableHead>Endpoint</TableHead><TableHead>Requisições</TableHead><TableHead>Status</TableHead><TableHead>Data</TableHead></TableRow></TableHeader>
                 <TableBody>{filteredLogs.slice(0, 100).map((log) => <TableRow key={log.id}><TableCell className="font-mono text-sm">{maskIp(log.ip_address, maskIpsEnabled)}</TableCell><TableCell className="max-w-[200px] truncate">{log.endpoint}</TableCell><TableCell>{log.requests_count}</TableCell><TableCell>{log.blocked ? <Badge variant="destructive">Bloqueado</Badge> : <Badge variant="secondary">OK</Badge>}</TableCell><TableCell className="text-sm text-muted-foreground">{formatDistanceToNow(new Date(log.created_at), { addSuffix: true, locale: ptBR })}</TableCell></TableRow>)}</TableBody></Table></div>
             </CardContent></Card>

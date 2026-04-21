@@ -45,9 +45,16 @@ export function BlockedIPsTab({ blockedIPs, searchTerm, onSearchChange, onBlockN
         </div>
       </CardHeader>
       <CardContent>
-        <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Buscar IP ou motivo..." value={searchTerm} onChange={(e) => onSearchChange(e.target.value)} className="pl-10" />
+        <div className="mb-4 space-y-1">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Buscar IP ou motivo..." value={searchTerm} onChange={(e) => onSearchChange(e.target.value)} className="pl-10" />
+          </div>
+          {maskIpsEnabled && (
+            <p className="text-xs text-muted-foreground pl-1">
+              A busca casa com o IP original — você pode pesquisar por <span className="font-mono">192.168.1.42</span> mesmo com mascaramento ativo.
+            </p>
+          )}
         </div>
         {filtered.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground"><Shield className="h-12 w-12 mx-auto mb-3 opacity-20" /><p>Nenhum IP bloqueado</p></div>
