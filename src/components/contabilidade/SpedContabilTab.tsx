@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { Download, FileText, AlertTriangle, CheckCircle2, ShieldAlert, Loader2 } from 'lucide-react';
+import { Download, FileText, AlertTriangle, CheckCircle2, ShieldAlert, Loader2, FileArchive, Wand2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -11,6 +11,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useGerarSpedContabil, useSpedContabilHistorico } from '@/hooks/useSpedContabil';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { SpedEcdWizard } from './SpedEcdWizard';
+import { baixarSpedZip } from '@/lib/sped-zip';
 
 interface Props {
   tipo: 'ECD' | 'ECF';
