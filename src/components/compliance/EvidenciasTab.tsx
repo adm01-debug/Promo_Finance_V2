@@ -234,6 +234,19 @@ export function EvidenciasTab() {
           )}
         </CardContent>
       </Card>
+
+      <EvidenciaStatusDialog
+        open={statusOpen}
+        onOpenChange={setStatusOpen}
+        status={stream.status}
+        events={stream.events}
+        current={stream.current}
+        percent={stream.percent}
+        result={stream.result}
+        error={stream.error}
+        onRetry={stream.retry}
+        onCancel={stream.cancel}
+      />
     </div>
   );
 }
