@@ -17,6 +17,18 @@ const TIPO_LABEL: Record<Anomalia["tipo_anomalia"], string> = {
 
 export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
   const { atualizarStatus } = useAnomaliasDetectadas();
+  const sincronizar = useSincronizarAnomaliaBitrix();
+
+  const revisarComBitrix = (status: "confirmada" | "falso_positivo") => {
+    atualizarStatus.mutate(
+      { id: anomalia.id, status },
+      {
+        onSuccess: () =>
+          sincronizar.mutate({ anomaliaId: anomalia.id, evento: status }),
+      },
+    );
+  };
+
   const sevVariant =
     anomalia.severidade === "critica" || anomalia.severidade === "alta"
       ? "destructive"
