@@ -239,17 +239,16 @@ export default function CorporateOnboarding() {
                   ? `Iniciando em ${countdown}s…`
                   : `Conectando ao ${redirecting.nome}…`}
               </div>
-              {countdown > 0 && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full gap-2"
-                  onClick={handleCancelRedirect}
-                >
-                  <X className="h-4 w-4" />
-                  Cancelar redirecionamento
-                </Button>
-              )}
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full gap-2"
+                onClick={handleCancelRedirect}
+                aria-label="Cancelar redirecionamento e voltar à escolha manual"
+              >
+                <X className="h-4 w-4" />
+                {countdown > 0 ? 'Cancelar redirecionamento' : 'Cancelar e voltar'}
+              </Button>
             </CardContent>
           </Card>
         </motion.div>
