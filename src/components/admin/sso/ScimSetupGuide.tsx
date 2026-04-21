@@ -127,6 +127,60 @@ export function ScimSetupGuide() {
             <Badge variant="outline" className="justify-center py-2">SCIM 2.0</Badge>
             <Badge variant="outline" className="justify-center py-2">Bearer auth</Badge>
           </div>
+
+          <div className="pt-2 space-y-3 border-t">
+            <div className="flex items-center justify-between gap-3 pt-3">
+              <div>
+                <p className="text-sm font-medium">Testar conexão</p>
+                <p className="text-xs text-muted-foreground">
+                  Faz um <code>GET /ServiceProviderConfig</code> sem token para validar se o endpoint está online.
+                </p>
+              </div>
+              <Button onClick={handleTest} disabled={testing} variant="outline">
+                {testing ? (
+                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Testando…</>
+                ) : (
+                  <><PlugZap className="h-4 w-4 mr-2" />Testar conexão</>
+                )}
+              </Button>
+            </div>
+
+            {result?.ok && (
+              <Alert variant="success" title="Endpoint SCIM acessível">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-xs">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    <span>HTTP {result.status} • {result.latencyMs} ms • schema SCIM 2.0 válido</span>
+                  </div>
+                  <div className="text-xs space-y-1 pt-1">
+                    <p className="font-medium">Status esperado por IdP:</p>
+                    <ul className="list-disc list-inside text-muted-foreground space-y-0.5">
+                      <li><strong>Azure AD:</strong> "Test Connection" deve retornar <code>200 OK</code>.</li>
+                      <li><strong>Okta:</strong> "Test Connector Configuration" deve ficar todo verde.</li>
+                    </ul>
+                    <p className="text-muted-foreground pt-1">
+                      Lembre-se que ações autenticadas (criação de usuários) ainda exigem um token SCIM válido.
+                    </p>
+                  </div>
+                </div>
+              </Alert>
+            )}
+
+            {result && !result.ok && (
+              <Alert variant="error" title="Não foi possível validar o endpoint">
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2 text-xs">
+                    <XCircle className="h-3.5 w-3.5" />
+                    <span>
+                      {result.message}
+                      {result.latencyMs !== undefined && ` • ${result.latencyMs} ms`}
+                    </span>
+                  </div>
+                  {result.hint && <p className="text-xs text-muted-foreground">{result.hint}</p>}
+                </div>
+              </Alert>
+            )}
+          </div>
         </CardContent>
       </Card>
 
