@@ -45,9 +45,11 @@ const TIPO_LABEL: Record<Anomalia["tipo_anomalia"], string> = {
 
 export function AnomaliasDetectadasPanel() {
   const [filtro, setFiltro] = useState<Anomalia["status"] | "todas">("nova");
+  const [reviewOpen, setReviewOpen] = useState(false);
   const { data, isLoading, atualizarStatus, detectar } = useAnomaliasDetectadas(
     filtro === "todas" ? undefined : filtro
   );
+  const { data: pendentes = [] } = usePendingAnomaliasQueue();
 
   return (
     <div className="space-y-4">
