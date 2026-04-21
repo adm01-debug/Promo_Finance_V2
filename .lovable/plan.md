@@ -1,90 +1,64 @@
 
 
-## Plano — Reabrir anomalia revisada
+## Plano — Sincronizar revisões de anomalia ao Bitrix24
 
-Hoje `useRevisarAnomalia` só aceita transição **a partir** de `nova`/`investigando` (linhas 158-162 de `useAnomaliasDetectadas.ts`: `.in("status", ["nova", "investigando"])`). Não existe caminho de volta para `confirmada` / `falso_positivo`. Vou adicionar essa transição com auditoria e UI nos dois pontos onde o usuário enxerga o status final.
+Ações **Confirmar**, **Falso positivo** e **Salvar parecer** (+ **Reabrir**) vão criar/atualizar uma **Tarefa** no Bitrix24 representando aquela anomalia. Reaproveita o padrão de `enviar-bitrix24-tributario` e os secrets já configurados (`BITRIX24_DOMAIN`, `BITRIX24_ACCESS_TOKEN`).
 
-### Mudanças
+### 1. Banco — coluna para o ID da tarefa Bitrix
 
-**1. `src/hooks/useAnomaliasDetectadas.ts` — novo hook `useReabrirAnomalia`**
+Migration mínima:
 
-Mutation dedicada (não reusa `atualizarStatus` para registrar auditoria e validar transição):
-
-```ts
-export function useReabrirAnomalia() {
-  const qc = useQueryClient();
-  const audit = useLogAudit();
-
-  return useMutation({
-    mutationFn: async (input: { id: string; motivo: string }) => {
-      const motivo = input.motivo.trim();
-      if (motivo.length < 10) {
-        throw new Error("Motivo deve ter ao menos 10 caracteres");
-      }
-      const { data: userData } = await supabase.auth.getUser();
-      const uid = userData.user?.id ?? null;
-
-      const { data, error } = await supabase
-        .from("anomalias_detectadas")
-        .update({
-          status: "investigando",
-          observacoes: motivo,
-          resolvida_em: null,
-          resolvida_por: null,
-        })
-        .eq("id", input.id)
-        .in("status", ["confirmada", "falso_positivo"])  // só reabre o que está fechado
-        .select("id")
-        .maybeSingle();
-
-      if (error) throw error;
-      if (!data) throw new Error("Anomalia não está em estado reabrível");
-
-      await audit.mutateAsync({
-        action: "REOPEN",
-        tableName: "anomalias_detectadas",
-        recordId: input.id,
-        details: motivo,
-      }).catch(() => undefined);
-
-      return data;
-    },
-    onSuccess: () => {
-      toast.success("Anomalia reaberta para investigação");
-      qc.invalidateQueries({ queryKey: ["anomalias-detectadas"] });
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-}
+```sql
+ALTER TABLE public.anomalias_detectadas
+  ADD COLUMN IF NOT EXISTS bitrix_task_id text;
 ```
 
-**2. `src/components/insights-ia/anomalia/AnomaliaHeader.tsx` — botão Reabrir**
+Sem mudança de RLS — políticas atuais cobrem a coluna nova.
 
-Quando `anomalia.status === "confirmada" || "falso_positivo"`, renderizar **apenas** o botão "Reabrir" (some o trio Investigar/Falso positivo/Confirmar — não faz sentido nesse estado). Clique abre um pequeno `Dialog` com `Textarea` exigindo motivo (mínimo 10 chars, mesma regra de `useRevisarAnomalia`):
+### 2. Edge function nova — `sincronizar-anomalia-bitrix24`
 
-```tsx
-{(anomalia.status === "confirmada" || anomalia.status === "falso_positivo") && (
-  <ReabrirAnomaliaDialog anomaliaId={anomalia.id} />
-)}
-```
+`supabase/functions/sincronizar-anomalia-bitrix24/index.ts`:
 
-`ReabrirAnomaliaDialog` é um componente novo curto (~50 linhas) em `src/components/insights-ia/anomalia/ReabrirAnomaliaDialog.tsx` — `Dialog` + `Textarea` + botão `RotateCcw` com `useReabrirAnomalia`.
+- CORS + valida JWT + lê `{ anomaliaId, evento: "confirmada" | "falso_positivo" | "parecer" | "reaberta" }`.
+- Carrega a anomalia (`SELECT *`) para pegar `bitrix_task_id`, severidade, tipo, descrição, observações, entidade.
+- Monta título `[Anomalia] {tipo_label} — {severidade}` e DESCRIPTION em BBCode com resumo, parecer atual, evento e link de drill-down `/admin/insights-ia/anomalia/{id}`.
+- Mapeia: severidade → `PRIORITY` (0/1/2); status → `STATUS` Bitrix (`confirmada`/`falso_positivo` → 5 fechado; `reaberta`/`parecer` → 2 pendente).
+- Se já existe `bitrix_task_id` → `tasks.task.update`. Senão → `tasks.task.add` e grava o `taskId` em `anomalias_detectadas`.
+- Sempre adiciona `task.commentitem.add` com o evento + parecer (timeline auditável dentro do Bitrix).
+- Reusa o helper `bitrixCall` (retry exponencial em 429/5xx).
+- Sem secrets configurados → `200 { skipped: true, reason: "Bitrix24 não configurado" }` (não quebra a UX).
+- Resposta de sucesso: `{ success: true, taskId, taskUrl, action: "created" | "updated" }`.
 
-**3. `src/components/admin/AnomaliasDetectadasPanel.tsx` — botão Reabrir inline**
+### 3. Hook cliente — `useSincronizarAnomaliaBitrix`
 
-No card de cada item da lista (linhas 469-481), quando o filtro está em "Confirmadas" ou "Falsos positivos" (ou "Todas" e o item está nesse estado), trocar o botão Drill-down secundário pelo botão "Reabrir" também via `ReabrirAnomaliaDialog`. Drill-down continua sendo a ação primária.
+`src/hooks/useSincronizarAnomaliaBitrix.ts` — wrapper de `supabase.functions.invoke("sincronizar-anomalia-bitrix24", ...)`. Toast só em erro real ou na primeira vez por sessão quando vier `skipped` (flag em `sessionStorage`).
+
+### 4. Pontos de UI que disparam a sync
+
+Cada local chama o hook **depois** da operação local, sem bloquear; falha do Bitrix nunca derruba o salvamento principal:
+
+- **`AnomaliaHeader.tsx`** — após Confirmar e após Falso positivo.
+- **`AcoesSugeridasCard.tsx`** — após Salvar parecer (`evento: "parecer"`).
+- **`AnomaliasReviewQueue.tsx`** — após cada `revisar.mutateAsync` (mesmos eventos).
+- **`AnomaliasDetectadasPanel.tsx`** — botões inline de Confirmar e Falso +.
+- **`ReabrirAnomaliaDialog.tsx`** — após `reabrir.mutateAsync` (`evento: "reaberta"`).
+
+### 5. Indicador no card
+
+`EntidadeRelacionadaCard` ganha um `Badge` "Bitrix24 #{taskId}" quando `anomalia.bitrix_task_id` existe. Link clicável só após a primeira sync da sessão (o `taskUrl` retornado vai para o cache do React Query); nas demais cargas de página exibimos só o badge textual, já que `BITRIX24_DOMAIN` é secret e não chega ao frontend.
 
 ### Fora de escopo
 
-- Reabrir em massa (bulk) — fila de revisão continua só pegando `nova`/`investigando`.
-- Histórico de reaberturas (quem/quando) — fica no log de auditoria, não na UI ainda.
-- Migration de banco — nenhuma alteração de schema; `resolvida_em` e `resolvida_por` são apenas limpos no UPDATE.
-- Atalhos de teclado.
+- Sync inversa (Bitrix → anomalia) via webhook — fica para iteração futura usando o `bitrix24-webhook` existente.
+- `RESPONSIBLE_ID` configurável: por ora a tarefa fica com o dono do token Bitrix.
+- Anexos/PDF.
+- Feature flag por empresa para desligar a integração — quem não tem secrets já fica em modo `skipped`.
 
 ### Detalhes técnicos
 
-- A transição é guardada no `.in("status", ["confirmada", "falso_positivo"])` do UPDATE, prevenindo race condition (alguém revisando ao mesmo tempo).
-- `resolvida_em = null` e `resolvida_por = null` deixam o registro consistente com novas anomalias `investigando`.
-- `observacoes` é sobrescrito pelo motivo da reabertura — alinhado ao comportamento atual de `useRevisarAnomalia`. Se quiser preservar o parecer anterior, é o item "histórico de pareceres" já discutido em mensagem anterior.
-- Audit log usa `action: "REOPEN"` (string nova, não exige migration — `useLogAudit` aceita string livre).
+- Helper `bitrixCall` é copiado (não extraído para `_shared/`) para manter o passo simples — mesmo padrão de `enviar-bitrix24-tributario`.
+- `tasks.task.add` recebe `fields: { TITLE, DESCRIPTION, PRIORITY, TAGS: ["lovable-anomalia", tipo, severidade] }`.
+- `task.commentitem.add` usa formato posicional `[task_id, { POST_MESSAGE: "..." }]` (peculiaridade da API Bitrix).
+- Auditoria local: cada disparo grava `useLogAudit({ action: "UPDATE", details: "BITRIX24_SYNC: evento=..." })`.
+- Sem conflito com `bitrix24-sync` existente, que só cuida de clientes/deals.
 
