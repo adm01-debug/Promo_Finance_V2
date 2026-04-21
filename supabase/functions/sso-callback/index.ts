@@ -693,6 +693,15 @@ Deno.serve(async (req) => {
     const cm = (provider.claim_mapping || {}) as Record<string, string>;
     const email = String(claims[cm.email || "email"] || claims.email || "").toLowerCase();
     const fullName = String(claims[cm.full_name || "name"] || claims.name || email);
+    const avatarUrl =
+      (claims[cm.avatar_url || "picture"] as string | undefined) ??
+      (claims.picture as string | undefined) ??
+      null;
+    const telefone =
+      (claims[cm.telefone || "phone_number"] as string | undefined) ??
+      (claims.phone_number as string | undefined) ??
+      (claims.phone as string | undefined) ??
+      null;
     const groups: string[] = Array.isArray(claims[cm.groups || "groups"])
       ? (claims[cm.groups || "groups"] as string[])
       : [];
@@ -710,6 +719,8 @@ Deno.serve(async (req) => {
       provider,
       email,
       fullName,
+      avatarUrl,
+      telefone,
       groups,
       existingUserId: null,
       allowJit: !!provider.auto_provision_users,
