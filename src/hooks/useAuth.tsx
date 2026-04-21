@@ -1,8 +1,10 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
+import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
 import { getCurrentEmpresaId } from '@/hooks/useUserEmpresas';
+import { broadcastSsoSlo, subscribeSsoSlo } from '@/lib/sso-sync';
 
 type AppRole = 'admin' | 'financeiro' | 'operacional' | 'visualizador';
 
@@ -165,9 +167,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('current-empresa-changed', handler);
   }, [user]);
 
+  // Sincroniza SSO Single Logout entre abas: ao receber broadcast, faz signOut local + redirect.
+  useEffect(() => {
+    const unsubscribe = subscribeSsoSlo((msg) => {
+      const dedupKey = String(msg.ts);
+      if (sessionStorage.getItem('sso-slo-toast-shown') === dedupKey) return;
+      sessionStorage.setItem('sso-slo-toast-shown', dedupKey);
+      toast.info(`Sessão SSO encerrada em outra aba (${msg.providerNome})`, { id: 'sso-slo' });
+      supabase.auth.signOut({ scope: 'local' }).catch(() => { /* noop */ });
+      window.location.replace('/auth?slo=ok&from=tab-sync');
+    });
+    return unsubscribe;
+  }, []);
+
   const signOut = async () => {
     const ssoProviderId = (user?.user_metadata as Record<string, unknown> | undefined)?.sso_provider_id as string | undefined;
     let ssoLogoutUrl: string | null = null;
+    let providerNome = 'SSO';
 
     if (ssoProviderId) {
       try {
@@ -175,9 +191,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           body: { provider_id: ssoProviderId, return_origin: window.location.origin },
         });
         if (!error && data?.logout_url) ssoLogoutUrl = data.logout_url as string;
+        if (!error && data?.provider_nome) providerNome = data.provider_nome as string;
       } catch (e) {
         logger.warn('[useAuth] SSO logout falhou — seguindo com logout local', e);
       }
+
+      // Sincroniza outras abas: cada uma fará signOut local + redirect para /auth.
+      try {
+        const ts = broadcastSsoSlo(providerNome);
+        // Marca esta aba para que ela não reaja ao próprio broadcast.
+        sessionStorage.setItem('sso-slo-toast-shown', String(ts));
+      } catch { /* noop */ }
+      toast.loading(`Encerrando sessão SSO via ${providerNome}…`, { id: 'sso-slo' });
     }
 
     await supabase.auth.signOut();
