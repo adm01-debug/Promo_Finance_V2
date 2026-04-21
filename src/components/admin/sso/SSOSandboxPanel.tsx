@@ -261,7 +261,7 @@ export function SSOSandboxPanel() {
               />
 
               {result.errors.length > 0 && (
-                <Alert variant="destructive">
+                <Alert variant="error">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
                     <ul className="list-disc pl-4 space-y-1">
