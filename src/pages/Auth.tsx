@@ -39,7 +39,11 @@ const containerVariants = {
 export default function Auth() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(() => {
+    if (typeof window === 'undefined') return '';
+    const params = new URLSearchParams(window.location.search);
+    return params.get('email') ?? '';
+  });
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string; fullName?: string }>({});
