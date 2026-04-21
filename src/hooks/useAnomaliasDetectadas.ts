@@ -169,3 +169,51 @@ export function useRevisarAnomalia() {
     onError: (e: Error) => toast.error(e.message),
   });
 }
+
+export function useReabrirAnomalia() {
+  const qc = useQueryClient();
+  const audit = useLogAudit();
+
+  return useMutation({
+    mutationFn: async (input: { id: string; motivo: string }) => {
+      const motivo = input.motivo.trim();
+      if (motivo.length < 10) {
+        throw new Error("Motivo deve ter ao menos 10 caracteres");
+      }
+
+      const { data, error } = await supabase
+        .from("anomalias_detectadas")
+        .update({
+          status: "investigando",
+          observacoes: motivo,
+          resolvida_em: null,
+          resolvida_por: null,
+        })
+        .eq("id", input.id)
+        .in("status", ["confirmada", "falso_positivo"])
+        .select("id")
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!data) {
+        throw new Error("Anomalia não está em estado reabrível");
+      }
+
+      await audit
+        .mutateAsync({
+          action: "UPDATE",
+          tableName: "anomalias_detectadas",
+          recordId: input.id,
+          details: `REOPEN: ${motivo}`,
+        })
+        .catch(() => undefined);
+
+      return data;
+    },
+    onSuccess: () => {
+      toast.success("Anomalia reaberta para investigação");
+      qc.invalidateQueries({ queryKey: ["anomalias-detectadas"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+}

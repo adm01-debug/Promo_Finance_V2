@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, Eye, Search } from "lucide-react";
 import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
 import { useAnomaliasDetectadas } from "@/hooks/useAnomaliasDetectadas";
+import { ReabrirAnomaliaDialog } from "./ReabrirAnomaliaDialog";
 
 const TIPO_LABEL: Record<Anomalia["tipo_anomalia"], string> = {
   movimentacao_outlier: "Movimentação atípica",
@@ -40,34 +41,40 @@ export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
           )}
         </div>
         <div className="flex gap-2 shrink-0">
-          {anomalia.status === "nova" && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() =>
-                atualizarStatus.mutate({ id: anomalia.id, status: "investigando" })
-              }
-            >
-              <Search className="h-3 w-3 mr-1" /> Investigar
-            </Button>
+          {anomalia.status === "confirmada" || anomalia.status === "falso_positivo" ? (
+            <ReabrirAnomaliaDialog anomaliaId={anomalia.id} />
+          ) : (
+            <>
+              {anomalia.status === "nova" && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    atualizarStatus.mutate({ id: anomalia.id, status: "investigando" })
+                  }
+                >
+                  <Search className="h-3 w-3 mr-1" /> Investigar
+                </Button>
+              )}
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() =>
+                  atualizarStatus.mutate({ id: anomalia.id, status: "falso_positivo" })
+                }
+              >
+                <Eye className="h-3 w-3 mr-1" /> Falso positivo
+              </Button>
+              <Button
+                size="sm"
+                onClick={() =>
+                  atualizarStatus.mutate({ id: anomalia.id, status: "confirmada" })
+                }
+              >
+                <CheckCircle2 className="h-3 w-3 mr-1" /> Confirmar
+              </Button>
+            </>
           )}
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() =>
-              atualizarStatus.mutate({ id: anomalia.id, status: "falso_positivo" })
-            }
-          >
-            <Eye className="h-3 w-3 mr-1" /> Falso positivo
-          </Button>
-          <Button
-            size="sm"
-            onClick={() =>
-              atualizarStatus.mutate({ id: anomalia.id, status: "confirmada" })
-            }
-          >
-            <CheckCircle2 className="h-3 w-3 mr-1" /> Confirmar
-          </Button>
         </div>
       </CardContent>
     </Card>

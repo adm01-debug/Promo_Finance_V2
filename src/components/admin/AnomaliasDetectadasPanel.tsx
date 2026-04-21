@@ -41,6 +41,7 @@ import {
 } from "@/hooks/useAnomaliasDetectadas";
 import { AnomaliasReviewQueue } from "./AnomaliasReviewQueue";
 import { AnomaliaDrillDownDrawer } from "./AnomaliaDrillDownDrawer";
+import { ReabrirAnomaliaDialog } from "@/components/insights-ia/anomalia/ReabrirAnomaliaDialog";
 import { dispatchOpenAnomaliaDrawer } from "@/lib/anomalia-routes";
 import { SavedFiltersBar } from "@/components/shared/SavedFiltersBar";
 import {
@@ -526,6 +527,11 @@ export function AnomaliasDetectadasPanel() {
                       >
                         <CheckCircle2 className="h-3 w-3 mr-1" /> Confirmar
                       </Button>
+                    )}
+                  {isVisible("acoes_inline") &&
+                    (a.status === "confirmada" ||
+                      a.status === "falso_positivo") && (
+                      <ReabrirAnomaliaDialog anomaliaId={a.id} />
                     )}
                 </div>
               ))}
