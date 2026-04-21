@@ -17,7 +17,9 @@ import {
   Eye,
   Loader2,
   RefreshCw,
+  Microscope,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import {
   useAnomaliasDetectadas,
   type Anomalia,

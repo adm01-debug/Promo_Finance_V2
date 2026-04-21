@@ -11,7 +11,7 @@ interface AcaoSugerida {
   titulo: string;
   descricao: string;
   rota?: string;
-  cta: string;
+  cta?: string;
 }
 
 function acoesPara(a: Anomalia): AcaoSugerida[] {
