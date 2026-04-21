@@ -167,6 +167,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('current-empresa-changed', handler);
   }, [user]);
 
+  // Sincroniza SSO Single Logout entre abas: ao receber broadcast, faz signOut local + redirect.
+  useEffect(() => {
+    const unsubscribe = subscribeSsoSlo((msg) => {
+      const dedupKey = String(msg.ts);
+      if (sessionStorage.getItem('sso-slo-toast-shown') === dedupKey) return;
+      sessionStorage.setItem('sso-slo-toast-shown', dedupKey);
+      toast.info(`Sessão SSO encerrada em outra aba (${msg.providerNome})`, { id: 'sso-slo' });
+      supabase.auth.signOut({ scope: 'local' }).catch(() => { /* noop */ });
+      window.location.replace('/auth?slo=ok&from=tab-sync');
+    });
+    return unsubscribe;
+  }, []);
+
   const signOut = async () => {
     const ssoProviderId = (user?.user_metadata as Record<string, unknown> | undefined)?.sso_provider_id as string | undefined;
     let ssoLogoutUrl: string | null = null;
