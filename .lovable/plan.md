@@ -1,51 +1,49 @@
 
 
-## Plano — Rota `/contabilidade` (verificação + ajuste menor)
+## Plano — Adicionar `/contabilidade` ao menu lateral
 
-### Diagnóstico
+### Contexto
 
-A rota `/contabilidade` **já está registrada e funcional** em `src/App.tsx`:
+A rota `/contabilidade` já existe em `src/App.tsx` (protegida com roles `admin`/`financeiro`) e a página `Contabilidade.tsx` já contém as abas internas (Plano, Lançamentos, Razão & Diário, DRE & Balanço, **SPED ECD**, **SPED ECF**). Falta apenas o link de navegação na sidebar — hoje só `/demonstrativos` aparece no grupo Fiscal.
 
-```tsx
-// linha 81 — lazy import
-const Contabilidade = lazy(() => import('./pages/Contabilidade'));
+A pergunta sobre "alternar para o módulo de SPED quando aplicável" já é resolvida pela própria página: ao clicar no link e abrir `/contabilidade`, o usuário vê todas as abas, incluindo SPED ECD e SPED ECF. Não precisa de rota separada.
 
-// linha 128 — rota protegida com RBAC
-<Route 
-  path="/contabilidade" 
-  element={
-    <ProtectedRoute requiredRoles={['admin', 'financeiro']}>
-      <Contabilidade />
-    </ProtectedRoute>
-  } 
-/>
-```
+### Mudança
 
-A página `src/pages/Contabilidade.tsx` existe e renderiza corretamente (tabs Plano / Lançamentos / Razão & Diário / DRE & Balanço / SPED ECD / SPED ECF).
+**`src/components/layout/sidebar/SidebarNavGroups.tsx`** — duas pequenas edições:
 
-Em produção a rota também funciona porque a Lovable hospeda como SPA com fallback automático para `index.html` em deep links — **não é preciso `_redirects`, `vercel.json` nem nada de hosting**.
+1. **Importar o ícone** `BookOpen` no bloco de imports do `lucide-react` (mesmo ícone usado no header da página `Contabilidade`).
 
-### Único ajuste pendente
+2. **Adicionar o item de menu** dentro do grupo `'fiscal'` (id `Fiscal & Documentos`), logo após `Demonstrativos`:
 
-`src/components/providers/NavigationTracker.tsx` mapeia labels de rotas para o sistema de "itens recentes" mas **não tem entrada para `/contabilidade`**. Sem ela, a página existe e carrega, mas não aparece em "Recentes" / Command Palette.
+   ```ts
+   { label: 'Contabilidade & SPED', icon: BookOpen, href: '/contabilidade' },
+   ```
 
-### Mudança proposta
+### Por que neste grupo e nesta posição
 
-**`src/components/providers/NavigationTracker.tsx`** — adicionar uma linha no `routeLabels`:
+- **Grupo Fiscal & Documentos** já agrega Notas Fiscais, Demonstrativos, Tributário — Contabilidade/SPED é continuação natural.
+- **Após Demonstrativos** porque DRE/Balanço da página Demonstrativos espelham os dados contábeis; quem está em Demonstrativos provavelmente quer o livro contábil completo a seguir.
 
-```ts
-'/contabilidade': 'Contabilidade & SPED',
-```
+### Comportamento herdado (sem código extra)
 
-(coloca junto com `/demonstrativos` para agrupar logicamente)
+- O item já fica **destacado quando ativo** (`bg-primary/10 text-primary` via lógica `isActive` existente).
+- O grupo Fiscal **abre automaticamente** quando o usuário entra em `/contabilidade` (graças ao `hasActiveItem` no `useState` inicial dos grupos).
+- Em modo **collapsed**, aparece tooltip "Contabilidade & SPED" no hover do ícone.
+- Usuários sem role `admin`/`financeiro` veem o link, mas ao clicar caem na tela "Acesso Negado" do `ProtectedRoute` (consistente com o resto do app — não filtramos itens por role na sidebar hoje).
+- A subnavegação SPED ECD/ECF é feita via **Tabs internas** da página, não via rota dedicada (alinhado ao padrão atual).
 
 ### Critério de pronto
 
-1. `/contabilidade` continua acessível via deep link no preview e em produção (já está).
-2. Acessar `/contabilidade` registra "Contabilidade & SPED" em itens recentes / Command Palette.
-3. Sem regressão em nenhuma outra rota.
+1. Sidebar mostra "Contabilidade & SPED" em **Fiscal & Documentos**, com ícone livro.
+2. Clicar leva a `/contabilidade` e a aba "Plano" abre por padrão.
+3. As abas internas permitem alternar para SPED ECD e SPED ECF sem sair da rota.
+4. Em rota ativa, o item fica destacado e o grupo Fiscal aparece expandido.
+5. No modo collapsed da sidebar, tooltip exibe o nome correto.
+6. `NavigationTracker` já registra "Contabilidade & SPED" em Recentes (entrada adicionada no turno anterior).
+7. Sem regressão em outros grupos do menu.
 
-### Observação
+### Arquivos
 
-Se você está vendo algum problema específico ao acessar `/contabilidade` (404 em produção, tela em branco, erro de carregamento do chunk lazy), me diga o sintoma exato — o código atual está correto, então qualquer falha seria em outro lugar (build, role do usuário não bate com `admin`/`financeiro`, ou cache de service worker servindo bundle antigo).
+- ✏️ `src/components/layout/sidebar/SidebarNavGroups.tsx` — adiciona import `BookOpen` e o item de menu
 
