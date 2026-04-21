@@ -67,6 +67,17 @@ export default function Auth() {
     resetBlocks 
   } = useAuthValidation();
 
+  // Toast único quando o usuário chega aqui após SSO Single Logout (?slo=ok)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('slo') !== 'ok') return;
+    if (sessionStorage.getItem('sso-slo-done-shown') === '1') return;
+    sessionStorage.setItem('sso-slo-done-shown', '1');
+    toast.success('Sessão encerrada com segurança', { id: 'sso-slo-done' });
+    const t = setTimeout(() => sessionStorage.removeItem('sso-slo-done-shown'), 5000);
+    return () => clearTimeout(t);
+  }, []);
+
   // Check if user is already logged in
   useEffect(() => {
     const checkUser = async () => {
