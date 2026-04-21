@@ -500,6 +500,19 @@ async function handleSamlFinalize(req: Request): Promise<Response> {
         email,
     ) || email;
 
+  const avatarUrl =
+    (meta[cm.avatar_url || "picture"] as string | undefined) ??
+    (meta.picture as string | undefined) ??
+    (meta.avatar_url as string | undefined) ??
+    (appMeta[cm.avatar_url || "picture"] as string | undefined) ??
+    null;
+  const telefone =
+    (meta[cm.telefone || "phone_number"] as string | undefined) ??
+    (meta.phone_number as string | undefined) ??
+    (meta.phone as string | undefined) ??
+    (appMeta[cm.telefone || "phone_number"] as string | undefined) ??
+    null;
+
   const rawGroups =
     meta[cm.groups || "groups"] ??
     appMeta[cm.groups || "groups"] ??
@@ -516,6 +529,8 @@ async function handleSamlFinalize(req: Request): Promise<Response> {
     provider,
     email,
     fullName,
+    avatarUrl,
+    telefone,
     groups,
     existingUserId: userId, // SAML: usuário já existe (broker criou)
     allowJit: false,
