@@ -1,87 +1,111 @@
 
 
-## Plano — `ImportLancamentosCSVDialog`: importação em lote de lançamentos contábeis
+## Plano — DRE & Balanço por Competência (com toggle Caixa)
 
-### Objetivo
+### Contexto e problema
 
-Adicionar um diálogo no `LancamentosTab` que permita importar múltiplos lançamentos contábeis (com partidas) a partir de um arquivo CSV, com parsing robusto, validação completa (partidas dobradas balanceadas, contas existentes, datas válidas) e prévia antes de inserir.
+Hoje `DREStatement` e `BalancoPatrimonial` calculam tudo a partir de `contas_pagar`/`contas_receber` filtrando `status='pago'` por `data_vencimento`. Isso é regime de **caixa** misturado com vencimento (nem caixa puro nem competência), com:
 
-### Formato do CSV
+- Receitas/despesas reconhecidas só quando pagas → distorce o resultado contábil.
+- Custos classificados por substring no nome do `centro_custo` ("admin", "comercial") → frágil.
+- Balanço com `imobilizado` e `capitalSocial` hardcoded e PL calculado por diferença.
+- Ignora completamente `lancamentos_contabeis` + `partidas_contabeis`, que é a fonte oficial (e alimenta o SPED ECD).
 
-Cada linha representa **uma partida** (D ou C). Lançamentos são agrupados por `lancamento_ref` (identificador local da linha do diário). Isso permite N partidas por lançamento sem schema complexo.
+A solução é usar **partidas contábeis (competência)** como fonte primária e oferecer um **toggle de fonte** (`competência` | `caixa`) para o usuário comparar.
 
-```csv
-lancamento_ref;data;historico;conta_codigo;tipo;valor;historico_complementar
-1;2024-03-15;Pgto fornecedor NF 12345;2.1.01;D;1500,00;
-1;2024-03-15;Pgto fornecedor NF 12345;1.1.01;C;1500,00;
-2;2024-03-16;Recebimento cliente;1.1.01;D;800,00;
-2;2024-03-16;Recebimento cliente;3.1.01;C;800,00;
+### Arquitetura proposta
+
+**1. Novo hook `useDemonstrativosContabeis`** (`src/hooks/useDemonstrativosContabeis.ts`)
+
+Centraliza a leitura de partidas contábeis no período e devolve estruturas prontas para DRE e Balanço.
+
+```ts
+type Fonte = 'competencia' | 'caixa';
+
+useDemonstrativosContabeis({ empresaId, ano, mes, fonte }) → {
+  dre: DRELinhas[],            // já agregado por grupo (Receita, CMV, Desp Op, etc.)
+  balanco: { ativo, passivo, pl, equilibrado },
+  origem: 'competencia' | 'caixa',
+  cobertura: { totalLancamentos, periodosVazios: boolean },
+  isLoading, error
+}
 ```
 
-- `lancamento_ref`: agrupador (string ou número) — todas as linhas com mesmo ref formam um lançamento
-- `data`: ISO `YYYY-MM-DD` ou BR `DD/MM/YYYY`
-- `historico`: histórico do lançamento (idêntico em todas as linhas do mesmo ref)
-- `conta_codigo`: código da conta no plano (deve existir e ser **analítica**)
-- `tipo`: `D` ou `C`
-- `valor`: número (aceita `1.234,56` BR ou `1234.56` US)
-- `historico_complementar`: opcional, por partida
+Lógica para `fonte='competencia'`:
+- Query única: `partidas_contabeis` join `plano_contas` join `lancamentos_contabeis` filtrando `data_lancamento` no período e `empresa_id`.
+- Para cada partida, sinal contábil:  
+  `D-receita = -valor`, `C-receita = +valor`, `D-despesa = +valor`, `C-despesa = -valor`,  
+  `D-ativo = +valor`, `C-ativo = -valor`, `D-passivo = -valor`, `C-passivo = +valor`.
+- Agrupa por `plano_contas.tipo` (`receita`/`despesa`/`ativo`/`passivo`) e por `centro_resultado` quando preenchido (subgrupos: vendas, deduções, CMV, desp operacional, financeiro, IR/CSLL).
+- Para o **Balanço**, o lucro do exercício = soma (receitas − despesas) acumulado **até o fim do período** (não só do mês). PL = capital social das contas tipo=passivo + lucros acumulados; balanço fecha por construção (débitos=créditos).
 
-### Arquivos
+Lógica para `fonte='caixa'`:
+- Reusa a lógica atual (contas_pagar/receber pagas), mas refatorada para devolver o mesmo shape.
 
-**➕ `src/lib/lancamentos-csv-importer.ts`** — parser dedicado
-- Reusa helpers `decodeFile`, `detectSeparator`, `parseNumber`, `splitCsvLine`, `normalizeHeader` (extraídos de `csv-importer.ts` para um módulo compartilhado `csv-utils.ts`, OU duplicados localmente para evitar refator amplo — opto por duplicar por simplicidade e isolamento)
-- Função `parseLancamentosCsv(file, planoContas)` → `{ lancamentos: ParsedLancamento[], errors, warnings, totalLines }`
-- Validações por linha: campos obrigatórios, data válida, tipo ∈ {D,C}, valor > 0, `conta_codigo` existe no plano e é analítica
-- Validações por grupo (após agrupar por `lancamento_ref`):
-  - data e histórico iguais em todas as linhas do grupo
-  - soma D = soma C (tolerância R$ 0,01)
-  - mínimo 2 partidas
-- Erros bloqueiam a linha; avisos (ex.: histórico divergente — usa o primeiro) não bloqueiam
+**2. Componente `FonteDadosToggle`** (`src/components/demonstrativos/FonteDadosToggle.tsx`)
 
-**➕ `src/components/contabilidade/ImportLancamentosCSVDialog.tsx`** — diálogo
-- `<Dialog>` `max-w-4xl` com 3 etapas internas (state, sem stepper visual pesado):
-  1. **Upload**: dropzone + botão "Baixar template CSV" (gera arquivo de exemplo); aviso sobre formato
-  2. **Pré-visualização**: cards com totais (X lançamentos, Y partidas, R$ total D/C, Z erros, W avisos) + `<Table>` mostrando os primeiros 50 lançamentos agrupados (ref, data, histórico, nº partidas, total, status ✓/✗) + `<Accordion>` ou `<Alert>` listando todos os erros com nº da linha
-  3. **Resultado**: progress + summary final (sucessos, falhas)
-- Botão "Importar" desabilitado se `errors.length > 0` ou nenhum lançamento válido
-- Importação chama `useImportLancamentosLote()` em sequência (ou via Promise.all em chunks de 10) reusando `useCriarLancamento` internamente — mas para performance e atomicidade, ver hook abaixo
+```
+┌─────────────────────────────────────────┐
+│ Fonte: [● Competência] [ Caixa ]   ⓘ   │
+│ 142 lançamentos contábeis no período    │
+└─────────────────────────────────────────┘
+```
 
-**➕ Hook `useImportLancamentosLote` em `src/hooks/useLancamentosContabeis.ts`**
-- Recebe `{ empresa_id, lancamentos: ParsedLancamento[] }`
-- Para cada lançamento: insere em `lancamentos_contabeis` + `partidas_contabeis` (mesmo padrão do `useCriarLancamento`, mas em loop com tracking de progresso via callback opcional `onProgress(done, total)`)
-- Retorna `{ sucesso: number, falhas: Array<{ ref, error }> }`
-- Não usa transação multi-tabela (Supabase JS não suporta) — em caso de falha de partidas após inserir o cabeçalho, faz `delete` do cabeçalho órfão (compensação)
-- Invalida cache `lancamentos-contabeis` ao final
+- `Tabs` com 2 valores; tooltip explica diferença ("Competência: reconhece quando ocorre o fato; Caixa: quando entra/sai dinheiro").
+- Mostra contador de lançamentos disponíveis e badge "Sem dados contábeis" quando `cobertura.totalLancamentos === 0` — neste caso força `caixa` automaticamente e exibe banner "Importe lançamentos no módulo Contabilidade para usar Competência".
 
-**✏️ `src/components/contabilidade/LancamentosTab.tsx`**
-- Adicionar botão **"Importar CSV"** ao lado do "Novo lançamento" (variant `outline`, ícone `Upload`)
-- `<ImportLancamentosCSVDialog empresaId={empresaId} planoContas={contasAnaliticas} />` ao lado do dialog atual
+**3. Refator `DREStatement.tsx`**
 
-### Validações detalhadas (checklist visual no passo 2)
+- Recebe `fonte` por props (`competencia` default).
+- Substitui o `useMemo` atual pela leitura do hook novo.
+- Mantém o mesmo render de tabela (linhas/níveis/AV%).
+- Header passa a mostrar badge "Regime: Competência" / "Regime: Caixa".
 
-| Validação | Tipo | Comportamento |
-|---|---|---|
-| Header com colunas obrigatórias | erro | bloqueia tudo |
-| `lancamento_ref` preenchido | erro | bloqueia linha |
-| `data` válida | erro | bloqueia linha |
-| `conta_codigo` existe no plano | erro | bloqueia linha |
-| Conta é analítica (não sintética) | erro | bloqueia linha |
-| `tipo` ∈ {D, C} | erro | bloqueia linha |
-| `valor` > 0 | erro | bloqueia linha |
-| Grupo balanceado (ΣD = ΣC) | erro | bloqueia grupo |
-| Grupo tem ≥ 2 partidas | erro | bloqueia grupo |
-| Datas iguais no grupo | aviso | usa a primeira |
-| Históricos divergentes no grupo | aviso | usa o primeiro |
-| Lançamento fora do ano-calendário corrente | aviso | importa mesmo assim |
+**4. Refator `BalancoPatrimonial.tsx`**
+
+- Recebe `fonte` por props.
+- Em `competencia`: ativo/passivo/PL vêm 100% das partidas; remove os valores hardcoded (`imobilizado=50000`, `capitalSocial=30000`).
+- Em `caixa`: mantém lógica atual mas com aviso "Balanço estimado a partir de movimentações de caixa — não substitui escrituração contábil".
+- Quando `equilibrado=false` em competência, mostra `AlertTriangle` com link para o módulo Contabilidade ("Há partidas desbalanceadas — revisar lançamentos").
+
+**5. Wiring em `Demonstrativos.tsx`**
+
+- Adiciona `const [fonte, setFonte] = useState<Fonte>('competencia')`.
+- Renderiza `<FonteDadosToggle value={fonte} onChange={setFonte} cobertura={...} />` logo abaixo do header de filtros.
+- Repasse `fonte` para `<DREStatement>` e `<BalancoPatrimonial>` (Fluxo de Caixa permanece como está — sempre caixa).
+
+### Mapeamento de contas → linhas DRE
+
+Usa `plano_contas.centro_resultado` (já existe na tabela) com fallback para o `codigo`:
+
+| centro_resultado | Linha DRE |
+|---|---|
+| `receita_bruta` ou tipo=receita sem centro | Receita Bruta |
+| `deducao_receita` | (-) Deduções |
+| `cmv` ou `custo_mercadoria` | (-) CMV |
+| `despesa_administrativa` | Desp. Administrativas |
+| `despesa_comercial` | Desp. Comerciais |
+| `despesa_financeira` / `receita_financeira` | Resultado Financeiro |
+| `irpj` / `csll` | (-) IRPJ/CSLL |
+| outras tipo=despesa | Outras Desp. Operacionais |
+
+Quando `centro_resultado` for null, cai num bucket "Não classificadas" com aviso clicável (futuramente abre modal de classificação).
 
 ### Critério de pronto
 
-1. Em `/contabilidade` → "Lançamentos", botão "Importar CSV" abre diálogo.
-2. Botão "Baixar template" gera arquivo de exemplo válido com 2 lançamentos.
-3. Upload de CSV mostra prévia com agrupamento por `lancamento_ref`, totais e checklist de erros.
-4. Botão "Importar" fica desabilitado enquanto houver erros bloqueantes.
-5. Importação em lote insere lançamentos com `origem='importacao_csv'`, exibe progress e summary final.
-6. Falhas parciais não corrompem o banco (delete compensatório no cabeçalho órfão).
-7. Cache `lancamentos-contabeis` é invalidado e a tabela é atualizada automaticamente.
-8. Sem regressão no diálogo "Novo lançamento" existente.
+1. Página `Demonstrativos` mostra toggle `Competência | Caixa` acima das tabs.
+2. Default = `Competência`; se a empresa não tem `partidas_contabeis` no período, banner explica e força `caixa`.
+3. DRE em modo competência soma valores a partir de `partidas_contabeis` agrupadas por `plano_contas.centro_resultado`.
+4. Balanço em modo competência tem ativo, passivo e PL todos vindos de partidas; campo `equilibrado` reflete a soma real (sem hardcode de capital social/imobilizado).
+5. Trocar o toggle re-renderiza ambos (DRE e Balanço) com o mesmo shape de tabelas, sem regressão visual.
+6. Header de cada card mostra badge do regime ativo.
+7. Hook novo isolado e testável; sem mexer em `FluxoCaixaContabil.tsx` (já é caixa por natureza).
+
+### Arquivos
+
+- ➕ `src/hooks/useDemonstrativosContabeis.ts`
+- ➕ `src/components/demonstrativos/FonteDadosToggle.tsx`
+- ✏️ `src/components/demonstrativos/DREStatement.tsx` — consome hook + prop `fonte`
+- ✏️ `src/components/demonstrativos/BalancoPatrimonial.tsx` — consome hook + prop `fonte`
+- ✏️ `src/pages/Demonstrativos.tsx` — state `fonte` + render do toggle
 
