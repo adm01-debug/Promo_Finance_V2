@@ -7730,6 +7730,123 @@ export type Database = {
           },
         ]
       }
+      scim_operations_log: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          empresa_id: string | null
+          external_id: string | null
+          id: string
+          operation: string
+          request_body: Json | null
+          resource_type: string
+          response_body: Json | null
+          status_code: number
+          token_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          empresa_id?: string | null
+          external_id?: string | null
+          id?: string
+          operation: string
+          request_body?: Json | null
+          resource_type: string
+          response_body?: Json | null
+          status_code: number
+          token_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          empresa_id?: string | null
+          external_id?: string | null
+          id?: string
+          operation?: string
+          request_body?: Json | null
+          resource_type?: string
+          response_body?: Json | null
+          status_code?: number
+          token_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scim_operations_log_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "scim_tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scim_tokens: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          created_by: string | null
+          empresa_id: string
+          expires_at: string | null
+          id: string
+          last_used_at: string | null
+          nome: string
+          provider_id: string | null
+          token_hash: string
+          token_prefix: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          created_by?: string | null
+          empresa_id: string
+          expires_at?: string | null
+          id?: string
+          last_used_at?: string | null
+          nome: string
+          provider_id?: string | null
+          token_hash: string
+          token_prefix: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          created_by?: string | null
+          empresa_id?: string
+          expires_at?: string | null
+          id?: string
+          last_used_at?: string | null
+          nome?: string
+          provider_id?: string | null
+          token_hash?: string
+          token_prefix?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scim_tokens_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scim_tokens_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "scim_tokens_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "sso_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       security_alerts: {
         Row: {
           created_at: string | null
@@ -8102,42 +8219,68 @@ export type Database = {
       }
       sso_login_attempts: {
         Row: {
+          code_verifier_hash: string | null
           created_at: string
           duration_ms: number | null
           email: string | null
+          empresa_id: string | null
           error_code: string | null
           error_message: string | null
+          expires_at: string | null
           id: string
           ip_address: string | null
           provider_id: string | null
+          state: string | null
           success: boolean
           user_agent: string | null
         }
         Insert: {
+          code_verifier_hash?: string | null
           created_at?: string
           duration_ms?: number | null
           email?: string | null
+          empresa_id?: string | null
           error_code?: string | null
           error_message?: string | null
+          expires_at?: string | null
           id?: string
           ip_address?: string | null
           provider_id?: string | null
+          state?: string | null
           success?: boolean
           user_agent?: string | null
         }
         Update: {
+          code_verifier_hash?: string | null
           created_at?: string
           duration_ms?: number | null
           email?: string | null
+          empresa_id?: string | null
           error_code?: string | null
           error_message?: string | null
+          expires_at?: string | null
           id?: string
           ip_address?: string | null
           provider_id?: string | null
+          state?: string | null
           success?: boolean
           user_agent?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "sso_login_attempts_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sso_login_attempts_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
           {
             foreignKeyName: "sso_login_attempts_provider_id_fkey"
             columns: ["provider_id"]
@@ -8160,6 +8303,7 @@ export type Database = {
           created_by: string | null
           default_role: Database["public"]["Enums"]["app_role"]
           discovery_url: string | null
+          empresa_id: string | null
           entity_id_idp: string | null
           force_sso_for_domains: boolean
           id: string
@@ -8194,6 +8338,7 @@ export type Database = {
           created_by?: string | null
           default_role?: Database["public"]["Enums"]["app_role"]
           discovery_url?: string | null
+          empresa_id?: string | null
           entity_id_idp?: string | null
           force_sso_for_domains?: boolean
           id?: string
@@ -8228,6 +8373,7 @@ export type Database = {
           created_by?: string | null
           default_role?: Database["public"]["Enums"]["app_role"]
           discovery_url?: string | null
+          empresa_id?: string | null
           entity_id_idp?: string | null
           force_sso_for_domains?: boolean
           id?: string
@@ -8250,7 +8396,22 @@ export type Database = {
           userinfo_endpoint?: string | null
           x509_cert?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "sso_providers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sso_providers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
       }
       sso_role_mappings: {
         Row: {
@@ -8701,6 +8862,60 @@ export type Database = {
           },
           {
             foreignKeyName: "transferencias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
+      user_empresas: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          empresa_id: string
+          id: string
+          is_default: boolean
+          provisioned_via: string
+          role: Database["public"]["Enums"]["app_role"]
+          scim_external_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          empresa_id: string
+          id?: string
+          is_default?: boolean
+          provisioned_via?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          scim_external_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          empresa_id?: string
+          id?: string
+          is_default?: boolean
+          provisioned_via?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          scim_external_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_empresas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_empresas_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_tributario_dashboard"
@@ -9849,6 +10064,14 @@ export type Database = {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
+        }
+        Returns: boolean
+      }
+      has_role_in_empresa: {
+        Args: {
+          _empresa: string
+          _role: Database["public"]["Enums"]["app_role"]
+          _user: string
         }
         Returns: boolean
       }
