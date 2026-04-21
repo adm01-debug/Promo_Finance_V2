@@ -26,6 +26,10 @@ import { RelatorioImportacaoDialog } from '@/components/conciliacao/RelatorioImp
 import { ConciliacaoDashboard } from '@/components/conciliacao/ConciliacaoDashboard';
 import { RegrasConciliacaoPanel } from '@/components/conciliacao/RegrasConciliacaoPanel';
 import { ConciliacaoFilters } from '@/components/conciliacao/ConciliacaoFilters';
+import { ConciliacaoToolbar, CONCILIACAO_DEFAULT_SORT, CONCILIACAO_DEFAULT_VISIBLE, type ConciliacaoSort } from '@/components/conciliacao/ConciliacaoToolbar';
+import { useSavedFilters, type SavedFilterPayload } from '@/hooks/useSavedFilters';
+import type { ConciliacaoFilterState } from '@/components/conciliacao/ConciliacaoFilters';
+import { useEffect, useMemo, useState } from 'react';
 import { ConciliacaoExport } from '@/components/conciliacao/ConciliacaoExport';
 import { ExtratoBancarioPanel } from '@/components/conciliacao/ExtratoBancarioPanel';
 import { SessoesConciliacaoPanel } from '@/components/conciliacao/SessoesConciliacaoPanel';
@@ -133,13 +137,12 @@ export default function Conciliacao() {
                         <TabsTrigger value="todas">Todas</TabsTrigger>
                       </TabsList>
                     </Tabs>
-                    <div className="flex items-center gap-2 w-full lg:w-auto">
-                      <div className="relative flex-1 lg:w-[280px]">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input placeholder="Buscar transações..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
-                      </div>
-                      <ConciliacaoFilters filters={filters} onFiltersChange={setFilters} />
-                    </div>
+                    <ConciliacaoToolbarHost
+                      searchTerm={searchTerm}
+                      setSearchTerm={setSearchTerm}
+                      filters={filters}
+                      setFilters={setFilters}
+                    />
                   </div>
                 </CardContent>
               </Card>
