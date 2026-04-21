@@ -23,15 +23,10 @@ import {
 import { Link } from "react-router-dom";
 import {
   useAnomaliasDetectadas,
+  usePendingAnomaliasQueue,
   type Anomalia,
 } from "@/hooks/useAnomaliasDetectadas";
-import { usePendingAnomaliasQueue } from "@/hooks/useAnomaliasDetectadas";
 import { AnomaliasReviewQueue } from "./AnomaliasReviewQueue";
-import { Link } from "react-router-dom";
-import {
-  useAnomaliasDetectadas,
-  type Anomalia,
-} from "@/hooks/useAnomaliasDetectadas";
 
 function severidadeBadge(s: Anomalia["severidade"]) {
   if (s === "critica") return "destructive";
