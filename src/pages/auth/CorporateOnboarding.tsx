@@ -25,11 +25,27 @@ export default function CorporateOnboarding() {
   const [ssoError, setSsoError] = useState<{ provider: ResolvedSsoProvider; message: string } | null>(null);
   const [userCancelled, setUserCancelled] = useState(false);
   const cancelRef = useRef(false);
+  const { logEvent } = useSsoOnboardingAudit();
 
   // Reset cancelamento quando o e-mail/domínio muda — novo domínio merece novo auto-redirect
   useEffect(() => {
     setUserCancelled(false);
   }, [submittedEmail]);
+
+  // Auditoria: domínio resolvido (com ou sem providers)
+  useEffect(() => {
+    if (!submittedEmail || loading || !domain) return;
+    logEvent({
+      eventType: 'domain_resolved',
+      email: submittedEmail,
+      context: {
+        domain,
+        providers_count: providers.length,
+        force_sso: !!autoRedirectProvider,
+        auto_redirect_provider: autoRedirectProvider?.nome ?? null,
+      },
+    });
+  }, [submittedEmail, loading, domain, providers.length, autoRedirectProvider, logEvent]);
 
   // Quando descobrimos provider com force, inicia contagem regressiva e dispara
   useEffect(() => {
@@ -37,7 +53,17 @@ export default function CorporateOnboarding() {
     cancelRef.current = false;
     setRedirecting(autoRedirectProvider);
     setCountdown(COUNTDOWN_SECONDS);
-  }, [autoRedirectProvider, redirecting, ssoError, userCancelled]);
+    logEvent({
+      eventType: 'auto_redirect_started',
+      email: submittedEmail,
+      providerId: autoRedirectProvider.id,
+      context: {
+        domain,
+        provider_nome: autoRedirectProvider.nome,
+        provider_tipo: autoRedirectProvider.tipo,
+      },
+    });
+  }, [autoRedirectProvider, redirecting, ssoError, userCancelled, submittedEmail, domain, logEvent]);
 
   useEffect(() => {
     if (!redirecting) return;
