@@ -12,7 +12,7 @@ export default function InsightsIA() {
   const [tab, setTab] = useState('anomalias');
 
   return (
-    <AppLayout>
+    <MainLayout>
       <div className="container max-w-7xl mx-auto py-6 space-y-6">
         <div className="flex items-center gap-3">
           <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
@@ -65,6 +65,6 @@ export default function InsightsIA() {
           </TabsContent>
         </Tabs>
       </div>
-    </AppLayout>
+    </MainLayout>
   );
 }
