@@ -43,6 +43,7 @@ import {
 export function MFASettings() {
   const { factors, isEnabled, isLoading, unenroll } = useMFA();
   const { sessions, revokeSession, revokeAllOtherSessions, parseUserAgent } = useSessions();
+  const { enabled: maskIpsEnabled } = useIpMaskPreference();
   const [showSetup, setShowSetup] = useState(false);
   const [showDisableDialog, setShowDisableDialog] = useState(false);
   const [disableFactorId, setDisableFactorId] = useState<string | null>(null);
