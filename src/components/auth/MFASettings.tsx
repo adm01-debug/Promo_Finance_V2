@@ -9,6 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useMFA } from '@/hooks/useMFA';
 import { useSessions } from '@/hooks/useSessions';
 import { TwoFactorSetup } from './TwoFactorSetup';
+import { IpMaskToggle } from '@/components/admin/IpMaskToggle';
+import { useIpMaskPreference } from '@/hooks/useIpMaskPreference';
+import { maskIp } from '@/lib/ip-mask';
 import {
   Shield,
   Smartphone,
