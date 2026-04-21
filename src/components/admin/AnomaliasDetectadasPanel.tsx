@@ -59,7 +59,16 @@ export function AnomaliasDetectadasPanel() {
             <AlertTriangle className="h-5 w-5 text-warning" />
             Anomalias detectadas
           </CardTitle>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button
+              size="sm"
+              variant="default"
+              onClick={() => setReviewOpen(true)}
+              disabled={pendentes.length === 0}
+            >
+              <ListChecks className="h-3 w-3 mr-1" />
+              Revisar em fila ({pendentes.length})
+            </Button>
             <Select value={filtro} onValueChange={(v) => setFiltro(v as typeof filtro)}>
               <SelectTrigger className="w-40">
                 <SelectValue />
