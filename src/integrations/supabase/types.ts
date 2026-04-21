@@ -4778,6 +4778,51 @@ export type Database = {
           },
         ]
       }
+      lancamentos_contabeis: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          data_lancamento: string
+          empresa_id: string
+          historico: string
+          id: string
+          numero_lancamento: number | null
+          origem: string
+          origem_id: string | null
+          status: string
+          updated_at: string
+          valor_total: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          data_lancamento: string
+          empresa_id: string
+          historico: string
+          id?: string
+          numero_lancamento?: number | null
+          origem?: string
+          origem_id?: string | null
+          status?: string
+          updated_at?: string
+          valor_total?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          data_lancamento?: string
+          empresa_id?: string
+          historico?: string
+          id?: string
+          numero_lancamento?: number | null
+          origem?: string
+          origem_id?: string | null
+          status?: string
+          updated_at?: string
+          valor_total?: number
+        }
+        Relationships: []
+      }
       login_attempts: {
         Row: {
           blocked_reason: string | null
@@ -5926,6 +5971,51 @@ export type Database = {
           },
         ]
       }
+      partidas_contabeis: {
+        Row: {
+          conta_id: string
+          created_at: string
+          historico_complementar: string | null
+          id: string
+          lancamento_id: string
+          tipo: string
+          valor: number
+        }
+        Insert: {
+          conta_id: string
+          created_at?: string
+          historico_complementar?: string | null
+          id?: string
+          lancamento_id: string
+          tipo: string
+          valor: number
+        }
+        Update: {
+          conta_id?: string
+          created_at?: string
+          historico_complementar?: string | null
+          id?: string
+          lancamento_id?: string
+          tipo?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partidas_contabeis_conta_id_fkey"
+            columns: ["conta_id"]
+            isOneToOne: false
+            referencedRelation: "plano_contas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partidas_contabeis_lancamento_id_fkey"
+            columns: ["lancamento_id"]
+            isOneToOne: false
+            referencedRelation: "lancamentos_contabeis"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       password_reset_requests: {
         Row: {
           aprovado_em: string | null
@@ -6192,9 +6282,12 @@ export type Database = {
       plano_contas: {
         Row: {
           ativo: boolean | null
+          centro_resultado: string | null
           codigo: string
+          codigo_referencial: string | null
           created_at: string
           descricao: string
+          empresa_id: string | null
           id: string
           natureza: string
           nivel: number
@@ -6205,9 +6298,12 @@ export type Database = {
         }
         Insert: {
           ativo?: boolean | null
+          centro_resultado?: string | null
           codigo: string
+          codigo_referencial?: string | null
           created_at?: string
           descricao: string
+          empresa_id?: string | null
           id?: string
           natureza: string
           nivel?: number
@@ -6218,9 +6314,12 @@ export type Database = {
         }
         Update: {
           ativo?: boolean | null
+          centro_resultado?: string | null
           codigo?: string
+          codigo_referencial?: string | null
           created_at?: string
           descricao?: string
+          empresa_id?: string | null
           id?: string
           natureza?: string
           nivel?: number
@@ -7847,6 +7946,60 @@ export type Database = {
           url_dump?: string | null
           user_email?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      sped_contabil_arquivos: {
+        Row: {
+          ano_calendario: number
+          created_at: string
+          empresa_id: string
+          gerado_por: string | null
+          hash_sha256: string | null
+          id: string
+          periodo_fim: string
+          periodo_inicio: string
+          recibo_transmissao: string | null
+          status: string
+          storage_path: string
+          tipo: string
+          total_lancamentos: number | null
+          total_linhas: number | null
+          validacoes: Json
+        }
+        Insert: {
+          ano_calendario: number
+          created_at?: string
+          empresa_id: string
+          gerado_por?: string | null
+          hash_sha256?: string | null
+          id?: string
+          periodo_fim: string
+          periodo_inicio: string
+          recibo_transmissao?: string | null
+          status?: string
+          storage_path: string
+          tipo: string
+          total_lancamentos?: number | null
+          total_linhas?: number | null
+          validacoes?: Json
+        }
+        Update: {
+          ano_calendario?: number
+          created_at?: string
+          empresa_id?: string
+          gerado_por?: string | null
+          hash_sha256?: string | null
+          id?: string
+          periodo_fim?: string
+          periodo_inicio?: string
+          recibo_transmissao?: string | null
+          status?: string
+          storage_path?: string
+          tipo?: string
+          total_lancamentos?: number | null
+          total_linhas?: number | null
+          validacoes?: Json
         }
         Relationships: []
       }
