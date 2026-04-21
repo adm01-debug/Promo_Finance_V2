@@ -201,7 +201,7 @@ describe('/auth/corporate — CorporateOnboarding', () => {
   });
 
   it('domínio COM match sem force_sso: lista providers e dispara invoke ao escolher manualmente', async () => {
-    invokeMock.mockResolvedValueOnce({
+    invokeMock.mockResolvedValue({
       data: { redirect_url: 'https://idp.acme/login', verifier: 'v', state: 's' },
       error: null,
     });
@@ -213,9 +213,11 @@ describe('/auth/corporate — CorporateOnboarding', () => {
     expect(screen.queryByText(/Redirecionando para/i)).not.toBeInTheDocument();
 
     const btn = await screen.findByRole('button', { name: /Entrar com Acme SSO/i });
-    fireEvent.click(btn);
+    await act(async () => {
+      fireEvent.click(btn);
+    });
 
-    await waitFor(() => expect(invokeMock).toHaveBeenCalledTimes(1));
+    expect(invokeMock).toHaveBeenCalledTimes(1);
     expect(invokeMock).toHaveBeenCalledWith('sso-initiate', {
       body: { provider_id: 'prov-1', redirect_to: 'https://app.test' },
     });
