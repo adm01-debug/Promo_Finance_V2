@@ -26,6 +26,10 @@ import { RelatorioImportacaoDialog } from '@/components/conciliacao/RelatorioImp
 import { ConciliacaoDashboard } from '@/components/conciliacao/ConciliacaoDashboard';
 import { RegrasConciliacaoPanel } from '@/components/conciliacao/RegrasConciliacaoPanel';
 import { ConciliacaoFilters } from '@/components/conciliacao/ConciliacaoFilters';
+import { ConciliacaoToolbar, CONCILIACAO_DEFAULT_SORT, CONCILIACAO_DEFAULT_VISIBLE, type ConciliacaoSort } from '@/components/conciliacao/ConciliacaoToolbar';
+import { useSavedFilters, type SavedFilterPayload } from '@/hooks/useSavedFilters';
+import type { ConciliacaoFilterState } from '@/components/conciliacao/ConciliacaoFilters';
+import { useEffect, useMemo, useState } from 'react';
 import { ConciliacaoExport } from '@/components/conciliacao/ConciliacaoExport';
 import { ExtratoBancarioPanel } from '@/components/conciliacao/ExtratoBancarioPanel';
 import { SessoesConciliacaoPanel } from '@/components/conciliacao/SessoesConciliacaoPanel';
@@ -34,6 +38,29 @@ import { useConciliacaoPage } from '@/hooks/useConciliacaoPage';
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.06 } } } as const;
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } } } as const;
+
+function ConciliacaoToolbarHost({
+  searchTerm, setSearchTerm, filters, setFilters, sort, setSort, visibleCols, setVisibleCols,
+  activePresetId, onLoadPreset, onClearPreset,
+}: {
+  searchTerm: string; setSearchTerm: (v: string) => void;
+  filters: ConciliacaoFilterState; setFilters: (f: ConciliacaoFilterState) => void;
+  sort: ConciliacaoSort; setSort: (s: ConciliacaoSort) => void;
+  visibleCols: string[]; setVisibleCols: (c: string[]) => void;
+  activePresetId: string | null;
+  onLoadPreset: (p: { id: string; payload: SavedFilterPayload<ConciliacaoFilterState> }) => void;
+  onClearPreset: () => void;
+}) {
+  return (
+    <ConciliacaoToolbar
+      searchTerm={searchTerm} onSearchChange={setSearchTerm}
+      filters={filters} onFiltersChange={setFilters}
+      sort={sort} onSortChange={setSort}
+      visibleCols={visibleCols} onVisibleColsChange={setVisibleCols}
+      activePresetId={activePresetId} onLoadPreset={onLoadPreset} onClearPreset={onClearPreset}
+    />
+  );
+}
 
 export default function Conciliacao() {
   const {
@@ -133,13 +160,12 @@ export default function Conciliacao() {
                         <TabsTrigger value="todas">Todas</TabsTrigger>
                       </TabsList>
                     </Tabs>
-                    <div className="flex items-center gap-2 w-full lg:w-auto">
-                      <div className="relative flex-1 lg:w-[280px]">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input placeholder="Buscar transações..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
-                      </div>
-                      <ConciliacaoFilters filters={filters} onFiltersChange={setFilters} />
-                    </div>
+                    <ConciliacaoToolbarHost
+                      searchTerm={searchTerm}
+                      setSearchTerm={setSearchTerm}
+                      filters={filters}
+                      setFilters={setFilters}
+                    />
                   </div>
                 </CardContent>
               </Card>
