@@ -249,10 +249,12 @@ describe('/auth/corporate — CorporateOnboarding', () => {
         screen.getByRole('button', { name: /Cancelar redirecionamento e voltar/i }),
       ).toBeInTheDocument();
 
-      // Avança o countdown (3s)
-      await act(async () => {
-        await vi.advanceTimersByTimeAsync(3500);
-      });
+      // Avança o countdown (3 ticks de 1s) deixando os useEffects rodarem
+      for (let i = 0; i < 5; i++) {
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(1000);
+        });
+      }
 
       await waitFor(() => expect(invokeMock).toHaveBeenCalled());
       expect(invokeMock).toHaveBeenCalledWith(
