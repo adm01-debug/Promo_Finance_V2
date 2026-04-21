@@ -17,11 +17,12 @@ interface RejeicaoDialogProps {
   onMotivoChange: (motivo: string) => void;
   onConfirmar: () => void;
   onCancelar: () => void;
+  isPending?: boolean;
 }
 
-export function RejeicaoDialog({ rejeicaoPendente, motivoRejeicao, onMotivoChange, onConfirmar, onCancelar }: RejeicaoDialogProps) {
+export function RejeicaoDialog({ rejeicaoPendente, motivoRejeicao, onMotivoChange, onConfirmar, onCancelar, isPending }: RejeicaoDialogProps) {
   return (
-    <Dialog open={!!rejeicaoPendente} onOpenChange={() => onCancelar()}>
+    <Dialog open={!!rejeicaoPendente} onOpenChange={(o) => { if (!o && !isPending) onCancelar(); }}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
