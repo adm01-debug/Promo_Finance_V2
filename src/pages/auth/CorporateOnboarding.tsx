@@ -81,15 +81,19 @@ export default function CorporateOnboarding() {
       const { data, error } = await supabase.functions.invoke('sso-initiate', {
         body: { provider_id: p.id, redirect_to: window.location.origin },
       });
-      // Aborta se o usuário cancelou enquanto a chamada estava em flight
       if (cancelRef.current) return;
       if (error) throw error;
       if (!data?.redirect_url) throw new Error('Resposta inválida do provedor (sem redirect_url)');
       if (data?.verifier && data?.state) {
         sessionStorage.setItem(`pkce:${data.state}`, data.verifier);
       }
-      // Última verificação antes de sair da página
       if (cancelRef.current) return;
+      logEvent({
+        eventType: 'redirect_dispatched',
+        email: submittedEmail,
+        providerId: p.id,
+        context: { domain, provider_nome: p.nome, provider_tipo: p.tipo },
+      });
       window.location.href = data.redirect_url;
     } catch (e) {
       if (cancelRef.current) return;
@@ -97,6 +101,14 @@ export default function CorporateOnboarding() {
       toast.error('Falha ao iniciar SSO', { description: message });
       setRedirecting(null);
       setSsoError({ provider: p, message });
+      logEvent({
+        eventType: 'redirect_failed',
+        email: submittedEmail,
+        providerId: p.id,
+        success: false,
+        errorMessage: message,
+        context: { domain, provider_nome: p.nome, provider_tipo: p.tipo },
+      });
     }
   };
 
@@ -106,14 +118,32 @@ export default function CorporateOnboarding() {
     cancelRef.current = false;
     setRedirecting(p);
     setCountdown(0);
+    logEvent({
+      eventType: 'manual_provider_selected',
+      email: submittedEmail,
+      providerId: p.id,
+      context: { domain, provider_nome: p.nome, provider_tipo: p.tipo },
+    });
     await triggerSso(p);
   };
 
   const handleCancelRedirect = () => {
+    const phase = countdown > 0 ? 'countdown' : 'connecting';
+    const cancelledProvider = redirecting;
     cancelRef.current = true;
     setUserCancelled(true);
     setRedirecting(null);
     setCountdown(COUNTDOWN_SECONDS);
+    logEvent({
+      eventType: 'auto_redirect_cancelled',
+      email: submittedEmail,
+      providerId: cancelledProvider?.id ?? null,
+      context: {
+        domain,
+        provider_nome: cancelledProvider?.nome ?? null,
+        phase,
+      },
+    });
     toast.info('Redirecionamento cancelado', {
       description: 'Escolha um método de login manualmente.',
     });
@@ -136,7 +166,19 @@ export default function CorporateOnboarding() {
   };
 
   const handleUsePassword = () => {
-    navigate(`/auth?email=${encodeURIComponent(submittedEmail || email)}`);
+    const targetEmail = submittedEmail || email;
+    logEvent({
+      eventType: 'password_fallback_used',
+      email: targetEmail,
+      providerId: ssoError?.provider.id ?? autoRedirectProvider?.id ?? null,
+      context: {
+        domain,
+        provider_nome: ssoError?.provider.nome ?? autoRedirectProvider?.nome ?? null,
+        after_error: !!ssoError,
+        after_cancel: userCancelled,
+      },
+    });
+    navigate(`/auth?email=${encodeURIComponent(targetEmail)}`);
   };
 
   // Estado: erro no SSO — fallback com retry, providers alternativos e senha
