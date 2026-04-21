@@ -1,4 +1,4 @@
-import { ThumbsDown, ArrowRight } from 'lucide-react';
+import { ThumbsDown, ArrowRight, Loader2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -17,11 +17,12 @@ interface RejeicaoDialogProps {
   onMotivoChange: (motivo: string) => void;
   onConfirmar: () => void;
   onCancelar: () => void;
+  isPending?: boolean;
 }
 
-export function RejeicaoDialog({ rejeicaoPendente, motivoRejeicao, onMotivoChange, onConfirmar, onCancelar }: RejeicaoDialogProps) {
+export function RejeicaoDialog({ rejeicaoPendente, motivoRejeicao, onMotivoChange, onConfirmar, onCancelar, isPending }: RejeicaoDialogProps) {
   return (
-    <Dialog open={!!rejeicaoPendente} onOpenChange={() => onCancelar()}>
+    <Dialog open={!!rejeicaoPendente} onOpenChange={(o) => { if (!o && !isPending) onCancelar(); }}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -66,11 +67,11 @@ export function RejeicaoDialog({ rejeicaoPendente, motivoRejeicao, onMotivoChang
         )}
 
         <DialogFooter>
-          <Button variant="outline" onClick={onCancelar}>
+          <Button variant="outline" onClick={onCancelar} disabled={isPending}>
             Cancelar
           </Button>
-          <Button variant="destructive" onClick={onConfirmar}>
-            <ThumbsDown className="h-4 w-4 mr-2" />
+          <Button variant="destructive" onClick={onConfirmar} disabled={isPending}>
+            {isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <ThumbsDown className="h-4 w-4 mr-2" />}
             Rejeitar
           </Button>
         </DialogFooter>

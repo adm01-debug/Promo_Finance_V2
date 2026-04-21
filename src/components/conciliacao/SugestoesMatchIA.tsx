@@ -13,6 +13,7 @@ import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { TransacaoOFX } from '@/lib/ofx-parser';
@@ -58,23 +59,29 @@ export function SugestoesMatchIA({
     }
   }, [transacoes, lancamentos, lastAnalysis, isAnalyzing, analisarConciliacao]);
 
+  const sugestoesValidasFor = useCallback((transacaoId: string): MatchSugestaoIA[] => {
+    const sugestoes = matchesIA.get(transacaoId) || [];
+    return sugestoes.filter(s => !matchesRejeitados.has(`${transacaoId}-${s.lancamentoId}`));
+  }, [matchesIA, matchesRejeitados]);
+
   const transacoesComSugestao = useMemo(() => {
     return transacoes.filter(t => {
-      const sugestoes = matchesIA.get(t.id);
-      return sugestoes && sugestoes.length > 0 && !matchesConfirmados.has(t.id);
+      if (matchesConfirmados.has(t.id)) return false;
+      return sugestoesValidasFor(t.id).length > 0;
     });
-  }, [transacoes, matchesIA, matchesConfirmados]);
+  }, [transacoes, matchesConfirmados, sugestoesValidasFor]);
 
   const matchesAltaConfianca = useMemo(() => {
     const matches: Array<{ transacaoId: string; transacaoDescricao: string; sugestao: MatchSugestaoIA }> = [];
     transacoesComSugestao.forEach(transacao => {
-      const sugestoes = matchesIA.get(transacao.id);
-      if (sugestoes && sugestoes.length > 0 && sugestoes[0].confianca === 'alta') {
+      const sugestoes = sugestoesValidasFor(transacao.id);
+      if (sugestoes.length > 0 && sugestoes[0].confianca === 'alta') {
         matches.push({ transacaoId: transacao.id, transacaoDescricao: transacao.descricao, sugestao: sugestoes[0] });
       }
     });
     return matches;
-  }, [transacoesComSugestao, matchesIA]);
+  }, [transacoesComSugestao, sugestoesValidasFor]);
+
 
   const estatisticas = useMemo(() => {
     let total = 0, alta = 0, media = 0, baixa = 0, valorTotal = 0;
@@ -131,11 +138,21 @@ export function SugestoesMatchIA({
     if (!rejeicaoPendente) return;
     const { transacaoId, transacaoDescricao, sugestao } = rejeicaoPendente;
     setMatchesRejeitados(prev => new Set([...prev, `${transacaoId}-${sugestao.lancamentoId}`]));
-    await registrarHistorico.mutateAsync({ transacaoId, lancamentoId: sugestao.lancamentoId, tipoLancamento: sugestao.lancamentoTipo, score: sugestao.score, confianca: sugestao.confianca, motivos: sugestao.motivos, analiseIA: sugestao.analiseIA, acao: 'rejeitado' });
-    await registrarFeedback.mutateAsync({ transacaoDescricao, lancamentoEntidade: sugestao.lancamento?.entidade || '', lancamentoDescricao: sugestao.lancamento?.descricao, tipoLancamento: sugestao.lancamentoTipo, scoreOriginal: sugestao.score, acao: 'rejeitado', motivoRejeicao: motivoRejeicao || undefined });
-    onRejeitarMatch(transacaoId, sugestao.lancamentoId);
-    setRejeicaoPendente(null);
-    setMotivoRejeicao('');
+    try {
+      await registrarHistorico.mutateAsync({ transacaoId, lancamentoId: sugestao.lancamentoId, tipoLancamento: sugestao.lancamentoTipo, score: sugestao.score, confianca: sugestao.confianca, motivos: sugestao.motivos, analiseIA: sugestao.analiseIA, acao: 'rejeitado' });
+      await registrarFeedback.mutateAsync({ transacaoDescricao, lancamentoEntidade: sugestao.lancamento?.entidade || '', lancamentoDescricao: sugestao.lancamento?.descricao, tipoLancamento: sugestao.lancamentoTipo, scoreOriginal: sugestao.score, acao: 'rejeitado', motivoRejeicao: motivoRejeicao || undefined });
+      onRejeitarMatch(transacaoId, sugestao.lancamentoId);
+      if (motivoRejeicao.trim()) {
+        toast.success('Rejeição registrada — IA aprenderá com este feedback');
+      } else {
+        toast.info('Rejeição registrada');
+      }
+    } catch {
+      toast.error('Erro ao registrar rejeição');
+    } finally {
+      setRejeicaoPendente(null);
+      setMotivoRejeicao('');
+    }
   };
 
   const handleAprovarTodos = async () => {
@@ -255,7 +272,7 @@ export function SugestoesMatchIA({
               <div className="space-y-3">
                 <AnimatePresence mode="popLayout">
                   {transacoesComSugestao.map((transacao) => {
-                    const sugestoes = matchesIA.get(transacao.id) || [];
+                    const sugestoes = sugestoesValidasFor(transacao.id);
                     const melhorMatch = sugestoes[0];
                     const isExpanded = expandedTransacao === transacao.id;
                     if (!melhorMatch) return null;
@@ -432,6 +449,7 @@ export function SugestoesMatchIA({
         onMotivoChange={setMotivoRejeicao}
         onConfirmar={confirmarRejeicao}
         onCancelar={() => { setRejeicaoPendente(null); setMotivoRejeicao(''); }}
+        isPending={registrarHistorico.isPending || registrarFeedback.isPending}
       />
 
       <HistoricoConciliacaoDialog
