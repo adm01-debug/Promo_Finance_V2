@@ -29,6 +29,7 @@ const routeLabels: Record<string, string> = {
   '/audit-logs': 'Logs de Auditoria',
   '/seguranca': 'Segurança',
   '/demonstrativos': 'Demonstrativos',
+  '/contabilidade': 'Contabilidade & SPED',
   '/pagamentos-recorrentes': 'Pagamentos Recorrentes',
   '/bitrix24': 'Bitrix24',
   '/reforma-tributaria': 'Reforma Tributária',
