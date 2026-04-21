@@ -1,5 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { useAuth } from './useAuth';
 
 export interface UserEmpresaLink {
@@ -39,4 +40,32 @@ export function getCurrentEmpresaId(): string | null {
 export function setCurrentEmpresaId(id: string) {
   localStorage.setItem(STORAGE_KEY, id);
   window.dispatchEvent(new CustomEvent('current-empresa-changed', { detail: id }));
+}
+
+export function useDefinirEmpresaPadrao() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (linkId: string) => {
+      if (!user) throw new Error('Usuário não autenticado');
+      // Zera o flag para todos os vínculos do usuário
+      const { error: e1 } = await (supabase as any)
+        .from('user_empresas')
+        .update({ is_default: false })
+        .eq('user_id', user.id);
+      if (e1) throw e1;
+      // Marca o vínculo selecionado
+      const { error: e2 } = await (supabase as any)
+        .from('user_empresas')
+        .update({ is_default: true })
+        .eq('id', linkId);
+      if (e2) throw e2;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-empresas'] });
+    },
+    onError: (err: Error) => {
+      toast.error('Não foi possível definir a empresa padrão: ' + err.message);
+    },
+  });
 }
