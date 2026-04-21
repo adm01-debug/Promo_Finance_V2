@@ -72,17 +72,13 @@ export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
               <Button
                 size="sm"
                 variant="ghost"
-                onClick={() =>
-                  atualizarStatus.mutate({ id: anomalia.id, status: "falso_positivo" })
-                }
+                onClick={() => revisarComBitrix("falso_positivo")}
               >
                 <Eye className="h-3 w-3 mr-1" /> Falso positivo
               </Button>
               <Button
                 size="sm"
-                onClick={() =>
-                  atualizarStatus.mutate({ id: anomalia.id, status: "confirmada" })
-                }
+                onClick={() => revisarComBitrix("confirmada")}
               >
                 <CheckCircle2 className="h-3 w-3 mr-1" /> Confirmar
               </Button>
