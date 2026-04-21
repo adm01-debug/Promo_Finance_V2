@@ -168,6 +168,7 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
       toast.warning('Sem dados para exportar.');
       return;
     }
+    const equilibrado = Math.abs(balanco.diferenca) < 0.01;
     const linhas: Record<string, string>[] = [
       { Grupo: 'ATIVO', Código: '', Conta: '', Valor: '' },
       ...balanco.ativo.map((c) => ({ Grupo: '', Código: c.codigo, Conta: c.nome, Valor: formatCurrency(c.saldo) })),
@@ -178,6 +179,14 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
       ...balanco.patrimonio.map((c) => ({ Grupo: '', Código: c.codigo, Conta: c.nome, Valor: formatCurrency(c.saldo) })),
       { Grupo: '', Código: '', Conta: 'Resultado do Exercício', Valor: formatCurrency(resultadoExercicio) },
       { Grupo: '', Código: '', Conta: 'Total Passivo + PL', Valor: formatCurrency(balanco.totalPassivoMaisPL) },
+      {
+        Grupo: equilibrado ? 'EQUILIBRADO' : 'DESEQUILÍBRIO',
+        Código: '',
+        Conta: equilibrado
+          ? 'Diferença (Ativo − Passivo+PL)'
+          : `Diferença (Ativo − Passivo+PL) — ${balanco.diferenca > 0 ? 'Ativo maior' : 'Passivo+PL maior'}`,
+        Valor: `${balanco.diferenca >= 0 ? '+' : ''}${formatCurrency(balanco.diferenca)}`,
+      },
     ];
     const cols: ExportColumn<Record<string, string>>[] = [
       { header: 'Grupo', key: 'Grupo' },
