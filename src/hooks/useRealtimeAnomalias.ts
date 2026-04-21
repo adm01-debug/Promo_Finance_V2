@@ -7,6 +7,10 @@ import {
   ANOMALIA_DRAWER_EVENT,
   dispatchOpenAnomaliaDrawer,
 } from "@/lib/anomalia-routes";
+import {
+  useAnomaliaPreferences,
+  shouldNotify,
+} from "@/hooks/useAnomaliaPreferences";
 
 const TIPO_LABEL: Record<string, string> = {
   movimentacao_outlier: "Movimentação atípica",
