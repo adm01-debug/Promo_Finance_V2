@@ -226,46 +226,54 @@ async function applyPipeline(opts: {
     }
   }
 
+  // Normaliza claims recebidos (vazio/email → null)
+  const incomingFullName = normalizeClaim(fullName, email);
+  const incomingAvatarUrl = normalizeClaim(avatarUrl, email);
+  const incomingTelefone = normalizeClaim(telefone, email);
+
   // Resolve usuário (SAML traz existingUserId; OIDC busca/cria)
   let userId: string | null = existingUserId ?? null;
   let jitCreated = false;
+  let existingAuthUser: { user_metadata?: Record<string, unknown> | null } | null = null;
+
   if (!userId) {
     const found = await findUserByEmail(admin, email);
     if (found) {
       userId = found.id;
-      const currentName = (found.user_metadata as Record<string, unknown> | null)?.full_name as
-        | string
-        | undefined;
-      if (fullName && fullName !== email && currentName !== fullName) {
-        await admin.auth.admin.updateUserById(found.id, {
-          user_metadata: {
-            ...(found.user_metadata || {}),
-            full_name: fullName,
-            sso_provider_id: providerId,
-          },
-        });
-        await admin.from("profiles").update({ full_name: fullName }).eq("id", found.id);
-      }
+      existingAuthUser = found;
     } else if (allowJit) {
+      const jitMeta: Record<string, unknown> = { sso_provider_id: providerId };
+      if (incomingFullName) jitMeta.full_name = incomingFullName;
+      if (incomingAvatarUrl) jitMeta.avatar_url = incomingAvatarUrl;
+      if (incomingTelefone) jitMeta.phone = incomingTelefone;
       const created = await admin.auth.admin.createUser({
         email,
         email_confirm: true,
-        user_metadata: { full_name: fullName, sso_provider_id: providerId },
+        user_metadata: jitMeta,
       });
       if (created.error || !created.data.user) {
         return { error: "create_user_failed", details: created.error?.message };
       }
       userId = created.data.user.id;
       jitCreated = true;
+
+      // Persiste avatar/telefone em profiles (handle_new_user só preenche full_name)
+      const jitProfileUpdates: Record<string, string> = {};
+      if (incomingFullName) jitProfileUpdates.full_name = incomingFullName;
+      if (incomingAvatarUrl) jitProfileUpdates.avatar_url = incomingAvatarUrl;
+      if (incomingTelefone) jitProfileUpdates.telefone = incomingTelefone;
+      if (Object.keys(jitProfileUpdates).length > 0) {
+        await admin.from("profiles").update(jitProfileUpdates).eq("id", userId);
+      }
     } else {
       return { error: "user_not_provisioned" };
     }
   } else {
-    // SAML: garante metadata sso_provider_id atualizado
+    // SAML: usuário já existe (broker criou)
     const { data: u } = await admin.auth.admin.getUserById(userId);
     if (u?.user) {
+      existingAuthUser = u.user;
       // Heurística JIT-via-SAML: usuário criado pelo broker SAML há < 60s
-      // entra como "primeira passagem pelo pipeline" e merece trilha JIT.
       const createdAtStr = (u.user as { created_at?: string }).created_at;
       if (createdAtStr) {
         const createdMs = Date.parse(createdAtStr);
@@ -273,18 +281,66 @@ async function applyPipeline(opts: {
           jitCreated = true;
         }
       }
-      const currentName = (u.user.user_metadata as Record<string, unknown> | null)?.full_name as
-        | string
-        | undefined;
-      const meta = u.user.user_metadata || {};
-      const needsUpdate =
-        (fullName && fullName !== email && currentName !== fullName) ||
-        (meta as Record<string, unknown>).sso_provider_id !== providerId;
-      if (needsUpdate) {
-        await admin.auth.admin.updateUserById(userId, {
-          user_metadata: { ...meta, full_name: fullName, sso_provider_id: providerId },
+    }
+  }
+
+  // Sincronização de perfil para usuários existentes (não-JIT)
+  // Compara claims do IdP com profiles atuais e atualiza apenas o que mudou.
+  if (userId && !jitCreated && existingAuthUser) {
+    const { data: currentProfile } = await admin
+      .from("profiles")
+      .select("full_name, avatar_url, telefone")
+      .eq("id", userId)
+      .maybeSingle();
+
+    const current = {
+      full_name: (currentProfile?.full_name ?? null) as string | null,
+      avatar_url: (currentProfile?.avatar_url ?? null) as string | null,
+      telefone: (currentProfile?.telefone ?? null) as string | null,
+    };
+    const { changes, updates } = buildProfileSyncDelta(current, {
+      full_name: incomingFullName,
+      avatar_url: incomingAvatarUrl,
+      telefone: incomingTelefone,
+    });
+
+    const meta = (existingAuthUser.user_metadata || {}) as Record<string, unknown>;
+    const metaProviderId = meta.sso_provider_id as string | undefined;
+    const needsMetaSync = metaProviderId !== providerId || Object.keys(updates).length > 0;
+
+    if (needsMetaSync) {
+      const newMeta: Record<string, unknown> = { ...meta, sso_provider_id: providerId };
+      if (updates.full_name) newMeta.full_name = updates.full_name;
+      if (updates.avatar_url) newMeta.avatar_url = updates.avatar_url;
+      if (updates.telefone) newMeta.phone = updates.telefone;
+      await admin.auth.admin.updateUserById(userId, { user_metadata: newMeta });
+    }
+    if (Object.keys(updates).length > 0) {
+      await admin.from("profiles").update(updates).eq("id", userId);
+
+      // Trilha de auditoria — só quando houve alteração real
+      try {
+        const fieldsChanged = Object.keys(changes);
+        await admin.from("audit_logs").insert({
+          user_id: userId,
+          user_email: email,
+          action: "UPDATE",
+          table_name: "sso_profile_sync",
+          record_id: userId,
+          new_data: {
+            provider_id: providerId,
+            provider_nome: providerNome,
+            provider_tipo: (provider.tipo as string) ?? null,
+            changes,
+            fields_changed: fieldsChanged,
+          },
+          details: `Sincronização SSO (${providerNome}): ${fieldsChanged.length} campo(s) atualizado(s) — ${fieldsChanged.join(", ")}`,
         });
-        await admin.from("profiles").update({ full_name: fullName }).eq("id", userId);
+      } catch (err) {
+        console.warn(
+          "[sso-callback] falha ao registrar audit_logs sso_profile_sync:",
+          err instanceof Error ? err.message : String(err)
+        );
       }
     }
   }
