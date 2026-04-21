@@ -527,6 +527,11 @@ export function AnomaliasDetectadasPanel() {
                         <CheckCircle2 className="h-3 w-3 mr-1" /> Confirmar
                       </Button>
                     )}
+                  {isVisible("acoes_inline") &&
+                    (a.status === "confirmada" ||
+                      a.status === "falso_positivo") && (
+                      <ReabrirAnomaliaDialog anomaliaId={a.id} />
+                    )}
                 </div>
               ))}
             </div>
