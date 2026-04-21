@@ -506,10 +506,16 @@ export function AnomaliasDetectadasPanel() {
                         size="sm"
                         variant="ghost"
                         onClick={() =>
-                          atualizarStatus.mutate({
-                            id: a.id,
-                            status: "falso_positivo",
-                          })
+                          atualizarStatus.mutate(
+                            { id: a.id, status: "falso_positivo" },
+                            {
+                              onSuccess: () =>
+                                sincronizar.mutate({
+                                  anomaliaId: a.id,
+                                  evento: "falso_positivo",
+                                }),
+                            },
+                          )
                         }
                       >
                         <Eye className="h-3 w-3 mr-1" /> Falso +
@@ -521,10 +527,16 @@ export function AnomaliasDetectadasPanel() {
                       <Button
                         size="sm"
                         onClick={() =>
-                          atualizarStatus.mutate({
-                            id: a.id,
-                            status: "confirmada",
-                          })
+                          atualizarStatus.mutate(
+                            { id: a.id, status: "confirmada" },
+                            {
+                              onSuccess: () =>
+                                sincronizar.mutate({
+                                  anomaliaId: a.id,
+                                  evento: "confirmada",
+                                }),
+                            },
+                          )
                         }
                       >
                         <CheckCircle2 className="h-3 w-3 mr-1" /> Confirmar
