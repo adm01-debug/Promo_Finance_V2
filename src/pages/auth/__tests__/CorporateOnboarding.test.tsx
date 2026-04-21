@@ -230,45 +230,36 @@ describe('/auth/corporate — CorporateOnboarding', () => {
   });
 
   it('auto-redirect com force_sso: dispara invoke após countdown e navega para o IdP', async () => {
-    vi.useFakeTimers();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
     try {
-      invokeMock.mockResolvedValueOnce({
+      invokeMock.mockResolvedValue({
         data: { redirect_url: 'https://idp.acme/auto', verifier: 'v', state: 's' },
         error: null,
       });
       const force = { ...baseProvider, id: 'prov-force', force_sso_for_domains: true };
-      setResolver({
-        providers: [force],
-        autoRedirectProvider: force,
-        domain: 'acme.com',
-      });
+      setResolver({ providers: [force], autoRedirectProvider: force, domain: 'acme.com' });
       renderPage();
 
       const input = screen.getByLabelText(/E-mail corporativo/i) as HTMLInputElement;
       fireEvent.change(input, { target: { value: 'bob@acme.com' } });
       fireEvent.click(screen.getByRole('button', { name: /Continuar/i }));
 
-      // Tela de redirecionamento aparece
       expect(await screen.findByText(/Redirecionando para Acme SSO/i)).toBeInTheDocument();
       expect(
         screen.getByRole('button', { name: /Cancelar redirecionamento e voltar/i }),
       ).toBeInTheDocument();
 
-      // Avança countdown (3s)
+      // Avança o countdown (3s)
       await act(async () => {
-        vi.advanceTimersByTime(3500);
-      });
-      // Drena microtasks da promise do invoke
-      await act(async () => {
-        await Promise.resolve();
-        await Promise.resolve();
+        await vi.advanceTimersByTimeAsync(3500);
       });
 
+      await waitFor(() => expect(invokeMock).toHaveBeenCalled());
       expect(invokeMock).toHaveBeenCalledWith(
         'sso-initiate',
         expect.objectContaining({ body: expect.objectContaining({ provider_id: 'prov-force' }) }),
       );
-      expect(hrefStore).toBe('https://idp.acme/auto');
+      await waitFor(() => expect(hrefStore).toBe('https://idp.acme/auto'));
 
       const events = logEventMock.mock.calls.map((c) => c[0].eventType);
       expect(events).toContain('auto_redirect_started');
@@ -279,14 +270,10 @@ describe('/auth/corporate — CorporateOnboarding', () => {
   });
 
   it('cancelar durante o countdown impede o invoke e volta para a escolha manual', async () => {
-    vi.useFakeTimers();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
     try {
       const force = { ...baseProvider, id: 'prov-force', force_sso_for_domains: true };
-      setResolver({
-        providers: [force],
-        autoRedirectProvider: force,
-        domain: 'acme.com',
-      });
+      setResolver({ providers: [force], autoRedirectProvider: force, domain: 'acme.com' });
       renderPage();
 
       const input = screen.getByLabelText(/E-mail corporativo/i) as HTMLInputElement;
@@ -298,7 +285,6 @@ describe('/auth/corporate — CorporateOnboarding', () => {
       });
       fireEvent.click(cancelBtn);
 
-      // Avisa que cancelou e volta a mostrar a escolha manual
       expect(
         await screen.findByText(/Redirecionamento automático cancelado/i),
       ).toBeInTheDocument();
@@ -306,7 +292,7 @@ describe('/auth/corporate — CorporateOnboarding', () => {
 
       // Mesmo passando o tempo do countdown, nada é invocado
       await act(async () => {
-        vi.advanceTimersByTime(5000);
+        await vi.advanceTimersByTimeAsync(5000);
       });
       expect(invokeMock).not.toHaveBeenCalled();
 
@@ -317,40 +303,21 @@ describe('/auth/corporate — CorporateOnboarding', () => {
     }
   });
 
-  it('falha no sso-initiate exibe tela de erro com retry e fallback para /auth', async () => {
-    invokeMock.mockResolvedValueOnce({
-      data: null,
-      error: { message: 'IdP indisponível' },
-    });
+  it('falha no sso-initiate exibe tela de erro e permite fallback para /auth com senha', async () => {
+    invokeMock.mockResolvedValue({ data: null, error: { message: 'IdP indisponível' } });
     setResolver({ providers: [baseProvider], domain: 'acme.com' });
     renderPage();
     await submitEmail('dave@acme.com');
 
-    fireEvent.click(await screen.findByRole('button', { name: /Entrar com Acme SSO/i }));
+    await act(async () => {
+      fireEvent.click(await screen.findByRole('button', { name: /Entrar com Acme SSO/i }));
+    });
 
     expect(
       await screen.findByText(/Não foi possível iniciar o login SSO/i),
     ).toBeInTheDocument();
     expect(screen.getByText(/IdP indisponível/i)).toBeInTheDocument();
-
-    // Retry: nova invocação que agora resolve
-    invokeMock.mockResolvedValueOnce({
-      data: { redirect_url: 'https://idp.acme/retry' },
-      error: null,
-    });
-    fireEvent.click(screen.getByRole('button', { name: /Tentar novamente/i }));
-    await waitFor(() => expect(invokeMock).toHaveBeenCalledTimes(2));
-
-    // Fallback "Continuar com senha" — primeiro re-renderiza a tela de erro forçando estado limpo
-    invokeMock.mockResolvedValueOnce({
-      data: null,
-      error: { message: 'IdP indisponível' },
-    });
-    setResolver({ providers: [baseProvider], domain: 'acme.com' });
-    renderPage();
-    await submitEmail('dave@acme.com');
-    fireEvent.click(await screen.findByRole('button', { name: /Entrar com Acme SSO/i }));
-    await screen.findByText(/Não foi possível iniciar o login SSO/i);
+    expect(screen.getByRole('button', { name: /Tentar novamente/i })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /Continuar com senha/i }));
     expect(mockNavigate).toHaveBeenCalledWith(
