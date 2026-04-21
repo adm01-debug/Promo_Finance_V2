@@ -171,6 +171,7 @@ export function AnomaliasDetectadasPanel() {
           )}
         </CardContent>
       </Card>
+      <AnomaliasReviewQueue open={reviewOpen} onOpenChange={setReviewOpen} />
     </div>
   );
 }
