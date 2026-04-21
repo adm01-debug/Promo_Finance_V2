@@ -40,7 +40,14 @@ export function EvidenciasTab() {
   const [inicio, setInicio] = useState(isoDays(30));
   const [fim, setFim] = useState(isoDays(0));
   const [escopos, setEscopos] = useState<string[]>(["financeiro", "tributario", "sistema", "conformidade"]);
-  const { data, isLoading, gerar, baixar } = useEvidenciasPacotes();
+  const { data, isLoading, baixar } = useEvidenciasPacotes();
+  const stream = useGerarEvidenciasStream();
+  const [statusOpen, setStatusOpen] = useState(false);
+
+  const handleGerar = () => {
+    setStatusOpen(true);
+    stream.start({ periodo_inicio: inicio, periodo_fim: fim, escopos });
+  };
 
   const [filtros, setFiltros] = useState<FiltrosState>({
     inicio: "",
