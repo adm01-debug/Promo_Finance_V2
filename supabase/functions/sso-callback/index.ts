@@ -157,11 +157,51 @@ async function safeJson(req: Request) {
  * Aplica o pipeline pós-autenticação (provisioning + vínculo + roles + audit).
  * Compartilhado entre OIDC callback e SAML finalize.
  */
+/**
+ * Normaliza valor de claim: trim, vazio vira null, valores idênticos ao email
+ * são descartados (heurística para evitar fallback "name=email").
+ */
+function normalizeClaim(v: unknown, email: string): string | null {
+  if (v === null || v === undefined) return null;
+  const s = String(v).trim();
+  if (!s) return null;
+  if (s.toLowerCase() === email.toLowerCase()) return null;
+  return s;
+}
+
+/**
+ * Calcula o delta entre o estado atual do perfil e os claims recebidos.
+ * Só inclui campos cujo valor incoming é não-nulo E diferente do current.
+ * Nunca sobrescreve com vazio.
+ */
+function buildProfileSyncDelta(
+  current: { full_name: string | null; avatar_url: string | null; telefone: string | null },
+  incoming: { full_name?: string | null; avatar_url?: string | null; telefone?: string | null },
+): {
+  changes: Record<string, { from: unknown; to: unknown }>;
+  updates: Record<string, string>;
+} {
+  const changes: Record<string, { from: unknown; to: unknown }> = {};
+  const updates: Record<string, string> = {};
+  const fields: Array<keyof typeof incoming> = ["full_name", "avatar_url", "telefone"];
+  for (const f of fields) {
+    const next = incoming[f];
+    if (next === null || next === undefined) continue;
+    const curr = current[f] ?? null;
+    if (curr === next) continue;
+    changes[f] = { from: curr, to: next };
+    updates[f] = next;
+  }
+  return { changes, updates };
+}
+
 async function applyPipeline(opts: {
   admin: Admin;
   provider: Record<string, unknown>;
   email: string;
   fullName: string;
+  avatarUrl?: string | null;
+  telefone?: string | null;
   groups: string[];
   existingUserId?: string | null; // SAML: já existe (broker criou); OIDC: descoberto/criado aqui
   allowJit: boolean;
@@ -171,7 +211,7 @@ async function applyPipeline(opts: {
   matchedGroup: string | null;
   jitCreated: boolean;
 } | { error: string; details?: string }> {
-  const { admin, provider, email, fullName, groups, existingUserId, allowJit } = opts;
+  const { admin, provider, email, fullName, avatarUrl, telefone, groups, existingUserId, allowJit } = opts;
   const providerId = provider.id as string;
   const providerNome = provider.nome as string;
   const empresaId = (provider.empresa_id as string | null) ?? null;
