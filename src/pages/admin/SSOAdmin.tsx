@@ -41,6 +41,7 @@ export default function SSOAdmin() {
         <TabsList>
           <TabsTrigger value="providers" className="gap-2"><SettingsIcon className="h-4 w-4" />Provedores</TabsTrigger>
           <TabsTrigger value="scim" className="gap-2"><ShieldCheck className="h-4 w-4" />SCIM</TabsTrigger>
+          <TabsTrigger value="sandbox" className="gap-2"><FlaskConical className="h-4 w-4" />Sandbox</TabsTrigger>
           <TabsTrigger value="metrics" className="gap-2"><Activity className="h-4 w-4" />Monitoramento</TabsTrigger>
           <TabsTrigger value="docs" className="gap-2"><BookOpen className="h-4 w-4" />Documentação</TabsTrigger>
         </TabsList>
@@ -50,6 +51,9 @@ export default function SSOAdmin() {
         </TabsContent>
         <TabsContent value="scim" className="mt-6">
           <ScimTokensTab />
+        </TabsContent>
+        <TabsContent value="sandbox" className="mt-6">
+          <SSOSandboxPanel />
         </TabsContent>
         <TabsContent value="metrics" className="mt-6">
           <SSOMetricsPanel />
