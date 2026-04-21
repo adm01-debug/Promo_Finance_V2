@@ -59,7 +59,7 @@ export function EvidenciasTab() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {ESCOPOS.map((e) => (
                 <label key={e.value} className="flex items-center gap-2 p-2 border rounded cursor-pointer hover:bg-muted/30">
-                  <Checkbox checked={escopos.includes(e.value)} onCheckedChange={() => toggleEscopo(e.value)} />
+                  <Checkbox checked={escopos.includes(e.value)} onChange={() => toggleEscopo(e.value)} />
                   <span className="text-sm">{e.label}</span>
                 </label>
               ))}
