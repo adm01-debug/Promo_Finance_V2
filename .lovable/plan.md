@@ -1,52 +1,65 @@
 
 
-## Plano — Diff visual antes/depois nos registros de auditoria
+## Plano — Filtros padronizados + exportação CSV/PDF nas abas de Compliance
 
-Hoje os dois drill-downs existentes (`AuditLogTable` e `AuditDetailDialog`) só mostram dois `<pre>` lado a lado com `JSON.stringify`. Não há destaque do que mudou nem identificação dos campos relevantes. Vou adicionar um componente reutilizável de diff e integrá-lo nos dois pontos.
+### Estado atual
 
-### Arquivos
+- `AuditFiltersBar` já é usado pelas 3 abas que dependem de `TrilhaTable` (Financeira, Tributária, Sistema) — bom.
+- `ConformidadeFiscalTab` e `EvidenciasTab` têm filtros próprios (não padronizados).
+- `TrilhaTable` exporta CSV mas **não PDF**, e a exportação ignora paginação (só exporta a página atual de 50).
+- Falta filtro de **usuário** dedicado em todas as abas.
 
-**1. Novo `src/lib/audit-diff.ts`** — utilitário puro, sem dependências externas:
-- `computeDiff(antes, depois)` → retorna `{ added: Field[], removed: Field[], changed: Field[], unchanged: Field[] }`
-- Compara recursivamente apenas chaves de 1º nível (objetos aninhados viram JSON string para comparação) — evita explosão visual.
-- Ignora chaves técnicas: `created_at`, `updated_at`, `id`, `*_id` permanecem mas vão para `unchanged` por padrão.
-- `extractCamposChave(registro)` → retorna lista priorizada (valor, status, descrição, numero, competencia, empresa_id, user_email) presentes em `new_data` ou no próprio registro.
+### Mudanças
 
-**2. Novo `src/components/audit/AuditDiffView.tsx`**
-```text
-┌─ Campos-chave ──────────────────┐
-│ [valor] R$ 12.500,00            │ ← chips destacando o que justifica a ação
-│ [status] pendente → aprovado    │
-└─────────────────────────────────┘
-┌─ Alterações (3) ────────────────┐
-│ ▼ status                        │
-│   - "pendente"  + "aprovado"    │ ← linha vermelha / verde
-│ ▼ valor                         │
-│   - 10000  + 12500              │
-└─────────────────────────────────┘
-┌─ Adicionados (1) / Removidos (0)
-└─ ▸ Ver JSON bruto (collapsible) │ ← mantém o pre antigo escondido
-```
-- Usa tokens semânticos: `bg-destructive/10 text-destructive` para removido, `bg-success/10 text-success` para adicionado, `bg-accent/10` para alterado.
-- Quando só existe `new_data` (INSERT) ou só `old_data` (DELETE), mostra a tabela de campos sem comparação e marca "Criação" / "Exclusão".
-- Formata valores: number com `Intl.NumberFormat`, datas ISO via `formatDate`, boolean → "Sim/Não", objetos → `<pre>` truncado.
+**1. `AuditFiltersBar` — incluir filtro de usuário**
+- Adicionar campo "Usuário" (Select assíncrono populado de `profiles.email` distintos vindos das tabelas de auditoria) — opcional, controlado por prop `mostrarUsuario`.
+- Estender `FiltrosState` com `usuario?: string`.
+- Manter retrocompat com chamadas atuais.
 
-**3. Integrar em `src/components/audit/AuditLogTable.tsx`**
-- Substituir os dois blocos `<pre>{JSON.stringify(log.old_data...)}` por `<AuditDiffView old={log.old_data} new={log.new_data} action={log.action} />`.
-- Manter metadados (ação, tabela, usuário, IP, detalhes) no topo.
+**2. `useTrilhaAuditoria` — aplicar filtro de usuário + suportar fetch completo para export**
+- Adicionar `usuario` aos filtros: mapeia para `user_email.eq` (sistema/tributária) ou `user_id` (financeira via join — usar `user_email` quando disponível).
+- Novo helper `fetchTrilhaAuditoriaCompleto(tipo, filtros)` (sem paginação, cap 5000 linhas) reutilizado pela exportação.
 
-**4. Integrar em `src/components/compliance/AuditDetailDialog.tsx`**
-- Substituir os dois `<pre>` Antes/Depois por `<AuditDiffView old={antes} new={depois} />`.
-- Manter o grid de metadados existente.
+**3. `TrilhaTable` — exportação CSV + PDF do resultado filtrado completo**
+- Substituir botão único "Exportar CSV" por componente `<ExportMenu>` (CSV + PDF) já existente em `src/components/ui/export-menu.tsx`.
+- Onclick: chama `fetchTrilhaAuditoriaCompleto` (com mesmos filtros), monta linhas, dispara `exportToCSV`/`exportToPDF` de `@/lib/export-utils`.
+- Nome do arquivo inclui `tipo + período` (ex.: `trilha-sistema-2026-04-01_2026-04-21.csv`).
+- Loading state no botão durante o fetch completo.
+- Título do PDF: "Trilha de Auditoria — {Tipo} ({inicio} a {fim})".
 
-### Sem alterações
-- Nenhuma migration. Estrutura de `audit_logs` / `auditoria_financeira` / `auditoria_tributaria` já tem `old_data`/`new_data` (e variantes `payload_anterior`/`payload_novo`, `dados_antigos`/`dados_novos`) — `AuditDetailDialog` já normaliza isso e passa pronto.
-- Hook `useTrilhaAuditoria` segue igual.
-- Sem novas dependências (diff feito à mão, sem `jsondiffpatch`).
+**4. `ConformidadeFiscalTab` — adotar `AuditFiltersBar`**
+- Reescrever o cabeçalho de filtros para usar `AuditFiltersBar` (mostrarUsuario=false; ação opcional = status conformidade).
+- Adicionar `<ExportMenu>` que exporta os checks visíveis (CSV + PDF).
+
+**5. `EvidenciasTab` — adotar `AuditFiltersBar` (somente período + busca)**
+- Filtra a lista de pacotes gerados por período de geração e usuário.
+- `<ExportMenu>` para histórico de pacotes.
+
+**6. Header da página `ComplianceAuditoria` — botão global "Exportar tudo"**
+- Dropdown que dispara export CSV/PDF da aba ativa, repassando filtros atuais via context leve (`AuditFiltersContext`) ou via ref para a tab ativa.
+- Implementação simples: cada aba expõe `exportRef` via `useImperativeHandle`; o header chama `exportRef.current.export('csv'|'pdf')`.
+
+### Detalhes técnicos
+
+- **Sem mudança de schema** — tudo client-side sobre as queries existentes.
+- **Cap de export**: 5000 linhas; se total > cap, toast informa truncamento e sugere refinar período.
+- **Respeito a escopo/RLS**: o fetch completo usa o mesmo client autenticado; RLS já restringe por papel — nada novo.
+- **Performance**: fetch completo só dispara no clique de export (não em toda mudança de filtro).
+- **Reutiliza `exportToCSV`/`exportToPDF`** de `@/lib/export-utils` (BOM UTF-8 já garantido para PT-BR).
+
+### Arquivos tocados
+
+- `src/components/compliance/AuditFiltersBar.tsx` — novo campo usuário + tipo `FiltrosState`.
+- `src/hooks/useTrilhaAuditoria.ts` — filtro `usuario` + helper `fetchTrilhaAuditoriaCompleto`.
+- `src/components/compliance/TrilhaTable.tsx` — `ExportMenu`, fetch completo, ref imperativa.
+- `src/components/compliance/ConformidadeFiscalTab.tsx` — adotar `AuditFiltersBar` + `ExportMenu`.
+- `src/components/compliance/EvidenciasTab.tsx` — adotar `AuditFiltersBar` + `ExportMenu`.
+- `src/pages/admin/ComplianceAuditoria.tsx` — botão "Exportar" no header (opcional, fase 2).
 
 ### Critério de pronto
-- Abrir um registro UPDATE em `/admin/compliance` → ver lista de campos alterados com cor antes/depois, e chips dos campos-chave no topo.
-- Registro INSERT mostra "Criação" + tabela de valores novos.
-- Registro DELETE mostra "Exclusão" + valores anteriores.
-- JSON bruto continua acessível via collapsible para auditoria forense.
+
+1. Todas as 5 abas exibem a mesma barra de filtros (período + busca + usuário + ação quando aplicável + presets 7/30/90d).
+2. Em cada aba, dropdown "Exportar" gera CSV e PDF com **todos os registros filtrados** (não só a página visível), respeitando data, usuário e escopo.
+3. Arquivo nomeado com tipo + período; PDF tem título informativo.
+4. Filtro por usuário funciona nas 3 trilhas (Financeira, Tributária, Sistema).
 
