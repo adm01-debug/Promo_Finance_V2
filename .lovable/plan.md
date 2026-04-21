@@ -1,76 +1,47 @@
 
 
-## Plano — Personalização de colunas, ordenação e filtros salvos (Anomalias + Conciliação)
+## Plano — Vincular feedback de Confirmar/Rejeitar IA ao banco
 
-Hoje:
-- A tabela `public.saved_filters` (já criada e com RLS por `user_id`) **nunca foi consumida** — `ConciliacaoFilters` mantém estado em memória e perde tudo ao recarregar.
-- O painel de anomalias (`AnomaliasDetectadasPanel`) só tem filtro por `status` (single select) e mostra cards fixos sem controle de colunas/ordenação.
-- A lista de transações de conciliação (`ConciliacaoTransactionList`) é card-based fixa, sem ordenação nem escolha de campos.
+Hoje, na conciliação por IA (`SugestoesMatchIA`):
+- **Confirmar** já chama `confirmarConciliacao` RPC (atualiza `transacoes_bancarias.conciliada=true` + status da conta) e grava `historico_conciliacao_ia` + `feedback_conciliacao_ia`. ✅
+- **Rejeitar** abre o `RejeicaoDialog`, captura motivo e grava `historico_conciliacao_ia(acao='rejeitado')` + `feedback_conciliacao_ia(motivo_rejeicao)`. Mas:
+  - O parâmetro `transacaoId` é descartado em `registrarHistorico` (a coluna `historico_conciliacao_ia.transacao_bancaria_id` nunca é preenchida) → impossível auditar qual transação foi rejeitada.
+  - `handleRejeitarMatch` em `useConciliacaoPage` só faz `toast.info('Sugestão rejeitada')`. A sugestão rejeitada permanece no painel e o mesmo match volta a ser sugerido na próxima reanálise.
+  - Não há filtragem do `matchesRejeitados` Set ao calcular `transacoesComSugestao` / `melhorMatch` em `SugestoesMatchIA`.
 
-Este plano entrega 3 capacidades reutilizáveis em ambas as telas: **filtros salvos**, **ordenação configurável** e **seleção de colunas/campos visíveis**.
+Este plano fecha as três pontas.
 
 ### Mudanças
 
-**1. Hook genérico `useSavedFilters`** (`src/hooks/useSavedFilters.ts`)
-- Wrappa a tabela `saved_filters` com React Query.
-- API: `useSavedFilters<T>(entityType: string)` retorna:
-  - `filters` (lista de presets do usuário para a entidade)
-  - `defaultFilter` (o `is_default=true`, se houver)
-  - `save({ name, payload, isDefault })` — upsert por `(user_id, entity_type, name)`
-  - `update(id, patch)` / `remove(id)` / `setDefault(id)`
-- O `payload` JSONB armazena tudo: `{ filters, sort: {key, dir}, columns: string[] }` — schema versionado com `v: 1` para migração futura.
-- RLS por `user_id` já existe; nada novo no backend.
+**1. `src/hooks/useHistoricoConciliacaoIA.ts`**
+- Estender `RegistrarHistoricoParams` com `transacaoId?: string` (já recebido mas ignorado).
+- No `insertData` do `registrarHistorico`, adicionar `transacao_bancaria_id: params.transacaoId ?? null` para que o vínculo FK seja gravado.
+- Em `aprovarEmLote`, propagar `transacaoId: match.transacaoId` na chamada de `registrarHistorico` (atualmente já passa, só precisa do campo no insert).
 
-**2. Componente reutilizável `SavedFiltersBar`** (`src/components/shared/SavedFiltersBar.tsx`)
-- Barra horizontal com:
-  - Dropdown "Carregar preset" listando `filters` (estrela no padrão).
-  - Botão **"Salvar como…"** abre `<Dialog>` com input de nome + checkbox "Definir como padrão".
-  - Botão **"Salvar atual"** (visível quando um preset está carregado e foi modificado).
-  - Botão lixeira para remover preset ativo.
-- Recebe `entityType`, `currentState` (objeto serializável) e `onLoad(state)`.
-- Detecta "modificado" por shallow-equal entre `currentState` e o preset carregado.
+**2. `src/hooks/useConciliacaoPage.ts`**
+- `handleRejeitarMatch(transacaoId, lancamentoId)`:
+  - Remove a transação da lista de sugestões da IA: `setTransacoesImportadas(prev => prev.filter(t => t.id !== transacaoId))` quando todas as sugestões para ela foram rejeitadas (ou simplesmente: tirar da lista; o painel então mostra a próxima).
+  - Mantém `toast.info('Sugestão rejeitada — feedback registrado')`.
+- Decisão: tirar a transação inteira da fila de sugestões IA é mais simples e alinha com o comportamento atual de "rejeitar = não quero esse match agora"; ela continua visível na lista pendente principal abaixo, onde pode ser conciliada manualmente.
 
-**3. Componente reutilizável `ColumnVisibilityMenu`** (`src/components/shared/ColumnVisibilityMenu.tsx`)
-- DropdownMenu com checkbox por coluna disponível.
-- Props: `columns: { key, label, locked? }[]`, `visible: string[]`, `onChange`.
-- Colunas com `locked: true` (ex.: descrição, valor) não podem ser ocultadas.
+**3. `src/components/conciliacao/SugestoesMatchIA.tsx`**
+- Em `transacoesComSugestao`, filtrar também `matchesRejeitados`: para uma transação cujo `melhorMatch.lancamentoId` esteja em `matchesRejeitados` como `${transacaoId}-${lancamentoId}`, pular para a próxima sugestão (ou ocultar a transação se não restar nenhuma).
+- Lógica: `const sugestoesValidas = sugestoes.filter(s => !matchesRejeitados.has('${transacao.id}-${s.lancamentoId}'))` e usar `sugestoesValidas[0]` como `melhorMatch`.
 
-**4. Hook `useTablePreferences`** (`src/hooks/useTablePreferences.ts`)
-- Combina filtros + sort + colunas num único state controlado, com persistência local (localStorage por `entityType`) como fallback antes do usuário criar preset.
-- Sincroniza com `defaultFilter` do `useSavedFilters` no mount: se existir default, aplica; senão usa localStorage; senão usa initial.
-
-**5. Aplicação em **Anomalias** (`AnomaliasDetectadasPanel`)**
-- entityType = `"anomalias_detectadas"`.
-- Novos filtros (além de status que já existe):
-  - **Severidade** (multi-check: critica/alta/media/baixa).
-  - **Período** (`detectada_em` início/fim, date inputs).
-  - **Tipo de anomalia** (multi-check com 5 tipos).
-- **Ordenação** configurável: `detectada_em` (default desc), `severidade` (rank custom critica→baixa), `tipo_anomalia`.
-- **Colunas/campos visíveis** (controla quais badges/blocos aparecem em cada card): `severidade` (locked), `tipo` (locked), `data`, `descricao` (locked), `observacoes`, `entidade_relacionada`, `acoes_inline`.
-- `SavedFiltersBar` posicionada acima do select de status atual; o select vira parte do estado serializado.
-
-**6. Aplicação em **Conciliação** (`ConciliacaoTransactionList` + `ConciliacaoFilters`)**
-- entityType = `"conciliacao_transacoes"`.
-- Estende `ConciliacaoFilterState` existente com:
-  - `severidade` derivada da confiança IA (renomeação visual: "Severidade do match" mapeado para `confiancaIA`).
-- **Ordenação** nova: `data` (default desc), `valor`, `confiancaIA`, `tipo`. Header com `SortableHeader` reaproveitado (`src/components/ui/sortable-header.tsx`, já existe).
-- **Colunas visíveis** no card: `data`, `descricao` (locked), `valor` (locked), `tipo`, `confianca_badge`, `acoes` (locked).
-- `SavedFiltersBar` adicionada na linha do header acima do search/filter atual.
+**4. UX/feedback**
+- `confirmarRejeicao` mostra `toast.success('Rejeição registrada — IA aprenderá com este feedback')` quando `motivoRejeicao` foi preenchido; toast neutro caso contrário.
+- Botão **Rejeitar** no `RejeicaoDialog` fica `disabled={registrarHistorico.isPending || registrarFeedback.isPending}` para evitar duplo-clique.
 
 ### Detalhes técnicos
 
-- **Sem mudança de schema**: `saved_filters` já existe com RLS, índices `(user_id, entity_type)` e trigger de `is_default` único.
-- **Tipagem do payload**: `interface SavedFilterPayload<T> { v: 1; filters: T; sort?: { key: string; dir: 'asc'|'desc' }; columns?: string[] }` exportada de `useSavedFilters`.
-- **Migração suave**: estado existente em `Conciliacao.tsx` continua funcionando; o `useTablePreferences` é opt-in e a forma do `filters` no payload é o próprio `ConciliacaoFilterState`.
-- **Concorrência**: trigger `ensure_single_default_filter` já garante 1 default por (user, entity).
-- **Performance**: índice parcial `idx_saved_filters_default WHERE is_default=true` já criado — query de bootstrap é `O(1)` por entidade.
-- **Ordenação por severidade** (anomalias): aplicada client-side com map `{critica:0, alta:1, media:2, baixa:3}` (mesmo padrão do `AnomaliasReviewQueue`).
-- **A11y**: `SavedFiltersBar` usa `<DropdownMenu>` shadcn (já a11y-compliant); `ColumnVisibilityMenu` com `role="menuitemcheckbox"`.
+- Sem mudança de schema: `historico_conciliacao_ia.transacao_bancaria_id` já existe (FK para `transacoes_bancarias`), apenas não estava sendo preenchido.
+- RLS dessas tabelas continua válida (`feedback_conciliacao_ia` e `historico_conciliacao_ia` já têm policies de insert para usuários autenticados conforme migrações anteriores).
+- `confirmarConciliacao` (RPC já existente) continua sendo o único responsável por mexer em `transacoes_bancarias.conciliada` — não duplicamos lógica.
+- Rejeição é puramente um **sinal de feedback**: não altera `transacoes_bancarias` (não há coluna "rejeitada"), apenas registra histórico/feedback e remove a sugestão da UI.
 
 ### Fora de escopo
 
-- Compartilhar presets entre usuários da mesma empresa (RLS atual é por `user_id`).
-- Drag-to-reorder de colunas (apenas show/hide).
-- Filtros salvos em outras telas (contas a pagar/receber/movimentações) — esses ficam para um próximo passo, mas o hook é genérico e está pronto para ser plugado lá.
-- Export do preset como JSON.
+- Adicionar coluna `rejeitada_em` a `transacoes_bancarias` (rejeição é por par transação↔lançamento, não por transação inteira).
+- Treinar/ajustar pesos do motor de IA com base no histórico de rejeições (consumido por `conciliacao-ia` edge — fica para próxima iteração).
+- Bulk-rejeitar com motivo único.
 
