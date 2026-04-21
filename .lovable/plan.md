@@ -1,65 +1,69 @@
 
 
-## Plano — Filtros padronizados + exportação CSV/PDF nas abas de Compliance
+## Plano — Reestruturar `/contabilidade` com 6 abas
 
 ### Estado atual
 
-- `AuditFiltersBar` já é usado pelas 3 abas que dependem de `TrilhaTable` (Financeira, Tributária, Sistema) — bom.
-- `ConformidadeFiscalTab` e `EvidenciasTab` têm filtros próprios (não padronizados).
-- `TrilhaTable` exporta CSV mas **não PDF**, e a exportação ignora paginação (só exporta a página atual de 50).
-- Falta filtro de **usuário** dedicado em todas as abas.
+A rota `/contabilidade` já existe (`src/pages/Contabilidade.tsx`, protegida para `admin`/`financeiro`) com **4 abas**: Plano, Lançamentos, SPED ECD, SPED ECF. Os hooks `usePlanoContas`, `useLancamentosContabeis` e `useSpedContabil` já consomem as tabelas reais (`plano_contas`, `lancamentos_contabeis`, `partidas_contabeis`). Faltam apenas as **2 abas novas**: Razão & Diário e DRE & Balanço.
 
-### Mudanças
+### O que será implementado
 
-**1. `AuditFiltersBar` — incluir filtro de usuário**
-- Adicionar campo "Usuário" (Select assíncrono populado de `profiles.email` distintos vindos das tabelas de auditoria) — opcional, controlado por prop `mostrarUsuario`.
-- Estender `FiltrosState` com `usuario?: string`.
-- Manter retrocompat com chamadas atuais.
+**1. Nova aba `RazaoDiarioTab.tsx`** (`src/components/contabilidade/`)
 
-**2. `useTrilhaAuditoria` — aplicar filtro de usuário + suportar fetch completo para export**
-- Adicionar `usuario` aos filtros: mapeia para `user_email.eq` (sistema/tributária) ou `user_id` (financeira via join — usar `user_email` quando disponível).
-- Novo helper `fetchTrilhaAuditoriaCompleto(tipo, filtros)` (sem paginação, cap 5000 linhas) reutilizado pela exportação.
+Aba única com sub-toggle (segmented) entre **Diário** e **Razão**, compartilhando filtros.
 
-**3. `TrilhaTable` — exportação CSV + PDF do resultado filtrado completo**
-- Substituir botão único "Exportar CSV" por componente `<ExportMenu>` (CSV + PDF) já existente em `src/components/ui/export-menu.tsx`.
-- Onclick: chama `fetchTrilhaAuditoriaCompleto` (com mesmos filtros), monta linhas, dispara `exportToCSV`/`exportToPDF` de `@/lib/export-utils`.
-- Nome do arquivo inclui `tipo + período` (ex.: `trilha-sistema-2026-04-01_2026-04-21.csv`).
-- Loading state no botão durante o fetch completo.
-- Título do PDF: "Trilha de Auditoria — {Tipo} ({inicio} a {fim})".
+- **Filtros no topo**: data início/fim (default = ano corrente), select de conta opcional (do `plano_contas` da empresa), busca textual em histórico.
+- **Modo Diário**: tabela cronológica achatada — `Data | Nº | Histórico | Conta (código + nome) | Débito | Crédito`. Totais de débito/crédito no rodapé (devem bater).
+- **Modo Razão**: agrupado por conta. Para cada conta com movimento:
+  - cabeçalho (código · nome · saldo inicial)
+  - linhas `Data | Histórico | Débito | Crédito | Saldo acumulado`
+  - saldo final
+  - Saldo inicial = soma de partidas anteriores ao `dataInicio` (calculado client-side a partir do mesmo dataset).
+- Botão **Exportar** (dropdown CSV/PDF) com `exportToCSV/exportToPDF` de `@/lib/export-utils`, nome `diario-{período}` ou `razao-{período}`.
+- Empty/loading com `Skeleton`.
 
-**4. `ConformidadeFiscalTab` — adotar `AuditFiltersBar`**
-- Reescrever o cabeçalho de filtros para usar `AuditFiltersBar` (mostrarUsuario=false; ação opcional = status conformidade).
-- Adicionar `<ExportMenu>` que exporta os checks visíveis (CSV + PDF).
+**2. Nova aba `DreBalancoTab.tsx`** (`src/components/contabilidade/`)
 
-**5. `EvidenciasTab` — adotar `AuditFiltersBar` (somente período + busca)**
-- Filtra a lista de pacotes gerados por período de geração e usuário.
-- `<ExportMenu>` para histórico de pacotes.
+Sub-toggle entre **DRE** e **Balanço Patrimonial**, calculados a partir de `usePlanoContas` + `useLancamentosContabeis`.
 
-**6. Header da página `ComplianceAuditoria` — botão global "Exportar tudo"**
-- Dropdown que dispara export CSV/PDF da aba ativa, repassando filtros atuais via context leve (`AuditFiltersContext`) ou via ref para a tab ativa.
-- Implementação simples: cada aba expõe `exportRef` via `useImperativeHandle`; o header chama `exportRef.current.export('csv'|'pdf')`.
+- **Filtros**: período (default ano corrente).
+- **DRE** agrupada por natureza:
+  - (+) Receitas (soma C − D em contas `natureza='receita'`)
+  - (−) Despesas (soma D − C em `natureza='despesa'`)
+  - (=) Resultado do período
+  - Hierarquia respeitando `parent_id` (recuo `paddingLeft = nivel * 16`).
+- **Balanço** em duas colunas:
+  - Ativo (`natureza='ativo'`, D − C)
+  - Passivo (`natureza='passivo'`, C − D) + Patrimônio (`natureza='patrimonio'`, C − D + resultado do exercício)
+  - Indicador de equilíbrio (Ativo vs Passivo+PL); se diferir > R$ 0,01, alerta amarelo.
+- Cálculo 100% client-side num `useMemo`.
+- **Exportar PDF** via `jsPDF` + `autoTable` (já no projeto), com cabeçalho da empresa e período, seguindo o padrão de `advanced-corporate-reporting-engine`.
 
-### Detalhes técnicos
+**3. Atualizar `src/pages/Contabilidade.tsx`**
 
-- **Sem mudança de schema** — tudo client-side sobre as queries existentes.
-- **Cap de export**: 5000 linhas; se total > cap, toast informa truncamento e sugere refinar período.
-- **Respeito a escopo/RLS**: o fetch completo usa o mesmo client autenticado; RLS já restringe por papel — nada novo.
-- **Performance**: fetch completo só dispara no clique de export (não em toda mudança de filtro).
-- **Reutiliza `exportToCSV`/`exportToPDF`** de `@/lib/export-utils` (BOM UTF-8 já garantido para PT-BR).
+- Trocar `TabsList` para 6 colunas (`grid-cols-3 md:grid-cols-6`), na ordem:
+  Plano · Lançamentos · **Razão & Diário** · **DRE & Balanço** · SPED ECD · SPED ECF
+- Importar e renderizar as duas novas abas; passar `empresaId` e `ano` do header.
+- Header existente (Empresa/Ano) preservado — filtros internos de cada nova aba refinam o período.
 
-### Arquivos tocados
+### Arquivos
 
-- `src/components/compliance/AuditFiltersBar.tsx` — novo campo usuário + tipo `FiltrosState`.
-- `src/hooks/useTrilhaAuditoria.ts` — filtro `usuario` + helper `fetchTrilhaAuditoriaCompleto`.
-- `src/components/compliance/TrilhaTable.tsx` — `ExportMenu`, fetch completo, ref imperativa.
-- `src/components/compliance/ConformidadeFiscalTab.tsx` — adotar `AuditFiltersBar` + `ExportMenu`.
-- `src/components/compliance/EvidenciasTab.tsx` — adotar `AuditFiltersBar` + `ExportMenu`.
-- `src/pages/admin/ComplianceAuditoria.tsx` — botão "Exportar" no header (opcional, fase 2).
+- ✏️ `src/pages/Contabilidade.tsx`
+- ➕ `src/components/contabilidade/RazaoDiarioTab.tsx`
+- ➕ `src/components/contabilidade/DreBalancoTab.tsx`
+
+### O que NÃO muda
+
+- Sem migration, sem nova edge function, sem novo hook.
+- Rota e RBAC já configurados.
+- Hooks existentes reutilizados sem alteração.
 
 ### Critério de pronto
 
-1. Todas as 5 abas exibem a mesma barra de filtros (período + busca + usuário + ação quando aplicável + presets 7/30/90d).
-2. Em cada aba, dropdown "Exportar" gera CSV e PDF com **todos os registros filtrados** (não só a página visível), respeitando data, usuário e escopo.
-3. Arquivo nomeado com tipo + período; PDF tem título informativo.
-4. Filtro por usuário funciona nas 3 trilhas (Financeira, Tributária, Sistema).
+1. `/contabilidade` mostra 6 abas funcionais com a empresa do header.
+2. Diário lista todas as partidas do período em ordem cronológica e fecha débitos = créditos.
+3. Razão agrupa por conta com saldo inicial → movimentos → saldo final corretos.
+4. DRE soma receitas − despesas mostrando resultado, com hierarquia preservada.
+5. Balanço sinaliza Ativo = Passivo + PL e alerta em caso de desequilíbrio.
+6. Exportação CSV/PDF funciona em Razão/Diário e PDF em DRE/Balanço.
 
