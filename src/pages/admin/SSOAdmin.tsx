@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { KeyRound, Activity, BookOpen, Settings as SettingsIcon } from 'lucide-react';
+import { KeyRound, Activity, BookOpen, Settings as SettingsIcon, ShieldCheck } from 'lucide-react';
 import { SSOProvidersList } from '@/components/admin/sso/SSOProvidersList';
 import { SSOWizardDialog } from '@/components/admin/sso/SSOWizardDialog';
 import { SSOMetricsPanel } from '@/components/admin/sso/SSOMetricsPanel';
 import { SSODocumentacao } from '@/components/admin/sso/SSODocumentacao';
+import { ScimTokensTab } from '@/components/admin/sso/ScimTokensTab';
 import type { SSOProvider } from '@/hooks/useSSO';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
@@ -38,12 +39,16 @@ export default function SSOAdmin() {
       <Tabs defaultValue="providers">
         <TabsList>
           <TabsTrigger value="providers" className="gap-2"><SettingsIcon className="h-4 w-4" />Provedores</TabsTrigger>
+          <TabsTrigger value="scim" className="gap-2"><ShieldCheck className="h-4 w-4" />SCIM</TabsTrigger>
           <TabsTrigger value="metrics" className="gap-2"><Activity className="h-4 w-4" />Monitoramento</TabsTrigger>
           <TabsTrigger value="docs" className="gap-2"><BookOpen className="h-4 w-4" />Documentação</TabsTrigger>
         </TabsList>
 
         <TabsContent value="providers" className="mt-6">
           <SSOProvidersList onEdit={openEdit} onCreate={openCreate} />
+        </TabsContent>
+        <TabsContent value="scim" className="mt-6">
+          <ScimTokensTab />
         </TabsContent>
         <TabsContent value="metrics" className="mt-6">
           <SSOMetricsPanel />
