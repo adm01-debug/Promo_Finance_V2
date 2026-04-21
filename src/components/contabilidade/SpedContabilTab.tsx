@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { Download, FileText, AlertTriangle, CheckCircle2, ShieldAlert, Loader2 } from 'lucide-react';
+import { Download, FileText, AlertTriangle, CheckCircle2, ShieldAlert, Loader2, FileArchive, Wand2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -11,6 +11,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useGerarSpedContabil, useSpedContabilHistorico } from '@/hooks/useSpedContabil';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { SpedEcdWizard } from './SpedEcdWizard';
+import { baixarSpedZip } from '@/lib/sped-zip';
 
 interface Props {
   tipo: 'ECD' | 'ECF';
@@ -19,6 +21,7 @@ interface Props {
 
 export function SpedContabilTab({ tipo, empresaId }: Props) {
   const [ano, setAno] = useState(new Date().getFullYear() - 1);
+  const [wizardOpen, setWizardOpen] = useState(false);
   const gerar = useGerarSpedContabil();
   const { data: historico = [], isLoading } = useSpedContabilHistorico(empresaId);
   const historicoTipo = historico.filter((h: { tipo: string }) => h.tipo === tipo);
@@ -29,8 +32,28 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
     window.open(data.signedUrl, '_blank');
   };
 
+  const handleDownloadZip = async (h: { storage_path: string; hash_sha256: string | null; ano_calendario: number; total_linhas: number; total_lancamentos: number }) => {
+    const { data, error } = await supabase.storage.from('relatorios-tributarios').createSignedUrl(h.storage_path, 60 * 60);
+    if (error || !data) { toast.error('Falha ao gerar link'); return; }
+    const fileName = h.storage_path.split('/').pop() || `ECD-${h.ano_calendario}.txt`;
+    try {
+      await baixarSpedZip({
+        txtUrl: data.signedUrl, fileName, hash: h.hash_sha256 || 'N/A',
+        empresa: { razao_social: '—', cnpj: '—' },
+        periodo: { inicio: `${h.ano_calendario}-01-01`, fim: `${h.ano_calendario}-12-31` },
+        totalLinhas: h.total_linhas, totalLancamentos: h.total_lancamentos,
+      });
+      toast.success('ZIP baixado');
+    } catch (e) {
+      toast.error(`Falha: ${e instanceof Error ? e.message : 'erro'}`);
+    }
+  };
+
   return (
     <div className="space-y-6">
+      {tipo === 'ECD' && empresaId && (
+        <SpedEcdWizard open={wizardOpen} onOpenChange={setWizardOpen} empresaId={empresaId} anoCalendario={ano} />
+      )}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -51,14 +74,21 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                 onChange={e => setAno(Number(e.target.value))} />
             </div>
             <div className="md:col-span-2 flex items-end">
-              <Button
-                disabled={!empresaId || gerar.isPending}
-                onClick={() => empresaId && gerar.mutate({ empresaId, anoCalendario: ano, tipo })}
-                className="w-full"
-              >
-                {gerar.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
-                Gerar e baixar SPED {tipo} de {ano}
-              </Button>
+              {tipo === 'ECD' ? (
+                <Button disabled={!empresaId} onClick={() => setWizardOpen(true)} className="w-full">
+                  <Wand2 className="mr-2 h-4 w-4" />
+                  Abrir wizard de geração SPED ECD · {ano}
+                </Button>
+              ) : (
+                <Button
+                  disabled={!empresaId || gerar.isPending}
+                  onClick={() => empresaId && gerar.mutate({ empresaId, anoCalendario: ano, tipo })}
+                  className="w-full"
+                >
+                  {gerar.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
+                  Gerar e baixar SPED {tipo} de {ano}
+                </Button>
+              )}
             </div>
           </div>
 
@@ -120,9 +150,14 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                     </TableCell>
                     <TableCell className="font-mono text-xs">{h.hash_sha256?.substring(0, 16)}…</TableCell>
                     <TableCell className="text-right">
-                      <Button size="sm" variant="outline" onClick={() => handleDownload(h.storage_path)}>
-                        <Download className="h-4 w-4" />
-                      </Button>
+                      <div className="flex justify-end gap-1">
+                        <Button size="sm" variant="outline" onClick={() => handleDownload(h.storage_path)} title="Baixar .txt">
+                          <Download className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => handleDownloadZip(h)} title="Baixar .zip com README">
+                          <FileArchive className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                   );
