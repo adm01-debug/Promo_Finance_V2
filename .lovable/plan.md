@@ -1,41 +1,35 @@
 
 
-## Plano — Guia de provisionamento SCIM 2.0 para Azure AD e Okta
+## Plano — Auditoria explícita e atualização de perfil no JIT provisioning
 
-O backend SCIM já está 100% funcional: endpoint `/scim/v2/Users` (GET/POST/PUT/PATCH/DELETE) e `/Groups` (GET) com auth Bearer, escopo por empresa, JIT em `auth.users`, vínculo em `user_empresas` (`provisioned_via='scim'`), filtros `eq` para `userName`/`externalId`, audit em `scim_operations_log`, e UI de geração/revogação de tokens.
+O JIT provisioning **já está implementado e ativo** no `supabase/functions/sso-callback/index.ts`:
 
-O que falta para fechar o fluxo de ponta a ponta é **um guia operacional copy-paste** dentro do próprio app, para que o admin configure Azure AD ou Okta sem sair da plataforma.
+- Quando o usuário não existe e `auto_provision_users=true`, cria em `auth.users` com `email_confirm: true`.
+- Resolve papel via `sso_role_mappings` (grupos do IdP → `app_role`), com fallback para `default_role`.
+- Vincula em `user_empresas` (`provisioned_via='sso'`, `is_default=true`).
+- Mantém `user_roles` para compatibilidade com `has_role()`.
+- Registra cada tentativa em `sso_login_attempts` (sucesso/falha + duração).
 
-### Escopo
+**Gaps que este plano fecha:**
 
-Adicionar uma nova sub-aba "Como configurar" dentro da aba **SCIM** do `/admin/sso`, com 3 seções tabuladas: Azure AD, Okta e Mapeamento de atributos.
+1. **Auditoria fraca**: criação JIT e mapeamento de papel não aparecem em `audit_logs` (a tabela usada por toda a UI de compliance). Hoje só ficam em `sso_login_attempts`, que é log técnico, não trilha de governança.
+2. **`full_name` não atualiza**: se o usuário muda nome no IdP, nosso perfil fica desatualizado para sempre.
 
-### Arquivos novos
+### Mudanças
 
-- **`src/components/admin/sso/ScimSetupGuide.tsx`** — guia completo:
-  - Card "Endpoint do servidor SCIM" com `Tenant URL` e `Authorization header` (campos somente leitura + botão copiar).
-  - Tabs Azure AD / Okta / Mapeamento.
-  - Azure AD: passo-a-passo (Enterprise applications → Custom non-gallery → Provisioning Automatic → Tenant URL + Secret Token → Test Connection → Mappings → Scope → Assignments).
-  - Okta: passo-a-passo (Create App Integration → Enable SCIM → Integration tab → Base URL + Bearer auth → Test Connector → "To App" actions → Assignments).
-  - Mapeamento de atributos: tabela com `userName`, `name.formatted`, `emails`, `externalId`, `active` mapeados para campos do Azure AD/Okta, com badge obrigatório/opcional.
-  - Links externos para a documentação oficial.
-  - Aviso explicando que novos usuários entram como `visualizador` e que mapeamento de papéis usa `sso_role_mappings`.
+**Arquivo único editado: `supabase/functions/sso-callback/index.ts`** (bloco JIT, linhas 117-162)
 
-### Arquivos editados
-
-- **`src/components/admin/sso/ScimTokensTab.tsx`** — converter o conteúdo atual em sub-aba "Tokens" e adicionar sub-aba "Como configurar" que renderiza `<ScimSetupGuide />`. Manter o select de empresa fora das sub-abas.
-
-### Detalhes técnicos
-
-- O endpoint SCIM já trata todas as operações que Azure AD/Okta enviam (POST/PUT/PATCH/DELETE em `/Users`). Nenhum trabalho de backend é necessário.
-- A `Tenant URL` exibida usa `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scim-server/scim/v2` (mesmo formato já usado em `ScimTokensTab`).
-- `ServiceProviderConfig` já é público e responde com `patch.supported=true`, `filter.supported=true`, o que faz o "Test Connection" do Azure AD passar.
-- O parser de filtro do servidor já cobre `userName eq` e `externalId eq` — ambos exigidos pelo Azure AD/Okta para idempotência.
-- Acessibilidade: todos os botões de copiar têm `aria-label`; tabela usa cabeçalhos semânticos.
+- **Atualização de perfil em re-login**: quando `found` existe e o IdP envia `fullName` diferente do `user_metadata.full_name` atual, chama `admin.auth.admin.updateUserById()` e `UPDATE profiles SET full_name`.
+- **Flag `jitCreated`** para distinguir criação nova vs login subsequente.
+- **Captura `matchedGroup`** ao resolver role mapping.
+- **Insert explícito em `audit_logs`**:
+  - Se `jitCreated`: `action='INSERT'`, `table_name='auth.users'`, `details` com nome do provider, role e grupo casado.
+  - Senão, se `matchedGroup`: `action='UPDATE'`, `table_name='user_roles'`, registrando a aplicação do mapeamento.
+- **`sso_login_attempts.error_code`** recebe `'jit_provisioned'` (semântica: "evento", não erro) para facilitar filtro nas métricas.
 
 ### Fora de escopo
 
-- Suporte a operações de Group write via SCIM (atualmente retorna 501; mapeamento de papel continua via `sso_role_mappings` no painel de Providers).
-- Webhooks de notificação para sync (Azure AD/Okta operam por polling).
-- Suporte a `co`, `sw`, `pr` no parser de filtro SCIM (mantido o subset `eq` + `and`).
+- Desprovisionamento automático (deactivate) quando IdP remove o usuário — isso é responsabilidade do SCIM, não do callback SSO.
+- Sincronização incremental de grupos a cada login (já acontece naturalmente).
+- UI nova de auditoria — `audit_logs` já é consumido por `ComplianceAuditoria.tsx`.
 
