@@ -1,49 +1,64 @@
 
 
-## Plano — Métrica de "Provisionamentos JIT" no SSOMetricsPanel
+## Plano — Logout SSO sincronizado entre abas com toast único
 
 ### Diagnóstico
 
-Hoje o `SSOMetricsPanel` (`src/components/admin/sso/SSOMetricsPanel.tsx`) calcula 4 KPIs sobre `sso_login_attempts` dos últimos 7 dias: total, taxa de sucesso, usuários únicos e latência média. Não há visibilidade de quantos desses logins efetivamente **criaram** um novo usuário via JIT.
+Hoje `signOut()` em `useAuth.tsx` chama `sso-logout`, faz `supabase.auth.signOut()` localmente e, se houver `logout_url`, redireciona **somente a aba atual** para o IdP. Outras abas abertas:
 
-O `sso-callback` já marca esses eventos: quando `applyPipeline` retorna `jitCreated: true`, o `logAttempt` de sucesso enriquece o registro com `error_code = 'jit_provisioned'` (e o `context.jit_created = true` na coluna JSONB). Ou seja, o dado já existe — falta apenas exibir.
+- Continuam montadas em rotas autenticadas até o `onAuthStateChange` disparar localmente (o que acontece eventualmente porque `auth.signOut()` propaga a perda de token entre abas via `localStorage`, mas **com latência variável**).
+- Cada aba que detecta o logout pode chamar `toast` próprio, gerando **múltiplos toasts** dispersos.
+- Não há sinalização explícita de "este foi um SLO SSO" — abas perdem contexto e podem mostrar a mensagem genérica de "sessão expirada".
+
+Falta um canal de sincronização explícito que: (1) avise todas as abas no instante zero do SLO, (2) faça-as navegarem para `/auth?slo=ok` (mesma rota usada pelo `post_logout_redirect_uri` em `sso-logout/index.ts`), (3) garanta um único toast visível no app inteiro.
 
 ### Comportamento
 
-1. Adicionar 1 KPI extra ao painel: **"Provisionamentos JIT"** (últimos 7d), com ícone `UserPlus` e contagem de tentativas onde `success = true` **e** (`error_code === 'jit_provisioned'` **ou** `context?.jit_created === true`). O OR garante compatibilidade com registros novos (que usam `context`) e com a convenção atual (`error_code`).
-2. Subtítulo em texto pequeno mostrando a taxa: `X% dos logins` (jitCount / totalSucessos × 100), para dar contexto sem poluir.
-3. Reorganizar o grid de KPIs de `md:grid-cols-4` para `md:grid-cols-5` para acomodar o novo card sem quebrar o layout em mobile (continua 1 coluna no xs, ajusta em md+).
-4. Adicionar uma série extra ao gráfico "Logins SSO últimos 7 dias": linha pontilhada **"JIT"** com a contagem diária de provisionamentos, usando `hsl(var(--accent))`. Isso permite ver visualmente picos de onboarding em massa (ex: rollout de novo IdP).
-5. Nas "Últimas tentativas", quando o registro for um JIT, exibir um badge extra **"JIT"** ao lado do badge do provider (variant `secondary`), para o admin reconhecer rapidamente onboarding events na lista.
+1. Quando o usuário clica em sair e há `ssoProviderId`, antes de chamar `auth.signOut()`, a aba **broadcasta** uma mensagem `{ type: 'sso-slo-initiated', providerNome, ts }` via `BroadcastChannel('sso-sync')`.
+2. Todas as outras abas que estão escutando recebem a mensagem e:
+   - Marcam um flag `sessionStorage['sso-slo-toast-shown'] = ts` para suprimir toasts duplicados que outras abas tentem mostrar;
+   - Chamam `supabase.auth.signOut({ scope: 'local' })` (não revoga o token de novo — só limpa o storage local) e navegam para `/auth?slo=ok&from=tab-sync`.
+3. A aba que iniciou o SLO mostra **um único** toast: `"Encerrando sessão SSO via {provider}…"` (sonner com id fixo `sso-slo` para deduplicação se a mesma aba renderizar duas vezes).
+4. Em `/auth`, quando a query `slo=ok` está presente, mostrar um toast informativo único `"Sessão encerrada com segurança"` — também com id fixo `sso-slo-done`, e somente uma vez por carregamento (guard via `sessionStorage`).
+5. Fallback robusto: se `BroadcastChannel` não existir (Safari antigo / contextos restritos), usa `window.addEventListener('storage', ...)` com uma chave-sentinela `localStorage.setItem('sso-slo-broadcast', JSON.stringify(payload))` + `removeItem` imediato. Funciona em todas as abas do mesmo origin.
+6. "Fechar páginas abertas em outras abas": navegadores **não permitem** que uma aba chame `window.close()` em outra aba que ela não abriu (regra de segurança do browser). O comportamento equivalente — e que o usuário realmente quer — é que essas abas **saiam imediatamente da área autenticada** e mostrem a tela de login. Isso é o que o item 2 entrega. Documentar essa limitação como nota no PR.
 
 ### Detalhes técnicos
 
-**Edit em `src/components/admin/sso/SSOMetricsPanel.tsx`**:
+**Novo arquivo `src/lib/sso-sync.ts`** (~60 linhas):
+- `export type SsoSyncMessage = { type: 'sso-slo-initiated'; providerNome: string; ts: number }`
+- `export function broadcastSsoSlo(providerNome: string)`: tenta `BroadcastChannel('sso-sync').postMessage(payload)` com try/catch; em qualquer falha ou ausência da API, faz fallback para `localStorage.setItem('sso-slo-broadcast', JSON.stringify(payload)); localStorage.removeItem('sso-slo-broadcast')`.
+- `export function subscribeSsoSlo(handler: (msg: SsoSyncMessage) => void): () => void`: registra listener no `BroadcastChannel` **e** no `window.storage` (para `key === 'sso-slo-broadcast' && newValue`); retorna função de cleanup que fecha o channel e remove o listener.
+- Helper interno `getDedupKey(ts) = 'sso-slo-' + ts` para o flag de supressão.
 
-- Importar `UserPlus` de `lucide-react`.
-- No `useMemo`, derivar:
-  ```ts
-  const isJit = (a) => a.success && (a.error_code === 'jit_provisioned' || (a.context as any)?.jit_created === true);
-  const jitCount = last7.filter(isJit).length;
-  const jitRate = successCount ? (jitCount / successCount) * 100 : 0;
-  ```
-- Estender `byDay` para acumular `jit` por dia, em paralelo a `success`/`fail`.
-- Adicionar 5º `<KPI>` no grid (mudar para `md:grid-cols-5`) com `value={jitCount}` e um subtítulo opcional. Pequeno ajuste no componente `KPI` para aceitar um `hint?: string` opcional renderizado abaixo do valor (`text-xs text-muted-foreground`).
-- Adicionar `<Line dataKey="jit" stroke="hsl(var(--accent))" strokeDasharray="4 4" name="Provisionamentos JIT" />` no `LineChart`.
-- Na lista de "Últimas tentativas", renderizar `{isJit(a) && <Badge variant="secondary" className="text-xs">JIT</Badge>}`.
+**Edit `src/hooks/useAuth.tsx`**:
+- Importar `broadcastSsoSlo, subscribeSsoSlo` do novo arquivo, `toast` do `sonner`.
+- Em `signOut()`: se `ssoProviderId` presente e `sso-logout` retornar sucesso, chamar `broadcastSsoSlo(data.provider_nome ?? 'SSO')` **antes** de `supabase.auth.signOut()`. Mostrar `toast.loading('Encerrando sessão SSO via ' + nome + '…', { id: 'sso-slo' })`.
+- Novo `useEffect` no `AuthProvider` que registra `subscribeSsoSlo` na montagem. Handler:
+  - Se `sessionStorage.getItem('sso-slo-toast-shown') === String(msg.ts)` → ignora (já tratado).
+  - Caso contrário: `sessionStorage.setItem('sso-slo-toast-shown', String(msg.ts))`, `toast.info('Sessão SSO encerrada em outra aba', { id: 'sso-slo' })`, chama `supabase.auth.signOut({ scope: 'local' }).catch(()=>{})`, e `window.location.replace('/auth?slo=ok&from=tab-sync')`.
+  - Cleanup no return do `useEffect`.
 
-**Sem migrations, sem mudanças de schema, sem novas queries**: o hook `useSSOLoginAttempts(500)` já traz `error_code` e `context` (a tabela tem essas colunas e o select é `*`). Verificarei o hook em implementação para confirmar.
+**Edit `src/pages/Auth.tsx`** (presumido — vou confirmar o caminho na implementação; se for `src/pages/Auth.tsx` ou similar, adicionar lá):
+- No mount, ler `URLSearchParams`. Se `slo === 'ok'` e `sessionStorage.getItem('sso-slo-done-shown') !== '1'`:
+  - `sessionStorage.setItem('sso-slo-done-shown', '1')`
+  - `toast.success('Sessão encerrada com segurança', { id: 'sso-slo-done' })`
+- Limpar a flag depois de alguns segundos para permitir um novo logout futuro na mesma aba persistente: `setTimeout(() => sessionStorage.removeItem('sso-slo-done-shown'), 5000)`.
+
+**Sem mudanças**: `supabase/functions/sso-logout/index.ts` continua igual — o `post_logout_redirect_uri` já aponta para `/auth?slo=ok`, então o usuário que volta do IdP ativa o mesmo handler.
 
 ### Critério de pronto
 
-1. KPI "Provisionamentos JIT" aparece no painel com a contagem correta de últimos 7 dias.
-2. O subtítulo mostra a porcentagem em relação aos logins bem-sucedidos.
-3. Gráfico de série temporal exibe a 3ª linha (JIT) tracejada, sobreposta às curvas de sucesso/falha.
-4. Tentativas JIT na lista exibem o badge "JIT" extra.
-5. Layout permanece responsivo (1 col mobile, 5 cols desktop).
-6. Sem regressão nos 4 KPIs existentes nem no PieChart por provedor.
+1. Com 2+ abas autenticadas, clicar em "Sair" em uma aba faz **todas** as outras saírem para `/auth?slo=ok&from=tab-sync` em <1s.
+2. Aparece exatamente **um** toast por evento (loading na aba iniciadora, info nas outras, sucesso final em `/auth`) — sem duplicatas mesmo abrindo 5 abas.
+3. Quando o IdP redireciona de volta com `?slo=ok`, o toast "Sessão encerrada com segurança" aparece uma única vez.
+4. `BroadcastChannel` é o caminho preferencial; o fallback via `storage` event funciona quando o BC é simulado como ausente.
+5. Sem regressão no logout de usuários **não-SSO** (broadcast só dispara quando há `ssoProviderId`).
+6. Nenhum erro no console se uma aba escuta o canal antes de qualquer SLO ocorrer.
 
 ### Arquivos
 
-- ✏️ `src/components/admin/sso/SSOMetricsPanel.tsx`
+- ➕ `src/lib/sso-sync.ts`
+- ✏️ `src/hooks/useAuth.tsx` (broadcast no `signOut`, listener no `useEffect`)
+- ✏️ `src/pages/Auth.tsx` (toast único ao chegar com `?slo=ok`)
 
