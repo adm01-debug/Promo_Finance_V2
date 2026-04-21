@@ -7,8 +7,9 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Progress } from '@/components/ui/progress';
-import { useSpedEcdValidacao, useGerarSpedContabil, type ChecklistItem, type SpedGeracaoResult } from '@/hooks/useSpedContabil';
+import { useSpedEcdValidacao, useGerarSpedContabil, type SpedGeracaoResult } from '@/hooks/useSpedContabil';
 import { baixarSpedZip } from '@/lib/sped-zip';
+import { SpedChecklistRow } from './SpedChecklistRow';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -150,14 +151,12 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
             </div>
 
             <div className="space-y-2">
-              {data.checklist.map((item) => <ChecklistRow key={item.id} item={item} />)}
+              {data.checklist.map((item) => <SpedChecklistRow key={item.id} item={item} />)}
             </div>
 
             {erros > 0 && (
-              <Alert variant="error">
-                <XCircle className="h-4 w-4" />
-                <AlertTitle>Geração bloqueada</AlertTitle>
-                <AlertDescription>Corrija os {erros} erro(s) acima antes de gerar o arquivo.</AlertDescription>
+              <Alert variant="error" title="Geração bloqueada">
+                Corrija os {erros} erro(s) acima antes de gerar o arquivo.
               </Alert>
             )}
 
