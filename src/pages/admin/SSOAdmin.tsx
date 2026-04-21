@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { KeyRound, Activity, BookOpen, Settings as SettingsIcon, ShieldCheck } from 'lucide-react';
+import { KeyRound, Activity, BookOpen, Settings as SettingsIcon, ShieldCheck, FlaskConical } from 'lucide-react';
 import { SSOProvidersList } from '@/components/admin/sso/SSOProvidersList';
 import { SSOWizardDialog } from '@/components/admin/sso/SSOWizardDialog';
 import { SSOMetricsPanel } from '@/components/admin/sso/SSOMetricsPanel';
 import { SSODocumentacao } from '@/components/admin/sso/SSODocumentacao';
 import { ScimTokensTab } from '@/components/admin/sso/ScimTokensTab';
+import { SSOSandboxPanel } from '@/components/admin/sso/SSOSandboxPanel';
 import type { SSOProvider } from '@/hooks/useSSO';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
