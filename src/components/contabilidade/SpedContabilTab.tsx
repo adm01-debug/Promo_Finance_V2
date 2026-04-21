@@ -150,9 +150,14 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                     </TableCell>
                     <TableCell className="font-mono text-xs">{h.hash_sha256?.substring(0, 16)}…</TableCell>
                     <TableCell className="text-right">
-                      <Button size="sm" variant="outline" onClick={() => handleDownload(h.storage_path)}>
-                        <Download className="h-4 w-4" />
-                      </Button>
+                      <div className="flex justify-end gap-1">
+                        <Button size="sm" variant="outline" onClick={() => handleDownload(h.storage_path)} title="Baixar .txt">
+                          <Download className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => handleDownloadZip(h)} title="Baixar .zip com README">
+                          <FileArchive className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                   );
