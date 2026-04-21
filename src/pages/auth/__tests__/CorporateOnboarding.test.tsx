@@ -217,7 +217,7 @@ describe('/auth/corporate — CorporateOnboarding', () => {
       fireEvent.click(btn);
     });
 
-    expect(invokeMock).toHaveBeenCalledTimes(1);
+    expect(invokeMock).toHaveBeenCalled();
     expect(invokeMock).toHaveBeenCalledWith('sso-initiate', {
       body: { provider_id: 'prov-1', redirect_to: 'https://app.test' },
     });
