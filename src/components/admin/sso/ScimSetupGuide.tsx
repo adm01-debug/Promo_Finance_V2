@@ -166,7 +166,7 @@ export function ScimSetupGuide() {
               </Alert>
             )}
 
-            {result && !result.ok && (
+            {result && result.ok === false && (
               <Alert variant="error" title="Não foi possível validar o endpoint">
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 text-xs">
