@@ -1,88 +1,88 @@
 
 
-## Plano — Tela dedicada de eventos JIT de provisionamento SSO
+## Plano — Enriquecer log do `sso-callback` com provider e grupo casado do magic link
 
 ### Diagnóstico
 
-Hoje os eventos JIT (`audit_logs.table_name = 'sso_jit_provisioning'`) ficam misturados em `/audit-logs`. Para investigá-los o admin precisa filtrar manualmente por tabela e ainda assim os campos importantes ficam escondidos no `new_data` JSON (`provider_id`, `provider_tipo`, `empresa_id`, `role`, `default_role`, `matched_group`, `groups_received`, `via`).
+Hoje, ao final do callback OIDC bem-sucedido (`supabase/functions/sso-callback/index.ts`, linhas 737-753):
 
-A trilha já é gravada de forma estruturada pelo `sso-callback`, então a tela é puramente leitura — sem mudanças de schema, RLS ou edge functions.
+1. `logAttempt(...)` grava em `sso_login_attempts` apenas: `provider_id`, `email`, `success`, `error_code`, `duration_ms`, `ip`, `user_agent`, `app_redirect`. **Não grava** o `matched_group`, a `role` resolvida, os `groups_received`, nem o `provider_nome`/`tipo`.
+2. Em seguida, `admin.auth.admin.generateLink({ type: 'magiclink', email, ... })` cria o magic link e redireciona — **sem nenhum log** que correlacione esse magic link específico ao mapeamento de role/grupo aplicado nesta sessão.
+
+Resultado: ao auditar "por que o usuário X recebeu role Y neste login às 14:32?", o admin precisa cruzar manualmente `sso_login_attempts` (login) ↔ `audit_logs.sso_jit_provisioning` (só existe quando JIT criou) ↔ `audit_logs.user_roles` (só quando matched_group). Para logins **subsequentes sem mudança de role e sem JIT** (caso mais comum), **não há trilha** ligando o magic link ao grupo casado.
+
+A tabela `sso_login_attempts` já tem uma coluna `context jsonb NOT NULL DEFAULT '{}'` exatamente para esse tipo de enriquecimento — não é usada hoje no callback.
 
 ### Comportamento
 
-Nova rota **`/admin/sso-jit-events`** (admin-only) com:
-
-1. **KPIs do topo** (período selecionado): total de provisionamentos, OIDC vs SAML, top provider, top role aplicada, % com `matched_group` (provisionados via mapeamento de grupo) vs `default_role`.
-
-2. **Filtros**:
-   - Busca livre (casa em `user_email`, `details`, e dentro de `new_data` → `provider_nome`, `matched_group`, `groups_received`).
-   - Provider (dropdown alimentado por `useSSOProviders`).
-   - Role aplicada (admin / financeiro / operacional / visualizador / todos).
-   - Via (oidc-jit / saml-broker-jit / todos).
-   - Origem da role: "via grupo mapeado" / "default role" / todos.
-   - Período (date range, default últimos 30 dias).
-
-3. **Tabela** com colunas: Data/Hora, Usuário (email), Provider (nome + badge tipo OIDC/SAML), Role aplicada, Origem (`matched_group` em badge ou "default"), Grupos recebidos (chips truncados, tooltip com lista completa), Via, IP. Linha clicável abre Dialog com JSON completo do `new_data` + `details`.
-
-4. **Exportação** CSV/PDF reutilizando `exportToCSV`/`exportToPDF` com colunas achatadas (provider_nome, role, matched_group, via, groups_received join `;`).
-
-5. **Empty state** quando não houver eventos: mensagem explicando que JIT só dispara quando `auto_provision_users = true` no provider.
-
-6. **Link cruzado**: botão "Ver no log completo" em cada linha leva a `/audit-logs?tableFilter=sso_jit_provisioning&search={email}`.
+1. Estender `logAttempt` para aceitar um campo opcional `context: Record<string, unknown>` e gravá-lo na coluna existente `sso_login_attempts.context`.
+2. No callback OIDC, antes do `generateLink`, montar um contexto estruturado e passá-lo para o `logAttempt` de sucesso:
+   ```json
+   {
+     "provider_nome": "Azure AD",
+     "provider_tipo": "oidc",
+     "matched_group": "DevOps-Admins",
+     "role_resolved": "admin",
+     "default_role": "visualizador",
+     "role_origin": "group_mapped",
+     "groups_received": ["DevOps-Admins", "All-Employees"],
+     "via": "oidc-jit",
+     "jit_created": true,
+     "empresa_id": "uuid-or-null"
+   }
+   ```
+   `role_origin` é derivado: `"group_mapped"` quando `matchedGroup != null`, senão `"default"`.
+3. Registrar o magic link emitido com um audit_log dedicado **`sso_magic_link_issued`** em `audit_logs` (table_name discreto, filtrável):
+   ```ts
+   await admin.from("audit_logs").insert({
+     user_id: result.userId,
+     user_email: email,
+     action: "LOGIN",
+     table_name: "sso_magic_link_issued",
+     record_id: result.userId,
+     new_data: { provider_id, provider_nome, provider_tipo, matched_group, role: result.role, default_role, role_origin, groups_received, via, app_redirect },
+     details: `Magic link emitido via ${providerNome} → role=${result.role} (${roleOrigin === 'group_mapped' ? `grupo ${matchedGroup}` : 'default'})`,
+   });
+   ```
+   Esse evento existe **em todo login bem-sucedido** (mesmo sem JIT e sem mudança de role) e é o ponto único de auditoria que correlaciona "magic link → provider → grupo → role".
+4. O `applyPipeline` hoje devolve `{ userId, role, matchedGroup, jitCreated }`. Já temos tudo o que precisamos sem refatorar o pipeline.
+5. Adicionar a nova `table_name` em `tableNameLabels` de `src/components/audit/AuditLogTable.tsx` como **"Magic Link SSO"** para a UI já mostrar legível.
+6. Falhas em qualquer um dos novos writes são engolidas (`try/catch` com `console.warn`) — login nunca pode quebrar por causa de auditoria.
 
 ### Detalhes técnicos
 
-**Arquivos novos**:
+**Edit em `supabase/functions/sso-callback/index.ts`**:
 
-- ✏️ `src/pages/admin/SSOJitEvents.tsx` — página principal com `MainLayout`, replica o padrão visual de `AuditLogs.tsx` (mesmos componentes Card/Filter/Stats).
-- ✏️ `src/components/audit/jit/SSOJitEventsTable.tsx` — tabela com badges de role/via/provider e Dialog de detalhes.
-- ✏️ `src/components/audit/jit/SSOJitEventsKPIs.tsx` — 4 cards de KPI calculados via `useMemo`.
-- ✏️ `src/hooks/useSSOJitEvents.ts` — `useQuery` que faz `supabase.from('audit_logs').select('*').eq('table_name','sso_jit_provisioning')` com filtros `.gte`/`.lte` em `created_at` e `.eq('user_email', …)` (provider, role, via aplicados client-side a partir do `new_data` JSONB, pois são chaves dentro do payload). Limit 1000.
+- `logAttempt(args)`: adicionar `context?: Record<string, unknown>` na assinatura; quando presente e não-vazio, incluir `context` no `.insert`.
+- No bloco de sucesso OIDC (linha ~737), construir `magicLinkContext` a partir do `result` + variáveis locais (`provider`, `groups`) e passar para `logAttempt`.
+- Logo antes do `generateLink`, inserir o novo `audit_logs` `sso_magic_link_issued` envolvido em `try/catch`.
+- Nada muda no SAML finalize neste plano (SAML não usa magic link — o broker já emite a sessão diretamente). Auditoria SAML equivalente fica como follow-up.
 
-**Arquivos editados**:
+**Edit em `src/components/audit/AuditLogTable.tsx`**:
 
-- ✏️ `src/App.tsx` — registrar `lazy(() => import('./pages/admin/SSOJitEvents'))` + `<Route path="/admin/sso-jit-events" …>` dentro de `<ProtectedRoute>`.
-- ✏️ `src/components/layout/MainLayout.tsx` (ou onde está o menu admin) — adicionar entrada "Eventos JIT (SSO)" no grupo Admin/Segurança apontando para a nova rota. (Identificar local exato durante a implementação.)
-- ✏️ `src/pages/AuditLogs.tsx` — adicionar atalho discreto no header: link "Ver eventos JIT" → `/admin/sso-jit-events` quando `tableFilter === 'sso_jit_provisioning'` ou sempre visível como `Button variant="link"`.
+- Adicionar 1 entrada em `tableNameLabels`:
+  ```ts
+  sso_magic_link_issued: 'Magic Link SSO',
+  ```
 
-**Tipos**:
+**Sem schema migrations**: a coluna `context jsonb` em `sso_login_attempts` já existe, e `audit_logs` aceita qualquer `table_name`/`new_data` jsonb.
 
-```ts
-type JitNewData = {
-  provider_id: string;
-  provider_nome: string;
-  provider_tipo: 'oidc' | 'saml';
-  empresa_id: string | null;
-  role: 'admin' | 'financeiro' | 'operacional' | 'visualizador';
-  default_role: string;
-  matched_group: string | null;
-  groups_received: string[];
-  via: 'oidc-jit' | 'saml-broker-jit';
-};
-```
-
-**Sem migrações, sem mudanças no edge function** — toda a leitura usa o `audit_logs` já existente.
-
-**RLS**: a tabela `audit_logs` já restringe leitura a admins via política existente; basta proteger a rota com `ProtectedRoute` + check de role admin (igual a `/admin/sso`).
+**Reflexo automático**:
+- `/audit-logs` ganha o novo filtro de tabela via `tableNameLabels`.
+- `/admin/sso-jit-events` continua mostrando só os JIT (sem regressão).
+- `SSOMetricsPanel` (que lê `sso_login_attempts`) passa a ter `context` populado para futuros widgets, sem nova migration.
 
 ### Critério de pronto
 
-1. `/admin/sso-jit-events` acessível só para admin, lista todos os registros com `table_name = 'sso_jit_provisioning'` no período.
-2. Filtros (provider, role, via, origem da role, busca, período) funcionam combinados.
-3. KPIs refletem o conjunto filtrado.
-4. Tabela mostra provider, role, origem (matched_group ou default) e grupos com clareza; Dialog exibe JSON completo.
-5. Export CSV/PDF inclui as colunas achatadas.
-6. Atalho a partir de `/audit-logs` leva à nova tela.
-7. Link/menu de navegação adicionado para admins.
-8. Sem regressões em `/audit-logs` nem no `sso-callback`.
+1. Após um login OIDC bem-sucedido, `select context from sso_login_attempts where email = '...' order by created_at desc limit 1` retorna o JSON com `provider_nome`, `matched_group`, `role_resolved`, `role_origin`, `groups_received`, `via`, `jit_created`.
+2. Para o mesmo login, existe uma linha em `audit_logs` com `table_name = 'sso_magic_link_issued'`, `action = 'LOGIN'`, `new_data` contendo `provider_id`, `matched_group` e `role`, e `details` legível.
+3. O evento é gravado **mesmo quando** não houve JIT e não houve mudança de role (login subsequente normal) — caso onde antes não havia trilha alguma.
+4. Filtro `Tabela: Magic Link SSO` aparece em `/audit-logs` e retorna os eventos novos.
+5. Falha simulada no `audit_logs.insert` **não impede** o redirect do magic link — só gera `console.warn`.
+6. Sem regressão: trilhas existentes (`sso_profile_sync`, `sso_jit_provisioning`, `user_roles`, `sso_login_attempts`) continuam sendo gravadas.
 
 ### Arquivos
 
-- ➕ `src/pages/admin/SSOJitEvents.tsx`
-- ➕ `src/components/audit/jit/SSOJitEventsTable.tsx`
-- ➕ `src/components/audit/jit/SSOJitEventsKPIs.tsx`
-- ➕ `src/hooks/useSSOJitEvents.ts`
-- ✏️ `src/App.tsx` (rota lazy)
-- ✏️ `src/components/layout/MainLayout.tsx` (entrada de menu)
-- ✏️ `src/pages/AuditLogs.tsx` (atalho)
+- ✏️ `supabase/functions/sso-callback/index.ts` (assinatura de `logAttempt` + chamada enriquecida + novo audit_log `sso_magic_link_issued` antes do `generateLink`).
+- ✏️ `src/components/audit/AuditLogTable.tsx` (1 entrada em `tableNameLabels`).
 
