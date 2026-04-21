@@ -153,6 +153,7 @@ function AppRoutes() {
             <Route path="/admin/sso" element={<ProtectedRoute><SSOAdmin /></ProtectedRoute>} />
             <Route path="/admin/insights-ia" element={<ProtectedRoute><InsightsIA /></ProtectedRoute>} />
             <Route path="/admin/insights-ia/anomalia/:id" element={<ProtectedRoute><AnomaliaDetalhe /></ProtectedRoute>} />
+            <Route path="/admin/compliance" element={<ProtectedRoute><ComplianceAuditoria /></ProtectedRoute>} />
             <Route path="/configuracoes/privacidade" element={<ProtectedRoute><CentroPrivacidadeLGPD /></ProtectedRoute>} />
             
             {/* 404 */}
