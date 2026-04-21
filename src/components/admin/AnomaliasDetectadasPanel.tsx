@@ -41,6 +41,7 @@ import {
 } from "@/hooks/useAnomaliasDetectadas";
 import { AnomaliasReviewQueue } from "./AnomaliasReviewQueue";
 import { AnomaliaDrillDownDrawer } from "./AnomaliaDrillDownDrawer";
+import { ReabrirAnomaliaDialog } from "@/components/insights-ia/anomalia/ReabrirAnomaliaDialog";
 import { dispatchOpenAnomaliaDrawer } from "@/lib/anomalia-routes";
 import { SavedFiltersBar } from "@/components/shared/SavedFiltersBar";
 import {
