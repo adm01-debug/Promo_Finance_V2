@@ -505,6 +505,7 @@ export type Database = {
       }
       anomalias_detectadas: {
         Row: {
+          centro_custo_id: string | null
           created_at: string
           dados: Json | null
           descricao: string
@@ -522,6 +523,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          centro_custo_id?: string | null
           created_at?: string
           dados?: Json | null
           descricao: string
@@ -539,6 +541,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          centro_custo_id?: string | null
           created_at?: string
           dados?: Json | null
           descricao?: string
@@ -8901,6 +8904,42 @@ export type Database = {
             referencedColumns: ["empresa_id"]
           },
         ]
+      }
+      user_anomalia_preferences: {
+        Row: {
+          centros_custo_silenciados: string[]
+          created_at: string
+          id: string
+          silenciar_ate: string | null
+          tipos_silenciados: string[]
+          toast_enabled: boolean
+          toast_min_severidade: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          centros_custo_silenciados?: string[]
+          created_at?: string
+          id?: string
+          silenciar_ate?: string | null
+          tipos_silenciados?: string[]
+          toast_enabled?: boolean
+          toast_min_severidade?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          centros_custo_silenciados?: string[]
+          created_at?: string
+          id?: string
+          silenciar_ate?: string | null
+          tipos_silenciados?: string[]
+          toast_enabled?: boolean
+          toast_min_severidade?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_empresas: {
         Row: {

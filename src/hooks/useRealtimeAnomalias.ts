@@ -7,6 +7,10 @@ import {
   ANOMALIA_DRAWER_EVENT,
   dispatchOpenAnomaliaDrawer,
 } from "@/lib/anomalia-routes";
+import {
+  useAnomaliaPreferences,
+  shouldNotify,
+} from "@/hooks/useAnomaliaPreferences";
 
 const TIPO_LABEL: Record<string, string> = {
   movimentacao_outlier: "Movimentação atípica",
@@ -24,6 +28,9 @@ const TIPO_LABEL: Record<string, string> = {
 export function useRealtimeAnomalias() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const { preferences } = useAnomaliaPreferences();
+  const prefsRef = useRef(preferences);
+  prefsRef.current = preferences;
   const seenIds = useRef<Set<string>>(new Set());
 
   useEffect(() => {
@@ -40,21 +47,23 @@ export function useRealtimeAnomalias() {
             severidade?: string;
             tipo_anomalia?: string;
             descricao?: string;
+            centro_custo_id?: string | null;
           };
 
           if (!a?.id || seenIds.current.has(a.id)) return;
           seenIds.current.add(a.id);
 
-          // Always invalidate caches so panel & queue counters update
           queryClient.invalidateQueries({ queryKey: ["anomalias-detectadas"] });
           queryClient.invalidateQueries({
             queryKey: ["anomalias-detectadas", "pending-queue"],
           });
+          queryClient.invalidateQueries({
+            queryKey: ["anomalias-criticas-count"],
+          });
+
+          if (!shouldNotify(prefsRef.current, a)) return;
 
           const isCritical = a.severidade === "critica";
-          const isHigh = a.severidade === "alta";
-          if (!isCritical && !isHigh) return;
-
           const tipoLabel = TIPO_LABEL[a.tipo_anomalia ?? ""] ?? "Nova anomalia";
           const titulo = `${isCritical ? "🚨 Crítica" : "⚠️ Alta"} — ${tipoLabel}`;
           const fn = isCritical ? toast.error : toast.warning;

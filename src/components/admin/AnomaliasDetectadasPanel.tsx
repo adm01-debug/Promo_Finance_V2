@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { AnomaliaPreferencesDialog } from "./AnomaliaPreferencesDialog";
+import { BellOff } from "lucide-react";
+import { useAnomaliasCriticasCount } from "@/hooks/useAnomaliasCriticasCount";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -118,6 +121,8 @@ const DEFAULT_PAYLOAD: SavedFilterPayload<AnomaliaFilters> = {
 
 export function AnomaliasDetectadasPanel() {
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [prefsOpen, setPrefsOpen] = useState(false);
+  const { data: criticasCount = 0 } = useAnomaliasCriticasCount();
   const [filters, setFilters] = useState<AnomaliaFilters>(DEFAULT_FILTERS);
   const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" }>({
     key: "detectada_em",
@@ -214,16 +219,21 @@ export function AnomaliasDetectadasPanel() {
             <CardTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-warning" />
               Anomalias detectadas
+              {criticasCount > 0 && (
+                <Badge variant="destructive" className="ml-1" aria-live="polite">
+                  {criticasCount} crítica{criticasCount > 1 ? "s" : ""}
+                </Badge>
+              )}
             </CardTitle>
             <div className="flex items-center gap-2 flex-wrap">
               <Button
                 size="sm"
-                variant="default"
-                onClick={() => setReviewOpen(true)}
-                disabled={pendentes.length === 0}
+                variant="ghost"
+                onClick={() => setPrefsOpen(true)}
+                title="Preferências de alerta"
               >
-                <ListChecks className="h-3 w-3 mr-1" />
-                Revisar em fila ({pendentes.length})
+                <BellOff className="h-3 w-3 mr-1" />
+                Preferências
               </Button>
               <Button
                 size="sm"
@@ -522,6 +532,7 @@ export function AnomaliasDetectadasPanel() {
         </CardContent>
       </Card>
       <AnomaliasReviewQueue open={reviewOpen} onOpenChange={setReviewOpen} />
+      <AnomaliaPreferencesDialog open={prefsOpen} onOpenChange={setPrefsOpen} />
       <AnomaliaDrillDownDrawer />
     </div>
   );
