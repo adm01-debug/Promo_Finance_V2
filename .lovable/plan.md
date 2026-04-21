@@ -1,61 +1,54 @@
 
 
-## Plano — Seletor de empresa no header + role por empresa atual no AuthContext
+## Plano — Fallback automático para falha de auto-redirect SSO
 
 ### Diagnóstico
 
-1. **Header.tsx (linhas 81–162)** já tem um dropdown de empresa, mas:
-   - Lê de `useEmpresas()` (lista global de todas as empresas do tenant) em vez de `useUserEmpresas()` (vínculos do usuário em `user_empresas`).
-   - Usa `useState` local em `selectedEmpresaId` — a escolha não persiste, não dispara evento global e não é compartilhada com hooks (`getCurrentEmpresaId`/`setCurrentEmpresaId` em `useUserEmpresas.ts`).
-   - Não mostra a role do vínculo nem badge de SSO.
-2. Já existe `src/components/layout/EmpresaSwitcher.tsx` que faz exatamente isso (lê vínculos, persiste em `localStorage`, dispara `current-empresa-changed`), mas **não está montado em lugar nenhum**.
-3. **AuthContext (`useAuth.tsx`)** lê `user_roles` (role global) e expõe `role`, `isAdmin`, `isFinanceiro`, `isOperacional` sem considerar a empresa atual. Quando o usuário tem vínculos com roles diferentes em empresas distintas (ex.: `admin` na A, `visualizador` na B), o gate de permissões e a UI mostram a role errada após trocar empresa.
+`src/pages/auth/CorporateOnboarding.tsx` faz auto-redirect SSO via `useSsoDomainResolver` quando o domínio do e-mail tem `force_sso_for_domains=true`. Hoje, em `triggerSso` (linhas 45–59), quando `supabase.functions.invoke('sso-initiate')` falha:
+- Mostra um `toast.error`
+- Volta `redirecting` para `null`
+- O usuário cai de volta no formulário inicial **sem nenhuma pista do que aconteceu** e **sem caminho alternativo evidente** — o auto-redirect dispara de novo no próximo render porque `autoRedirectProvider` ainda está presente, criando loop.
+
+Falta um estado de erro persistente que:
+1. Pare o loop de auto-redirect.
+2. Mostre o que falhou.
+3. Ofereça retry, providers SSO alternativos do mesmo domínio e o caminho de senha pré-preenchido.
 
 ### Mudanças
 
-**1. `src/components/layout/Header.tsx`**
-- Remover bloco do dropdown atual (linhas 81–162 relativas ao seletor + `useEmpresas`/`selectedEmpresaId`).
-- Importar e renderizar `<EmpresaSwitcher />` na mesma posição. Remover import de `useEmpresas`, `Building2`, `ChevronDown` se não usados em outros pontos (manter o que ainda é referenciado).
-- Substituir o badge de role no menu do usuário por uma derivação que prefere `roleAtual` (vinda do AuthContext atualizado) sobre `role` global, mantendo o mapeamento `roleLabels`.
+**Arquivo único:** `src/pages/auth/CorporateOnboarding.tsx`
 
-**2. `src/components/layout/EmpresaSwitcher.tsx`** (pequenos ajustes)
-- Sempre renderizar quando houver ≥1 vínculo (hoje só renderiza com >1) — usuário com 1 empresa precisa ver qual está ativa.
-- Adicionar badge "SSO" quando `provisioned_via === 'sso' || 'scim'`.
-- Após `setCurrentEmpresaId`, invalidar a query de permissões (já é disparado o evento; o AuthContext fará o refetch).
-
-**3. `src/hooks/useAuth.tsx`** — role por empresa atual
-- Adicionar estado `currentEmpresaId` inicializado com `getCurrentEmpresaId()` e `roleAtual: AppRole | null`.
-- Listener para o evento `current-empresa-changed` (window) que atualiza `currentEmpresaId`.
-- Nova função `fetchRoleForEmpresa(userId, empresaId)`:
-  - SELECT `role` em `user_empresas` filtrando `user_id`, `empresa_id`, `ativo=true` → setar `roleAtual`.
-  - Se `empresaId` for null, cair no fallback `user_roles` (comportamento atual).
-- Disparar `fetchRoleForEmpresa` quando: usuário muda, evento `current-empresa-changed` chega, lista de vínculos muda (após SCIM/SSO).
-- Expor no contexto: `currentEmpresaId`, `roleAtual`. **Manter `role` (global)** para retrocompatibilidade, mas redefinir os derivados `isAdmin`/`isFinanceiro`/`isOperacional`/`hasRole` para usarem `roleAtual ?? role`.
-- Quando `signOut` ou troca de usuário, limpar `roleAtual` e `currentEmpresaId` do estado (sem apagar do localStorage para preservar última escolha).
-
-**4. `src/hooks/usePermissions.ts`**
-- Trocar dependência de `role` por `roleAtual ?? role` do `useAuth`, e incluir `currentEmpresaId` na queryKey/dependências de `fetchPermissions` para refetch automático ao trocar de empresa. Sem mudança de schema — `role_permissions` continua sendo a fonte.
+1. **Novo estado** `ssoError: { provider, message } | null`.
+2. **`triggerSso`**:
+   - Validar `data?.redirect_url` antes de redirecionar (catch para resposta malformada).
+   - No `catch`, além de limpar `redirecting`, gravar `setSsoError({ provider, message })`.
+3. **Effect de auto-redirect**: incluir `ssoError` na guarda — se houver erro, **não** re-disparar auto-redirect (quebra o loop).
+4. **`handleManualSso`**: limpar `ssoError` antes de tentar de novo.
+5. **Tela de fallback** (renderizada quando `ssoError` está setado, antes do formulário principal):
+   - Card com ícone de alerta + título "Não foi possível iniciar o login SSO".
+   - `Alert` mostrando provedor que falhou + mensagem de erro.
+   - Botão **"Tentar novamente"** (retry no mesmo provedor) com ícone `RotateCw`.
+   - Lista de **outros providers SSO** disponíveis para o domínio (`providers.filter(p => p.id !== ssoError.provider.id)`), cada um com botão estilo do flow normal.
+   - Botão primário **"Continuar com senha"** que navega para `/auth?email=<email>` (já existe `handleUsePassword`).
+   - Link secundário "Voltar e usar outro e-mail" que limpa `ssoError` e `submittedEmail`.
+6. **Tela "redirecionando"**: trocar `if (redirecting)` para `if (redirecting && !ssoError)` para garantir que o erro tem prioridade visual.
 
 ### O que NÃO muda
 
-- Schema do banco, RLS, tabelas `user_empresas`, `user_roles`, `role_permissions`.
-- `EmpresaSelectionGate` (continua sendo o gate inicial após login).
-- Edge functions SSO/SCIM.
-- Contrato externo de `useAuth` para consumidores que só leem `role`/`isAdmin` (continuam funcionando, agora refletindo a empresa atual).
+- `useSsoDomainResolver`, `sso-initiate` edge function, `LoginForm`, `SsoLoginButtons`, schema do banco.
+- Comportamento do auto-redirect quando tudo dá certo (ainda dispara após countdown de 3s).
+- Rota `/auth` já aceita `?email=` (verificado no `handleUsePassword` existente).
 
 ### Critério de pronto
 
-1. Header mostra `EmpresaSwitcher` listando apenas vínculos de `user_empresas` ativos do usuário.
-2. Trocar empresa no header persiste em `localStorage` e dispara `current-empresa-changed`.
-3. `useAuth().roleAtual` muda automaticamente após a troca, e `isAdmin`/`isFinanceiro`/`isOperacional`/`hasRole` refletem a role da empresa selecionada.
-4. `usePermissions` recalcula permissões e `PermissionGate` re-renderiza sem reload.
-5. Usuário com 1 vínculo vê o switcher (apenas leitura), com badges de role e SSO/SCIM quando aplicável.
-6. Sem regressão em `EmpresaSelectionGate`, `EmpresaSwitcher` standalone ou em telas que usam `usePermissions`.
+1. Quando `sso-initiate` retornar erro (rede, provedor inativo, configuração inválida), o usuário vê tela de fallback em vez de loop.
+2. O auto-redirect **não** dispara novamente enquanto `ssoError` estiver setado.
+3. Botão "Tentar novamente" reabre o fluxo SSO no mesmo provedor.
+4. Se houver outros providers no domínio, eles aparecem como botões alternativos.
+5. Botão "Continuar com senha" navega para `/auth?email=<email>` com o e-mail já preenchido.
+6. Sem regressão no fluxo normal (auto-redirect com sucesso, escolha manual, domínio sem SSO).
 
 ### Arquivos
 
-- ✏️ `src/components/layout/Header.tsx`
-- ✏️ `src/components/layout/EmpresaSwitcher.tsx`
-- ✏️ `src/hooks/useAuth.tsx`
-- ✏️ `src/hooks/usePermissions.ts`
+- ✏️ `src/pages/auth/CorporateOnboarding.tsx`
 
