@@ -261,7 +261,7 @@ export function SugestoesMatchIA({
               <div className="space-y-3">
                 <AnimatePresence mode="popLayout">
                   {transacoesComSugestao.map((transacao) => {
-                    const sugestoes = matchesIA.get(transacao.id) || [];
+                    const sugestoes = sugestoesValidasFor(transacao.id);
                     const melhorMatch = sugestoes[0];
                     const isExpanded = expandedTransacao === transacao.id;
                     if (!melhorMatch) return null;
