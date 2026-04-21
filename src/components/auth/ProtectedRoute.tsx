@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
+import { EmpresaGuard } from './EmpresaGuard';
 
 type AppRole = 'admin' | 'financeiro' | 'operacional' | 'visualizador';
 
@@ -44,5 +45,5 @@ export function ProtectedRoute({ children, requiredRoles }: ProtectedRouteProps)
     );
   }
 
-  return <>{children}</>;
+  return <EmpresaGuard>{children}</EmpresaGuard>;
 }
