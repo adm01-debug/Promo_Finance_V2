@@ -246,12 +246,16 @@ export default function Conciliacao() {
                           <CardContent className="p-4">
                             <div className="flex items-center gap-3">
                               {!transacao.conciliada && <Checkbox checked={isSelected} onChange={() => toggleSelect(transacao.id)} className="flex-shrink-0" />}
-                              <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0", isCredito ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive")}>
-                                {isCredito ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
-                              </div>
+                              {showCol('tipo') && (
+                                <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0", isCredito ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive")}>
+                                  {isCredito ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
+                                </div>
+                              )}
                               <div className="flex-1 min-w-0">
                                 <p className="font-medium text-sm truncate">{transacao.descricao}</p>
-                                <div className="flex items-center gap-2 mt-0.5"><Calendar className="h-3 w-3 text-muted-foreground" /><span className="text-xs text-muted-foreground">{formatDate(transacao.data)}</span></div>
+                                {showCol('data') && (
+                                  <div className="flex items-center gap-2 mt-0.5"><Calendar className="h-3 w-3 text-muted-foreground" /><span className="text-xs text-muted-foreground">{formatDate(transacao.data)}</span></div>
+                                )}
                               </div>
                               <p className={cn("font-bold text-base whitespace-nowrap", isCredito ? "text-success" : "text-destructive")}>{isCredito ? '+' : ''}{formatCurrency(transacao.valor)}</p>
                               {transacao.conciliada && <Badge className="bg-success/10 text-success border-success/20 gap-1 flex-shrink-0"><CheckCircle2 className="h-3 w-3" />Conciliada</Badge>}
