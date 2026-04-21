@@ -119,7 +119,7 @@ export function EvidenciaStatusDialog({
         )}
 
         {status === "error" && (
-          <Alert variant="destructive">
+          <Alert variant="error">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Erro</AlertTitle>
             <AlertDescription className="break-words">{error}</AlertDescription>
