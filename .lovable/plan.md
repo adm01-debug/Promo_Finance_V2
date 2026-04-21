@@ -1,52 +1,45 @@
 
 
-## Plano — Fallback automático para falha de auto-redirect SSO
+## Plano — Cancelar redirecionamento durante todo o carregamento
 
 ### Diagnóstico
 
-`src/pages/auth/CorporateOnboarding.tsx` faz auto-redirect SSO via `useSsoDomainResolver` quando o domínio do e-mail tem `force_sso_for_domains=true`. Hoje, em `triggerSso` (linhas 45–59), quando `supabase.functions.invoke('sso-initiate')` falha:
-- Mostra um `toast.error`
-- Volta `redirecting` para `null`
-- O usuário cai de volta no formulário inicial **sem nenhuma pista do que aconteceu** e **sem caminho alternativo evidente** — o auto-redirect dispara de novo no próximo render porque `autoRedirectProvider` ainda está presente, criando loop.
+Em `src/pages/auth/CorporateOnboarding.tsx` (tela `if (redirecting && !ssoError)`):
 
-Falta um estado de erro persistente que:
-1. Pare o loop de auto-redirect.
-2. Mostre o que falhou.
-3. Ofereça retry, providers SSO alternativos do mesmo domínio e o caminho de senha pré-preenchido.
+- O botão "Cancelar redirecionamento" só renderiza quando `countdown > 0` (linha `{countdown > 0 && (…)}`).
+- Quando o countdown chega a 0, a UI mostra "Conectando ao {provider}…" e **remove o botão de cancelar**. Nesse intervalo (entre `triggerSso` ser chamado e o `window.location.href` efetivar a navegação) o usuário não tem como abortar — pode levar segundos se o edge function estiver lento.
+- `handleCancelRedirect` apenas limpa `redirecting` e reseta `countdown`, mas não sinaliza para `triggerSso` que ele deve abortar antes de fazer `window.location.href`.
+
+Resultado: o botão existe mas não cumpre a promessa "cancelar a qualquer momento durante o carregamento".
 
 ### Mudanças
 
 **Arquivo único:** `src/pages/auth/CorporateOnboarding.tsx`
 
-1. **Novo estado** `ssoError: { provider, message } | null`.
-2. **`triggerSso`**:
-   - Validar `data?.redirect_url` antes de redirecionar (catch para resposta malformada).
-   - No `catch`, além de limpar `redirecting`, gravar `setSsoError({ provider, message })`.
-3. **Effect de auto-redirect**: incluir `ssoError` na guarda — se houver erro, **não** re-disparar auto-redirect (quebra o loop).
-4. **`handleManualSso`**: limpar `ssoError` antes de tentar de novo.
-5. **Tela de fallback** (renderizada quando `ssoError` está setado, antes do formulário principal):
-   - Card com ícone de alerta + título "Não foi possível iniciar o login SSO".
-   - `Alert` mostrando provedor que falhou + mensagem de erro.
-   - Botão **"Tentar novamente"** (retry no mesmo provedor) com ícone `RotateCw`.
-   - Lista de **outros providers SSO** disponíveis para o domínio (`providers.filter(p => p.id !== ssoError.provider.id)`), cada um com botão estilo do flow normal.
-   - Botão primário **"Continuar com senha"** que navega para `/auth?email=<email>` (já existe `handleUsePassword`).
-   - Link secundário "Voltar e usar outro e-mail" que limpa `ssoError` e `submittedEmail`.
-6. **Tela "redirecionando"**: trocar `if (redirecting)` para `if (redirecting && !ssoError)` para garantir que o erro tem prioridade visual.
+1. **Sempre renderizar o botão "Cancelar redirecionamento"** dentro da tela de redirecting (remover a guarda `countdown > 0`). O label adapta:
+   - `countdown > 0`: "Cancelar redirecionamento"
+   - `countdown <= 0`: "Cancelar e voltar"
+2. **`triggerSso` respeita `cancelRef`** antes de fazer a navegação:
+   - Após o `await supabase.functions.invoke(...)` resolver com sucesso, checar `cancelRef.current` antes de gravar o PKCE no sessionStorage e executar `window.location.href`. Se cancelado, sair sem navegar.
+   - Garante que mesmo se a chamada já estava em flight, o usuário consegue abortar enquanto a resposta volta.
+3. **`handleCancelRedirect`** continua setando `cancelRef.current = true` (já faz) e limpando `redirecting`/`countdown`. Isso já libera o usuário de volta para a tela de escolha manual (que renderiza `providers` com `force_sso_for_domains`? não — vamos garantir o ponto 4).
+4. **Tela de escolha manual** após cancelamento: o effect que dispara auto-redirect (`useEffect` em `autoRedirectProvider`) re-dispararia imediatamente, anulando o cancelamento. Adicionar um ref `cancelledOnceRef` (ou estado `userCancelled: boolean`) para suprimir o auto-redirect após cancelamento explícito do usuário, deixando a tela mostrar a lista de providers (incluindo o que falhou) com a opção "Continuar com senha".
+   - Mostrar um pequeno `Alert` informativo: "Redirecionamento cancelado. Escolha um método manualmente."
+5. **Resetar `userCancelled`** se o usuário trocar o e-mail (mudar `submittedEmail`), para que um novo domínio com force-SSO funcione normalmente.
 
 ### O que NÃO muda
 
-- `useSsoDomainResolver`, `sso-initiate` edge function, `LoginForm`, `SsoLoginButtons`, schema do banco.
-- Comportamento do auto-redirect quando tudo dá certo (ainda dispara após countdown de 3s).
-- Rota `/auth` já aceita `?email=` (verificado no `handleUsePassword` existente).
+- `useSsoDomainResolver`, `sso-initiate`, `LoginForm`, `SsoLoginButtons`, schema do banco, fluxo de erro SSO já implementado.
+- A semântica do auto-redirect quando o usuário não cancela.
 
 ### Critério de pronto
 
-1. Quando `sso-initiate` retornar erro (rede, provedor inativo, configuração inválida), o usuário vê tela de fallback em vez de loop.
-2. O auto-redirect **não** dispara novamente enquanto `ssoError` estiver setado.
-3. Botão "Tentar novamente" reabre o fluxo SSO no mesmo provedor.
-4. Se houver outros providers no domínio, eles aparecem como botões alternativos.
-5. Botão "Continuar com senha" navega para `/auth?email=<email>` com o e-mail já preenchido.
-6. Sem regressão no fluxo normal (auto-redirect com sucesso, escolha manual, domínio sem SSO).
+1. Botão "Cancelar redirecionamento" visível em **todos os momentos** da tela de redirecionamento (countdown e "Conectando…").
+2. Cancelar durante "Conectando…" interrompe a navegação ao IdP — mesmo se a Edge Function já tiver respondido com `redirect_url`, o `window.location.href` não é executado.
+3. Após cancelar, o usuário volta para a tela de escolha manual (com providers listados, sem auto-redirect re-disparando).
+4. Aviso visual informa que o redirecionamento foi cancelado.
+5. Trocar o e-mail reativa o auto-redirect normalmente.
+6. Sem regressão no fluxo de sucesso, no fallback de erro SSO ou na escolha manual.
 
 ### Arquivos
 
