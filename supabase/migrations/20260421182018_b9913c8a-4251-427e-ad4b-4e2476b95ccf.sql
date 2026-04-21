@@ -1,0 +1,1 @@
+ALTER TABLE public.sso_login_attempts ADD COLUMN IF NOT EXISTS app_redirect text;

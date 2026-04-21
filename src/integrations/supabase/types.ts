@@ -8258,6 +8258,7 @@ export type Database = {
       }
       sso_login_attempts: {
         Row: {
+          app_redirect: string | null
           code_verifier_hash: string | null
           created_at: string
           duration_ms: number | null
@@ -8274,6 +8275,7 @@ export type Database = {
           user_agent: string | null
         }
         Insert: {
+          app_redirect?: string | null
           code_verifier_hash?: string | null
           created_at?: string
           duration_ms?: number | null
@@ -8290,6 +8292,7 @@ export type Database = {
           user_agent?: string | null
         }
         Update: {
+          app_redirect?: string | null
           code_verifier_hash?: string | null
           created_at?: string
           duration_ms?: number | null

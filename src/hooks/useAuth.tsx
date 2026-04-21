@@ -85,6 +85,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setTimeout(() => {
             fetchProfile(session.user.id);
           }, 0);
+
+          // SAML finalize: quando o broker nativo do Supabase autentica via SAML,
+          // disparamos o pipeline de JIT/vínculo/role mapping.
+          if (event === 'SIGNED_IN') {
+            const provider = (session.user.app_metadata as Record<string, unknown> | undefined)?.provider as string | undefined;
+            const ssoProviderId = (session.user.user_metadata as Record<string, unknown> | undefined)?.sso_provider_id as string | undefined;
+            const isSaml = provider === 'sso:saml' || provider?.startsWith('sso');
+            if (isSaml && ssoProviderId) {
+              setTimeout(() => {
+                supabase.functions.invoke('sso-callback', {
+                  body: { kind: 'saml-finalize', provider_id: ssoProviderId },
+                }).catch((err) => logger.warn('[useAuth] saml-finalize falhou', err));
+              }, 0);
+            }
+          }
         } else {
           setProfile(null);
           setRole(null);

@@ -1,5 +1,5 @@
-import { corsHeaders } from "@supabase/supabase-js/cors";
-import { createClient } from "@supabase/supabase-js";
+import { corsHeaders } from "npm:@supabase/supabase-js/cors";
+import { createClient } from "npm:@supabase/supabase-js";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -62,6 +62,7 @@ Deno.serve(async (req) => {
       state,
       code_verifier_hash: verifierHash,
       expires_at,
+      app_redirect: redirect_to ?? null,
     });
 
     const callback = `${SUPABASE_URL}/functions/v1/sso-callback`;
