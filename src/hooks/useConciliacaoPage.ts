@@ -137,8 +137,11 @@ export function useConciliacaoPage() {
     setTransacoesImportadas(prev => prev.filter(t => t.id !== transacaoId));
   }, [confirmarConciliacao]);
 
-  const handleRejeitarMatch = useCallback((_transacaoId: string, _lancamentoId: string) => {
-    toast.info('Sugestão rejeitada');
+  const handleRejeitarMatch = useCallback((transacaoId: string, _lancamentoId: string) => {
+    // Remove a transação da fila de sugestões IA — feedback já foi gravado em
+    // historico_conciliacao_ia + feedback_conciliacao_ia pelo SugestoesMatchIA.
+    setTransacoesImportadas(prev => prev.filter(t => t.id !== transacaoId));
+    toast.info('Sugestão rejeitada — feedback registrado');
   }, []);
 
   const handleConciliarManual = useCallback((transacaoId: string) => {
