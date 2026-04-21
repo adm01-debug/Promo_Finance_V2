@@ -137,7 +137,7 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
         {!validar.isPending && data && step === 2 && (
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
-              <Badge variant={erros === 0 ? 'default' : 'destructive'} className="gap-1">
+              <Badge variant={erros === 0 ? 'default' : 'error'} className="gap-1">
                 {erros === 0 ? <CheckCircle2 className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
                 {erros} erro(s)
               </Badge>
