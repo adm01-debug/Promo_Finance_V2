@@ -8260,12 +8260,14 @@ export type Database = {
         Row: {
           app_redirect: string | null
           code_verifier_hash: string | null
+          context: Json
           created_at: string
           duration_ms: number | null
           email: string | null
           empresa_id: string | null
           error_code: string | null
           error_message: string | null
+          event_type: string | null
           expires_at: string | null
           id: string
           ip_address: string | null
@@ -8277,12 +8279,14 @@ export type Database = {
         Insert: {
           app_redirect?: string | null
           code_verifier_hash?: string | null
+          context?: Json
           created_at?: string
           duration_ms?: number | null
           email?: string | null
           empresa_id?: string | null
           error_code?: string | null
           error_message?: string | null
+          event_type?: string | null
           expires_at?: string | null
           id?: string
           ip_address?: string | null
@@ -8294,12 +8298,14 @@ export type Database = {
         Update: {
           app_redirect?: string | null
           code_verifier_hash?: string | null
+          context?: Json
           created_at?: string
           duration_ms?: number | null
           email?: string | null
           empresa_id?: string | null
           error_code?: string | null
           error_message?: string | null
+          event_type?: string | null
           expires_at?: string | null
           id?: string
           ip_address?: string | null
@@ -10170,6 +10176,18 @@ export type Database = {
           _old_data?: Json
           _record_id?: string
           _table_name?: string
+        }
+        Returns: string
+      }
+      log_sso_onboarding_event: {
+        Args: {
+          _context?: Json
+          _email: string
+          _error_code?: string
+          _error_message?: string
+          _event_type: string
+          _provider_id?: string
+          _success?: boolean
         }
         Returns: string
       }
