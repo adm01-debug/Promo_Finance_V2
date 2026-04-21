@@ -94,10 +94,11 @@ async function logAttempt(args: {
   ip?: string | null;
   ua?: string | null;
   appRedirect?: string | null;
+  context?: Record<string, unknown>;
 }) {
   const admin = args.admin ?? createClient(SUPABASE_URL, SERVICE_ROLE);
   try {
-    await admin.from("sso_login_attempts").insert({
+    const row: Record<string, unknown> = {
       provider_id: args.providerId,
       email: args.email,
       success: args.success,
@@ -107,7 +108,11 @@ async function logAttempt(args: {
       ip_address: args.ip ?? null,
       user_agent: args.ua ?? null,
       app_redirect: args.appRedirect ?? null,
-    });
+    };
+    if (args.context && Object.keys(args.context).length > 0) {
+      row.context = args.context;
+    }
+    await admin.from("sso_login_attempts").insert(row);
   } catch {
     /* não propagar */
   }
@@ -734,11 +739,61 @@ Deno.serve(async (req) => {
       return redirectErr(req, result.error, appRedirect);
     }
 
+    const providerNome = (provider.nome as string) ?? "";
+    const providerTipo = (provider.tipo as string) ?? null;
+    const defaultRole = (provider.default_role as string) || "visualizador";
+    const roleOrigin = result.matchedGroup ? "group_mapped" : "default";
+    const via = providerTipo === "oidc" ? "oidc-jit" : "saml-broker-jit";
+    const magicLinkContext = {
+      provider_nome: providerNome,
+      provider_tipo: providerTipo,
+      matched_group: result.matchedGroup,
+      role_resolved: result.role,
+      default_role: defaultRole,
+      role_origin: roleOrigin,
+      groups_received: groups,
+      via,
+      jit_created: result.jitCreated,
+      empresa_id: (provider.empresa_id as string | null) ?? null,
+    };
+
     await logAttempt({
       admin, providerId: provider.id, email, success: true,
       errCode: null, errMsg: result.jitCreated ? "jit_provisioned" : null,
-      t0, ip, ua, appRedirect,
+      t0, ip, ua, appRedirect, context: magicLinkContext,
     });
+
+    // Trilha dedicada: magic link → provider → grupo → role (existe em todo login)
+    try {
+      await admin.from("audit_logs").insert({
+        user_id: result.userId,
+        user_email: email,
+        action: "LOGIN",
+        table_name: "sso_magic_link_issued",
+        record_id: result.userId,
+        new_data: {
+          provider_id: provider.id,
+          provider_nome: providerNome,
+          provider_tipo: providerTipo,
+          matched_group: result.matchedGroup,
+          role: result.role,
+          default_role: defaultRole,
+          role_origin: roleOrigin,
+          groups_received: groups,
+          via,
+          jit_created: result.jitCreated,
+          app_redirect: appRedirect ?? null,
+        },
+        details: `Magic link emitido via ${providerNome} → role=${result.role} (${
+          roleOrigin === "group_mapped" ? `grupo ${result.matchedGroup}` : "default"
+        })`,
+      });
+    } catch (err) {
+      console.warn(
+        "[sso-callback] falha ao registrar audit_logs sso_magic_link_issued:",
+        err instanceof Error ? err.message : String(err),
+      );
+    }
 
     // Magic link e redirect para o app
     const redirectTo = appRedirect || safeOrigin(req, null);

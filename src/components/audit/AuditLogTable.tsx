@@ -45,6 +45,7 @@ const tableNameLabels: Record<string, string> = {
   user_roles: 'Perfis de Usuário', profiles: 'Perfis',
   sso_jit_provisioning: 'Provisionamento SSO (JIT)',
   sso_profile_sync: 'Sincronização de Perfil (SSO)',
+  sso_magic_link_issued: 'Magic Link SSO',
 };
 
 interface Props {
