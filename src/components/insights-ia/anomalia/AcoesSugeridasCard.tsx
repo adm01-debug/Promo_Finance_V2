@@ -6,6 +6,7 @@ import { Lightbulb, Save } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
 import { useAnomaliasDetectadas } from "@/hooks/useAnomaliasDetectadas";
+import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
 
 interface AcaoSugerida {
   titulo: string;
@@ -93,6 +94,7 @@ function acoesPara(a: Anomalia): AcaoSugerida[] {
 export function AcoesSugeridasCard({ anomalia }: { anomalia: Anomalia }) {
   const [obs, setObs] = useState(anomalia.observacoes ?? "");
   const { atualizarStatus } = useAnomaliasDetectadas();
+  const sincronizar = useSincronizarAnomaliaBitrix();
   const acoes = acoesPara(anomalia);
 
   return (
@@ -131,11 +133,17 @@ export function AcoesSugeridasCard({ anomalia }: { anomalia: Anomalia }) {
           <Button
             size="sm"
             onClick={() =>
-              atualizarStatus.mutate({
-                id: anomalia.id,
-                status: anomalia.status === "nova" ? "investigando" : anomalia.status,
-                observacoes: obs,
-              })
+              atualizarStatus.mutate(
+                {
+                  id: anomalia.id,
+                  status: anomalia.status === "nova" ? "investigando" : anomalia.status,
+                  observacoes: obs,
+                },
+                {
+                  onSuccess: () =>
+                    sincronizar.mutate({ anomaliaId: anomalia.id, evento: "parecer" }),
+                },
+              )
             }
             disabled={atualizarStatus.isPending}
           >

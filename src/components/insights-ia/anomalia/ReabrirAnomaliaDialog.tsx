@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RotateCcw, Loader2 } from "lucide-react";
 import { useReabrirAnomalia } from "@/hooks/useAnomaliasDetectadas";
+import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
 
 interface Props {
   anomaliaId: string;
@@ -30,6 +31,7 @@ export function ReabrirAnomaliaDialog({
   const [open, setOpen] = useState(false);
   const [motivo, setMotivo] = useState("");
   const reabrir = useReabrirAnomalia();
+  const sincronizar = useSincronizarAnomaliaBitrix();
 
   const motivoTrim = motivo.trim();
   const valido = motivoTrim.length >= 10;
@@ -38,6 +40,7 @@ export function ReabrirAnomaliaDialog({
     if (!valido) return;
     try {
       await reabrir.mutateAsync({ id: anomaliaId, motivo: motivoTrim });
+      sincronizar.mutate({ anomaliaId, evento: "reaberta" });
       setOpen(false);
       setMotivo("");
     } catch {
