@@ -111,6 +111,13 @@ export function AnomaliasDetectadasPanel() {
                       </p>
                     )}
                   </div>
+                  <div className="flex flex-col gap-1 shrink-0">
+                    <Button asChild size="sm" variant="secondary">
+                      <Link to={`/admin/insights-ia/anomalia/${a.id}`}>
+                        <Microscope className="h-3 w-3 mr-1" /> Drill-down
+                      </Link>
+                    </Button>
+                  </div>
                   {a.status === "nova" && (
                     <div className="flex flex-col gap-1 shrink-0">
                       <Button
