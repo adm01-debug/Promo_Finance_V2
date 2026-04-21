@@ -1,21 +1,68 @@
-import { useState } from 'react';
-import { BookOpen, FileText, Calculator, Building2, BookText, BarChart3 } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import { BookOpen, FileText, Calculator, Building2, BookText, BarChart3, AlertTriangle } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useEmpresas } from '@/hooks/useFinancialData';
+import { useSpedContabilHistorico } from '@/hooks/useSpedContabil';
 import { PlanoContasTab } from '@/components/contabilidade/PlanoContasTab';
 import { LancamentosTab } from '@/components/contabilidade/LancamentosTab';
 import { SpedContabilTab } from '@/components/contabilidade/SpedContabilTab';
 import { RazaoDiarioTab } from '@/components/contabilidade/RazaoDiarioTab';
 import { DreBalancoTab } from '@/components/contabilidade/DreBalancoTab';
 
+const VALID_TABS = ['plano', 'lancamentos', 'razao', 'dre', 'ecd', 'ecf'] as const;
+type TabId = typeof VALID_TABS[number];
+
+const ANO_DEFAULT = new Date().getFullYear() - 1;
+
+interface HistoricoMin {
+  tipo: string;
+  ano_calendario: number;
+  status: string;
+}
+
 export default function Contabilidade() {
   const { data: empresas = [] } = useEmpresas();
-  const [empresaId, setEmpresaId] = useState<string>('');
-  const [ano, setAno] = useState(new Date().getFullYear() - 1);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const tabParam = searchParams.get('tab');
+  const tab: TabId = (VALID_TABS as readonly string[]).includes(tabParam ?? '')
+    ? (tabParam as TabId)
+    : 'plano';
+
+  const empresaId = searchParams.get('empresa') ?? '';
+  const anoParam = Number(searchParams.get('ano'));
+  const ano = Number.isFinite(anoParam) && anoParam >= 2010 && anoParam <= new Date().getFullYear()
+    ? anoParam
+    : ANO_DEFAULT;
+
+  const updateParam = (key: string, value: string | null) => {
+    setSearchParams(
+      prev => {
+        const next = new URLSearchParams(prev);
+        if (value === null || value === '') next.delete(key);
+        else next.set(key, value);
+        return next;
+      },
+      { replace: true },
+    );
+  };
+
+  const setTab = (v: string) => updateParam('tab', v);
+  const setEmpresaId = (v: string) => updateParam('empresa', v || null);
+  const setAno = (v: number) => updateParam('ano', String(v));
+
+  // Histórico SPED para detectar se a ECD do ano selecionado já foi gerada (sincroniza badge da ECF)
+  const { data: historico = [] } = useSpedContabilHistorico(empresaId);
+  const temEcdNoAno = (historico as HistoricoMin[]).some(
+    h => h.tipo === 'ECD' && h.ano_calendario === ano && h.status !== 'rejeitado',
+  );
+  const ecfPendente = !!empresaId && !temEcdNoAno;
 
   return (
     <MainLayout>
@@ -42,19 +89,46 @@ export default function Contabilidade() {
             </div>
             <div className="space-y-1">
               <Label className="text-xs">Ano-calendário</Label>
-              <Input type="number" min={2010} max={new Date().getFullYear()} value={ano} onChange={e => setAno(Number(e.target.value))} className="w-[100px]" />
+              <Input
+                type="number"
+                min={2010}
+                max={new Date().getFullYear()}
+                value={ano}
+                onChange={e => setAno(Number(e.target.value))}
+                className="w-[100px]"
+              />
             </div>
           </div>
         </div>
 
-        <Tabs defaultValue="plano" className="space-y-6">
+        <Tabs value={tab} onValueChange={setTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-3 md:grid-cols-6">
             <TabsTrigger value="plano" className="gap-1.5"><BookOpen className="h-4 w-4" />Plano</TabsTrigger>
             <TabsTrigger value="lancamentos" className="gap-1.5"><Calculator className="h-4 w-4" />Lançamentos</TabsTrigger>
             <TabsTrigger value="razao" className="gap-1.5"><BookText className="h-4 w-4" />Razão & Diário</TabsTrigger>
             <TabsTrigger value="dre" className="gap-1.5"><BarChart3 className="h-4 w-4" />DRE & Balanço</TabsTrigger>
             <TabsTrigger value="ecd" className="gap-1.5"><FileText className="h-4 w-4" />SPED ECD</TabsTrigger>
-            <TabsTrigger value="ecf" className="gap-1.5"><FileText className="h-4 w-4" />SPED ECF</TabsTrigger>
+            <TabsTrigger value="ecf" className="gap-1.5">
+              <FileText className="h-4 w-4" />
+              SPED ECF
+              {ecfPendente && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge
+                        variant="outline"
+                        className="ml-1 h-5 px-1.5 border-amber-500/40 bg-amber-500/10 text-amber-700"
+                      >
+                        <AlertTriangle className="h-3 w-3" />
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                      Gere a SPED ECD de {ano} antes da ECF
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="plano"><PlanoContasTab empresaId={empresaId} /></TabsContent>
