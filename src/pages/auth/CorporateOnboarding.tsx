@@ -311,6 +311,14 @@ export default function CorporateOnboarding() {
               </Button>
             </form>
 
+            {userCancelled && providers.length > 0 && (
+              <Alert variant="warning">
+                <AlertDescription className="text-sm">
+                  Redirecionamento automático cancelado. Escolha um método de login abaixo.
+                </AlertDescription>
+              </Alert>
+            )}
+
             {submittedEmail && !loading && providers.length === 0 && (
               <Alert>
                 <AlertDescription className="text-sm">
@@ -327,7 +335,7 @@ export default function CorporateOnboarding() {
               </Alert>
             )}
 
-            {providers.length > 0 && !autoRedirectProvider && (
+            {providers.length > 0 && (!autoRedirectProvider || userCancelled) && (
               <div className="space-y-2 pt-2 border-t">
                 <p className="text-xs text-center text-muted-foreground uppercase tracking-wide">
                   Provedores disponíveis
