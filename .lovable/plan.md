@@ -1,72 +1,94 @@
 
 
-## Plano — Destacar desequilíbrio do Balanço com diferença em R$
+## Plano — Wizard de Geração SPED ECD com Checklist e Validações
 
 ### Estado atual
 
-A aba `DreBalancoTab` (criada recentemente) já calcula totais de Ativo e Passivo + PL e exibe um indicador visual quando há divergência maior que R$ 0,01. Falta, porém:
-
-- Destaque visual mais forte (não só um badge discreto).
-- Mostrar a **diferença exata em R$** (com sinal indicando o lado que está maior).
-- Rodapé fixo da aba consolidando o status do balanço.
-- Pista de qual lado está faltando (Ativo > Passivo+PL ou vice-versa).
-
-O componente legado `src/components/demonstrativos/BalancoPatrimonial.tsx` (rota `/demonstrativos`) tem lógica parecida e também só mostra um badge "Equilibrado / Divergência" sem o valor da diferença — vale aplicar o mesmo padrão lá para consistência.
+A aba `SpedContabilTab` (compartilhada por ECD/ECF) gera o arquivo direto em um clique, abre a URL assinada no navegador e apenas mostra um toast de sucesso/erro. A edge `gerar-sped-ecd` **já retorna** `validacoes.erros`, `validacoes.avisos`, `hash_sha256`, `total_linhas` e `total_lancamentos` — mas a UI não exibe nada disso de forma estruturada antes do download. Falta também um **modo "preview"** (validar sem gerar arquivo) e um checklist visual das pré-condições.
 
 ### O que será implementado
 
-**1. `src/components/contabilidade/DreBalancoTab.tsx` (editado)**
+**1. Modo `validate` na edge `gerar-sped-ecd`**
 
-Adicionar, no modo Balanço, um **rodapé sticky** dentro do card com:
+Adicionar parâmetro opcional `mode: 'validate' | 'generate'` (default `generate`). Quando `validate`:
+- Roda todas as validações atuais + checklist estendido (ver item 3).
+- **Não monta o TXT** nem faz upload nem grava em `sped_contabil_arquivos`.
+- Retorna `{ checklist, validacoes, total_lancamentos, periodo, empresa }` em poucos segundos.
 
-- **Estado equilibrado** (|Ativo − (Passivo+PL)| ≤ 0,01):
-  - Faixa verde discreta (`bg-emerald-500/10 border-emerald-500/30`).
-  - Ícone `CheckCircle2` + texto "Balanço equilibrado · Ativo = Passivo + PL = R$ X,XX".
+Quando `generate`: comportamento atual + **bloqueia se houver erros** (retorna 422 com `validacoes`, sem fazer upload).
 
-- **Estado desequilibrado**:
-  - Faixa de alerta (`bg-destructive/10 border-destructive/40 text-destructive`).
-  - Ícone `AlertTriangle` pulsante (animação leve).
-  - Linha 1: "Balanço desequilibrado".
-  - Linha 2 em grid de 3 colunas: **Ativo** · **Passivo + PL** · **Diferença** (cada um com label + valor formatado em `formatCurrency`).
-  - A "Diferença" em destaque (texto maior, negrito, com sinal):
-    - Se Ativo > Passivo+PL → `+R$ X,XX (Ativo maior)`.
-    - Se Passivo+PL > Ativo → `-R$ X,XX (Passivo+PL maior)`.
-  - Texto auxiliar pequeno: "Verifique lançamentos em aberto, contas sem mapeamento de natureza ou diferenças de arredondamento."
+**2. Novo componente `SpedEcdWizard.tsx`**
 
-Reforço adicional nas linhas de total da tabela (TOTAL ATIVO / TOTAL PASSIVO+PL) quando desequilibrado: borda vermelha à esquerda (`border-l-4 border-destructive`) e cor do valor em `text-destructive`.
+Wizard de 3 passos dentro de um `Dialog` grande (substitui o botão atual de "Gerar e baixar SPED ECD"):
 
-A diferença entra também no PDF exportado: nova linha ao final "Diferença: R$ X,XX" colorida quando ≠ 0.
+- **Passo 1 — Período & Empresa**: confirmação do ano-calendário, CNPJ, razão social. Mostra contagem de lançamentos encontrados (chamada leve à edge em modo `validate`).
+- **Passo 2 — Checklist de validações**: lista verificável com ícones (✓ verde / ⚠ âmbar / ✗ vermelho):
+  - CNPJ e razão social preenchidos
+  - Plano de contas com pelo menos 1 conta analítica
+  - Cada lançamento com débitos = créditos (mostra contagem de violações)
+  - Lançamentos dentro do período
+  - Numeração sequencial (gap = aviso)
+  - % de contas analíticas com `codigo_referencial` CFC (aviso se < 100%)
+  - Pelo menos 1 lançamento no período
+  - Balancetes consistentes (débitos totais = créditos totais)
+  
+  Cada item expansível mostra a lista de itens problemáticos. Botão "Re-validar" recarrega.
 
-**2. `src/components/demonstrativos/BalancoPatrimonial.tsx` (editado)**
+- **Passo 3 — Geração & Download**:
+  - Botão "Gerar arquivo" **disabled** se houver qualquer **erro** (avisos não bloqueiam, mas ficam destacados).
+  - Após geração: card mostrando `file_name`, `total_linhas`, `total_lancamentos`, `hash_sha256` (com botão "Copiar hash"), badge de status.
+  - Dois botões: **Download .txt** e **Download .zip** (zip gerado client-side com `JSZip` empacotando o TXT + um `README.txt` com hash e instruções de validação no PVA-ECD).
+  - Alerta padrão "arquivo preliminar".
 
-Substituir o card central "✓ Equilibrado / ✗ Divergência" por um bloco que, no caso de divergência, exibe o valor exato da diferença (mesmo padrão visual do item 1, em escala compacta). Manter os outros dois cards (Ativo Total / Passivo+PL).
+**3. Hook `useSpedEcdValidacao`**
 
-### Detalhe técnico
+Novo hook em `src/hooks/useSpedContabil.ts`:
 
 ```ts
-const diferenca = totalAtivo - totalPassivoPL;
-const equilibrado = Math.abs(diferenca) <= 0.01;
-const ladoMaior = diferenca > 0 ? 'Ativo' : 'Passivo + PL';
+useSpedEcdValidacao() // mutation que invoca gerar-sped-ecd com mode:'validate'
 ```
 
-Tolerância fixa de R$ 0,01 (centavo) para absorver arredondamentos de soma em ponto flutuante. Cores via tokens semânticos (`destructive`, `emerald` apenas inline pois não há token de sucesso global) — mantendo o padrão atual do projeto.
+Reusar `useGerarSpedContabil` existente para o passo 3 (modo generate), apenas ajustando para **não abrir a URL automaticamente** quando chamado pelo wizard (passar flag `silent: true`). O botão de download fica explícito no UI do wizard.
+
+**4. Geração do ZIP client-side**
+
+- Adicionar dependência `jszip` (já comum no stack).
+- Função `baixarZip(url, fileName, hash)`:
+  1. Faz `fetch(url)` no TXT já assinado.
+  2. Cria um ZIP com:
+     - `<file_name>.txt`
+     - `README.txt` contendo: nome empresa, CNPJ, período, hash SHA-256, instrução para validar no PVA-ECD.
+  3. Dispara o download via `URL.createObjectURL(blob)`.
+
+**5. Integração na aba**
+
+`SpedContabilTab.tsx` (quando `tipo='ECD'`): substitui o botão atual de geração por **"Abrir wizard de geração"** que abre o `SpedEcdWizard`. O histórico abaixo (tabela `sped_contabil_arquivos`) permanece igual, ganhando 1 botão extra por linha: "Baixar como ZIP" (reutiliza a função do item 4).
+
+Para `tipo='ECF'`: mantém o fluxo atual sem wizard (escopo do pedido é só ECD).
 
 ### Arquivos
 
-- ✏️ `src/components/contabilidade/DreBalancoTab.tsx`
-- ✏️ `src/components/demonstrativos/BalancoPatrimonial.tsx`
+- ✏️ `supabase/functions/gerar-sped-ecd/index.ts` (modo `validate` + bloqueio em `generate` quando erros)
+- ✏️ `src/hooks/useSpedContabil.ts` (novo `useSpedEcdValidacao` + flag `silent` em `useGerarSpedContabil`)
+- ✏️ `src/components/contabilidade/SpedContabilTab.tsx` (abre wizard quando tipo=ECD; novo botão ZIP no histórico)
+- ➕ `src/components/contabilidade/SpedEcdWizard.tsx` (wizard 3 passos)
+- ➕ `src/lib/sped-zip.ts` (helper para empacotar TXT+README em ZIP)
+- 📦 Adicionar `jszip` ao `package.json`
 
 ### O que NÃO muda
 
-- Sem migration, sem novo hook, sem nova edge function.
-- Lógica de cálculo do balanço permanece igual; só muda a apresentação.
-- Rotas e RBAC inalterados.
+- Sem migration (tabela `sped_contabil_arquivos` já guarda hash, validações, status).
+- Sem novo bucket — usa `relatorios-tributarios`.
+- ECF segue inalterado (escopo é ECD).
+- Geração TXT atual é preservada — apenas envelopada pelo wizard.
 
 ### Critério de pronto
 
-1. Em `/contabilidade` → aba "DRE & Balanço" → modo "Balanço": com balanço equilibrado, rodapé verde discreto confirma o status.
-2. Quando há divergência, rodapé vermelho exibe Ativo, Passivo+PL e a **diferença em R$** com sinal e indicação do lado maior.
-3. Linhas de total ganham destaque vermelho quando desequilibrado.
-4. PDF exportado inclui linha "Diferença".
-5. `/demonstrativos` → Balanço aplica o mesmo padrão no card central.
+1. Em `/contabilidade` → aba "SPED ECD", o botão abre um wizard de 3 passos.
+2. Passo 2 mostra checklist com ✓/⚠/✗ para cada validação, expansível com detalhes.
+3. Avisos (ex.: contas sem código CFC) **não bloqueiam**, erros (ex.: lançamento desbalanceado) **bloqueiam** o passo 3.
+4. Após geração, hash SHA-256 fica visível com botão "Copiar".
+5. Botões "Baixar .txt" e "Baixar .zip" funcionam; ZIP inclui README com hash e instruções PVA.
+6. Edge em `mode:'validate'` não cria arquivo nem grava em `sped_contabil_arquivos`.
+7. Tabela de histórico ganha botão extra para baixar como ZIP em uma execução anterior.
 
