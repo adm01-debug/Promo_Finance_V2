@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Building2, Loader2, Mail, ArrowRight, KeyRound, X } from 'lucide-react';
+import { Building2, Loader2, Mail, ArrowRight, KeyRound, X, AlertTriangle, RotateCw, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,15 +21,16 @@ export default function CorporateOnboarding() {
   const { providers, autoRedirectProvider, loading, domain } = useSsoDomainResolver(submittedEmail);
   const [redirecting, setRedirecting] = useState<ResolvedSsoProvider | null>(null);
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS);
+  const [ssoError, setSsoError] = useState<{ provider: ResolvedSsoProvider; message: string } | null>(null);
   const cancelRef = useRef(false);
 
   // Quando descobrimos provider com force, inicia contagem regressiva e dispara
   useEffect(() => {
-    if (!autoRedirectProvider || redirecting) return;
+    if (!autoRedirectProvider || redirecting || ssoError) return;
     cancelRef.current = false;
     setRedirecting(autoRedirectProvider);
     setCountdown(COUNTDOWN_SECONDS);
-  }, [autoRedirectProvider, redirecting]);
+  }, [autoRedirectProvider, redirecting, ssoError]);
 
   useEffect(() => {
     if (!redirecting) return;
@@ -48,17 +49,21 @@ export default function CorporateOnboarding() {
         body: { provider_id: p.id, redirect_to: window.location.origin },
       });
       if (error) throw error;
+      if (!data?.redirect_url) throw new Error('Resposta inválida do provedor (sem redirect_url)');
       if (data?.verifier && data?.state) {
         sessionStorage.setItem(`pkce:${data.state}`, data.verifier);
       }
       window.location.href = data.redirect_url;
     } catch (e) {
-      toast.error('Falha ao iniciar SSO', { description: (e as Error).message });
+      const message = e instanceof Error ? e.message : 'Erro desconhecido';
+      toast.error('Falha ao iniciar SSO', { description: message });
       setRedirecting(null);
+      setSsoError({ provider: p, message });
     }
   };
 
   const handleManualSso = async (p: ResolvedSsoProvider) => {
+    setSsoError(null);
     setRedirecting(p);
     setCountdown(0);
     await triggerSso(p);
@@ -68,6 +73,12 @@ export default function CorporateOnboarding() {
     cancelRef.current = true;
     setRedirecting(null);
     setCountdown(COUNTDOWN_SECONDS);
+  };
+
+  const handleResetEmail = () => {
+    setSsoError(null);
+    setSubmittedEmail('');
+    setEmail('');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -83,6 +94,102 @@ export default function CorporateOnboarding() {
   const handleUsePassword = () => {
     navigate(`/auth?email=${encodeURIComponent(submittedEmail || email)}`);
   };
+
+  // Estado: erro no SSO — fallback com retry, providers alternativos e senha
+  if (ssoError) {
+    const failedPreset = IDP_PRESETS.find((x) => x.id === ssoError.provider.preset);
+    const otherProviders = providers.filter((p) => p.id !== ssoError.provider.id);
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/30 p-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md"
+        >
+          <Card className="border-border/60 shadow-xl">
+            <CardHeader className="text-center">
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+                <AlertTriangle className="h-6 w-6 text-destructive" />
+              </div>
+              <CardTitle>Não foi possível iniciar o login SSO</CardTitle>
+              <CardDescription>
+                Houve uma falha ao redirecionar para <strong>{ssoError.provider.nome}</strong>.
+                Você pode tentar novamente ou continuar com outro método.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert variant="error">
+                <AlertDescription className="text-sm">
+                  <span className="flex items-center gap-2 font-medium mb-1">
+                    <span aria-hidden>{failedPreset?.logo ?? <KeyRound className="h-4 w-4" />}</span>
+                    {ssoError.provider.nome}
+                  </span>
+                  <span className="text-xs opacity-90 break-words">{ssoError.message}</span>
+                </AlertDescription>
+              </Alert>
+
+              <Button
+                type="button"
+                className="w-full gap-2"
+                size="lg"
+                onClick={() => handleManualSso(ssoError.provider)}
+              >
+                <RotateCw className="h-4 w-4" />
+                Tentar novamente
+              </Button>
+
+              {otherProviders.length > 0 && (
+                <div className="space-y-2 pt-2 border-t">
+                  <p className="text-xs text-center text-muted-foreground uppercase tracking-wide">
+                    Outros provedores disponíveis
+                  </p>
+                  {otherProviders.map((p) => {
+                    const preset = IDP_PRESETS.find((x) => x.id === p.preset);
+                    return (
+                      <Button
+                        key={p.id}
+                        type="button"
+                        variant="outline"
+                        className="w-full gap-2"
+                        onClick={() => handleManualSso(p)}
+                        aria-label={`Entrar com ${p.nome}`}
+                      >
+                        <span className="text-base" aria-hidden>
+                          {preset?.logo ?? <KeyRound className="h-4 w-4" />}
+                        </span>
+                        Entrar com {p.nome}
+                      </Button>
+                    );
+                  })}
+                </div>
+              )}
+
+              <div className="pt-2 border-t space-y-2">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="w-full gap-2"
+                  onClick={handleUsePassword}
+                >
+                  <LogIn className="h-4 w-4" />
+                  Continuar com senha
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="w-full"
+                  onClick={handleResetEmail}
+                >
+                  Usar outro e-mail
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    );
+  }
 
   // Estado: redirecionando
   if (redirecting) {
