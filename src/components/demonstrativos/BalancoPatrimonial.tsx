@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Scale, ArrowRight } from 'lucide-react';
+import { Scale, ArrowRight, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -163,16 +163,36 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId }: BalancoPatr
           </CardContent>
         </Card>
 
-        <Card className="border-border/50 flex items-center justify-center">
-          <CardContent className="pt-6 text-center">
-            <Badge variant={balanco.equilibrado ? 'default' : 'destructive'} className="text-lg px-4 py-2">
-              {balanco.equilibrado ? '✓ Equilibrado' : '✗ Divergência'}
-            </Badge>
-            <div className="mt-2 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-              <span>Ativo</span>
-              <ArrowRight className="h-4 w-4" />
-              <span>Passivo + PL</span>
-            </div>
+        <Card className={`border-border/50 flex items-center justify-center ${balanco.equilibrado ? '' : 'border-destructive/50 bg-destructive/5'}`}>
+          <CardContent className="pt-6 text-center w-full">
+            {balanco.equilibrado ? (
+              <>
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <CheckCircle2 className="h-5 w-5 text-success" />
+                  <span className="font-semibold text-success">Equilibrado</span>
+                </div>
+                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                  <span>Ativo</span>
+                  <ArrowRight className="h-4 w-4" />
+                  <span>Passivo + PL</span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <AlertTriangle className="h-5 w-5 text-destructive animate-pulse" />
+                  <span className="font-semibold text-destructive">Desequilibrado</span>
+                </div>
+                <div className="text-xs text-muted-foreground">Diferença</div>
+                <div className="font-mono text-lg font-bold tabular-nums text-destructive">
+                  {balanco.totalAtivo - balanco.totalPassivo >= 0 ? '+' : ''}
+                  {formatCurrency(balanco.totalAtivo - balanco.totalPassivo)}
+                </div>
+                <div className="text-[11px] text-muted-foreground mt-1">
+                  {balanco.totalAtivo > balanco.totalPassivo ? 'Ativo maior' : 'Passivo+PL maior'}
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
 

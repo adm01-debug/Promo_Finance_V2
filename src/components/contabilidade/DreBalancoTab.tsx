@@ -4,9 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useLancamentosContabeis } from '@/hooks/useLancamentosContabeis';
 import { usePlanoContas, type PlanoContaRow } from '@/hooks/usePlanoContas';
@@ -168,6 +166,7 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
       toast.warning('Sem dados para exportar.');
       return;
     }
+    const equilibrado = Math.abs(balanco.diferenca) < 0.01;
     const linhas: Record<string, string>[] = [
       { Grupo: 'ATIVO', Código: '', Conta: '', Valor: '' },
       ...balanco.ativo.map((c) => ({ Grupo: '', Código: c.codigo, Conta: c.nome, Valor: formatCurrency(c.saldo) })),
@@ -178,6 +177,14 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
       ...balanco.patrimonio.map((c) => ({ Grupo: '', Código: c.codigo, Conta: c.nome, Valor: formatCurrency(c.saldo) })),
       { Grupo: '', Código: '', Conta: 'Resultado do Exercício', Valor: formatCurrency(resultadoExercicio) },
       { Grupo: '', Código: '', Conta: 'Total Passivo + PL', Valor: formatCurrency(balanco.totalPassivoMaisPL) },
+      {
+        Grupo: equilibrado ? 'EQUILIBRADO' : 'DESEQUILÍBRIO',
+        Código: '',
+        Conta: equilibrado
+          ? 'Diferença (Ativo − Passivo+PL)'
+          : `Diferença (Ativo − Passivo+PL) — ${balanco.diferenca > 0 ? 'Ativo maior' : 'Passivo+PL maior'}`,
+        Valor: `${balanco.diferenca >= 0 ? '+' : ''}${formatCurrency(balanco.diferenca)}`,
+      },
     ];
     const cols: ExportColumn<Record<string, string>>[] = [
       { header: 'Grupo', key: 'Grupo' },
@@ -279,52 +286,89 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2">
-              <section className="border rounded-md p-3 space-y-1">
-                <h3 className="text-sm font-semibold mb-2">ATIVO</h3>
-                {balanco.ativo.length === 0
-                  ? <p className="text-xs text-muted-foreground">Sem contas de ativo.</p>
-                  : balanco.ativo.map(renderLinha)}
-                <div className="flex items-center justify-between px-2 py-2 border-t font-semibold">
-                  <span>Total Ativo</span>
-                  <span className="font-mono tabular-nums">{formatCurrency(balanco.totalAtivo)}</span>
-                </div>
-              </section>
-              <section className="border rounded-md p-3 space-y-1">
-                <h3 className="text-sm font-semibold mb-2">PASSIVO + PATRIMÔNIO LÍQUIDO</h3>
-                <div className="text-xs uppercase text-muted-foreground px-2 mt-1">Passivo</div>
-                {balanco.passivo.length === 0
-                  ? <p className="text-xs text-muted-foreground px-2">Sem passivos.</p>
-                  : balanco.passivo.map(renderLinha)}
-                <div className="text-xs uppercase text-muted-foreground px-2 mt-2">Patrimônio Líquido</div>
-                {balanco.patrimonio.map(renderLinha)}
-                <div className="flex items-center justify-between px-2 py-1">
-                  <span className="text-sm">Resultado do Exercício</span>
-                  <span className="font-mono text-sm tabular-nums">{formatCurrency(resultadoExercicio)}</span>
-                </div>
-                <div className="flex items-center justify-between px-2 py-2 border-t font-semibold">
-                  <span>Total Passivo + PL</span>
-                  <span className="font-mono tabular-nums">{formatCurrency(balanco.totalPassivoMaisPL)}</span>
-                </div>
-              </section>
-            </div>
+            {(() => {
+              const equilibrado = Math.abs(balanco.diferenca) < 0.01;
+              const totalCellClass = equilibrado
+                ? 'font-mono tabular-nums'
+                : 'font-mono tabular-nums text-destructive';
+              const sectionClass = equilibrado
+                ? 'border rounded-md p-3 space-y-1'
+                : 'border-l-4 border-l-destructive border rounded-md p-3 space-y-1';
 
-            {Math.abs(balanco.diferenca) < 0.01 ? (
-              <Alert className="border-success/30 bg-success/5">
-                <CheckCircle2 className="h-4 w-4 text-success" />
-                <AlertDescription className="text-sm">
-                  Balanço equilibrado: Ativo = Passivo + PL = <strong>{formatCurrency(balanco.totalAtivo)}</strong>
-                </AlertDescription>
-              </Alert>
-            ) : (
-              <Alert className="border-warning/40 bg-warning/5">
-                <AlertTriangle className="h-4 w-4 text-warning" />
-                <AlertDescription className="text-sm">
-                  Diferença entre Ativo e Passivo+PL: <Badge variant="outline" className="ml-1 font-mono">{formatCurrency(balanco.diferenca)}</Badge>
-                  {' '}— revise lançamentos do período.
-                </AlertDescription>
-              </Alert>
-            )}
+              return (
+                <>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <section className={sectionClass}>
+                      <h3 className="text-sm font-semibold mb-2">ATIVO</h3>
+                      {balanco.ativo.length === 0
+                        ? <p className="text-xs text-muted-foreground">Sem contas de ativo.</p>
+                        : balanco.ativo.map(renderLinha)}
+                      <div className="flex items-center justify-between px-2 py-2 border-t font-semibold">
+                        <span className={equilibrado ? '' : 'text-destructive'}>Total Ativo</span>
+                        <span className={totalCellClass}>{formatCurrency(balanco.totalAtivo)}</span>
+                      </div>
+                    </section>
+                    <section className={sectionClass}>
+                      <h3 className="text-sm font-semibold mb-2">PASSIVO + PATRIMÔNIO LÍQUIDO</h3>
+                      <div className="text-xs uppercase text-muted-foreground px-2 mt-1">Passivo</div>
+                      {balanco.passivo.length === 0
+                        ? <p className="text-xs text-muted-foreground px-2">Sem passivos.</p>
+                        : balanco.passivo.map(renderLinha)}
+                      <div className="text-xs uppercase text-muted-foreground px-2 mt-2">Patrimônio Líquido</div>
+                      {balanco.patrimonio.map(renderLinha)}
+                      <div className="flex items-center justify-between px-2 py-1">
+                        <span className="text-sm">Resultado do Exercício</span>
+                        <span className="font-mono text-sm tabular-nums">{formatCurrency(resultadoExercicio)}</span>
+                      </div>
+                      <div className="flex items-center justify-between px-2 py-2 border-t font-semibold">
+                        <span className={equilibrado ? '' : 'text-destructive'}>Total Passivo + PL</span>
+                        <span className={totalCellClass}>{formatCurrency(balanco.totalPassivoMaisPL)}</span>
+                      </div>
+                    </section>
+                  </div>
+
+                  {equilibrado ? (
+                    <div className="sticky bottom-0 rounded-md border border-success/30 bg-success/10 px-4 py-3 flex items-center gap-3 backdrop-blur">
+                      <CheckCircle2 className="h-5 w-5 text-success shrink-0" />
+                      <div className="text-sm">
+                        <span className="font-semibold text-success">Balanço equilibrado</span>
+                        <span className="text-muted-foreground"> · Ativo = Passivo + PL = </span>
+                        <span className="font-mono font-semibold">{formatCurrency(balanco.totalAtivo)}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="sticky bottom-0 rounded-md border-2 border-destructive/40 bg-destructive/10 px-4 py-3 backdrop-blur">
+                      <div className="flex items-center gap-2 mb-3">
+                        <AlertTriangle className="h-5 w-5 text-destructive shrink-0 animate-pulse" />
+                        <span className="font-semibold text-destructive">Balanço desequilibrado</span>
+                      </div>
+                      <div className="grid gap-3 sm:grid-cols-3">
+                        <div>
+                          <div className="text-xs text-muted-foreground">Ativo</div>
+                          <div className="font-mono text-sm tabular-nums">{formatCurrency(balanco.totalAtivo)}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-muted-foreground">Passivo + PL</div>
+                          <div className="font-mono text-sm tabular-nums">{formatCurrency(balanco.totalPassivoMaisPL)}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-muted-foreground">Diferença</div>
+                          <div className="font-mono text-base font-bold tabular-nums text-destructive">
+                            {balanco.diferenca >= 0 ? '+' : ''}{formatCurrency(balanco.diferenca)}
+                          </div>
+                          <div className="text-[11px] text-muted-foreground">
+                            {balanco.diferenca > 0 ? 'Ativo maior' : 'Passivo+PL maior'}
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-3">
+                        Verifique lançamentos em aberto, contas sem mapeamento de natureza ou diferenças de arredondamento.
+                      </p>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
           </div>
         )}
       </CardContent>
