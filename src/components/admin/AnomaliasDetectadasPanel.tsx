@@ -151,11 +151,9 @@ export function AnomaliasDetectadasPanel() {
   }, [defaultFilter, bootstrapped]);
 
   const { data, isLoading, atualizarStatus, detectar } = useAnomaliasDetectadas(
-    undefined,
-  );
-  const sincronizar = useSincronizarAnomaliaBitrix();
     filters.status === "todas" ? undefined : filters.status,
   );
+  const sincronizar = useSincronizarAnomaliaBitrix();
   const { data: pendentes = [] } = usePendingAnomaliasQueue();
 
   const lista = useMemo(() => {
