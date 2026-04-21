@@ -224,6 +224,15 @@ async function applyPipeline(opts: {
     // SAML: garante metadata sso_provider_id atualizado
     const { data: u } = await admin.auth.admin.getUserById(userId);
     if (u?.user) {
+      // Heurística JIT-via-SAML: usuário criado pelo broker SAML há < 60s
+      // entra como "primeira passagem pelo pipeline" e merece trilha JIT.
+      const createdAtStr = (u.user as { created_at?: string }).created_at;
+      if (createdAtStr) {
+        const createdMs = Date.parse(createdAtStr);
+        if (!Number.isNaN(createdMs) && Date.now() - createdMs < 60_000) {
+          jitCreated = true;
+        }
+      }
       const currentName = (u.user.user_metadata as Record<string, unknown> | null)?.full_name as
         | string
         | undefined;
@@ -266,35 +275,59 @@ async function applyPipeline(opts: {
     .from("user_roles")
     .upsert({ user_id: userId, role }, { onConflict: "user_id,role" });
 
-  // Audit
+  // Audit — trilha estruturada
+  const providerTipo = (provider.tipo as string) ?? null;
   if (jitCreated) {
-    await admin.from("audit_logs").insert({
-      user_id: userId,
-      user_email: email,
-      action: "INSERT",
-      table_name: "auth.users",
-      record_id: userId,
-      new_data: {
-        email,
-        full_name: fullName,
-        provisioned_via: "sso",
-        provider_id: providerId,
-        provider_nome: providerNome,
-      },
-      details: `JIT provisioning via SSO (${providerNome}); role=${role}${
-        matchedGroup ? `; group=${matchedGroup}` : ""
-      }`,
-    });
+    // OIDC: createUser rodou aqui; SAML: broker criou nos últimos 60s.
+    // Em ambos os casos, gravamos um evento dedicado e filtrável.
+    const isOidc = providerTipo === "oidc";
+    const via = isOidc ? "oidc-jit" : "saml-broker-jit";
+    try {
+      await admin.from("audit_logs").insert({
+        user_id: userId,
+        user_email: email,
+        action: "INSERT",
+        table_name: "sso_jit_provisioning",
+        record_id: userId,
+        new_data: {
+          provider_id: providerId,
+          provider_nome: providerNome,
+          provider_tipo: providerTipo,
+          empresa_id: empresaId,
+          role,
+          default_role: defaultRole,
+          matched_group: matchedGroup,
+          groups_received: groups,
+          full_name: fullName,
+          via,
+        },
+        details: `JIT via ${providerNome}: role=${role}${
+          matchedGroup ? ` (grupo ${matchedGroup})` : " (default)"
+        }`,
+      });
+    } catch (err) {
+      console.warn(
+        "[sso-callback] falha ao registrar audit_logs sso_jit_provisioning:",
+        err instanceof Error ? err.message : String(err)
+      );
+    }
   } else if (matchedGroup) {
-    await admin.from("audit_logs").insert({
-      user_id: userId,
-      user_email: email,
-      action: "UPDATE",
-      table_name: "user_roles",
-      record_id: userId,
-      new_data: { role, matched_group: matchedGroup, provider_id: providerId },
-      details: `SSO role mapping aplicado (${providerNome}): ${matchedGroup} → ${role}`,
-    });
+    try {
+      await admin.from("audit_logs").insert({
+        user_id: userId,
+        user_email: email,
+        action: "UPDATE",
+        table_name: "user_roles",
+        record_id: userId,
+        new_data: { role, matched_group: matchedGroup, provider_id: providerId },
+        details: `SSO role mapping aplicado (${providerNome}): ${matchedGroup} → ${role}`,
+      });
+    } catch (err) {
+      console.warn(
+        "[sso-callback] falha ao registrar audit_logs user_roles:",
+        err instanceof Error ? err.message : String(err)
+      );
+    }
   }
 
   return { userId: userId!, role, matchedGroup, jitCreated };
