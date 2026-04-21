@@ -45,6 +45,7 @@ import { useAprovacoesPendentesCount } from '@/hooks/useAprovacoesPendentesCount
 import { useAlertasNaoLidos } from '@/hooks/useAlertas';
 import { useAlertasTributariosCount } from '@/hooks/useAlertasTributariosCount';
 import { useRealtimeAlertas } from '@/hooks/useRealtimeAlertas';
+import { useRealtimeAnomalias } from '@/hooks/useRealtimeAnomalias';
 
 interface NavItem {
   label: string;
@@ -160,6 +161,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
   const { data: alertasNaoLidos = 0 } = useAlertasNaoLidos();
   const { data: alertasTributarios = 0 } = useAlertasTributariosCount();
   useRealtimeAlertas();
+  useRealtimeAnomalias();
 
   // Track which groups are open
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
