@@ -16,6 +16,7 @@ import { useLancamentosContabeis, useCriarLancamento } from '@/hooks/useLancamen
 import { usePlanoContas } from '@/hooks/usePlanoContas';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
+import { ImportLancamentosCSVDialog } from './ImportLancamentosCSVDialog';
 
 interface Props { empresaId?: string; ano: number }
 
@@ -97,8 +98,10 @@ export function LancamentosTab({ empresaId, ano }: Props) {
             <CardTitle>Lançamentos Contábeis · {ano}</CardTitle>
             <CardDescription>Partidas dobradas — débitos = créditos</CardDescription>
           </div>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild><Button disabled={!empresaId}><Plus className="h-4 w-4 mr-2" />Novo lançamento</Button></DialogTrigger>
+          <div className="flex gap-2">
+            <ImportLancamentosCSVDialog empresaId={empresaId} planoContas={contasAnaliticas} ano={ano} />
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild><Button disabled={!empresaId}><Plus className="h-4 w-4 mr-2" />Novo lançamento</Button></DialogTrigger>
             <DialogContent className="max-w-3xl">
               <DialogHeader><DialogTitle>Novo lançamento contábil</DialogTitle></DialogHeader>
               <div className="space-y-4">
@@ -143,7 +146,8 @@ export function LancamentosTab({ empresaId, ano }: Props) {
                 <Button onClick={handleSalvar} disabled={!balanceado || !historico || criar.isPending} className="w-full">Salvar lançamento</Button>
               </div>
             </DialogContent>
-          </Dialog>
+            </Dialog>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">

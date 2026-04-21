@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import type { ParsedLancamento } from '@/lib/lancamentos-csv-importer';
 
 export interface LancamentoContabilInput {
   empresa_id: string;
@@ -67,5 +68,81 @@ export function useCriarLancamento() {
       toast.success('Lançamento contábil registrado');
     },
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
+  });
+}
+
+export interface ImportLoteResult {
+  sucesso: number;
+  falhas: { ref: string; error: string }[];
+}
+
+export interface ImportLoteInput {
+  empresa_id: string;
+  lancamentos: ParsedLancamento[];
+  origem?: string;
+  onProgress?: (done: number, total: number) => void;
+}
+
+export function useImportLancamentosLote() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: ImportLoteInput): Promise<ImportLoteResult> => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const result: ImportLoteResult = { sucesso: 0, falhas: [] };
+      const total = input.lancamentos.length;
+
+      for (let i = 0; i < total; i++) {
+        const l = input.lancamentos[i];
+        let lancId: string | null = null;
+        try {
+          if (!l.balanceado || l.partidas.length < 2) {
+            throw new Error('Lançamento não balanceado ou com menos de 2 partidas');
+          }
+          const { data: lanc, error } = await supabase
+            .from('lancamentos_contabeis')
+            .insert({
+              empresa_id: input.empresa_id,
+              data_lancamento: l.data,
+              historico: l.historico,
+              origem: input.origem || 'importacao_csv',
+              valor_total: l.total_debito,
+              created_by: user?.id,
+            })
+            .select()
+            .maybeSingle();
+          if (error || !lanc) throw error || new Error('Falha ao criar cabeçalho');
+          lancId = lanc.id;
+
+          const { error: errPart } = await supabase.from('partidas_contabeis').insert(
+            l.partidas.map((p) => ({
+              lancamento_id: lanc.id,
+              conta_id: p.conta_id,
+              tipo: p.tipo,
+              valor: p.valor,
+              historico_complementar: p.historico_complementar,
+            })),
+          );
+          if (errPart) throw errPart;
+          result.sucesso++;
+        } catch (e) {
+          // Compensação: remove cabeçalho órfão
+          if (lancId) {
+            await supabase.from('lancamentos_contabeis').delete().eq('id', lancId);
+          }
+          result.falhas.push({ ref: l.ref, error: e instanceof Error ? e.message : 'Erro desconhecido' });
+        }
+        input.onProgress?.(i + 1, total);
+      }
+      return result;
+    },
+    onSuccess: (res) => {
+      qc.invalidateQueries({ queryKey: ['lancamentos-contabeis'] });
+      if (res.falhas.length === 0) {
+        toast.success(`${res.sucesso} lançamento(s) importado(s) com sucesso`);
+      } else {
+        toast.warning(`Importação concluída: ${res.sucesso} sucesso(s), ${res.falhas.length} falha(s)`);
+      }
+    },
+    onError: (e: Error) => toast.error(`Erro na importação: ${e.message}`),
   });
 }
