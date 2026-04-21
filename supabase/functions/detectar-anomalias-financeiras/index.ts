@@ -15,6 +15,7 @@ interface AnomaliaInsert {
   severidade: "baixa" | "media" | "alta" | "critica";
   descricao: string;
   dados: Record<string, unknown>;
+  centro_custo_id?: string | null;
 }
 
 function mean(arr: number[]): number {
@@ -55,7 +56,7 @@ serve(async (req) => {
     // ============ Detector 1: movimentação > 3σ ============
     const { data: movs } = await client
       .from("movimentacoes")
-      .select("id, valor, empresa_id, data_movimentacao, descricao")
+      .select("id, valor, empresa_id, data_movimentacao, descricao, centro_custo_id")
       .gte("data_movimentacao", trintaDiasAtras)
       .limit(5000);
     if (movs && movs.length > 5) {
