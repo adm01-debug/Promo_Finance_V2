@@ -330,7 +330,7 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
               </>
             ) : importResult ? (
               <>
-                <Alert variant={importResult.falhas.length === 0 ? 'default' : 'destructive'}>
+                <Alert variant={importResult.falhas.length === 0 ? 'success' : 'error'}>
                   {importResult.falhas.length === 0
                     ? <CheckCircle2 className="h-4 w-4 text-green-600" />
                     : <AlertCircle className="h-4 w-4" />}
