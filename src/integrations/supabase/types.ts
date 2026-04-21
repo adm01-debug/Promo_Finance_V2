@@ -9701,6 +9701,19 @@ export type Database = {
         }[]
       }
       refresh_mv_benchmark_setorial: { Args: never; Returns: undefined }
+      registrar_tentativa_sso: {
+        Args: {
+          _duration_ms?: number
+          _email: string
+          _error_code?: string
+          _error_message?: string
+          _ip?: string
+          _provider_id: string
+          _success: boolean
+          _user_agent?: string
+        }
+        Returns: string
+      }
       reset_failed_attempts: { Args: { _email: string }; Returns: undefined }
       toggle_cron_job: {
         Args: { is_active: boolean; job_id: number }
