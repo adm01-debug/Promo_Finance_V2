@@ -1,94 +1,82 @@
 
 
-## Plano — Wizard de Geração SPED ECD com Checklist e Validações
+## Plano — Finalizar SpedContabilTab: Wizard ECF + Cross-check com ECD
 
 ### Estado atual
 
-A aba `SpedContabilTab` (compartilhada por ECD/ECF) gera o arquivo direto em um clique, abre a URL assinada no navegador e apenas mostra um toast de sucesso/erro. A edge `gerar-sped-ecd` **já retorna** `validacoes.erros`, `validacoes.avisos`, `hash_sha256`, `total_linhas` e `total_lancamentos` — mas a UI não exibe nada disso de forma estruturada antes do download. Falta também um **modo "preview"** (validar sem gerar arquivo) e um checklist visual das pré-condições.
+- **ECD**: wizard completo (`SpedEcdWizard`) com 3 passos (período → checklist → download/hash/zip). Edge `gerar-sped-ecd` suporta `mode: 'validate' | 'generate'` e bloqueia geração com erros.
+- **ECF**: ainda usa o botão simples direto. Edge `gerar-sped-ecf` faz cross-check (busca ECD do mesmo período) mas não expõe isso de forma estruturada e não suporta modo `validate`.
+- **Build**: o "erro de build" reportado é o 500 de `external-data` (secrets `EXTERNAL_SUPABASE_URL` e `EXTERNAL_SUPABASE_SERVICE_KEY`) — já tratado em mensagem anterior; basta o usuário preencher.
+- **Histórico**: tabela `sped_contabil_arquivos` já tem campo `recibo_transmissao` e status `transmitido`, mas a UI não permite registrar transmissões manualmente.
 
 ### O que será implementado
 
-**1. Modo `validate` na edge `gerar-sped-ecd`**
+**1. Edge `gerar-sped-ecf` — modo `validate` + checklist estruturado + bloqueio**
 
-Adicionar parâmetro opcional `mode: 'validate' | 'generate'` (default `generate`). Quando `validate`:
-- Roda todas as validações atuais + checklist estendido (ver item 3).
-- **Não monta o TXT** nem faz upload nem grava em `sped_contabil_arquivos`.
-- Retorna `{ checklist, validacoes, total_lancamentos, periodo, empresa }` em poucos segundos.
+Espelhar o padrão da ECD:
+- Aceitar `mode: 'validate' | 'generate'` (default `generate`).
+- Construir array `checklist: ChecklistItem[]` com 7 itens:
+  - ✓/✗ Dados da empresa (CNPJ + razão social)
+  - ✓/✗ Pelo menos 1 lançamento contábil no período
+  - ✓/✗ **ECD do mesmo período localizada** (cross-check) — detalhe mostra hash curto e recibo se houver
+  - ⚠ Lucro líquido coerente (≠ 0 quando há receita/despesa)
+  - ⚠ % de contas analíticas com `codigo_referencial` CFC (recomendado para J051)
+  - ⚠ Cross-check K355 (saldos) vs L100 (balanço) — divergência tolerada até R$ 0,01
+  - ✓/✗ Apuração IRPJ/CSLL com base ≥ 0
+- Em `mode='validate'`: retorna `{ mode, empresa, periodo, total_lancamentos, checklist, validacoes, ecd_referencia, apuracao_preview }` — **sem** gerar TXT, sem upload, sem insert no histórico.
+- Em `mode='generate'`: se `erros.length > 0`, retorna **422** com `{ error, checklist, validacoes }`. Caso contrário, segue fluxo atual + retorna `checklist`, `empresa` e `periodo` no payload (para o passo 3 do wizard).
 
-Quando `generate`: comportamento atual + **bloqueia se houver erros** (retorna 422 com `validacoes`, sem fazer upload).
+**2. Novo `SpedEcfWizard.tsx`**
 
-**2. Novo componente `SpedEcdWizard.tsx`**
+Dialog de 3 passos espelhando o ECD:
+- **Passo 1 — Período & ECD vinculada**: card com empresa, CNPJ, ano, total de lançamentos. Card destacado mostrando ECD encontrada (hash curto, data de geração, status, recibo se houver) ou alerta vermelho se ausente.
+- **Passo 2 — Checklist + Apuração preview**: usa `ChecklistRow` (extraído para arquivo próprio) + card "Apuração preliminar" com `lucro_liquido`, `base_irpj`, `irpj` (15% + adicional 10%), `csll` (9%) calculados pela edge.
+- **Passo 3 — Geração & Download**: igual ao ECD (file_name, total_linhas, hash com botão copiar, botões `.txt` e `.zip`) + bloco **"Registrar transmissão"** (form inline com campo `recibo_transmissao` + botão "Marcar como transmitido").
 
-Wizard de 3 passos dentro de um `Dialog` grande (substitui o botão atual de "Gerar e baixar SPED ECD"):
+**3. Refator: extrair `ChecklistRow`**
 
-- **Passo 1 — Período & Empresa**: confirmação do ano-calendário, CNPJ, razão social. Mostra contagem de lançamentos encontrados (chamada leve à edge em modo `validate`).
-- **Passo 2 — Checklist de validações**: lista verificável com ícones (✓ verde / ⚠ âmbar / ✗ vermelho):
-  - CNPJ e razão social preenchidos
-  - Plano de contas com pelo menos 1 conta analítica
-  - Cada lançamento com débitos = créditos (mostra contagem de violações)
-  - Lançamentos dentro do período
-  - Numeração sequencial (gap = aviso)
-  - % de contas analíticas com `codigo_referencial` CFC (aviso se < 100%)
-  - Pelo menos 1 lançamento no período
-  - Balancetes consistentes (débitos totais = créditos totais)
-  
-  Cada item expansível mostra a lista de itens problemáticos. Botão "Re-validar" recarrega.
+Mover de `SpedEcdWizard.tsx` para `src/components/contabilidade/SpedChecklistRow.tsx` e reusar nos dois wizards (DRY).
 
-- **Passo 3 — Geração & Download**:
-  - Botão "Gerar arquivo" **disabled** se houver qualquer **erro** (avisos não bloqueiam, mas ficam destacados).
-  - Após geração: card mostrando `file_name`, `total_linhas`, `total_lancamentos`, `hash_sha256` (com botão "Copiar hash"), badge de status.
-  - Dois botões: **Download .txt** e **Download .zip** (zip gerado client-side com `JSZip` empacotando o TXT + um `README.txt` com hash e instruções de validação no PVA-ECD).
-  - Alerta padrão "arquivo preliminar".
-
-**3. Hook `useSpedEcdValidacao`**
-
-Novo hook em `src/hooks/useSpedContabil.ts`:
+**4. Hooks novos em `useSpedContabil.ts`**
 
 ```ts
-useSpedEcdValidacao() // mutation que invoca gerar-sped-ecd com mode:'validate'
+useSpedEcfValidacao()           // mutation para gerar-sped-ecf com mode:'validate'
+useRegistrarTransmissaoSped()   // UPDATE em sped_contabil_arquivos: status='transmitido' + recibo_transmissao
 ```
 
-Reusar `useGerarSpedContabil` existente para o passo 3 (modo generate), apenas ajustando para **não abrir a URL automaticamente** quando chamado pelo wizard (passar flag `silent: true`). O botão de download fica explícito no UI do wizard.
+`useGerarSpedContabil` já suporta flag `silent` — reusado para a ECF.
 
-**4. Geração do ZIP client-side**
+**5. Integração `SpedContabilTab`**
 
-- Adicionar dependência `jszip` (já comum no stack).
-- Função `baixarZip(url, fileName, hash)`:
-  1. Faz `fetch(url)` no TXT já assinado.
-  2. Cria um ZIP com:
-     - `<file_name>.txt`
-     - `README.txt` contendo: nome empresa, CNPJ, período, hash SHA-256, instrução para validar no PVA-ECD.
-  3. Dispara o download via `URL.createObjectURL(blob)`.
-
-**5. Integração na aba**
-
-`SpedContabilTab.tsx` (quando `tipo='ECD'`): substitui o botão atual de geração por **"Abrir wizard de geração"** que abre o `SpedEcdWizard`. O histórico abaixo (tabela `sped_contabil_arquivos`) permanece igual, ganhando 1 botão extra por linha: "Baixar como ZIP" (reutiliza a função do item 4).
-
-Para `tipo='ECF'`: mantém o fluxo atual sem wizard (escopo do pedido é só ECD).
+- `tipo='ECF'`: substituir botão direto por **"Abrir wizard de geração SPED ECF"** que abre `SpedEcfWizard`.
+- Tabela de histórico ganha:
+  - Coluna **Recibo** (badge verde com nº truncado quando preenchido).
+  - Ação extra **"Registrar transmissão"** quando `status !== 'transmitido'` — abre pequeno dialog inline com input do recibo.
 
 ### Arquivos
 
-- ✏️ `supabase/functions/gerar-sped-ecd/index.ts` (modo `validate` + bloqueio em `generate` quando erros)
-- ✏️ `src/hooks/useSpedContabil.ts` (novo `useSpedEcdValidacao` + flag `silent` em `useGerarSpedContabil`)
-- ✏️ `src/components/contabilidade/SpedContabilTab.tsx` (abre wizard quando tipo=ECD; novo botão ZIP no histórico)
-- ➕ `src/components/contabilidade/SpedEcdWizard.tsx` (wizard 3 passos)
-- ➕ `src/lib/sped-zip.ts` (helper para empacotar TXT+README em ZIP)
-- 📦 Adicionar `jszip` ao `package.json`
+- ✏️ `supabase/functions/gerar-sped-ecf/index.ts` — modo `validate` + checklist estruturado + bloqueio em erros + retorno de `ecd_referencia`/`apuracao_preview`/`checklist`/`empresa`/`periodo`
+- ✏️ `src/hooks/useSpedContabil.ts` — `useSpedEcfValidacao` + `useRegistrarTransmissaoSped` + tipos `SpedEcfValidacaoResult`
+- ✏️ `src/components/contabilidade/SpedContabilTab.tsx` — abre wizard ECF; coluna Recibo + ação "Registrar transmissão"
+- ✏️ `src/components/contabilidade/SpedEcdWizard.tsx` — substituir `ChecklistRow` interno pelo import compartilhado
+- ➕ `src/components/contabilidade/SpedEcfWizard.tsx` — wizard 3 passos
+- ➕ `src/components/contabilidade/SpedChecklistRow.tsx` — componente reusável
 
 ### O que NÃO muda
 
-- Sem migration (tabela `sped_contabil_arquivos` já guarda hash, validações, status).
+- Sem migration — `sped_contabil_arquivos` já tem `recibo_transmissao` e status `transmitido`.
 - Sem novo bucket — usa `relatorios-tributarios`.
-- ECF segue inalterado (escopo é ECD).
-- Geração TXT atual é preservada — apenas envelopada pelo wizard.
+- `sped-zip.ts` reusado como está.
+- Geração TXT da ECF preservada.
 
 ### Critério de pronto
 
-1. Em `/contabilidade` → aba "SPED ECD", o botão abre um wizard de 3 passos.
-2. Passo 2 mostra checklist com ✓/⚠/✗ para cada validação, expansível com detalhes.
-3. Avisos (ex.: contas sem código CFC) **não bloqueiam**, erros (ex.: lançamento desbalanceado) **bloqueiam** o passo 3.
-4. Após geração, hash SHA-256 fica visível com botão "Copiar".
-5. Botões "Baixar .txt" e "Baixar .zip" funcionam; ZIP inclui README com hash e instruções PVA.
-6. Edge em `mode:'validate'` não cria arquivo nem grava em `sped_contabil_arquivos`.
-7. Tabela de histórico ganha botão extra para baixar como ZIP em uma execução anterior.
+1. Em `/contabilidade` → aba "SPED ECF", o botão abre wizard de 3 passos.
+2. Passo 1 mostra card destacado com a ECD vinculada (ou alerta vermelho se ausente).
+3. Passo 2 exibe checklist ✓/⚠/✗ incluindo cross-check ECD + card de apuração preliminar (lucro líquido, base, IRPJ, CSLL).
+4. Erros bloqueiam o passo 3; avisos não bloqueiam.
+5. Passo 3 mostra hash SHA-256 com "Copiar", botões `.txt` e `.zip`, e formulário "Registrar transmissão" (grava recibo + status `transmitido`).
+6. Histórico passa a mostrar coluna Recibo e badge "Transmitido" quando aplicável; ação extra "Registrar transmissão" disponível.
+7. Edge ECF em `mode:'validate'` não cria arquivo nem grava em `sped_contabil_arquivos`.
+8. Sem regressão no wizard ECD (apenas import do `ChecklistRow` movido).
 
