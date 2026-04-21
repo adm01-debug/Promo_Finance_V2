@@ -9,6 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useMFA } from '@/hooks/useMFA';
 import { useSessions } from '@/hooks/useSessions';
 import { TwoFactorSetup } from './TwoFactorSetup';
+import { IpMaskToggle } from '@/components/admin/IpMaskToggle';
+import { useIpMaskPreference } from '@/hooks/useIpMaskPreference';
+import { maskIp } from '@/lib/ip-mask';
 import {
   Shield,
   Smartphone,
@@ -40,6 +43,7 @@ import {
 export function MFASettings() {
   const { factors, isEnabled, isLoading, unenroll } = useMFA();
   const { sessions, revokeSession, revokeAllOtherSessions, parseUserAgent } = useSessions();
+  const { enabled: maskIpsEnabled } = useIpMaskPreference();
   const [showSetup, setShowSetup] = useState(false);
   const [showDisableDialog, setShowDisableDialog] = useState(false);
   const [disableFactorId, setDisableFactorId] = useState<string | null>(null);
@@ -189,17 +193,20 @@ export function MFASettings() {
                     Gerencie os dispositivos conectados à sua conta
                   </CardDescription>
                 </div>
-                {sessions.length > 1 && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-destructive"
-                    onClick={revokeAllOtherSessions}
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Encerrar Outras
-                  </Button>
-                )}
+                <div className="flex items-center gap-3">
+                  <IpMaskToggle />
+                  {sessions.length > 1 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-destructive"
+                      onClick={revokeAllOtherSessions}
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Encerrar Outras
+                    </Button>
+                  )}
+                </div>
               </div>
             </CardHeader>
             <CardContent>
@@ -238,7 +245,7 @@ export function MFASettings() {
                             {session.ip_address && (
                               <span className="flex items-center gap-1">
                                 <Globe className="h-3 w-3" />
-                                {session.ip_address}
+                                {maskIp(session.ip_address, maskIpsEnabled)}
                               </span>
                             )}
                             <span className="flex items-center gap-1">

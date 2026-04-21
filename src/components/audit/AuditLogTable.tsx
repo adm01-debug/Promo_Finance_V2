@@ -7,6 +7,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Eye, User, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 import { formatDate } from '@/lib/formatters';
+import { maskIp } from '@/lib/ip-mask';
+import { useIpMaskPreference } from '@/hooks/useIpMaskPreference';
 
 type AuditAction = 'INSERT' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'LOGOUT' | 'EXPORT' | 'APPROVE' | 'REJECT';
 
@@ -48,6 +50,7 @@ interface Props {
 }
 
 export function AuditLogTable({ logs }: Props) {
+  const { enabled: maskIpsEnabled } = useIpMaskPreference();
   return (
     <ScrollArea className="h-[500px]">
       <Table>
@@ -70,7 +73,7 @@ export function AuditLogTable({ logs }: Props) {
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-1.5"><User className="h-3 w-3 text-muted-foreground" /><span className="text-sm truncate max-w-[150px]">{log.user_email || 'Sistema'}</span></div>
-                {log.ip_address && <span className="text-xs text-muted-foreground">{log.ip_address}</span>}
+                {log.ip_address && <span className="text-xs text-muted-foreground">{maskIp(log.ip_address, maskIpsEnabled)}</span>}
               </TableCell>
               <TableCell><Badge variant="outline" className={actionConfig[log.action]?.color}>{actionConfig[log.action]?.label || log.action}</Badge></TableCell>
               <TableCell className="text-sm">{log.table_name ? (tableNameLabels[log.table_name] || log.table_name) : '-'}</TableCell>
@@ -86,7 +89,7 @@ export function AuditLogTable({ logs }: Props) {
                           <div><p className="text-muted-foreground">Ação</p><Badge variant="outline" className={actionConfig[log.action]?.color}>{actionConfig[log.action]?.label}</Badge></div>
                           <div><p className="text-muted-foreground">Tabela</p><p>{log.table_name ? (tableNameLabels[log.table_name] || log.table_name) : '-'}</p></div>
                           <div><p className="text-muted-foreground">Usuário</p><p>{log.user_email || 'Sistema'}</p></div>
-                          <div><p className="text-muted-foreground">IP</p><p>{log.ip_address || '-'}</p></div>
+                          <div><p className="text-muted-foreground">IP</p><p>{maskIp(log.ip_address, maskIpsEnabled)}</p></div>
                         </div>
                         {log.details && <div><p className="text-muted-foreground">Detalhes</p><p>{log.details}</p></div>}
                         {log.old_data && <div><p className="text-muted-foreground mb-1">Dados Anteriores</p><pre className="bg-muted p-3 rounded-lg text-xs overflow-auto max-h-[200px]">{JSON.stringify(log.old_data, null, 2)}</pre></div>}

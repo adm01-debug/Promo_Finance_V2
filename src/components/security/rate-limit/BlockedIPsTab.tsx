@@ -6,6 +6,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Shield, Search, Plus, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { maskIp, matchesIpFilter } from '@/lib/ip-mask';
+import { useIpMaskPreference } from '@/hooks/useIpMaskPreference';
+import { IpMaskToggle } from '@/components/admin/IpMaskToggle';
 
 interface BlockedIP {
   id: string;
@@ -25,16 +28,20 @@ interface Props {
 }
 
 export function BlockedIPsTab({ blockedIPs, searchTerm, onSearchChange, onBlockNew, onUnblock }: Props) {
+  const { enabled: maskIpsEnabled } = useIpMaskPreference();
   const filtered = blockedIPs.filter(ip =>
-    !ip.unblocked_at && (ip.ip_address.includes(searchTerm) || (ip.reason?.toLowerCase().includes(searchTerm.toLowerCase())))
+    !ip.unblocked_at && (matchesIpFilter(ip.ip_address, searchTerm) || (ip.reason?.toLowerCase().includes(searchTerm.toLowerCase())))
   );
 
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
           <div><CardTitle>IPs Bloqueados</CardTitle><CardDescription>Gerencie os endereços IP bloqueados no sistema</CardDescription></div>
-          <Button onClick={onBlockNew} className="gap-2"><Plus className="h-4 w-4" />Bloquear IP</Button>
+          <div className="flex items-center gap-3">
+            <IpMaskToggle />
+            <Button onClick={onBlockNew} className="gap-2"><Plus className="h-4 w-4" />Bloquear IP</Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -50,7 +57,7 @@ export function BlockedIPsTab({ blockedIPs, searchTerm, onSearchChange, onBlockN
             <TableBody>
               {filtered.map((ip) => (
                 <TableRow key={ip.id}>
-                  <TableCell className="font-mono">{ip.ip_address}</TableCell>
+                  <TableCell className="font-mono">{maskIp(ip.ip_address, maskIpsEnabled)}</TableCell>
                   <TableCell>{ip.reason || '-'}</TableCell>
                   <TableCell>{format(new Date(ip.blocked_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}</TableCell>
                   <TableCell><Badge variant={ip.permanent ? 'destructive' : 'secondary'}>{ip.permanent ? 'Permanente' : 'Temporário'}</Badge></TableCell>
