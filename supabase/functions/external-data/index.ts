@@ -134,8 +134,18 @@ Deno.serve(async (req) => {
     const extUrl = Deno.env.get('EXTERNAL_SUPABASE_URL')?.trim();
     const extKeyRaw = Deno.env.get('EXTERNAL_SUPABASE_SERVICE_KEY')?.trim();
     if (!extUrl || !extKeyRaw) {
-      return new Response(JSON.stringify({ error: 'External DB not configured' }), {
-        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      console.warn('[external-data] EXTERNAL_SUPABASE_URL/SERVICE_KEY ausentes — retornando fallback vazio');
+      return new Response(JSON.stringify({
+        data: [],
+        total: 0,
+        page: 1,
+        limit: 0,
+        total_pages: 0,
+        fallback: true,
+        error: 'EXTERNAL_DB_NOT_CONFIGURED',
+        message: 'Integração de dados externos (clientes/fornecedores) não configurada.',
+      }), {
+        status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
