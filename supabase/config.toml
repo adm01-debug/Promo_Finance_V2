@@ -111,5 +111,8 @@ verify_jwt = false
 [functions.sso-callback]
 verify_jwt = false
 
+[functions.sso-logout]
+verify_jwt = false
+
 [functions.scim-server]
 verify_jwt = false

@@ -110,11 +110,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signOut = async () => {
+    // Detecta login via SSO (gravado em user_metadata pelo sso-callback)
+    const ssoProviderId = (user?.user_metadata as Record<string, unknown> | undefined)?.sso_provider_id as string | undefined;
+    let ssoLogoutUrl: string | null = null;
+
+    if (ssoProviderId) {
+      try {
+        const { data, error } = await supabase.functions.invoke('sso-logout', {
+          body: { provider_id: ssoProviderId, return_origin: window.location.origin },
+        });
+        if (!error && data?.logout_url) ssoLogoutUrl = data.logout_url as string;
+      } catch (e) {
+        logger.warn('[useAuth] SSO logout falhou — seguindo com logout local', e);
+      }
+    }
+
     await supabase.auth.signOut();
     setUser(null);
     setSession(null);
     setProfile(null);
     setRole(null);
+
+    if (ssoLogoutUrl) {
+      // Full redirect ao IdP para encerrar a sessão corporativa
+      window.location.href = ssoLogoutUrl;
+    }
   };
 
   const hasRole = (roles: AppRole[]) => {
