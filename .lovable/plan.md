@@ -1,47 +1,87 @@
 
 
-## Plano — Botão "Testar conexão" no setup do SCIM
+## Plano — Mascaramento opcional de `ip_address` em listas e detalhes
 
 ### Diagnóstico
 
-O guia em `src/components/admin/sso/ScimSetupGuide.tsx` mostra a Tenant URL e o header `Authorization: Bearer <SEU_TOKEN_SCIM>` mas o admin não tem como validar, dali mesmo, se o endpoint está acessível antes de ir até o painel do Azure AD ou Okta colar e clicar "Test Connection". O endpoint `/ServiceProviderConfig` do `scim-server` é GET público (sem `verify_jwt` e sem checagem de Bearer no servidor para esse path), o que o torna ideal para um health check do lado do cliente.
+Hoje o campo `ip_address` é exibido **em texto puro** em várias telas administrativas/segurança:
 
-### Comportamento
+- `src/components/audit/AuditLogTable.tsx` — coluna "Usuário" e bloco "Detalhes".
+- `src/pages/AuditLogs.tsx` — coluna "IP" e exportações CSV/PDF.
+- `src/components/security/rate-limit/BlockedIPsTab.tsx` — coluna principal e filtragem por substring.
+- `src/components/security/RateLimitDashboard.tsx` — filtragem `log.ip_address.includes(...)` e listas.
+- `src/components/auth/MFASettings.tsx` — sessões ativas do próprio usuário.
+- `src/components/compliance/AuditDetailDialog.tsx` — metadata grid mostra `ip_address` cru.
 
-Adicionar, no card "Endpoint do servidor SCIM", um botão **"Testar conexão"** que:
+A filtragem em todas essas telas é **substring** (`.includes`/`.ilike`) e o requisito é manter o filtro funcionando contra o IP **original** mesmo quando a exibição estiver mascarada.
 
-1. Faz `GET <SCIM_BASE>/ServiceProviderConfig` direto do navegador (sem token).
-2. Mede a latência (`performance.now`) e inspeciona a resposta.
-3. Mostra o resultado num bloco abaixo do botão com:
-   - **OK (200, schema válido)** — badge verde, latência em ms, e duas linhas confirmando o status esperado por IdP:
-     - "Azure AD: **Test Connection** retornará 200 OK"
-     - "Okta: **Test Connector Configuration** ficará verde"
-   - **Falha** — badge vermelho com o motivo (HTTP status, timeout, schema inesperado, CORS) e dica curta de troubleshooting (ex.: "se aparecer erro de CORS, o endpoint só está acessível pelo IdP em produção").
-4. Estado de loading no botão (`Loader2` girando + texto "Testando…") e desabilita durante a chamada.
-5. Timeout de 8s via `AbortController`.
-6. Validação considera sucesso somente se `res.ok` **e** o JSON contiver `schemas` incluindo `urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig`.
+### Abordagem
 
-Mensagens visíveis ao admin para os dois cenários esperados ficam sempre na tela como referência (bloco "Status esperado por IdP"), independentemente de já ter testado.
+**1. Helper compartilhado e testável**
+
+`src/lib/ip-mask.ts` com:
+
+- `maskIp(ip: string | null | undefined, enabled: boolean): string` — quando `enabled`, mascara os 2 últimos octetos para IPv4 (`192.168.*.*`) e os 4 últimos hextets para IPv6 (`2001:db8:1234:5678:****:****:****:****`). Quando `enabled=false`, retorna o IP original. `null/undefined` → `'-'`.
+- `matchesIpFilter(ip: string | null, term: string): boolean` — busca **sempre na string original** (lowercase), garantindo "filtro por substring continua funcionando mesmo com mascaramento".
+
+Testes unitários novos em `src/lib/__tests__/ip-mask.test.ts` cobrindo IPv4, IPv6, null, e o requisito de filtro com mask ON.
+
+**2. Preferência persistida por usuário**
+
+`src/hooks/useIpMaskPreference.ts`:
+
+- localStorage key `lov:ip-mask-enabled` (default `false`).
+- Expõe `{ enabled, setEnabled, toggle }`.
+- Sincronização entre abas via evento `storage`.
+
+Sem tabela nova — é preferência local do operador (apenas um boolean).
+
+**3. Componente toggle reutilizável**
+
+`src/components/admin/IpMaskToggle.tsx`:
+
+- `Switch` shadcn + ícone `Eye`/`EyeOff` + label "Mascarar IPs".
+- Tooltip: "Os filtros continuam funcionando com o IP original."
+
+**4. Aplicação nas telas**
+
+Em cada tela que lista IPs:
+
+- **`AuditLogs.tsx`** — toggle ao lado dos filtros existentes; coluna IP e exportação CSV/PDF passam por `maskIp`.
+- **`AuditLogTable.tsx`** — render de IP (linha + bloco expandido) usa `maskIp`.
+- **`BlockedIPsTab.tsx`** — toggle no header; coluna IP via `maskIp`; filtragem trocada para `matchesIpFilter`.
+- **`RateLimitDashboard.tsx`** — toggle ao lado do search; `filteredLogs` usa `matchesIpFilter`; render usa `maskIp`.
+- **`MFASettings.tsx`** — toggle no card de sessões; `session.ip_address` renderizado via `maskIp`.
+- **`AuditDetailDialog.tsx`** — pós-processamento no `Object.entries(registro)`: se `key === 'ip_address'` e toggle ativo, exibe mascarado.
 
 ### Detalhes técnicos
 
-- Edição única em `src/components/admin/sso/ScimSetupGuide.tsx`:
-  - Novo `useState` para `result: { ok: boolean; status?: number; latencyMs?: number; message: string } | null` e `loading: boolean`.
-  - Função `handleTest` async com `fetch(url, { signal, headers: { Accept: 'application/scim+json' } })`.
-  - UI usa `Alert` (`variant="success"` quando ok, `variant="error"` quando falha — mesmas variants já usadas no projeto, ex.: `CorporateOnboarding`).
-  - Reusa ícones já em escopo + `Loader2`, `CheckCircle2`, `XCircle` de `lucide-react`.
-- Sem mudanças em edge function: `/ServiceProviderConfig` já responde GET público com CORS habilitado (`corsHeaders` da SDK) — confirmado em `supabase/functions/scim-server/index.ts`.
-- Sem mudanças de DB nem secrets.
+- IPv4 detectado por regex `^(\d{1,3}\.){3}\d{1,3}$`.
+- IPv6: pega os 4 primeiros hextets, substitui o resto por `****`.
+- Strings que não casam com nenhum dos dois (ex.: hostnames) retornam o valor original — mascarar só faz sentido para IPs reais.
+- Helper é puro (sem dependências React) → trivial de testar.
+- Sem mudanças em backend, RLS, edge functions ou tipos do Supabase. O dado bruto continua no DB; mascaramento é puramente de exibição/exportação.
+- Filtros por servidor (caso existam) continuam usando o IP original — só renderização e CSV/PDF respeitam o toggle.
 
 ### Critério de pronto
 
-1. Aba **SSO → SCIM → Como configurar** mostra botão "Testar conexão" no card do endpoint.
-2. Click chama `GET .../scim/v2/ServiceProviderConfig` e retorna em até 8s.
-3. Sucesso exibe badge verde, latência e bloco "Status esperado por IdP" com Azure AD e Okta.
-4. Falha exibe badge vermelho, código/erro e dica.
-5. Sem regressão visual no resto do guia (passos Azure, Okta, mapeamento de atributos).
+1. Toggle "Mascarar IPs" presente em: AuditLogs, BlockedIPsTab, RateLimitDashboard, MFASettings.
+2. Quando ativo, IPs aparecem como `192.168.*.*` em listas, detalhes (`AuditDetailDialog`, expansão de log) e exportações de `AuditLogs`.
+3. Buscar "192.168" continua trazendo o IP `192.168.1.42` mesmo com mascaramento ativo.
+4. Preferência persiste entre reloads (localStorage) e sincroniza entre abas.
+5. Testes unitários de `maskIp` e `matchesIpFilter` passam (`npm test -- ip-mask`).
+6. `tsc --noEmit` continua verde; sem regressão visual.
 
 ### Arquivos
 
-- ✏️ `src/components/admin/sso/ScimSetupGuide.tsx`
+- 🆕 `src/lib/ip-mask.ts`
+- 🆕 `src/lib/__tests__/ip-mask.test.ts`
+- 🆕 `src/hooks/useIpMaskPreference.ts`
+- 🆕 `src/components/admin/IpMaskToggle.tsx`
+- ✏️ `src/components/audit/AuditLogTable.tsx`
+- ✏️ `src/pages/AuditLogs.tsx` (toggle + exportação)
+- ✏️ `src/components/security/rate-limit/BlockedIPsTab.tsx`
+- ✏️ `src/components/security/RateLimitDashboard.tsx`
+- ✏️ `src/components/auth/MFASettings.tsx`
+- ✏️ `src/components/compliance/AuditDetailDialog.tsx`
 
