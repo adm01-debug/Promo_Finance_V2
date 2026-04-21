@@ -58,23 +58,29 @@ export function SugestoesMatchIA({
     }
   }, [transacoes, lancamentos, lastAnalysis, isAnalyzing, analisarConciliacao]);
 
+  const sugestoesValidasFor = useCallback((transacaoId: string): MatchSugestaoIA[] => {
+    const sugestoes = matchesIA.get(transacaoId) || [];
+    return sugestoes.filter(s => !matchesRejeitados.has(`${transacaoId}-${s.lancamentoId}`));
+  }, [matchesIA, matchesRejeitados]);
+
   const transacoesComSugestao = useMemo(() => {
     return transacoes.filter(t => {
-      const sugestoes = matchesIA.get(t.id);
-      return sugestoes && sugestoes.length > 0 && !matchesConfirmados.has(t.id);
+      if (matchesConfirmados.has(t.id)) return false;
+      return sugestoesValidasFor(t.id).length > 0;
     });
-  }, [transacoes, matchesIA, matchesConfirmados]);
+  }, [transacoes, matchesConfirmados, sugestoesValidasFor]);
 
   const matchesAltaConfianca = useMemo(() => {
     const matches: Array<{ transacaoId: string; transacaoDescricao: string; sugestao: MatchSugestaoIA }> = [];
     transacoesComSugestao.forEach(transacao => {
-      const sugestoes = matchesIA.get(transacao.id);
-      if (sugestoes && sugestoes.length > 0 && sugestoes[0].confianca === 'alta') {
+      const sugestoes = sugestoesValidasFor(transacao.id);
+      if (sugestoes.length > 0 && sugestoes[0].confianca === 'alta') {
         matches.push({ transacaoId: transacao.id, transacaoDescricao: transacao.descricao, sugestao: sugestoes[0] });
       }
     });
     return matches;
-  }, [transacoesComSugestao, matchesIA]);
+  }, [transacoesComSugestao, sugestoesValidasFor]);
+
 
   const estatisticas = useMemo(() => {
     let total = 0, alta = 0, media = 0, baixa = 0, valorTotal = 0;
