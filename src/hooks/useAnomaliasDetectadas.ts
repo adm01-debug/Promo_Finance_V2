@@ -93,3 +93,79 @@ export function useAnomaliasDetectadas(filtroStatus?: Anomalia["status"]) {
 
   return { ...list, atualizarStatus, detectar };
 }
+
+export function usePendingAnomaliasQueue() {
+  return useQuery({
+    queryKey: ["anomalias-detectadas", "pending-queue"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("anomalias_detectadas")
+        .select("*")
+        .in("status", ["nova", "investigando"])
+        .order("detectada_em", { ascending: true })
+        .limit(500);
+      if (error) throw error;
+      const list = (data ?? []) as Anomalia[];
+      return list.sort((a, b) => {
+        const sa = SEVERIDADE_ORDEM[a.severidade] ?? 9;
+        const sb = SEVERIDADE_ORDEM[b.severidade] ?? 9;
+        if (sa !== sb) return sa - sb;
+        return new Date(a.detectada_em).getTime() - new Date(b.detectada_em).getTime();
+      });
+    },
+    staleTime: 30_000,
+  });
+}
+
+export function useRevisarAnomalia() {
+  const qc = useQueryClient();
+  const audit = useLogAudit();
+
+  return useMutation({
+    mutationFn: async (input: {
+      id: string;
+      status: "confirmada" | "falso_positivo";
+      observacoes: string;
+    }) => {
+      const obs = input.observacoes.trim();
+      if (obs.length < 10) {
+        throw new Error("Comentário deve ter ao menos 10 caracteres");
+      }
+      const { data: userData } = await supabase.auth.getUser();
+      const uid = userData.user?.id ?? null;
+
+      const { data, error } = await supabase
+        .from("anomalias_detectadas")
+        .update({
+          status: input.status,
+          observacoes: obs,
+          resolvida_em: new Date().toISOString(),
+          resolvida_por: uid,
+        })
+        .eq("id", input.id)
+        .in("status", ["nova", "investigando"])
+        .select("id")
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!data) {
+        throw new Error("Anomalia já foi revisada por outro usuário");
+      }
+
+      await audit
+        .mutateAsync({
+          action: input.status === "confirmada" ? "APPROVE" : "REJECT",
+          tableName: "anomalias_detectadas",
+          recordId: input.id,
+          details: obs,
+        })
+        .catch(() => undefined);
+
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["anomalias-detectadas"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+}
