@@ -76,6 +76,7 @@ const ContadorReadonly = lazy(() => import('./pages/ContadorReadonly'));
 const SSOAdmin = lazy(() => import('./pages/admin/SSOAdmin'));
 const InsightsIA = lazy(() => import('./pages/admin/InsightsIA'));
 const AnomaliaDetalhe = lazy(() => import('./pages/admin/AnomaliaDetalhe'));
+const ComplianceAuditoria = lazy(() => import('./pages/admin/ComplianceAuditoria'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Inner app component that can use routing hooks
