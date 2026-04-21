@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useSsoDomainResolver, type ResolvedSsoProvider } from '@/hooks/useSsoDomainResolver';
+import { useSsoOnboardingAudit } from '@/hooks/useSsoOnboardingAudit';
 import { IDP_PRESETS } from '@/components/admin/sso/IdpPresets';
 
 const COUNTDOWN_SECONDS = 3;
