@@ -1,31 +1,90 @@
 
 
-## Já está implementado — nada a fazer
+## Plano — Reabrir anomalia revisada
 
-O painel `/admin/insights-ia` (componente `AnomaliasDetectadasPanel`) já tem o conjunto completo de filtros e ordenação que você descreveu. Conferi linha por linha em `src/components/admin/AnomaliasDetectadasPanel.tsx`:
+Hoje `useRevisarAnomalia` só aceita transição **a partir** de `nova`/`investigando` (linhas 158-162 de `useAnomaliasDetectadas.ts`: `.in("status", ["nova", "investigando"])`). Não existe caminho de volta para `confirmada` / `falso_positivo`. Vou adicionar essa transição com auditoria e UI nos dois pontos onde o usuário enxerga o status final.
 
-### Filtros já disponíveis na barra de cabeçalho
+### Mudanças
 
-- **Status** (Select): Novas / Investigando / Confirmadas / Falsos positivos / Todas — linhas 262-281, aplicado direto no `useAnomaliasDetectadas(status)`.
-- **Severidade** (multi-select dropdown com checkboxes): crítica, alta, média, baixa — linhas 283-319, com badge de contagem.
-- **Tipo de anomalia** (multi-select dropdown): movimentação atípica, pagamento duplicado, conta a pagar alta, conciliação atrasada, variação brusca de regime — linhas 321-354.
-- **Período** (data início e fim) — linhas 356-376.
-- **Ordenação** (dropdown): por data de detecção, severidade ou tipo, com toggle ascendente/descendente — linhas 378-417.
-- **Visibilidade de colunas** (`ColumnVisibilityMenu`) — linha 419-423.
-- **Presets salvos** (`SavedFiltersBar`) com bootstrap automático do preset padrão do usuário — linhas 136-149, 254-260.
-- **Contador de filtros ativos** — linhas 425-431.
+**1. `src/hooks/useAnomaliasDetectadas.ts` — novo hook `useReabrirAnomalia`**
 
-A filtragem e a ordenação acontecem no `useMemo` das linhas 156-184, e cada item da lista mostra o botão "Drill-down" (drawer lateral) e o link para abrir a tela completa em `/admin/insights-ia/anomalia/:id` — linhas 469-481.
+Mutation dedicada (não reusa `atualizarStatus` para registrar auditoria e validar transição):
 
-### O que está faltando, se quiser
+```ts
+export function useReabrirAnomalia() {
+  const qc = useQueryClient();
+  const audit = useLogAudit();
 
-Apenas três coisas não existem hoje (e que pareciam implícitas no pedido):
+  return useMutation({
+    mutationFn: async (input: { id: string; motivo: string }) => {
+      const motivo = input.motivo.trim();
+      if (motivo.length < 10) {
+        throw new Error("Motivo deve ter ao menos 10 caracteres");
+      }
+      const { data: userData } = await supabase.auth.getUser();
+      const uid = userData.user?.id ?? null;
 
-1. **Campo de busca textual livre** (por descrição/observações) — hoje só há filtros estruturados. O ícone `Search` está importado mas não é usado. Posso adicionar um `Input` com debounce que filtra `descricao` e `observacoes`.
-2. **Sincronização dos filtros com a URL** (`?status=...&severidade=...`) para compartilhar/voltar — hoje o estado é só local.
-3. **Filtro por entidade relacionada** (ex.: só anomalias de `conta_pagar`) — hoje filtra por `tipo_anomalia`, não por `entidade_tipo`.
+      const { data, error } = await supabase
+        .from("anomalias_detectadas")
+        .update({
+          status: "investigando",
+          observacoes: motivo,
+          resolvida_em: null,
+          resolvida_por: null,
+        })
+        .eq("id", input.id)
+        .in("status", ["confirmada", "falso_positivo"])  // só reabre o que está fechado
+        .select("id")
+        .maybeSingle();
 
-### Recomendação
+      if (error) throw error;
+      if (!data) throw new Error("Anomalia não está em estado reabrível");
 
-Como o pedido literal ("ordenar e buscar por severidade, tipo e status") já está 100% atendido, sugiro fechar este como "já existe". Se quiser que eu adicione **busca textual livre** e/ou **sincronização com URL**, me confirme qual dos três itens acima implementar e eu faço numa pequena edição cirúrgica em `AnomaliasDetectadasPanel.tsx`.
+      await audit.mutateAsync({
+        action: "REOPEN",
+        tableName: "anomalias_detectadas",
+        recordId: input.id,
+        details: motivo,
+      }).catch(() => undefined);
+
+      return data;
+    },
+    onSuccess: () => {
+      toast.success("Anomalia reaberta para investigação");
+      qc.invalidateQueries({ queryKey: ["anomalias-detectadas"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+}
+```
+
+**2. `src/components/insights-ia/anomalia/AnomaliaHeader.tsx` — botão Reabrir**
+
+Quando `anomalia.status === "confirmada" || "falso_positivo"`, renderizar **apenas** o botão "Reabrir" (some o trio Investigar/Falso positivo/Confirmar — não faz sentido nesse estado). Clique abre um pequeno `Dialog` com `Textarea` exigindo motivo (mínimo 10 chars, mesma regra de `useRevisarAnomalia`):
+
+```tsx
+{(anomalia.status === "confirmada" || anomalia.status === "falso_positivo") && (
+  <ReabrirAnomaliaDialog anomaliaId={anomalia.id} />
+)}
+```
+
+`ReabrirAnomaliaDialog` é um componente novo curto (~50 linhas) em `src/components/insights-ia/anomalia/ReabrirAnomaliaDialog.tsx` — `Dialog` + `Textarea` + botão `RotateCcw` com `useReabrirAnomalia`.
+
+**3. `src/components/admin/AnomaliasDetectadasPanel.tsx` — botão Reabrir inline**
+
+No card de cada item da lista (linhas 469-481), quando o filtro está em "Confirmadas" ou "Falsos positivos" (ou "Todas" e o item está nesse estado), trocar o botão Drill-down secundário pelo botão "Reabrir" também via `ReabrirAnomaliaDialog`. Drill-down continua sendo a ação primária.
+
+### Fora de escopo
+
+- Reabrir em massa (bulk) — fila de revisão continua só pegando `nova`/`investigando`.
+- Histórico de reaberturas (quem/quando) — fica no log de auditoria, não na UI ainda.
+- Migration de banco — nenhuma alteração de schema; `resolvida_em` e `resolvida_por` são apenas limpos no UPDATE.
+- Atalhos de teclado.
+
+### Detalhes técnicos
+
+- A transição é guardada no `.in("status", ["confirmada", "falso_positivo"])` do UPDATE, prevenindo race condition (alguém revisando ao mesmo tempo).
+- `resolvida_em = null` e `resolvida_por = null` deixam o registro consistente com novas anomalias `investigando`.
+- `observacoes` é sobrescrito pelo motivo da reabertura — alinhado ao comportamento atual de `useRevisarAnomalia`. Se quiser preservar o parecer anterior, é o item "histórico de pareceres" já discutido em mensagem anterior.
+- Audit log usa `action: "REOPEN"` (string nova, não exige migration — `useLogAudit` aceita string livre).
 
