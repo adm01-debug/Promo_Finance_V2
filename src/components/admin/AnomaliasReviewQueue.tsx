@@ -114,6 +114,7 @@ export function AnomaliasReviewQueue({ open, onOpenChange }: Props) {
         status,
         observacoes: comentarioTrim,
       });
+      sincronizar.mutate({ anomaliaId: atual.id, evento: status });
       setStats((s) => ({
         ...s,
         confirmadas: status === "confirmada" ? s.confirmadas + 1 : s.confirmadas,
