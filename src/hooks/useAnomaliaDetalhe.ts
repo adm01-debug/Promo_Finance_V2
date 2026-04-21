@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
+import { getEntidadeUrl } from "@/lib/anomalia-routes";
 
 export interface EntidadeRelacionada {
   tipo: string;
@@ -39,7 +40,7 @@ async function carregarEntidade(
     tipo,
     encontrada: !!data,
     registro: data ?? null,
-    rotaUI: cfg.rota,
+    rotaUI: getEntidadeUrl(tipo, id, ""),
   };
 }
 
