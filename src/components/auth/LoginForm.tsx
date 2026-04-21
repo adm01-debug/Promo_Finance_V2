@@ -236,7 +236,7 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(function Log
 
         <SsoLoginButtons email={email} />
 
-        <div className="text-center">
+        <div className="text-center space-y-2">
           <button
             type="button"
             onClick={onForgotPassword}
@@ -244,6 +244,14 @@ export const LoginForm = forwardRef<HTMLDivElement, LoginFormProps>(function Log
           >
             Esqueci minha senha
           </button>
+          <div>
+            <a
+              href="/auth/corporate"
+              className="text-xs text-muted-foreground hover:text-foreground hover:underline"
+            >
+              Acesso corporativo (SSO)
+            </a>
+          </div>
         </div>
       </form>
     </div>
