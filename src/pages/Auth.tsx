@@ -86,6 +86,22 @@ export default function Auth() {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  // Feedback de Single Logout SSO / erros SSO via querystring
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('slo') === 'ok') {
+      toast.success('Você saiu de todas as sessões corporativas');
+      params.delete('slo');
+      const qs = params.toString();
+      window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : ''));
+    } else if (params.get('sso_error')) {
+      toast.error('Falha no login SSO', { description: params.get('sso_error') ?? undefined });
+      params.delete('sso_error');
+      const qs = params.toString();
+      window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : ''));
+    }
+  }, []);
+
   // Check biometric availability
   useEffect(() => {
     const checkBiometric = async () => {

@@ -265,6 +265,17 @@ export function SSOWizardDialog({ open, onOpenChange, editing }: Props) {
                 </div>
               </>
             )}
+            <div>
+              <Label>URL de logout (SLO) <span className="text-xs text-muted-foreground font-normal">— opcional</span></Label>
+              <Input
+                value={form.slo_url ?? ''}
+                onChange={e => setForm(p => ({ ...p, slo_url: e.target.value }))}
+                placeholder={form.tipo === 'oidc' ? 'https://login.idp.com/oauth2/v2.0/logout' : 'https://idp.com/saml/slo'}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Para OIDC, deixe em branco para usar o <code>end_session_endpoint</code> do discovery. Sem URL de logout, o "Sair" encerra apenas a sessão local.
+              </p>
+            </div>
           </div>
         )}
 
