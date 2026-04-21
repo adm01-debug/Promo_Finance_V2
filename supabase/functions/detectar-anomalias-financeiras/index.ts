@@ -75,6 +75,7 @@ serve(async (req) => {
             severidade: v > m + 5 * sd ? "critica" : "alta",
             descricao: `Movimentação de R$ ${v.toFixed(2)} excede 3σ (média R$ ${m.toFixed(2)}).`,
             dados: { valor: v, media: m, desvio: sd, limite },
+            centro_custo_id: (mov as { centro_custo_id?: string | null }).centro_custo_id ?? null,
           });
         }
       }
@@ -83,11 +84,11 @@ serve(async (req) => {
     // ============ Detector 2: pagamento duplicado ============
     const { data: pagsRecentes } = await client
       .from("contas_pagar")
-      .select("id, fornecedor_id, valor, data_vencimento, empresa_id, descricao")
+      .select("id, fornecedor_id, valor, data_vencimento, empresa_id, descricao, centro_custo_id")
       .gte("data_vencimento", seteDiasAtras)
       .limit(2000);
     if (pagsRecentes) {
-      const buckets = new Map<string, Array<{ id: string; empresa_id: string | null; descricao: string | null }>>();
+      const buckets = new Map<string, Array<{ id: string; empresa_id: string | null; descricao: string | null; centro_custo_id: string | null }>>();
       for (const p of pagsRecentes) {
         const k = `${p.fornecedor_id}|${p.valor}|${p.data_vencimento}`;
         if (!buckets.has(k)) buckets.set(k, []);
@@ -104,10 +105,12 @@ serve(async (req) => {
               severidade: "alta",
               descricao: `Possível pagamento duplicado: ${arr.length} contas com mesma chave (${k}).`,
               dados: { chave: k, ids: arr.map((x) => x.id) },
+              centro_custo_id: p.centro_custo_id ?? null,
             });
           }
         }
       }
+    }
     }
 
     // ============ Detector 3: conta a pagar > p95 ============
@@ -118,7 +121,7 @@ serve(async (req) => {
     for (const emp of empresas ?? []) {
       const { data: cps } = await client
         .from("contas_pagar")
-        .select("id, valor, descricao")
+        .select("id, valor, descricao, centro_custo_id")
         .eq("empresa_id", emp.id)
         .gte("data_vencimento", trintaDiasAtras);
       if (cps && cps.length > 10) {
@@ -134,6 +137,7 @@ serve(async (req) => {
               severidade: "media",
               descricao: `Conta a pagar de R$ ${Number(c.valor).toFixed(2)} excede 1.5x p95 (R$ ${p95.toFixed(2)}).`,
               dados: { valor: Number(c.valor), p95 },
+              centro_custo_id: (c as { centro_custo_id?: string | null }).centro_custo_id ?? null,
             });
           }
         }
