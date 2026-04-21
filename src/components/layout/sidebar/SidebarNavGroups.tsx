@@ -37,6 +37,7 @@ import {
   Camera,
   ArrowLeftRight,
   FileCheck,
+  BookOpen,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -113,6 +114,7 @@ const navGroups: NavGroup[] = [
       { label: 'Histórico Tributário', icon: FileSpreadsheet, href: '/tributario/historico-financeiro' },
       { label: 'Notas Fiscais', icon: FileText, href: '/notas-fiscais' },
       { label: 'Demonstrativos', icon: FileSpreadsheet, href: '/demonstrativos' },
+      { label: 'Contabilidade & SPED', icon: BookOpen, href: '/contabilidade' },
       { label: 'Contratos', icon: FileCheck, href: '/contratos' },
       { label: 'Assinatura Digital', icon: FileSignature, href: '/assinatura-digital' },
       { label: 'Comprovante OCR', icon: Camera, href: '/comprovante-ocr' },
