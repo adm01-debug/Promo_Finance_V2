@@ -39,6 +39,7 @@ import {
   usePendingAnomaliasQueue,
   type Anomalia,
 } from "@/hooks/useAnomaliasDetectadas";
+import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
 import { AnomaliasReviewQueue } from "./AnomaliasReviewQueue";
 import { AnomaliaDrillDownDrawer } from "./AnomaliaDrillDownDrawer";
 import { ReabrirAnomaliaDialog } from "@/components/insights-ia/anomalia/ReabrirAnomaliaDialog";
@@ -150,6 +151,9 @@ export function AnomaliasDetectadasPanel() {
   }, [defaultFilter, bootstrapped]);
 
   const { data, isLoading, atualizarStatus, detectar } = useAnomaliasDetectadas(
+    undefined,
+  );
+  const sincronizar = useSincronizarAnomaliaBitrix();
     filters.status === "todas" ? undefined : filters.status,
   );
   const { data: pendentes = [] } = usePendingAnomaliasQueue();
