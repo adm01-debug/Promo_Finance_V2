@@ -13,6 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useEvidenciasPacotes } from "@/hooks/useEvidenciasPack";
+import { useGerarEvidenciasStream } from "@/hooks/useGerarEvidenciasStream";
+import { EvidenciaStatusDialog } from "./EvidenciaStatusDialog";
 import { AuditFiltersBar, type FiltrosState } from "./AuditFiltersBar";
 import { exportToCSV, exportToPDF, type ExportColumn } from "@/lib/export-utils";
 import { toast } from "sonner";
