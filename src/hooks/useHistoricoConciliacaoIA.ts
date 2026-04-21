@@ -96,6 +96,7 @@ export function useHistoricoConciliacaoIA() {
         analise_ia: string | null;
         acao: 'aprovado' | 'rejeitado';
         aprovado_por: string | null;
+        transacao_bancaria_id: string | null;
         conta_pagar_id?: string;
         conta_receber_id?: string;
       }
@@ -108,6 +109,7 @@ export function useHistoricoConciliacaoIA() {
         analise_ia: params.analiseIA || null,
         acao: params.acao,
         aprovado_por: user?.id || null,
+        transacao_bancaria_id: params.transacaoId || null,
       };
 
       if (params.tipoLancamento === 'pagar') {
