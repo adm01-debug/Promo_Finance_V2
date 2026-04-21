@@ -36,13 +36,13 @@ export function AuditoriaDecisoesTab() {
             <ExportMenu
               data={exportData}
               columns={[
-                { header: 'Data', accessor: 'data' },
-                { header: 'Tipo', accessor: 'tipo' },
-                { header: 'Score', accessor: 'score' },
-                { header: 'Confiança', accessor: 'confianca' },
-                { header: 'Ação', accessor: 'acao' },
-                { header: 'Motivos', accessor: 'motivos' },
-                { header: 'Análise IA', accessor: 'analise' },
+                { header: 'Data', key: 'data' },
+                { header: 'Tipo', key: 'tipo' },
+                { header: 'Score', key: 'score' },
+                { header: 'Confiança', key: 'confianca' },
+                { header: 'Ação', key: 'acao' },
+                { header: 'Motivos', key: 'motivos' },
+                { header: 'Análise IA', key: 'analise' },
               ]}
               filename="auditoria-decisoes-ia"
               title="Auditoria de Decisões IA"

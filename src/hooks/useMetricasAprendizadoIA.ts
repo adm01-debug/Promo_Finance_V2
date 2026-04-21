@@ -21,6 +21,15 @@ export interface RegraAplicada {
   tipo: string | null;
 }
 
+interface RegraConciliacaoRow {
+  id: string;
+  padrao_descricao: string | null;
+  entidade_nome: string | null;
+  vezes_aplicada: number | null;
+  lancamento_tipo: string | null;
+  categoria: string | null;
+}
+
 export interface HeatmapAnomalia {
   semana: string;
   tipo: string;
@@ -52,7 +61,7 @@ export function useMetricasAprendizadoIA() {
           .gte('created_at', desde.toISOString()),
         supabase
           .from('regras_conciliacao')
-          .select('id, nome, vezes_aplicada, tipo')
+          .select('id, padrao_descricao, entidade_nome, vezes_aplicada, lancamento_tipo, categoria')
           .eq('ativo', true)
           .order('vezes_aplicada', { ascending: false })
           .limit(10),
@@ -64,7 +73,13 @@ export function useMetricasAprendizadoIA() {
 
       const feedbacks = feedbacksRes.data ?? [];
       const historico = historicoRes.data ?? [];
-      const regras = (regrasRes.data ?? []) as RegraAplicada[];
+      const regrasRows = (regrasRes.data ?? []) as unknown as RegraConciliacaoRow[];
+      const regras: RegraAplicada[] = regrasRows.map((r) => ({
+        id: r.id,
+        nome: r.padrao_descricao || r.entidade_nome || 'Sem nome',
+        vezes_aplicada: r.vezes_aplicada ?? 0,
+        tipo: r.lancamento_tipo ?? r.categoria ?? null,
+      }));
       const anomalias = anomaliasRes.data ?? [];
 
       // Série temporal semanal
