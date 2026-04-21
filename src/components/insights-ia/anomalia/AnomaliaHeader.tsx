@@ -44,6 +44,11 @@ export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
             <Badge variant={sevVariant}>{anomalia.severidade}</Badge>
             <Badge variant="outline">{TIPO_LABEL[anomalia.tipo_anomalia]}</Badge>
             <Badge variant="outline" className="capitalize">{anomalia.status}</Badge>
+            {anomalia.bitrix_task_id && (
+              <Badge variant="secondary" className="text-xs">
+                Bitrix24 #{anomalia.bitrix_task_id}
+              </Badge>
+            )}
             <span className="text-xs text-muted-foreground">
               Detectada em {new Date(anomalia.detectada_em).toLocaleString("pt-BR")}
             </span>
