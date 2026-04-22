@@ -269,6 +269,71 @@ export function ScimSetupGuide() {
                 </div>
               </Alert>
             )}
+
+            {history.length > 0 && (
+              <div className="pt-3 border-t space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <History className="h-3.5 w-3.5 text-muted-foreground" />
+                    <p className="text-xs font-medium">
+                      Últimos testes ({history.length})
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={clearHistory}
+                    className="h-7 px-2 text-xs"
+                    aria-label="Limpar histórico de testes"
+                  >
+                    <Trash2 className="h-3.5 w-3.5 mr-1" />
+                    Limpar
+                  </Button>
+                </div>
+                <div className="rounded-md border overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="h-8 text-xs">Quando</TableHead>
+                        <TableHead className="h-8 text-xs">Status</TableHead>
+                        <TableHead className="h-8 text-xs text-right">Latência</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {history.map((h) => (
+                        <TableRow key={h.timestamp}>
+                          <TableCell
+                            className="py-1.5 text-xs text-muted-foreground"
+                            title={formatTimestamp(h.timestamp)}
+                          >
+                            {formatRelative(h.timestamp)}
+                          </TableCell>
+                          <TableCell className="py-1.5">
+                            {h.ok ? (
+                              <Badge className="bg-success text-success-foreground gap-1 h-5">
+                                <CheckCircle2 className="h-3 w-3" />
+                                {h.status ?? 'OK'}
+                              </Badge>
+                            ) : (
+                              <Badge variant="destructive" className="gap-1 h-5" title={h.message}>
+                                <XCircle className="h-3 w-3" />
+                                {h.status ?? 'erro'}
+                              </Badge>
+                            )}
+                          </TableCell>
+                          <TableCell className="py-1.5 text-xs text-right font-mono">
+                            {h.latencyMs !== undefined ? `${h.latencyMs} ms` : '—'}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                <p className="text-[10px] text-muted-foreground">
+                  Histórico armazenado localmente neste navegador (últimos {HISTORY_MAX} testes).
+                </p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
