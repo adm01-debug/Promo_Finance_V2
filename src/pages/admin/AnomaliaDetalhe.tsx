@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ArrowLeft, AlertTriangle, Clock, RefreshCw, WifiOff } from "lucide-react";
 import { useAnomaliaDetalhe } from "@/hooks/useAnomaliaDetalhe";
+import { useRefetchAnomaliasOnFocus } from "@/hooks/useRefetchAnomaliasOnFocus";
 import { AnomaliaHeader } from "@/components/insights-ia/anomalia/AnomaliaHeader";
 import { EntidadeRelacionadaCard } from "@/components/insights-ia/anomalia/EntidadeRelacionadaCard";
 import { HistoricoContextualCard } from "@/components/insights-ia/anomalia/HistoricoContextualCard";
@@ -29,6 +30,7 @@ export default function AnomaliaDetalhe() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data, isLoading, isFetching, error, refetch } = useAnomaliaDetalhe(id);
+  useRefetchAnomaliasOnFocus(id);
   const [slow, setSlow] = useState(false);
   const [verySlow, setVerySlow] = useState(false);
 
