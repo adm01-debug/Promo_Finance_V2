@@ -1,89 +1,63 @@
 
 
-## Plano — Revogação local reforçada no logout (cookies + storage do app)
+## Plano — Filtro de claims + rastreamento de regras aplicadas no Sandbox SSO
 
 ### Diagnóstico
 
-Hoje `signOut()` em `useAuth.tsx` faz:
-1. Chama `sso-logout` (se SSO).
-2. Broadcasta SLO para outras abas.
-3. `supabase.auth.signOut()` — limpa o token Supabase em `localStorage`.
-4. Reseta state local (user, session, profile, role).
-5. Redireciona para `ssoLogoutUrl` se existir.
-
-**Lacunas**:
-- `localStorage` ainda contém artefatos do app: `current-empresa-id`, `sso-slo-toast-shown`, `sso-slo-done-shown`, filtros salvos, preferências de UI, caches do React Query persistidos, flags de onboarding, `ip-mask-preference`, etc.
-- `sessionStorage` mantém estado de navegação/wizard.
-- Cookies não-HttpOnly do app (se houver) permanecem.
-- O `QueryClient` do TanStack mantém em memória todos os dados sensíveis já carregados (contas, clientes, lançamentos) — se o redirect SSO falhar ou a aba só voltar ao `/auth`, qualquer navegação rápida pode renderizar dados em cache antes do guard fechar a rota.
-- IndexedDB (usado pelo SW Workbox para cache de respostas) pode reter respostas autenticadas.
-- O `revokeSession` em `user_sessions` não é chamado no logout — a sessão fica marcada como ativa no banco.
-
-A `useSessions().revokeSession` já existe e marca `revoked=true`. Falta integrar.
+O `SSOSandboxPanel` hoje:
+- Mostra o JSON de claims inteiro num `Textarea`, sem foco em uma claim específica.
+- O painel "Resultado" exibe `resolved_role` e `matched_group`, mas **não diz qual claim do JSON foi consumida** para email/nome/grupos, nem qual regra de `claim_mapping` casou, nem por que as outras `role_mappings` foram **descartadas**.
+- A edge `sso-test-login` retorna o resultado final mas não expõe a "trilha" da decisão (só `matched_group`).
 
 ### Comportamento
 
-1. Criar utilitário central `src/lib/auth-cleanup.ts` que executa em ordem:
-   - **a. QueryClient.clear()** — limpa todo o cache em memória (impede flash de dados sensíveis na próxima rota).
-   - **b. Limpar `localStorage`** com allowlist: preserva apenas chaves não-sensíveis explicitamente listadas (`theme`, `language`, `cookie-consent`, `ip-mask-preference`). Tudo o mais é removido — incluindo `current-empresa-id`, qualquer chave começando com `sb-` (token Supabase residual), `lovable-`, `react-query-`, `sso-slo-*`, filtros salvos, wizard state, etc.
-   - **c. Limpar `sessionStorage`** completamente (`sessionStorage.clear()`).
-   - **d. Limpar cookies não-HttpOnly do app** com `path=/` para o `document.domain` atual: itera `document.cookie.split(';')` e expira cada um com `Max-Age=0; path=/; domain=<host>` e variantes (sem domain, com `.domain`). Cookies HttpOnly do Supabase são geridos pelo `auth.signOut()`.
-   - **e. Limpar caches do Service Worker** que possam ter respostas autenticadas: `caches.keys()` + `caches.delete()` para caches que casam com padrões de API (`/rest/v1/`, `/functions/v1/`, `api-cache-*`, `runtime-*`). Preserva caches estáticos (`precache-*`, `static-*`).
-   - **f. Limpar IndexedDB de runtime**: `indexedDB.databases?.()` e deletar bancos cujo nome casa com padrões dinâmicos (`workbox-*`, `keyval-store`, `lovable-cache`). Try/catch envolvendo cada delete.
-   - **g. Disparar evento global** `window.dispatchEvent(new Event('app-logout-cleanup'))` para que outros hooks (ex.: `useUserEmpresas`, listeners de empresa) resetem seu state in-memory.
-   - Cada etapa em try/catch isolado — falha de uma não bloqueia as demais. Logs via `logger.warn`.
+1. **Chips "Claim em foco"** acima do `Textarea` (esquerda): `Tudo` (default), `email`, `name`, `groups`, `domain`. Ao escolher, o painel direito ganha um card `<ClaimFocusCard />` no topo destacando:
+   - O **caminho da claim** no JSON segundo o `claim_mapping` em uso (ex.: `claim_mapping.email = "preferred_username"`).
+   - O **valor bruto** lido das `mock_claims` para essa chave (ou "(não encontrada)").
+   - O **valor normalizado** que entrou na decisão (email lowercased, groups como array, domain extraído).
+   - Para `groups`: lista cada item com badge verde no(s) que casou(aram) com algum role mapping e cinza nos demais.
 
-2. Atualizar `src/hooks/useAuth.tsx` `signOut()`:
-   - Antes de `supabase.auth.signOut()`: tentar revogar a sessão ativa em `user_sessions` (best-effort) — chama nova mutation pequena inline, marcando `revoked=true, revoked_at=now()` para a sessão `is_current=true` do `user.id`.
-   - Após `supabase.auth.signOut()` e antes do redirect: chamar `await runAuthCleanup(queryClient)`.
-   - Se `ssoLogoutUrl` existir: `window.location.replace(ssoLogoutUrl)` (em vez de `href` — não deixa entrada no history que permitiria voltar).
-   - Se não houver SSO logout URL: `window.location.replace('/auth')` para forçar bootstrap completo da aplicação (descarta tudo o que está em memória React).
+2. **Card "Regras aplicadas"** (direita, sempre visível após simular):
+   - **Claim mapping aplicado**: tabela `Campo lógico → Claim no JWT → Valor obtido`, com badge `aplicado`/`vazio`. Permite ver que `email` veio de `preferred_username` e não de `email`.
+   - **Role mappings avaliados**: lista ordenada de TODAS as regras `idp_group:app_role` cadastradas no provider, cada uma com badge:
+     - `✓ aplicada` (verde) — primeira que casou.
+     - `○ ignorada (regra anterior já casou)` (cinza) — regras subsequentes que também casariam.
+     - `✗ não casou` (outline) — grupo não está nos grupos do usuário.
+   - Sinaliza também quando o **`default_role`** prevaleceu (badge "fallback aplicado").
 
-3. Atualizar o handler de `subscribeSsoSlo` (outras abas que recebem broadcast):
-   - Após `supabase.auth.signOut({ scope: 'local' })`, chamar também `runAuthCleanup(queryClient)`.
-   - Continua o `window.location.replace('/auth?slo=ok&from=tab-sync')` — o full reload já garantiria reset, mas o cleanup elimina dados sensíveis durante a janela entre o handler e o reload.
-
-4. Expor `queryClient` ao `useAuth`:
-   - `useAuth.tsx` importa `useQueryClient` do `@tanstack/react-query` e captura no provider.
-   - Passa para `runAuthCleanup` em ambos os caminhos (signOut próprio e listener de outra aba).
-
-5. Garantir o redirect duro:
-   - Substituir os atuais `window.location.href = ssoLogoutUrl` por `window.location.replace(...)` para eliminar a entrada do history; após o logout, "Voltar" do navegador não pode reentrar na rota protegida com state ainda em memória.
-   - Quando não há SSO, hoje o código não redireciona explicitamente (deixa o `ProtectedRoute` reagir). Passar a forçar `window.location.replace('/auth')` para descarregar o bundle React e seu estado.
+3. **Filtros de visualização** (cliente-only) acima do card "Regras aplicadas": chips `Todas`/`Aplicadas`/`Ignoradas`/`Sem match` + busca livre por nome de grupo IdP.
 
 ### Detalhes técnicos
 
-- ➕ **`src/lib/auth-cleanup.ts`** (~80 linhas):
-  - `export const PRESERVED_LOCAL_KEYS = new Set(['theme','language','cookie-consent','ip-mask-preference'])`
-  - `export async function runAuthCleanup(queryClient?: QueryClient): Promise<void>` com as 7 etapas acima, cada uma em `try/catch` independente.
-  - Helper interno `clearCookies()` que itera `document.cookie` e expira cada nome com 3 combinações de path/domain.
-  - Helper interno `clearRuntimeCaches()` baseado em padrões regex (`/^(workbox-runtime|api-cache|runtime-)/i`).
+- ✏️ **`supabase/functions/sso-test-login/index.ts`** — adicionar ao `preview`:
+  - `claim_mapping_used: { email, full_name, groups }` — chaves efetivamente usadas (com fallbacks resolvidos).
+  - `claim_values: { email_raw, full_name_raw, groups_raw }` — valor bruto extraído de `mock_claims` antes da normalização.
+  - `role_mappings_evaluated: Array<{ idp_group, app_role, status: 'matched' | 'skipped' | 'no_match', ordem }>` — lista completa em ordem.
+  - `default_role_used: boolean`.
+  - Substituir o loop atual de `role_mappings` por um que percorre todos e marca status. Sem breaking changes — só campos novos opcionais.
 
-- ✏️ **`src/hooks/useAuth.tsx`**:
-  - Importar `useQueryClient` e `runAuthCleanup`.
-  - No `AuthProvider`: `const queryClient = useQueryClient();`
-  - Em `signOut`: best-effort `update user_sessions set revoked=true where user_id=user.id and is_current=true and revoked=false`; depois `auth.signOut()`; depois `await runAuthCleanup(queryClient)`; depois `window.location.replace(ssoLogoutUrl ?? '/auth')`.
-  - No listener de `subscribeSsoSlo`: incluir `await runAuthCleanup(queryClient)` antes do `window.location.replace`.
-  - Remover os `setUser(null)` etc. que precedem o redirect — são inúteis dado o full reload, mas mantidos comentados não — vamos simplesmente remover para evitar render intermediário.
+- ✏️ **`SSOSandboxPanel.tsx`**:
+  - Atualizar tipo `SimulationResult`.
+  - Estado `focusClaim`, `mappingFilter`, `mappingSearch`.
+  - Chips de focus claim acima do `Textarea`.
+  - `<ClaimFocusCard />` no topo do painel de resultado, antes dos `<Step />`.
+  - `<RulesAppliedCard />` após os `<Step />`, antes do `Collapsible` JSON.
+  - Linha extra no Step "Resolução de papel" quando `default_role_used`.
 
-- ✏️ **Sem mudança** em `sso-logout/index.ts`, `Auth.tsx`, `sso-sync.ts`, `useSessions.ts`. A revogação de sessão é inline para evitar dependência de hook (que exige React).
-
-- O `QueryClient` é único (importado de `src/lib/queryClient.ts` e injetado no `App.tsx`); `useQueryClient` retorna a instância correta. Se algum cenário sem provider, o `runAuthCleanup` aceita undefined e pula a etapa.
+- Tudo coeso no mesmo arquivo; se ultrapassar ~450 linhas, extraio para `src/components/admin/sso/sandbox/`.
 
 ### Critério de pronto
 
-1. Após "Sair", `localStorage` contém apenas as chaves da allowlist; tudo o mais foi removido (verificável no DevTools).
-2. `sessionStorage` está vazio.
-3. Cookies não-HttpOnly do app foram expirados (verificável em Application → Cookies).
-4. `caches.keys()` em runtime patterns retorna vazio para os padrões dinâmicos; caches estáticos do PWA permanecem.
-5. Após o logout, "Voltar" do navegador (history) não restaura uma rota protegida com dados visíveis — abre `/auth`.
-6. `user_sessions` da sessão atual fica com `revoked=true` no banco.
-7. Em outras abas (broadcast SLO), o cleanup também roda antes do reload.
-8. Sem regressão para usuários **não-SSO**: o cleanup roda igual, e o redirect final é `/auth`.
-9. Falha em qualquer etapa do cleanup (ex.: `caches` indisponível em alguns browsers) não impede a conclusão do logout — apenas log de warning.
+1. Chips de claim em foco renderizam acima do JSON e funcionam antes de simular (mostram só o caminho do mapping).
+2. "Claim em foco = email" mostra: chave usada, valor bruto, valor normalizado.
+3. "Claim em foco = groups" lista cada grupo do usuário com badge indicando se casou em algum role mapping.
+4. Card "Regras aplicadas" lista todas as regras com badges `aplicada`/`ignorada`/`sem match` na ordem cadastrada.
+5. Filtro `Aplicadas` reduz a lista para apenas a regra que casou.
+6. Quando ninguém casa, UI sinaliza "fallback default_role aplicado".
+7. Edge continua compatível com chamadas antigas.
 
 ### Arquivos
 
-- ➕ `src/lib/auth-cleanup.ts`
-- ✏️ `src/hooks/useAuth.tsx`
+- ✏️ `supabase/functions/sso-test-login/index.ts`
+- ✏️ `src/components/admin/sso/SSOSandboxPanel.tsx`
 
