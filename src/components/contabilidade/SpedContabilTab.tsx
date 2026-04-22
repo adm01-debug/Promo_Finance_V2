@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Download, FileText, AlertTriangle, CheckCircle2, ShieldAlert, FileArchive, Wand2, Send, FileSearch, ChevronDown, ChevronRight, ScrollText, XCircle, Hash, Lock, Unlock } from 'lucide-react';
+import { Download, FileText, AlertTriangle, CheckCircle2, ShieldAlert, FileArchive, Wand2, Send, FileSearch, ChevronDown, ChevronRight, ScrollText, XCircle, Hash, Lock, Unlock, Loader2, Clock, PlayCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { useSpedContabilHistorico, useRegistrarTransmissaoSped } from '@/hooks/useSpedContabil';
+import { useSpedContabilHistorico, useRegistrarTransmissaoSped, useGerarSpedContabil } from '@/hooks/useSpedContabil';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { SpedEcdWizard } from './SpedEcdWizard';
@@ -61,9 +61,43 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
   const [validacoesArquivo, setValidacoesArquivo] = useState<HistoricoRow | null>(null);
   const [reciboInput, setReciboInput] = useState('');
   const [expandedAudit, setExpandedAudit] = useState<Set<string>>(new Set());
+  const [exportStatus, setExportStatus] = useState<'idle' | 'queued' | 'processing' | 'done' | 'error'>('idle');
   const transmitir = useRegistrarTransmissaoSped();
+  const gerarSped = useGerarSpedContabil();
   const { data: historico = [], isLoading } = useSpedContabilHistorico(empresaId);
   const historicoTipo = (historico as unknown as HistoricoRow[]).filter((h) => h.tipo === tipo);
+
+  const handleGerarExportar = async () => {
+    if (!empresaId) return;
+    setExportStatus('queued');
+    // breve estado "em fila" para feedback visual antes da chamada
+    await new Promise((r) => setTimeout(r, 350));
+    setExportStatus('processing');
+    try {
+      await gerarSped.mutateAsync({ empresaId, anoCalendario: ano, tipo });
+      setExportStatus('done');
+      setTimeout(() => setExportStatus('idle'), 4000);
+    } catch {
+      setExportStatus('error');
+      setTimeout(() => setExportStatus('idle'), 5000);
+    }
+  };
+
+  const exportButton = (() => {
+    const base = 'flex-1';
+    switch (exportStatus) {
+      case 'queued':
+        return { icon: <Clock className="mr-2 h-4 w-4" />, label: 'Em fila…', disabled: true, variant: 'secondary' as const, className: cn(base, 'bg-muted text-muted-foreground') };
+      case 'processing':
+        return { icon: <Loader2 className="mr-2 h-4 w-4 animate-spin" />, label: 'Processando…', disabled: true, variant: 'secondary' as const, className: cn(base, 'bg-primary/10 text-primary') };
+      case 'done':
+        return { icon: <CheckCircle2 className="mr-2 h-4 w-4" />, label: 'Concluído', disabled: false, variant: 'default' as const, className: cn(base, 'bg-success hover:bg-success text-white') };
+      case 'error':
+        return { icon: <AlertTriangle className="mr-2 h-4 w-4" />, label: 'Falhou — tentar novamente', disabled: false, variant: 'destructive' as const, className: base };
+      default:
+        return { icon: <PlayCircle className="mr-2 h-4 w-4" />, label: `Gerar/Exportar SPED ${tipo}`, disabled: false, variant: 'default' as const, className: base };
+    }
+  })();
 
   const toggleAudit = (id: string) => {
     setExpandedAudit((prev) => {
@@ -211,12 +245,38 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                   Pré-visualizar
                 </Button>
               )}
-              <Button disabled={!empresaId} onClick={() => setWizardOpen(true)} className="flex-1">
+              <Button disabled={!empresaId} variant="outline" onClick={() => setWizardOpen(true)} className="flex-1">
                 <Wand2 className="mr-2 h-4 w-4" />
                 Abrir wizard · {ano}
               </Button>
+              <Button
+                disabled={!empresaId || exportButton.disabled}
+                onClick={handleGerarExportar}
+                variant={exportButton.variant}
+                className={exportButton.className}
+              >
+                {exportButton.icon}
+                {exportButton.label}
+              </Button>
             </div>
           </div>
+
+          {exportStatus !== 'idle' && (
+            <div
+              className={cn(
+                'flex items-center gap-2 rounded-md border px-3 py-2 text-xs animate-fade-in',
+                exportStatus === 'queued' && 'border-muted-foreground/20 bg-muted/30 text-muted-foreground',
+                exportStatus === 'processing' && 'border-primary/30 bg-primary/5 text-primary',
+                exportStatus === 'done' && 'border-success/30 bg-success/5 text-success',
+                exportStatus === 'error' && 'border-destructive/30 bg-destructive/5 text-destructive',
+              )}
+            >
+              {exportStatus === 'queued' && <><Clock className="h-3.5 w-3.5" /><span>Em fila — preparando geração do SPED {tipo} para o ano {ano}.</span></>}
+              {exportStatus === 'processing' && <><Loader2 className="h-3.5 w-3.5 animate-spin" /><span>Processando — gerando arquivo SPED {tipo} ({ano}). Isso pode levar alguns segundos.</span></>}
+              {exportStatus === 'done' && <><CheckCircle2 className="h-3.5 w-3.5" /><span>Concluído — arquivo disponível no histórico abaixo e aberto em nova aba.</span></>}
+              {exportStatus === 'error' && <><AlertTriangle className="h-3.5 w-3.5" /><span>Falha na geração — verifique o histórico para detalhes ou tente novamente.</span></>}
+            </div>
+          )}
 
           <Alert variant="warning" title="Arquivo preliminar">
             <div className="flex items-start gap-2">
