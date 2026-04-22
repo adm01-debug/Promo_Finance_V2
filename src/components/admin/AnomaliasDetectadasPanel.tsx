@@ -46,6 +46,11 @@ import { ReabrirAnomaliaDialog } from "@/components/insights-ia/anomalia/Reabrir
 import { dispatchOpenAnomaliaDrawer } from "@/lib/anomalia-routes";
 import { SavedFiltersBar } from "@/components/shared/SavedFiltersBar";
 import {
+  AdvancedSearchPopover,
+  type SearchSuggestion,
+  type SeverityPreview,
+} from "@/components/shared/AdvancedSearchPopover";
+import {
   ViewExportButton,
   type ViewExportColumn,
 } from "@/components/shared/ViewExportButton";
