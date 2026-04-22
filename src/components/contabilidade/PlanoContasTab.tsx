@@ -132,6 +132,15 @@ export function PlanoContasTab({ empresaId }: Props) {
         )}
         {filtered.length > 200 && <p className="text-xs text-muted-foreground">Exibindo 200 de {filtered.length} contas. Refine a busca.</p>}
       </CardContent>
+
+      <Dialog open={auditOpen} onOpenChange={setAuditOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Auditoria de códigos referenciais CFC</DialogTitle>
+          </DialogHeader>
+          <AuditoriaCFCPanel resultado={auditoria} empresa={empresa} />
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
