@@ -105,15 +105,27 @@ export function AnomaliaHistoricoSection({ anomaliaId }: Props) {
     }
   };
 
+  const reopenCount = useMemo(() => entries.filter(isReopen).length, [entries]);
+
   return (
     <div className="rounded-lg border bg-card">
       <div className="flex items-center justify-between p-4 border-b">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <History className="h-4 w-4 text-muted-foreground" />
           <h3 className="text-sm font-semibold">Histórico de mudanças</h3>
           {entries.length > 0 && (
             <Badge variant="secondary" className="text-xs">
               {entries.length}
+            </Badge>
+          )}
+          {reopenCount > 0 && (
+            <Badge
+              variant="outline"
+              className="text-xs gap-1 border-primary/40 text-primary"
+              title={`Esta anomalia foi reaberta ${reopenCount} vez(es)`}
+            >
+              <RotateCcw className="h-3 w-3" />
+              {reopenCount} reabertura{reopenCount === 1 ? "" : "s"}
             </Badge>
           )}
         </div>
