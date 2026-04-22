@@ -126,6 +126,7 @@ export function ScimSetupGuide() {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
     const start = performance.now();
+    let finalResult: TestResult | null = null;
     try {
       const res = await fetch(url, {
         method: 'GET',
@@ -134,42 +135,52 @@ export function ScimSetupGuide() {
       });
       const latencyMs = Math.round(performance.now() - start);
       if (!res.ok) {
-        setResult({
+        finalResult = {
           ok: false,
           status: res.status,
           latencyMs,
           message: `Endpoint respondeu HTTP ${res.status} ${res.statusText}`,
           hint: res.status >= 500 ? 'Servidor SCIM com falha — verifique logs da edge function scim-server.' : undefined,
-        });
+        };
         return;
       }
       const json = await res.json().catch(() => null);
       const schemas: string[] = Array.isArray(json?.schemas) ? json.schemas : [];
       if (!schemas.includes(SCIM_SP_CONFIG_SCHEMA)) {
-        setResult({
+        finalResult = {
           ok: false,
           status: res.status,
           latencyMs,
           message: 'Resposta 200 mas o payload não é um ServiceProviderConfig SCIM 2.0 válido.',
           hint: 'Verifique se a URL aponta para /scim/v2/ServiceProviderConfig.',
-        });
+        };
         return;
       }
-      setResult({ ok: true, status: res.status, latencyMs });
+      finalResult = { ok: true, status: res.status, latencyMs };
     } catch (err) {
       const latencyMs = Math.round(performance.now() - start);
       const isAbort = (err as Error)?.name === 'AbortError';
-      setResult({
+      finalResult = {
         ok: false,
         latencyMs,
         message: isAbort ? 'Timeout: o endpoint não respondeu em 8s.' : `Falha ao conectar: ${(err as Error).message}`,
         hint: isAbort
           ? 'Tente novamente ou verifique a saúde da edge function scim-server.'
           : 'Se o erro for de CORS/rede, lembre que IdPs (Azure AD, Okta) chamam o endpoint a partir de servidores externos — esse teste local pode falhar mesmo com endpoint saudável em produção.',
-      });
+      };
     } finally {
       clearTimeout(timeout);
       setTesting(false);
+      if (finalResult) {
+        setResult(finalResult);
+        pushHistory({
+          timestamp: Date.now(),
+          ok: finalResult.ok,
+          status: finalResult.status,
+          latencyMs: finalResult.latencyMs,
+          message: finalResult.ok ? undefined : finalResult.message,
+        });
+      }
     }
   };
 
