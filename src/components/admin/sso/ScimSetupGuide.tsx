@@ -376,6 +376,7 @@ export function ScimSetupGuide() {
               </Alert>
             </CardContent>
           </Card>
+          <ScimUserJsonGenerator />
         </TabsContent>
       </Tabs>
     </div>
