@@ -107,7 +107,7 @@ export function useRealtimeAnomalias() {
               switch (k) {
                 case "drill_down":
                   return {
-                    label: "Drill-down",
+                    label: "Ver detalhes",
                     onClick: () => dispatchOpenAnomaliaDrawer(a.id),
                   };
                 case "abrir_pagina":
