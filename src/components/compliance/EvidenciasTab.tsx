@@ -5,8 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Label } from "@/components/ui/label";
-import { Package, Download, Loader2, FileArchive, FileSpreadsheet, FileText, X, Filter } from "lucide-react";
+import { Package, Download, Loader2, FileArchive, FileSpreadsheet, FileText } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
