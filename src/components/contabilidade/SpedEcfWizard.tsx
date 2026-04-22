@@ -347,6 +347,62 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                 </Button>
               </div>
 
+              {errosLista.length > 0 && (
+                <Alert variant="error">
+                  <AlertTitle className="flex items-center gap-2">
+                    <XCircle className="h-4 w-4" /> {errosLista.length} erro(s) encontrado(s)
+                  </AlertTitle>
+                  <AlertDescription>
+                    <ScrollArea className="max-h-48 mt-2 rounded-md border border-destructive/20 bg-destructive/5 p-2">
+                      <ul className="space-y-1.5">
+                        {errosLista.map((erro, i) => (
+                          <motion.li
+                            key={i}
+                            initial={{ opacity: 0, x: -6 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.03, duration: 0.2 }}
+                            className="flex items-start gap-2 text-xs"
+                          >
+                            <Badge variant="outline" className="border-destructive/40 text-destructive shrink-0 h-5 px-1.5 text-[10px] font-mono">
+                              {String(i + 1).padStart(2, '0')}
+                            </Badge>
+                            <span className="leading-snug">{erro}</span>
+                          </motion.li>
+                        ))}
+                      </ul>
+                    </ScrollArea>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {avisosLista.length > 0 && (
+                <Alert variant="warning">
+                  <AlertTitle className="flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4" /> {avisosLista.length} aviso(s)
+                  </AlertTitle>
+                  <AlertDescription>
+                    <ScrollArea className="max-h-40 mt-2 rounded-md border border-warning/20 bg-warning/5 p-2">
+                      <ul className="space-y-1.5">
+                        {avisosLista.map((aviso, i) => (
+                          <motion.li
+                            key={i}
+                            initial={{ opacity: 0, x: -6 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.03, duration: 0.2 }}
+                            className="flex items-start gap-2 text-xs"
+                          >
+                            <Badge variant="outline" className="border-warning/40 text-warning shrink-0 h-5 px-1.5 text-[10px] font-mono">
+                              {String(i + 1).padStart(2, '0')}
+                            </Badge>
+                            <span className="leading-snug">{aviso}</span>
+                          </motion.li>
+                        ))}
+                      </ul>
+                    </ScrollArea>
+                  </AlertDescription>
+                </Alert>
+              )}
+
               <div className="rounded-xl border border-border/60 bg-card/60 backdrop-blur-sm p-1">
                 <PreValidacaoSpedPanel resultado={preValidacao} />
               </div>
@@ -369,27 +425,40 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                 </div>
               </div>
 
-              {erros > 0 && (
-                <Alert variant="error" title="Geração bloqueada">
-                  <AlertDescription className="flex items-center gap-2">
-                    <ShieldAlert className="h-4 w-4 animate-pulse" />
-                    Corrija os {erros} erro(s) acima antes de gerar o arquivo.
-                  </AlertDescription>
+              {!podeGerar && motivoBloqueio && (
+                <Alert variant="error">
+                  <AlertTitle className="flex items-center gap-2">
+                    <ShieldAlert className="h-4 w-4 animate-pulse" /> Geração de arquivo bloqueada
+                  </AlertTitle>
+                  <AlertDescription className="mt-1">{motivoBloqueio}</AlertDescription>
                 </Alert>
               )}
 
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setStep(1)}>Voltar</Button>
                 <div className="flex-1" />
-                <Button
-                  onClick={handleGerar}
-                  disabled={!podeGerar || gerar.isPending}
-                  variant={podeGerar ? 'premium' : 'outline'}
-                  className={cn('gap-2', podeGerar && 'hover-scale', !podeGerar && 'cursor-not-allowed')}
-                >
-                  {gerar.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : !podeGerar ? <Lock className="h-4 w-4" /> : <Download className="h-4 w-4" />}
-                  {!podeGerar ? 'Geração bloqueada' : 'Gerar arquivo SPED ECF'}
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span tabIndex={!podeGerar ? 0 : -1}>
+                        <Button
+                          onClick={handleGerar}
+                          disabled={!podeGerar || gerar.isPending}
+                          variant={podeGerar ? 'premium' : 'outline'}
+                          className={cn('gap-2', podeGerar && 'hover-scale', !podeGerar && 'cursor-not-allowed')}
+                        >
+                          {gerar.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : !podeGerar ? <Lock className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+                          {!podeGerar ? 'Geração bloqueada' : 'Gerar arquivo SPED ECF'}
+                        </Button>
+                      </span>
+                    </TooltipTrigger>
+                    {!podeGerar && motivoBloqueio && (
+                      <TooltipContent side="top" className="max-w-xs">
+                        {motivoBloqueio}
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </motion.div>
           )}
