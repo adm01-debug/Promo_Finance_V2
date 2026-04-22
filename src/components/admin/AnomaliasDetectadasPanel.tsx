@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { AnomaliaPreferencesDialog } from "./AnomaliaPreferencesDialog";
 import { BellOff } from "lucide-react";
 import { useAnomaliasCriticasCount } from "@/hooks/useAnomaliasCriticasCount";
-import { CriticasBadgeSilencePopover } from "./CriticasBadgeSilencePopover";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -238,6 +237,16 @@ export function AnomaliasDetectadasPanel() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, sort, bootstrapped]);
+
+  // Salva o search atual para que a página de drill-down possa restaurar
+  // o painel com os mesmos filtros/ordenação ao clicar em "Voltar para a lista".
+  useEffect(() => {
+    if (!bootstrapped) return;
+    window.sessionStorage.setItem(
+      "anomalias-panel:last-search",
+      window.location.search ?? "",
+    );
+  }, [searchParams, bootstrapped]);
 
   const { data, isLoading, atualizarStatus } = useAnomaliasDetectadas(
     filters.status === "todas" ? undefined : filters.status,
@@ -502,7 +511,9 @@ export function AnomaliasDetectadasPanel() {
               <AlertTriangle className="h-5 w-5 text-warning" />
               Anomalias detectadas
               {criticasCount > 0 && (
-                <CriticasBadgeSilencePopover count={criticasCount} />
+                <Badge variant="destructive" className="ml-1" aria-live="polite">
+                  {criticasCount} crítica{criticasCount > 1 ? "s" : ""}
+                </Badge>
               )}
             </CardTitle>
             <div className="flex items-center gap-2 flex-wrap">
@@ -862,17 +873,13 @@ export function AnomaliasDetectadasPanel() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() =>
-                          atualizarStatus.mutate(
-                            { id: a.id, status: "investigando" },
-                            {
-                              onSettled: () =>
-                                navigate(
-                                  `/admin/insights-ia/anomalia/${a.id}`,
-                                ),
-                            },
-                          )
-                        }
+                        onClick={() => {
+                          atualizarStatus.mutate({
+                            id: a.id,
+                            status: "investigando",
+                          });
+                          navigate(`/admin/insights-ia/anomalia/${a.id}`);
+                        }}
                         disabled={atualizarStatus.isPending}
                       >
                         <Search className="h-3 w-3 mr-1" /> Investigar

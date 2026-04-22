@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -15,14 +15,21 @@ import { AcoesSugeridasCard } from "@/components/insights-ia/anomalia/AcoesSuger
 
 const SLOW_THRESHOLD_MS = 2_500;
 const VERY_SLOW_THRESHOLD_MS = 8_000;
+export const ANOMALIAS_PANEL_RETURN_KEY = "anomalias-panel:last-search";
+
+function buildVoltarUrl(): string {
+  if (typeof window === "undefined") return "/admin/insights-ia";
+  const search = window.sessionStorage.getItem(ANOMALIAS_PANEL_RETURN_KEY) ?? "";
+  return `/admin/insights-ia${search}`;
+}
 
 export default function AnomaliaDetalhe() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { data, isLoading, isFetching, error, refetch } = useAnomaliaDetalhe(id);
   const [slow, setSlow] = useState(false);
   const [verySlow, setVerySlow] = useState(false);
 
-  // Reseta os timers a cada nova busca
   useEffect(() => {
     if (!isFetching) {
       setSlow(false);
@@ -39,19 +46,32 @@ export default function AnomaliaDetalhe() {
     };
   }, [isFetching, id]);
 
+  const voltarUrl = buildVoltarUrl();
+
   return (
     <MainLayout>
       <div className="container max-w-7xl mx-auto py-6 space-y-6">
-        <div className="flex items-center gap-3">
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/admin/insights-ia">
-              <ArrowLeft className="h-4 w-4 mr-1" /> Voltar
-            </Link>
-          </Button>
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-warning" />
-            <h1 className="text-xl font-bold font-display">Drill-down de anomalia</h1>
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3">
+            <Button asChild variant="ghost" size="sm">
+              <Link to={voltarUrl}>
+                <ArrowLeft className="h-4 w-4 mr-1" /> Voltar
+              </Link>
+            </Button>
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-warning" />
+              <h1 className="text-xl font-bold font-display">
+                Drill-down de anomalia
+              </h1>
+            </div>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate(voltarUrl)}
+          >
+            <ArrowLeft className="h-4 w-4 mr-1" /> Voltar para a lista
+          </Button>
         </div>
 
         {isLoading ? (
@@ -79,7 +99,7 @@ export default function AnomaliaDetalhe() {
                       <RefreshCw className="h-3 w-3 mr-1" /> Tentar novamente
                     </Button>
                     <Button asChild size="sm" variant="ghost">
-                      <Link to="/admin/insights-ia">
+                      <Link to={voltarUrl}>
                         <ArrowLeft className="h-3 w-3 mr-1" /> Voltar à lista
                       </Link>
                     </Button>
@@ -113,7 +133,7 @@ export default function AnomaliaDetalhe() {
                   <RefreshCw className="h-3 w-3 mr-1" /> Tentar novamente
                 </Button>
                 <Button asChild size="sm" variant="ghost">
-                  <Link to="/admin/insights-ia">
+                  <Link to={voltarUrl}>
                     <ArrowLeft className="h-3 w-3 mr-1" /> Voltar à lista
                   </Link>
                 </Button>
