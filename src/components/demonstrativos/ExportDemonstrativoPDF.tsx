@@ -15,6 +15,17 @@ interface DRELinha {
   tipo: string;
 }
 
+interface ResumoBalanco {
+  totalAtivo: number;
+  totalPassivo: number; // Passivo + PL
+  equilibrado: boolean;
+}
+
+interface ResumoDRE {
+  receitaLiquida?: number;
+  lucroLiquido: number;
+}
+
 interface ExportDemonstrativoPDFProps {
   tipo: 'dre' | 'balanco' | 'fluxo';
   periodo: string;
@@ -22,9 +33,11 @@ interface ExportDemonstrativoPDFProps {
   ano: number;
   empresa: string;
   linhas: DRELinha[];
+  resumoBalanco?: ResumoBalanco;
+  resumoDRE?: ResumoDRE;
 }
 
-export function ExportDemonstrativoPDF({ tipo, periodo, mes, ano, empresa, linhas }: ExportDemonstrativoPDFProps) {
+export function ExportDemonstrativoPDF({ tipo, periodo, mes, ano, empresa, linhas, resumoBalanco, resumoDRE }: ExportDemonstrativoPDFProps) {
   const [exporting, setExporting] = useState(false);
 
   const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
