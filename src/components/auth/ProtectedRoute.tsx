@@ -23,6 +23,7 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children, requiredRoles }: ProtectedRouteProps) {
   const { user, role, isLoading, hasRole } = useAuth();
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
