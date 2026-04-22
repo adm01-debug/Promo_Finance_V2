@@ -209,7 +209,7 @@ export function LancamentosTab({ empresaId, ano }: Props) {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" selected={dataInicio} onSelect={d => { setDataInicio(d); setPreset('custom'); }} initialFocus className={cn('p-3 pointer-events-auto')} />
+              <Calendar mode="single" selected={dataInicio} onSelect={d => { setDataInicio(d); filtersController.setField('preset', 'custom'); }} initialFocus className={cn('p-3 pointer-events-auto')} />
             </PopoverContent>
           </Popover>
 
@@ -221,15 +221,20 @@ export function LancamentosTab({ empresaId, ano }: Props) {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" selected={dataFim} onSelect={d => { setDataFim(d); setPreset('custom'); }} initialFocus className={cn('p-3 pointer-events-auto')} />
+              <Calendar mode="single" selected={dataFim} onSelect={d => { setDataFim(d); filtersController.setField('preset', 'custom'); }} initialFocus className={cn('p-3 pointer-events-auto')} />
             </PopoverContent>
           </Popover>
 
-          {filtrosAtivos && (
-            <Button variant="ghost" size="sm" onClick={limparFiltros} className="gap-1">
-              <X className="h-3.5 w-3.5" />Limpar
-            </Button>
-          )}
+          <ClearFiltersButton
+            controller={filtersController}
+            entityLabel="lançamentos contábeis"
+            describeFilters={(v) => [
+              { label: 'Busca', value: v.busca, isActive: !!v.busca },
+              { label: 'Período', value: v.preset, isActive: v.preset !== 'all' },
+              { label: 'Data início', value: v.dataInicio, isActive: !!v.dataInicio },
+              { label: 'Data fim', value: v.dataFim, isActive: !!v.dataFim },
+            ]}
+          />
 
           <div className="ml-auto text-xs text-muted-foreground">
             {lancsFiltrados.length} de {lancs.length} {lancs.length === 1 ? 'lançamento' : 'lançamentos'}
