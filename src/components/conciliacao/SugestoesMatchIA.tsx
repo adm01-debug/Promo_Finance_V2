@@ -166,9 +166,13 @@ export function SugestoesMatchIA({
       await registrarHistorico.mutateAsync({ transacaoId, lancamentoId: sugestao.lancamentoId, tipoLancamento: sugestao.lancamentoTipo, score: sugestao.score, confianca: sugestao.confianca, motivos: sugestao.motivos, analiseIA: sugestao.analiseIA, acao: 'rejeitado' });
       await registrarFeedback.mutateAsync({ transacaoId, transacaoDescricao, lancamentoEntidade: sugestao.lancamento?.entidade || '', lancamentoDescricao: sugestao.lancamento?.descricao, tipoLancamento: sugestao.lancamentoTipo, scoreOriginal: sugestao.score, acao: 'rejeitado', motivoRejeicao: motivo || undefined });
       if (motivo.trim()) {
-        toast.success('Rejeição registrada — IA aprenderá com este feedback');
+        toast.success('Feedback registrado com sucesso', {
+          description: `Motivo salvo no banco — a IA aprenderá com: "${motivo.trim().slice(0, 80)}${motivo.trim().length > 80 ? '...' : ''}"`,
+        });
       } else {
-        toast.info('Rejeição registrada');
+        toast.success('Rejeição registrada com sucesso', {
+          description: 'Sugestão removida e feedback salvo no banco para refinar a IA.',
+        });
       }
     } catch {
       // Reverte a remoção otimista em caso de falha
