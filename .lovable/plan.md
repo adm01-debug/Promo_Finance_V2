@@ -1,99 +1,85 @@
 
 
-## Plano — Validação de consistência do editor SSO
+## Plano — Modo Bulk no Sandbox SSO
 
 ### Diagnóstico
 
-Hoje o `SSOWizardDialog` salva `claim_mapping`, `allowed_domains` e `role_mappings` sem checar conflitos lógicos entre eles. Problemas reais que passam batido:
+Hoje a aba **Simular** do `SSOSandboxPanel` testa 1 conjunto de claims por vez. Para validar mudanças de `claim_mapping`/`role_mappings` contra todo o time, o admin precisa rodar N simulações manuais. A edge `sso-test-login` já é idempotente e devolve um `preview` rico — falta um runner em lote no front + uma visão agregada.
 
-- `claim_mapping.email` vazio ou apontando para chave que nenhum preset emite (ex.: `mail` em Azure quando o IdP entrega `preferred_username`).
-- `allowed_domains` vazio com `auto_provision_users=true` → qualquer pessoa do mundo entra via JIT.
-- `allowed_domains` com domínios duplicados, com espaços, em maiúsculas, ou inválidos (sem `.`).
-- `role_mappings` com `idp_group` duplicado, `app_role` desconhecido, ordem repetida, ou ZERO mappings + `default_role='admin'` (escalonamento involuntário).
-- `default_role` apontando para papel que não existe no enum (`admin|financeiro|operacional|visualizador`).
-- Nenhum `role_mapping` cobre os grupos comuns do preset (Azure → `Admins-*`, Okta → `Operacional`) → todo mundo cai no `default_role`, "rota sem correspondência".
-- `force_sso_for_domains=true` mas `allowed_domains` vazio → flag inerte.
-- `claim_mapping.groups` definido, mas zero `role_mappings` cadastrados → grupos vêm e são descartados.
+### Comportamento
 
-### Solução
+Nova terceira aba **"Lote"** ao lado de Simular / Histórico, com:
 
-**1. Lib pura `src/lib/sso/consistency.ts`** com função `validateSSOConfig(config) → Issue[]`:
+1. **Entrada de usuários** (qualquer um destes):
+   - Editor JSON: array de objetos de claims (`[{email,name,groups}, ...]`).
+   - Importar CSV (cabeçalho na 1ª linha, vírgula `;` ou `,`; coluna `groups` separada por `|`).
+   - Botão "Carregar exemplo" (12 usuários sintéticos cobrindo: admin, financeiro, sem grupo, domínio bloqueado, e-mail malformado, grupos múltiplos).
+   - Validador inline: contagem de linhas válidas / erros de parsing.
 
-```ts
-type Severity = 'error' | 'warning' | 'info';
-type Scope = 'claim_mapping' | 'allowed_domains' | 'role_mappings' | 'default_role' | 'global';
+2. **Configuração** reaproveita os mesmos controles da aba Simular:
+   - Provider + `useProviderConfig`, OU bloco manual (claim_mapping, allowed_domains, role_mappings, default_role).
+   - Limite hard-coded: máx **200 usuários** por execução (proteção contra abuso da edge).
 
-interface Issue {
-  id: string;            // 'cm.email.missing', 'rm.duplicate.group', etc.
-  severity: Severity;
-  scope: Scope;
-  field?: string;        // 'allowed_domains[2]', 'role_mappings[0].idp_group'
-  message: string;       // pt-BR, curta
-  hint?: string;         // sugestão acionável
-  autofix?: { label: string; patch: Partial<SSOConfig> };
-}
-```
+3. **Execução**:
+   - Botão "Executar lote" dispara chamadas paralelas à `sso-test-login` em **batches de 5** (concurrency limit) com barra de progresso `processados/total`.
+   - Cada chamada reusa o mesmo `payload` exceto `mock_claims`.
+   - Falhas HTTP/network viram linha com `outcome='erro_rede'` no resumo (não derrubam o lote).
+   - Botão "Cancelar" interrompe próximos batches (in-flight terminam).
 
-Regras implementadas (~15):
+4. **Resumo agregado** (cards no topo + tabela detalhada):
+   - **KPIs**: Total · Seriam criados (JIT) · Já existem · Bloqueados · Sem e-mail · Erros de rede.
+   - **Gráfico de barras horizontais** por motivo de bloqueio (ex.: domínio fora da allowlist, `auto_provision_users=false`, e-mail inválido, sem claim de e-mail).
+   - **Distribuição de papéis resolvidos** (mini-bars: admin/financeiro/operacional/visualizador).
+   - **Cobertura de grupos**: lista de `idp_group` que casou X usuários e regras que ficaram em 0 (sinaliza regra "morta").
 
-| ID | Severidade | Quando |
-|---|---|---|
-| `cm.email.missing` | error | `claim_mapping.email` vazio |
-| `cm.email.unknown_for_preset` | warning | preset=azure e email≠`email`/`preferred_username`/`upn` |
-| `cm.groups.unused` | warning | `claim_mapping.groups` definido + 0 `role_mappings` |
-| `dom.empty_with_jit` | error | `allowed_domains=[]` + `auto_provision_users=true` |
-| `dom.invalid` | error | domínio sem `.`, com espaço, ou regex inválido |
-| `dom.duplicate` | warning | duplicados (case-insensitive) |
-| `dom.case_or_whitespace` | info | tem maiúscula/espaço (com autofix de normalização) |
-| `dom.force_without_domains` | warning | `force_sso_for_domains=true` + `allowed_domains=[]` |
-| `rm.duplicate_group` | error | mesmo `idp_group` 2× |
-| `rm.unknown_role` | error | `app_role` fora do enum |
-| `rm.empty_group` | error | `idp_group` em branco |
-| `rm.coverage_missing` | warning | preset tem grupos comuns esperados não cobertos |
-| `rm.no_admin_route` | info | nenhum mapping resolve para `admin` (intencional?) |
-| `default.privileged` | warning | `default_role='admin'` ou `'financeiro'` (privilege escalation) |
-| `default.unknown` | error | `default_role` fora do enum |
-| `global.no_routes` | warning | 0 `role_mappings` E `default_role` é privilegiado |
+5. **Tabela detalhada por usuário**:
+   - Colunas: linha #, email mascarado, domínio, grupos, papel resolvido, grupo casado, outcome (badge), motivo (se bloqueado).
+   - Filtro por outcome (chips) + busca por email/domínio.
+   - Ações por linha: "Abrir no Simular" (envia esse usuário pra aba Simular preenchendo claims/config) e "Ver detalhes" (sheet com JSON completo, reusa `SandboxRunDetailSheet`).
 
-**2. Hook `useSSOConsistency(config)`** — `useMemo` que retorna `{ issues, errors, warnings, infos, hasBlocker }`. Sem chamadas de rede.
+6. **Persistência (opcional, fire-and-forget)**:
+   - Toggle "Salvar runs no histórico" (default OFF para não poluir): quando ON, cada usuário do lote vira uma `sso_sandbox_runs` marcada com `batch_id` (uuid gerado no client) — permite filtrar o lote inteiro depois no Histórico.
+   - **Migration leve**: adicionar coluna `batch_id uuid NULL` + índice em `sso_sandbox_runs`. Sem mudança em RLS.
 
-**3. Componente `SSOConsistencyPanel`** — card colapsável com:
-- Header: badges contando `N erros · M avisos · K infos` + cor dominante.
-- Lista por severidade, agrupada por escopo, cada item com:
-  - Ícone + mensagem + `field` em mono.
-  - Hint em texto secundário.
-  - Botão "Corrigir" se houver `autofix` (aplica `patch` no estado do form).
-- Filtro por severidade (chips: Tudo / Erros / Avisos / Infos).
-- Estado vazio: "Configuração consistente ✓".
-
-**4. Integração no `SSOWizardDialog`**:
-- Painel renderizado no topo do passo de revisão (e sempre visível como sticky no rodapé do dialog quando há `error`).
-- Botão "Salvar" desabilitado enquanto `hasBlocker=true`, com tooltip "Resolva os erros antes de salvar".
-- Aplicar autofix dispara o mesmo setter do form (sem persistir; usuário ainda revisa).
-- Validação roda em tempo real via `useMemo` sobre o estado do form.
-
-**5. Cobertura de testes** em `src/lib/sso/__tests__/consistency.test.ts`: 1 caso por regra (entrada feliz + entrada que dispara o issue), garantindo IDs estáveis.
-
-### Não-escopo
-
-- Sem mudanças na edge `sso-test-login` nem em migrations.
-- Sem validação online (DNS, MX, JWKS) — só checagem estática local.
-- Sem alteração no fluxo de runtime do login real.
+7. **Exportar resumo**:
+   - Botão "Exportar CSV" baixa `lote-sandbox-{YYYYMMDD-HHmm}.csv` com email mascarado, outcome, papel, grupo casado, motivo — útil pra anexar em ticket/auditoria.
 
 ### Critérios de aceite
 
-1. Editor mostra painel de consistência com contagem ao vivo.
-2. Salvar fica bloqueado se houver `severity='error'`.
-3. Cada regra da tabela acima dispara/cessa conforme o caso.
-4. Autofixes (normalizar domínios, remover duplicados) funcionam em 1 clique.
-5. Configuração 100% válida: painel exibe estado "Configuração consistente".
-6. Testes unitários cobrem todas as regras.
+1. Aba "Lote" carrega exemplo de 12 usuários e executa o lote em <8s (concurrency=5).
+2. KPIs batem com a soma das linhas da tabela detalhada.
+3. Filtros por outcome reduzem a tabela sem refetch.
+4. Cancelar interrompe batches pendentes; barra de progresso reflete corretamente.
+5. CSV exportado abre no Excel/Sheets em UTF-8 (com BOM) sem quebrar acentos.
+6. Quando "Salvar no histórico" ON, todas as runs aparecem em Histórico filtráveis pelo `batch_id` (novo chip de filtro).
+7. Lote acima de 200 usuários é rejeitado com mensagem clara.
+8. Erros HTTP de uma linha não impedem o restante do lote.
+9. "Abrir no Simular" preenche provider, config e claims daquele usuário e troca de aba — sem auto-simular.
+
+### Detalhes técnicos
+
+- **Runner**: `src/lib/sso/sandbox-bulk-runner.ts` — função `runBulk(users, basePayload, { concurrency, signal, onProgress })` retorna `Promise<BulkResult[]>`. Usa `AbortController` p/ cancelamento. Concurrency via fila simples (sem `p-limit`).
+- **CSV**: parser próprio simples (`papaparse` não está no projeto e CSV aqui é trivial — header fixo `email,name,groups,...`).
+- **Aggregator**: `src/lib/sso/sandbox-bulk-aggregator.ts` — recebe `BulkResult[]` e devolve `{ counts, byBlockReason, byRole, groupCoverage }`.
+- **Histórico filter**: `useSSOSandboxRuns` ganha `batchId?` (filtro `eq('batch_id', ...)`).
+
+### Não-escopo
+
+- Sem mudanças na edge `sso-test-login` (ela já entrega tudo necessário).
+- Sem rate-limit server-side novo — a edge já valida admin por chamada.
+- Sem testes E2E; só unit no aggregator e no parser CSV.
 
 ### Arquivos
 
-- ➕ `src/lib/sso/consistency.ts`
-- ➕ `src/lib/sso/__tests__/consistency.test.ts`
-- ➕ `src/hooks/useSSOConsistency.ts`
-- ➕ `src/components/admin/sso/SSOConsistencyPanel.tsx`
-- ✏️ `src/components/admin/sso/SSOWizardDialog.tsx` (integração + bloqueio do botão Salvar)
+- ➕ migration `sso_sandbox_runs.batch_id` (coluna + índice).
+- ➕ `src/lib/sso/sandbox-bulk-runner.ts`
+- ➕ `src/lib/sso/sandbox-bulk-aggregator.ts`
+- ➕ `src/lib/sso/__tests__/sandbox-bulk-aggregator.test.ts`
+- ➕ `src/lib/sso/sandbox-csv.ts` (parse + export)
+- ➕ `src/lib/sso/__tests__/sandbox-csv.test.ts`
+- ➕ `src/components/admin/sso/sandbox/SandboxBulkPanel.tsx` (entrada + execução + cancelamento)
+- ➕ `src/components/admin/sso/sandbox/SandboxBulkSummary.tsx` (KPIs + barras + cobertura)
+- ➕ `src/components/admin/sso/sandbox/SandboxBulkTable.tsx` (tabela + filtros + ações)
+- ✏️ `src/components/admin/sso/SSOSandboxPanel.tsx` (nova aba "Lote", handler `applyClaims` p/ "Abrir no Simular")
+- ✏️ `src/hooks/useSSOSandboxRuns.ts` (suporte a `batchId` no filtro + persistência opcional)
 
