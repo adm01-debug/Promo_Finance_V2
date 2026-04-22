@@ -262,6 +262,20 @@ export function AnomaliasDetectadasPanel() {
   const sincronizar = useSincronizarAnomaliaBitrix();
   const { data: pendentes = [] } = usePendingAnomaliasQueue();
 
+  // Seleção em lote para reabertura de anomalias confirmadas/falso_positivo
+  const [selecionados, setSelecionados] = useState<Set<string>>(new Set());
+  const [reabrirLoteOpen, setReabrirLoteOpen] = useState(false);
+
+  const toggleSelecionado = (id: string) => {
+    setSelecionados((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+  const limparSelecao = () => setSelecionados(new Set());
+
   // Lista filtrada SEM o termo de busca — usada para gerar sugestões e prévias
   const listaBase = useMemo(() => {
     let arr = data ?? [];
