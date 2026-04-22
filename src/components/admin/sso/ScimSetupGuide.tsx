@@ -13,6 +13,7 @@ import { Progress } from '@/components/ui/progress';
 import { useScimChecklist } from '@/hooks/useScimChecklist';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { ScimUserJsonGenerator } from './ScimUserJsonGenerator';
 
 const SCIM_BASE = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scim-server/scim/v2`;
 
@@ -375,6 +376,7 @@ export function ScimSetupGuide() {
               </Alert>
             </CardContent>
           </Card>
+          <ScimUserJsonGenerator />
         </TabsContent>
       </Tabs>
     </div>
