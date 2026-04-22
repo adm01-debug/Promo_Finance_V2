@@ -143,10 +143,11 @@ export function SandboxBulkPanel({ onOpenInSimulator }: Props) {
               providerId: useProviderConfig && providerId ? providerId : null,
               providerNome: provider?.nome ?? r.result.preview.provider_nome ?? null,
               useProviderConfig,
-              input: { ...base, mock_claims: r.claims, batch_id: batchId },
+              input: { ...base, mock_claims: r.claims },
               result: r.result as never,
               outcome: computeOutcome(r.result as never),
-            } as never, {
+              batchId,
+            }, {
               onError: (e) => console.warn('[bulk] persist failed:', e),
             });
           }
