@@ -8,10 +8,28 @@ import { createClient } from "npm:@supabase/supabase-js";
 await load({ export: true, allowEmptyValues: true, examplePath: null }).catch(() => ({}));
 
 const SUPABASE_URL = Deno.env.get("VITE_SUPABASE_URL") ?? Deno.env.get("SUPABASE_URL")!;
-const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 const SCIM_BASE = `${SUPABASE_URL}/functions/v1/scim-server/scim/v2`;
 
-const admin = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { persistSession: false } });
+// E2E suite seeds empresa/provider/scim_token via service role.
+// When the key isn't exposed (default test runner), the suite registers a single
+// skipped test so the module still loads. Run with SUPABASE_SERVICE_ROLE_KEY set
+// to actually execute the scenarios.
+const HAS_SERVICE_ROLE = SERVICE_ROLE.length > 0;
+const admin = HAS_SERVICE_ROLE
+  ? createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { persistSession: false } })
+  : (null as any);
+
+if (!HAS_SERVICE_ROLE) {
+  Deno.test({
+    name: "SCIM e2e suite — skipped (SUPABASE_SERVICE_ROLE_KEY not set)",
+    ignore: true,
+    fn: () => {},
+  });
+}
+
+const e2eTest = (name: string, fn: () => Promise<void>) =>
+  Deno.test({ name, ignore: !HAS_SERVICE_ROLE, fn });
 
 async function sha256(s: string) {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
