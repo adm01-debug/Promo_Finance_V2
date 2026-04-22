@@ -5,12 +5,14 @@ import { useMemo } from 'react';
 import { useLancamentosContabeis } from '@/hooks/useLancamentosContabeis';
 import { useDemonstrativosContabeis } from '@/hooks/useDemonstrativosContabeis';
 
+import { useAuditoriaCFC } from '@/hooks/useAuditoriaCFC';
+
 export type SeveridadeAlerta = 'error' | 'warning' | 'info';
 
 export interface PreValidacaoAlerta {
   id: string;
   severidade: SeveridadeAlerta;
-  categoria: 'razao' | 'dre' | 'cruzado' | 'cobertura';
+  categoria: 'razao' | 'dre' | 'cruzado' | 'cobertura' | 'cfc';
   titulo: string;
   detalhe: string;
   valor?: number;
@@ -63,9 +65,10 @@ export function usePreValidacaoSped(empresaId: string | undefined, anoCalendario
     mes: 11,
     fonte: 'competencia',
   });
+  const cfc = useAuditoriaCFC(empresaId);
 
   return useMemo<PreValidacaoResult>(() => {
-    const isLoading = loadingLancs || dre.isLoading;
+    const isLoading = loadingLancs || dre.isLoading || cfc.isLoading;
     const alertas: PreValidacaoAlerta[] = [];
 
     const lancamentos = (lancs as LancamentoInline[]) || [];
