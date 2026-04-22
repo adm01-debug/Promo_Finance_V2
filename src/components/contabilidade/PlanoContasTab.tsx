@@ -21,11 +21,13 @@ export function PlanoContasTab({ empresaId }: Props) {
   const [busca, setBusca] = useState('');
   const [open, setOpen] = useState(false);
   const [auditOpen, setAuditOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [form, setForm] = useState({ codigo: '', descricao: '', natureza: 'ativo', tipo: 'analitica', codigo_referencial: '' });
   const { data: contas = [], isLoading } = usePlanoContas(empresaId);
   const { data: empresas = [] } = useEmpresas();
   const empresa = empresas.find((e) => e.id === empresaId);
   const auditoria = useAuditoriaCFC(empresaId);
+  const history = usePlanoContaHistory({ empresaId, limit: 200 });
   const upsert = useUpsertPlanoConta();
 
   const filtered = contas.filter(c =>
