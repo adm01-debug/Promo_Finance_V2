@@ -70,8 +70,16 @@ export function SavedFiltersBar<T>({
   onClear,
 }: SavedFiltersBarProps<T>) {
   const { user, currentEmpresaId } = useAuth();
-  const { filters, defaultFilter, save, remove, setDefault, duplicate, updateSharing } =
-    useSavedFilters<T>(entityType);
+  const {
+    filters,
+    defaultFilter,
+    isLoading: presetsLoading,
+    save,
+    remove,
+    setDefault,
+    duplicate,
+    updateSharing,
+  } = useSavedFilters<T>(entityType);
   const {
     byFilterId: subsByFilter,
     subscribe,
@@ -86,10 +94,28 @@ export function SavedFiltersBar<T>({
   const [makeDefault, setMakeDefault] = useState(false);
   const [shareEnabled, setShareEnabled] = useState(false);
   const [shareRoles, setShareRoles] = useState<AppRole[]>([]);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const [shareDialog, setShareDialog] = useState<SavedFilterRow<T> | null>(null);
   const [shareDialogEnabled, setShareDialogEnabled] = useState(false);
   const [shareDialogRoles, setShareDialogRoles] = useState<AppRole[]>([]);
+  const [shareError, setShareError] = useState<string | null>(null);
+
+  // Estados visuais para feedback por linha (evita cliques repetidos)
+  const [loadingPresetId, setLoadingPresetId] = useState<string | null>(null);
+  const [pendingRemoveId, setPendingRemoveId] = useState<string | null>(null);
+  const [pendingDefaultId, setPendingDefaultId] = useState<string | null>(null);
+  const [pendingDuplicateId, setPendingDuplicateId] = useState<string | null>(
+    null,
+  );
+
+  const anyMutationPending =
+    save.isPending ||
+    remove.isPending ||
+    setDefault.isPending ||
+    duplicate.isPending ||
+    updateSharing.isPending ||
+    !!loadingPresetId;
 
   const activePreset = useMemo(
     () => filters.find((f) => f.id === activePresetId) ?? null,
