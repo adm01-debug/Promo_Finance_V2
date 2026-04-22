@@ -192,14 +192,17 @@ Windows: Get-FileHash trilha-financeira.csv -Algorithm SHA256
     },
     _details: detalhes,
   });
+  let audit_warning: string | null = null;
   if (auditErr) {
-    // Não bloqueia a geração — apenas loga e segue
+    // Não bloqueia a geração — apenas loga, sinaliza ao cliente e segue
     console.error("audit_logs insert falhou:", auditErr.message);
+    audit_warning = `Pacote gerado, mas a trilha de auditoria não foi registrada: ${auditErr.message}`;
+    send("registrar", "Registrando pacote", "concluído (sem audit log)");
+  } else {
+    send("registrar", "Registrando pacote", "concluído");
   }
 
-  send("registrar", "Registrando pacote", "concluído");
-
-  return { ok: true, pacote, signed_url: signed.signedUrl, manifest };
+  return { ok: true, pacote, signed_url: signed.signedUrl, manifest, audit_warning };
 }
 
 async function autenticar(req: Request) {
