@@ -4,30 +4,88 @@ import { useAuth } from "@/hooks/useAuth";
 
 export type Severidade = "baixa" | "media" | "alta" | "critica";
 
+export type ToastAcaoKey =
+  | "drill_down"
+  | "abrir_pagina"
+  | "copiar_id"
+  | "marcar_lida";
+
+export type DrawerAcaoKey =
+  | "abrir_entidade"
+  | "pagina_completa"
+  | "copiar_id"
+  | "marcar_lida";
+
+export type ToastAcoes = Record<ToastAcaoKey, boolean>;
+export type DrawerAcoes = Record<DrawerAcaoKey, boolean>;
+
 export interface AnomaliaPreferences {
   id: string;
   user_id: string;
   toast_enabled: boolean;
+  /** @deprecated mantido por compat — a fonte da verdade agora é toast_severidades_ativas */
   toast_min_severidade: Severidade;
+  toast_severidades_ativas: Severidade[];
+  toast_duracao_segundos: number;
+  toast_acoes: ToastAcoes;
+  drawer_acoes: DrawerAcoes;
   silenciar_ate: string | null;
   centros_custo_silenciados: string[];
   tipos_silenciados: string[];
 }
 
-const SEV_RANK: Record<Severidade, number> = {
-  critica: 0,
-  alta: 1,
-  media: 2,
-  baixa: 3,
+const DEFAULT_TOAST_ACOES: ToastAcoes = {
+  drill_down: true,
+  abrir_pagina: true,
+  copiar_id: false,
+  marcar_lida: false,
 };
+
+const DEFAULT_DRAWER_ACOES: DrawerAcoes = {
+  abrir_entidade: true,
+  pagina_completa: true,
+  copiar_id: false,
+  marcar_lida: false,
+};
+
+export const TOAST_DURACAO_MIN = 3;
+export const TOAST_DURACAO_MAX = 30;
+export const TOAST_DURACAO_DEFAULT = 12;
 
 const DEFAULT_PREFS: Omit<AnomaliaPreferences, "id" | "user_id"> = {
   toast_enabled: true,
   toast_min_severidade: "critica",
+  toast_severidades_ativas: ["critica", "alta"],
+  toast_duracao_segundos: TOAST_DURACAO_DEFAULT,
+  toast_acoes: DEFAULT_TOAST_ACOES,
+  drawer_acoes: DEFAULT_DRAWER_ACOES,
   silenciar_ate: null,
   centros_custo_silenciados: [],
   tipos_silenciados: [],
 };
+
+/** Normaliza um registro do banco preenchendo defaults para colunas novas/legadas. */
+function normalizePrefs(raw: unknown): AnomaliaPreferences {
+  const r = (raw ?? {}) as Partial<AnomaliaPreferences>;
+  return {
+    id: r.id as string,
+    user_id: r.user_id as string,
+    toast_enabled: r.toast_enabled ?? DEFAULT_PREFS.toast_enabled,
+    toast_min_severidade:
+      r.toast_min_severidade ?? DEFAULT_PREFS.toast_min_severidade,
+    toast_severidades_ativas:
+      r.toast_severidades_ativas && r.toast_severidades_ativas.length > 0
+        ? r.toast_severidades_ativas
+        : DEFAULT_PREFS.toast_severidades_ativas,
+    toast_duracao_segundos:
+      r.toast_duracao_segundos ?? DEFAULT_PREFS.toast_duracao_segundos,
+    toast_acoes: { ...DEFAULT_TOAST_ACOES, ...(r.toast_acoes ?? {}) },
+    drawer_acoes: { ...DEFAULT_DRAWER_ACOES, ...(r.drawer_acoes ?? {}) },
+    silenciar_ate: r.silenciar_ate ?? null,
+    centros_custo_silenciados: r.centros_custo_silenciados ?? [],
+    tipos_silenciados: r.tipos_silenciados ?? [],
+  };
+}
 
 export function shouldNotify(
   prefs: AnomaliaPreferences | null | undefined,
@@ -43,7 +101,15 @@ export function shouldNotify(
     return false;
 
   const sev = (anomalia.severidade ?? "baixa") as Severidade;
-  if (SEV_RANK[sev] > SEV_RANK[prefs.toast_min_severidade]) return false;
+
+  // Lista explícita de severidades ativas é a fonte da verdade
+  if (
+    prefs.toast_severidades_ativas &&
+    prefs.toast_severidades_ativas.length > 0 &&
+    !prefs.toast_severidades_ativas.includes(sev)
+  ) {
+    return false;
+  }
 
   if (
     anomalia.centro_custo_id &&
@@ -76,7 +142,7 @@ export function useAnomaliaPreferences() {
         .eq("user_id", user.id)
         .maybeSingle();
       if (error) throw error;
-      if (data) return data as unknown as AnomaliaPreferences;
+      if (data) return normalizePrefs(data);
 
       const { data: created, error: insErr } = await supabase
         .from("user_anomalia_preferences")
@@ -84,7 +150,7 @@ export function useAnomaliaPreferences() {
         .select("*")
         .maybeSingle();
       if (insErr) throw insErr;
-      return (created as unknown as AnomaliaPreferences) ?? null;
+      return created ? normalizePrefs(created) : null;
     },
   });
 
@@ -93,19 +159,17 @@ export function useAnomaliaPreferences() {
       patch: Partial<Omit<AnomaliaPreferences, "id" | "user_id">>,
     ) => {
       if (!user?.id) throw new Error("not authenticated");
+      const merged = { ...DEFAULT_PREFS, ...(query.data ?? {}), ...patch };
       const { data, error } = await supabase
         .from("user_anomalia_preferences")
-        .upsert(
-          { user_id: user.id, ...DEFAULT_PREFS, ...query.data, ...patch },
-          { onConflict: "user_id" },
-        )
+        .upsert({ user_id: user.id, ...merged }, { onConflict: "user_id" })
         .select("*")
         .maybeSingle();
       if (error) throw error;
-      return data as unknown as AnomaliaPreferences;
+      return data ? normalizePrefs(data) : null;
     },
     onSuccess: (data) => {
-      qc.setQueryData(["anomalia-preferences", user?.id], data);
+      if (data) qc.setQueryData(["anomalia-preferences", user?.id], data);
     },
   });
 

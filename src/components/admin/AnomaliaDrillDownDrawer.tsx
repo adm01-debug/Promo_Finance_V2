@@ -8,9 +8,13 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ExternalLink, X, Microscope } from "lucide-react";
+import { ExternalLink, X, Microscope, Copy, CheckCheck } from "lucide-react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAnomaliaDetalhe } from "@/hooks/useAnomaliaDetalhe";
+import { useAnomaliaPreferences } from "@/hooks/useAnomaliaPreferences";
 import { AnomaliaHeader } from "@/components/insights-ia/anomalia/AnomaliaHeader";
 import { EntidadeRelacionadaCard } from "@/components/insights-ia/anomalia/EntidadeRelacionadaCard";
 import { AcoesSugeridasCard } from "@/components/insights-ia/anomalia/AcoesSugeridasCard";
@@ -18,11 +22,13 @@ import { ANOMALIA_DRAWER_EVENT, getEntidadeUrl } from "@/lib/anomalia-routes";
 
 /**
  * Lateral drawer that opens via the global `open-anomalia-drawer` event.
- * Shows a compact drill-down of an anomaly without leaving the current page.
+ * Footer actions are filtered by user preferences (`drawer_acoes`).
  */
 export function AnomaliaDrillDownDrawer() {
   const [openId, setOpenId] = useState<string | null>(null);
   const { data, isLoading, error } = useAnomaliaDetalhe(openId ?? undefined);
+  const { preferences } = useAnomaliaPreferences();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     function handler(e: Event) {
@@ -38,6 +44,38 @@ export function AnomaliaDrillDownDrawer() {
   }, []);
 
   const close = () => setOpenId(null);
+
+  const acoes = preferences?.drawer_acoes ?? {
+    abrir_entidade: true,
+    pagina_completa: true,
+    copiar_id: false,
+    marcar_lida: false,
+  };
+
+  const handleCopiarId = async () => {
+    if (!openId) return;
+    try {
+      await navigator.clipboard.writeText(openId);
+      toast.success("ID copiado");
+    } catch {
+      toast.error("Não foi possível copiar");
+    }
+  };
+
+  const handleMarcarLida = async () => {
+    if (!openId) return;
+    const { error: err } = await supabase
+      .from("anomalias_detectadas")
+      .update({ status: "investigando" })
+      .eq("id", openId)
+      .eq("status", "nova");
+    if (err) {
+      toast.error("Falha ao marcar como lida");
+      return;
+    }
+    toast.success("Marcada como lida");
+    queryClient.invalidateQueries({ queryKey: ["anomalias-detectadas"] });
+  };
 
   return (
     <Sheet open={!!openId} onOpenChange={(o) => !o && close()}>
@@ -64,7 +102,7 @@ export function AnomaliaDrillDownDrawer() {
             <>
               <AnomaliaHeader anomalia={data.anomalia} />
               <EntidadeRelacionadaCard entidade={data.entidade} />
-              {data.entidade.encontrada && (
+              {acoes.abrir_entidade && data.entidade.encontrada && (
                 <Button asChild variant="outline" size="sm" className="w-full">
                   <Link
                     to={getEntidadeUrl(
@@ -84,8 +122,18 @@ export function AnomaliaDrillDownDrawer() {
           )}
         </div>
 
-        <SheetFooter className="gap-2 sm:gap-2">
-          {openId && (
+        <SheetFooter className="gap-2 sm:gap-2 flex-wrap">
+          {acoes.copiar_id && openId && (
+            <Button variant="outline" size="sm" onClick={handleCopiarId}>
+              <Copy className="h-3 w-3 mr-1" /> Copiar ID
+            </Button>
+          )}
+          {acoes.marcar_lida && openId && (
+            <Button variant="outline" size="sm" onClick={handleMarcarLida}>
+              <CheckCheck className="h-3 w-3 mr-1" /> Marcar lida
+            </Button>
+          )}
+          {acoes.pagina_completa && openId && (
             <Button asChild variant="secondary" size="sm">
               <Link to={`/admin/insights-ia/anomalia/${openId}`} onClick={close}>
                 <ExternalLink className="h-3 w-3 mr-1" /> Página completa

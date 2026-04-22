@@ -10,6 +10,7 @@ import {
 import {
   useAnomaliaPreferences,
   shouldNotify,
+  type ToastAcaoKey,
 } from "@/hooks/useAnomaliaPreferences";
 
 const TIPO_LABEL: Record<string, string> = {
@@ -20,10 +21,14 @@ const TIPO_LABEL: Record<string, string> = {
   mudanca_regime_brusca: "Variação brusca de regime",
 };
 
+interface AcaoToast {
+  label: string;
+  onClick: () => void | Promise<void>;
+}
+
 /**
  * Subscribes to realtime INSERT events on anomalias_detectadas.
- * Only critical/high severity anomalies trigger user-facing toasts.
- * The toast offers a quick "Drill-down" (in-app drawer) and "Open page" action.
+ * Toast severities, duration and actions are driven by user preferences.
  */
 export function useRealtimeAnomalias() {
   const queryClient = useQueryClient();
@@ -61,26 +66,96 @@ export function useRealtimeAnomalias() {
             queryKey: ["anomalias-criticas-count"],
           });
 
-          if (!shouldNotify(prefsRef.current, a)) return;
+          const prefs = prefsRef.current;
+          if (!shouldNotify(prefs, a)) return;
 
           const isCritical = a.severidade === "critica";
           const tipoLabel = TIPO_LABEL[a.tipo_anomalia ?? ""] ?? "Nova anomalia";
-          const titulo = `${isCritical ? "🚨 Crítica" : "⚠️ Alta"} — ${tipoLabel}`;
+          const titulo = `${isCritical ? "🚨 Crítica" : "⚠️ " + (a.severidade ?? "Anomalia")} — ${tipoLabel}`;
           const fn = isCritical ? toast.error : toast.warning;
 
-          fn(titulo, {
+          // Monta as ações habilitadas pelo usuário (na ordem desejada)
+          const acoesOrdem: ToastAcaoKey[] = [
+            "drill_down",
+            "abrir_pagina",
+            "copiar_id",
+            "marcar_lida",
+          ];
+          const acoesAtivas = prefs?.toast_acoes ?? {
+            drill_down: true,
+            abrir_pagina: true,
+            copiar_id: false,
+            marcar_lida: false,
+          };
+          const acoes: AcaoToast[] = acoesOrdem
+            .filter((k) => acoesAtivas[k])
+            .map((k) => {
+              switch (k) {
+                case "drill_down":
+                  return {
+                    label: "Drill-down",
+                    onClick: () => dispatchOpenAnomaliaDrawer(a.id),
+                  };
+                case "abrir_pagina":
+                  return {
+                    label: "Abrir página",
+                    onClick: () =>
+                      window.location.assign(
+                        `/admin/insights-ia/anomalia/${a.id}`,
+                      ),
+                  };
+                case "copiar_id":
+                  return {
+                    label: "Copiar ID",
+                    onClick: async () => {
+                      try {
+                        await navigator.clipboard.writeText(a.id);
+                        toast.success("ID copiado");
+                      } catch {
+                        toast.error("Não foi possível copiar");
+                      }
+                    },
+                  };
+                case "marcar_lida":
+                  return {
+                    label: "Marcar lida",
+                    onClick: async () => {
+                      const { error } = await supabase
+                        .from("anomalias_detectadas")
+                        .update({ status: "investigando" })
+                        .eq("id", a.id)
+                        .eq("status", "nova");
+                      if (error) toast.error("Falha ao marcar como lida");
+                      else toast.success("Marcada como lida");
+                      queryClient.invalidateQueries({
+                        queryKey: ["anomalias-detectadas"],
+                      });
+                    },
+                  };
+              }
+            });
+
+          const duracaoMs = (prefs?.toast_duracao_segundos ?? 12) * 1000;
+          const opts: Parameters<typeof fn>[1] = {
             description: a.descricao,
-            duration: 12000,
-            action: {
-              label: "Drill-down",
-              onClick: () => dispatchOpenAnomaliaDrawer(a.id),
-            },
-            cancel: {
-              label: "Abrir página",
-              onClick: () =>
-                window.location.assign(`/admin/insights-ia/anomalia/${a.id}`),
-            },
-          });
+            duration: duracaoMs,
+          };
+          if (acoes[0]) opts.action = acoes[0];
+          if (acoes[1]) opts.cancel = acoes[1];
+
+          fn(titulo, opts);
+
+          // Para 3ª/4ª ações habilitadas, mostra um toast secundário com link
+          // (sonner suporta só 1 action + 1 cancel por toast).
+          if (acoes.length > 2) {
+            for (let i = 2; i < acoes.length; i += 1) {
+              toast(acoes[i].label, {
+                description: `Ação extra para “${tipoLabel}”`,
+                duration: duracaoMs,
+                action: { label: acoes[i].label, onClick: acoes[i].onClick },
+              });
+            }
+          }
         },
       )
       .subscribe();
