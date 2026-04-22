@@ -449,6 +449,9 @@ export function SSOSandboxPanel() {
       </Card>
     </div>
       </TabsContent>
+      <TabsContent value="lote">
+        <SandboxBulkPanel onOpenInSimulator={applyClaimsFromBulk} />
+      </TabsContent>
       <TabsContent value="historico">
         <SandboxHistory onReplay={applyRun} />
       </TabsContent>
