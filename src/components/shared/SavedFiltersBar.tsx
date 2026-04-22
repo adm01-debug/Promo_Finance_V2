@@ -68,7 +68,7 @@ export function SavedFiltersBar<T>({
   onClear,
 }: SavedFiltersBarProps<T>) {
   const { user, currentEmpresaId } = useAuth();
-  const { filters, save, remove, setDefault, duplicate, updateSharing } =
+  const { filters, defaultFilter, save, remove, setDefault, duplicate, updateSharing } =
     useSavedFilters<T>(entityType);
   const {
     byFilterId: subsByFilter,
