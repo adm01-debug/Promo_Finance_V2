@@ -63,6 +63,7 @@ export function TrilhaTable({ tipo, colunas, acoes, filename }: Props) {
   const [pagina, setPagina] = useState(1);
   const [detalhe, setDetalhe] = useState<Record<string, unknown> | null>(null);
   const [exporting, setExporting] = useState<"csv" | "pdf" | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const filtrosNorm = {
     inicio: filtros.inicio || undefined,
