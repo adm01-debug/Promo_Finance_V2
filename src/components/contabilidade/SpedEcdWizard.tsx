@@ -276,11 +276,55 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
 
         {step === 3 && resultado && (
           <div className="space-y-4">
-            <Alert className="border-emerald-500/40 bg-emerald-500/10">
-              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-              <AlertTitle>Arquivo gerado com sucesso</AlertTitle>
-              <AlertDescription>{resultado.file_name}</AlertDescription>
-            </Alert>
+            {downloadBloqueado ? (
+              <Alert variant="error" title="Download bloqueado: arquivo gerado com erros">
+                <p className="mt-1">
+                  O arquivo <span className="font-mono">{resultado.file_name}</span> foi gerado, mas a validação
+                  retornou {errosResultado.length} erro(s). Os botões de download estão bloqueados até que os
+                  erros sejam corrigidos.
+                </p>
+              </Alert>
+            ) : (
+              <Alert className="border-success/40 bg-success/10">
+                <CheckCircle2 className="h-4 w-4 text-success" />
+                <AlertTitle>Arquivo gerado com sucesso</AlertTitle>
+                <AlertDescription>{resultado.file_name}</AlertDescription>
+              </Alert>
+            )}
+
+            {errosResultado.length > 0 && (
+              <Alert variant="error" title={`${errosResultado.length} erro(s) na geração`}>
+                <ScrollArea className="max-h-48 rounded-md border bg-destructive/5 p-2 mt-2">
+                  <ul className="space-y-1.5 text-sm">
+                    {errosResultado.map((e, i) => (
+                      <li key={i} className="flex gap-2 items-start">
+                        <Badge variant="destructive" className="h-5 px-1.5 shrink-0 mt-0.5">{i + 1}</Badge>
+                        <span className="text-foreground break-words">{e}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </ScrollArea>
+              </Alert>
+            )}
+
+            {avisosResultado.length > 0 && (
+              <Alert>
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>{avisosResultado.length} aviso(s)</AlertTitle>
+                <AlertDescription>
+                  <ScrollArea className="max-h-32 rounded-md border bg-muted/30 p-2 mt-2">
+                    <ul className="space-y-1 text-sm">
+                      {avisosResultado.map((a, i) => (
+                        <li key={i} className="flex gap-2 items-start">
+                          <Badge variant="outline" className="h-5 px-1.5 shrink-0 mt-0.5">{i + 1}</Badge>
+                          <span className="text-foreground break-words">{a}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </ScrollArea>
+                </AlertDescription>
+              </Alert>
+            )}
 
             <Card>
               <CardContent className="pt-6 space-y-3 text-sm">
@@ -305,13 +349,61 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
             </Alert>
 
             <div className="flex flex-wrap gap-2">
-              <Button onClick={() => window.open(resultado.url, '_blank')} className="gap-2">
-                <Download className="h-4 w-4" /> Baixar .txt
-              </Button>
-              <Button variant="outline" onClick={baixarZip} className="gap-2">
-                <FileArchive className="h-4 w-4" /> Baixar .zip (com README)
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span tabIndex={downloadBloqueado ? 0 : -1}>
+                      <Button
+                        onClick={() => !downloadBloqueado && window.open(resultado.url, '_blank')}
+                        disabled={downloadBloqueado}
+                        aria-disabled={downloadBloqueado}
+                        className="gap-2"
+                      >
+                        {downloadBloqueado ? <Ban className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+                        Baixar .txt
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+                  {downloadBloqueado && (
+                    <TooltipContent side="top" className="max-w-xs">
+                      <p className="font-medium">Download bloqueado</p>
+                      <p className="text-xs">Corrija os {errosResultado.length} erro(s) antes de baixar.</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span tabIndex={downloadBloqueado ? 0 : -1}>
+                      <Button
+                        variant="outline"
+                        onClick={() => !downloadBloqueado && baixarZip()}
+                        disabled={downloadBloqueado}
+                        aria-disabled={downloadBloqueado}
+                        className="gap-2"
+                      >
+                        {downloadBloqueado ? <Ban className="h-4 w-4" /> : <FileArchive className="h-4 w-4" />}
+                        Baixar .zip (com README)
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+                  {downloadBloqueado && (
+                    <TooltipContent side="top" className="max-w-xs">
+                      <p className="font-medium">Download bloqueado</p>
+                      <p className="text-xs">Corrija os {errosResultado.length} erro(s) antes de baixar.</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
+
               <div className="flex-1" />
+              {downloadBloqueado && (
+                <Button variant="outline" onClick={() => setStep(2)} className="gap-2">
+                  <RefreshCw className="h-4 w-4" /> Voltar e revalidar
+                </Button>
+              )}
               <Button variant="ghost" onClick={() => onOpenChange(false)}>Fechar</Button>
             </div>
           </div>
