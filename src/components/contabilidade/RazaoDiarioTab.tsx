@@ -13,8 +13,15 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useLancamentosContabeis } from '@/hooks/useLancamentosContabeis';
 import { usePlanoContas } from '@/hooks/usePlanoContas';
+import { useEmpresas } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
-import { exportToCSV, exportToPDF, type ExportColumn } from '@/lib/export-utils';
+import {
+  exportDiarioCSV,
+  exportDiarioPDF,
+  exportRazaoCSV,
+  exportRazaoPDF,
+  type EmpresaHeader,
+} from '@/lib/export-contabil';
 import { toast } from 'sonner';
 
 interface Props { empresaId?: string; ano: number }
