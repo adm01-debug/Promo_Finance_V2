@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -25,6 +26,8 @@ interface Props {
   onEstadoChange: (v: string) => void;
   onScoreChange: (v: string) => void;
   onClearFilters: () => void;
+  /** Slot opcional para o ClearFiltersButton (substitui o botão padrão de Limpar). */
+  clearSlot?: ReactNode;
 }
 
 export function ClientesFiltersPanel({

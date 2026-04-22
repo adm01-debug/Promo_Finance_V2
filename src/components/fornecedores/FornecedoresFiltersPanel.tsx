@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -22,6 +23,8 @@ interface Props {
   onClearFilters: () => void;
   filteredCount: number;
   totalCount: number;
+  /** Slot opcional para o ClearFiltersButton (substitui o botão padrão de Limpar). */
+  clearSlot?: ReactNode;
 }
 
 export function FornecedoresFiltersPanel({
