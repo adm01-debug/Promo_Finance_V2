@@ -83,11 +83,63 @@ export function AnomaliasReviewQueue({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   /**
-   * Recarrega do backend a anomalia em uma posição da fila para garantir
-   * que ela ainda está pendente (evita revisar dados desatualizados por
-   * concorrência). Se já foi resolvida, avança automaticamente para a próxima.
+   * Resolve um rótulo legível para o autor (full_name → email mascarado → fallback).
    */
-  async function recarregarPosicao(novoIndex: number) {
+  async function resolverAutor(userId: string | null) {
+    if (!userId) return { nome: "outro revisor", email: null as string | null };
+    try {
+      const { data: prof } = await supabase
+        .from("profiles")
+        .select("full_name, email")
+        .eq("id", userId)
+        .maybeSingle();
+      const nome = (prof?.full_name as string | null)?.trim() || null;
+      const email = (prof?.email as string | null)?.trim() || null;
+      return { nome: nome || email || "outro revisor", email };
+    } catch {
+      return { nome: "outro revisor", email: null };
+    }
+  }
+
+  /**
+   * Mostra um toast detalhado quando outro revisor já resolveu a anomalia.
+   * Inclui: identificação da anomalia (tipo + severidade + descrição truncada),
+   * quem resolveu (nome/email), a ação tomada, quando, e atalho para a auditoria.
+   */
+  async function notificarConflito(original: Anomalia, fresca: Anomalia) {
+    const { nome, email } = await resolverAutor(fresca.resolvida_por);
+    const acao =
+      fresca.status === "confirmada"
+        ? "confirmou como problema real"
+        : "marcou como falso positivo";
+    const quando = fresca.resolvida_em
+      ? ` (${tempoDecorrido(fresca.resolvida_em)})`
+      : "";
+    const descCurta =
+      original.descricao.length > 80
+        ? `${original.descricao.slice(0, 80)}…`
+        : original.descricao;
+    const tipoLabel = TIPO_LABEL[original.tipo_anomalia];
+    const titulo = `${nome} já revisou esta anomalia${quando}`;
+    const linhaAnomalia = `[${original.severidade.toUpperCase()} · ${tipoLabel}] ${descCurta}`;
+    const linhaAcao = `Ação: ${acao}.${email && nome !== email ? ` Contato: ${email}.` : ""} Avançando para a próxima.`;
+
+    toast.warning(titulo, {
+      description: `${linhaAnomalia}\n${linhaAcao}`,
+      duration: 8000,
+      action: {
+        label: "Ver no log",
+        onClick: () => {
+          window.open(
+            `/audit-logs?table=anomalias_detectadas&record=${original.id}`,
+            "_blank",
+            "noopener,noreferrer",
+          );
+        },
+      },
+    });
+  }
+
     if (novoIndex >= snapshot.length) {
       setIndex(novoIndex);
       return;
