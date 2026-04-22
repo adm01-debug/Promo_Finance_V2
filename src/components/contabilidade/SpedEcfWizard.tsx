@@ -38,6 +38,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
   const validar = useSpedEcfValidacao();
   const gerar = useGerarSpedContabil();
   const transmitir = useRegistrarTransmissaoSped();
+  const preValidacao = usePreValidacaoSped(empresaId, anoCalendario);
 
   useEffect(() => {
     if (open && empresaId && anoCalendario) {
@@ -52,7 +53,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
   const data = validar.data;
   const erros = data?.validacoes.erros.length || 0;
   const avisos = data?.validacoes.avisos.length || 0;
-  const podeGerar = data && erros === 0;
+  const podeGerar = !!data && erros === 0 && preValidacao.podeGerar;
 
   const handleGerar = async () => {
     try {
