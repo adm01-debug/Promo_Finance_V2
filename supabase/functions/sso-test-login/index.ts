@@ -39,7 +39,6 @@ Deno.serve(async (req) => {
     let auto_provision_users = true;
     let provider_nome: string | null = null;
 
-    // Carrega config real do provider quando provider_id é fornecido (requer admin)
     if (payload.provider_id) {
       const authHeader = req.headers.get("Authorization");
       if (!authHeader?.startsWith("Bearer ")) {
@@ -85,10 +84,20 @@ Deno.serve(async (req) => {
     }
 
     const mock_claims = payload.mock_claims ?? {};
-    const email = String(mock_claims[claim_mapping.email ?? "email"] ?? "").toLowerCase();
-    const full_name = String(mock_claims[claim_mapping.full_name ?? "name"] ?? "");
-    const groupsRaw = mock_claims[claim_mapping.groups ?? "groups"];
-    const groups: string[] = Array.isArray(groupsRaw) ? groupsRaw.map(String) : [];
+
+    const claim_mapping_used = {
+      email: claim_mapping.email ?? "email",
+      full_name: claim_mapping.full_name ?? "name",
+      groups: claim_mapping.groups ?? "groups",
+    };
+
+    const email_raw = mock_claims[claim_mapping_used.email];
+    const full_name_raw = mock_claims[claim_mapping_used.full_name];
+    const groups_raw = mock_claims[claim_mapping_used.groups];
+
+    const email = String(email_raw ?? "").toLowerCase();
+    const full_name = String(full_name_raw ?? "");
+    const groups: string[] = Array.isArray(groups_raw) ? groups_raw.map(String) : [];
 
     const errors: string[] = [];
     if (!email) errors.push("Claim de email não encontrada");
@@ -101,15 +110,37 @@ Deno.serve(async (req) => {
 
     let resolved_role = default_role;
     let matched_group: string | null = null;
-    for (const m of role_mappings) {
-      if (groups.includes(m.idp_group)) {
+    const role_mappings_evaluated: Array<{
+      idp_group: string;
+      app_role: string;
+      status: "matched" | "skipped" | "no_match";
+      ordem: number;
+    }> = [];
+
+    let alreadyMatched = false;
+    role_mappings.forEach((m, i) => {
+      const groupPresent = groups.includes(m.idp_group);
+      let status: "matched" | "skipped" | "no_match";
+      if (groupPresent && !alreadyMatched) {
+        status = "matched";
         resolved_role = m.app_role;
         matched_group = m.idp_group;
-        break;
+        alreadyMatched = true;
+      } else if (groupPresent && alreadyMatched) {
+        status = "skipped";
+      } else {
+        status = "no_match";
       }
-    }
+      role_mappings_evaluated.push({
+        idp_group: m.idp_group,
+        app_role: m.app_role,
+        status,
+        ordem: i,
+      });
+    });
 
-    // Verifica existência do usuário (requer service role; só roda se temos provider_id ou se for chamada admin)
+    const default_role_used = !matched_group;
+
     let user_exists = false;
     let would_jit_provision = false;
     let provision_blocked_reason: string | null = null;
@@ -127,7 +158,7 @@ Deno.serve(async (req) => {
           }
         }
       } catch {
-        // silently ignore — manteremos user_exists=false
+        // ignore
       }
     }
 
@@ -147,6 +178,15 @@ Deno.serve(async (req) => {
         provision_blocked_reason,
         provider_nome,
         auto_provision_users,
+        claim_mapping_used,
+        claim_values: {
+          email_raw: email_raw ?? null,
+          full_name_raw: full_name_raw ?? null,
+          groups_raw: groups_raw ?? null,
+        },
+        role_mappings_evaluated,
+        default_role,
+        default_role_used,
       },
       errors,
     }, 200);
