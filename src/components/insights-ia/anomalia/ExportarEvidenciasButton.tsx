@@ -106,8 +106,8 @@ function buildResumoMarkdown(p: Props): string {
     `- **Detectada em:** ${new Date(anomalia.detectada_em).toLocaleString("pt-BR")}`,
   );
   if (anomalia.empresa_id) linhas.push(`- **Empresa:** ${anomalia.empresa_id}`);
-  if (anomalia.centro_custo_id)
-    linhas.push(`- **Centro de custo:** ${anomalia.centro_custo_id}`);
+  if ((anomalia as { centro_custo_id?: string | null }).centro_custo_id)
+    linhas.push(`- **Centro de custo:** ${(anomalia as { centro_custo_id?: string | null }).centro_custo_id}`);
   linhas.push(`- **Descrição:** ${anomalia.descricao}`);
   if (anomalia.observacoes)
     linhas.push(`- **Observações:** ${anomalia.observacoes}`);
@@ -189,7 +189,7 @@ function buildResumoJson(p: Props) {
       status: anomalia.status,
       detectadaEm: anomalia.detectada_em,
       empresaId: anomalia.empresa_id,
-      centroCustoId: anomalia.centro_custo_id,
+      centroCustoId: (anomalia as { centro_custo_id?: string | null }).centro_custo_id,
       descricao: anomalia.descricao,
       observacoes: anomalia.observacoes,
       bitrixTaskId: anomalia.bitrix_task_id,
