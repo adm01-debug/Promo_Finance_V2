@@ -133,45 +133,109 @@ export function SavedFiltersBar<T>({
   const handleSave = async () => {
     const trimmed = name.trim();
     if (trimmed.length < 2) return;
-    await save.mutateAsync({
-      name: trimmed,
-      payload: currentState,
-      isDefault: makeDefault,
-      isShared: shareEnabled,
-      sharedWithRoles: shareEnabled ? shareRoles : [],
-    });
-    setDialogOpen(false);
-    setName("");
-    setMakeDefault(false);
-    setShareEnabled(false);
-    setShareRoles([]);
+    setSaveError(null);
+    try {
+      await save.mutateAsync({
+        name: trimmed,
+        payload: currentState,
+        isDefault: makeDefault,
+        isShared: shareEnabled,
+        sharedWithRoles: shareEnabled ? shareRoles : [],
+      });
+      setDialogOpen(false);
+      setName("");
+      setMakeDefault(false);
+      setShareEnabled(false);
+      setShareRoles([]);
+    } catch (err) {
+      setSaveError(
+        err instanceof Error ? err.message : "Falha ao salvar o preset.",
+      );
+    }
   };
 
   const handleOverwrite = async () => {
     if (!activePreset || !isOwner(activePreset)) return;
-    await save.mutateAsync({
-      name: activePreset.name,
-      payload: currentState,
-      isDefault: activePreset.is_default,
-      isShared: activePreset.is_shared,
-      sharedWithRoles: activePreset.shared_with_roles,
-    });
+    if (save.isPending) return;
+    try {
+      await save.mutateAsync({
+        name: activePreset.name,
+        payload: currentState,
+        isDefault: activePreset.is_default,
+        isShared: activePreset.is_shared,
+        sharedWithRoles: activePreset.shared_with_roles,
+      });
+    } catch {
+      /* toast já é exibido pelo hook */
+    }
   };
 
   const openShareDialog = (f: SavedFilterRow<T>) => {
     setShareDialog(f);
     setShareDialogEnabled(f.is_shared);
     setShareDialogRoles(f.shared_with_roles);
+    setShareError(null);
   };
 
   const handleSaveShare = async () => {
     if (!shareDialog) return;
-    await updateSharing.mutateAsync({
-      id: shareDialog.id,
-      isShared: shareDialogEnabled,
-      sharedWithRoles: shareDialogEnabled ? shareDialogRoles : [],
+    setShareError(null);
+    try {
+      await updateSharing.mutateAsync({
+        id: shareDialog.id,
+        isShared: shareDialogEnabled,
+        sharedWithRoles: shareDialogEnabled ? shareDialogRoles : [],
+      });
+      setShareDialog(null);
+    } catch (err) {
+      setShareError(
+        err instanceof Error
+          ? err.message
+          : "Falha ao atualizar compartilhamento.",
+      );
+    }
+  };
+
+  // Carrega preset com feedback visual e proteção contra cliques repetidos
+  const handleLoadPreset = (f: SavedFilterRow<T>) => {
+    if (loadingPresetId || anyMutationPending) return;
+    if (f.id === activePresetId) return; // já está ativo
+    setLoadingPresetId(f.id);
+    try {
+      onLoad({ id: f.id, payload: f.filters });
+    } finally {
+      // Limpa no próximo tick — onLoad é síncrono no consumidor,
+      // mas mantemos o feedback brevemente para evitar flicker.
+      setTimeout(() => setLoadingPresetId(null), 200);
+    }
+  };
+
+  const handleRemove = (f: SavedFilterRow<T>) => {
+    if (pendingRemoveId || remove.isPending) return;
+    setPendingRemoveId(f.id);
+    remove.mutate(f.id, {
+      onSettled: () => setPendingRemoveId(null),
+      onSuccess: () => {
+        if (f.id === activePresetId) onClear();
+      },
     });
-    setShareDialog(null);
+  };
+
+  const handleSetDefault = (f: SavedFilterRow<T>) => {
+    if (pendingDefaultId || setDefault.isPending) return;
+    setPendingDefaultId(f.id);
+    setDefault.mutate(f.id, {
+      onSettled: () => setPendingDefaultId(null),
+    });
+  };
+
+  const handleDuplicate = (f: SavedFilterRow<T>) => {
+    if (pendingDuplicateId || duplicate.isPending) return;
+    setPendingDuplicateId(f.id);
+    duplicate.mutate(
+      { sourceId: f.id },
+      { onSettled: () => setPendingDuplicateId(null) },
+    );
   };
 
   const toggleRole = (
