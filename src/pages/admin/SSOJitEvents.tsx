@@ -133,14 +133,6 @@ export default function SSOJitEvents() {
     if (!filtered.length) return toast.error('Nenhum evento para exportar');
     exportToPDF(filtered, columns, 'Eventos JIT de Provisionamento SSO');
   };
-  const clear = () => {
-    setSearch('');
-    setProviderFilter('all');
-    setRoleFilter('all');
-    setViaFilter('all');
-    setOriginFilter('all');
-    setDateRange({ from: subDays(new Date(), 30), to: new Date() });
-  };
 
   return (
     <MainLayout>
@@ -245,9 +237,20 @@ export default function SSOJitEvents() {
               </Popover>
             </div>
             <div className="flex items-center justify-end mt-4">
-              <Button variant="outline" size="sm" onClick={clear}>
-                <X className="h-4 w-4 mr-1" /> Limpar Filtros
-              </Button>
+              <ClearFiltersButton
+                controller={filtersController}
+                entityLabel="eventos JIT SSO"
+                variant="outline"
+                describeFilters={(v) => [
+                  { label: 'Busca', value: v.search, isActive: !!v.search },
+                  { label: 'Provider', value: v.providerFilter, isActive: v.providerFilter !== 'all' },
+                  { label: 'Role', value: v.roleFilter, isActive: v.roleFilter !== 'all' },
+                  { label: 'Via', value: v.viaFilter, isActive: v.viaFilter !== 'all' },
+                  { label: 'Origem', value: v.originFilter, isActive: v.originFilter !== 'all' },
+                  { label: 'Período', value: 'personalizado', isActive: v.fromIso !== SSO_DEFAULTS.fromIso || v.toIso !== SSO_DEFAULTS.toIso },
+                ]}
+                label="Limpar Filtros"
+              />
             </div>
           </CardContent>
         </Card>
