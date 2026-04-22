@@ -51,6 +51,10 @@ import {
 } from "@/components/shared/ColumnVisibilityMenu";
 import type { SavedFilterPayload } from "@/hooks/useSavedFilters";
 import { useSavedFilters } from "@/hooks/useSavedFilters";
+import {
+  useProfilesByIds,
+  formatProfileLabel,
+} from "@/hooks/useProfilesByIds";
 
 function severidadeBadge(s: Anomalia["severidade"]) {
   if (s === "critica" || s === "alta") return "destructive";
@@ -123,6 +127,9 @@ const DEFAULT_PAYLOAD: SavedFilterPayload<AnomaliaFilters> = {
 
 export function AnomaliasDetectadasPanel() {
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [reviewSeveridade, setReviewSeveridade] = useState<
+    Anomalia["severidade"] | "todas"
+  >("todas");
   const [prefsOpen, setPrefsOpen] = useState(false);
   const { data: criticasCount = 0 } = useAnomaliasCriticasCount();
   const navigate = useNavigate();
