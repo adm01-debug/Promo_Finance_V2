@@ -58,6 +58,35 @@ export function EvidenciasTab() {
     usuario: "",
   });
 
+  // Filtros adicionais específicos da aba Evidências
+  const [coberturaInicio, setCoberturaInicio] = useState("");
+  const [coberturaFim, setCoberturaFim] = useState("");
+  const [escoposFiltro, setEscoposFiltro] = useState<string[]>([]);
+
+  const aplicarPresetGeracao = (dias: number) => {
+    setFiltros((f) => ({ ...f, inicio: isoDays(dias), fim: isoDays(0) }));
+  };
+
+  const limparFiltrosHistorico = () => {
+    setFiltros({ inicio: "", fim: "", busca: "", acao: "todas", usuario: "" });
+    setCoberturaInicio("");
+    setCoberturaFim("");
+    setEscoposFiltro([]);
+  };
+
+  const toggleEscopoFiltro = (v: string) => {
+    setEscoposFiltro((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]));
+  };
+
+  const filtrosAtivos =
+    !!filtros.inicio ||
+    !!filtros.fim ||
+    !!filtros.busca ||
+    !!filtros.usuario ||
+    !!coberturaInicio ||
+    !!coberturaFim ||
+    escoposFiltro.length > 0;
+
   const usuarios = useMemo(() => {
     const set = new Set<string>();
     (data ?? []).forEach((p) => p.gerado_por_email && set.add(p.gerado_por_email));
@@ -75,9 +104,14 @@ export function EvidenciasTab() {
           `${p.periodo_inicio} ${p.periodo_fim} ${p.escopos.join(" ")} ${p.gerado_por_email ?? ""}`.toLowerCase();
         if (!hay.includes(filtros.busca.toLowerCase())) return false;
       }
+      // Filtro por período de cobertura do pacote (sobreposição com [coberturaInicio, coberturaFim])
+      if (coberturaInicio && p.periodo_fim < coberturaInicio) return false;
+      if (coberturaFim && p.periodo_inicio > coberturaFim) return false;
+      // Filtro por escopos: pacote deve conter ao menos um dos escopos selecionados
+      if (escoposFiltro.length > 0 && !p.escopos.some((e) => escoposFiltro.includes(e))) return false;
       return true;
     });
-  }, [data, filtros]);
+  }, [data, filtros, coberturaInicio, coberturaFim, escoposFiltro]);
 
   const toggleEscopo = (v: string) => {
     setEscopos((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]));
