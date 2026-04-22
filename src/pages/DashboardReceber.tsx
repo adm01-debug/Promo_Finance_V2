@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Filter, Calendar, Users, Building2, Clock, Eye, PieChart as PieChartIcon } from "lucide-react";
 import { MainLayout } from "@/components/layout/MainLayout";
@@ -13,19 +13,48 @@ import { ptBR } from "date-fns/locale";
 import { Link } from "react-router-dom";
 import { ReceberKpisCards, ReceberInadimplenciaBar } from "@/components/dashboard-receber/ReceberKpis";
 import { ReceberChartsSection } from "@/components/dashboard-receber/ReceberCharts";
+import { useManagedFilters } from "@/hooks/useManagedFilters";
+import { ClearFiltersButton } from "@/components/filters/ClearFiltersButton";
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } };
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
 
+interface ReceberFilters extends Record<string, unknown> {
+  empresaId: string;
+  vendedorId: string;
+  ramoAtividade: string;
+  statusFilter: string;
+  clienteId: string;
+  periodo: string;
+  dataInicioIso: string;
+  dataFimIso: string;
+}
+
+const RECEBER_DEFAULTS: ReceberFilters = {
+  empresaId: "todas",
+  vendedorId: "todos",
+  ramoAtividade: "todos",
+  statusFilter: "todos",
+  clienteId: "todos",
+  periodo: "30",
+  dataInicioIso: subDays(new Date(), 30).toISOString(),
+  dataFimIso: new Date().toISOString(),
+};
+
 export default function DashboardReceber() {
-  const [empresaId, setEmpresaId] = useState<string>("todas");
-  const [vendedorId, setVendedorId] = useState<string>("todos");
-  const [ramoAtividade, setRamoAtividade] = useState<string>("todos");
-  const [statusFilter, setStatusFilter] = useState<string>("todos");
-  const [clienteId, setClienteId] = useState<string>("todos");
-  const [periodo, setPeriodo] = useState<string>("30");
-  const [dataInicio, setDataInicio] = useState<Date | undefined>(subDays(new Date(), 30));
-  const [dataFim, setDataFim] = useState<Date | undefined>(new Date());
+  const filtersController = useManagedFilters<ReceberFilters>({
+    entityType: "dashboard-receber",
+    defaults: RECEBER_DEFAULTS,
+    localStorageKey: "app-dashboard-receber-filters",
+  });
+  const { empresaId, vendedorId, ramoAtividade, statusFilter, clienteId, periodo, dataInicioIso, dataFimIso } = filtersController.values;
+  const dataInicio = dataInicioIso ? new Date(dataInicioIso) : undefined;
+  const dataFim = dataFimIso ? new Date(dataFimIso) : undefined;
+  const setEmpresaId = (v: string) => filtersController.setField('empresaId', v);
+  const setVendedorId = (v: string) => filtersController.setField('vendedorId', v);
+  const setRamoAtividade = (v: string) => filtersController.setField('ramoAtividade', v);
+  const setStatusFilter = (v: string) => filtersController.setField('statusFilter', v);
+  const setClienteId = (v: string) => filtersController.setField('clienteId', v);
 
   const { data: contasReceber = [] } = useContasReceber();
   const { data: empresas = [] } = useEmpresas();
