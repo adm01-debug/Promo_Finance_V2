@@ -18,6 +18,7 @@ export interface GerarResult {
   pacote: EvidenciaPacote;
   signed_url: string;
   manifest: Record<string, unknown>;
+  audit_warning?: string | null;
 }
 
 export type GerarStatus = "idle" | "running" | "success" | "error";
