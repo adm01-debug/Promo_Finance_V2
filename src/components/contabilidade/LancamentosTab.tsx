@@ -137,7 +137,7 @@ export function LancamentosTab({ empresaId, ano }: Props) {
                       </Button>
                     </div>
                   ))}
-                  <div className={`flex justify-between text-sm p-2 rounded ${balanceado ? 'bg-green-500/10 text-green-700' : 'bg-amber-500/10 text-amber-700'}`}>
+                  <div className={`flex justify-between text-sm p-2 rounded ${balanceado ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'}`}>
                     <span>D: {formatCurrency(totalD)}</span>
                     <span>C: {formatCurrency(totalC)}</span>
                     <span>{balanceado ? '✓ Balanceado' : `Diferença: ${formatCurrency(Math.abs(totalD - totalC))}`}</span>

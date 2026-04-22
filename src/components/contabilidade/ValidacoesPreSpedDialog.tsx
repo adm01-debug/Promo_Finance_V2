@@ -67,7 +67,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
             <div className="text-xs text-muted-foreground">Erros</div>
             <div
               data-testid="contador-erros"
-              className={`text-2xl font-bold ${erros.length > 0 ? 'text-destructive' : 'text-emerald-600'}`}
+              className={`text-2xl font-bold ${erros.length > 0 ? 'text-destructive' : 'text-success'}`}
             >
               {erros.length}
             </div>
@@ -76,7 +76,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
             <div className="text-xs text-muted-foreground">Avisos</div>
             <div
               data-testid="contador-avisos"
-              className={`text-2xl font-bold ${avisos.length > 0 ? 'text-amber-600' : 'text-muted-foreground'}`}
+              className={`text-2xl font-bold ${avisos.length > 0 ? 'text-warning' : 'text-muted-foreground'}`}
             >
               {avisos.length}
             </div>
@@ -120,7 +120,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
 
           <TabsContent value="erros">
             {erros.length === 0 ? (
-              <div className="flex items-center gap-2 text-sm text-emerald-600 p-4 justify-center">
+              <div className="flex items-center gap-2 text-sm text-success p-4 justify-center">
                 <CheckCircle2 className="h-4 w-4" /> Nenhum erro encontrado
               </div>
             ) : (
@@ -145,7 +145,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
               <ScrollArea className="max-h-72 border rounded-md p-3">
                 <ol data-testid="lista-avisos" className="space-y-2 text-xs font-mono list-decimal list-inside">
                   {avisos.map((a, i) => (
-                    <li key={i} className="text-amber-700">
+                    <li key={i} className="text-warning">
                       {a}
                     </li>
                   ))}

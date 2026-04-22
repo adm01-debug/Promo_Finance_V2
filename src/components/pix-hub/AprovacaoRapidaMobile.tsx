@@ -77,7 +77,7 @@ export function AprovacaoRapidaMobile() {
         </div>
         <div className="flex items-center gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
-            <ChevronRight className="h-3 w-3 text-emerald-600" /> Deslize → Aprovar
+            <ChevronRight className="h-3 w-3 text-success" /> Deslize → Aprovar
           </span>
           <span className="flex items-center gap-1">
             <ChevronLeft className="h-3 w-3 text-destructive" /> ← Rejeitar
@@ -88,7 +88,7 @@ export function AprovacaoRapidaMobile() {
       {pendentes.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">
-            <Check className="h-10 w-10 mx-auto mb-3 text-emerald-500 opacity-50" />
+            <Check className="h-10 w-10 mx-auto mb-3 text-success opacity-50" />
             <p className="text-sm font-medium">Todas as aprovações em dia!</p>
             <p className="text-xs mt-1">Não há pagamentos pendentes de aprovação</p>
           </CardContent>
@@ -116,7 +116,7 @@ export function AprovacaoRapidaMobile() {
               >
                 <Card className={cn(
                   'relative overflow-hidden transition-colors',
-                  isApproving && 'border-emerald-500/50 bg-emerald-500/5',
+                  isApproving && 'border-success/50 bg-success/5',
                   isRejecting && 'border-destructive/50 bg-destructive/5',
                 )}>
                   {/* Swipe indicators */}
@@ -126,7 +126,7 @@ export function AprovacaoRapidaMobile() {
                   </div>
                   <div className={cn('absolute inset-y-0 right-0 w-16 flex items-center justify-center transition-opacity',
                     isApproving ? 'opacity-100' : 'opacity-0')}>
-                    <Check className="h-6 w-6 text-emerald-600" />
+                    <Check className="h-6 w-6 text-success" />
                   </div>
 
                   <CardContent className="py-4">
@@ -163,7 +163,7 @@ export function AprovacaoRapidaMobile() {
                         onClick={() => setRejectDialog(sol)}>
                         <X className="h-3.5 w-3.5" /> Rejeitar
                       </Button>
-                      <Button size="sm" className="flex-1 gap-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+                      <Button size="sm" className="flex-1 gap-1 bg-success hover:bg-success/90 text-success-foreground"
                         onClick={() => handleAprovar(sol)} disabled={aprovarMutation.isPending}>
                         <Check className="h-3.5 w-3.5" /> Aprovar
                       </Button>

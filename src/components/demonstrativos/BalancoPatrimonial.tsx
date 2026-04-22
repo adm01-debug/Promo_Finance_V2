@@ -96,7 +96,7 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
         />
       </div>
       {origem === 'caixa' && (
-        <Alert className="border-amber-500/30 bg-amber-500/5">
+        <Alert className="border-warning/30 bg-warning/5">
           <AlertDescription className="text-xs">
             <strong>Balanço estimado a partir de movimentações de caixa</strong> — não substitui escrituração contábil. Use o regime de Competência para um balanço fiel.
           </AlertDescription>

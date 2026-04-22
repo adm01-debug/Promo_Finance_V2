@@ -180,7 +180,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                       {h.status === 'rejeitado' ? (
                         <Badge variant="destructive" className="gap-1"><AlertTriangle className="h-3 w-3" />{h.validacoes?.erros?.length ?? 0} erros</Badge>
                       ) : h.status === 'transmitido' ? (
-                        <Badge className="gap-1 bg-emerald-600 hover:bg-emerald-600"><CheckCircle2 className="h-3 w-3" />Transmitido</Badge>
+                        <Badge className="gap-1 bg-success hover:bg-success"><CheckCircle2 className="h-3 w-3" />Transmitido</Badge>
                       ) : (
                         <Badge variant="secondary" className="gap-1"><CheckCircle2 className="h-3 w-3" />Gerado</Badge>
                       )}

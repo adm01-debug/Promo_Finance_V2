@@ -16,13 +16,13 @@ interface Props { empresaId?: string; ano: number }
 const statusBadge = (s: StatusConsistencia) => {
   switch (s) {
     case 'ok':
-      return <Badge variant="outline" className="border-emerald-500/40 bg-emerald-500/10 text-emerald-700 gap-1"><CheckCircle2 className="h-3 w-3" />D=C</Badge>;
+      return <Badge variant="outline" className="border-success/40 bg-success/10 text-success gap-1"><CheckCircle2 className="h-3 w-3" />D=C</Badge>;
     case 'desbalanceado':
       return <Badge variant="outline" className="border-destructive/40 bg-destructive/10 text-destructive gap-1"><AlertTriangle className="h-3 w-3" />Divergência</Badge>;
     case 'sem_partidas':
-      return <Badge variant="outline" className="border-amber-500/40 bg-amber-500/10 text-amber-700 gap-1"><XCircle className="h-3 w-3" />Sem partidas</Badge>;
+      return <Badge variant="outline" className="border-warning/40 bg-warning/10 text-warning gap-1"><XCircle className="h-3 w-3" />Sem partidas</Badge>;
     case 'orfao':
-      return <Badge variant="outline" className="border-amber-500/40 bg-amber-500/10 text-amber-700 gap-1"><XCircle className="h-3 w-3" />Órfão</Badge>;
+      return <Badge variant="outline" className="border-warning/40 bg-warning/10 text-warning gap-1"><XCircle className="h-3 w-3" />Órfão</Badge>;
   }
 };
 
@@ -75,8 +75,8 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
           <CardHeader className="pb-2"><CardDescription>Total importado</CardDescription><CardTitle className="text-2xl">{total}</CardTitle></CardHeader>
           <CardContent className="text-xs text-muted-foreground">lançamentos no ano de {ano}</CardContent>
         </Card>
-        <Card className="border-emerald-500/30">
-          <CardHeader className="pb-2"><CardDescription className="text-emerald-700">Consistentes (D=C)</CardDescription><CardTitle className="text-2xl text-emerald-700">{totalOk}</CardTitle></CardHeader>
+        <Card className="border-success/30">
+          <CardHeader className="pb-2"><CardDescription className="text-success">Consistentes (D=C)</CardDescription><CardTitle className="text-2xl text-success">{totalOk}</CardTitle></CardHeader>
           <CardContent className="text-xs text-muted-foreground">{taxaOk}% do total</CardContent>
         </Card>
         <Card className={totalDivergentes > 0 ? 'border-destructive/40' : ''}>
@@ -136,16 +136,16 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
                     <TableRow key={r.origem}>
                       <TableCell><Badge variant="outline" className="capitalize">{r.origem}</Badge></TableCell>
                       <TableCell className="text-right font-mono">{r.total}</TableCell>
-                      <TableCell className="text-right font-mono text-emerald-700">{r.ok}</TableCell>
+                      <TableCell className="text-right font-mono text-success">{r.ok}</TableCell>
                       <TableCell className={`text-right font-mono ${r.desbalanceados > 0 ? 'text-destructive font-semibold' : ''}`}>{r.desbalanceados}</TableCell>
-                      <TableCell className={`text-right font-mono ${r.sem_partidas > 0 ? 'text-amber-700' : ''}`}>{r.sem_partidas}</TableCell>
+                      <TableCell className={`text-right font-mono ${r.sem_partidas > 0 ? 'text-warning' : ''}`}>{r.sem_partidas}</TableCell>
                       <TableCell className="text-right font-mono">{formatCurrency(r.valor_total)}</TableCell>
                       <TableCell className="text-right text-xs text-muted-foreground">
                         {r.ultima_importacao ? format(new Date(r.ultima_importacao + 'T00:00:00'), 'dd/MM/yyyy') : '—'}
                       </TableCell>
                       <TableCell>
                         {saudavel ? (
-                          <Badge variant="outline" className="border-emerald-500/40 bg-emerald-500/10 text-emerald-700 gap-1">
+                          <Badge variant="outline" className="border-success/40 bg-success/10 text-success gap-1">
                             <CheckCircle2 className="h-3 w-3" />{taxa}% OK
                           </Badge>
                         ) : (

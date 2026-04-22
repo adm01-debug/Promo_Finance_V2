@@ -64,7 +64,12 @@ export function EmpresaDrillDownSection({ contasBancarias, topClientesReceber, t
           {contasBancarias.length === 0 ? <p className="text-muted-foreground text-sm">Nenhuma conta bancária cadastrada</p> : contasBancarias.map((conta) => (
             <div key={conta.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg flex items-center justify-center text-xs font-bold" style={{ background: `${conta.cor || '#3B82F6'}20`, color: conta.cor || '#3B82F6' }}>{conta.codigo_banco}</div>
+                <div
+                  className="h-10 w-10 rounded-lg flex items-center justify-center text-xs font-bold bg-primary/10 text-primary"
+                  style={conta.cor ? { background: `${conta.cor}20`, color: conta.cor } : undefined}
+                >
+                  {conta.codigo_banco}
+                </div>
                 <div><p className="font-medium">{conta.banco}</p><p className="text-xs text-muted-foreground">Ag: {conta.agencia} | Cc: {conta.conta}</p></div>
               </div>
               <div className="text-right"><p className="font-bold">{formatCurrency(conta.saldo_atual)}</p><p className="text-xs text-muted-foreground">Disponível: {formatCurrency(conta.saldo_disponivel)}</p></div>

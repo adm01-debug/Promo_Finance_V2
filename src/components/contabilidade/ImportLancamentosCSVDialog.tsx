@@ -193,13 +193,13 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
               </CardContent></Card>
               <Card><CardContent className="p-3 text-center">
                 <div className="text-xs text-muted-foreground">Erros</div>
-                <div className={cn('text-xl font-bold', parseResult.errors.length > 0 ? 'text-destructive' : 'text-green-600')}>
+                <div className={cn('text-xl font-bold', parseResult.errors.length > 0 ? 'text-destructive' : 'text-success')}>
                   {parseResult.errors.length}
                 </div>
               </CardContent></Card>
               <Card><CardContent className="p-3 text-center">
                 <div className="text-xs text-muted-foreground">Avisos</div>
-                <div className={cn('text-xl font-bold', parseResult.warnings.length > 0 ? 'text-amber-600' : 'text-muted-foreground')}>
+                <div className={cn('text-xl font-bold', parseResult.warnings.length > 0 ? 'text-warning' : 'text-muted-foreground')}>
                   {parseResult.warnings.length}
                 </div>
               </CardContent></Card>
@@ -240,7 +240,7 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
                 )}
                 {parseResult.warnings.length > 0 && (
                   <AccordionItem value="warnings">
-                    <AccordionTrigger className="text-amber-600 hover:text-amber-600">
+                    <AccordionTrigger className="text-warning hover:text-warning">
                       <span className="flex items-center gap-2">
                         <AlertTriangle className="h-4 w-4" />{parseResult.warnings.length} aviso(s)
                       </span>
@@ -249,7 +249,7 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
                       <ScrollArea className="max-h-32">
                         <ul className="text-xs space-y-1 font-mono">
                           {parseResult.warnings.map((w, i) => (
-                            <li key={i} className="text-amber-700">
+                            <li key={i} className="text-warning">
                               <span className="font-semibold">L{w.line}</span>
                               {w.ref && <span className="text-muted-foreground"> [ref:{w.ref}]</span>}
                               {' — '}{w.message}
@@ -284,7 +284,7 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
                         return (
                           <TableRow key={l.ref}>
                             <TableCell>
-                              {ok ? <CheckCircle2 className="h-4 w-4 text-green-600" />
+                              {ok ? <CheckCircle2 className="h-4 w-4 text-success" />
                                 : <XCircle className="h-4 w-4 text-destructive" />}
                             </TableCell>
                             <TableCell className="font-mono text-xs">{l.ref}</TableCell>
@@ -332,7 +332,7 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
               <>
                 <Alert variant={importResult.falhas.length === 0 ? 'success' : 'error'}>
                   {importResult.falhas.length === 0
-                    ? <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    ? <CheckCircle2 className="h-4 w-4 text-success" />
                     : <AlertCircle className="h-4 w-4" />}
                   <AlertTitle>
                     {importResult.falhas.length === 0 ? 'Importação concluída' : 'Importação concluída com falhas'}

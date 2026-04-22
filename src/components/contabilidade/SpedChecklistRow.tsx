@@ -9,8 +9,8 @@ export function SpedChecklistRow({ item }: { item: ChecklistItem }) {
   const [open, setOpen] = useState(false);
   const Icon = item.status === 'ok' ? CheckCircle2 : item.status === 'warn' ? AlertTriangle : XCircle;
   const color =
-    item.status === 'ok' ? 'text-emerald-600' :
-    item.status === 'warn' ? 'text-amber-600' : 'text-destructive';
+    item.status === 'ok' ? 'text-success' :
+    item.status === 'warn' ? 'text-warning' : 'text-destructive';
   const border =
     item.status === 'ok' ? 'border-l-emerald-500/50' :
     item.status === 'warn' ? 'border-l-amber-500/50' : 'border-l-destructive';

@@ -91,7 +91,7 @@ export function SpedEcdPreviewDialog({
   const statusTone = statusGlobal === 'ok'
     ? 'bg-success/10 text-success border-success/30'
     : statusGlobal === 'warn'
-      ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30'
+      ? 'bg-warning/10 text-warning border-warning/30'
       : 'bg-destructive/10 text-destructive border-destructive/30';
 
   return (
@@ -189,14 +189,14 @@ export function SpedEcdPreviewDialog({
                   {avisos.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <AlertTriangle className="h-4 w-4 text-amber-600" />
+                        <AlertTriangle className="h-4 w-4 text-warning" />
                         <p className="text-sm font-semibold">Avisos ({avisos.length})</p>
                       </div>
-                      <ScrollArea className="max-h-40 rounded-md border bg-amber-500/5 p-2">
+                      <ScrollArea className="max-h-40 rounded-md border bg-warning/5 p-2">
                         <ul className="space-y-1 text-sm">
                           {avisos.map((a, i) => (
                             <li key={i} className="flex gap-2">
-                              <Badge variant="outline" className="h-5 px-1.5 shrink-0 border-amber-500/40 text-amber-700 dark:text-amber-300">
+                              <Badge variant="outline" className="h-5 px-1.5 shrink-0 border-warning/40 text-warning">
                                 {i + 1}
                               </Badge>
                               <span className="text-foreground">{a}</span>
@@ -283,7 +283,7 @@ function ResumoCard({
     tone === 'success'
       ? 'text-success'
       : tone === 'warn'
-        ? 'text-amber-600 dark:text-amber-400'
+        ? 'text-warning'
         : tone === 'error'
           ? 'text-destructive'
           : 'text-foreground';
