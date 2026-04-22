@@ -1,32 +1,39 @@
 
 
-## Já está implementado ✅
+## Status atual
 
-A persistência da preferência "Mascarar IPs" no navegador e a sincronização entre abas **já existem e funcionam** desde a introdução do toggle. Não há código novo a escrever.
+Verifiquei cada tela citada. O mascaramento e/ou o toggle já estão presentes em quase todas — restam apenas duas lacunas reais.
 
-### Como funciona hoje
+| Tela | `maskIp` aplicado? | `IpMaskToggle` visível? |
+|---|---|---|
+| `AuditLogs` (página) | ✅ | ✅ |
+| `AuditLogTable` (linha + modal de detalhes) | ✅ (linha **e** campo "IP" do dialog) | herda da página |
+| `BlockedIPsTab` | ✅ | ✅ |
+| `RateLimitDashboard` — tabela de logs | ✅ | ✅ |
+| `RateLimitDashboard` — bloco de **alertas de segurança** | ❌ exibe `alert.ip_address` cru | — |
+| **Sessões (MFA / `KnownDevicesPanel` / `useSessions`)** | ❌ exibe `session.ip_address` cru | ❌ sem toggle |
 
-**1. Persistência no navegador**
-- `src/hooks/useIpMaskPreference.ts` usa `useLocalStorage<boolean>('lov:ip-mask-enabled', false)`.
-- O valor é serializado em `localStorage` sob a chave `lov:ip-mask-enabled`, então sobrevive a reloads, fechamento de aba e reinício do navegador.
+O modal de detalhes do `AuditLogTable` **já** usa `maskIp(log.ip_address, maskIpsEnabled)` (linha do dialog "IP"), então nada a fazer ali.
 
-**2. Sincronização entre abas**
-- `useLocalStorage` (`src/hooks/useLocalStorage.ts`, linhas 62-77) registra dois listeners:
-  - `storage` — evento nativo disparado pelo navegador em **outras** abas quando `localStorage` muda.
-  - `local-storage` — `CustomEvent` próprio, disparado via `window.dispatchEvent` na **mesma** aba (linha 55) para que componentes irmãos também reajam imediatamente.
-- Quando qualquer aba alterna o switch, todas as outras abas releem o valor e re-renderizam (`AuditLogs`, `BlockedIPsTab`, `SSOJitEventsTable`, `RateLimitDashboard`, `AuditLogTable` etc.) sem precisar de F5.
+## Mudanças propostas
 
-**3. Toggle único e reutilizável**
-- `src/components/admin/IpMaskToggle.tsx` é o switch visual com tooltip lembrando que filtros continuam usando o IP original.
+### 1. `src/components/security/RateLimitDashboard.tsx`
+- No bloco de alertas de segurança, trocar `{alert.ip_address}` por `{maskIp(alert.ip_address, maskIpsEnabled)}`. O hook `useIpMaskPreference` já está em escopo (usado na tabela de logs), então é apenas substituir a expressão.
 
-### Verificação rápida que você pode fazer
+### 2. Sessões ativas (painel do usuário)
+Localizar o componente que lista sessões (provável: `src/components/security/SessionsPanel.tsx` ou similar consumindo `useSessions`) e:
+- Importar `maskIp`, `useIpMaskPreference` e `IpMaskToggle`.
+- Adicionar `<IpMaskToggle />` no header do card de sessões.
+- Aplicar `maskIp(session.ip_address, maskIpsEnabled)` em cada linha/cartão de sessão.
 
-1. Abrir `/admin/audit-logs` em duas abas lado a lado.
-2. Ativar "Mascarar IPs" em uma → a outra atualiza sozinha em <100 ms.
-3. Recarregar (F5) qualquer aba → o estado permanece.
-4. DevTools → Application → Local Storage → confirmar a chave `lov:ip-mask-enabled` com valor `true`/`false`.
+> Confirmarei o caminho exato do componente no momento da implementação (provavelmente referenciado por `MFASettings` ou pela aba "Dispositivos" em `Seguranca.tsx` via `KnownDevicesPanel`). Se `KnownDevicesPanel` já for o ponto de exibição de IPs de sessão, o toggle e o `maskIp` vão lá; caso contrário, no painel real de sessões.
 
-### Nada a fazer
+### 3. Sem mudanças necessárias
+- `AuditLogs`, `AuditLogTable` (incluindo modal), `BlockedIPsTab` e a tabela de logs do `RateLimitDashboard` já estão completos. Não duplicar toggles.
 
-Como o requisito já está atendido, não vou propor mudanças. Se quiser que eu **estenda** o comportamento (por exemplo: persistir por usuário no backend para sincronizar entre dispositivos, ou expor o toggle no header global em vez de página por página), me diga qual variação prefere e eu monto um plano específico.
+## Resultado esperado
+
+Após as duas mudanças, **todo IP exibido nas telas de segurança** (auditoria + modal, IPs bloqueados, rate limit logs **e alertas**, sessões/dispositivos) respeita a preferência única persistida em `localStorage` e sincronizada entre abas. Filtros de busca continuam casando o IP original via `matchesIpFilter`.
+
+Sem migrações, sem mudanças de RLS, sem impacto em exports CSV.
 
