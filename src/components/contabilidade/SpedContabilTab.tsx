@@ -245,8 +245,8 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                   const avisos = h.validacoes?.avisos ?? [];
                   const bloqueada = h.status === 'rejeitado' || erros.length > 0;
                   return (
-                  <>
-                  <TableRow key={h.id}>
+                  <React.Fragment key={h.id}>
+                  <TableRow>
                     <TableCell className="p-1">
                       <Button
                         size="sm"
