@@ -605,12 +605,53 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               </Alert>
 
               <div className="flex flex-wrap gap-2">
-                <Button onClick={() => window.open(resultado.url, '_blank')} variant="premium" className="gap-2 hover-scale">
-                  <Download className="h-4 w-4" /> Baixar .txt
-                </Button>
-                <Button variant="outline" onClick={baixarZip} className="gap-2 hover-scale">
-                  <FileArchive className="h-4 w-4" /> Baixar .zip (com README)
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span tabIndex={downloadBloqueado ? 0 : -1}>
+                        <Button
+                          onClick={() => window.open(resultado.url, '_blank')}
+                          disabled={downloadBloqueado}
+                          variant={downloadBloqueado ? 'outline' : 'premium'}
+                          className={cn('gap-2', !downloadBloqueado && 'hover-scale', downloadBloqueado && 'cursor-not-allowed')}
+                        >
+                          {downloadBloqueado ? <Ban className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+                          Baixar .txt
+                        </Button>
+                      </span>
+                    </TooltipTrigger>
+                    {downloadBloqueado && (
+                      <TooltipContent side="top">
+                        Corrija os {errosResultado.length} erro(s) antes de baixar
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span tabIndex={downloadBloqueado ? 0 : -1}>
+                        <Button
+                          variant="outline"
+                          onClick={baixarZip}
+                          disabled={downloadBloqueado}
+                          className={cn('gap-2', !downloadBloqueado && 'hover-scale', downloadBloqueado && 'cursor-not-allowed')}
+                        >
+                          {downloadBloqueado ? <Ban className="h-4 w-4" /> : <FileArchive className="h-4 w-4" />}
+                          Baixar .zip (com README)
+                        </Button>
+                      </span>
+                    </TooltipTrigger>
+                    {downloadBloqueado && (
+                      <TooltipContent side="top">
+                        Corrija os {errosResultado.length} erro(s) antes de baixar
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                </TooltipProvider>
+                {downloadBloqueado && (
+                  <Button variant="outline" onClick={() => setStep(2)} className="gap-2 hover-scale">
+                    <RefreshCw className="h-4 w-4" /> Voltar e revalidar
+                  </Button>
+                )}
               </div>
 
               {resultado.arquivo_id && (
