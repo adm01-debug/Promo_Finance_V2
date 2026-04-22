@@ -18,15 +18,19 @@ async function sha256(s: string) {
   return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-function err(status: number, detail: string, scimType?: string) {
+function err(status: number, detail: string, scimType?: string, extras?: Record<string, unknown>) {
   const body: Record<string, unknown> = {
     schemas: ["urn:ietf:params:scim:api:messages:2.0:Error"],
     detail,
     status: String(status),
   };
   if (scimType) body.scimType = scimType;
+  if (extras) for (const [k, v] of Object.entries(extras)) if (v !== undefined) body[k] = v;
   return new Response(JSON.stringify(body), { status, headers: scimHeaders });
 }
+
+const SUPPORTED_USER_FILTER_ATTRS = ["userName", "emails", "emails.value", "externalId", "active", "userType", "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:department"];
+const SUPPORTED_GROUP_FILTER_ATTRS = ["displayName", "externalId"];
 
 function ok(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: scimHeaders });
