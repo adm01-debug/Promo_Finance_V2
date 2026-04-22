@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, Eye, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
 import { useAnomaliasDetectadas } from "@/hooks/useAnomaliasDetectadas";
 import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
