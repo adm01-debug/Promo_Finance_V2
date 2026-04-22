@@ -135,12 +135,20 @@ export default function DashboardReceber() {
   }, [filteredContas]);
 
   const handlePeriodoChange = (value: string) => {
-    setPeriodo(value); const hoje = new Date();
-    if (value === "7") setDataInicio(subDays(hoje, 7)); else if (value === "30") setDataInicio(subDays(hoje, 30)); else if (value === "90") setDataInicio(subDays(hoje, 90)); else if (value === "365") setDataInicio(subDays(hoje, 365));
-    setDataFim(hoje);
+    const hoje = new Date();
+    let ini = subDays(hoje, 30);
+    if (value === "7") ini = subDays(hoje, 7);
+    else if (value === "30") ini = subDays(hoje, 30);
+    else if (value === "90") ini = subDays(hoje, 90);
+    else if (value === "365") ini = subDays(hoje, 365);
+    filtersController.setValues({
+      ...filtersController.values,
+      periodo: value,
+      dataInicioIso: ini.toISOString(),
+      dataFimIso: hoje.toISOString(),
+    });
   };
 
-  const clearFilters = () => { setEmpresaId("todas"); setVendedorId("todos"); setRamoAtividade("todos"); setStatusFilter("todos"); setClienteId("todos"); setPeriodo("30"); setDataInicio(subDays(new Date(), 30)); setDataFim(new Date()); };
   const activeFiltersCount = [empresaId !== "todas", vendedorId !== "todos", ramoAtividade !== "todos", statusFilter !== "todos", clienteId !== "todos"].filter(Boolean).length;
 
   return (
@@ -159,7 +167,19 @@ export default function DashboardReceber() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2"><Filter className="h-5 w-5" />Filtros{activeFiltersCount > 0 && <Badge variant="secondary">{activeFiltersCount} ativos</Badge>}</CardTitle>
-              {activeFiltersCount > 0 && <Button variant="ghost" size="sm" onClick={clearFilters}>Limpar filtros</Button>}
+              <ClearFiltersButton
+                controller={filtersController}
+                entityLabel="dashboard de recebíveis"
+                describeFilters={(v) => [
+                  { label: 'Empresa', value: v.empresaId, isActive: v.empresaId !== 'todas' },
+                  { label: 'Vendedor', value: v.vendedorId, isActive: v.vendedorId !== 'todos' },
+                  { label: 'Ramo', value: v.ramoAtividade, isActive: v.ramoAtividade !== 'todos' },
+                  { label: 'Status', value: v.statusFilter, isActive: v.statusFilter !== 'todos' },
+                  { label: 'Cliente', value: v.clienteId, isActive: v.clienteId !== 'todos' },
+                  { label: 'Período', value: v.periodo, isActive: v.periodo !== '30' },
+                ]}
+                label="Limpar filtros"
+              />
             </div>
           </CardHeader>
           <CardContent>
