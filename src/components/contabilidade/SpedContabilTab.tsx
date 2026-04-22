@@ -159,6 +159,20 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
         <SpedEcfWizard open={wizardOpen} onOpenChange={setWizardOpen} empresaId={empresaId} anoCalendario={ano} />
       )}
 
+      <ValidacoesPreSpedDialog
+        open={!!validacoesArquivo}
+        onOpenChange={(v) => { if (!v) setValidacoesArquivo(null); }}
+        arquivo={validacoesArquivo ? {
+          tipo: validacoesArquivo.tipo as 'ECD' | 'ECF',
+          ano_calendario: validacoesArquivo.ano_calendario,
+          hash_sha256: validacoesArquivo.hash_sha256,
+          status: validacoesArquivo.status,
+          validacoes: validacoesArquivo.validacoes ?? { erros: [], avisos: [] },
+        } satisfies ValidacoesPreSpedArquivo : null}
+        onDownloadTxt={() => validacoesArquivo && handleDownload(validacoesArquivo.storage_path)}
+        onDownloadZip={() => validacoesArquivo && handleDownloadZip(validacoesArquivo)}
+      />
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
