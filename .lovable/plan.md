@@ -1,64 +1,89 @@
 
 
-## Plano — Logout SSO sincronizado entre abas com toast único
+## Plano — Revogação local reforçada no logout (cookies + storage do app)
 
 ### Diagnóstico
 
-Hoje `signOut()` em `useAuth.tsx` chama `sso-logout`, faz `supabase.auth.signOut()` localmente e, se houver `logout_url`, redireciona **somente a aba atual** para o IdP. Outras abas abertas:
+Hoje `signOut()` em `useAuth.tsx` faz:
+1. Chama `sso-logout` (se SSO).
+2. Broadcasta SLO para outras abas.
+3. `supabase.auth.signOut()` — limpa o token Supabase em `localStorage`.
+4. Reseta state local (user, session, profile, role).
+5. Redireciona para `ssoLogoutUrl` se existir.
 
-- Continuam montadas em rotas autenticadas até o `onAuthStateChange` disparar localmente (o que acontece eventualmente porque `auth.signOut()` propaga a perda de token entre abas via `localStorage`, mas **com latência variável**).
-- Cada aba que detecta o logout pode chamar `toast` próprio, gerando **múltiplos toasts** dispersos.
-- Não há sinalização explícita de "este foi um SLO SSO" — abas perdem contexto e podem mostrar a mensagem genérica de "sessão expirada".
+**Lacunas**:
+- `localStorage` ainda contém artefatos do app: `current-empresa-id`, `sso-slo-toast-shown`, `sso-slo-done-shown`, filtros salvos, preferências de UI, caches do React Query persistidos, flags de onboarding, `ip-mask-preference`, etc.
+- `sessionStorage` mantém estado de navegação/wizard.
+- Cookies não-HttpOnly do app (se houver) permanecem.
+- O `QueryClient` do TanStack mantém em memória todos os dados sensíveis já carregados (contas, clientes, lançamentos) — se o redirect SSO falhar ou a aba só voltar ao `/auth`, qualquer navegação rápida pode renderizar dados em cache antes do guard fechar a rota.
+- IndexedDB (usado pelo SW Workbox para cache de respostas) pode reter respostas autenticadas.
+- O `revokeSession` em `user_sessions` não é chamado no logout — a sessão fica marcada como ativa no banco.
 
-Falta um canal de sincronização explícito que: (1) avise todas as abas no instante zero do SLO, (2) faça-as navegarem para `/auth?slo=ok` (mesma rota usada pelo `post_logout_redirect_uri` em `sso-logout/index.ts`), (3) garanta um único toast visível no app inteiro.
+A `useSessions().revokeSession` já existe e marca `revoked=true`. Falta integrar.
 
 ### Comportamento
 
-1. Quando o usuário clica em sair e há `ssoProviderId`, antes de chamar `auth.signOut()`, a aba **broadcasta** uma mensagem `{ type: 'sso-slo-initiated', providerNome, ts }` via `BroadcastChannel('sso-sync')`.
-2. Todas as outras abas que estão escutando recebem a mensagem e:
-   - Marcam um flag `sessionStorage['sso-slo-toast-shown'] = ts` para suprimir toasts duplicados que outras abas tentem mostrar;
-   - Chamam `supabase.auth.signOut({ scope: 'local' })` (não revoga o token de novo — só limpa o storage local) e navegam para `/auth?slo=ok&from=tab-sync`.
-3. A aba que iniciou o SLO mostra **um único** toast: `"Encerrando sessão SSO via {provider}…"` (sonner com id fixo `sso-slo` para deduplicação se a mesma aba renderizar duas vezes).
-4. Em `/auth`, quando a query `slo=ok` está presente, mostrar um toast informativo único `"Sessão encerrada com segurança"` — também com id fixo `sso-slo-done`, e somente uma vez por carregamento (guard via `sessionStorage`).
-5. Fallback robusto: se `BroadcastChannel` não existir (Safari antigo / contextos restritos), usa `window.addEventListener('storage', ...)` com uma chave-sentinela `localStorage.setItem('sso-slo-broadcast', JSON.stringify(payload))` + `removeItem` imediato. Funciona em todas as abas do mesmo origin.
-6. "Fechar páginas abertas em outras abas": navegadores **não permitem** que uma aba chame `window.close()` em outra aba que ela não abriu (regra de segurança do browser). O comportamento equivalente — e que o usuário realmente quer — é que essas abas **saiam imediatamente da área autenticada** e mostrem a tela de login. Isso é o que o item 2 entrega. Documentar essa limitação como nota no PR.
+1. Criar utilitário central `src/lib/auth-cleanup.ts` que executa em ordem:
+   - **a. QueryClient.clear()** — limpa todo o cache em memória (impede flash de dados sensíveis na próxima rota).
+   - **b. Limpar `localStorage`** com allowlist: preserva apenas chaves não-sensíveis explicitamente listadas (`theme`, `language`, `cookie-consent`, `ip-mask-preference`). Tudo o mais é removido — incluindo `current-empresa-id`, qualquer chave começando com `sb-` (token Supabase residual), `lovable-`, `react-query-`, `sso-slo-*`, filtros salvos, wizard state, etc.
+   - **c. Limpar `sessionStorage`** completamente (`sessionStorage.clear()`).
+   - **d. Limpar cookies não-HttpOnly do app** com `path=/` para o `document.domain` atual: itera `document.cookie.split(';')` e expira cada um com `Max-Age=0; path=/; domain=<host>` e variantes (sem domain, com `.domain`). Cookies HttpOnly do Supabase são geridos pelo `auth.signOut()`.
+   - **e. Limpar caches do Service Worker** que possam ter respostas autenticadas: `caches.keys()` + `caches.delete()` para caches que casam com padrões de API (`/rest/v1/`, `/functions/v1/`, `api-cache-*`, `runtime-*`). Preserva caches estáticos (`precache-*`, `static-*`).
+   - **f. Limpar IndexedDB de runtime**: `indexedDB.databases?.()` e deletar bancos cujo nome casa com padrões dinâmicos (`workbox-*`, `keyval-store`, `lovable-cache`). Try/catch envolvendo cada delete.
+   - **g. Disparar evento global** `window.dispatchEvent(new Event('app-logout-cleanup'))` para que outros hooks (ex.: `useUserEmpresas`, listeners de empresa) resetem seu state in-memory.
+   - Cada etapa em try/catch isolado — falha de uma não bloqueia as demais. Logs via `logger.warn`.
+
+2. Atualizar `src/hooks/useAuth.tsx` `signOut()`:
+   - Antes de `supabase.auth.signOut()`: tentar revogar a sessão ativa em `user_sessions` (best-effort) — chama nova mutation pequena inline, marcando `revoked=true, revoked_at=now()` para a sessão `is_current=true` do `user.id`.
+   - Após `supabase.auth.signOut()` e antes do redirect: chamar `await runAuthCleanup(queryClient)`.
+   - Se `ssoLogoutUrl` existir: `window.location.replace(ssoLogoutUrl)` (em vez de `href` — não deixa entrada no history que permitiria voltar).
+   - Se não houver SSO logout URL: `window.location.replace('/auth')` para forçar bootstrap completo da aplicação (descarta tudo o que está em memória React).
+
+3. Atualizar o handler de `subscribeSsoSlo` (outras abas que recebem broadcast):
+   - Após `supabase.auth.signOut({ scope: 'local' })`, chamar também `runAuthCleanup(queryClient)`.
+   - Continua o `window.location.replace('/auth?slo=ok&from=tab-sync')` — o full reload já garantiria reset, mas o cleanup elimina dados sensíveis durante a janela entre o handler e o reload.
+
+4. Expor `queryClient` ao `useAuth`:
+   - `useAuth.tsx` importa `useQueryClient` do `@tanstack/react-query` e captura no provider.
+   - Passa para `runAuthCleanup` em ambos os caminhos (signOut próprio e listener de outra aba).
+
+5. Garantir o redirect duro:
+   - Substituir os atuais `window.location.href = ssoLogoutUrl` por `window.location.replace(...)` para eliminar a entrada do history; após o logout, "Voltar" do navegador não pode reentrar na rota protegida com state ainda em memória.
+   - Quando não há SSO, hoje o código não redireciona explicitamente (deixa o `ProtectedRoute` reagir). Passar a forçar `window.location.replace('/auth')` para descarregar o bundle React e seu estado.
 
 ### Detalhes técnicos
 
-**Novo arquivo `src/lib/sso-sync.ts`** (~60 linhas):
-- `export type SsoSyncMessage = { type: 'sso-slo-initiated'; providerNome: string; ts: number }`
-- `export function broadcastSsoSlo(providerNome: string)`: tenta `BroadcastChannel('sso-sync').postMessage(payload)` com try/catch; em qualquer falha ou ausência da API, faz fallback para `localStorage.setItem('sso-slo-broadcast', JSON.stringify(payload)); localStorage.removeItem('sso-slo-broadcast')`.
-- `export function subscribeSsoSlo(handler: (msg: SsoSyncMessage) => void): () => void`: registra listener no `BroadcastChannel` **e** no `window.storage` (para `key === 'sso-slo-broadcast' && newValue`); retorna função de cleanup que fecha o channel e remove o listener.
-- Helper interno `getDedupKey(ts) = 'sso-slo-' + ts` para o flag de supressão.
+- ➕ **`src/lib/auth-cleanup.ts`** (~80 linhas):
+  - `export const PRESERVED_LOCAL_KEYS = new Set(['theme','language','cookie-consent','ip-mask-preference'])`
+  - `export async function runAuthCleanup(queryClient?: QueryClient): Promise<void>` com as 7 etapas acima, cada uma em `try/catch` independente.
+  - Helper interno `clearCookies()` que itera `document.cookie` e expira cada nome com 3 combinações de path/domain.
+  - Helper interno `clearRuntimeCaches()` baseado em padrões regex (`/^(workbox-runtime|api-cache|runtime-)/i`).
 
-**Edit `src/hooks/useAuth.tsx`**:
-- Importar `broadcastSsoSlo, subscribeSsoSlo` do novo arquivo, `toast` do `sonner`.
-- Em `signOut()`: se `ssoProviderId` presente e `sso-logout` retornar sucesso, chamar `broadcastSsoSlo(data.provider_nome ?? 'SSO')` **antes** de `supabase.auth.signOut()`. Mostrar `toast.loading('Encerrando sessão SSO via ' + nome + '…', { id: 'sso-slo' })`.
-- Novo `useEffect` no `AuthProvider` que registra `subscribeSsoSlo` na montagem. Handler:
-  - Se `sessionStorage.getItem('sso-slo-toast-shown') === String(msg.ts)` → ignora (já tratado).
-  - Caso contrário: `sessionStorage.setItem('sso-slo-toast-shown', String(msg.ts))`, `toast.info('Sessão SSO encerrada em outra aba', { id: 'sso-slo' })`, chama `supabase.auth.signOut({ scope: 'local' }).catch(()=>{})`, e `window.location.replace('/auth?slo=ok&from=tab-sync')`.
-  - Cleanup no return do `useEffect`.
+- ✏️ **`src/hooks/useAuth.tsx`**:
+  - Importar `useQueryClient` e `runAuthCleanup`.
+  - No `AuthProvider`: `const queryClient = useQueryClient();`
+  - Em `signOut`: best-effort `update user_sessions set revoked=true where user_id=user.id and is_current=true and revoked=false`; depois `auth.signOut()`; depois `await runAuthCleanup(queryClient)`; depois `window.location.replace(ssoLogoutUrl ?? '/auth')`.
+  - No listener de `subscribeSsoSlo`: incluir `await runAuthCleanup(queryClient)` antes do `window.location.replace`.
+  - Remover os `setUser(null)` etc. que precedem o redirect — são inúteis dado o full reload, mas mantidos comentados não — vamos simplesmente remover para evitar render intermediário.
 
-**Edit `src/pages/Auth.tsx`** (presumido — vou confirmar o caminho na implementação; se for `src/pages/Auth.tsx` ou similar, adicionar lá):
-- No mount, ler `URLSearchParams`. Se `slo === 'ok'` e `sessionStorage.getItem('sso-slo-done-shown') !== '1'`:
-  - `sessionStorage.setItem('sso-slo-done-shown', '1')`
-  - `toast.success('Sessão encerrada com segurança', { id: 'sso-slo-done' })`
-- Limpar a flag depois de alguns segundos para permitir um novo logout futuro na mesma aba persistente: `setTimeout(() => sessionStorage.removeItem('sso-slo-done-shown'), 5000)`.
+- ✏️ **Sem mudança** em `sso-logout/index.ts`, `Auth.tsx`, `sso-sync.ts`, `useSessions.ts`. A revogação de sessão é inline para evitar dependência de hook (que exige React).
 
-**Sem mudanças**: `supabase/functions/sso-logout/index.ts` continua igual — o `post_logout_redirect_uri` já aponta para `/auth?slo=ok`, então o usuário que volta do IdP ativa o mesmo handler.
+- O `QueryClient` é único (importado de `src/lib/queryClient.ts` e injetado no `App.tsx`); `useQueryClient` retorna a instância correta. Se algum cenário sem provider, o `runAuthCleanup` aceita undefined e pula a etapa.
 
 ### Critério de pronto
 
-1. Com 2+ abas autenticadas, clicar em "Sair" em uma aba faz **todas** as outras saírem para `/auth?slo=ok&from=tab-sync` em <1s.
-2. Aparece exatamente **um** toast por evento (loading na aba iniciadora, info nas outras, sucesso final em `/auth`) — sem duplicatas mesmo abrindo 5 abas.
-3. Quando o IdP redireciona de volta com `?slo=ok`, o toast "Sessão encerrada com segurança" aparece uma única vez.
-4. `BroadcastChannel` é o caminho preferencial; o fallback via `storage` event funciona quando o BC é simulado como ausente.
-5. Sem regressão no logout de usuários **não-SSO** (broadcast só dispara quando há `ssoProviderId`).
-6. Nenhum erro no console se uma aba escuta o canal antes de qualquer SLO ocorrer.
+1. Após "Sair", `localStorage` contém apenas as chaves da allowlist; tudo o mais foi removido (verificável no DevTools).
+2. `sessionStorage` está vazio.
+3. Cookies não-HttpOnly do app foram expirados (verificável em Application → Cookies).
+4. `caches.keys()` em runtime patterns retorna vazio para os padrões dinâmicos; caches estáticos do PWA permanecem.
+5. Após o logout, "Voltar" do navegador (history) não restaura uma rota protegida com dados visíveis — abre `/auth`.
+6. `user_sessions` da sessão atual fica com `revoked=true` no banco.
+7. Em outras abas (broadcast SLO), o cleanup também roda antes do reload.
+8. Sem regressão para usuários **não-SSO**: o cleanup roda igual, e o redirect final é `/auth`.
+9. Falha em qualquer etapa do cleanup (ex.: `caches` indisponível em alguns browsers) não impede a conclusão do logout — apenas log de warning.
 
 ### Arquivos
 
-- ➕ `src/lib/sso-sync.ts`
-- ✏️ `src/hooks/useAuth.tsx` (broadcast no `signOut`, listener no `useEffect`)
-- ✏️ `src/pages/Auth.tsx` (toast único ao chegar com `?slo=ok`)
+- ➕ `src/lib/auth-cleanup.ts`
+- ✏️ `src/hooks/useAuth.tsx`
 
