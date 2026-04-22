@@ -44,7 +44,33 @@ async function logOp(admin: SupabaseClient, opts: {
   resource: string; operation: string;
   externalId: string | null; userId: string | null;
   status: number; reqBody: unknown; resBody: unknown; t0: number;
+  method?: string; path?: string; ip?: string | null; userAgent?: string | null;
+  errorDetail?: string | null;
 }) {
+  const duration = Date.now() - opts.t0;
+  // Structured console log — sempre emitido (visível em `supabase functions logs`).
+  const level = opts.status >= 500 ? "error" : opts.status >= 400 ? "warn" : "info";
+  const logLine = {
+    scim: true,
+    method: opts.method,
+    path: opts.path,
+    resource: opts.resource,
+    operation: opts.operation,
+    status: opts.status,
+    duration_ms: duration,
+    empresa_id: opts.empresaId,
+    token_id: opts.tokenId,
+    external_id: opts.externalId,
+    user_id: opts.userId,
+    ip: opts.ip ?? null,
+    user_agent: opts.userAgent ?? null,
+    error: opts.errorDetail ?? null,
+  };
+  if (level === "error") console.error(JSON.stringify(logLine));
+  else if (level === "warn") console.warn(JSON.stringify(logLine));
+  else console.info(JSON.stringify(logLine));
+
+  // Persistência best-effort em scim_operations_log.
   try {
     await admin.from("scim_operations_log").insert({
       token_id: opts.tokenId, empresa_id: opts.empresaId,
@@ -52,9 +78,19 @@ async function logOp(admin: SupabaseClient, opts: {
       external_id: opts.externalId, user_id: opts.userId, status_code: opts.status,
       request_body: truncate(opts.reqBody) as any,
       response_body: truncate(opts.resBody) as any,
-      duration_ms: Date.now() - opts.t0,
+      duration_ms: duration,
     });
   } catch {/* nunca derruba a request */}
+}
+
+/** Extrai detail de uma resposta SCIM Error (best-effort). */
+async function extractErrorDetail(resp: Response): Promise<string | null> {
+  if (resp.status < 400) return null;
+  if (!resp.headers.get("content-type")?.includes("scim+json")) return null;
+  try {
+    const body = await resp.clone().json();
+    return typeof body?.detail === "string" ? body.detail : null;
+  } catch { return null; }
 }
 
 // ============================== role resolver ==============================
