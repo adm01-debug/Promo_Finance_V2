@@ -850,8 +850,9 @@ export function AnomaliasDetectadasPanel() {
                   <div className="flex flex-wrap items-center gap-2 mb-3 p-2 rounded-md border border-border bg-muted/40">
                     <Checkbox
                       id="anomalias-select-all"
-                      checked={allSelected ? true : someSelected ? "indeterminate" : false}
-                      onCheckedChange={handleToggleAll}
+                      checked={allSelected}
+                      indeterminate={someSelected}
+                      onChange={handleToggleAll}
                       aria-label="Selecionar todas as anomalias reabríveis visíveis"
                     />
                     <label
@@ -906,7 +907,7 @@ export function AnomaliasDetectadasPanel() {
                           {podeSelecionar && (
                             <Checkbox
                               checked={selecionado}
-                              onCheckedChange={() => toggleSelecionado(a.id)}
+                              onChange={() => toggleSelecionado(a.id)}
                               className="mt-1 shrink-0"
                               aria-label={`Selecionar anomalia ${a.descricao}`}
                             />
