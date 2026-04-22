@@ -127,6 +127,9 @@ function KpiCard({ label, value, mono }: { label: string; value: number | string
   );
 }
 
+const WIZARD_DRAFT_KEY = (empresaId: string, ano: number) =>
+  `sped-ecf-wizard-draft:${empresaId}:${ano}`;
+
 export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: Props) {
   const [step, setStep] = useState<Step>(1);
   const [resultado, setResultado] = useState<(SpedGeracaoResult & { arquivo_id?: string }) | null>(null);
@@ -141,15 +144,40 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
 
   useEffect(() => () => { if (copyTimer.current) clearTimeout(copyTimer.current); }, []);
 
+  // Hidrata rascunho (step + recibo) ao abrir
   useEffect(() => {
     if (open && empresaId && anoCalendario) {
-      setStep(1);
+      let restoredStep: Step = 1;
+      let restoredRecibo = '';
+      if (typeof window !== 'undefined') {
+        try {
+          const raw = window.localStorage.getItem(WIZARD_DRAFT_KEY(empresaId, anoCalendario));
+          if (raw) {
+            const parsed = JSON.parse(raw) as { step?: Step; recibo?: string };
+            if (parsed.step === 1 || parsed.step === 2) restoredStep = parsed.step;
+            if (typeof parsed.recibo === 'string') restoredRecibo = parsed.recibo;
+          }
+        } catch { /* noop */ }
+      }
+      setStep(restoredStep);
       setResultado(null);
-      setRecibo('');
+      setRecibo(restoredRecibo);
       validar.mutate({ empresaId, anoCalendario });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, empresaId, anoCalendario]);
+
+  // Persiste rascunho enquanto o wizard está aberto (sem persistir step 3, que é resultado pós-geração)
+  useEffect(() => {
+    if (!open || !empresaId || !anoCalendario || typeof window === 'undefined') return;
+    if (step === 3) return;
+    try {
+      window.localStorage.setItem(
+        WIZARD_DRAFT_KEY(empresaId, anoCalendario),
+        JSON.stringify({ step, recibo, ts: Date.now() }),
+      );
+    } catch { /* noop */ }
+  }, [open, empresaId, anoCalendario, step, recibo]);
 
   const data = validar.data;
   const erros = data?.validacoes.erros.length || 0;
