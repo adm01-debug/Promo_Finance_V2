@@ -36,15 +36,22 @@ export function ReabrirAnomaliasLoteDialog({
   onConcluido,
 }: Props) {
   const [motivo, setMotivo] = useState("");
+  const [tocado, setTocado] = useState(false);
   const reabrirLote = useReabrirAnomaliasLote();
   const sincronizar = useSincronizarAnomaliaBitrix();
 
   useEffect(() => {
-    if (!open) setMotivo("");
+    if (!open) {
+      setMotivo("");
+      setTocado(false);
+    }
   }, [open]);
 
   const motivoTrim = motivo.trim();
-  const valido = motivoTrim.length >= 10 && ids.length > 0;
+  const parsed = motivoSchema.safeParse(motivo);
+  const erroMotivo = parsed.success ? null : parsed.error.issues[0]?.message ?? null;
+  const mostrarErro = tocado && !!erroMotivo;
+  const valido = parsed.success && ids.length > 0;
 
   async function handleConfirmar() {
     if (!valido) return;
