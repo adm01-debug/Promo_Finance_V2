@@ -289,10 +289,21 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
                     <span className="font-semibold truncate">{displayName}</span>
                     <span className="text-xs font-normal text-muted-foreground truncate">{user?.email}</span>
                     {roleInfo && (
-                      <Badge variant="outline" className={cn("mt-0.5 w-fit text-[10px]", roleInfo.color)}>
-                        <Shield className="h-2.5 w-2.5 mr-1" />
-                        {roleInfo.label}
-                      </Badge>
+                      <div className="flex flex-wrap items-center gap-1 mt-0.5">
+                        <Badge variant="outline" className={cn("w-fit text-[10px]", roleInfo.color)}>
+                          <Shield className="h-2.5 w-2.5 mr-1" />
+                          {roleInfo.label}
+                        </Badge>
+                        {empresaLabel ? (
+                          <Badge variant="secondary" className="w-fit text-[10px] max-w-[140px] truncate">
+                            {empresaLabel}
+                          </Badge>
+                        ) : isFallbackGlobal ? (
+                          <Badge variant="outline" className="w-fit text-[10px] text-muted-foreground">
+                            Global
+                          </Badge>
+                        ) : null}
+                      </div>
                     )}
                   </div>
                 </div>
