@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Download, FileText, AlertTriangle, CheckCircle2, ShieldAlert, FileArchive, Wand2, Send, FileSearch, ChevronDown, ChevronRight, ScrollText, XCircle, Hash, Lock, Unlock } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -406,7 +406,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                       </TableCell>
                     </TableRow>
                   )}
-                  </>
+                  </React.Fragment>
                   );
                 })}
               </TableBody>
