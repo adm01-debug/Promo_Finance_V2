@@ -238,6 +238,16 @@ export function AnomaliasDetectadasPanel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, sort, bootstrapped]);
 
+  // Salva o search atual para que a página de drill-down possa restaurar
+  // o painel com os mesmos filtros/ordenação ao clicar em "Voltar para a lista".
+  useEffect(() => {
+    if (!bootstrapped) return;
+    window.sessionStorage.setItem(
+      "anomalias-panel:last-search",
+      window.location.search ?? "",
+    );
+  }, [searchParams, bootstrapped]);
+
   const { data, isLoading, atualizarStatus } = useAnomaliasDetectadas(
     filters.status === "todas" ? undefined : filters.status,
   );
