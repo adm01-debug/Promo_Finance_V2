@@ -77,6 +77,7 @@ const FiltrosSalvos = lazy(() => import('./pages/configuracoes/FiltrosSalvos'));
 const ContadorReadonly = lazy(() => import('./pages/ContadorReadonly'));
 const SSOAdmin = lazy(() => import('./pages/admin/SSOAdmin'));
 const SSOJitEvents = lazy(() => import('./pages/admin/SSOJitEvents'));
+const ScimAudit = lazy(() => import('./pages/admin/ScimAudit'));
 const InsightsIA = lazy(() => import('./pages/admin/InsightsIA'));
 const AnomaliaDetalhe = lazy(() => import('./pages/admin/AnomaliaDetalhe'));
 const ComplianceAuditoria = lazy(() => import('./pages/admin/ComplianceAuditoria'));
@@ -159,6 +160,7 @@ function AppRoutes() {
             <Route path="/admin/system-health" element={<ProtectedRoute><AdminSystemHealth /></ProtectedRoute>} />
             <Route path="/admin/sso" element={<ProtectedRoute><SSOAdmin /></ProtectedRoute>} />
             <Route path="/admin/sso-jit-events" element={<ProtectedRoute requiredRoles={['admin']}><SSOJitEvents /></ProtectedRoute>} />
+            <Route path="/admin/scim-audit" element={<ProtectedRoute requiredRoles={['admin']}><ScimAudit /></ProtectedRoute>} />
             <Route path="/admin/insights-ia" element={<ProtectedRoute><InsightsIA /></ProtectedRoute>} />
             <Route path="/admin/insights-ia/anomalia/:id" element={<ProtectedRoute><AnomaliaDetalhe /></ProtectedRoute>} />
             <Route path="/admin/compliance" element={<ProtectedRoute><ComplianceAuditoria /></ProtectedRoute>} />
