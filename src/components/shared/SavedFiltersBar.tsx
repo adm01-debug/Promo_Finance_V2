@@ -155,6 +155,24 @@ export function SavedFiltersBar<T>({
     setRoles(checked ? [...roles, role] : roles.filter((r) => r !== role));
   };
 
+  // Restaura ao preset padrão (se existir) ou ao estado inicial.
+  const handleRestoreDefault = () => {
+    if (defaultFilter) {
+      onLoad({ id: defaultFilter.id, payload: defaultFilter.filters });
+    } else {
+      onClear();
+    }
+  };
+
+  // Habilita o botão somente quando há algo a restaurar:
+  // - existe preset modificado, OU
+  // - há um preset ativo diferente do default, OU
+  // - não há preset ativo mas existe default disponível
+  const canRestore =
+    isModified ||
+    (defaultFilter && activePresetId !== defaultFilter.id) ||
+    (!activePresetId && !!defaultFilter);
+
   return (
     <>
       <div className="flex items-center gap-1.5 flex-wrap">
