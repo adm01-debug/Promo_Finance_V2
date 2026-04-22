@@ -34,6 +34,21 @@ export function useHighlightFromUrl(
     const id = searchParams.get(paramName);
     if (!id) return;
 
+    const cleanParam = () => {
+      const next = new URLSearchParams(searchParams);
+      next.delete(paramName);
+      setSearchParams(next, { replace: true });
+    };
+
+    // Param malformado → não tenta procurar, limpa a URL e avisa.
+    if (!isValidId(id)) {
+      toast.error("Link inválido", {
+        description: "O identificador na URL não está em um formato válido.",
+      });
+      cleanParam();
+      return;
+    }
+
     let attempts = 0;
     let timeoutId: number | undefined;
     let removeTimeoutId: number | undefined;
@@ -46,6 +61,14 @@ export function useHighlightFromUrl(
         attempts += 1;
         if (attempts < 12) {
           timeoutId = window.setTimeout(tryHighlight, 250);
+        } else {
+          // Esgotou retries: o item não está nesta lista (filtro ativo, paginação,
+          // permissão, ou registro removido). Avisa e limpa o param.
+          toast.warning("Item não encontrado", {
+            description:
+              "O registro vinculado não está visível aqui. Verifique filtros ativos ou se ele ainda existe.",
+          });
+          cleanParam();
         }
         return;
       }
@@ -57,10 +80,7 @@ export function useHighlightFromUrl(
         el.classList.remove("row-highlight-flash");
       }, durationMs);
 
-      // Limpa o param para não re-disparar em navegação/back/refresh
-      const next = new URLSearchParams(searchParams);
-      next.delete(paramName);
-      setSearchParams(next, { replace: true });
+      cleanParam();
     };
 
     // Aguarda um tick para o React montar a lista filtrada
