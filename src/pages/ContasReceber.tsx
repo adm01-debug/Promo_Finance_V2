@@ -57,6 +57,8 @@ export default function ContasReceber() {
     selectAll, toggleSelect, clearSelection,
   } = useContasReceberLogic();
 
+  useHighlightFromUrl('highlight', (sortedContas?.length ?? 0) > 0);
+
   const bulkActions = [
     { id: 'mark-received', label: 'Marcar como Recebido', icon: <CheckCircle2 className="h-4 w-4" />, variant: 'default' as const, onClick: handleBulkMarkAsReceived },
     { id: 'cancel', label: 'Cancelar', icon: <XCircle className="h-4 w-4" />, variant: 'destructive' as const, onClick: handleBulkCancel },
