@@ -31,6 +31,38 @@ export function AnomaliaDrillDownDrawer() {
   const { data, isLoading, error } = useAnomaliaDetalhe(openId ?? undefined);
   const { preferences } = useAnomaliaPreferences();
   const queryClient = useQueryClient();
+  const audit = useLogAudit();
+  const [autoPromovidos] = useState<Set<string>>(() => new Set());
+
+  // Auto-promove anomalia "nova" para "investigando" ao abrir o drawer
+  useEffect(() => {
+    if (!data?.anomalia) return;
+    const a = data.anomalia;
+    if (a.status !== "nova") return;
+    if (autoPromovidos.has(a.id)) return;
+    autoPromovidos.add(a.id);
+
+    (async () => {
+      const { data: updated, error: err } = await supabase
+        .from("anomalias_detectadas")
+        .update({ status: "investigando" })
+        .eq("id", a.id)
+        .eq("status", "nova")
+        .select("id")
+        .maybeSingle();
+      if (err || !updated) return;
+      await audit
+        .mutateAsync({
+          action: "UPDATE",
+          tableName: "anomalias_detectadas",
+          recordId: a.id,
+          details: "AUTO_REVIEW_OPEN: status nova → investigando ao abrir drawer",
+        })
+        .catch(() => undefined);
+      queryClient.invalidateQueries({ queryKey: ["anomalias-detectadas"] });
+      queryClient.invalidateQueries({ queryKey: ["anomalia-detalhe", a.id] });
+    })();
+  }, [data?.anomalia, audit, queryClient, autoPromovidos]);
 
   useEffect(() => {
     function handler(e: Event) {
