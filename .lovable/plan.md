@@ -1,127 +1,99 @@
 
 
-## Plano — Histórico de simulações do Sandbox SSO
+## Plano — Validação de consistência do editor SSO
 
 ### Diagnóstico
 
-O `SSOSandboxPanel` hoje executa simulações via `sso-test-login` mas descarta o resultado quando o admin muda os inputs ou clica em "Simular" novamente. Não há como:
+Hoje o `SSOWizardDialog` salva `claim_mapping`, `allowed_domains` e `role_mappings` sem checar conflitos lógicos entre eles. Problemas reais que passam batido:
 
-- Comparar duas simulações lado a lado (ex.: "antes do ajuste do `claim_mapping` o usuário era bloqueado, agora seria JIT").
-- Reproduzir a mesma entrada (claims + provider + config manual) com um clique.
-- Auditar quem simulou o quê (útil quando vários admins testam o mesmo provider).
+- `claim_mapping.email` vazio ou apontando para chave que nenhum preset emite (ex.: `mail` em Azure quando o IdP entrega `preferred_username`).
+- `allowed_domains` vazio com `auto_provision_users=true` → qualquer pessoa do mundo entra via JIT.
+- `allowed_domains` com domínios duplicados, com espaços, em maiúsculas, ou inválidos (sem `.`).
+- `role_mappings` com `idp_group` duplicado, `app_role` desconhecido, ordem repetida, ou ZERO mappings + `default_role='admin'` (escalonamento involuntário).
+- `default_role` apontando para papel que não existe no enum (`admin|financeiro|operacional|visualizador`).
+- Nenhum `role_mapping` cobre os grupos comuns do preset (Azure → `Admins-*`, Okta → `Operacional`) → todo mundo cai no `default_role`, "rota sem correspondência".
+- `force_sso_for_domains=true` mas `allowed_domains` vazio → flag inerte.
+- `claim_mapping.groups` definido, mas zero `role_mappings` cadastrados → grupos vêm e são descartados.
 
-A tabela `sso_login_attempts` registra logins reais — não simulações. Misturar os dois lá poluiria as métricas. Precisamos de uma tabela própria.
+### Solução
 
-### Comportamento
+**1. Lib pura `src/lib/sso/consistency.ts`** com função `validateSSOConfig(config) → Issue[]`:
 
-1. **Persistência automática** — toda chamada bem-sucedida ao `sso-test-login` (sucesso ou com erros lógicos) é salva em `sso_sandbox_runs` junto com o snapshot de input. Erros HTTP/exception não são salvos.
+```ts
+type Severity = 'error' | 'warning' | 'info';
+type Scope = 'claim_mapping' | 'allowed_domains' | 'role_mappings' | 'default_role' | 'global';
 
-2. **Aba/seção "Histórico"** dentro do `SSOSandboxPanel`, abaixo dos dois cards atuais ou em uma nova `Tabs` interna (`Simular` / `Histórico`):
-   - Tabela com colunas: data/hora, provider, email mascarado, **outcome** (badge), papel resolvido, grupo casado, autor.
-   - **Outcome** é derivado do `preview` em uma única classe semântica:
-     - `bloqueado` (vermelho) — `errors.length > 0` ou `domain_allowed=false` ou `provision_blocked_reason`.
-     - `seria_jit` (azul) — `would_jit_provision=true` e sem erros.
-     - `usuario_existente` (verde) — `user_exists=true` e sem erros.
-     - `sem_email` (cinza) — sem email parseável.
-   - Filtros: provider (Select), outcome (chips), busca por email, range de datas.
-   - Paginação simples (20 por página, `range()` no Supabase).
-
-3. **Ações por linha**:
-   - **Ver detalhes** — abre `Sheet` lateral com o JSON completo de input e o `preview` retornado, mais a trilha de `role_mappings_evaluated` (reutiliza `RulesAppliedCard`).
-   - **Reproduzir** — preenche o painel da esquerda (provider, useProviderConfig, claims JSON, mapping manual etc.) com os valores salvos e troca para a aba "Simular". Não dispara a simulação automaticamente — admin revisa e clica "Simular".
-   - **Comparar** — checkbox em cada linha permite selecionar até **2** runs. Quando 2 estão selecionadas, aparece um botão "Comparar (2)" que abre um `Dialog` em duas colunas mostrando lado a lado: input diff (claims, claim_mapping, role_mappings, default_role), outcome, grupos, papel, e diferenças destacadas.
-   - **Excluir** — soft delete (admin only). Confirmação inline.
-
-4. **Limites e housekeeping**:
-   - RLS: apenas admins fazem SELECT/INSERT/DELETE.
-   - Política de retenção: TTL de 90 dias (cleanup feito por job já existente ou simplesmente via `created_at < now() - 90d` na próxima execução). Sem cron novo nesta entrega; documentado no README da feature.
-
-### Detalhes técnicos
-
-**Migration — `sso_sandbox_runs`**:
-
-```sql
-CREATE TABLE public.sso_sandbox_runs (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  created_at timestamptz NOT NULL DEFAULT now(),
-  created_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,
-  created_by_email text,
-  provider_id uuid REFERENCES public.sso_providers(id) ON DELETE SET NULL,
-  provider_nome text,
-  use_provider_config boolean NOT NULL DEFAULT true,
-  input jsonb NOT NULL,           -- {mock_claims, claim_mapping, role_mappings, default_role, allowed_domains, provider_id}
-  result jsonb NOT NULL,          -- preview + errors + success
-  outcome text NOT NULL,          -- 'bloqueado' | 'seria_jit' | 'usuario_existente' | 'sem_email'
-  email_masked text,
-  resolved_role text,
-  matched_group text,
-  has_errors boolean NOT NULL DEFAULT false
-);
-
-CREATE INDEX idx_sso_sandbox_runs_created_at ON public.sso_sandbox_runs (created_at DESC);
-CREATE INDEX idx_sso_sandbox_runs_provider ON public.sso_sandbox_runs (provider_id, created_at DESC);
-CREATE INDEX idx_sso_sandbox_runs_outcome ON public.sso_sandbox_runs (outcome, created_at DESC);
-
-ALTER TABLE public.sso_sandbox_runs ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Admins read sandbox runs"
-  ON public.sso_sandbox_runs FOR SELECT TO authenticated
-  USING (public.has_role(auth.uid(), 'admin'));
-
-CREATE POLICY "Admins insert sandbox runs"
-  ON public.sso_sandbox_runs FOR INSERT TO authenticated
-  WITH CHECK (public.has_role(auth.uid(), 'admin') AND auth.uid() = created_by);
-
-CREATE POLICY "Admins delete sandbox runs"
-  ON public.sso_sandbox_runs FOR DELETE TO authenticated
-  USING (public.has_role(auth.uid(), 'admin'));
+interface Issue {
+  id: string;            // 'cm.email.missing', 'rm.duplicate.group', etc.
+  severity: Severity;
+  scope: Scope;
+  field?: string;        // 'allowed_domains[2]', 'role_mappings[0].idp_group'
+  message: string;       // pt-BR, curta
+  hint?: string;         // sugestão acionável
+  autofix?: { label: string; patch: Partial<SSOConfig> };
+}
 ```
 
-**Hook — `src/hooks/useSSOSandboxRuns.ts`** (novo):
-- `useSSOSandboxRuns(filters)` — query paginada com filtros de provider/outcome/email/from/to.
-- `useSaveSSOSandboxRun()` — mutação para INSERT após cada simulação.
-- `useDeleteSSOSandboxRun()` — DELETE por id, invalida cache.
+Regras implementadas (~15):
 
-**`SSOSandboxPanel.tsx`** — refactor leve:
-- Envolver os dois cards atuais em `<Tabs>` com `simular` / `historico`.
-- Após `testMutation.mutateAsync`, computar `outcome` no client e disparar `useSaveSSOSandboxRun().mutate({ input, result, outcome, ... })` em fire-and-forget (sem bloquear UX, apenas log de erro).
-- Receber prop/state para preencher inputs ao "Reproduzir" — handler `applyRun(run)` que faz `setProviderId / setUseProviderConfig / setClaimsJson / setManual*` e troca aba para `simular`.
-- Como o componente já está perto do limite, extrair a aba de histórico para `src/components/admin/sso/sandbox/SandboxHistory.tsx` e os subcomponentes para `sandbox/` (cumpre regra de modularização).
+| ID | Severidade | Quando |
+|---|---|---|
+| `cm.email.missing` | error | `claim_mapping.email` vazio |
+| `cm.email.unknown_for_preset` | warning | preset=azure e email≠`email`/`preferred_username`/`upn` |
+| `cm.groups.unused` | warning | `claim_mapping.groups` definido + 0 `role_mappings` |
+| `dom.empty_with_jit` | error | `allowed_domains=[]` + `auto_provision_users=true` |
+| `dom.invalid` | error | domínio sem `.`, com espaço, ou regex inválido |
+| `dom.duplicate` | warning | duplicados (case-insensitive) |
+| `dom.case_or_whitespace` | info | tem maiúscula/espaço (com autofix de normalização) |
+| `dom.force_without_domains` | warning | `force_sso_for_domains=true` + `allowed_domains=[]` |
+| `rm.duplicate_group` | error | mesmo `idp_group` 2× |
+| `rm.unknown_role` | error | `app_role` fora do enum |
+| `rm.empty_group` | error | `idp_group` em branco |
+| `rm.coverage_missing` | warning | preset tem grupos comuns esperados não cobertos |
+| `rm.no_admin_route` | info | nenhum mapping resolve para `admin` (intencional?) |
+| `default.privileged` | warning | `default_role='admin'` ou `'financeiro'` (privilege escalation) |
+| `default.unknown` | error | `default_role` fora do enum |
+| `global.no_routes` | warning | 0 `role_mappings` E `default_role` é privilegiado |
 
-**Novos arquivos UI**:
-- `src/components/admin/sso/sandbox/SandboxHistory.tsx` — tabela + filtros + seleção.
-- `src/components/admin/sso/sandbox/SandboxRunDetailSheet.tsx` — `Sheet` lateral com input/preview/regras.
-- `src/components/admin/sso/sandbox/SandboxCompareDialog.tsx` — `Dialog` com diff de 2 runs.
-- `src/components/admin/sso/sandbox/outcome.ts` — helper `computeOutcome(result)` + `OUTCOME_META` (label/cor/icon).
+**2. Hook `useSSOConsistency(config)`** — `useMemo` que retorna `{ issues, errors, warnings, infos, hasBlocker }`. Sem chamadas de rede.
 
-**Diff de comparação** — implementação simples client-side: para cada chave de `input.mock_claims` mostra "==" / "diff" e renderiza ambos lados; para o `result.preview`, destaca campos que mudaram (`outcome`, `resolved_role`, `matched_group`, `user_exists`, `would_jit_provision`, `domain_allowed`). Sem libs externas.
+**3. Componente `SSOConsistencyPanel`** — card colapsável com:
+- Header: badges contando `N erros · M avisos · K infos` + cor dominante.
+- Lista por severidade, agrupada por escopo, cada item com:
+  - Ícone + mensagem + `field` em mono.
+  - Hint em texto secundário.
+  - Botão "Corrigir" se houver `autofix` (aplica `patch` no estado do form).
+- Filtro por severidade (chips: Tudo / Erros / Avisos / Infos).
+- Estado vazio: "Configuração consistente ✓".
 
-**Reprodução**:
-- O snapshot `input` contém tudo necessário. Quando o admin clica "Reproduzir", aplicamos:
-  - `setProviderId(input.provider_id ?? '')`
-  - `setUseProviderConfig(!!input.provider_id)`
-  - `setClaimsJson(JSON.stringify(input.mock_claims, null, 2))`
-  - Se manual: `setManualEmail(input.claim_mapping.email)`, `setManualName(...)`, `setManualGroups(...)`, `setManualRole(input.default_role)`, `setManualDomains(input.allowed_domains.join(','))`, `setManualMappings(input.role_mappings.map(...).join('\n'))`.
-- Toast: "Entrada carregada. Revise e clique em Simular."
+**4. Integração no `SSOWizardDialog`**:
+- Painel renderizado no topo do passo de revisão (e sempre visível como sticky no rodapé do dialog quando há `error`).
+- Botão "Salvar" desabilitado enquanto `hasBlocker=true`, com tooltip "Resolva os erros antes de salvar".
+- Aplicar autofix dispara o mesmo setter do form (sem persistir; usuário ainda revisa).
+- Validação roda em tempo real via `useMemo` sobre o estado do form.
 
-### Critério de pronto
+**5. Cobertura de testes** em `src/lib/sso/__tests__/consistency.test.ts`: 1 caso por regra (entrada feliz + entrada que dispara o issue), garantindo IDs estáveis.
 
-1. Toda simulação executada no Sandbox aparece em "Histórico" em até 1s, com outcome correto.
-2. Filtros por provider, outcome, email e data reduzem a lista; a busca por email funciona em emails mascarados.
-3. "Reproduzir" preenche os inputs exatamente como estavam no momento da simulação original e troca para a aba "Simular".
-4. "Comparar" só fica habilitado com exatamente 2 seleções; o dialog mostra diferenças nos inputs e nos outcomes.
-5. "Ver detalhes" mostra o JSON cru de input e preview, plus a trilha de regras.
-6. Não-admins não conseguem ler/escrever a tabela (RLS bloqueia).
-7. Falha ao salvar run não interrompe a simulação — apenas log de warning.
-8. Sem regressão nas funcionalidades atuais do Sandbox (chips de claim em foco, regras aplicadas, JSON colapsável continuam funcionando).
+### Não-escopo
+
+- Sem mudanças na edge `sso-test-login` nem em migrations.
+- Sem validação online (DNS, MX, JWKS) — só checagem estática local.
+- Sem alteração no fluxo de runtime do login real.
+
+### Critérios de aceite
+
+1. Editor mostra painel de consistência com contagem ao vivo.
+2. Salvar fica bloqueado se houver `severity='error'`.
+3. Cada regra da tabela acima dispara/cessa conforme o caso.
+4. Autofixes (normalizar domínios, remover duplicados) funcionam em 1 clique.
+5. Configuração 100% válida: painel exibe estado "Configuração consistente".
+6. Testes unitários cobrem todas as regras.
 
 ### Arquivos
 
-- ➕ migration `sso_sandbox_runs` (tabela + RLS + índices).
-- ➕ `src/hooks/useSSOSandboxRuns.ts`
-- ➕ `src/components/admin/sso/sandbox/outcome.ts`
-- ➕ `src/components/admin/sso/sandbox/SandboxHistory.tsx`
-- ➕ `src/components/admin/sso/sandbox/SandboxRunDetailSheet.tsx`
-- ➕ `src/components/admin/sso/sandbox/SandboxCompareDialog.tsx`
-- ✏️ `src/components/admin/sso/SSOSandboxPanel.tsx` (Tabs + persistência + handler `applyRun`)
+- ➕ `src/lib/sso/consistency.ts`
+- ➕ `src/lib/sso/__tests__/consistency.test.ts`
+- ➕ `src/hooks/useSSOConsistency.ts`
+- ➕ `src/components/admin/sso/SSOConsistencyPanel.tsx`
+- ✏️ `src/components/admin/sso/SSOWizardDialog.tsx` (integração + bloqueio do botão Salvar)
 
