@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAnomaliaDetalhe } from "@/hooks/useAnomaliaDetalhe";
 import { useAnomaliaPreferences } from "@/hooks/useAnomaliaPreferences";
+import { useLogAudit } from "@/hooks/useAuditLog";
 import { AnomaliaHeader } from "@/components/insights-ia/anomalia/AnomaliaHeader";
 import { EntidadeRelacionadaCard } from "@/components/insights-ia/anomalia/EntidadeRelacionadaCard";
 import { AcoesSugeridasCard } from "@/components/insights-ia/anomalia/AcoesSugeridasCard";
