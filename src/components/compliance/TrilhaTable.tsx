@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { AuditFiltersBar, type FiltrosState } from "./AuditFiltersBar";
 import { AuditDetailDialog } from "./AuditDetailDialog";
 import {
@@ -21,6 +23,14 @@ import {
   type TrilhaTipo,
 } from "@/hooks/useTrilhaAuditoria";
 import { exportToCSV, exportToPDF, type ExportColumn } from "@/lib/export-utils";
+
+const TIPO_TABLE: Record<TrilhaTipo, string> = {
+  financeira: "auditoria_financeira",
+  tributaria: "auditoria_tributaria",
+  sistema: "audit_logs",
+  conformidade: "verificacoes_conformidade",
+};
+
 
 interface ColunaDef {
   key: string;
