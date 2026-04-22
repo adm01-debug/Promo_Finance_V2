@@ -26,7 +26,8 @@ import { RelatorioImportacaoDialog } from '@/components/conciliacao/RelatorioImp
 import { ConciliacaoDashboard } from '@/components/conciliacao/ConciliacaoDashboard';
 import { RegrasConciliacaoPanel } from '@/components/conciliacao/RegrasConciliacaoPanel';
 import { ConciliacaoFilters } from '@/components/conciliacao/ConciliacaoFilters';
-import { ConciliacaoToolbar, CONCILIACAO_DEFAULT_SORT, CONCILIACAO_DEFAULT_VISIBLE, type ConciliacaoSort } from '@/components/conciliacao/ConciliacaoToolbar';
+import { ConciliacaoToolbar, CONCILIACAO_COLUMNS, CONCILIACAO_DEFAULT_SORT, CONCILIACAO_DEFAULT_VISIBLE, type ConciliacaoSort } from '@/components/conciliacao/ConciliacaoToolbar';
+import { mergeLockedColumns } from '@/components/shared/ColumnVisibilityMenu';
 import { useSavedFilters, type SavedFilterPayload } from '@/hooks/useSavedFilters';
 import type { ConciliacaoFilterState } from '@/components/conciliacao/ConciliacaoFilters';
 import { useEffect, useMemo, useState } from 'react';
