@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShieldCheck, Filter, RefreshCw, Eye, Clock, AlertCircle } from "lucide-react";
-import { BackButton } from "@/components/ui/back-button";
+import { BackButton } from "@/components/navigation/BackButton";
 import { logger } from "@/lib/logger";
 
 interface ScimLogRow {
