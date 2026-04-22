@@ -8,8 +8,10 @@ import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Progress } from '@/components/ui/progress';
 import { useSpedEcdValidacao, useGerarSpedContabil, type SpedGeracaoResult } from '@/hooks/useSpedContabil';
+import { usePreValidacaoSped } from '@/hooks/usePreValidacaoSped';
 import { baixarSpedZip } from '@/lib/sped-zip';
 import { SpedChecklistRow } from './SpedChecklistRow';
+import { PreValidacaoSpedPanel } from './PreValidacaoSpedPanel';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
