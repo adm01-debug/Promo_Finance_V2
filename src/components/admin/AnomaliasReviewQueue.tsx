@@ -29,6 +29,7 @@ import {
   type Anomalia,
 } from "@/hooks/useAnomaliasDetectadas";
 import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const TIPO_LABEL: Record<Anomalia["tipo_anomalia"], string> = {
@@ -58,9 +59,18 @@ function tempoDecorrido(iso: string): string {
 interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
+  /**
+   * Filtra a fila por severidade antes do snapshot. "todas" inclui todas.
+   * Default: "todas".
+   */
+  severidadeFilter?: Anomalia["severidade"] | "todas";
 }
 
-export function AnomaliasReviewQueue({ open, onOpenChange }: Props) {
+export function AnomaliasReviewQueue({
+  open,
+  onOpenChange,
+  severidadeFilter = "todas",
+}: Props) {
   const { data: fila = [], isLoading } = usePendingAnomaliasQueue();
   const revisar = useRevisarAnomalia();
   const sincronizar = useSincronizarAnomaliaBitrix();
@@ -74,12 +84,16 @@ export function AnomaliasReviewQueue({ open, onOpenChange }: Props) {
   // Snapshot da fila ao abrir (evita reordenação durante revisão)
   useEffect(() => {
     if (open && !isLoading) {
-      setSnapshot(fila);
+      const filtrada =
+        severidadeFilter === "todas"
+          ? fila
+          : fila.filter((a) => a.severidade === severidadeFilter);
+      setSnapshot(filtrada);
       setIndex(0);
       setComentario("");
       setStats({ confirmadas: 0, rejeitadas: 0, puladas: 0 });
     }
-  }, [open, isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [open, isLoading, severidadeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const atual = snapshot[index];
   const total = snapshot.length;
@@ -128,9 +142,31 @@ export function AnomaliasReviewQueue({ open, onOpenChange }: Props) {
       avancar();
     } catch (err) {
       if (err instanceof AnomaliaJaRevisadaError) {
-        toast.warning("Outro revisor já resolveu esta anomalia", {
-          description: "Pulando para a próxima da fila.",
-        });
+        // Buscar quem resolveu pra dar feedback rico
+        let descricao = "Pulando para a próxima da fila.";
+        try {
+          const { data } = await supabase
+            .from("anomalias_detectadas")
+            .select("status, resolvida_por, resolvida_em")
+            .eq("id", atual.id)
+            .maybeSingle();
+          if (data?.resolvida_por) {
+            const { data: prof } = await supabase
+              .from("profiles")
+              .select("full_name, email")
+              .eq("id", data.resolvida_por)
+              .maybeSingle();
+            const quem =
+              (prof?.full_name as string | null)?.trim() ||
+              (prof?.email as string | null)?.trim() ||
+              "outro admin";
+            const acao = data.status === "confirmada" ? "confirmou" : "marcou como falso positivo";
+            descricao = `${quem} ${acao} esta anomalia. Pulando para a próxima.`;
+          }
+        } catch {
+          /* feedback básico já está OK */
+        }
+        toast.warning("Outro revisor já resolveu esta anomalia", { description: descricao });
         setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
         avancar();
         return;

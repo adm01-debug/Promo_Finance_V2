@@ -51,6 +51,10 @@ import {
 } from "@/components/shared/ColumnVisibilityMenu";
 import type { SavedFilterPayload } from "@/hooks/useSavedFilters";
 import { useSavedFilters } from "@/hooks/useSavedFilters";
+import {
+  useProfilesByIds,
+  formatProfileLabel,
+} from "@/hooks/useProfilesByIds";
 
 function severidadeBadge(s: Anomalia["severidade"]) {
   if (s === "critica" || s === "alta") return "destructive";
@@ -123,6 +127,9 @@ const DEFAULT_PAYLOAD: SavedFilterPayload<AnomaliaFilters> = {
 
 export function AnomaliasDetectadasPanel() {
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [reviewSeveridade, setReviewSeveridade] = useState<
+    Anomalia["severidade"] | "todas"
+  >("todas");
   const [prefsOpen, setPrefsOpen] = useState(false);
   const { data: criticasCount = 0 } = useAnomaliasCriticasCount();
   const navigate = useNavigate();
@@ -186,6 +193,24 @@ export function AnomaliasDetectadasPanel() {
     return sorted;
   }, [data, filters, sort]);
 
+  // Contagem da fila pendente por severidade (para o seletor de revisão)
+  const pendentesPorSev = useMemo(() => {
+    const acc: Record<Anomalia["severidade"] | "todas", number> = {
+      todas: pendentes.length,
+      critica: 0,
+      alta: 0,
+      media: 0,
+      baixa: 0,
+    };
+    for (const a of pendentes) acc[a.severidade] += 1;
+    return acc;
+  }, [pendentes]);
+
+  // Resolve nomes/emails de quem revisou as anomalias visíveis
+  const { data: profilesMap } = useProfilesByIds(
+    lista.map((a) => a.resolvida_por),
+  );
+
   const currentState: SavedFilterPayload<AnomaliaFilters> = useMemo(
     () => ({ v: 1, filters, sort, columns: visibleCols }),
     [filters, sort, visibleCols],
@@ -230,6 +255,55 @@ export function AnomaliasDetectadasPanel() {
               )}
             </CardTitle>
             <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5 rounded-md border bg-muted/30 px-2 py-1">
+                <ListChecks className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground hidden sm:inline">
+                  Revisar:
+                </span>
+                <Select
+                  value={reviewSeveridade}
+                  onValueChange={(v) =>
+                    setReviewSeveridade(v as Anomalia["severidade"] | "todas")
+                  }
+                >
+                  <SelectTrigger
+                    className="h-7 w-32 border-0 bg-transparent px-1 text-xs focus:ring-0"
+                    aria-label="Filtrar fila por severidade"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todas">
+                      Todas ({pendentesPorSev.todas})
+                    </SelectItem>
+                    <SelectItem value="critica">
+                      Crítica ({pendentesPorSev.critica})
+                    </SelectItem>
+                    <SelectItem value="alta">
+                      Alta ({pendentesPorSev.alta})
+                    </SelectItem>
+                    <SelectItem value="media">
+                      Média ({pendentesPorSev.media})
+                    </SelectItem>
+                    <SelectItem value="baixa">
+                      Baixa ({pendentesPorSev.baixa})
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button
+                  size="sm"
+                  variant="default"
+                  className="h-7 px-2 text-xs"
+                  disabled={
+                    (reviewSeveridade === "todas"
+                      ? pendentesPorSev.todas
+                      : pendentesPorSev[reviewSeveridade]) === 0
+                  }
+                  onClick={() => setReviewOpen(true)}
+                >
+                  Iniciar
+                </Button>
+              </div>
               <Button
                 size="sm"
                 variant="ghost"
@@ -468,6 +542,32 @@ export function AnomaliasDetectadasPanel() {
                         {a.observacoes}
                       </p>
                     )}
+                    {(a.status === "confirmada" ||
+                      a.status === "falso_positivo") &&
+                      a.resolvida_por && (
+                        <p
+                          className="text-[11px] text-muted-foreground mt-1"
+                          title={
+                            profilesMap?.get(a.resolvida_por)?.email ?? undefined
+                          }
+                        >
+                          {a.status === "confirmada"
+                            ? "Confirmada"
+                            : "Marcada falso positivo"}{" "}
+                          por{" "}
+                          <span className="font-medium text-foreground">
+                            {formatProfileLabel(
+                              profilesMap?.get(a.resolvida_por),
+                            )}
+                          </span>
+                          {a.resolvida_em && (
+                            <>
+                              {" · "}
+                              {new Date(a.resolvida_em).toLocaleString("pt-BR")}
+                            </>
+                          )}
+                        </p>
+                      )}
                   </div>
                   <div className="flex flex-col gap-1 shrink-0">
                     <Button
@@ -553,7 +653,11 @@ export function AnomaliasDetectadasPanel() {
           )}
         </CardContent>
       </Card>
-      <AnomaliasReviewQueue open={reviewOpen} onOpenChange={setReviewOpen} />
+      <AnomaliasReviewQueue
+        open={reviewOpen}
+        onOpenChange={setReviewOpen}
+        severidadeFilter={reviewSeveridade}
+      />
       <AnomaliaPreferencesDialog open={prefsOpen} onOpenChange={setPrefsOpen} />
       <AnomaliaDrillDownDrawer />
     </div>
