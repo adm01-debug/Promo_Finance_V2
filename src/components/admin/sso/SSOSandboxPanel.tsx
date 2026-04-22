@@ -6,13 +6,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { FlaskConical, CheckCircle2, XCircle, AlertCircle, Play, Code2, ChevronDown, ShieldCheck, UserPlus, UserCheck } from 'lucide-react';
+import { FlaskConical, CheckCircle2, XCircle, AlertCircle, Play, Code2, ChevronDown, ShieldCheck, UserPlus, UserCheck, Search, Filter, Target, ListChecks } from 'lucide-react';
 import { useSSOProviders, useTestSSOLogin, type AppRole } from '@/hooks/useSSO';
 import { IDP_PRESETS } from './IdpPresets';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 const MOCK_PRESETS: Record<string, Record<string, unknown>> = {
   azure: {
@@ -43,6 +45,16 @@ const MOCK_PRESETS: Record<string, Record<string, unknown>> = {
   },
 };
 
+type FocusClaim = 'all' | 'email' | 'name' | 'groups' | 'domain';
+type MappingFilter = 'all' | 'matched' | 'skipped' | 'no_match';
+
+interface RoleMappingEval {
+  idp_group: string;
+  app_role: string;
+  status: 'matched' | 'skipped' | 'no_match';
+  ordem: number;
+}
+
 interface SimulationResult {
   success: boolean;
   preview: {
@@ -58,9 +70,29 @@ interface SimulationResult {
     provision_blocked_reason: string | null;
     provider_nome: string | null;
     auto_provision_users: boolean;
+    claim_mapping_used?: { email: string; full_name: string; groups: string };
+    claim_values?: { email_raw: unknown; full_name_raw: unknown; groups_raw: unknown };
+    role_mappings_evaluated?: RoleMappingEval[];
+    default_role?: string;
+    default_role_used?: boolean;
   };
   errors: string[];
 }
+
+const FOCUS_CHIPS: Array<{ id: FocusClaim; label: string }> = [
+  { id: 'all', label: 'Tudo' },
+  { id: 'email', label: 'email' },
+  { id: 'name', label: 'name' },
+  { id: 'groups', label: 'groups' },
+  { id: 'domain', label: 'domain' },
+];
+
+const FILTER_CHIPS: Array<{ id: MappingFilter; label: string }> = [
+  { id: 'all', label: 'Todas' },
+  { id: 'matched', label: 'Aplicadas' },
+  { id: 'skipped', label: 'Ignoradas' },
+  { id: 'no_match', label: 'Sem match' },
+];
 
 export function SSOSandboxPanel() {
   const { data: providers = [] } = useSSOProviders();
@@ -76,6 +108,10 @@ export function SSOSandboxPanel() {
   const [manualDomains, setManualDomains] = useState('');
   const [manualMappings, setManualMappings] = useState('Admins-Financeiro:financeiro\nOperacional:operacional');
   const [result, setResult] = useState<SimulationResult | null>(null);
+
+  const [focusClaim, setFocusClaim] = useState<FocusClaim>('all');
+  const [mappingFilter, setMappingFilter] = useState<MappingFilter>('all');
+  const [mappingSearch, setMappingSearch] = useState('');
 
   const jsonError = useMemo(() => {
     try { JSON.parse(claimsJson); return null; } catch (e) { return (e as Error).message; }
@@ -110,6 +146,15 @@ export function SSOSandboxPanel() {
       toast.error('Erro ao simular', { description: e instanceof Error ? e.message : 'Erro' });
     }
   };
+
+  const filteredMappings = useMemo(() => {
+    const list = result?.preview.role_mappings_evaluated ?? [];
+    return list.filter(m => {
+      if (mappingFilter !== 'all' && m.status !== mappingFilter) return false;
+      if (mappingSearch && !m.idp_group.toLowerCase().includes(mappingSearch.toLowerCase())) return false;
+      return true;
+    });
+  }, [result, mappingFilter, mappingSearch]);
 
   return (
     <div className="grid lg:grid-cols-2 gap-6">
@@ -146,6 +191,26 @@ export function SSOSandboxPanel() {
               </p>
             </div>
             <Switch checked={useProviderConfig} onCheckedChange={setUseProviderConfig} disabled={!providerId} />
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="flex items-center gap-1.5"><Target className="h-3.5 w-3.5" /> Claim em foco</Label>
+              <span className="text-xs text-muted-foreground">Destaca a regra usada no painel ao lado</span>
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {FOCUS_CHIPS.map(chip => (
+                <Button
+                  key={chip.id}
+                  size="sm"
+                  variant={focusClaim === chip.id ? 'default' : 'outline'}
+                  className="h-7 text-xs"
+                  onClick={() => setFocusClaim(chip.id)}
+                >
+                  {chip.label}
+                </Button>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -225,6 +290,8 @@ export function SSOSandboxPanel() {
             </div>
           ) : (
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
+              <ClaimFocusCard result={result} focus={focusClaim} />
+
               <Step
                 ok={!!result.preview.email}
                 title="Parsing de claims"
@@ -244,7 +311,7 @@ export function SSOSandboxPanel() {
                 title="Resolução de papel"
                 detail={result.preview.matched_group
                   ? `Grupo "${result.preview.matched_group}" → ${result.preview.resolved_role}`
-                  : `Papel padrão: ${result.preview.resolved_role}`}
+                  : `Papel padrão (fallback): ${result.preview.resolved_role}`}
                 icon={<UserCheck className="h-4 w-4" />}
               />
               <Step
@@ -258,6 +325,15 @@ export function SSOSandboxPanel() {
                       : `Bloqueado: ${result.preview.provision_blocked_reason ?? 'desconhecido'}`
                 }
                 icon={result.preview.user_exists ? <UserCheck className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
+              />
+
+              <RulesAppliedCard
+                result={result}
+                filter={mappingFilter}
+                setFilter={setMappingFilter}
+                search={mappingSearch}
+                setSearch={setMappingSearch}
+                filtered={filteredMappings}
               />
 
               {result.errors.length > 0 && (
@@ -303,4 +379,229 @@ function Step({ ok, title, detail, icon }: { ok: boolean; title: string; detail:
       </div>
     </div>
   );
+}
+
+function formatRaw(v: unknown): string {
+  if (v === null || v === undefined) return '(não encontrada)';
+  if (Array.isArray(v)) return JSON.stringify(v);
+  if (typeof v === 'object') return JSON.stringify(v);
+  return String(v);
+}
+
+function ClaimFocusCard({ result, focus }: { result: SimulationResult; focus: FocusClaim }) {
+  const cm = result.preview.claim_mapping_used ?? { email: 'email', full_name: 'name', groups: 'groups' };
+  const cv = result.preview.claim_values ?? { email_raw: null, full_name_raw: null, groups_raw: null };
+  const matchedGroup = result.preview.matched_group;
+  const evaluated = result.preview.role_mappings_evaluated ?? [];
+  const groupsThatMatchSomeRule = new Set(
+    evaluated.filter(e => e.status === 'matched' || e.status === 'skipped').map(e => e.idp_group)
+  );
+
+  type Row = { key: FocusClaim; label: string; jwtKey: string; raw: unknown; normalized: string };
+  const rows: Row[] = [
+    { key: 'email', label: 'email', jwtKey: cm.email, raw: cv.email_raw, normalized: result.preview.email ?? '(vazio)' },
+    { key: 'name', label: 'name', jwtKey: cm.full_name, raw: cv.full_name_raw, normalized: result.preview.full_name || '(vazio)' },
+    { key: 'groups', label: 'groups', jwtKey: cm.groups, raw: cv.groups_raw, normalized: result.preview.groups.length ? result.preview.groups.join(', ') : '(nenhum)' },
+    { key: 'domain', label: 'domain', jwtKey: '(derivado de email)', raw: result.preview.domain || null, normalized: result.preview.domain || '(vazio)' },
+  ];
+
+  const visible = focus === 'all' ? rows : rows.filter(r => r.key === focus);
+
+  return (
+    <div className="rounded-lg border bg-muted/20 p-3 space-y-2">
+      <div className="flex items-center gap-2">
+        <Target className="h-4 w-4 text-primary" />
+        <p className="text-sm font-medium">
+          Claim em foco: <span className="text-primary">{focus === 'all' ? 'Todos' : focus}</span>
+        </p>
+      </div>
+      <div className="space-y-2">
+        {visible.map(row => (
+          <div key={row.key} className="rounded-md border bg-background p-2 text-xs space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="font-mono font-semibold">{row.label}</span>
+              <Badge variant="outline" className="text-[10px]">JWT: {row.jwtKey}</Badge>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <span className="text-muted-foreground">bruto:</span>{' '}
+                <span className="font-mono break-all">{formatRaw(row.raw)}</span>
+              </div>
+              <div>
+                <span className="text-muted-foreground">normalizado:</span>{' '}
+                <span className="font-mono break-all">{row.normalized}</span>
+              </div>
+            </div>
+            {row.key === 'groups' && result.preview.groups.length > 0 && (
+              <div className="flex flex-wrap gap-1 pt-1">
+                {result.preview.groups.map(g => {
+                  const isMatched = g === matchedGroup;
+                  const couldMatch = groupsThatMatchSomeRule.has(g);
+                  return (
+                    <Badge
+                      key={g}
+                      variant="outline"
+                      className={cn(
+                        'text-[10px]',
+                        isMatched && 'border-success/60 text-success bg-success/10',
+                        !isMatched && couldMatch && 'border-secondary/60 text-secondary',
+                      )}
+                    >
+                      {g}
+                      {isMatched && ' ✓'}
+                      {!isMatched && couldMatch && ' ○'}
+                    </Badge>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function RulesAppliedCard({
+  result,
+  filter,
+  setFilter,
+  search,
+  setSearch,
+  filtered,
+}: {
+  result: SimulationResult;
+  filter: MappingFilter;
+  setFilter: (f: MappingFilter) => void;
+  search: string;
+  setSearch: (s: string) => void;
+  filtered: RoleMappingEval[];
+}) {
+  const cm = result.preview.claim_mapping_used;
+  const cv = result.preview.claim_values;
+  const evaluated = result.preview.role_mappings_evaluated ?? [];
+  const defaultRoleUsed = result.preview.default_role_used;
+  const defaultRole = result.preview.default_role ?? result.preview.resolved_role;
+
+  return (
+    <div className="rounded-lg border p-3 space-y-3">
+      <div className="flex items-center gap-2">
+        <ListChecks className="h-4 w-4 text-primary" />
+        <p className="text-sm font-medium">Regras aplicadas</p>
+      </div>
+
+      {cm && cv && (
+        <div className="space-y-1">
+          <p className="text-xs font-semibold text-muted-foreground">Claim mapping</p>
+          <div className="rounded-md border overflow-hidden text-xs">
+            <table className="w-full">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left p-2 font-medium">Campo</th>
+                  <th className="text-left p-2 font-medium">Claim no JWT</th>
+                  <th className="text-left p-2 font-medium">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {([
+                  { field: 'email', jwtKey: cm.email, raw: cv.email_raw },
+                  { field: 'full_name', jwtKey: cm.full_name, raw: cv.full_name_raw },
+                  { field: 'groups', jwtKey: cm.groups, raw: cv.groups_raw },
+                ] as const).map(r => {
+                  const has = r.raw !== null && r.raw !== undefined && r.raw !== '';
+                  return (
+                    <tr key={r.field} className="border-t">
+                      <td className="p-2 font-mono">{r.field}</td>
+                      <td className="p-2 font-mono">{r.jwtKey}</td>
+                      <td className="p-2">
+                        {has ? (
+                          <Badge variant="outline" className="text-[10px] border-success/40 text-success">aplicado</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-[10px] text-muted-foreground">vazio</Badge>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-2">
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-xs font-semibold text-muted-foreground">Role mappings ({evaluated.length})</p>
+          {defaultRoleUsed && (
+            <Badge variant="outline" className="text-[10px] border-warning/40 text-warning">
+              fallback default_role: {defaultRole}
+            </Badge>
+          )}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1">
+            <Filter className="h-3 w-3 text-muted-foreground" />
+            {FILTER_CHIPS.map(c => (
+              <Button
+                key={c.id}
+                size="sm"
+                variant={filter === c.id ? 'default' : 'outline'}
+                className="h-6 px-2 text-[11px]"
+                onClick={() => setFilter(c.id)}
+              >
+                {c.label}
+              </Button>
+            ))}
+          </div>
+          <div className="relative flex-1 min-w-[140px]">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Buscar grupo IdP..."
+              className="h-7 pl-7 text-xs"
+            />
+          </div>
+        </div>
+
+        {evaluated.length === 0 ? (
+          <p className="text-xs text-muted-foreground italic">Nenhum role mapping configurado.</p>
+        ) : filtered.length === 0 ? (
+          <p className="text-xs text-muted-foreground italic">Nenhuma regra para os filtros atuais.</p>
+        ) : (
+          <ul className="space-y-1">
+            {filtered.map(m => (
+              <li
+                key={`${m.ordem}-${m.idp_group}`}
+                className={cn(
+                  'flex items-center justify-between rounded-md border px-2 py-1.5 text-xs',
+                  m.status === 'matched' && 'border-success/40 bg-success/5',
+                  m.status === 'skipped' && 'bg-muted/30',
+                )}
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-[10px] font-mono text-muted-foreground">#{m.ordem + 1}</span>
+                  <span className="font-mono truncate">{m.idp_group}</span>
+                  <span className="text-muted-foreground">→</span>
+                  <span className="font-mono">{m.app_role}</span>
+                </div>
+                <RuleStatusBadge status={m.status} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function RuleStatusBadge({ status }: { status: RoleMappingEval['status'] }) {
+  if (status === 'matched') {
+    return <Badge variant="outline" className="text-[10px] border-success/40 text-success gap-1"><CheckCircle2 className="h-3 w-3" />aplicada</Badge>;
+  }
+  if (status === 'skipped') {
+    return <Badge variant="outline" className="text-[10px] text-muted-foreground gap-1">○ ignorada</Badge>;
+  }
+  return <Badge variant="outline" className="text-[10px] text-muted-foreground gap-1"><XCircle className="h-3 w-3" />sem match</Badge>;
 }
