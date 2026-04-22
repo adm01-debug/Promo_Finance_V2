@@ -277,6 +277,8 @@ async function listUsers(admin: SupabaseClient, empresaId: string, url: URL) {
     if (a === "username" || a === "emails" || a === "emails.value") q = q.eq("profiles.email", c.value.toLowerCase());
     else if (a === "externalid") q = q.eq("scim_external_id", c.value);
     else if (a === "active") q = q.eq("ativo", c.value === "true");
+    else if (a === "usertype" || a === "urn:ietf:params:scim:schemas:extension:enterprise:2.0:user:department") q = q.eq("role", c.value);
+    else if (a === "meta.resourcetype") { /* ignore: Azure sometimes sends this */ }
     else return err(400, `Unsupported filter attribute: ${c.attr}`, "invalidFilter");
   }
 
@@ -600,10 +602,17 @@ async function listGroups(admin: SupabaseClient, empresaId: string, url: URL) {
 
   let q = admin.from("sso_role_mappings").select("*", { count: "exact" }).in("provider_id", provIds);
   for (const c of clauses) {
-    if (c.attr.toLowerCase() === "displayname") q = q.eq("idp_group", c.value);
+    const a = c.attr.toLowerCase();
+    if (a === "displayname") q = q.eq("idp_group", c.value);
+    else if (a === "externalid") q = q.eq("idp_group", c.value);
+    else if (a === "meta.resourcetype") { /* ignore */ }
     else return err(400, `Unsupported filter attribute: ${c.attr}`, "invalidFilter");
   }
 
+  if (count === 0) {
+    const { count: total } = await q;
+    return ok(listResp([], total ?? 0, startIndex));
+  }
   const { data, count: total } = await q.range(startIndex - 1, startIndex - 1 + count - 1);
   const Resources = await Promise.all((data ?? []).map(async (g: any) =>
     groupToScim(g, await fetchGroupMembers(admin, empresaId, g.app_role as AppRole))
