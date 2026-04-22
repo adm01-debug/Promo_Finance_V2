@@ -418,6 +418,11 @@ export function SSOSandboxPanel() {
         </CardContent>
       </Card>
     </div>
+      </TabsContent>
+      <TabsContent value="historico">
+        <SandboxHistory onReplay={applyRun} />
+      </TabsContent>
+    </Tabs>
   );
 }
 
