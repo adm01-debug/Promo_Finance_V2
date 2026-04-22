@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { AuditFiltersBar, type FiltrosState } from "./AuditFiltersBar";
 import { AuditDetailDialog } from "./AuditDetailDialog";
 import {
@@ -21,6 +23,14 @@ import {
   type TrilhaTipo,
 } from "@/hooks/useTrilhaAuditoria";
 import { exportToCSV, exportToPDF, type ExportColumn } from "@/lib/export-utils";
+
+const TIPO_TABLE: Record<TrilhaTipo, string> = {
+  financeira: "auditoria_financeira",
+  tributaria: "auditoria_tributaria",
+  sistema: "audit_logs",
+  conformidade: "verificacoes_conformidade",
+};
+
 
 interface ColunaDef {
   key: string;
@@ -53,6 +63,7 @@ export function TrilhaTable({ tipo, colunas, acoes, filename }: Props) {
   const [pagina, setPagina] = useState(1);
   const [detalhe, setDetalhe] = useState<Record<string, unknown> | null>(null);
   const [exporting, setExporting] = useState<"csv" | "pdf" | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const filtrosNorm = {
     inicio: filtros.inicio || undefined,
@@ -72,6 +83,43 @@ export function TrilhaTable({ tipo, colunas, acoes, filename }: Props) {
 
   const total = data?.total ?? 0;
   const totalPaginas = Math.max(1, Math.ceil(total / 50));
+
+  // Deep-link: quando ?record=<id> e ?tab=<tipo> vierem da URL (ex.: clique
+  // no toast em tempo real), localiza e abre o registro automaticamente.
+  useEffect(() => {
+    const recordId = searchParams.get("record");
+    const tabParam = searchParams.get("tab");
+    if (!recordId || tabParam !== tipo) return;
+
+    let cancelled = false;
+    (async () => {
+      const local = (data?.rows ?? []).find(
+        (r) => (r as { id?: string }).id === recordId,
+      );
+      if (local) {
+        setDetalhe(local);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: row, error } = await (supabase as any)
+          .from(TIPO_TABLE[tipo])
+          .select("*")
+          .eq("id", recordId)
+          .maybeSingle();
+        if (cancelled) return;
+        if (!error && row) setDetalhe(row as Record<string, unknown>);
+        else toast.error("Registro de auditoria não encontrado");
+      }
+      const next = new URLSearchParams(searchParams);
+      next.delete("record");
+      setSearchParams(next, { replace: true });
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, tipo, data?.rows]);
+
 
   const construirLinhas = (rows: Record<string, unknown>[]) =>
     rows.map((r) => {

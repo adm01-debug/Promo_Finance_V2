@@ -154,7 +154,11 @@ export const PRIORITY_META: Record<
 export function toastForPriority(
   priority: AuditPriority,
   message: string,
-  options?: { description?: string; duration?: number }
+  options?: {
+    description?: string;
+    duration?: number;
+    action?: { label: string; onClick: () => void };
+  }
 ) {
   const opts = { duration: priority === 'critical' ? 15000 : 6000, ...options };
   switch (priority) {
