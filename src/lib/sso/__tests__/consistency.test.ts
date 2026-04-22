@@ -6,7 +6,7 @@ const baseValid: SSOConfigInput = {
   claim_mapping: { email: 'email', full_name: 'name', groups: 'groups' },
   allowed_domains: ['empresa.com.br'],
   role_mappings: [
-    { idp_group: 'Admins-Financeiro', app_role: 'financeiro' },
+    { idp_group: 'Admins-Financeiro', app_role: 'admin' },
     { idp_group: 'Todos-Funcionarios', app_role: 'visualizador' },
   ],
   default_role: 'visualizador',
