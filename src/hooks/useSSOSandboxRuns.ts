@@ -41,6 +41,7 @@ export function useSSOSandboxRuns(filters: SandboxRunsFilters = {}) {
       filters.from?.toISOString() ?? null,
       filters.to?.toISOString() ?? null,
       filters.limit ?? 50,
+      filters.batchId ?? null,
     ],
     queryFn: async () => {
       let q = (supabase as any)
@@ -53,6 +54,7 @@ export function useSSOSandboxRuns(filters: SandboxRunsFilters = {}) {
       if (filters.email) q = q.ilike('email_masked', `%${filters.email}%`);
       if (filters.from) q = q.gte('created_at', startOfDay(filters.from).toISOString());
       if (filters.to) q = q.lte('created_at', endOfDay(filters.to).toISOString());
+      if (filters.batchId) q = q.eq('batch_id', filters.batchId);
       const { data, error } = await q;
       if (error) throw error;
       return (data ?? []) as SandboxRun[];
@@ -67,6 +69,7 @@ interface SaveRunInput {
   input: Record<string, unknown>;
   result: SandboxResult;
   outcome: SandboxOutcome;
+  batchId?: string | null;
 }
 
 export function useSaveSSOSandboxRun() {
