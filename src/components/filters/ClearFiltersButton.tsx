@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { toastWithUndo } from '@/lib/toast-with-undo';
 import { logger } from '@/lib/logger';
