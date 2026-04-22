@@ -82,6 +82,7 @@ interface Props {
 
 export function AnomaliaPreferencesDialog({ open, onOpenChange }: Props) {
   const { preferences, update } = useAnomaliaPreferences();
+  const logAudit = useLogAudit();
   const [enabled, setEnabled] = useState(true);
   const [severidadesAtivas, setSeveridadesAtivas] = useState<Severidade[]>([
     "critica",
