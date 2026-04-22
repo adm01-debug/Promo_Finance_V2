@@ -137,6 +137,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
   const [resultado, setResultado] = useState<(SpedGeracaoResult & { arquivo_id?: string }) | null>(null);
   const [recibo, setRecibo] = useState('');
   const [hashCopied, setHashCopied] = useState(false);
+  const [validacoesOpen, setValidacoesOpen] = useState(false);
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const validar = useSpedEcfValidacao();
   const gerar = useGerarSpedContabil();
