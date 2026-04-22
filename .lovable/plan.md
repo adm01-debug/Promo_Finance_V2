@@ -1,85 +1,87 @@
 
 
-## Plano — Modo Bulk no Sandbox SSO
+## Validação de Códigos Referenciais CFC
 
-### Diagnóstico
+Implementar uma camada de validação automatizada para o **Plano de Contas**, garantindo que os códigos referenciais CFC (usados no SPED ECD/ECF) estejam corretos e sem duplicidades por empresa.
 
-Hoje a aba **Simular** do `SSOSandboxPanel` testa 1 conjunto de claims por vez. Para validar mudanças de `claim_mapping`/`role_mappings` contra todo o time, o admin precisa rodar N simulações manuais. A edge `sso-test-login` já é idempotente e devolve um `preview` rico — falta um runner em lote no front + uma visão agregada.
+### Contexto
 
-### Comportamento
+O SPED ECD/ECF exige que cada conta analítica tenha um `codigo_referencial` válido seguindo o padrão CFC (ex: `1.01.01.01.001`). Hoje o sistema apenas avisa quando faltam códigos, mas não valida formato nem detecta duplicidades — o que pode causar rejeição direta na transmissão à Receita Federal.
 
-Nova terceira aba **"Lote"** ao lado de Simular / Histórico, com:
+### O que será entregue
 
-1. **Entrada de usuários** (qualquer um destes):
-   - Editor JSON: array de objetos de claims (`[{email,name,groups}, ...]`).
-   - Importar CSV (cabeçalho na 1ª linha, vírgula `;` ou `,`; coluna `groups` separada por `|`).
-   - Botão "Carregar exemplo" (12 usuários sintéticos cobrindo: admin, financeiro, sem grupo, domínio bloqueado, e-mail malformado, grupos múltiplos).
-   - Validador inline: contagem de linhas válidas / erros de parsing.
+#### 1. Biblioteca de validação CFC (`src/lib/cfc-validator.ts`)
+- `validarFormatoCFC(codigo)`: regex `^\d(\.\d{2}){3,4}(\.\d{1,3})?$`, aceitando 4 ou 5 níveis hierárquicos.
+- `validarPrefixoNatureza(codigo, natureza)`: confere se o prefixo corresponde à natureza da conta (1=Ativo, 2=Passivo+PL, 3=Receita, 4=Custos/Despesas, 5=Apuração).
+- `detectarDuplicidades(contas)`: agrupa por (empresa_id, codigo_referencial) e retorna conflitos.
+- `validarHierarquiaCFC(codigo, nivel)`: garante que o nível do código bate com a profundidade declarada.
 
-2. **Configuração** reaproveita os mesmos controles da aba Simular:
-   - Provider + `useProviderConfig`, OU bloco manual (claim_mapping, allowed_domains, role_mappings, default_role).
-   - Limite hard-coded: máx **200 usuários** por execução (proteção contra abuso da edge).
+#### 2. Hook de auditoria (`src/hooks/useAuditoriaCFC.ts`)
+Cruza dados de `plano_contas` por empresa e retorna:
+```ts
+{
+  totalContas, totalAnaliticas, comReferencial, semReferencial,
+  formatoInvalido: PlanoContaRow[],
+  prefixoIncorreto: { conta, esperado, atual }[],
+  duplicidades: { codigo_referencial, contas: PlanoContaRow[] }[],
+  scoreConformidade: number  // 0-100
+}
+```
 
-3. **Execução**:
-   - Botão "Executar lote" dispara chamadas paralelas à `sso-test-login` em **batches de 5** (concurrency limit) com barra de progresso `processados/total`.
-   - Cada chamada reusa o mesmo `payload` exceto `mock_claims`.
-   - Falhas HTTP/network viram linha com `outcome='erro_rede'` no resumo (não derrubam o lote).
-   - Botão "Cancelar" interrompe próximos batches (in-flight terminam).
+#### 3. Painel de relatório (`src/components/contabilidade/AuditoriaCFCPanel.tsx`)
+Card premium com:
+- **KPIs**: Score de conformidade (com badge color-coded), totais, contagens por categoria
+- **Lista de problemas** agrupada por tipo (formato inválido, prefixo incorreto, duplicidades)
+- **Ações**: botão "Ir para conta" e "Exportar relatório CSV/PDF"
+- Estado vazio celebratório quando 100% conforme
 
-4. **Resumo agregado** (cards no topo + tabela detalhada):
-   - **KPIs**: Total · Seriam criados (JIT) · Já existem · Bloqueados · Sem e-mail · Erros de rede.
-   - **Gráfico de barras horizontais** por motivo de bloqueio (ex.: domínio fora da allowlist, `auto_provision_users=false`, e-mail inválido, sem claim de e-mail).
-   - **Distribuição de papéis resolvidos** (mini-bars: admin/financeiro/operacional/visualizador).
-   - **Cobertura de grupos**: lista de `idp_group` que casou X usuários e regras que ficaram em 0 (sinaliza regra "morta").
+#### 4. Integração nos pontos críticos
+- **`PlanoContasManager`**: novo botão "Auditar CFC" abrindo o painel em modal.
+- **`SpedEcdWizard` / `SpedEcfWizard`**: bloqueio de geração quando houver erros críticos (formato inválido ou duplicidade), exibindo o painel inline na etapa 2.
+- **`usePreValidacaoSped`**: integra alertas CFC ao checklist existente, categoria `'cfc'`.
 
-5. **Tabela detalhada por usuário**:
-   - Colunas: linha #, email mascarado, domínio, grupos, papel resolvido, grupo casado, outcome (badge), motivo (se bloqueado).
-   - Filtro por outcome (chips) + busca por email/domínio.
-   - Ações por linha: "Abrir no Simular" (envia esse usuário pra aba Simular preenchendo claims/config) e "Ver detalhes" (sheet com JSON completo, reusa `SandboxRunDetailSheet`).
-
-6. **Persistência (opcional, fire-and-forget)**:
-   - Toggle "Salvar runs no histórico" (default OFF para não poluir): quando ON, cada usuário do lote vira uma `sso_sandbox_runs` marcada com `batch_id` (uuid gerado no client) — permite filtrar o lote inteiro depois no Histórico.
-   - **Migration leve**: adicionar coluna `batch_id uuid NULL` + índice em `sso_sandbox_runs`. Sem mudança em RLS.
-
-7. **Exportar resumo**:
-   - Botão "Exportar CSV" baixa `lote-sandbox-{YYYYMMDD-HHmm}.csv` com email mascarado, outcome, papel, grupo casado, motivo — útil pra anexar em ticket/auditoria.
-
-### Critérios de aceite
-
-1. Aba "Lote" carrega exemplo de 12 usuários e executa o lote em <8s (concurrency=5).
-2. KPIs batem com a soma das linhas da tabela detalhada.
-3. Filtros por outcome reduzem a tabela sem refetch.
-4. Cancelar interrompe batches pendentes; barra de progresso reflete corretamente.
-5. CSV exportado abre no Excel/Sheets em UTF-8 (com BOM) sem quebrar acentos.
-6. Quando "Salvar no histórico" ON, todas as runs aparecem em Histórico filtráveis pelo `batch_id` (novo chip de filtro).
-7. Lote acima de 200 usuários é rejeitado com mensagem clara.
-8. Erros HTTP de uma linha não impedem o restante do lote.
-9. "Abrir no Simular" preenche provider, config e claims daquele usuário e troca de aba — sem auto-simular.
+#### 5. Exportação
+- CSV (UTF-8 BOM, separador `;`) com colunas: empresa, código local, código referencial, natureza, problema, sugestão.
+- PDF via `jsPDF/autoTable` reaproveitando o padrão de `export-contabil.ts` (header empresa + período + paginação).
 
 ### Detalhes técnicos
 
-- **Runner**: `src/lib/sso/sandbox-bulk-runner.ts` — função `runBulk(users, basePayload, { concurrency, signal, onProgress })` retorna `Promise<BulkResult[]>`. Usa `AbortController` p/ cancelamento. Concurrency via fila simples (sem `p-limit`).
-- **CSV**: parser próprio simples (`papaparse` não está no projeto e CSV aqui é trivial — header fixo `email,name,groups,...`).
-- **Aggregator**: `src/lib/sso/sandbox-bulk-aggregator.ts` — recebe `BulkResult[]` e devolve `{ counts, byBlockReason, byRole, groupCoverage }`.
-- **Histórico filter**: `useSSOSandboxRuns` ganha `batchId?` (filtro `eq('batch_id', ...)`).
+**Padrão CFC esperado (Receita Federal):**
+```text
+N.NN.NN.NN[.NNN]   ← 4 ou 5 níveis
+│ │  │  │   └─ subconta opcional (1-3 dígitos)
+│ │  │  └───── conta analítica
+│ │  └──────── subgrupo
+│ └─────────── grupo
+└───────────── natureza (1-5)
+```
 
-### Não-escopo
+**Detecção de duplicidades** usa SQL no hook (mais eficiente que JS):
+```sql
+SELECT codigo_referencial, COUNT(*) as total, array_agg(id) as ids
+FROM plano_contas
+WHERE empresa_id = $1 AND codigo_referencial IS NOT NULL AND ativo = true
+GROUP BY codigo_referencial HAVING COUNT(*) > 1
+```
 
-- Sem mudanças na edge `sso-test-login` (ela já entrega tudo necessário).
-- Sem rate-limit server-side novo — a edge já valida admin por chamada.
-- Sem testes E2E; só unit no aggregator e no parser CSV.
+**Score de conformidade:**
+```text
+score = 100 - (formatoInvalido*5 + prefixoIncorreto*3 + duplicidades*10 + semReferencial*1)
+clamp(0, 100)
+```
 
 ### Arquivos
 
-- ➕ migration `sso_sandbox_runs.batch_id` (coluna + índice).
-- ➕ `src/lib/sso/sandbox-bulk-runner.ts`
-- ➕ `src/lib/sso/sandbox-bulk-aggregator.ts`
-- ➕ `src/lib/sso/__tests__/sandbox-bulk-aggregator.test.ts`
-- ➕ `src/lib/sso/sandbox-csv.ts` (parse + export)
-- ➕ `src/lib/sso/__tests__/sandbox-csv.test.ts`
-- ➕ `src/components/admin/sso/sandbox/SandboxBulkPanel.tsx` (entrada + execução + cancelamento)
-- ➕ `src/components/admin/sso/sandbox/SandboxBulkSummary.tsx` (KPIs + barras + cobertura)
-- ➕ `src/components/admin/sso/sandbox/SandboxBulkTable.tsx` (tabela + filtros + ações)
-- ✏️ `src/components/admin/sso/SSOSandboxPanel.tsx` (nova aba "Lote", handler `applyClaims` p/ "Abrir no Simular")
-- ✏️ `src/hooks/useSSOSandboxRuns.ts` (suporte a `batchId` no filtro + persistência opcional)
+**Criados:**
+- `src/lib/cfc-validator.ts`
+- `src/lib/__tests__/cfc-validator.test.ts`
+- `src/hooks/useAuditoriaCFC.ts`
+- `src/components/contabilidade/AuditoriaCFCPanel.tsx`
+
+**Editados:**
+- `src/components/contabilidade/PlanoContasManager.tsx` — botão "Auditar CFC"
+- `src/components/contabilidade/SpedEcdWizard.tsx` — bloqueio + painel inline
+- `src/components/contabilidade/SpedEcfWizard.tsx` — bloqueio + painel inline
+- `src/hooks/usePreValidacaoSped.ts` — categoria `'cfc'` no checklist
+- `src/lib/export-contabil.ts` — função `exportAuditoriaCFC(PDF/CSV)`
 
