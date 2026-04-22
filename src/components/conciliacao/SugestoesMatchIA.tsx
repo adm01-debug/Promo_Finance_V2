@@ -123,7 +123,7 @@ export function SugestoesMatchIA({
     const newConfirmed = new Set([...matchesConfirmados, transacaoId]);
     setMatchesConfirmados(newConfirmed);
     await registrarHistorico.mutateAsync({ transacaoId, lancamentoId: sugestao.lancamentoId, tipoLancamento: sugestao.lancamentoTipo, score: sugestao.score, confianca: sugestao.confianca, motivos: sugestao.motivos, analiseIA: sugestao.analiseIA, acao: 'aprovado' });
-    await registrarFeedback.mutateAsync({ transacaoDescricao, lancamentoEntidade: sugestao.lancamento?.entidade || '', lancamentoDescricao: sugestao.lancamento?.descricao, tipoLancamento: sugestao.lancamentoTipo, scoreOriginal: sugestao.score, acao: 'aprovado' });
+    await registrarFeedback.mutateAsync({ transacaoId, transacaoDescricao, lancamentoEntidade: sugestao.lancamento?.entidade || '', lancamentoDescricao: sugestao.lancamento?.descricao, tipoLancamento: sugestao.lancamentoTipo, scoreOriginal: sugestao.score, acao: 'aprovado' });
     onConfirmarMatch(transacaoId, sugestao.lancamentoId, sugestao.lancamentoTipo);
     const totalWithSuggestions = estatisticas.comSugestao + matchesConfirmados.size;
     if (newConfirmed.size >= totalWithSuggestions && totalWithSuggestions > 0) triggerConfetti(true);
@@ -140,7 +140,7 @@ export function SugestoesMatchIA({
     setMatchesRejeitados(prev => new Set([...prev, `${transacaoId}-${sugestao.lancamentoId}`]));
     try {
       await registrarHistorico.mutateAsync({ transacaoId, lancamentoId: sugestao.lancamentoId, tipoLancamento: sugestao.lancamentoTipo, score: sugestao.score, confianca: sugestao.confianca, motivos: sugestao.motivos, analiseIA: sugestao.analiseIA, acao: 'rejeitado' });
-      await registrarFeedback.mutateAsync({ transacaoDescricao, lancamentoEntidade: sugestao.lancamento?.entidade || '', lancamentoDescricao: sugestao.lancamento?.descricao, tipoLancamento: sugestao.lancamentoTipo, scoreOriginal: sugestao.score, acao: 'rejeitado', motivoRejeicao: motivoRejeicao || undefined });
+      await registrarFeedback.mutateAsync({ transacaoId, transacaoDescricao, lancamentoEntidade: sugestao.lancamento?.entidade || '', lancamentoDescricao: sugestao.lancamento?.descricao, tipoLancamento: sugestao.lancamentoTipo, scoreOriginal: sugestao.score, acao: 'rejeitado', motivoRejeicao: motivoRejeicao || undefined });
       onRejeitarMatch(transacaoId, sugestao.lancamentoId);
       if (motivoRejeicao.trim()) {
         toast.success('Rejeição registrada — IA aprenderá com este feedback');
