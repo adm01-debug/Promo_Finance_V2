@@ -269,6 +269,17 @@ export function SavedFiltersBar<T>({
                 Limpar seleção
               </DropdownMenuItem>
             )}
+            <DropdownMenuSeparator />
+            <div
+              className="px-2 py-1.5 text-[11px] text-muted-foreground flex items-start gap-1.5"
+              role="note"
+            >
+              <Cloud className="h-3 w-3 mt-0.5 shrink-0 text-primary" />
+              <span>
+                Sincronizado com sua conta — disponível em qualquer navegador
+                após login.
+              </span>
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
