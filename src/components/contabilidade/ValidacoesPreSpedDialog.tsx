@@ -134,21 +134,55 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
             </TabsTrigger>
           </TabsList>
 
+          {(erros.length > 0 || avisos.length > 0) && (
+            <div className="relative mt-2">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+              <Input
+                data-testid="input-busca-validacoes"
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+                placeholder="Buscar nos erros e avisos..."
+                className="h-8 pl-8 pr-8 text-xs"
+              />
+              {busca && (
+                <button
+                  type="button"
+                  onClick={() => setBusca('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  aria-label="Limpar busca"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+          )}
+
           <TabsContent value="erros">
             {erros.length === 0 ? (
               <div className="flex items-center gap-2 text-sm text-success p-4 justify-center">
                 <CheckCircle2 className="h-4 w-4" /> Nenhum erro encontrado
               </div>
+            ) : errosFiltrados.length === 0 ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground p-4 justify-center">
+                <Search className="h-4 w-4" /> Nenhum erro corresponde a "{busca}"
+              </div>
             ) : (
-              <ScrollArea className="max-h-72 border rounded-md p-3">
-                <ol data-testid="lista-erros" className="space-y-2 text-xs font-mono list-decimal list-inside">
-                  {erros.map((e, i) => (
-                    <li key={i} className="text-destructive">
-                      {e}
-                    </li>
-                  ))}
-                </ol>
-              </ScrollArea>
+              <>
+                {termo && (
+                  <p className="text-[11px] text-muted-foreground px-1 pb-1">
+                    {errosFiltrados.length} de {erros.length} erro(s)
+                  </p>
+                )}
+                <ScrollArea className="max-h-72 border rounded-md p-3">
+                  <ol data-testid="lista-erros" className="space-y-2 text-xs font-mono list-decimal list-inside">
+                    {errosFiltrados.map((e, i) => (
+                      <li key={i} className="text-destructive">
+                        {e}
+                      </li>
+                    ))}
+                  </ol>
+                </ScrollArea>
+              </>
             )}
           </TabsContent>
 
@@ -157,16 +191,27 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
               <div className="flex items-center gap-2 text-sm text-muted-foreground p-4 justify-center">
                 <CheckCircle2 className="h-4 w-4" /> Nenhum aviso
               </div>
+            ) : avisosFiltrados.length === 0 ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground p-4 justify-center">
+                <Search className="h-4 w-4" /> Nenhum aviso corresponde a "{busca}"
+              </div>
             ) : (
-              <ScrollArea className="max-h-72 border rounded-md p-3">
-                <ol data-testid="lista-avisos" className="space-y-2 text-xs font-mono list-decimal list-inside">
-                  {avisos.map((a, i) => (
-                    <li key={i} className="text-warning">
-                      {a}
-                    </li>
-                  ))}
-                </ol>
-              </ScrollArea>
+              <>
+                {termo && (
+                  <p className="text-[11px] text-muted-foreground px-1 pb-1">
+                    {avisosFiltrados.length} de {avisos.length} aviso(s)
+                  </p>
+                )}
+                <ScrollArea className="max-h-72 border rounded-md p-3">
+                  <ol data-testid="lista-avisos" className="space-y-2 text-xs font-mono list-decimal list-inside">
+                    {avisosFiltrados.map((a, i) => (
+                      <li key={i} className="text-warning">
+                        {a}
+                      </li>
+                    ))}
+                  </ol>
+                </ScrollArea>
+              </>
             )}
           </TabsContent>
         </Tabs>
