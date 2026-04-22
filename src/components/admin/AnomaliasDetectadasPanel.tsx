@@ -542,6 +542,32 @@ export function AnomaliasDetectadasPanel() {
                         {a.observacoes}
                       </p>
                     )}
+                    {(a.status === "confirmada" ||
+                      a.status === "falso_positivo") &&
+                      a.resolvida_por && (
+                        <p
+                          className="text-[11px] text-muted-foreground mt-1"
+                          title={
+                            profilesMap?.get(a.resolvida_por)?.email ?? undefined
+                          }
+                        >
+                          {a.status === "confirmada"
+                            ? "Confirmada"
+                            : "Marcada falso positivo"}{" "}
+                          por{" "}
+                          <span className="font-medium text-foreground">
+                            {formatProfileLabel(
+                              profilesMap?.get(a.resolvida_por),
+                            )}
+                          </span>
+                          {a.resolvida_em && (
+                            <>
+                              {" · "}
+                              {new Date(a.resolvida_em).toLocaleString("pt-BR")}
+                            </>
+                          )}
+                        </p>
+                      )}
                   </div>
                   <div className="flex flex-col gap-1 shrink-0">
                     <Button
