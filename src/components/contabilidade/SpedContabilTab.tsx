@@ -16,6 +16,8 @@ import { toast } from 'sonner';
 import { SpedEcdWizard } from './SpedEcdWizard';
 import { SpedEcfWizard } from './SpedEcfWizard';
 import { SpedEcdPreviewDialog } from './SpedEcdPreviewDialog';
+import { ValidacoesPreSpedDialog, type ValidacoesPreSpedArquivo } from './ValidacoesPreSpedDialog';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { baixarSpedZip } from '@/lib/sped-zip';
 
 interface Props {
@@ -56,6 +58,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
   const [wizardOpen, setWizardOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [transmissaoArquivo, setTransmissaoArquivo] = useState<HistoricoRow | null>(null);
+  const [validacoesArquivo, setValidacoesArquivo] = useState<HistoricoRow | null>(null);
   const [reciboInput, setReciboInput] = useState('');
   const [expandedAudit, setExpandedAudit] = useState<Set<string>>(new Set());
   const transmitir = useRegistrarTransmissaoSped();
@@ -155,6 +158,20 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
       {tipo === 'ECF' && empresaId && (
         <SpedEcfWizard open={wizardOpen} onOpenChange={setWizardOpen} empresaId={empresaId} anoCalendario={ano} />
       )}
+
+      <ValidacoesPreSpedDialog
+        open={!!validacoesArquivo}
+        onOpenChange={(v) => { if (!v) setValidacoesArquivo(null); }}
+        arquivo={validacoesArquivo ? {
+          tipo: validacoesArquivo.tipo as 'ECD' | 'ECF',
+          ano_calendario: validacoesArquivo.ano_calendario,
+          hash_sha256: validacoesArquivo.hash_sha256,
+          status: validacoesArquivo.status,
+          validacoes: validacoesArquivo.validacoes ?? { erros: [], avisos: [] },
+        } satisfies ValidacoesPreSpedArquivo : null}
+        onDownloadTxt={() => validacoesArquivo && handleDownload(validacoesArquivo.storage_path)}
+        onDownloadZip={() => validacoesArquivo && handleDownloadZip(validacoesArquivo)}
+      />
 
       <Card>
         <CardHeader>
@@ -282,12 +299,45 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                     <TableCell className="font-mono text-xs">{h.hash_sha256?.substring(0, 12)}…</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
-                        <Button size="sm" variant="outline" onClick={() => handleDownload(h.storage_path)} title="Baixar .txt">
-                          <Download className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={() => handleDownloadZip(h)} title="Baixar .zip">
-                          <FileArchive className="h-4 w-4" />
-                        </Button>
+                        {(() => {
+                          const isRejeitado = h.status === 'rejeitado';
+                          const temErros = erros.length > 0;
+                          const isBloqueado = bloqueada;
+                          const variant = isBloqueado ? 'destructive' : avisos.length > 0 ? 'outline' : 'outline';
+                          const Icon = isBloqueado ? Lock : ShieldAlert;
+                          const label = isBloqueado ? 'Bloqueado' : 'Validações & Download';
+                          const tooltipLabel = isRejeitado
+                            ? `Transmissão rejeitada — ${erros.length} erro(s) impedem o download. Clique para revisar.`
+                            : temErros
+                              ? `${erros.length} erro(s) de validação bloqueiam o download. Clique para revisar.`
+                              : avisos.length > 0
+                                ? `${avisos.length} aviso(s) — download liberado. Clique para revisar e baixar.`
+                                : 'Sem erros nem avisos. Clique para baixar .txt ou .zip.';
+                          return (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant={variant as 'destructive' | 'outline'}
+                                    onClick={() => setValidacoesArquivo(h)}
+                                    className={cn(
+                                      'gap-1.5',
+                                      isBloqueado && 'border-destructive/40 text-destructive hover:bg-destructive/10',
+                                      !isBloqueado && avisos.length > 0 && 'border-warning/40 text-warning hover:bg-warning/10',
+                                    )}
+                                  >
+                                    <Icon className="h-3.5 w-3.5" />
+                                    {label}
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent variant={isBloqueado ? 'warning' : 'default'}>
+                                  {tooltipLabel}
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          );
+                        })()}
                         {h.status !== 'transmitido' && h.status !== 'rejeitado' && (
                           <Button size="sm" variant="outline" onClick={() => { setTransmissaoArquivo(h); setReciboInput(''); }} title="Registrar transmissão">
                             <Send className="h-4 w-4" />
