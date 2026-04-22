@@ -343,10 +343,36 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                   <div><p className="text-muted-foreground">Lançamentos</p><p className="font-mono font-medium">{resultado.total_lancamentos}</p></div>
                 </div>
                 <div>
-                  <p className="text-muted-foreground mb-1">Hash SHA-256</p>
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-muted-foreground">Hash SHA-256</p>
+                    <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Integridade do arquivo</span>
+                  </div>
                   <div className="flex items-center gap-2">
-                    <code className="flex-1 text-xs font-mono bg-muted p-2 rounded break-all">{resultado.hash_sha256}</code>
-                    <Button size="icon" variant="outline" onClick={copyHash}><Copy className="h-3.5 w-3.5" /></Button>
+                    <code className="flex-1 text-xs font-mono bg-muted p-2 rounded break-all select-all">{resultado.hash_sha256}</code>
+                    <TooltipProvider>
+                      <Tooltip open={hashCopied || undefined}>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size="icon"
+                            variant={hashCopied ? 'default' : 'outline'}
+                            onClick={copyHash}
+                            aria-label={hashCopied ? 'Hash copiado' : 'Copiar hash SHA-256'}
+                            className={cn('transition-colors', hashCopied && 'bg-success text-success-foreground hover:bg-success/90')}
+                          >
+                            {hashCopied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">
+                          {hashCopied ? (
+                            <span className="flex items-center gap-1.5 font-medium">
+                              <Check className="h-3.5 w-3.5" /> Copiado para a área de transferência
+                            </span>
+                          ) : (
+                            <span>Copiar hash SHA-256</span>
+                          )}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </div>
               </CardContent>
