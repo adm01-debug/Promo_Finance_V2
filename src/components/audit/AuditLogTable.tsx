@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 import { formatDate } from '@/lib/formatters';
 import { maskIp } from '@/lib/ip-mask';
 import { useIpMaskPreference } from '@/hooks/useIpMaskPreference';
+import { AuditDiffView } from './AuditDiffView';
 
 type AuditAction = 'INSERT' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'LOGOUT' | 'EXPORT' | 'APPROVE' | 'REJECT';
 
@@ -95,8 +96,12 @@ export function AuditLogTable({ logs }: Props) {
                           <div><p className="text-muted-foreground">IP</p><p>{maskIp(log.ip_address, maskIpsEnabled)}</p></div>
                         </div>
                         {log.details && <div><p className="text-muted-foreground">Detalhes</p><p>{log.details}</p></div>}
-                        {log.old_data && <div><p className="text-muted-foreground mb-1">Dados Anteriores</p><pre className="bg-muted p-3 rounded-lg text-xs overflow-auto max-h-[200px]">{JSON.stringify(log.old_data, null, 2)}</pre></div>}
-                        {log.new_data && <div><p className="text-muted-foreground mb-1">Dados Novos</p><pre className="bg-muted p-3 rounded-lg text-xs overflow-auto max-h-[200px]">{JSON.stringify(log.new_data, null, 2)}</pre></div>}
+                        {(log.old_data || log.new_data) && (
+                          <div>
+                            <p className="text-muted-foreground mb-2">Comparação antes/depois</p>
+                            <AuditDiffView old={log.old_data} new={log.new_data} action={log.action} />
+                          </div>
+                        )}
                       </div>
                     </ScrollArea>
                   </DialogContent>
