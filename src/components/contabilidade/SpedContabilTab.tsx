@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { Download, FileText, AlertTriangle, CheckCircle2, ShieldAlert, FileArchive, Wand2, Send } from 'lucide-react';
+import { Download, FileText, AlertTriangle, CheckCircle2, ShieldAlert, FileArchive, Wand2, Send, FileSearch } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -14,6 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { SpedEcdWizard } from './SpedEcdWizard';
 import { SpedEcfWizard } from './SpedEcfWizard';
+import { SpedEcdPreviewDialog } from './SpedEcdPreviewDialog';
 import { baixarSpedZip } from '@/lib/sped-zip';
 
 interface Props {
@@ -38,6 +39,7 @@ interface HistoricoRow {
 export function SpedContabilTab({ tipo, empresaId }: Props) {
   const [ano, setAno] = useState(new Date().getFullYear() - 1);
   const [wizardOpen, setWizardOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [transmissaoArquivo, setTransmissaoArquivo] = useState<HistoricoRow | null>(null);
   const [reciboInput, setReciboInput] = useState('');
   const transmitir = useRegistrarTransmissaoSped();
@@ -77,7 +79,16 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
   return (
     <div className="space-y-6">
       {tipo === 'ECD' && empresaId && (
-        <SpedEcdWizard open={wizardOpen} onOpenChange={setWizardOpen} empresaId={empresaId} anoCalendario={ano} />
+        <>
+          <SpedEcdWizard open={wizardOpen} onOpenChange={setWizardOpen} empresaId={empresaId} anoCalendario={ano} />
+          <SpedEcdPreviewDialog
+            open={previewOpen}
+            onOpenChange={setPreviewOpen}
+            empresaId={empresaId}
+            anoCalendario={ano}
+            onAbrirWizard={() => setWizardOpen(true)}
+          />
+        </>
       )}
       {tipo === 'ECF' && empresaId && (
         <SpedEcfWizard open={wizardOpen} onOpenChange={setWizardOpen} empresaId={empresaId} anoCalendario={ano} />
@@ -102,10 +113,21 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
               <Input type="number" min={2010} max={new Date().getFullYear()} value={ano}
                 onChange={e => setAno(Number(e.target.value))} />
             </div>
-            <div className="md:col-span-2 flex items-end">
-              <Button disabled={!empresaId} onClick={() => setWizardOpen(true)} className="w-full">
+            <div className="md:col-span-2 flex items-end gap-2">
+              {tipo === 'ECD' && (
+                <Button
+                  disabled={!empresaId}
+                  variant="outline"
+                  onClick={() => setPreviewOpen(true)}
+                  className="flex-1"
+                >
+                  <FileSearch className="mr-2 h-4 w-4" />
+                  Pré-visualizar
+                </Button>
+              )}
+              <Button disabled={!empresaId} onClick={() => setWizardOpen(true)} className="flex-1">
                 <Wand2 className="mr-2 h-4 w-4" />
-                Abrir wizard de geração SPED {tipo} · {ano}
+                Abrir wizard · {ano}
               </Button>
             </div>
           </div>
