@@ -116,16 +116,49 @@ async function findAuthUserByEmail(admin: SupabaseClient, email: string) {
 
 interface FilterClause { attr: string; op: "eq"; value: string }
 
+/**
+ * Parser SCIM 2.0 (RFC 7644 §3.4.2.2) — suporta:
+ *   - operador `eq` (único comparador necessário para provisioners típicos)
+ *   - composição com `and` (case-insensitive, múltiplas cláusulas)
+ *   - valores entre aspas: `userName eq "foo@bar.com"`
+ *   - booleanos sem aspas: `active eq true`
+ *   - números sem aspas: `meta.version eq 3`
+ *   - parênteses simples envolvendo cláusulas (ignorados, sem grupos OR aninhados)
+ *   - prefixos de schema URN (ex.: `urn:...:User:userName`)
+ */
 function parseFilter(filter: string): FilterClause[] | null {
   if (!filter) return [];
-  const parts = filter.split(/\s+and\s+/i);
+  // Remove parênteses externos/internos simples — não suportamos OR/NOT/agrupamento real.
+  const sanitized = filter.replace(/[()]/g, " ").trim();
+  if (!sanitized) return [];
+  // Rejeita explicitamente operadores não suportados para evitar matching parcial.
+  if (/\s+(or|not)\s+/i.test(sanitized)) return null;
+
+  const parts = sanitized.split(/\s+and\s+/i);
   const clauses: FilterClause[] = [];
-  for (const p of parts) {
-    const m = p.match(/^\s*([A-Za-z0-9_.:]+)\s+eq\s+(?:"([^"]*)"|(true|false))\s*$/i);
+  for (const raw of parts) {
+    const p = raw.trim();
+    if (!p) continue;
+    const m = p.match(
+      /^([A-Za-z0-9_.:\-]+)\s+eq\s+(?:"((?:[^"\\]|\\.)*)"|(true|false)|(-?\d+(?:\.\d+)?))$/i,
+    );
     if (!m) return null;
-    clauses.push({ attr: m[1], op: "eq", value: m[2] ?? m[3] });
+    const value = m[2] !== undefined ? m[2].replace(/\\(.)/g, "$1") : (m[3] ?? m[4]);
+    clauses.push({ attr: m[1], op: "eq", value });
   }
   return clauses;
+}
+
+/** Normaliza o nome do atributo do filtro removendo prefixos de schema URN. */
+function normalizeFilterAttr(attr: string): string {
+  const lower = attr.toLowerCase();
+  const userPrefix = "urn:ietf:params:scim:schemas:core:2.0:user:";
+  const groupPrefix = "urn:ietf:params:scim:schemas:core:2.0:group:";
+  const entPrefix = "urn:ietf:params:scim:schemas:extension:enterprise:2.0:user:";
+  if (lower.startsWith(userPrefix)) return lower.slice(userPrefix.length);
+  if (lower.startsWith(groupPrefix)) return lower.slice(groupPrefix.length);
+  if (lower.startsWith(entPrefix)) return lower.slice(entPrefix.length);
+  return lower;
 }
 
 // ============================== SCIM serializers ==============================
