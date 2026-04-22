@@ -15,6 +15,17 @@ interface DRELinha {
   tipo: string;
 }
 
+interface ResumoBalanco {
+  totalAtivo: number;
+  totalPassivo: number; // Passivo + PL
+  equilibrado: boolean;
+}
+
+interface ResumoDRE {
+  receitaLiquida?: number;
+  lucroLiquido: number;
+}
+
 interface ExportDemonstrativoPDFProps {
   tipo: 'dre' | 'balanco' | 'fluxo';
   periodo: string;
@@ -22,9 +33,11 @@ interface ExportDemonstrativoPDFProps {
   ano: number;
   empresa: string;
   linhas: DRELinha[];
+  resumoBalanco?: ResumoBalanco;
+  resumoDRE?: ResumoDRE;
 }
 
-export function ExportDemonstrativoPDF({ tipo, periodo, mes, ano, empresa, linhas }: ExportDemonstrativoPDFProps) {
+export function ExportDemonstrativoPDF({ tipo, periodo, mes, ano, empresa, linhas, resumoBalanco, resumoDRE }: ExportDemonstrativoPDFProps) {
   const [exporting, setExporting] = useState(false);
 
   const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
@@ -54,9 +67,88 @@ export function ExportDemonstrativoPDF({ tipo, periodo, mes, ano, empresa, linha
       doc.setDrawColor(200);
       doc.line(10, 38, pageWidth - 10, 38);
 
+      // Summary block (matches on-screen footer with green/red highlight)
+      let tableStartY = 42;
+      if (tipo === 'balanco' && resumoBalanco) {
+        const diff = resumoBalanco.totalAtivo - resumoBalanco.totalPassivo;
+        const ok = resumoBalanco.equilibrado;
+        // Colors mirror the screen tokens: success (green) / destructive (red)
+        const accent: [number, number, number] = ok ? [22, 163, 74] : [220, 38, 38];
+        const bgTint: [number, number, number] = ok ? [240, 253, 244] : [254, 242, 242];
+
+        const boxX = 10;
+        const boxY = 42;
+        const boxW = pageWidth - 20;
+        const boxH = 26;
+
+        doc.setFillColor(...bgTint);
+        doc.setDrawColor(...accent);
+        doc.setLineWidth(0.6);
+        doc.roundedRect(boxX, boxY, boxW, boxH, 2, 2, 'FD');
+        doc.setLineWidth(0.2);
+
+        // Status pill
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...accent);
+        doc.text(ok ? 'BALANÇO EQUILIBRADO' : 'BALANÇO DESEQUILIBRADO', boxX + 4, boxY + 7);
+
+        // Three columns: Ativo | Passivo+PL | Diferença
+        const colW = boxW / 3;
+        const labelY = boxY + 14;
+        const valueY = boxY + 22;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(90, 90, 90);
+        doc.text('Ativo Total', boxX + 4, labelY);
+        doc.text('Passivo + PL', boxX + colW + 4, labelY);
+        doc.text('Diferença (Ativo − Passivo+PL)', boxX + 2 * colW + 4, labelY);
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(30, 30, 30);
+        doc.text(formatCurrency(resumoBalanco.totalAtivo), boxX + 4, valueY);
+        doc.text(formatCurrency(resumoBalanco.totalPassivo), boxX + colW + 4, valueY);
+
+        doc.setTextColor(...accent);
+        const diffStr = `${diff >= 0 ? '+' : ''}${formatCurrency(diff)}`;
+        doc.text(diffStr, boxX + 2 * colW + 4, valueY);
+
+        tableStartY = boxY + boxH + 6;
+      } else if (tipo === 'dre' && resumoDRE) {
+        const lucro = resumoDRE.lucroLiquido;
+        const positivo = lucro >= 0;
+        const accent: [number, number, number] = positivo ? [22, 163, 74] : [220, 38, 38];
+        const bgTint: [number, number, number] = positivo ? [240, 253, 244] : [254, 242, 242];
+
+        const boxX = 10;
+        const boxY = 42;
+        const boxW = pageWidth - 20;
+        const boxH = 18;
+
+        doc.setFillColor(...bgTint);
+        doc.setDrawColor(...accent);
+        doc.setLineWidth(0.6);
+        doc.roundedRect(boxX, boxY, boxW, boxH, 2, 2, 'FD');
+        doc.setLineWidth(0.2);
+
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...accent);
+        doc.text(positivo ? 'RESULTADO: LUCRO LÍQUIDO' : 'RESULTADO: PREJUÍZO LÍQUIDO', boxX + 4, boxY + 7);
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        const valueStr = formatCurrency(Math.abs(lucro));
+        doc.text(valueStr, boxX + boxW - 4, boxY + 13, { align: 'right' });
+
+        tableStartY = boxY + boxH + 6;
+      }
+
       // Table
       autoTable(doc, {
-        startY: 42,
+        startY: tableStartY,
         head: [['Código', 'Descrição', 'Valor (R$)', 'AV (%)']],
         body: linhas.map(l => [
           l.codigo,
