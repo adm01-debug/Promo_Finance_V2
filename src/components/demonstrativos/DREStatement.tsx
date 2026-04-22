@@ -122,6 +122,7 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
                       border-t border-border/30 transition-colors hover:bg-muted/30
                       ${linha.nivel === 0 ? 'font-semibold bg-muted/20' : ''}
                       ${linha.codigo === '11' ? 'bg-primary/10 font-bold' : ''}
+                      ${linha.codigo === '99' ? 'bg-warning/10 font-semibold border-l-2 border-l-warning' : ''}
                     `}
                   >
                     <td className="p-3 text-sm text-muted-foreground">{linha.codigo}</td>
