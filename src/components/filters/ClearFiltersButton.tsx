@@ -77,22 +77,23 @@ export function ClearFiltersButton<T extends Record<string, unknown>>({
       setOpen(false);
 
       const previewChips = activeFilters.length > 0 ? (
-        <div className="mt-1 flex flex-wrap gap-1.5">
+        <div className="mt-1.5 flex flex-wrap gap-1.5">
           {activeFilters.slice(0, 6).map((f, i) => (
-            <span
+            <Badge
               key={`${f.label}-${i}`}
-              className="inline-flex items-center gap-1 rounded-md border border-border/60 bg-muted/60 px-1.5 py-0.5 text-xs text-foreground"
+              variant="secondary"
+              className="gap-1 font-normal"
             >
               <span className="font-medium">{f.label}</span>
               {f.value !== undefined && (
                 <span className="text-muted-foreground">· {formatValue(f.value)}</span>
               )}
-            </span>
+            </Badge>
           ))}
           {activeFilters.length > 6 && (
-            <span className="inline-flex items-center rounded-md bg-muted/60 px-1.5 py-0.5 text-xs text-muted-foreground">
+            <Badge variant="outline" className="font-normal text-muted-foreground">
               +{activeFilters.length - 6}
-            </span>
+            </Badge>
           )}
         </div>
       ) : (
@@ -100,13 +101,13 @@ export function ClearFiltersButton<T extends Record<string, unknown>>({
       );
 
       const description = (
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <p className="text-xs text-muted-foreground">
             {activeFilters.length} {activeFilters.length === 1 ? 'filtro removido' : 'filtros removidos'}
             {localKeys.length > 0 ? ' · preferências locais limpas' : ''}
           </p>
           {previewChips}
-          <p className="pt-1 text-[10px] text-muted-foreground">
+          <p className="pt-1 text-[10px] uppercase tracking-wide text-muted-foreground">
             Você tem 5s para desfazer.
           </p>
         </div>
