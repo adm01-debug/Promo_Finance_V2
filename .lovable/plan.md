@@ -1,70 +1,54 @@
 
 
-## Aplicar `useManagedFilters` + `ClearFiltersButton` nas telas restantes
+## Finalizar refator: `ExpertHistory` + `advanced-filters` com `clearSlot`/`controller`
 
-Continuação do refator centralizado de "Limpar filtros" — estendendo o controller a todas as telas com filtros locais ainda não migradas. Sem mudar UX visível: mesmos selects/inputs/layout, apenas trocando o estado e o botão de limpar.
+Fechar os 2 itens restantes do plano para atingir 100% de cobertura do sistema centralizado de filtros.
 
-### Telas a refatorar
+### 1) `ExpertHistory.tsx` / `ExpertHistoryPanel.tsx`
 
-| # | Arquivo | `entityType` | localStorageKey | Filtros gerenciados |
-|---|---|---|---|---|
-| 1 | `src/components/contabilidade/LancamentosTab.tsx` | `lancamentos-contabeis` | `app-lancamentos-filters` | `busca`, `preset`, `dataInicio`, `dataFim` |
-| 2 | `src/components/contabilidade/RazaoDiarioTab.tsx` | `razao-diario` | `app-razao-diario-filters` | `modo`, `preset`, `dataInicio`, `dataFim`, `contaId`, `busca` |
-| 3 | `src/pages/admin/AuditoriaIA.tsx` | `auditoria-ia` | `app-auditoria-ia-filters` | `userFilter`, `cnpjFilter`, `transacaoFilter`, `acaoFilter` |
-| 4 | `src/pages/admin/SSOJitEvents.tsx` | `sso-jit-events` | `app-sso-jit-filters` | `dateRange`, `search`, `providerFilter`, `roleFilter`, `viaFilter`, `originFilter` |
-| 5 | `src/pages/DashboardReceber.tsx` | `dashboard-receber` | `app-dashboard-receber-filters` | `empresaId`, `vendedorId`, `ramoAtividade`, `statusFilter`, `clienteId`, `periodo`, `dataInicio`, `dataFim` |
-| 6 | `src/components/expert/ExpertHistory.tsx` + `ExpertHistoryPanel.tsx` | `expert-history` | `app-expert-history-filters` | `searchQuery`, `dateFilter` |
-| 7 | `src/components/ui/advanced-filters.tsx` | (pass-through) | — | recebe `controller?` opcional para delegar `handleClearFilters` |
+O controller `expertFiltersController` já está instanciado em `src/pages/Expert.tsx` e `searchQuery`/`dateFilter` já chegam via props. Falta substituir o botão "Limpar filtros" do empty-state pelo `<ClearFiltersButton>`:
 
-> **Observação**: `RelatoriosAgendados.tsx` não tem filtros (apenas dialog de criação) — foi falso positivo do plano original e fica fora do escopo.
+- Adicionar prop `clearSlot?: ReactNode` em `ExpertHistoryProps` e `ExpertHistoryPanelProps`.
+- Remover a prop `onClearFilters` (não é mais necessária — o slot encapsula a ação).
+- No empty-state ("Nenhuma conversa encontrada com os filtros aplicados"), renderizar `{clearSlot}` no lugar do `<Button variant="link" onClick={onClearFilters}>Limpar filtros</Button>` atual.
+- Em `Expert.tsx`, passar:
+  ```tsx
+  clearSlot={
+    <ClearFiltersButton
+      controller={expertFiltersController}
+      entityLabel="histórico do expert"
+      variant="ghost"
+      size="sm"
+      label="Limpar filtros"
+      describeFilters={(v) => [
+        { label: 'Busca', value: v.searchQuery, isActive: !!v.searchQuery },
+        { label: 'Período', value: v.dateFilter, isActive: v.dateFilter !== 'all' },
+      ]}
+    />
+  }
+  ```
 
-### Padrão por tela
+### 2) `src/components/ui/advanced-filters.tsx`
 
-1. **Substituir os `useState` individuais** por um único `useManagedFilters<FilterShape>({ entityType, defaults, localStorageKey })`.
-2. **Bridge bidirecional** via `useEffect` quando a tela usa hooks que esperam estado local (ex.: `useSSOJitEvents({ from, to })`): manter variáveis derivadas `const search = controller.values.search` + `setSearch = (v) => controller.setField('search', v)` para minimizar diff.
-3. **Substituir o botão "Limpar filtros"** por:
-   ```tsx
-   <ClearFiltersButton
-     controller={controller}
-     entityLabel="<rótulo PT-BR>"
-     describeFilters={(v) => [
-       { label: 'Busca', value: v.search, isActive: !!v.search },
-       { label: 'Status', value: v.statusFilter, isActive: v.statusFilter !== 'all' },
-       // ...etc por tela
-     ]}
-   />
-   ```
-4. **Hidratação tardia**: respeitar `controller.isHydrated` antes de aplicar defaults destrutivos (ex.: `RazaoDiarioTab` recompõe intervalo "ano" — só rodar após hidratar para não sobrescrever filtros salvos).
+Adicionar suporte opcional ao controller centralizado, mantendo retrocompatibilidade com `ContasReceberFilters`/`ContasPagarFilters`:
 
-### Detalhe especial — `advanced-filters.tsx`
-
-Adicionar prop opcional `controller?: ManagedFiltersController<AdvancedFilters>` ao `AdvancedFiltersPopover`. Quando presente:
-- O botão "Limpar tudo" interno passa a abrir o `ConfirmDialog` + toast com undo (via `ClearFiltersButton` embutido).
-- Quando ausente, mantém comportamento atual (`onFiltersChange({})`) para retrocompatibilidade com `ContasReceberFilters` / `ContasPagarFilters` que ainda não foram migrados.
-
-### `ExpertHistory` / `ExpertHistoryPanel`
-
-Mover a posse do estado para o componente pai (página Expert), instanciar `useManagedFilters` lá e passar `searchQuery`/`dateFilter` + `setters` por props (compatível com a API atual). O botão "Limpar filtros" do empty-state passa a ser o `ClearFiltersButton` (variant `link`, label "Limpar filtros") via prop nova `clearSlot?: ReactNode`.
+- Nova prop opcional `controller?: ManagedFiltersController<AdvancedFilters>` em `AdvancedFiltersProps`.
+- Quando `controller` está presente: o botão interno "Limpar tudo" passa a renderizar um `<ClearFiltersButton>` embutido (mesma estética `ghost`/`sm`, label "Limpar tudo") com `describeFilters` mapeando `dataVencimentoInicio`, `dataVencimentoFim`, `valorMinimo`, `valorMaximo`, `tipoCobranca`.
+- Quando ausente: mantém `handleClearFilters` atual (`onFiltersChange({})`) — zero quebra para os consumidores não migrados.
 
 ### Detalhes técnicos
 
-- **Tokens HSL apenas** — nada de hex/cinza fora dos tokens.
-- **Tipografia** `font-display` no título do `ConfirmDialog` (já vem do componente).
-- **Performance**: o `useManagedFilters` já tem debounce de 500 ms; nenhuma mudança extra nas queries existentes (React Query reage normalmente à mudança de filtros).
-- **Resiliência**: como o controller cai em localStorage → defaults se Supabase falhar, nenhuma tela quebra offline.
-- **Type-safety**: declarar uma `interface` de filtros por tela (ex: `LancamentosFilters`, `SSOJitFilters`) e tipar o controller.
+- **Sem mudança de UX**: posições, ícones e cópias permanecem; apenas o handler do botão muda quando há controller.
+- **Tokens HSL** já vigentes nos componentes — nenhuma alteração de cor.
+- **Tipagem**: importar `ManagedFiltersController` de `@/hooks/useManagedFilters` e `ReactNode` do React.
+- **Build check**: rodar TS check mental nos 3 arquivos para garantir que removi a prop `onClearFilters` em todos os call-sites do `ExpertHistory`/`Panel` (atualmente apenas `Expert.tsx`).
 
 ### Arquivos editados
 
-- `src/components/contabilidade/LancamentosTab.tsx`
-- `src/components/contabilidade/RazaoDiarioTab.tsx`
-- `src/pages/admin/AuditoriaIA.tsx`
-- `src/pages/admin/SSOJitEvents.tsx`
-- `src/pages/DashboardReceber.tsx`
-- `src/components/expert/ExpertHistory.tsx`
-- `src/components/expert/ExpertHistoryPanel.tsx`
-- `src/pages/Expert.tsx` (ou pai equivalente — instanciar o controller)
-- `src/components/ui/advanced-filters.tsx`
+- `src/components/expert/ExpertHistory.tsx` — substituir prop `onClearFilters` por `clearSlot`.
+- `src/components/expert/ExpertHistoryPanel.tsx` — mesma mudança (paridade de API).
+- `src/pages/Expert.tsx` — passar `clearSlot={<ClearFiltersButton ... />}` para os dois componentes; remover passagem de `onClearFilters` se houver.
+- `src/components/ui/advanced-filters.tsx` — adicionar prop opcional `controller` e renderizar `<ClearFiltersButton>` quando presente.
 
-Resultado: **100% das telas com filtros** passam a ter confirmação, undo, toast detalhado e persistência cross-device, com paridade visual e técnica ao padrão já implementado em Clientes/Fornecedores/AuditLogs.
+Resultado: **100% das telas com filtros** (Clientes, Fornecedores, AuditLogs, LancamentosTab, RazaoDiarioTab, AuditoriaIA, SSOJitEvents, DashboardReceber, Expert e qualquer consumidor futuro do `AdvancedFiltersPopover`) compartilham o mesmo fluxo de confirmação + undo + toast detalhado + persistência cross-device.
 
