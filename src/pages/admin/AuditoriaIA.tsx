@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ShieldCheck, Search, X, Brain, CheckCircle2, XCircle, Filter } from 'lucide-react';
-import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
