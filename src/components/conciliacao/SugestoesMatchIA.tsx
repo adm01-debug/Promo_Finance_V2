@@ -53,6 +53,9 @@ export function SugestoesMatchIA({
   const { isAnalyzing, matchesIA, lastAnalysis, analisarConciliacao } = useConciliacaoIA();
   const { historico, registrarHistorico, registrarFeedback, aprovarEmLote, estatisticasHistorico, isLoadingHistorico } = useHistoricoConciliacaoIA();
 
+  // Bloqueia interações enquanto qualquer mutação de persistência está em andamento
+  const mutationPending = registrarHistorico.isPending || registrarFeedback.isPending || aprovarEmLote.isPending;
+
   // Conjunto de matches rejeitados persistidos no histórico (transacao_bancaria_id + lancamento_id)
   const rejeicoesPersistidas = useMemo(() => {
     const set = new Set<string>();
@@ -217,8 +220,8 @@ export function SugestoesMatchIA({
             
             <div className="flex items-center gap-2">
               {matchesAltaConfianca.length > 0 && (
-                <Button variant="default" size="sm" onClick={() => setShowAprovarTodosDialog(true)} className="gap-2 bg-success hover:bg-success/90">
-                  <CheckCheck className="h-4 w-4" />
+                <Button variant="default" size="sm" onClick={() => setShowAprovarTodosDialog(true)} disabled={mutationPending} className="gap-2 bg-success hover:bg-success/90">
+                  {aprovarEmLote.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCheck className="h-4 w-4" />}
                   Aprovar todos ({matchesAltaConfianca.length})
                 </Button>
               )}
@@ -339,10 +342,10 @@ export function SugestoesMatchIA({
                                       </TooltipTrigger>
                                       <TooltipContent>Ver detalhes</TooltipContent>
                                     </Tooltip>
-                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-success hover:text-success hover:bg-success/10" onClick={(e) => { e.stopPropagation(); handleConfirmar(transacao.id, transacao.descricao, melhorMatch); }}>
-                                      <CheckCircle2 className="h-4 w-4" />
+                                    <Button size="icon" variant="ghost" disabled={mutationPending} className="h-8 w-8 text-success hover:text-success hover:bg-success/10" onClick={(e) => { e.stopPropagation(); handleConfirmar(transacao.id, transacao.descricao, melhorMatch); }}>
+                                      {mutationPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
                                     </Button>
-                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={(e) => { e.stopPropagation(); handleRejeitar(transacao.id, transacao.descricao, melhorMatch); }}>
+                                    <Button size="icon" variant="ghost" disabled={mutationPending} className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={(e) => { e.stopPropagation(); handleRejeitar(transacao.id, transacao.descricao, melhorMatch); }}>
                                       <X className="h-4 w-4" />
                                     </Button>
                                     <CollapsibleTrigger asChild>
@@ -408,11 +411,11 @@ export function SugestoesMatchIA({
                                             <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => abrirDetalhes(transacao, sugestao)}>
                                               <FileText className="h-3 w-3" />
                                             </Button>
-                                            <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => handleConfirmar(transacao.id, transacao.descricao, sugestao)}>
-                                              <Link2 className="h-3 w-3" />
+                                            <Button size="sm" variant="outline" disabled={mutationPending} className="h-7 text-xs gap-1" onClick={() => handleConfirmar(transacao.id, transacao.descricao, sugestao)}>
+                                              {mutationPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Link2 className="h-3 w-3" />}
                                               Vincular
                                             </Button>
-                                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleRejeitar(transacao.id, transacao.descricao, sugestao)}>
+                                            <Button size="icon" variant="ghost" disabled={mutationPending} className="h-7 w-7" onClick={() => handleRejeitar(transacao.id, transacao.descricao, sugestao)}>
                                               <X className="h-3 w-3" />
                                             </Button>
                                           </div>
