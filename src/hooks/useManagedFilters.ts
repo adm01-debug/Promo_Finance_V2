@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { logger } from '@/lib/logger';
 
 type AnyFilters = Record<string, unknown>;
@@ -155,11 +155,11 @@ export function useManagedFilters<T extends AnyFilters>(
           await supabase
             .from('user_active_filters')
             .upsert(
-              {
+              [{
                 user_id: user.id,
                 entity_type: entityType,
-                payload: { v: PAYLOAD_VERSION, filters: next },
-              },
+                payload: { v: PAYLOAD_VERSION, filters: next } as never,
+              }],
               { onConflict: 'user_id,entity_type' }
             );
         } catch (e) {
@@ -263,11 +263,11 @@ export function useManagedFilters<T extends AnyFilters>(
       if (user?.id && snap.remoteRow) {
         try {
           await supabase.from('user_active_filters').upsert(
-            {
+            [{
               user_id: user.id,
               entity_type: entityType,
-              payload: snap.remoteRow.payload,
-            },
+              payload: snap.remoteRow.payload as never,
+            }],
             { onConflict: 'user_id,entity_type' }
           );
         } catch (e) {
