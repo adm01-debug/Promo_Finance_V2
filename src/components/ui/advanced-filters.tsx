@@ -21,6 +21,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import type { ManagedFiltersController } from '@/hooks/useManagedFilters';
+import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 
 export interface AdvancedFilters {
   dataVencimentoInicio?: Date;
@@ -35,6 +37,7 @@ interface AdvancedFiltersProps {
   onFiltersChange: (filters: AdvancedFilters) => void;
   tiposCobranca?: { value: string; label: string }[];
   className?: string;
+  controller?: ManagedFiltersController<AdvancedFilters & Record<string, unknown>>;
 }
 
 export function AdvancedFiltersPopover({
@@ -48,6 +51,7 @@ export function AdvancedFiltersPopover({
     { value: 'dinheiro', label: 'Dinheiro' },
   ],
   className,
+  controller,
 }: AdvancedFiltersProps) {
   const [open, setOpen] = useState(false);
 
@@ -89,15 +93,33 @@ export function AdvancedFiltersPopover({
           <div className="flex items-center justify-between">
             <h4 className="font-semibold text-sm">Filtros Avançados</h4>
             {activeFiltersCount > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 text-xs gap-1 text-muted-foreground"
-                onClick={handleClearFilters}
-              >
-                <RotateCcw className="h-3 w-3" />
-                Limpar
-              </Button>
+              controller ? (
+                <ClearFiltersButton
+                  controller={controller}
+                  entityLabel="filtros avançados"
+                  variant="ghost"
+                  size="sm"
+                  label="Limpar tudo"
+                  className="h-7 text-xs text-muted-foreground"
+                  describeFilters={(v) => [
+                    { label: 'De', value: v.dataVencimentoInicio as unknown as string, isActive: !!v.dataVencimentoInicio },
+                    { label: 'Até', value: v.dataVencimentoFim as unknown as string, isActive: !!v.dataVencimentoFim },
+                    { label: 'Mínimo', value: v.valorMinimo as unknown as number, isActive: v.valorMinimo != null },
+                    { label: 'Máximo', value: v.valorMaximo as unknown as number, isActive: v.valorMaximo != null },
+                    { label: 'Tipo', value: v.tipoCobranca as unknown as string, isActive: !!v.tipoCobranca },
+                  ]}
+                />
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 text-xs gap-1 text-muted-foreground"
+                  onClick={handleClearFilters}
+                >
+                  <RotateCcw className="h-3 w-3" />
+                  Limpar
+                </Button>
+              )
             )}
           </div>
 

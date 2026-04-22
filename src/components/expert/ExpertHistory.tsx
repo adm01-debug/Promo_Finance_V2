@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { History, X, Search, Calendar, Filter, Trash2, Loader2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -29,14 +30,14 @@ interface ExpertHistoryProps {
   onLoadConversation: (id: string) => void;
   onDeleteConversation: (id: string, e: React.MouseEvent) => void;
   onClose: () => void;
-  onClearFilters: () => void;
+  clearSlot?: ReactNode;
 }
 
 export function ExpertHistory({
   conversations, filteredConversations, currentConversationId,
   searchQuery, dateFilter, loadingConversations,
   onSearchChange, onDateFilterChange, onLoadConversation,
-  onDeleteConversation, onClose, onClearFilters,
+  onDeleteConversation, onClose, clearSlot,
 }: ExpertHistoryProps) {
   return (
     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden mb-4">
@@ -89,7 +90,7 @@ export function ExpertHistory({
           <div className="text-center py-4">
             <Filter className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
             <p className="text-sm text-muted-foreground">Nenhuma conversa encontrada com os filtros aplicados</p>
-            <Button variant="link" size="sm" onClick={onClearFilters}>Limpar filtros</Button>
+            {clearSlot}
           </div>
         ) : (
           <p className="text-sm text-muted-foreground text-center py-4">Nenhuma conversa salva ainda</p>
