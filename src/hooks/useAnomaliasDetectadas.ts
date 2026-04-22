@@ -231,3 +231,75 @@ export function useReabrirAnomalia() {
     onError: (e: Error) => toast.error(e.message),
   });
 }
+
+export interface ReabrirLoteResultado {
+  total: number;
+  reabertas: number;
+  ids_reabertos: string[];
+  ignoradas: number;
+}
+
+export function useReabrirAnomaliasLote() {
+  const qc = useQueryClient();
+  const audit = useLogAudit();
+
+  return useMutation<ReabrirLoteResultado, Error, { ids: string[]; motivo: string }>({
+    mutationFn: async (input) => {
+      const motivo = input.motivo.trim();
+      if (motivo.length < 10) {
+        throw new Error("Motivo deve ter ao menos 10 caracteres");
+      }
+      const ids = Array.from(new Set(input.ids.filter(Boolean)));
+      if (ids.length === 0) {
+        throw new Error("Selecione ao menos uma anomalia para reabrir");
+      }
+      if (ids.length > 100) {
+        throw new Error("Máximo de 100 anomalias por lote");
+      }
+
+      const { data, error } = await supabase
+        .from("anomalias_detectadas")
+        .update({
+          status: "investigando",
+          observacoes: motivo,
+          resolvida_em: null,
+          resolvida_por: null,
+        })
+        .in("id", ids)
+        .in("status", ["confirmada", "falso_positivo"])
+        .select("id");
+
+      if (error) throw error;
+      const reabertas = (data ?? []) as { id: string }[];
+
+      await audit
+        .mutateAsync({
+          action: "UPDATE",
+          tableName: "anomalias_detectadas",
+          recordId: reabertas.map((r) => r.id).join(","),
+          details: `REOPEN_BATCH (${reabertas.length}/${ids.length}): ${motivo}`,
+        })
+        .catch(() => undefined);
+
+      return {
+        total: ids.length,
+        reabertas: reabertas.length,
+        ids_reabertos: reabertas.map((r) => r.id),
+        ignoradas: ids.length - reabertas.length,
+      };
+    },
+    onSuccess: (res) => {
+      if (res.reabertas === 0) {
+        toast.error("Nenhuma anomalia foi reaberta (já podem ter sido alteradas)");
+      } else if (res.ignoradas > 0) {
+        toast.success(
+          `${res.reabertas} anomalia(s) reaberta(s) — ${res.ignoradas} ignorada(s) por já não estarem em estado reabrível`,
+        );
+      } else {
+        toast.success(`${res.reabertas} anomalia(s) reaberta(s) para investigação`);
+      }
+      qc.invalidateQueries({ queryKey: ["anomalias-detectadas"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+}

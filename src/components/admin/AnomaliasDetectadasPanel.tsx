@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -32,6 +33,8 @@ import {
   ListChecks,
   Filter,
   ArrowUpDown,
+  RotateCcw,
+  X,
 } from "lucide-react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
@@ -46,6 +49,7 @@ import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitr
 import { AnomaliasReviewQueue } from "./AnomaliasReviewQueue";
 import { AnomaliaDrillDownDrawer } from "./AnomaliaDrillDownDrawer";
 import { ReabrirAnomaliaDialog } from "@/components/insights-ia/anomalia/ReabrirAnomaliaDialog";
+import { ReabrirAnomaliasLoteDialog } from "@/components/insights-ia/anomalia/ReabrirAnomaliasLoteDialog";
 import { dispatchOpenAnomaliaDrawer } from "@/lib/anomalia-routes";
 import { SavedFiltersBar } from "@/components/shared/SavedFiltersBar";
 import {
@@ -257,6 +261,20 @@ export function AnomaliasDetectadasPanel() {
   const { activeRun, disparar, disparando } = useAnomaliaDetectionRun();
   const sincronizar = useSincronizarAnomaliaBitrix();
   const { data: pendentes = [] } = usePendingAnomaliasQueue();
+
+  // Seleção em lote para reabertura de anomalias confirmadas/falso_positivo
+  const [selecionados, setSelecionados] = useState<Set<string>>(new Set());
+  const [reabrirLoteOpen, setReabrirLoteOpen] = useState(false);
+
+  const toggleSelecionado = (id: string) => {
+    setSelecionados((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+  const limparSelecao = () => setSelecionados(new Set());
 
   // Lista filtrada SEM o termo de busca — usada para gerar sugestões e prévias
   const listaBase = useMemo(() => {
@@ -794,20 +812,107 @@ export function AnomaliasDetectadasPanel() {
           </div>
         </CardHeader>
         <CardContent>
-          {isLoading ? (
-            <Skeleton className="h-40 w-full" />
-          ) : lista.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-8 text-center">
-              ✓ Nenhuma anomalia neste filtro.
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {lista.map((a) => (
-                <div
-                  key={a.id}
-                  className="p-3 rounded-md border bg-card flex items-start justify-between gap-3"
-                >
-                  <div className="flex-1 min-w-0">
+          {(() => {
+            const idsReabriveis = lista
+              .filter(
+                (a) => a.status === "confirmada" || a.status === "falso_positivo",
+              )
+              .map((a) => a.id);
+            const setReabriveis = new Set(idsReabriveis);
+            const selecionadosVisiveis = idsReabriveis.filter((id) =>
+              selecionados.has(id),
+            );
+            const allSelected =
+              idsReabriveis.length > 0 &&
+              selecionadosVisiveis.length === idsReabriveis.length;
+            const someSelected =
+              selecionadosVisiveis.length > 0 && !allSelected;
+            const handleToggleAll = () => {
+              if (allSelected) {
+                // deseleciona apenas os reabríveis visíveis
+                setSelecionados((prev) => {
+                  const next = new Set(prev);
+                  idsReabriveis.forEach((id) => next.delete(id));
+                  return next;
+                });
+              } else {
+                setSelecionados((prev) => {
+                  const next = new Set(prev);
+                  idsReabriveis.forEach((id) => next.add(id));
+                  return next;
+                });
+              }
+            };
+
+            return (
+              <>
+                {idsReabriveis.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-2 mb-3 p-2 rounded-md border border-border bg-muted/40">
+                    <Checkbox
+                      id="anomalias-select-all"
+                      checked={allSelected}
+                      indeterminate={someSelected}
+                      onChange={handleToggleAll}
+                      aria-label="Selecionar todas as anomalias reabríveis visíveis"
+                    />
+                    <label
+                      htmlFor="anomalias-select-all"
+                      className="text-xs text-muted-foreground cursor-pointer select-none"
+                    >
+                      {selecionadosVisiveis.length > 0
+                        ? `${selecionadosVisiveis.length} de ${idsReabriveis.length} selecionada(s) para reabertura`
+                        : `Selecionar para reabrir em lote (${idsReabriveis.length} reabrível${idsReabriveis.length === 1 ? "" : "is"})`}
+                    </label>
+                    <div className="ml-auto flex items-center gap-2">
+                      {selecionadosVisiveis.length > 0 && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={limparSelecao}
+                        >
+                          <X className="h-3 w-3 mr-1" /> Limpar seleção
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={selecionadosVisiveis.length === 0}
+                        onClick={() => setReabrirLoteOpen(true)}
+                      >
+                        <RotateCcw className="h-3 w-3 mr-1" />
+                        Reabrir {selecionadosVisiveis.length || ""} em lote
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {isLoading ? (
+                  <Skeleton className="h-40 w-full" />
+                ) : lista.length === 0 ? (
+                  <p className="text-sm text-muted-foreground py-8 text-center">
+                    ✓ Nenhuma anomalia neste filtro.
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {lista.map((a) => {
+                      const podeSelecionar = setReabriveis.has(a.id);
+                      const selecionado = selecionados.has(a.id);
+                      return (
+                        <div
+                          key={a.id}
+                          className={`p-3 rounded-md border bg-card flex items-start justify-between gap-3 ${
+                            selecionado ? "border-primary/60 ring-1 ring-primary/30" : ""
+                          }`}
+                        >
+                          {podeSelecionar && (
+                            <Checkbox
+                              checked={selecionado}
+                              onChange={() => toggleSelecionado(a.id)}
+                              className="mt-1 shrink-0"
+                              aria-label={`Selecionar anomalia ${a.descricao}`}
+                            />
+                          )}
+                          <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       <Badge variant={severidadeBadge(a.severidade)}>
                         {a.severidade}
@@ -932,12 +1037,22 @@ export function AnomaliasDetectadasPanel() {
                       a.status === "falso_positivo") && (
                       <ReabrirAnomaliaDialog anomaliaId={a.id} />
                     )}
-                </div>
-              ))}
-            </div>
-          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </CardContent>
       </Card>
+      <ReabrirAnomaliasLoteDialog
+        open={reabrirLoteOpen}
+        onOpenChange={setReabrirLoteOpen}
+        ids={Array.from(selecionados)}
+        onConcluido={limparSelecao}
+      />
       <AnomaliasReviewQueue
         open={reviewOpen}
         onOpenChange={setReviewOpen}
