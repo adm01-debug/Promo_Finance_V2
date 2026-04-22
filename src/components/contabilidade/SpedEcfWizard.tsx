@@ -463,7 +463,11 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
             </motion.div>
           )}
 
-          {step === 3 && resultado && (
+          {step === 3 && resultado && (() => {
+            const errosResultado = resultado.validacoes?.erros || [];
+            const avisosResultado = resultado.validacoes?.avisos || [];
+            const downloadBloqueado = errosResultado.length > 0;
+            return (
             <motion.div
               key="step-3"
               initial={{ opacity: 0, y: 8 }}
