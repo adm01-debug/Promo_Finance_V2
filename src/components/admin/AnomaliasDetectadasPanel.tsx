@@ -282,6 +282,9 @@ export function AnomaliasDetectadasPanel() {
   };
   const limparSelecao = () => setSelecionados(new Set());
 
+  // Index de anomalias reabertas (audit_logs com REOPEN/REOPEN_BATCH)
+  const { data: reabertasIndex } = useAnomaliasReabertasIndex();
+
   // Lista filtrada SEM o termo de busca — usada para gerar sugestões e prévias
   const listaBase = useMemo(() => {
     let arr = data ?? [];
@@ -297,8 +300,11 @@ export function AnomaliasDetectadasPanel() {
       const fim = new Date(filters.periodoFim).getTime() + 86_400_000;
       arr = arr.filter((a) => new Date(a.detectada_em).getTime() <= fim);
     }
+    if (filters.apenasReabertas) {
+      arr = arr.filter((a) => reabertasIndex?.has(a.id));
+    }
     return arr;
-  }, [data, filters]);
+  }, [data, filters, reabertasIndex]);
 
   const lista = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
@@ -321,6 +327,13 @@ export function AnomaliasDetectadasPanel() {
         cmp = SEV_RANK[a.severidade] - SEV_RANK[b.severidade];
       } else if (sort.key === "tipo_anomalia") {
         cmp = a.tipo_anomalia.localeCompare(b.tipo_anomalia);
+      } else if (sort.key === "ultima_reabertura") {
+        const ta = reabertasIndex?.get(a.id)?.ultima_reabertura;
+        const tb = reabertasIndex?.get(b.id)?.ultima_reabertura;
+        // Anomalias sem reabertura vão para o final (independente de asc/desc)
+        const va = ta ? new Date(ta).getTime() : Number.NEGATIVE_INFINITY;
+        const vb = tb ? new Date(tb).getTime() : Number.NEGATIVE_INFINITY;
+        cmp = va - vb;
       } else {
         cmp =
           new Date(a.detectada_em).getTime() -
@@ -329,7 +342,7 @@ export function AnomaliasDetectadasPanel() {
       return sort.dir === "asc" ? cmp : -cmp;
     });
     return sorted;
-  }, [listaBase, searchTerm, sort]);
+  }, [listaBase, searchTerm, sort, reabertasIndex]);
 
   // Contagem da fila pendente por severidade (para o seletor de revisão)
   const pendentesPorSev = useMemo(() => {
