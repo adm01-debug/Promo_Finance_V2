@@ -1,5 +1,6 @@
 import { useState, useRef, useMemo } from 'react';
-import { Upload, FileText, Download, AlertCircle, CheckCircle2, XCircle, AlertTriangle, Loader2 } from 'lucide-react';
+import { Upload, FileText, Download, AlertCircle, CheckCircle2, XCircle, AlertTriangle, Loader2, ChevronRight } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
