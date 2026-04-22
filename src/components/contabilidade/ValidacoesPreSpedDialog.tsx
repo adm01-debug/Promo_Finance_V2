@@ -33,13 +33,25 @@ interface Props {
 }
 
 export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloadTxt, onDownloadZip }: Props) {
-  if (!arquivo) return null;
+  const [busca, setBusca] = useState('');
 
-  const erros = arquivo.validacoes?.erros ?? [];
-  const avisos = arquivo.validacoes?.avisos ?? [];
-  const isRejeitado = arquivo.status === 'rejeitado';
+  const erros = arquivo?.validacoes?.erros ?? [];
+  const avisos = arquivo?.validacoes?.avisos ?? [];
+  const isRejeitado = arquivo?.status === 'rejeitado';
   const bloqueado = erros.length > 0 || isRejeitado;
-  const hashCurto = arquivo.hash_sha256 ? `${arquivo.hash_sha256.slice(0, 12)}…` : '—';
+  const hashCurto = arquivo?.hash_sha256 ? `${arquivo.hash_sha256.slice(0, 12)}…` : '—';
+
+  const termo = busca.trim().toLowerCase();
+  const errosFiltrados = useMemo(
+    () => (termo ? erros.filter((e) => e.toLowerCase().includes(termo)) : erros),
+    [erros, termo],
+  );
+  const avisosFiltrados = useMemo(
+    () => (termo ? avisos.filter((a) => a.toLowerCase().includes(termo)) : avisos),
+    [avisos, termo],
+  );
+
+  if (!arquivo) return null;
 
   const handleDownloadTxt = () => {
     if (bloqueado) return;
