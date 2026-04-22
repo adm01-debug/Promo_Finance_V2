@@ -36,8 +36,22 @@ interface HistoricoRow {
   tipo: string;
 }
 
+const DRAFT_KEY = (tipo: 'ECD' | 'ECF', empresaId?: string) =>
+  `sped-wizard-draft:${tipo}:${empresaId || '_'}`;
+
 export function SpedContabilTab({ tipo, empresaId }: Props) {
-  const [ano, setAno] = useState(new Date().getFullYear() - 1);
+  const [ano, setAno] = useState(() => {
+    if (typeof window === 'undefined') return new Date().getFullYear() - 1;
+    try {
+      const raw = window.localStorage.getItem(DRAFT_KEY(tipo, empresaId));
+      if (raw) {
+        const parsed = JSON.parse(raw) as { ano?: number };
+        if (typeof parsed.ano === 'number' && parsed.ano >= 2010) return parsed.ano;
+      }
+    } catch { /* noop */ }
+    return new Date().getFullYear() - 1;
+  });
+  const [rascunhoRestaurado, setRascunhoRestaurado] = useState(false);
   const [wizardOpen, setWizardOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [transmissaoArquivo, setTransmissaoArquivo] = useState<HistoricoRow | null>(null);
@@ -45,6 +59,35 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
   const transmitir = useRegistrarTransmissaoSped();
   const { data: historico = [], isLoading } = useSpedContabilHistorico(empresaId);
   const historicoTipo = (historico as unknown as HistoricoRow[]).filter((h) => h.tipo === tipo);
+
+  // Re-hidrata o ano ao trocar de empresa/tipo
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const raw = window.localStorage.getItem(DRAFT_KEY(tipo, empresaId));
+      if (raw) {
+        const parsed = JSON.parse(raw) as { ano?: number };
+        if (typeof parsed.ano === 'number' && parsed.ano >= 2010) {
+          setAno(parsed.ano);
+          setRascunhoRestaurado(true);
+          const t = setTimeout(() => setRascunhoRestaurado(false), 4000);
+          return () => clearTimeout(t);
+        }
+      }
+    } catch { /* noop */ }
+  }, [tipo, empresaId]);
+
+  // Persiste o ano sempre que mudar
+  useEffect(() => {
+    if (typeof window === 'undefined' || !empresaId) return;
+    try {
+      window.localStorage.setItem(
+        DRAFT_KEY(tipo, empresaId),
+        JSON.stringify({ ano, ts: Date.now() }),
+      );
+    } catch { /* noop */ }
+  }, [ano, tipo, empresaId]);
+
 
   const handleDownload = async (storage_path: string) => {
     const { data, error } = await supabase.storage.from('relatorios-tributarios').createSignedUrl(storage_path, 60 * 60);
