@@ -1,49 +1,35 @@
 
 
-## Padronização Visual do Wizard SPED ECD
+## Paridade total de UX entre SpedEcfWizard e SpedEcdWizard
 
-Aplicar 100% o padrão de design system do app financeiro (HSL tokens, tipografia Outfit/Plus Jakarta Sans, animações framer-motion + classes utilitárias) nas 3 etapas do `SpedEcdWizard.tsx` e replicar para o `SpedEcfWizard.tsx`.
+O `SpedEcfWizard.tsx` já compartilha header, StepPills, MetaField, KpiChip, KpiCard, AnimatePresence, gradientes de banner, hash SHA-256 com tooltip "Copiado" e botões `premium`. Faltam quatro detalhes do padrão ECD que vou portar para o ECF.
 
-### Mudanças por etapa
+### Diferenças a corrigir
 
-**Header & Progress (todas as etapas)**
-- Trocar título por hierarquia premium: `text-xl font-display font-semibold tracking-tight` + descrição com `text-sm text-muted-foreground`.
-- Indicador de passos como pílulas numeradas com estado (concluído `bg-success/15 text-success`, atual `bg-primary/15 text-primary ring-1 ring-primary/30`, futuro `bg-muted text-muted-foreground`) com transição `transition-all duration-300`.
-- `Progress` com `variant` semântico (success quando step 3 sem erros, warning com avisos, destructive quando bloqueado).
-- Wrapper das etapas com `motion.div` usando `initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }}` e `AnimatePresence mode="wait"` para troca suave entre steps.
+**1. Step 2 — Listas detalhadas de erros e avisos**
+Hoje o ECF mostra apenas chips KPI numéricos. Vou adicionar, logo após a linha "Re-validar":
+- `Alert variant="error"` com ScrollArea (`max-h-48`) listando cada erro em `motion.li` com badge numerada, animação staggered (`delay: i*0.03`).
+- `Alert variant="warning"` equivalente para avisos (`max-h-40`, badge `border-warning/40 text-warning`).
+- Derivar `errosLista = data.validacoes.erros` e `avisosLista = data.validacoes.avisos`.
 
-**Step 1 — Período**
-- Substituir `Card` neutro por card premium glassmorphism (`bg-card/60 backdrop-blur-sm border-border/60 shadow-sm`).
-- Grid de metadados com labels uppercase tracking-wide `text-[11px]` e valores `text-sm font-medium`, ícone leve antes de cada label (Building2, Hash, Calendar, FileText) usando `text-primary/70`.
-- Botão "Próximo" com `variant="default"` + `hover-scale` e ícone `ChevronRight` animado.
+**2. Step 2 — Alerta de bloqueio com motivo + tooltip no botão**
+- Calcular `motivoBloqueio` consolidando todas as causas (erros de validação, ECD ausente em `data.ecd_referencia`, problemas críticos do `preValidacao`, CFC críticos).
+- Adicionar `Alert variant="error" title="Geração de arquivo bloqueada"` com `ShieldAlert animate-pulse` e o `motivoBloqueio` quando `!podeGerar`.
+- Envolver o botão "Gerar arquivo SPED ECF" em `Tooltip` mostrando o motivo no estado desabilitado (mesmo padrão `<span tabIndex>` do ECD para acessibilidade).
 
-**Step 2 — Validações**
-- Linha de status no topo como bento de 3 chips KPI (Erros / Avisos / CFC) usando tokens `bg-destructive/10 text-destructive`, `bg-warning/10 text-warning`, com counter animado (`AnimatedCounter` já existente).
-- Listas de erros/avisos com itens em `motion.li` staggered (delay `i*0.03`), badges numéricas usando classes semânticas, ScrollArea com borda `border-border/60` e fundo sutil tokenizado.
-- Painéis embarcados (`PreValidacaoSpedPanel`, `AuditoriaCFCPanel`) recebem wrapper card consistente.
-- Checklist em container com divisores sutis e `animate-fade-in`.
-- Alert de bloqueio com `variant="error"` + ícone pulsante (`animate-pulse` no ShieldAlert).
-- Botão "Gerar arquivo" usa `variant="premium"` quando habilitado (gradient primary→accent, `hover:shadow-glow-primary`); quando bloqueado mantém `variant="outline"` com `Lock` e cursor-not-allowed.
+**3. Step 3 — Banner de bloqueio + downloads bloqueados**
+- Derivar `errosResultado = resultado.validacoes?.erros || []`, `avisosResultado = resultado.validacoes?.avisos || []`, `downloadBloqueado = errosResultado.length > 0`.
+- Substituir o banner único de sucesso por condicional: quando `downloadBloqueado`, renderizar card vermelho (`from-destructive/10 to-destructive/5`) com `Ban animate-pulse` e mensagem explicando que o arquivo foi gerado mas a validação falhou.
+- Listar `errosResultado` e `avisosResultado` em ScrollArea (mesmo padrão do Step 2).
+- Botões "Baixar .txt" e "Baixar .zip" envoltos em Tooltip; quando bloqueados ficam `variant="outline"` com ícone `Ban`, `disabled` e tooltip "Corrija os N erro(s) antes de baixar".
+- Adicionar botão **"Voltar e revalidar"** (`variant="outline"` + `RefreshCw`) que retorna ao Step 2 quando `downloadBloqueado`.
 
-**Step 3 — Download**
-- Banner de sucesso reformulado: card com gradiente sutil `from-success/10 to-success/5`, ícone `CheckCircle2` em círculo `bg-success/20` com `animate-scale-in`, título `text-lg font-semibold`.
-- Banner de bloqueio: equivalente em `from-destructive/10 to-destructive/5` com `Ban` animado.
-- Card de metadados (Linhas/Lançamentos) como mini KPIs com `AnimatedCounter`, números em `font-display font-semibold text-2xl`.
-- Bloco de Hash SHA-256: container `bg-muted/40 border border-border/60 rounded-lg p-3`, code em `font-mono text-xs`, botão copy com micro-animação (já existente) + tooltip mantido.
-- Botões de download: principal `variant="premium"` com `Download`, secundário `variant="outline"` com `FileArchive`; ambos com `gap-2` e `hover-scale`.
-- Aviso PVA com `variant="info"` e ícone `ShieldAlert` em `text-info`.
+**4. Ajustes menores**
+- Importar `Ban`, `ScrollArea`, `AlertTitle` no topo do arquivo.
+- O bloco de "Apuração preliminar" e o card "ECD vinculada" do Step 1 permanecem (são exclusivos do ECF — não há equivalente no ECD, e fazem parte do valor de negócio da etapa).
 
-**Tokens & utilitários aplicados**
-- Zero hex hardcoded — apenas `bg-success`, `bg-destructive`, `bg-warning`, `bg-primary`, `bg-accent`, `text-muted-foreground`, etc.
-- Tipografia: títulos com `font-display` (Outfit), corpo herda Plus Jakarta Sans.
-- Animações: `animate-fade-in`, `animate-scale-in`, `hover-scale`, `transition-all duration-200`, framer-motion para entrada de listas e transição entre steps.
+### Arquivo editado
+- `src/components/contabilidade/SpedEcfWizard.tsx` — apenas as 4 mudanças acima; sem alteração comportamental além do bloqueio defensivo dos botões de download quando o backend retorna erros pós-geração.
 
-**Replicação no SpedEcfWizard.tsx**
-- Aplicar exatamente o mesmo tratamento visual (header, steps, banners, hash, botões) para manter consistência entre os dois wizards.
-
-### Arquivos a editar
-- `src/components/contabilidade/SpedEcdWizard.tsx` — refatoração visual completa das 3 etapas.
-- `src/components/contabilidade/SpedEcfWizard.tsx` — espelhar padrão.
-
-Nenhuma mudança de comportamento, apenas estilo, tipografia e animações alinhados ao design system Premium do restante do sistema.
+Resultado: paridade visual e de UX 100% com o `SpedEcdWizard`, mantendo a especificidade da ECF (vínculo com ECD e apuração IRPJ/CSLL preliminar).
 
