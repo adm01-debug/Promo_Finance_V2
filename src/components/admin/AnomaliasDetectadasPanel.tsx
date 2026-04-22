@@ -862,13 +862,17 @@ export function AnomaliasDetectadasPanel() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => {
-                          atualizarStatus.mutate({
-                            id: a.id,
-                            status: "investigando",
-                          });
-                          navigate(`/admin/insights-ia/anomalia/${a.id}`);
-                        }}
+                        onClick={() =>
+                          atualizarStatus.mutate(
+                            { id: a.id, status: "investigando" },
+                            {
+                              onSettled: () =>
+                                navigate(
+                                  `/admin/insights-ia/anomalia/${a.id}`,
+                                ),
+                            },
+                          )
+                        }
                         disabled={atualizarStatus.isPending}
                       >
                         <Search className="h-3 w-3 mr-1" /> Investigar

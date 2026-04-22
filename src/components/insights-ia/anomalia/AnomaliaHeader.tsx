@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, Eye, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
 import { useAnomaliasDetectadas } from "@/hooks/useAnomaliasDetectadas";
 import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
@@ -18,6 +19,7 @@ const TIPO_LABEL: Record<Anomalia["tipo_anomalia"], string> = {
 export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
   const { atualizarStatus } = useAnomaliasDetectadas();
   const sincronizar = useSincronizarAnomaliaBitrix();
+  const navigate = useNavigate();
 
   const revisarComBitrix = (status: "confirmada" | "falso_positivo") => {
     atualizarStatus.mutate(
@@ -67,8 +69,17 @@ export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
                 <Button
                   size="sm"
                   variant="outline"
+                  disabled={atualizarStatus.isPending}
                   onClick={() =>
-                    atualizarStatus.mutate({ id: anomalia.id, status: "investigando" })
+                    atualizarStatus.mutate(
+                      { id: anomalia.id, status: "investigando" },
+                      {
+                        onSettled: () =>
+                          navigate(
+                            `/admin/insights-ia/anomalia/${anomalia.id}`,
+                          ),
+                      },
+                    )
                   }
                 >
                   <Search className="h-3 w-3 mr-1" /> Investigar
