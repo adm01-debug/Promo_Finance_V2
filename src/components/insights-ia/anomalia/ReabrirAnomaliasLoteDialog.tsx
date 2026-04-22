@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { z } from "zod";
 import {
   Dialog,
   DialogContent,
@@ -14,6 +15,12 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RotateCcw, Loader2, AlertTriangle } from "lucide-react";
 import { useReabrirAnomaliasLote } from "@/hooks/useAnomaliasDetectadas";
 import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
+
+const motivoSchema = z
+  .string()
+  .trim()
+  .min(10, { message: "O motivo deve ter pelo menos 10 caracteres." })
+  .max(1000, { message: "O motivo deve ter no máximo 1000 caracteres." });
 
 interface Props {
   open: boolean;
