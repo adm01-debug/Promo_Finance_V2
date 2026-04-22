@@ -12,6 +12,7 @@ import { HistoricoContextualCard } from "@/components/insights-ia/anomalia/Histo
 import { DetectoresContribuintesCard } from "@/components/insights-ia/anomalia/DetectoresContribuintesCard";
 import { AnomaliasRelacionadasCard } from "@/components/insights-ia/anomalia/AnomaliasRelacionadasCard";
 import { AcoesSugeridasCard } from "@/components/insights-ia/anomalia/AcoesSugeridasCard";
+import { ExportarEvidenciasButton } from "@/components/insights-ia/anomalia/ExportarEvidenciasButton";
 
 const SLOW_THRESHOLD_MS = 2_500;
 const VERY_SLOW_THRESHOLD_MS = 8_000;
@@ -65,13 +66,23 @@ export default function AnomaliaDetalhe() {
               </h1>
             </div>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate(voltarUrl)}
-          >
-            <ArrowLeft className="h-4 w-4 mr-1" /> Voltar para a lista
-          </Button>
+          <div className="flex items-center gap-2">
+            {data && (
+              <ExportarEvidenciasButton
+                anomalia={data.anomalia}
+                entidade={data.entidade}
+                historico={data.historico}
+                relacionadas={data.relacionadas}
+              />
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate(voltarUrl)}
+            >
+              <ArrowLeft className="h-4 w-4 mr-1" /> Voltar para a lista
+            </Button>
+          </div>
         </div>
 
         {isLoading ? (
