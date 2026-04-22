@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useHighlightFromUrl } from '@/hooks/useHighlightFromUrl';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,8 @@ export default function Movimentacoes() {
 
   const { data: movimentacoes, isLoading } = useMovimentacoes(undefined, { startDate, endDate });
   const { data: empresas } = useAllEmpresas();
+
+  useHighlightFromUrl('highlight', !isLoading && (movimentacoes?.length ?? 0) > 0);
 
   const filtered = useMemo(() => {
     if (!movimentacoes) return [];
@@ -152,7 +155,7 @@ export default function Movimentacoes() {
                   </TableHeader>
                   <TableBody>
                     {filtered.map(mov => (
-                      <TableRow key={mov.id}>
+                      <TableRow key={mov.id} data-highlight-id={mov.id}>
                         <TableCell className="whitespace-nowrap">
                           {format(parseISO(mov.data_movimentacao), 'dd/MM/yyyy', { locale: ptBR })}
                         </TableCell>
