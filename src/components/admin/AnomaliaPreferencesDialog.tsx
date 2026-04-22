@@ -285,8 +285,8 @@ export function AnomaliaPreferencesDialog({ open, onOpenChange }: Props) {
                 >
                   <Checkbox
                     checked={toastAcoes[opt.key]}
-                    onCheckedChange={(v) =>
-                      setToastAcoes({ ...toastAcoes, [opt.key]: !!v })
+                    onChange={(e) =>
+                      setToastAcoes({ ...toastAcoes, [opt.key]: e.target.checked })
                     }
                     className="mt-0.5"
                   />
@@ -319,8 +319,8 @@ export function AnomaliaPreferencesDialog({ open, onOpenChange }: Props) {
                 >
                   <Checkbox
                     checked={drawerAcoes[opt.key]}
-                    onCheckedChange={(v) =>
-                      setDrawerAcoes({ ...drawerAcoes, [opt.key]: !!v })
+                    onChange={(e) =>
+                      setDrawerAcoes({ ...drawerAcoes, [opt.key]: e.target.checked })
                     }
                     className="mt-0.5"
                   />
@@ -413,9 +413,11 @@ export function AnomaliaPreferencesDialog({ open, onOpenChange }: Props) {
                   >
                     <Checkbox
                       checked={ccs.includes(cc.id)}
-                      onCheckedChange={(v) =>
+                      onChange={(e) =>
                         setCcs(
-                          v ? [...ccs, cc.id] : ccs.filter((x) => x !== cc.id),
+                          e.target.checked
+                            ? [...ccs, cc.id]
+                            : ccs.filter((x) => x !== cc.id),
                         )
                       }
                     />
@@ -442,9 +444,9 @@ export function AnomaliaPreferencesDialog({ open, onOpenChange }: Props) {
                 >
                   <Checkbox
                     checked={tipos.includes(t.value)}
-                    onCheckedChange={(v) =>
+                    onChange={(e) =>
                       setTipos(
-                        v
+                        e.target.checked
                           ? [...tipos, t.value]
                           : tipos.filter((x) => x !== t.value),
                       )
