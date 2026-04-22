@@ -53,6 +53,17 @@ export function SugestoesMatchIA({
   const { isAnalyzing, matchesIA, lastAnalysis, analisarConciliacao } = useConciliacaoIA();
   const { historico, registrarHistorico, registrarFeedback, aprovarEmLote, estatisticasHistorico, isLoadingHistorico } = useHistoricoConciliacaoIA();
 
+  // Conjunto de matches rejeitados persistidos no histórico (transacao_bancaria_id + lancamento_id)
+  const rejeicoesPersistidas = useMemo(() => {
+    const set = new Set<string>();
+    historico.forEach((h) => {
+      if (h.acao !== 'rejeitado' || !h.transacao_bancaria_id) return;
+      const lancId = h.conta_pagar_id || h.conta_receber_id;
+      if (lancId) set.add(`${h.transacao_bancaria_id}-${lancId}`);
+    });
+    return set;
+  }, [historico]);
+
   useEffect(() => {
     if (transacoes.length > 0 && lancamentos.length > 0 && !lastAnalysis && !isAnalyzing) {
       analisarConciliacao(transacoes, lancamentos);
@@ -61,8 +72,11 @@ export function SugestoesMatchIA({
 
   const sugestoesValidasFor = useCallback((transacaoId: string): MatchSugestaoIA[] => {
     const sugestoes = matchesIA.get(transacaoId) || [];
-    return sugestoes.filter(s => !matchesRejeitados.has(`${transacaoId}-${s.lancamentoId}`));
-  }, [matchesIA, matchesRejeitados]);
+    return sugestoes.filter((s) => {
+      const key = `${transacaoId}-${s.lancamentoId}`;
+      return !matchesRejeitados.has(key) && !rejeicoesPersistidas.has(key);
+    });
+  }, [matchesIA, matchesRejeitados, rejeicoesPersistidas]);
 
   const transacoesComSugestao = useMemo(() => {
     return transacoes.filter(t => {
