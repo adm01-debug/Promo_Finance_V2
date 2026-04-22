@@ -411,11 +411,11 @@ export function SugestoesMatchIA({
                                             <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => abrirDetalhes(transacao, sugestao)}>
                                               <FileText className="h-3 w-3" />
                                             </Button>
-                                            <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => handleConfirmar(transacao.id, transacao.descricao, sugestao)}>
-                                              <Link2 className="h-3 w-3" />
+                                            <Button size="sm" variant="outline" disabled={mutationPending} className="h-7 text-xs gap-1" onClick={() => handleConfirmar(transacao.id, transacao.descricao, sugestao)}>
+                                              {mutationPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Link2 className="h-3 w-3" />}
                                               Vincular
                                             </Button>
-                                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleRejeitar(transacao.id, transacao.descricao, sugestao)}>
+                                            <Button size="icon" variant="ghost" disabled={mutationPending} className="h-7 w-7" onClick={() => handleRejeitar(transacao.id, transacao.descricao, sugestao)}>
                                               <X className="h-3 w-3" />
                                             </Button>
                                           </div>
