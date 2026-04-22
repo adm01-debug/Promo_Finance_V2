@@ -126,6 +126,9 @@ export function SSOSandboxPanel() {
     if (preset) setClaimsJson(JSON.stringify(preset, null, 2));
   };
 
+  const saveRun = useSaveSSOSandboxRun();
+  const [activeTab, setActiveTab] = useState<'simular' | 'historico'>('simular');
+
   const simulate = async () => {
     if (jsonError) { toast.error('JSON inválido', { description: jsonError }); return; }
     const mock_claims = JSON.parse(claimsJson);
@@ -143,12 +146,53 @@ export function SSOSandboxPanel() {
         }).filter(Boolean);
       }
       const data = await testMutation.mutateAsync(payload);
-      setResult(data as unknown as SimulationResult);
+      const simResult = data as unknown as SimulationResult;
+      setResult(simResult);
       if ((data as { success: boolean }).success) toast.success('Simulação concluída');
       else toast.error('Simulação encontrou problemas');
+
+      // Persistir histórico (fire-and-forget)
+      const provider = providers.find(p => p.id === providerId);
+      saveRun.mutate({
+        providerId: useProviderConfig && providerId ? providerId : null,
+        providerNome: provider?.nome ?? simResult.preview.provider_nome ?? null,
+        useProviderConfig,
+        input: payload,
+        result: simResult as never,
+        outcome: computeOutcome(simResult as never),
+      }, {
+        onError: (e) => console.warn('[sandbox] falha ao salvar histórico:', e),
+      });
     } catch (e) {
       toast.error('Erro ao simular', { description: e instanceof Error ? e.message : 'Erro' });
     }
+  };
+
+  const applyRun = (run: SandboxRun) => {
+    const input = run.input as {
+      mock_claims?: unknown;
+      provider_id?: string;
+      claim_mapping?: { email?: string; full_name?: string; groups?: string };
+      default_role?: AppRole;
+      allowed_domains?: string[];
+      role_mappings?: Array<{ idp_group: string; app_role: string }>;
+    };
+    setProviderId(input.provider_id ?? '');
+    setUseProviderConfig(!!input.provider_id);
+    if (input.mock_claims !== undefined) {
+      setClaimsJson(JSON.stringify(input.mock_claims, null, 2));
+    }
+    if (input.claim_mapping) {
+      setManualEmail(input.claim_mapping.email ?? 'email');
+      setManualName(input.claim_mapping.full_name ?? 'name');
+      setManualGroups(input.claim_mapping.groups ?? 'groups');
+    }
+    if (input.default_role) setManualRole(input.default_role);
+    if (input.allowed_domains) setManualDomains(input.allowed_domains.join(', '));
+    if (input.role_mappings) {
+      setManualMappings(input.role_mappings.map(m => `${m.idp_group}:${m.app_role}`).join('\n'));
+    }
+    setActiveTab('simular');
   };
 
   const filteredMappings = useMemo(() => {
