@@ -342,10 +342,10 @@ export function SugestoesMatchIA({
                                       </TooltipTrigger>
                                       <TooltipContent>Ver detalhes</TooltipContent>
                                     </Tooltip>
-                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-success hover:text-success hover:bg-success/10" onClick={(e) => { e.stopPropagation(); handleConfirmar(transacao.id, transacao.descricao, melhorMatch); }}>
-                                      <CheckCircle2 className="h-4 w-4" />
+                                    <Button size="icon" variant="ghost" disabled={mutationPending} className="h-8 w-8 text-success hover:text-success hover:bg-success/10" onClick={(e) => { e.stopPropagation(); handleConfirmar(transacao.id, transacao.descricao, melhorMatch); }}>
+                                      {mutationPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
                                     </Button>
-                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={(e) => { e.stopPropagation(); handleRejeitar(transacao.id, transacao.descricao, melhorMatch); }}>
+                                    <Button size="icon" variant="ghost" disabled={mutationPending} className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={(e) => { e.stopPropagation(); handleRejeitar(transacao.id, transacao.descricao, melhorMatch); }}>
                                       <X className="h-4 w-4" />
                                     </Button>
                                     <CollapsibleTrigger asChild>
