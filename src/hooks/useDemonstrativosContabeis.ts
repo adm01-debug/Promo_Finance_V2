@@ -136,6 +136,10 @@ function calcularPorCompetencia(
     outras_op: 0,
   };
 
+  // Mapa de contas não classificadas (sem centro_resultado)
+  const naoClassMap = new Map<string, ContaNaoClassificada>();
+  let totalNaoClassificado = 0;
+
   for (const p of partidasPeriodo) {
     if (!p.conta) continue;
     const tipo = p.conta.tipo.toLowerCase();
@@ -147,6 +151,29 @@ function calcularPorCompetencia(
     let valor = 0;
     if (isReceita) valor = p.tipo === 'C' ? p.valor : -p.valor;
     if (isDespesa) valor = p.tipo === 'D' ? p.valor : -p.valor;
+
+    const semClassificacao = !p.conta.centro_resultado || p.conta.centro_resultado.trim() === '';
+    if (semClassificacao) {
+      const key = p.conta.codigo;
+      const desc = p.conta.descricao || p.conta.nome || p.conta.codigo;
+      const existing = naoClassMap.get(key);
+      if (existing) {
+        existing.valor += valor;
+        existing.partidas += 1;
+      } else {
+        naoClassMap.set(key, {
+          conta_id: p.conta.id,
+          codigo: p.conta.codigo,
+          descricao: desc,
+          tipo: isReceita ? 'receita' : 'despesa',
+          valor,
+          partidas: 1,
+          centro_resultado_sugerido: sugerirCentroResultado(p.conta.codigo, desc, p.conta.tipo),
+        });
+      }
+      totalNaoClassificado += valor;
+      continue;
+    }
 
     const grupo = classificarLinhaDRE(p.conta.centro_resultado, p.conta.codigo);
     if (isReceita && grupo === 'rec_financeira') buckets.rec_financeira += valor;
