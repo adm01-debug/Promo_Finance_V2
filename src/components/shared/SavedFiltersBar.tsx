@@ -623,8 +623,24 @@ export function SavedFiltersBar<T>({
               )}
             </div>
           </div>
+          {saveError && (
+            <div
+              role="alert"
+              className="mt-2 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive"
+            >
+              <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+              <span>{saveError}</span>
+            </div>
+          )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSaveError(null);
+                setDialogOpen(false);
+              }}
+              disabled={save.isPending}
+            >
               Cancelar
             </Button>
             <Button
@@ -635,7 +651,14 @@ export function SavedFiltersBar<T>({
                 (shareEnabled && !currentEmpresaId)
               }
             >
-              Salvar
+              {save.isPending ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 mr-2 animate-spin" />
+                  Salvando…
+                </>
+              ) : (
+                "Salvar"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
