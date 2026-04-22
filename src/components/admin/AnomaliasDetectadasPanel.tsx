@@ -199,6 +199,15 @@ export function AnomaliasDetectadasPanel() {
   const [visibleCols, setVisibleCols] = useState<string[]>(DEFAULT_VISIBLE);
   const [activePresetId, setActivePresetId] = useState<string | null>(null);
   const [bootstrapped, setBootstrapped] = useState(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem("anomalias.recent-searches");
+      return raw ? (JSON.parse(raw) as string[]) : [];
+    } catch {
+      return [];
+    }
+  });
 
   const { defaultFilter } = useSavedFilters<AnomaliaFilters>(ENTITY_TYPE);
 
