@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Download, FileText, AlertTriangle, CheckCircle2, ShieldAlert, FileArchive, Wand2, Send, FileSearch } from 'lucide-react';
+import { Download, FileText, AlertTriangle, CheckCircle2, ShieldAlert, FileArchive, Wand2, Send, FileSearch, ChevronDown, ChevronRight, ScrollText, XCircle, Hash, Lock, Unlock } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -56,9 +57,26 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [transmissaoArquivo, setTransmissaoArquivo] = useState<HistoricoRow | null>(null);
   const [reciboInput, setReciboInput] = useState('');
+  const [expandedAudit, setExpandedAudit] = useState<Set<string>>(new Set());
   const transmitir = useRegistrarTransmissaoSped();
   const { data: historico = [], isLoading } = useSpedContabilHistorico(empresaId);
   const historicoTipo = (historico as unknown as HistoricoRow[]).filter((h) => h.tipo === tipo);
+
+  const toggleAudit = (id: string) => {
+    setExpandedAudit((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const copyHash = async (hash: string | null) => {
+    if (!hash) return;
+    try {
+      await navigator.clipboard.writeText(hash);
+      toast.success('Hash copiado');
+    } catch { toast.error('Falha ao copiar'); }
+  };
 
   // Re-hidrata o ano ao trocar de empresa/tipo
   useEffect(() => {
@@ -209,6 +227,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-8"></TableHead>
                   <TableHead>Período</TableHead>
                   <TableHead>Gerado em</TableHead>
                   <TableHead>Lançamentos</TableHead>
@@ -220,15 +239,33 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {historicoTipo.map((h) => (
-                  <TableRow key={h.id}>
+                {historicoTipo.map((h) => {
+                  const isOpen = expandedAudit.has(h.id);
+                  const erros = h.validacoes?.erros ?? [];
+                  const avisos = h.validacoes?.avisos ?? [];
+                  const bloqueada = h.status === 'rejeitado' || erros.length > 0;
+                  return (
+                  <React.Fragment key={h.id}>
+                  <TableRow>
+                    <TableCell className="p-1">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 w-7 p-0"
+                        onClick={() => toggleAudit(h.id)}
+                        title={isOpen ? 'Ocultar trilha de auditoria' : 'Ver trilha de auditoria'}
+                        aria-expanded={isOpen}
+                      >
+                        {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                      </Button>
+                    </TableCell>
                     <TableCell className="font-medium">{h.ano_calendario}</TableCell>
                     <TableCell>{format(new Date(h.created_at), 'dd/MM/yyyy HH:mm')}</TableCell>
                     <TableCell>{h.total_lancamentos}</TableCell>
                     <TableCell>{h.total_linhas}</TableCell>
                     <TableCell>
                       {h.status === 'rejeitado' ? (
-                        <Badge variant="destructive" className="gap-1"><AlertTriangle className="h-3 w-3" />{h.validacoes?.erros?.length ?? 0} erros</Badge>
+                        <Badge variant="destructive" className="gap-1"><AlertTriangle className="h-3 w-3" />{erros.length} erros</Badge>
                       ) : h.status === 'transmitido' ? (
                         <Badge className="gap-1 bg-success hover:bg-success"><CheckCircle2 className="h-3 w-3" />Transmitido</Badge>
                       ) : (
@@ -259,7 +296,119 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                       </div>
                     </TableCell>
                   </TableRow>
-                ))}
+                  {isOpen && (
+                    <TableRow key={`${h.id}-audit`} className="bg-muted/20 hover:bg-muted/20">
+                      <TableCell colSpan={9} className="p-0">
+                        <div className="p-4 space-y-3 border-l-2 border-primary/30 ml-2">
+                          <div className="flex items-center gap-2 text-sm font-semibold font-display tracking-tight">
+                            <ScrollText className="h-4 w-4 text-primary" />
+                            Trilha de auditoria · execução de {format(new Date(h.created_at), 'dd/MM/yyyy HH:mm')}
+                          </div>
+
+                          {/* Status / decisão */}
+                          <div className={cn(
+                            'rounded-lg border p-3 flex items-start gap-3',
+                            bloqueada
+                              ? 'border-destructive/30 bg-destructive/5'
+                              : 'border-success/30 bg-success/5',
+                          )}>
+                            <div className={cn(
+                              'h-8 w-8 rounded-md flex items-center justify-center shrink-0',
+                              bloqueada ? 'bg-destructive/15 text-destructive' : 'bg-success/15 text-success',
+                            )}>
+                              {bloqueada ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
+                            </div>
+                            <div className="flex-1 space-y-0.5">
+                              <p className={cn(
+                                'text-xs font-semibold',
+                                bloqueada ? 'text-destructive' : 'text-success',
+                              )}>
+                                {bloqueada
+                                  ? `Geração bloqueada — ${erros.length} erro(s) de validação`
+                                  : 'Geração liberada — nenhum erro de validação'}
+                              </p>
+                              <p className="text-[11px] text-muted-foreground">
+                                Status final: <span className="font-mono">{h.status}</span>
+                                {avisos.length > 0 && ` · ${avisos.length} aviso(s) tolerado(s)`}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Metadados de execução */}
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            <div className="rounded-md border border-border/60 bg-card/60 p-2.5">
+                              <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">Total de linhas</p>
+                              <p className="text-sm font-mono font-semibold tabular-nums mt-0.5">{h.total_linhas.toLocaleString('pt-BR')}</p>
+                            </div>
+                            <div className="rounded-md border border-border/60 bg-card/60 p-2.5">
+                              <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">Lançamentos</p>
+                              <p className="text-sm font-mono font-semibold tabular-nums mt-0.5">{h.total_lancamentos.toLocaleString('pt-BR')}</p>
+                            </div>
+                            <div className="rounded-md border border-border/60 bg-card/60 p-2.5 col-span-2">
+                              <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium flex items-center gap-1">
+                                <Hash className="h-3 w-3" /> Hash SHA-256
+                              </p>
+                              <button
+                                type="button"
+                                onClick={() => copyHash(h.hash_sha256)}
+                                className="text-[11px] font-mono text-foreground/90 mt-0.5 hover:text-primary transition-colors break-all text-left w-full"
+                                title="Clique para copiar"
+                              >
+                                {h.hash_sha256 || '—'}
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Erros que bloquearam */}
+                          {erros.length > 0 && (
+                            <div className="space-y-1.5">
+                              <p className="text-[11px] uppercase tracking-wide text-destructive font-semibold flex items-center gap-1.5">
+                                <XCircle className="h-3.5 w-3.5" /> Erros que impediram a geração ({erros.length})
+                              </p>
+                              <ul className="space-y-1 rounded-md border border-destructive/20 bg-destructive/5 p-2">
+                                {erros.map((e, i) => (
+                                  <li key={i} className="flex items-start gap-2 text-xs">
+                                    <Badge variant="outline" className="border-destructive/40 text-destructive shrink-0 h-5 px-1.5 text-[10px] font-mono">
+                                      {String(i + 1).padStart(2, '0')}
+                                    </Badge>
+                                    <span className="leading-snug">{e}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          {/* Avisos tolerados */}
+                          {avisos.length > 0 && (
+                            <div className="space-y-1.5">
+                              <p className="text-[11px] uppercase tracking-wide text-warning font-semibold flex items-center gap-1.5">
+                                <AlertTriangle className="h-3.5 w-3.5" /> Avisos tolerados ({avisos.length})
+                              </p>
+                              <ul className="space-y-1 rounded-md border border-warning/20 bg-warning/5 p-2">
+                                {avisos.map((a, i) => (
+                                  <li key={i} className="flex items-start gap-2 text-xs">
+                                    <Badge variant="outline" className="border-warning/40 text-warning shrink-0 h-5 px-1.5 text-[10px] font-mono">
+                                      {String(i + 1).padStart(2, '0')}
+                                    </Badge>
+                                    <span className="leading-snug">{a}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          {erros.length === 0 && avisos.length === 0 && (
+                            <p className="text-xs text-muted-foreground italic">
+                              Nenhuma validação registrada para esta execução.
+                            </p>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  </React.Fragment>
+                  );
+                })}
               </TableBody>
             </Table>
           )}
