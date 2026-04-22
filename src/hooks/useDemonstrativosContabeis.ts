@@ -272,8 +272,23 @@ function calcularPorCompetencia(
     { codigo: '3.2', descricao: 'Lucros/Prejuízos Acumulados', valor: lucrosAcumulados, nivel: 1 },
   ];
 
+  // Linhas extras na DRE para "Não classificadas" (apenas se houver)
+  const naoClassificadas = Array.from(naoClassMap.values()).sort(
+    (a, b) => Math.abs(b.valor) - Math.abs(a.valor),
+  );
+  if (naoClassificadas.length > 0) {
+    linhas.push({
+      codigo: '99',
+      descricao: '⚠ NÃO CLASSIFICADAS (sem centro_resultado)',
+      valor: totalNaoClassificado,
+      percentual: pct(totalNaoClassificado),
+      nivel: 0,
+      tipo: totalNaoClassificado >= 0 ? 'receita' : 'despesa',
+    });
+  }
+
   return {
-    dre: { linhas, receitaBruta, lucroLiquido },
+    dre: { linhas, receitaBruta, lucroLiquido, naoClassificadas, totalNaoClassificado },
     balanco: {
       ativo,
       passivo,
@@ -313,7 +328,7 @@ export function useDemonstrativosContabeis(params: {
     queryFn: async () => {
       let q = supabase
         .from('partidas_contabeis')
-        .select('tipo, valor, conta:plano_contas(codigo, descricao, nome, tipo, natureza, centro_resultado), lancamento:lancamentos_contabeis!inner(data_lancamento, empresa_id)')
+        .select('tipo, valor, conta:plano_contas(id, codigo, descricao, nome, tipo, natureza, centro_resultado), lancamento:lancamentos_contabeis!inner(data_lancamento, empresa_id)')
         .lte('lancamento.data_lancamento', fim)
         .limit(20000);
       if (empresaId !== 'todas') q = q.eq('lancamento.empresa_id', empresaId);
