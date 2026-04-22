@@ -154,6 +154,7 @@ export default function AnomaliaDetalhe() {
           </Alert>
         ) : (
           <>
+            <AnomaliaBreadcrumb entidadeTipo={data.anomalia.entidade_tipo} />
             <AnomaliaHeader anomalia={data.anomalia} />
             <div className="grid lg:grid-cols-2 gap-4">
               <EntidadeRelacionadaCard entidade={data.entidade} />
