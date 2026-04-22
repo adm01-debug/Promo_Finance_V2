@@ -433,7 +433,7 @@ export function useDemonstrativosContabeis(params: {
     const totalPassivo = passivoCirc + pl;
 
     return {
-      dre: { linhas, receitaBruta, lucroLiquido },
+      dre: { linhas, receitaBruta, lucroLiquido, naoClassificadas: [], totalNaoClassificado: 0 },
       balanco: {
         ativo: [
           { codigo: '1', descricao: 'ATIVO TOTAL', valor: totalAtivo, nivel: 0 },
