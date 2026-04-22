@@ -622,6 +622,14 @@ export function AnomaliasDetectadasPanel() {
               onChange={setVisibleCols}
             />
 
+            <ViewExportButton
+              filename="anomalias_visualizacao"
+              title="Anomalias detectadas — visualização atual"
+              rows={lista}
+              columns={exportColumns}
+              meta={exportMeta}
+            />
+
             {activeFilterCount > 0 && (
               <Badge variant="outline" className="h-7 px-2">
                 {activeFilterCount} filtro
