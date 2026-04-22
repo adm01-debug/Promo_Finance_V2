@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { format, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { CalendarIcon, Search, Filter, RefreshCcw, Activity, Download, FileSpreadsheet, X, ShieldCheck } from 'lucide-react';
+import { CalendarIcon, Search, Filter, RefreshCcw, Activity, Download, FileSpreadsheet, ShieldCheck } from 'lucide-react';
 import type { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
@@ -19,17 +19,51 @@ import { useSSOJitEvents, JitAuditEvent } from '@/hooks/useSSOJitEvents';
 import { useSSOProviders } from '@/hooks/useSSO';
 import { SSOJitEventsKPIs } from '@/components/audit/jit/SSOJitEventsKPIs';
 import { SSOJitEventsTable } from '@/components/audit/jit/SSOJitEventsTable';
+import { useManagedFilters } from '@/hooks/useManagedFilters';
+import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
+
+interface SSOJitFilters extends Record<string, unknown> {
+  fromIso: string;
+  toIso: string;
+  search: string;
+  providerFilter: string;
+  roleFilter: string;
+  viaFilter: string;
+  originFilter: string;
+}
+
+const SSO_DEFAULTS: SSOJitFilters = {
+  fromIso: subDays(new Date(), 30).toISOString(),
+  toIso: new Date().toISOString(),
+  search: '',
+  providerFilter: 'all',
+  roleFilter: 'all',
+  viaFilter: 'all',
+  originFilter: 'all',
+};
 
 export default function SSOJitEvents() {
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: subDays(new Date(), 30),
-    to: new Date(),
+  const filtersController = useManagedFilters<SSOJitFilters>({
+    entityType: 'sso-jit-events',
+    defaults: SSO_DEFAULTS,
+    localStorageKey: 'app-sso-jit-filters',
   });
-  const [search, setSearch] = useState('');
-  const [providerFilter, setProviderFilter] = useState('all');
-  const [roleFilter, setRoleFilter] = useState('all');
-  const [viaFilter, setViaFilter] = useState('all');
-  const [originFilter, setOriginFilter] = useState('all');
+  const { fromIso, toIso, search, providerFilter, roleFilter, viaFilter, originFilter } = filtersController.values;
+  const dateRange: DateRange | undefined = fromIso || toIso
+    ? { from: fromIso ? new Date(fromIso) : undefined, to: toIso ? new Date(toIso) : undefined }
+    : undefined;
+  const setDateRange = (r: DateRange | undefined) => {
+    filtersController.setValues({
+      ...filtersController.values,
+      fromIso: r?.from ? r.from.toISOString() : '',
+      toIso: r?.to ? r.to.toISOString() : '',
+    });
+  };
+  const setSearch = (v: string) => filtersController.setField('search', v);
+  const setProviderFilter = (v: string) => filtersController.setField('providerFilter', v);
+  const setRoleFilter = (v: string) => filtersController.setField('roleFilter', v);
+  const setViaFilter = (v: string) => filtersController.setField('viaFilter', v);
+  const setOriginFilter = (v: string) => filtersController.setField('originFilter', v);
 
   const { data: events, isLoading, refetch } = useSSOJitEvents({
     from: dateRange?.from,
