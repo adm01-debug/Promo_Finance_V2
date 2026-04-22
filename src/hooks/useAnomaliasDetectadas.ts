@@ -27,6 +27,7 @@ export interface Anomalia {
   status: "nova" | "investigando" | "falso_positivo" | "confirmada";
   detectada_em: string;
   resolvida_em: string | null;
+  resolvida_por: string | null;
   observacoes: string | null;
   bitrix_task_id: string | null;
 }
