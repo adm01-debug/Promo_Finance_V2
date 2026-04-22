@@ -220,8 +220,8 @@ export function SugestoesMatchIA({
             
             <div className="flex items-center gap-2">
               {matchesAltaConfianca.length > 0 && (
-                <Button variant="default" size="sm" onClick={() => setShowAprovarTodosDialog(true)} className="gap-2 bg-success hover:bg-success/90">
-                  <CheckCheck className="h-4 w-4" />
+                <Button variant="default" size="sm" onClick={() => setShowAprovarTodosDialog(true)} disabled={mutationPending} className="gap-2 bg-success hover:bg-success/90">
+                  {aprovarEmLote.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCheck className="h-4 w-4" />}
                   Aprovar todos ({matchesAltaConfianca.length})
                 </Button>
               )}
