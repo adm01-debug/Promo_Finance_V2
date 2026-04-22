@@ -69,6 +69,14 @@ export function SavedFiltersBar<T>({
   const { user, currentEmpresaId } = useAuth();
   const { filters, save, remove, setDefault, duplicate, updateSharing } =
     useSavedFilters<T>(entityType);
+  const {
+    byFilterId: subsByFilter,
+    subscribe,
+    unsubscribe,
+    updateChannels,
+  } = useSavedFilterSubscriptions();
+  const { subscribed: pushReady, subscribe: enablePush } =
+    useWebPushSubscription();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [name, setName] = useState("");
