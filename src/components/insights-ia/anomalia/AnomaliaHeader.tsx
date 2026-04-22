@@ -60,7 +60,7 @@ export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
 
   return (
     <Card>
-      <CardContent className="p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <CardContent className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="space-y-2">
           <div className="flex items-center gap-2 flex-wrap">
             <Badge variant={sevVariant}>{anomalia.severidade}</Badge>
@@ -71,11 +71,11 @@ export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
                 Bitrix24 #{anomalia.bitrix_task_id}
               </Badge>
             )}
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-muted-foreground tabular-nums">
               Detectada em {new Date(anomalia.detectada_em).toLocaleString("pt-BR")}
             </span>
           </div>
-          <p className="text-base font-medium">{anomalia.descricao}</p>
+          <p className="text-base font-semibold">{anomalia.descricao}</p>
           {anomalia.observacoes && (
             <p className="text-sm text-muted-foreground italic">{anomalia.observacoes}</p>
           )}

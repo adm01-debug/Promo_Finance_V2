@@ -99,16 +99,16 @@ export function AcoesSugeridasCard({ anomalia }: { anomalia: Anomalia }) {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Lightbulb className="h-4 w-4" /> Ações sugeridas
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-sm font-semibold tracking-tight">
+          <Lightbulb className="h-4 w-4 text-muted-foreground" /> Ações sugeridas
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-3">
           {acoes.map((a, i) => (
-            <div key={i} className="border rounded-md p-3 bg-muted/30">
-              <h4 className="font-semibold text-sm">{a.titulo}</h4>
+            <div key={i} className="border border-border rounded-md p-3 bg-muted/40">
+              <h4 className="text-sm font-semibold">{a.titulo}</h4>
               <p className="text-xs text-muted-foreground mt-1">{a.descricao}</p>
               {a.rota && a.cta && (
                 <Button asChild size="sm" variant="outline" className="mt-2">
@@ -119,8 +119,11 @@ export function AcoesSugeridasCard({ anomalia }: { anomalia: Anomalia }) {
           ))}
         </div>
 
-        <div className="space-y-2 pt-2 border-t">
-          <label htmlFor="obs" className="text-sm font-medium">
+        <div className="space-y-2 pt-2 border-t border-border">
+          <label
+            htmlFor="obs"
+            className="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+          >
             Parecer / observações
           </label>
           <Textarea

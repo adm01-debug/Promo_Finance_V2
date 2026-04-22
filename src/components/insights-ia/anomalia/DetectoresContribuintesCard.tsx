@@ -74,28 +74,30 @@ export function DetectoresContribuintesCard({ anomalia }: { anomalia: Anomalia }
   const detectores = buildDetectores(anomalia);
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Brain className="h-4 w-4" /> Detectores que contribuíram (XAI)
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-sm font-semibold tracking-tight">
+          <Brain className="h-4 w-4 text-muted-foreground" /> Detectores que contribuíram (XAI)
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {detectores.map((d, i) => (
-          <div key={i} className="space-y-2 p-3 border rounded-md bg-muted/30">
+          <div key={i} className="space-y-2 p-3 border border-border rounded-md bg-muted/40">
             <div className="flex items-center justify-between">
-              <h4 className="font-semibold text-sm">{d.nome}</h4>
-              <span className="text-xs text-muted-foreground">{d.contribuicao}%</span>
+              <h4 className="text-sm font-semibold">{d.nome}</h4>
+              <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                {d.contribuicao}%
+              </span>
             </div>
             <Progress value={d.contribuicao} className="h-1.5" />
-            <p className="text-xs font-mono text-muted-foreground">Regra: {d.regra}</p>
+            <p className="font-mono text-[11px] text-muted-foreground">Regra: {d.regra}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               <div>
                 <span className="text-muted-foreground">Observado: </span>
-                <span className="font-medium">{d.observado}</span>
+                <span className="font-medium tabular-nums">{d.observado}</span>
               </div>
               <div>
                 <span className="text-muted-foreground">Esperado: </span>
-                <span className="font-medium">{d.esperado}</span>
+                <span className="font-medium tabular-nums">{d.esperado}</span>
               </div>
             </div>
           </div>

@@ -8,12 +8,12 @@ import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
 export function AnomaliasRelacionadasCard({ lista }: { lista: Anomalia[] }) {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <History className="h-4 w-4" /> Outras anomalias relacionadas
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-sm font-semibold tracking-tight">
+          <History className="h-4 w-4 text-muted-foreground" /> Outras anomalias relacionadas
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
         {lista.length === 0 ? (
           <p className="text-sm text-muted-foreground py-4 text-center">
             Nenhuma anomalia adicional para esta entidade.
@@ -21,7 +21,10 @@ export function AnomaliasRelacionadasCard({ lista }: { lista: Anomalia[] }) {
         ) : (
           <ul className="space-y-2">
             {lista.map((a) => (
-              <li key={a.id} className="flex items-center justify-between border-l-2 border-border pl-3 py-1.5">
+              <li
+                key={a.id}
+                className="flex items-center justify-between gap-2 border-l-2 border-primary/40 pl-3 py-1.5"
+              >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <Badge
@@ -34,13 +37,13 @@ export function AnomaliasRelacionadasCard({ lista }: { lista: Anomalia[] }) {
                     >
                       {a.severidade}
                     </Badge>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-muted-foreground tabular-nums">
                       {new Date(a.detectada_em).toLocaleDateString("pt-BR")}
                     </span>
                   </div>
-                  <p className="text-sm truncate">{a.descricao}</p>
+                  <p className="text-sm leading-snug truncate">{a.descricao}</p>
                 </div>
-                <Button asChild variant="ghost" size="sm">
+                <Button asChild variant="ghost" size="icon" className="h-7 w-7 shrink-0">
                   <Link to={`/admin/insights-ia/anomalia/${a.id}`}>
                     <ArrowRight className="h-3 w-3" />
                   </Link>

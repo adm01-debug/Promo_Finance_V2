@@ -54,7 +54,7 @@ export default function AnomaliaDetalhe() {
 
   return (
     <MainLayout>
-      <div className="container max-w-7xl mx-auto py-6 space-y-6">
+      <div className="container max-w-6xl mx-auto py-6 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-3">
             <Button asChild variant="ghost" size="sm">
@@ -64,7 +64,7 @@ export default function AnomaliaDetalhe() {
             </Button>
             <div className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-warning" />
-              <h1 className="text-xl font-bold font-display">
+              <h1 className="text-2xl font-semibold tracking-tight font-display">
                 Drill-down de anomalia
               </h1>
             </div>
