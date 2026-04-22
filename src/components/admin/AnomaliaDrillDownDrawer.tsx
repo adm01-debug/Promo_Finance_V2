@@ -18,6 +18,7 @@ import { useAnomaliaPreferences } from "@/hooks/useAnomaliaPreferences";
 import { AnomaliaHeader } from "@/components/insights-ia/anomalia/AnomaliaHeader";
 import { EntidadeRelacionadaCard } from "@/components/insights-ia/anomalia/EntidadeRelacionadaCard";
 import { AcoesSugeridasCard } from "@/components/insights-ia/anomalia/AcoesSugeridasCard";
+import { AnomaliaHistoricoSection } from "@/components/admin/AnomaliaHistoricoSection";
 import { ANOMALIA_DRAWER_EVENT, getEntidadeUrl } from "@/lib/anomalia-routes";
 
 /**
@@ -118,6 +119,7 @@ export function AnomaliaDrillDownDrawer() {
                 </Button>
               )}
               <AcoesSugeridasCard anomalia={data.anomalia} />
+              <AnomaliaHistoricoSection anomaliaId={data.anomalia.id} />
             </>
           )}
         </div>
