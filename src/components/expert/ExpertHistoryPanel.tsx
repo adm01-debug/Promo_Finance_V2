@@ -1,9 +1,9 @@
+import type { ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { History, X, Search, Calendar, Filter, Loader2, Trash2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
@@ -31,9 +31,10 @@ interface ExpertHistoryPanelProps {
   onDateFilterChange: (filter: string) => void;
   onLoadConversation: (id: string) => void;
   onDeleteConversation: (id: string, e: React.MouseEvent) => void;
+  clearSlot?: ReactNode;
 }
 
-export function ExpertHistoryPanel({ show, onClose, conversations, filteredConversations, loadingConversations, currentConversationId, searchQuery, dateFilter, onSearchChange, onDateFilterChange, onLoadConversation, onDeleteConversation }: ExpertHistoryPanelProps) {
+export function ExpertHistoryPanel({ show, onClose, conversations, filteredConversations, loadingConversations, currentConversationId, searchQuery, dateFilter, onSearchChange, onDateFilterChange, onLoadConversation, onDeleteConversation, clearSlot }: ExpertHistoryPanelProps) {
   return (
     <AnimatePresence>
       {show && (
@@ -84,7 +85,9 @@ export function ExpertHistoryPanel({ show, onClose, conversations, filteredConve
               <div className="text-center py-4">
                 <Filter className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
                 <p className="text-sm text-muted-foreground">Nenhuma conversa encontrada com os filtros aplicados</p>
-                <Button variant="link" size="sm" onClick={() => { onSearchChange(''); onDateFilterChange('all'); }}>Limpar filtros</Button>
+                {clearSlot ?? (
+                  <Button variant="link" size="sm" onClick={() => { onSearchChange(''); onDateFilterChange('all'); }}>Limpar filtros</Button>
+                )}
               </div>
             ) : (
               <p className="text-sm text-muted-foreground text-center py-4">Nenhuma conversa salva ainda</p>

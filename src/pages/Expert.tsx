@@ -156,7 +156,33 @@ export default function Expert() {
           </div>
         </div>
 
-        <ExpertHistoryPanel show={showHistory} onClose={() => setShowHistory(false)} conversations={conversations || []} filteredConversations={filteredConversations} loadingConversations={loadingConversations} currentConversationId={currentConversationId} searchQuery={searchQuery} dateFilter={dateFilter} onSearchChange={setSearchQuery} onDateFilterChange={setDateFilter} onLoadConversation={loadConversation} onDeleteConversation={handleDeleteConversation} />
+        <ExpertHistoryPanel
+          show={showHistory}
+          onClose={() => setShowHistory(false)}
+          conversations={conversations || []}
+          filteredConversations={filteredConversations}
+          loadingConversations={loadingConversations}
+          currentConversationId={currentConversationId}
+          searchQuery={searchQuery}
+          dateFilter={dateFilter}
+          onSearchChange={setSearchQuery}
+          onDateFilterChange={setDateFilter}
+          onLoadConversation={loadConversation}
+          onDeleteConversation={handleDeleteConversation}
+          clearSlot={
+            <ClearFiltersButton
+              controller={expertFilters}
+              entityLabel="histórico do expert"
+              variant="ghost"
+              size="sm"
+              label="Limpar filtros"
+              describeFilters={(v) => [
+                { label: 'Busca', value: v.searchQuery, isActive: !!v.searchQuery },
+                { label: 'Período', value: v.dateFilter, isActive: v.dateFilter !== 'all' },
+              ]}
+            />
+          }
+        />
 
         {messages.length === 0 && showSuggestions && <div className="mb-4"><ProactiveSuggestions onSuggestionClick={(s) => sendMessage(s)} /></div>}
 
