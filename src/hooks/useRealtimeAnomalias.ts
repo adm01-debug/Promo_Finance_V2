@@ -46,7 +46,7 @@ export function useRealtimeAnomalias() {
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "anomalias_detectadas" },
-        (payload) => {
+        async (payload) => {
           const a = payload.new as {
             id: string;
             severidade?: string;
@@ -69,10 +69,24 @@ export function useRealtimeAnomalias() {
           const prefs = prefsRef.current;
           if (!shouldNotify(prefs, a)) return;
 
+          // Busca nome do centro de custo associado (quando houver) para enriquecer o toast
+          let centroCustoNome: string | null = null;
+          if (a.centro_custo_id) {
+            const { data: cc } = await supabase
+              .from("centros_custo")
+              .select("nome, codigo")
+              .eq("id", a.centro_custo_id)
+              .maybeSingle();
+            if (cc) centroCustoNome = `${cc.codigo} — ${cc.nome}`;
+          }
+
           const isCritical = a.severidade === "critica";
           const tipoLabel = TIPO_LABEL[a.tipo_anomalia ?? ""] ?? "Nova anomalia";
           const titulo = `${isCritical ? "🚨 Crítica" : "⚠️ " + (a.severidade ?? "Anomalia")} — ${tipoLabel}`;
           const fn = isCritical ? toast.error : toast.warning;
+          const descricaoToast = centroCustoNome
+            ? `${a.descricao ?? ""}${a.descricao ? " · " : ""}Centro de custo: ${centroCustoNome}`
+            : a.descricao;
 
           // Monta as ações habilitadas pelo usuário (na ordem desejada)
           const acoesOrdem: ToastAcaoKey[] = [
