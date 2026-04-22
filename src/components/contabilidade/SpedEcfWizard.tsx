@@ -14,8 +14,10 @@ import {
   useRegistrarTransmissaoSped,
   type SpedGeracaoResult,
 } from '@/hooks/useSpedContabil';
+import { usePreValidacaoSped } from '@/hooks/usePreValidacaoSped';
 import { baixarSpedZip } from '@/lib/sped-zip';
 import { SpedChecklistRow } from './SpedChecklistRow';
+import { PreValidacaoSpedPanel } from './PreValidacaoSpedPanel';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
