@@ -58,6 +58,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
   const [wizardOpen, setWizardOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [transmissaoArquivo, setTransmissaoArquivo] = useState<HistoricoRow | null>(null);
+  const [validacoesArquivo, setValidacoesArquivo] = useState<HistoricoRow | null>(null);
   const [reciboInput, setReciboInput] = useState('');
   const [expandedAudit, setExpandedAudit] = useState<Set<string>>(new Set());
   const transmitir = useRegistrarTransmissaoSped();
