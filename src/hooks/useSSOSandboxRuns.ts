@@ -18,6 +18,7 @@ export interface SandboxRun {
   resolved_role: string | null;
   matched_group: string | null;
   has_errors: boolean;
+  batch_id?: string | null;
 }
 
 export interface SandboxRunsFilters {
@@ -27,6 +28,7 @@ export interface SandboxRunsFilters {
   from?: Date;
   to?: Date;
   limit?: number;
+  batchId?: string;
 }
 
 export function useSSOSandboxRuns(filters: SandboxRunsFilters = {}) {
