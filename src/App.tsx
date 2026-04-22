@@ -161,6 +161,7 @@ function AppRoutes() {
             <Route path="/admin/insights-ia" element={<ProtectedRoute><InsightsIA /></ProtectedRoute>} />
             <Route path="/admin/insights-ia/anomalia/:id" element={<ProtectedRoute><AnomaliaDetalhe /></ProtectedRoute>} />
             <Route path="/admin/compliance" element={<ProtectedRoute><ComplianceAuditoria /></ProtectedRoute>} />
+            <Route path="/admin/auditoria-ia" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><AuditoriaIA /></ProtectedRoute>} />
             <Route path="/configuracoes/privacidade" element={<ProtectedRoute><CentroPrivacidadeLGPD /></ProtectedRoute>} />
             
             {/* 404 */}
