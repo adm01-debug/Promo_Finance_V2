@@ -383,6 +383,18 @@ export function SugestoesMatchIA({
                                 </div>
                               )}
 
+                              {motivosRejeicaoPorTransacao.has(transacao.id) && (
+                                <div className="mt-2 ml-13 p-2 rounded-lg bg-destructive/10 border border-destructive/30">
+                                  <p className="text-xs text-destructive flex items-start gap-1.5">
+                                    <X className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                                    <span>
+                                      <span className="font-semibold">Motivo da rejeição anterior:</span>{' '}
+                                      {motivosRejeicaoPorTransacao.get(transacao.id)}
+                                    </span>
+                                  </p>
+                                </div>
+                              )}
+
                               <div className="flex flex-wrap items-center gap-1 mt-2 ml-13">
                                 {melhorMatch.motivos.slice(0, 4).map((motivo, idx) => (
                                   <Tooltip key={idx}>
