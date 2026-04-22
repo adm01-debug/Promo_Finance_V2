@@ -10,8 +10,12 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { FlaskConical, CheckCircle2, XCircle, AlertCircle, Play, Code2, ChevronDown, ShieldCheck, UserPlus, UserCheck, Search, Filter, Target, ListChecks } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { FlaskConical, CheckCircle2, XCircle, AlertCircle, Play, Code2, ChevronDown, ShieldCheck, UserPlus, UserCheck, Search, Filter, Target, ListChecks, History } from 'lucide-react';
 import { useSSOProviders, useTestSSOLogin, type AppRole } from '@/hooks/useSSO';
+import { useSaveSSOSandboxRun, type SandboxRun } from '@/hooks/useSSOSandboxRuns';
+import { computeOutcome } from './sandbox/outcome';
+import { SandboxHistory } from './sandbox/SandboxHistory';
 import { IDP_PRESETS } from './IdpPresets';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -122,6 +126,9 @@ export function SSOSandboxPanel() {
     if (preset) setClaimsJson(JSON.stringify(preset, null, 2));
   };
 
+  const saveRun = useSaveSSOSandboxRun();
+  const [activeTab, setActiveTab] = useState<'simular' | 'historico'>('simular');
+
   const simulate = async () => {
     if (jsonError) { toast.error('JSON inválido', { description: jsonError }); return; }
     const mock_claims = JSON.parse(claimsJson);
@@ -139,12 +146,53 @@ export function SSOSandboxPanel() {
         }).filter(Boolean);
       }
       const data = await testMutation.mutateAsync(payload);
-      setResult(data as unknown as SimulationResult);
+      const simResult = data as unknown as SimulationResult;
+      setResult(simResult);
       if ((data as { success: boolean }).success) toast.success('Simulação concluída');
       else toast.error('Simulação encontrou problemas');
+
+      // Persistir histórico (fire-and-forget)
+      const provider = providers.find(p => p.id === providerId);
+      saveRun.mutate({
+        providerId: useProviderConfig && providerId ? providerId : null,
+        providerNome: provider?.nome ?? simResult.preview.provider_nome ?? null,
+        useProviderConfig,
+        input: payload,
+        result: simResult as never,
+        outcome: computeOutcome(simResult as never),
+      }, {
+        onError: (e) => console.warn('[sandbox] falha ao salvar histórico:', e),
+      });
     } catch (e) {
       toast.error('Erro ao simular', { description: e instanceof Error ? e.message : 'Erro' });
     }
+  };
+
+  const applyRun = (run: SandboxRun) => {
+    const input = run.input as {
+      mock_claims?: unknown;
+      provider_id?: string;
+      claim_mapping?: { email?: string; full_name?: string; groups?: string };
+      default_role?: AppRole;
+      allowed_domains?: string[];
+      role_mappings?: Array<{ idp_group: string; app_role: string }>;
+    };
+    setProviderId(input.provider_id ?? '');
+    setUseProviderConfig(!!input.provider_id);
+    if (input.mock_claims !== undefined) {
+      setClaimsJson(JSON.stringify(input.mock_claims, null, 2));
+    }
+    if (input.claim_mapping) {
+      setManualEmail(input.claim_mapping.email ?? 'email');
+      setManualName(input.claim_mapping.full_name ?? 'name');
+      setManualGroups(input.claim_mapping.groups ?? 'groups');
+    }
+    if (input.default_role) setManualRole(input.default_role);
+    if (input.allowed_domains) setManualDomains(input.allowed_domains.join(', '));
+    if (input.role_mappings) {
+      setManualMappings(input.role_mappings.map(m => `${m.idp_group}:${m.app_role}`).join('\n'));
+    }
+    setActiveTab('simular');
   };
 
   const filteredMappings = useMemo(() => {
@@ -157,6 +205,12 @@ export function SSOSandboxPanel() {
   }, [result, mappingFilter, mappingSearch]);
 
   return (
+    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'simular' | 'historico')}>
+      <TabsList className="mb-4">
+        <TabsTrigger value="simular" className="gap-2"><FlaskConical className="h-4 w-4" />Simular</TabsTrigger>
+        <TabsTrigger value="historico" className="gap-2"><History className="h-4 w-4" />Histórico</TabsTrigger>
+      </TabsList>
+      <TabsContent value="simular">
     <div className="grid lg:grid-cols-2 gap-6">
       <Card>
         <CardHeader>
@@ -364,6 +418,11 @@ export function SSOSandboxPanel() {
         </CardContent>
       </Card>
     </div>
+      </TabsContent>
+      <TabsContent value="historico">
+        <SandboxHistory onReplay={applyRun} />
+      </TabsContent>
+    </Tabs>
   );
 }
 
