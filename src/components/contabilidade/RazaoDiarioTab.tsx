@@ -13,8 +13,15 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useLancamentosContabeis } from '@/hooks/useLancamentosContabeis';
 import { usePlanoContas } from '@/hooks/usePlanoContas';
+import { useEmpresas } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
-import { exportToCSV, exportToPDF, type ExportColumn } from '@/lib/export-utils';
+import {
+  exportDiarioCSV,
+  exportDiarioPDF,
+  exportRazaoCSV,
+  exportRazaoPDF,
+  type EmpresaHeader,
+} from '@/lib/export-contabil';
 import { toast } from 'sonner';
 
 interface Props { empresaId?: string; ano: number }
@@ -39,6 +46,16 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
 
   const { data: lancs = [], isLoading } = useLancamentosContabeis(empresaId, ano);
   const { data: plano = [] } = usePlanoContas(empresaId);
+  const { data: empresas = [] } = useEmpresas();
+  const empresaHeader = useMemo<EmpresaHeader | undefined>(() => {
+    const e = (empresas as Array<Record<string, unknown>>).find((x) => x.id === empresaId);
+    if (!e) return undefined;
+    return {
+      razao_social: (e.razao_social as string) ?? null,
+      nome_fantasia: (e.nome_fantasia as string) ?? null,
+      cnpj: (e.cnpj as string) ?? null,
+    };
+  }, [empresas, empresaId]);
 
   // Achata todas as partidas com metadados do lançamento
   const todasPartidas = useMemo<PartidaFlat[]>(() => {
@@ -124,31 +141,16 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
     return Array.from(grupos.values()).sort((a, b) => a.codigo.localeCompare(b.codigo));
   }, [partidasFiltradas, todasPartidas, dataInicio, contaId]);
 
-  const sufixoArquivo = `${dataInicio}_${dataFim}`;
+  const ctxExport = { empresa: empresaHeader, dataInicio, dataFim };
 
   const exportarDiario = (formato: 'csv' | 'pdf') => {
     if (diario.length === 0) {
       toast.warning('Nada para exportar.');
       return;
     }
-    const linhas = diario.map((p) => ({
-      Data: format(new Date(`${p.data}T00:00:00`), 'dd/MM/yyyy'),
-      Nº: p.numero ?? '',
-      Histórico: p.historico,
-      Conta: `${p.conta_codigo} — ${p.conta_nome}`,
-      Débito: p.debito ? formatCurrency(p.debito) : '',
-      Crédito: p.credito ? formatCurrency(p.credito) : '',
-    }));
-    const colunas: ExportColumn<Record<string, string | number>>[] = [
-      { header: 'Data', key: 'Data' },
-      { header: 'Nº', key: 'Nº' },
-      { header: 'Histórico', key: 'Histórico' },
-      { header: 'Conta', key: 'Conta' },
-      { header: 'Débito', key: 'Débito' },
-      { header: 'Crédito', key: 'Crédito' },
-    ];
-    if (formato === 'csv') exportToCSV(linhas, colunas, `livro-diario_${sufixoArquivo}`);
-    else exportToPDF(linhas, colunas, `Livro Diário · ${dataInicio} a ${dataFim}`);
+    if (formato === 'csv') exportDiarioCSV(diario, ctxExport);
+    else exportDiarioPDF(diario, ctxExport);
+    toast.success(`Diário exportado (${diario.length} partidas).`);
   };
 
   const exportarRazao = (formato: 'csv' | 'pdf') => {
@@ -156,47 +158,9 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
       toast.warning('Nada para exportar.');
       return;
     }
-    const linhas: Record<string, string>[] = [];
-    for (const g of razao) {
-      let saldo = g.saldo_inicial;
-      linhas.push({
-        Conta: `${g.codigo} — ${g.nome}`,
-        Data: '',
-        Histórico: 'SALDO INICIAL',
-        Débito: '',
-        Crédito: '',
-        Saldo: formatCurrency(saldo),
-      });
-      for (const m of g.movs) {
-        saldo += m.debito - m.credito;
-        linhas.push({
-          Conta: `${g.codigo} — ${g.nome}`,
-          Data: format(new Date(`${m.data}T00:00:00`), 'dd/MM/yyyy'),
-          Histórico: m.historico,
-          Débito: m.debito ? formatCurrency(m.debito) : '',
-          Crédito: m.credito ? formatCurrency(m.credito) : '',
-          Saldo: formatCurrency(saldo),
-        });
-      }
-      linhas.push({
-        Conta: `${g.codigo} — ${g.nome}`,
-        Data: '',
-        Histórico: 'SALDO FINAL',
-        Débito: '',
-        Crédito: '',
-        Saldo: formatCurrency(saldo),
-      });
-    }
-    const colunas: ExportColumn<Record<string, string>>[] = [
-      { header: 'Conta', key: 'Conta' },
-      { header: 'Data', key: 'Data' },
-      { header: 'Histórico', key: 'Histórico' },
-      { header: 'Débito', key: 'Débito' },
-      { header: 'Crédito', key: 'Crédito' },
-      { header: 'Saldo', key: 'Saldo' },
-    ];
-    if (formato === 'csv') exportToCSV(linhas, colunas, `livro-razao_${sufixoArquivo}`);
-    else exportToPDF(linhas, colunas, `Livro Razão · ${dataInicio} a ${dataFim}`);
+    if (formato === 'csv') exportRazaoCSV(razao, ctxExport);
+    else exportRazaoPDF(razao, ctxExport);
+    toast.success(`Razão exportado (${razao.length} contas).`);
   };
 
   const exportar = (formato: 'csv' | 'pdf') => (modo === 'diario' ? exportarDiario(formato) : exportarRazao(formato));
