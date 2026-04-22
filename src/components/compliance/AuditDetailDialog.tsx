@@ -1,7 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { maskIp } from "@/lib/ip-mask";
-import { useIpMaskPreference } from "@/hooks/useIpMaskPreference";
 import { AuditDiffView } from "@/components/audit/AuditDiffView";
 
 interface Props {
