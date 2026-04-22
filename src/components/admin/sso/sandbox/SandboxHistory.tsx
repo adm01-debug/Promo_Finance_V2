@@ -161,7 +161,7 @@ export function SandboxHistory({ onReplay }: Props) {
                     <TableCell>
                       <Checkbox
                         checked={isSel}
-                        onCheckedChange={(c) => toggleSelect(run.id, !!c)}
+                        onChange={(e) => toggleSelect(run.id, e.target.checked)}
                       />
                     </TableCell>
                     <TableCell className="text-xs whitespace-nowrap">
