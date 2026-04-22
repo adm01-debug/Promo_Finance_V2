@@ -134,7 +134,8 @@ export function CommandPalette() {
       items: [
         { id: 'nfe', title: 'Notas Fiscais', subtitle: 'NF-e, NFS-e, CT-e', icon: FileText, action: () => navigate('/notas-fiscais'), keywords: ['nota', 'fiscal', 'nfe'], shortcut: ['⌥', 'N'] },
         { id: 'relatorios', title: 'Relatórios', subtitle: 'DRE, Balanço, Fluxo', icon: FileBarChart, action: () => navigate('/relatorios'), keywords: ['relatorio', 'dre', 'balanco'], shortcut: ['⌥', 'L'] },
-        { id: 'demonstrativos', title: 'Demonstrativos', subtitle: 'Contabilidade', icon: Calculator, action: () => navigate('/demonstrativos'), keywords: ['demonstrativo', 'contabil'] },
+        { id: 'demonstrativos', title: 'Demonstrativos', subtitle: 'DRE, Balanço, Fluxo (contábil)', icon: Calculator, action: () => navigate('/demonstrativos'), keywords: ['demonstrativo', 'contabil', 'dre', 'balanco'] },
+        { id: 'contabilidade', title: 'Contabilidade & SPED', subtitle: 'Plano de contas, lançamentos, ECD/ECF', icon: Calculator, action: () => navigate('/contabilidade'), keywords: ['contabilidade', 'sped', 'ecd', 'ecf', 'plano', 'contas', 'lancamento', 'partida'] },
       ],
     },
     {
