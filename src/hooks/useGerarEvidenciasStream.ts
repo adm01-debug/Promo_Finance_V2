@@ -117,6 +117,12 @@ export function useGerarEvidenciasStream() {
               setPercent(100);
               setStatus("success");
               toast.success("Pacote de evidências pronto.");
+              if (final.audit_warning) {
+                toast.warning("Trilha de auditoria não registrada", {
+                  description: final.audit_warning,
+                  duration: 8000,
+                });
+              }
               qc.invalidateQueries({ queryKey: ["evidencias-pacotes"] });
               qc.invalidateQueries({ queryKey: ["compliance-kpis"] });
               return;
