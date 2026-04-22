@@ -1,8 +1,11 @@
 // E2E tests for SCIM server: Users + Groups CRUD with empresa/provider isolation.
 // Verifies that user_empresas + user_roles reflect changes automatically per empresa & provider.
-import "https://deno.land/std@0.224.0/dotenv/load.ts";
+import { load } from "https://deno.land/std@0.224.0/dotenv/mod.ts";
 import { assert, assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
 import { createClient } from "npm:@supabase/supabase-js";
+
+// Load .env without strict example validation
+await load({ export: true, allowEmptyValues: true, examplePath: null }).catch(() => ({}));
 
 const SUPABASE_URL = Deno.env.get("VITE_SUPABASE_URL") ?? Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
