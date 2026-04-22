@@ -126,7 +126,7 @@ export function ScimUserJsonGenerator() {
         </div>
 
         {errors.length > 0 && (
-          <Alert variant="destructive">
+          <Alert variant="error">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
               <p className="font-medium mb-1">Erros impedindo a geração:</p>
