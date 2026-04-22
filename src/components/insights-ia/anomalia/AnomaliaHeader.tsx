@@ -5,6 +5,7 @@ import { CheckCircle2, Eye, Search } from "lucide-react";
 import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
 import { useAnomaliasDetectadas } from "@/hooks/useAnomaliasDetectadas";
 import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
+import { useLogAudit } from "@/hooks/useAuditLog";
 import { ReabrirAnomaliaDialog } from "./ReabrirAnomaliaDialog";
 
 const TIPO_LABEL: Record<Anomalia["tipo_anomalia"], string> = {
@@ -18,6 +19,27 @@ const TIPO_LABEL: Record<Anomalia["tipo_anomalia"], string> = {
 export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
   const { atualizarStatus } = useAnomaliasDetectadas();
   const sincronizar = useSincronizarAnomaliaBitrix();
+  const audit = useLogAudit();
+
+  const centroCustoId = (anomalia as { centro_custo_id?: string | null }).centro_custo_id ?? null;
+
+  const handleInvestigar = () => {
+    atualizarStatus.mutate(
+      { id: anomalia.id, status: "investigando" },
+      {
+        onSuccess: () => {
+          audit
+            .mutateAsync({
+              action: "UPDATE",
+              tableName: "anomalias_detectadas",
+              recordId: anomalia.id,
+              details: `INVESTIGAR_CLICK: status → investigando | severidade=${anomalia.severidade} | tipo=${anomalia.tipo_anomalia} | centro_custo_id=${centroCustoId ?? "—"} | empresa_id=${anomalia.empresa_id ?? "—"}`,
+            })
+            .catch(() => undefined);
+        },
+      },
+    );
+  };
 
   const revisarComBitrix = (status: "confirmada" | "falso_positivo") => {
     atualizarStatus.mutate(
@@ -67,9 +89,7 @@ export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() =>
-                    atualizarStatus.mutate({ id: anomalia.id, status: "investigando" })
-                  }
+                  onClick={handleInvestigar}
                 >
                   <Search className="h-3 w-3 mr-1" /> Investigar
                 </Button>
