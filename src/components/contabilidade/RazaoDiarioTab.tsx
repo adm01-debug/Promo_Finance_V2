@@ -331,11 +331,15 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
             </SelectContent>
           </Select>
 
-          {filtrosAtivos && (
-            <Button variant="ghost" size="sm" onClick={limparFiltros} className="gap-1">
-              <X className="h-3.5 w-3.5" /> Limpar
-            </Button>
-          )}
+          <ClearFiltersButton
+            controller={filtersController}
+            entityLabel="razão & diário"
+            describeFilters={(v) => [
+              { label: 'Busca', value: v.busca, isActive: !!v.busca },
+              { label: 'Conta', value: v.contaId, isActive: v.contaId !== 'todas' },
+              { label: 'Período', value: v.preset, isActive: v.preset !== 'ano' },
+            ]}
+          />
 
           <div className="ml-auto text-xs text-muted-foreground">
             {modo === 'diario'
