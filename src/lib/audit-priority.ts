@@ -158,6 +158,7 @@ export function toastForPriority(
     description?: string;
     duration?: number;
     action?: { label: string; onClick: () => void };
+    id?: string | number;
   }
 ) {
   const opts = { duration: priority === 'critical' ? 15000 : 6000, ...options };
