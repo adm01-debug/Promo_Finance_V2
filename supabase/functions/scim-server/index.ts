@@ -649,11 +649,24 @@ async function listGroups(admin: SupabaseClient, empresaId: string, url: URL) {
 
   let q = admin.from("sso_role_mappings").select("*", { count: "exact" }).in("provider_id", provIds);
   for (const c of clauses) {
-    if (c.attr.toLowerCase() === "displayname") q = q.eq("idp_group", c.value);
-    else return err(400, `Unsupported filter attribute: ${c.attr}`, "invalidFilter");
+    const a = normalizeFilterAttr(c.attr);
+    if (a === "displayname") {
+      q = q.eq("idp_group", c.value);
+    } else if (a === "id") {
+      q = q.eq("id", c.value);
+    } else {
+      return err(400, `Unsupported filter attribute: ${c.attr}`, "invalidFilter");
+    }
   }
 
-  const { data, count: total } = await q.range(startIndex - 1, startIndex - 1 + count - 1);
+  if (count === 0) {
+    const { count: total } = await q;
+    return ok(listResp([], total ?? 0, startIndex));
+  }
+
+  const { data, count: total } = await q
+    .order("created_at", { ascending: true })
+    .range(startIndex - 1, startIndex - 1 + count - 1);
   const Resources = await Promise.all((data ?? []).map(async (g: any) =>
     groupToScim(g, await fetchGroupMembers(admin, empresaId, g.app_role as AppRole))
   ));
