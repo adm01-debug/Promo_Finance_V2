@@ -19,6 +19,7 @@ import {
   ExternalLink,
   Loader2,
   Sparkles,
+  ScrollText,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
@@ -155,6 +156,19 @@ export function AnomaliasReviewQueue({ open, onOpenChange }: Props) {
             Revise cada anomalia pendente. Comentário obrigatório (mínimo 10 caracteres) antes de
             confirmar ou rejeitar.
           </DialogDescription>
+          <div className="pt-1">
+            <Button asChild variant="link" size="sm" className="h-auto px-0 text-xs">
+              <Link
+                to="/audit-logs?table=anomalias_detectadas&action=APPROVE"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <ScrollText className="h-3 w-3 mr-1" />
+                Ver log de auditoria das revisões (confirmações e rejeições)
+                <ExternalLink className="h-3 w-3 ml-1" />
+              </Link>
+            </Button>
+          </div>
         </DialogHeader>
 
         {isLoading ? (

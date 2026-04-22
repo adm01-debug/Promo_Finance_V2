@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -45,9 +46,13 @@ const actionConfig: Record<AuditAction, { label: string; color: string }> = {
 
 export default function AuditLogs() {
   const { enabled: maskIpsEnabled } = useIpMaskPreference();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [actionFilter, setActionFilter] = useState<string>('all');
-  const [tableFilter, setTableFilter] = useState<string>('all');
+  const [searchParams] = useSearchParams();
+  const initialAction = searchParams.get('action') ?? 'all';
+  const initialTable = searchParams.get('table') ?? 'all';
+  const initialRecord = searchParams.get('record') ?? '';
+  const [searchTerm, setSearchTerm] = useState(initialRecord);
+  const [actionFilter, setActionFilter] = useState<string>(initialAction);
+  const [tableFilter, setTableFilter] = useState<string>(initialTable);
   const [userFilter, setUserFilter] = useState<string>('all');
   const [dismissedAlerts, setDismissedAlerts] = useState<Set<string>>(new Set());
   const [dateRange, setDateRange] = useState<DateRange | undefined>({ from: subDays(new Date(), 7), to: new Date() });
