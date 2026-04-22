@@ -5,6 +5,7 @@ import { CheckCircle2, Eye, Search } from "lucide-react";
 import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
 import { useAnomaliasDetectadas } from "@/hooks/useAnomaliasDetectadas";
 import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
+import { useLogAudit } from "@/hooks/useAuditLog";
 import { ReabrirAnomaliaDialog } from "./ReabrirAnomaliaDialog";
 
 const TIPO_LABEL: Record<Anomalia["tipo_anomalia"], string> = {
