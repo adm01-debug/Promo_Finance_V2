@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { format, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { CalendarIcon, Search, Filter, RefreshCcw, Activity, Download, FileSpreadsheet, X, ShieldCheck } from 'lucide-react';
+import { CalendarIcon, Search, Filter, RefreshCcw, Activity, Download, FileSpreadsheet, ShieldCheck } from 'lucide-react';
 import type { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
@@ -19,17 +19,51 @@ import { useSSOJitEvents, JitAuditEvent } from '@/hooks/useSSOJitEvents';
 import { useSSOProviders } from '@/hooks/useSSO';
 import { SSOJitEventsKPIs } from '@/components/audit/jit/SSOJitEventsKPIs';
 import { SSOJitEventsTable } from '@/components/audit/jit/SSOJitEventsTable';
+import { useManagedFilters } from '@/hooks/useManagedFilters';
+import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
+
+interface SSOJitFilters extends Record<string, unknown> {
+  fromIso: string;
+  toIso: string;
+  search: string;
+  providerFilter: string;
+  roleFilter: string;
+  viaFilter: string;
+  originFilter: string;
+}
+
+const SSO_DEFAULTS: SSOJitFilters = {
+  fromIso: subDays(new Date(), 30).toISOString(),
+  toIso: new Date().toISOString(),
+  search: '',
+  providerFilter: 'all',
+  roleFilter: 'all',
+  viaFilter: 'all',
+  originFilter: 'all',
+};
 
 export default function SSOJitEvents() {
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: subDays(new Date(), 30),
-    to: new Date(),
+  const filtersController = useManagedFilters<SSOJitFilters>({
+    entityType: 'sso-jit-events',
+    defaults: SSO_DEFAULTS,
+    localStorageKey: 'app-sso-jit-filters',
   });
-  const [search, setSearch] = useState('');
-  const [providerFilter, setProviderFilter] = useState('all');
-  const [roleFilter, setRoleFilter] = useState('all');
-  const [viaFilter, setViaFilter] = useState('all');
-  const [originFilter, setOriginFilter] = useState('all');
+  const { fromIso, toIso, search, providerFilter, roleFilter, viaFilter, originFilter } = filtersController.values;
+  const dateRange: DateRange | undefined = fromIso || toIso
+    ? { from: fromIso ? new Date(fromIso) : undefined, to: toIso ? new Date(toIso) : undefined }
+    : undefined;
+  const setDateRange = (r: DateRange | undefined) => {
+    filtersController.setValues({
+      ...filtersController.values,
+      fromIso: r?.from ? r.from.toISOString() : '',
+      toIso: r?.to ? r.to.toISOString() : '',
+    });
+  };
+  const setSearch = (v: string) => filtersController.setField('search', v);
+  const setProviderFilter = (v: string) => filtersController.setField('providerFilter', v);
+  const setRoleFilter = (v: string) => filtersController.setField('roleFilter', v);
+  const setViaFilter = (v: string) => filtersController.setField('viaFilter', v);
+  const setOriginFilter = (v: string) => filtersController.setField('originFilter', v);
 
   const { data: events, isLoading, refetch } = useSSOJitEvents({
     from: dateRange?.from,
@@ -98,14 +132,6 @@ export default function SSOJitEvents() {
   const handlePDF = () => {
     if (!filtered.length) return toast.error('Nenhum evento para exportar');
     exportToPDF(filtered, columns, 'Eventos JIT de Provisionamento SSO');
-  };
-  const clear = () => {
-    setSearch('');
-    setProviderFilter('all');
-    setRoleFilter('all');
-    setViaFilter('all');
-    setOriginFilter('all');
-    setDateRange({ from: subDays(new Date(), 30), to: new Date() });
   };
 
   return (
@@ -211,9 +237,20 @@ export default function SSOJitEvents() {
               </Popover>
             </div>
             <div className="flex items-center justify-end mt-4">
-              <Button variant="outline" size="sm" onClick={clear}>
-                <X className="h-4 w-4 mr-1" /> Limpar Filtros
-              </Button>
+              <ClearFiltersButton
+                controller={filtersController}
+                entityLabel="eventos JIT SSO"
+                variant="outline"
+                describeFilters={(v) => [
+                  { label: 'Busca', value: v.search, isActive: !!v.search },
+                  { label: 'Provider', value: v.providerFilter, isActive: v.providerFilter !== 'all' },
+                  { label: 'Role', value: v.roleFilter, isActive: v.roleFilter !== 'all' },
+                  { label: 'Via', value: v.viaFilter, isActive: v.viaFilter !== 'all' },
+                  { label: 'Origem', value: v.originFilter, isActive: v.originFilter !== 'all' },
+                  { label: 'Período', value: 'personalizado', isActive: v.fromIso !== SSO_DEFAULTS.fromIso || v.toIso !== SSO_DEFAULTS.toIso },
+                ]}
+                label="Limpar Filtros"
+              />
             </div>
           </CardContent>
         </Card>

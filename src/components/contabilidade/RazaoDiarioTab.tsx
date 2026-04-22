@@ -10,7 +10,9 @@ import {
   endOfDay,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { BookText, CalendarIcon, Download, FileSpreadsheet, FileText, Search, X } from 'lucide-react';
+import { BookText, CalendarIcon, Download, FileSpreadsheet, FileText, Search } from 'lucide-react';
+import { useManagedFilters } from '@/hooks/useManagedFilters';
+import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -53,66 +55,64 @@ type DatePreset = 'all' | 'today' | 'last7' | 'last30' | 'mes' | 'ano' | 'custom
 
 const toIsoDate = (d: Date) => format(d, 'yyyy-MM-dd');
 
+interface RazaoFilters extends Record<string, unknown> {
+  preset: DatePreset;
+  dataInicio: string;
+  dataFim: string;
+  contaId: string;
+  busca: string;
+}
+
 export function RazaoDiarioTab({ empresaId, ano }: Props) {
   const [modo, setModo] = useState<'diario' | 'razao'>('diario');
-  // Estado de filtros COMPARTILHADO entre Diário e Razão (sincronia explícita).
-  const [preset, setPreset] = useState<DatePreset>('ano');
-  const [dataInicio, setDataInicio] = useState(`${ano}-01-01`);
-  const [dataFim, setDataFim] = useState(`${ano}-12-31`);
-  const [contaId, setContaId] = useState<string>('todas');
-  const [busca, setBusca] = useState('');
 
-  // Quando o ano muda na página pai, recompõe o intervalo padrão "Ano de X".
+  const defaults = useMemo<RazaoFilters>(() => ({
+    preset: 'ano',
+    dataInicio: `${ano}-01-01`,
+    dataFim: `${ano}-12-31`,
+    contaId: 'todas',
+    busca: '',
+  }), [ano]);
+
+  const filtersController = useManagedFilters<RazaoFilters>({
+    entityType: 'razao-diario',
+    defaults,
+    localStorageKey: 'app-razao-diario-filters',
+  });
+  const { preset, dataInicio, dataFim, contaId, busca } = filtersController.values;
+  const setPreset = (p: DatePreset) => filtersController.setField('preset', p);
+  const setDataInicio = (v: string) => filtersController.setField('dataInicio', v);
+  const setDataFim = (v: string) => filtersController.setField('dataFim', v);
+  const setContaId = (v: string) => filtersController.setField('contaId', v);
+  const setBusca = (v: string) => filtersController.setField('busca', v);
+
+  // Quando o ano muda na página pai, recompõe o intervalo padrão "Ano de X" — só após hidratar.
   useEffect(() => {
+    if (!filtersController.isHydrated) return;
     if (preset === 'ano') {
-      setDataInicio(`${ano}-01-01`);
-      setDataFim(`${ano}-12-31`);
+      filtersController.setValues({
+        ...filtersController.values,
+        dataInicio: `${ano}-01-01`,
+        dataFim: `${ano}-12-31`,
+      });
     }
-  }, [ano, preset]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ano, filtersController.isHydrated]);
 
   const handlePreset = (p: DatePreset) => {
-    setPreset(p);
     const hoje = new Date();
+    let ini = dataInicio; let fim = dataFim;
     switch (p) {
-      case 'all':
-        setDataInicio(`${ano}-01-01`);
-        setDataFim(`${ano}-12-31`);
-        break;
-      case 'today':
-        setDataInicio(toIsoDate(startOfDay(hoje)));
-        setDataFim(toIsoDate(endOfDay(hoje)));
-        break;
-      case 'last7':
-        setDataInicio(toIsoDate(startOfDay(subDays(hoje, 6))));
-        setDataFim(toIsoDate(endOfDay(hoje)));
-        break;
-      case 'last30':
-        setDataInicio(toIsoDate(startOfDay(subDays(hoje, 29))));
-        setDataFim(toIsoDate(endOfDay(hoje)));
-        break;
-      case 'mes':
-        setDataInicio(toIsoDate(startOfMonth(hoje)));
-        setDataFim(toIsoDate(endOfMonth(hoje)));
-        break;
-      case 'ano':
-        setDataInicio(toIsoDate(startOfYear(new Date(ano, 0, 1))));
-        setDataFim(toIsoDate(endOfYear(new Date(ano, 0, 1))));
-        break;
-      case 'custom':
-        break;
+      case 'all': ini = `${ano}-01-01`; fim = `${ano}-12-31`; break;
+      case 'today': ini = toIsoDate(startOfDay(hoje)); fim = toIsoDate(endOfDay(hoje)); break;
+      case 'last7': ini = toIsoDate(startOfDay(subDays(hoje, 6))); fim = toIsoDate(endOfDay(hoje)); break;
+      case 'last30': ini = toIsoDate(startOfDay(subDays(hoje, 29))); fim = toIsoDate(endOfDay(hoje)); break;
+      case 'mes': ini = toIsoDate(startOfMonth(hoje)); fim = toIsoDate(endOfMonth(hoje)); break;
+      case 'ano': ini = toIsoDate(startOfYear(new Date(ano, 0, 1))); fim = toIsoDate(endOfYear(new Date(ano, 0, 1))); break;
+      case 'custom': filtersController.setField('preset', p); return;
     }
+    filtersController.setValues({ ...filtersController.values, preset: p, dataInicio: ini, dataFim: fim });
   };
-
-  const limparFiltros = () => {
-    setBusca('');
-    setContaId('todas');
-    handlePreset('ano');
-  };
-
-  const filtrosAtivos =
-    busca !== '' ||
-    contaId !== 'todas' ||
-    preset !== 'ano';
 
   const { data: lancs = [], isLoading } = useLancamentosContabeis(empresaId, ano);
   const { data: plano = [] } = usePlanoContas(empresaId);
@@ -331,11 +331,15 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
             </SelectContent>
           </Select>
 
-          {filtrosAtivos && (
-            <Button variant="ghost" size="sm" onClick={limparFiltros} className="gap-1">
-              <X className="h-3.5 w-3.5" /> Limpar
-            </Button>
-          )}
+          <ClearFiltersButton
+            controller={filtersController}
+            entityLabel="razão & diário"
+            describeFilters={(v) => [
+              { label: 'Busca', value: v.busca, isActive: !!v.busca },
+              { label: 'Conta', value: v.contaId, isActive: v.contaId !== 'todas' },
+              { label: 'Período', value: v.preset, isActive: v.preset !== 'ano' },
+            ]}
+          />
 
           <div className="ml-auto text-xs text-muted-foreground">
             {modo === 'diario'
