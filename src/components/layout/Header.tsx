@@ -267,7 +267,10 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
                 <div className="hidden sm:flex flex-col items-start">
                   <span className="text-sm font-medium leading-tight">{displayName}</span>
                   {roleInfo && (
-                    <span className="text-[10px] text-muted-foreground leading-tight">{roleInfo.label}</span>
+                    <span className="text-[10px] text-muted-foreground leading-tight truncate max-w-[160px]">
+                      {roleInfo.label}
+                      {empresaLabel ? ` · ${empresaLabel}` : isFallbackGlobal ? ' · Global' : ''}
+                    </span>
                   )}
                 </div>
                 <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
