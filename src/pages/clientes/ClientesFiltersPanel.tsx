@@ -32,7 +32,7 @@ interface Props {
 
 export function ClientesFiltersPanel({
   searchTerm, statusFilter, estadoFilter, scoreFilter, estados, filteredCount, totalCount, hasActiveFilters,
-  onSearchChange, onStatusChange, onEstadoChange, onScoreChange, onClearFilters,
+  onSearchChange, onStatusChange, onEstadoChange, onScoreChange, onClearFilters, clearSlot,
 }: Props) {
   return (
     <motion.div variants={itemVariants}>
@@ -100,10 +100,12 @@ export function ClientesFiltersPanel({
               </SelectContent>
             </Select>
 
-            {hasActiveFilters && (
-              <Button variant="ghost" size="sm" onClick={onClearFilters} className="h-9 px-2 text-muted-foreground hover:text-foreground">
-                <X className="h-4 w-4 mr-1" />Limpar
-              </Button>
+            {clearSlot ?? (
+              hasActiveFilters && (
+                <Button variant="ghost" size="sm" onClick={onClearFilters} className="h-9 px-2 text-muted-foreground hover:text-foreground">
+                  <X className="h-4 w-4 mr-1" />Limpar
+                </Button>
+              )
             )}
 
             <div className="flex items-center gap-4 ml-auto">
