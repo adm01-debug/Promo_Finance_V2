@@ -52,7 +52,7 @@ export const FonteDadosToggle = ({ value, onChange, totalPartidas, hasContabilid
       </div>
 
       {!hasContabilidade && value === 'caixa' && (
-        <Alert className="border-amber-500/30 bg-amber-500/5">
+        <Alert className="border-warning/30 bg-warning/5">
           <AlertDescription className="text-xs">
             Sem lançamentos contábeis para este período. Importe lançamentos no módulo <strong>Contabilidade</strong> para usar o regime de Competência.
           </AlertDescription>

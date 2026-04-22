@@ -116,7 +116,7 @@ export function PixDashboardRealtime() {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-bold text-destructive tabular-nums">-{formatCurrency(emp.totalEnviado)}</p>
-                    <p className="text-sm font-bold text-emerald-600 tabular-nums">+{formatCurrency(emp.totalRecebido)}</p>
+                    <p className="text-sm font-bold text-success tabular-nums">+{formatCurrency(emp.totalRecebido)}</p>
                   </div>
                 </div>
               ))}
@@ -144,14 +144,14 @@ export function PixDashboardRealtime() {
             <div className="space-y-2">
               {stats.ultimasTransacoes.map((t) => {
                 const emp = empresas.find(e => e.id === t.empresa_id);
-                const statusColor = ['realizado', 'concluido'].includes(t.status) ? 'text-emerald-600' 
+                const statusColor = ['realizado', 'concluido'].includes(t.status) ? 'text-success' 
                   : ['cancelado', 'erro', 'rejeitado'].includes(t.status) ? 'text-destructive' 
                   : 'text-muted-foreground';
                 return (
                   <div key={t.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/50 hover:bg-muted/40 transition-colors">
                     <div className="flex items-center gap-3 min-w-0">
                       <div className={cn('h-8 w-8 rounded-full flex items-center justify-center shrink-0',
-                        ['realizado', 'concluido'].includes(t.status) ? 'bg-emerald-500/10' : 'bg-muted')}>
+                        ['realizado', 'concluido'].includes(t.status) ? 'bg-success/10' : 'bg-muted')}>
                         <ArrowUpRight className={cn('h-4 w-4', statusColor)} />
                       </div>
                       <div className="min-w-0">
@@ -182,10 +182,10 @@ function KPICard({ icon: Icon, label, value, sub, variant }: {
 }) {
   const colors = {
     sent: { bg: 'bg-primary/10', icon: 'text-primary', value: 'text-foreground' },
-    received: { bg: 'bg-emerald-500/10', icon: 'text-emerald-600', value: 'text-emerald-600' },
+    received: { bg: 'bg-success/10', icon: 'text-success', value: 'text-success' },
     warning: { bg: 'bg-accent/10', icon: 'text-accent-foreground', value: 'text-accent-foreground' },
     danger: { bg: 'bg-destructive/10', icon: 'text-destructive', value: 'text-destructive' },
-    success: { bg: 'bg-emerald-500/10', icon: 'text-emerald-600', value: 'text-emerald-600' },
+    success: { bg: 'bg-success/10', icon: 'text-success', value: 'text-success' },
     neutral: { bg: 'bg-muted', icon: 'text-muted-foreground', value: 'text-muted-foreground' },
   };
   const c = colors[variant];
