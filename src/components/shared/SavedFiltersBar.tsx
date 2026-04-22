@@ -31,6 +31,8 @@ import {
   Users,
   User as UserIcon,
   Cloud,
+  Bell,
+  BellOff,
 } from "lucide-react";
 import {
   useSavedFilters,
@@ -38,6 +40,8 @@ import {
   type SavedFilterPayload,
   type SavedFilterRow,
 } from "@/hooks/useSavedFilters";
+import { useSavedFilterSubscriptions } from "@/hooks/useSavedFilterSubscriptions";
+import { useWebPushSubscription } from "@/hooks/useWebPushSubscription";
 import { useAuth } from "@/hooks/useAuth";
 
 interface SavedFiltersBarProps<T> {
