@@ -177,7 +177,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
                   </Button>
                 </span>
               </TooltipTrigger>
-              {bloqueado && <TooltipContent>Bloqueado por erros de validação</TooltipContent>}
+              {bloqueado && <TooltipContent>{isRejeitado ? 'Bloqueado: arquivo rejeitado' : 'Bloqueado por erros de validação'}</TooltipContent>}
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
