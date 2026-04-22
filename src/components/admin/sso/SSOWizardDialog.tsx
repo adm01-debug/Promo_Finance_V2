@@ -512,6 +512,14 @@ export function SSOWizardDialog({ open, onOpenChange, editing }: Props) {
               </div>
               <Switch checked={!!form.ativo} onCheckedChange={v => setForm(p => ({ ...p, ativo: v }))} />
             </div>
+
+            <SSOConsistencyPanel
+              issues={consistency.issues}
+              errors={consistency.errors}
+              warnings={consistency.warnings}
+              infos={consistency.infos}
+              onAutofix={applyAutofix}
+            />
           </div>
         )}
 
@@ -520,13 +528,22 @@ export function SSOWizardDialog({ open, onOpenChange, editing }: Props) {
           <Button variant="outline" onClick={prev} disabled={step === 0}>
             <ChevronLeft className="h-4 w-4 mr-1" />Voltar
           </Button>
-          <span className="text-sm text-muted-foreground">Passo {step + 1} de {STEPS.length}</span>
+          <span className="text-sm text-muted-foreground">
+            Passo {step + 1} de {STEPS.length}
+            {consistency.hasBlocker && step >= 2 && (
+              <span className="ml-2 text-destructive">· {consistency.errors.length} erro(s) a resolver</span>
+            )}
+          </span>
           {step < 3 ? (
             <Button onClick={next} disabled={(step === 0 && !preset) || (step === 1 && !form.nome)}>
               Próximo<ChevronRight className="h-4 w-4 ml-1" />
             </Button>
           ) : (
-            <Button onClick={handleSave} disabled={save.isPending}>
+            <Button
+              onClick={handleSave}
+              disabled={save.isPending || consistency.hasBlocker}
+              title={consistency.hasBlocker ? 'Resolva os erros de consistência antes de salvar' : undefined}
+            >
               {save.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               Salvar provedor
             </Button>
