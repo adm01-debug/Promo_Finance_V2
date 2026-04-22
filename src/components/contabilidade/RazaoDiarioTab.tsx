@@ -162,8 +162,6 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
     else exportRazaoPDF(razao, ctxExport);
     toast.success(`Razão exportado (${razao.length} contas).`);
   };
-    else exportToPDF(linhas, colunas, `Livro Razão · ${dataInicio} a ${dataFim}`);
-  };
 
   const exportar = (formato: 'csv' | 'pdf') => (modo === 'diario' ? exportarDiario(formato) : exportarRazao(formato));
 
