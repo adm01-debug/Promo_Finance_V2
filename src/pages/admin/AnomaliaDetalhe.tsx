@@ -66,7 +66,7 @@ export default function AnomaliaDetalhe() {
               </Alert>
             )}
             {verySlow && (
-              <Alert variant="destructive">
+              <Alert variant="error">
                 <WifiOff className="h-4 w-4" />
                 <AlertTitle>A consulta está demorando mais que o esperado</AlertTitle>
                 <AlertDescription className="space-y-2">
@@ -99,7 +99,7 @@ export default function AnomaliaDetalhe() {
             </div>
           </div>
         ) : error || !data ? (
-          <Alert variant="destructive">
+          <Alert variant="error">
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Não foi possível carregar a anomalia</AlertTitle>
             <AlertDescription className="space-y-2">
