@@ -51,7 +51,20 @@ export function SugestoesMatchIA({
   }>({ open: false, transacao: null, sugestao: null });
   
   const { isAnalyzing, matchesIA, lastAnalysis, analisarConciliacao } = useConciliacaoIA();
-  const { historico, registrarHistorico, registrarFeedback, aprovarEmLote, estatisticasHistorico, isLoadingHistorico } = useHistoricoConciliacaoIA();
+  const { historico, feedback, registrarHistorico, registrarFeedback, aprovarEmLote, estatisticasHistorico, isLoadingHistorico } = useHistoricoConciliacaoIA();
+
+  // Mapa: transacao_bancaria_id -> motivo de rejeição mais recente (de feedback_conciliacao_ia)
+  const motivosRejeicaoPorTransacao = useMemo(() => {
+    const map = new Map<string, string>();
+    feedback.forEach((f) => {
+      if (f.acao !== 'rejeitado' || !f.transacao_bancaria_id) return;
+      const motivo = (f.motivo_rejeicao || '').trim();
+      if (!motivo) return;
+      // feedback já vem ordenado desc por created_at — só registramos a primeira ocorrência
+      if (!map.has(f.transacao_bancaria_id)) map.set(f.transacao_bancaria_id, motivo);
+    });
+    return map;
+  }, [feedback]);
 
   // Bloqueia interações enquanto qualquer mutação de persistência está em andamento
   const mutationPending = registrarHistorico.isPending || registrarFeedback.isPending || aprovarEmLote.isPending;
