@@ -57,9 +57,26 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [transmissaoArquivo, setTransmissaoArquivo] = useState<HistoricoRow | null>(null);
   const [reciboInput, setReciboInput] = useState('');
+  const [expandedAudit, setExpandedAudit] = useState<Set<string>>(new Set());
   const transmitir = useRegistrarTransmissaoSped();
   const { data: historico = [], isLoading } = useSpedContabilHistorico(empresaId);
   const historicoTipo = (historico as unknown as HistoricoRow[]).filter((h) => h.tipo === tipo);
+
+  const toggleAudit = (id: string) => {
+    setExpandedAudit((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const copyHash = async (hash: string | null) => {
+    if (!hash) return;
+    try {
+      await navigator.clipboard.writeText(hash);
+      toast.success('Hash copiado');
+    } catch { toast.error('Falha ao copiar'); }
+  };
 
   // Re-hidrata o ano ao trocar de empresa/tipo
   useEffect(() => {
