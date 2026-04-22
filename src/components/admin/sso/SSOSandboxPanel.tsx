@@ -128,7 +128,35 @@ export function SSOSandboxPanel() {
   };
 
   const saveRun = useSaveSSOSandboxRun();
-  const [activeTab, setActiveTab] = useState<'simular' | 'historico'>('simular');
+  const [activeTab, setActiveTab] = useState<'simular' | 'lote' | 'historico'>('simular');
+
+  const applyClaimsFromBulk = (claims: Record<string, unknown>, base: {
+    provider_id?: string;
+    claim_mapping?: { email?: string; full_name?: string; groups?: string };
+    default_role?: string;
+    allowed_domains?: string[];
+    role_mappings?: Array<{ idp_group: string; app_role: string }>;
+  }) => {
+    setClaimsJson(JSON.stringify(claims, null, 2));
+    if (base.provider_id) {
+      setProviderId(base.provider_id);
+      setUseProviderConfig(true);
+    } else {
+      setUseProviderConfig(false);
+      if (base.claim_mapping) {
+        setManualEmail(base.claim_mapping.email ?? 'email');
+        setManualName(base.claim_mapping.full_name ?? 'name');
+        setManualGroups(base.claim_mapping.groups ?? 'groups');
+      }
+      if (base.default_role) setManualRole(base.default_role as AppRole);
+      if (base.allowed_domains) setManualDomains(base.allowed_domains.join(', '));
+      if (base.role_mappings) {
+        setManualMappings(base.role_mappings.map(m => `${m.idp_group}:${m.app_role}`).join('\n'));
+      }
+    }
+    setActiveTab('simular');
+    toast.success('Claims carregadas no Simular');
+  };
 
   const simulate = async () => {
     if (jsonError) { toast.error('JSON inválido', { description: jsonError }); return; }
