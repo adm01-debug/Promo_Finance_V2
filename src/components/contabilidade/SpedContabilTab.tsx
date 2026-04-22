@@ -153,7 +153,14 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-3">
             <div className="space-y-2">
-              <Label>Ano-calendário</Label>
+              <div className="flex items-center justify-between gap-2">
+                <Label>Ano-calendário</Label>
+                {rascunhoRestaurado && (
+                  <Badge variant="secondary" className="text-[10px] font-normal animate-fade-in">
+                    Rascunho restaurado
+                  </Badge>
+                )}
+              </div>
               <Input type="number" min={2010} max={new Date().getFullYear()} value={ano}
                 onChange={e => setAno(Number(e.target.value))} />
             </div>
