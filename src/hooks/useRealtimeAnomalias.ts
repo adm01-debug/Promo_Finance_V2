@@ -151,7 +151,7 @@ export function useRealtimeAnomalias() {
 
           const duracaoMs = (prefs?.toast_duracao_segundos ?? 12) * 1000;
           const opts: Parameters<typeof fn>[1] = {
-            description: a.descricao,
+            description: descricaoToast,
             duration: duracaoMs,
           };
           if (acoes[0]) opts.action = acoes[0];
