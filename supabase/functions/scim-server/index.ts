@@ -270,7 +270,7 @@ async function listUsers(admin: SupabaseClient, empresaId: string, url: URL) {
   const count = Math.min(Math.max(parseInt(url.searchParams.get("count") || "50"), 0), 200);
   const filter = url.searchParams.get("filter") || "";
   const clauses = parseFilter(filter);
-  if (clauses === null) return err(400, `Filter not supported: ${filter}`, "invalidFilter");
+  if (clauses === null) return err(400, `Filter not supported: ${filter}`, "invalidFilter", { filter, supportedAttributes: SUPPORTED_USER_FILTER_ATTRS, supportedOperators: ["eq"], supportedLogical: ["and"], hint: "Use eq with quoted strings, e.g. userName eq \"alice@example.com\"" });
 
   let q = admin.from("user_empresas")
     .select("*, profiles!inner(id,email,full_name)", { count: "exact" })
@@ -283,7 +283,7 @@ async function listUsers(admin: SupabaseClient, empresaId: string, url: URL) {
     else if (a === "active") q = q.eq("ativo", c.value === "true");
     else if (a === "usertype" || a === "urn:ietf:params:scim:schemas:extension:enterprise:2.0:user:department") q = q.eq("role", c.value);
     else if (a === "meta.resourcetype") { /* ignore: Azure sometimes sends this */ }
-    else return err(400, `Unsupported filter attribute: ${c.attr}`, "invalidFilter");
+    else return err(400, `Unsupported filter attribute: ${c.attr}`, "invalidFilter", { attribute: c.attr, supportedAttributes: SUPPORTED_USER_FILTER_ATTRS, hint: "Check spelling and case; userType maps to user_empresas.role" });
   }
 
   if (count === 0) {
@@ -498,8 +498,8 @@ async function patchUser(admin: SupabaseClient, providerId: string | null, empre
   }
 
   const result = applyPatchOps(body.Operations);
-  if (result.invalidOp) return err(400, `Unsupported op: ${result.invalidOp}`, "invalidSyntax");
-  if (result.invalidPath) return err(400, `Unsupported path: ${result.invalidPath}`, "invalidPath");
+  if (result.invalidOp) return err(400, `Unsupported op: ${result.invalidOp}`, "invalidSyntax", { op: result.invalidOp, supportedOps: ["add", "replace", "remove"] });
+  if (result.invalidPath) return err(400, `Unsupported path: ${result.invalidPath}`, "invalidPath", { path: result.invalidPath, supportedPaths: ["userName", "displayName", "name.formatted", "active", "emails", "emails[primary eq true].value", "externalId", "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:department"] });
 
   if (result.newRoleHint) {
     const role = await resolveRole(admin, providerId, result.newRoleHint);
@@ -602,7 +602,7 @@ async function listGroups(admin: SupabaseClient, empresaId: string, url: URL) {
   const count = Math.min(Math.max(parseInt(url.searchParams.get("count") || "50"), 0), 200);
   const filter = url.searchParams.get("filter") || "";
   const clauses = parseFilter(filter);
-  if (clauses === null) return err(400, `Filter not supported: ${filter}`, "invalidFilter");
+  if (clauses === null) return err(400, `Filter not supported: ${filter}`, "invalidFilter", { filter, supportedAttributes: SUPPORTED_GROUP_FILTER_ATTRS, supportedOperators: ["eq"], supportedLogical: ["and"], hint: "Use displayName eq \"admin\" or externalId eq \"<idp_group>\"" });
 
   let q = admin.from("sso_role_mappings").select("*", { count: "exact" }).in("provider_id", provIds);
   for (const c of clauses) {
@@ -610,7 +610,7 @@ async function listGroups(admin: SupabaseClient, empresaId: string, url: URL) {
     if (a === "displayname") q = q.eq("idp_group", c.value);
     else if (a === "externalid") q = q.eq("idp_group", c.value);
     else if (a === "meta.resourcetype") { /* ignore */ }
-    else return err(400, `Unsupported filter attribute: ${c.attr}`, "invalidFilter");
+    else return err(400, `Unsupported filter attribute: ${c.attr}`, "invalidFilter", { attribute: c.attr, supportedAttributes: SUPPORTED_GROUP_FILTER_ATTRS });
   }
 
   if (count === 0) {
@@ -634,7 +634,7 @@ async function getGroup(admin: SupabaseClient, empresaId: string, id: string) {
 }
 
 async function createGroup(admin: SupabaseClient, providerId: string | null, empresaId: string, body: any) {
-  if (!providerId) return err(400, "Group provisioning requires SCIM token bound to provider_id");
+  if (!providerId) return err(400, "Group provisioning requires SCIM token bound to provider_id", "invalidValue", { hint: "Issue the SCIM token from SSO Admin scoped to a specific provider" });
   // Garante que provider pertence à empresa do token
   const { data: prov } = await admin.from("sso_providers").select("id,empresa_id")
     .eq("id", providerId).maybeSingle();
@@ -697,7 +697,7 @@ async function patchGroup(admin: SupabaseClient, empresaId: string, id: string, 
       }
       continue;
     }
-    return err(400, `Unsupported path: ${op?.path}`, "invalidPath");
+    return err(400, `Unsupported path: ${op?.path}`, "invalidPath", { path: op?.path, supportedPaths: ["displayName", "members", "members[value eq \"<id>\"]"] });
   }
 
   const { data: fresh } = await admin.from("sso_role_mappings").select("*").eq("id", id).maybeSingle();
