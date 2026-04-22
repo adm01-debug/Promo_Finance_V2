@@ -164,6 +164,7 @@ function parseFiltersFromUrl(sp: URLSearchParams): Partial<AnomaliaFilters> {
   if (ini) out.periodoInicio = ini;
   const fim = sp.get("fim");
   if (fim) out.periodoFim = fim;
+  if (sp.get("reopen") === "1") out.apenasReabertas = true;
   return out;
 }
 
@@ -182,6 +183,7 @@ function writeFiltersToUrl(
   setOrDel("tipos", f.tipos.join(","));
   setOrDel("ini", f.periodoInicio);
   setOrDel("fim", f.periodoFim);
+  setOrDel("reopen", f.apenasReabertas ? "1" : "");
   setOrDel("sort", s.key !== "detectada_em" ? s.key : "");
   setOrDel("dir", s.dir !== "desc" ? s.dir : "");
   return next;
