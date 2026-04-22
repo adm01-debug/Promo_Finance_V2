@@ -15,9 +15,11 @@ import {
   type SpedGeracaoResult,
 } from '@/hooks/useSpedContabil';
 import { usePreValidacaoSped } from '@/hooks/usePreValidacaoSped';
+import { useAuditoriaCFC } from '@/hooks/useAuditoriaCFC';
 import { baixarSpedZip } from '@/lib/sped-zip';
 import { SpedChecklistRow } from './SpedChecklistRow';
 import { PreValidacaoSpedPanel } from './PreValidacaoSpedPanel';
+import { AuditoriaCFCPanel } from './AuditoriaCFCPanel';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -39,6 +41,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
   const gerar = useGerarSpedContabil();
   const transmitir = useRegistrarTransmissaoSped();
   const preValidacao = usePreValidacaoSped(empresaId, anoCalendario);
+  const auditoriaCFC = useAuditoriaCFC(empresaId);
 
   useEffect(() => {
     if (open && empresaId && anoCalendario) {
@@ -53,7 +56,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
   const data = validar.data;
   const erros = data?.validacoes.erros.length || 0;
   const avisos = data?.validacoes.avisos.length || 0;
-  const podeGerar = !!data && erros === 0 && preValidacao.podeGerar;
+  const podeGerar = !!data && erros === 0 && preValidacao.podeGerar && auditoriaCFC.problemasCriticos === 0;
 
   const handleGerar = async () => {
     try {
@@ -206,6 +209,8 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
             </div>
 
             <PreValidacaoSpedPanel resultado={preValidacao} />
+
+            <AuditoriaCFCPanel resultado={auditoriaCFC} empresa={data.empresa} compact />
 
             <div className="space-y-2">
               {data.checklist.map((item) => <SpedChecklistRow key={item.id} item={item} />)}
