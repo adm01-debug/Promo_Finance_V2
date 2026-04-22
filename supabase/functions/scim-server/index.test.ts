@@ -108,7 +108,7 @@ async function scim(ctx: Ctx, method: string, path: string, body?: unknown) {
 
 // ─────────────── USERS ───────────────
 
-Deno.test("Users: POST creates user_empresas + user_roles, isolated by empresa", async () => {
+e2eTest("Users: POST creates user_empresas + user_roles, isolated by empresa", async () => {
   const ctx = await setupCtx("users-post");
   try {
     const email = `scim_${Date.now()}@test.local`;
@@ -139,7 +139,7 @@ Deno.test("Users: POST creates user_empresas + user_roles, isolated by empresa",
   } finally { await teardown(ctx); }
 });
 
-Deno.test("Users: PATCH replace active=false deactivates user_empresas", async () => {
+e2eTest("Users: PATCH replace active=false deactivates user_empresas", async () => {
   const ctx = await setupCtx("users-patch");
   try {
     const email = `scim_${Date.now()}_p@test.local`;
@@ -161,7 +161,7 @@ Deno.test("Users: PATCH replace active=false deactivates user_empresas", async (
   } finally { await teardown(ctx); }
 });
 
-Deno.test("Users: PATCH enterprise.department updates role + user_roles", async () => {
+e2eTest("Users: PATCH enterprise.department updates role + user_roles", async () => {
   const ctx = await setupCtx("users-role");
   try {
     const email = `scim_${Date.now()}_r@test.local`;
@@ -189,7 +189,7 @@ Deno.test("Users: PATCH enterprise.department updates role + user_roles", async 
   } finally { await teardown(ctx); }
 });
 
-Deno.test("Users: PUT full replace updates fields atomically", async () => {
+e2eTest("Users: PUT full replace updates fields atomically", async () => {
   const ctx = await setupCtx("users-put");
   try {
     const email = `scim_${Date.now()}_u@test.local`;
@@ -214,7 +214,7 @@ Deno.test("Users: PUT full replace updates fields atomically", async () => {
   } finally { await teardown(ctx); }
 });
 
-Deno.test("Users: DELETE soft-disables user_empresas (ativo=false)", async () => {
+e2eTest("Users: DELETE soft-disables user_empresas (ativo=false)", async () => {
   const ctx = await setupCtx("users-del");
   try {
     const email = `scim_${Date.now()}_d@test.local`;
@@ -232,7 +232,7 @@ Deno.test("Users: DELETE soft-disables user_empresas (ativo=false)", async () =>
   } finally { await teardown(ctx); }
 });
 
-Deno.test("Users: cross-empresa isolation — token A cannot see user from empresa B", async () => {
+e2eTest("Users: cross-empresa isolation — token A cannot see user from empresa B", async () => {
   const a = await setupCtx("iso-a");
   const b = await setupCtx("iso-b");
   try {
@@ -251,7 +251,7 @@ Deno.test("Users: cross-empresa isolation — token A cannot see user from empre
 
 // ─────────────── GROUPS ───────────────
 
-Deno.test("Groups: POST creates sso_role_mappings bound to provider", async () => {
+e2eTest("Groups: POST creates sso_role_mappings bound to provider", async () => {
   const ctx = await setupCtx("groups-post");
   try {
     const r = await scim(ctx, "POST", "/Groups", {
@@ -269,7 +269,7 @@ Deno.test("Groups: POST creates sso_role_mappings bound to provider", async () =
   } finally { await teardown(ctx); }
 });
 
-Deno.test("Groups: PATCH add member updates user_empresas role + user_roles", async () => {
+e2eTest("Groups: PATCH add member updates user_empresas role + user_roles", async () => {
   const ctx = await setupCtx("groups-patch");
   try {
     const email = `scim_${Date.now()}_gm@test.local`;
@@ -296,7 +296,7 @@ Deno.test("Groups: PATCH add member updates user_empresas role + user_roles", as
   } finally { await teardown(ctx); }
 });
 
-Deno.test("Groups: PATCH replace members removes excluded ones (role -> visualizador)", async () => {
+e2eTest("Groups: PATCH replace members removes excluded ones (role -> visualizador)", async () => {
   const ctx = await setupCtx("groups-replace");
   try {
     const email = `scim_${Date.now()}_gr@test.local`;
@@ -325,7 +325,7 @@ Deno.test("Groups: PATCH replace members removes excluded ones (role -> visualiz
   } finally { await teardown(ctx); }
 });
 
-Deno.test("Groups: PATCH displayName renames idp_group", async () => {
+e2eTest("Groups: PATCH displayName renames idp_group", async () => {
   const ctx = await setupCtx("groups-rename");
   try {
     const g = await scim(ctx, "POST", "/Groups", { displayName: "old-name" });
@@ -339,7 +339,7 @@ Deno.test("Groups: PATCH displayName renames idp_group", async () => {
   } finally { await teardown(ctx); }
 });
 
-Deno.test("Groups: DELETE removes mapping and respects provider isolation", async () => {
+e2eTest("Groups: DELETE removes mapping and respects provider isolation", async () => {
   const a = await setupCtx("gdel-a");
   const b = await setupCtx("gdel-b");
   try {
