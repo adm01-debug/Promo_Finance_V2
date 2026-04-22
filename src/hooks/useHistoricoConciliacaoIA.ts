@@ -22,6 +22,7 @@ interface HistoricoConciliacaoIA {
 
 interface FeedbackConciliacaoIA {
   id: string;
+  transacao_bancaria_id: string | null;
   transacao_descricao: string;
   lancamento_entidade: string;
   lancamento_descricao: string | null;
@@ -45,6 +46,7 @@ interface RegistrarHistoricoParams {
 }
 
 interface RegistrarFeedbackParams {
+  transacaoId?: string;
   transacaoDescricao: string;
   lancamentoEntidade: string;
   lancamentoDescricao?: string;
@@ -140,6 +142,7 @@ export function useHistoricoConciliacaoIA() {
       const { data, error } = await supabase
         .from('feedback_conciliacao_ia')
         .insert({
+          transacao_bancaria_id: params.transacaoId || null,
           transacao_descricao: params.transacaoDescricao,
           lancamento_entidade: params.lancamentoEntidade,
           lancamento_descricao: params.lancamentoDescricao || null,
