@@ -39,6 +39,8 @@ import {
   usePendingAnomaliasQueue,
   type Anomalia,
 } from "@/hooks/useAnomaliasDetectadas";
+import { useAnomaliaDetectionRun } from "@/hooks/useAnomaliaDetectionRun";
+import { DetectionRunProgress } from "./DetectionRunProgress";
 import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
 import { AnomaliasReviewQueue } from "./AnomaliasReviewQueue";
 import { AnomaliaDrillDownDrawer } from "./AnomaliaDrillDownDrawer";
