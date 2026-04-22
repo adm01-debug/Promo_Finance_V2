@@ -1,10 +1,20 @@
 import { ReactNode } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ShieldAlert, ArrowLeft, Mail } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { EmpresaGuard } from './EmpresaGuard';
 
 type AppRole = 'admin' | 'financeiro' | 'operacional' | 'visualizador';
+
+const ROLE_LABELS: Record<AppRole, string> = {
+  admin: 'Administrador',
+  financeiro: 'Financeiro',
+  operacional: 'Operacional',
+  visualizador: 'Visualizador',
+};
 
 interface ProtectedRouteProps {
   children: ReactNode;
