@@ -72,6 +72,14 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
 
   return (
     <div className="space-y-6">
+      <BalancoDesequilibrioIndicator
+        empresaId={empresaId}
+        mes={mes}
+        ano={ano}
+        totalAtivo={balanco.totalAtivo}
+        totalPassivo={balanco.totalPassivo}
+        equilibrado={balanco.equilibrado}
+      />
       <div className="flex justify-end">
         <ExportDemonstrativoPDF
           tipo="balanco"
