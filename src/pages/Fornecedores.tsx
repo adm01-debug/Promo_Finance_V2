@@ -129,8 +129,6 @@ export default function Fornecedores() {
   const hasActiveFilters = statusFilter !== 'all' || estadoFilter !== 'all';
   
   const clearFilters = () => {
-    setStatusFilter('all');
-    setEstadoFilter('all');
     setSearchTerm('');
     setCurrentPage(1);
   };
@@ -221,6 +219,18 @@ export default function Fornecedores() {
           onClearFilters={clearFilters}
           filteredCount={filteredFornecedores.length}
           totalCount={fornecedores.length}
+          clearSlot={
+            <ClearFiltersButton
+              controller={filtersController}
+              entityLabel="fornecedores"
+              describeFilters={(v) => [
+                { label: 'Busca', value: v.search, isActive: !!v.search },
+                { label: 'Status', value: v.status, isActive: v.status !== 'all' },
+                { label: 'Estado', value: v.estado, isActive: v.estado !== 'all' },
+              ]}
+              className="h-9 px-2 text-muted-foreground hover:text-foreground"
+            />
+          }
         />
 
         {/* Table */}
