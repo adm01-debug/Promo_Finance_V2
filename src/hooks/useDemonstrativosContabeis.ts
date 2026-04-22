@@ -21,11 +21,23 @@ export interface BalancoLinha {
   nivel: number;
 }
 
+export interface ContaNaoClassificada {
+  conta_id?: string;
+  codigo: string;
+  descricao: string;
+  tipo: 'receita' | 'despesa';
+  valor: number;
+  partidas: number;
+  centro_resultado_sugerido: string | null;
+}
+
 export interface DemonstrativosResult {
   dre: {
     linhas: DRELinha[];
     receitaBruta: number;
     lucroLiquido: number;
+    naoClassificadas: ContaNaoClassificada[];
+    totalNaoClassificado: number;
   };
   balanco: {
     ativo: BalancoLinha[];
@@ -48,6 +60,7 @@ interface PartidaRow {
   tipo: 'D' | 'C' | string;
   valor: number;
   conta: {
+    id?: string;
     codigo: string;
     descricao: string | null;
     nome: string | null;
@@ -56,6 +69,27 @@ interface PartidaRow {
     centro_resultado: string | null;
   } | null;
   lancamento: { data_lancamento: string; empresa_id: string } | null;
+}
+
+// Sugere centro_resultado a partir do código/descrição da conta
+function sugerirCentroResultado(codigo: string, descricao: string, tipo: string): string | null {
+  const c = codigo.toLowerCase();
+  const d = (descricao || '').toLowerCase();
+  const t = tipo.toLowerCase();
+  if (t === 'receita') {
+    if (/financeir/.test(d)) return 'receita_financeira';
+    return 'receita_operacional';
+  }
+  if (t === 'despesa') {
+    if (/imposto|icms|iss|pis|cofins|simples/.test(d)) return 'deducao_receita';
+    if (/cmv|custo.*(merc|produ)/.test(d)) return 'cmv';
+    if (/admin|aluguel|escrit|contab/.test(d)) return 'despesa_administrativa';
+    if (/comercial|vendas|marketing|publicid/.test(d)) return 'despesa_comercial';
+    if (/financeir|juros|tarifa banc/.test(d)) return 'despesa_financeira';
+    if (/irpj|csll/.test(d) || c.startsWith('3.4') || c.startsWith('3.5')) return 'irpj_csll';
+    return 'despesa_operacional';
+  }
+  return null;
 }
 
 // ----------- Helpers de classificação -----------
@@ -102,6 +136,10 @@ function calcularPorCompetencia(
     outras_op: 0,
   };
 
+  // Mapa de contas não classificadas (sem centro_resultado)
+  const naoClassMap = new Map<string, ContaNaoClassificada>();
+  let totalNaoClassificado = 0;
+
   for (const p of partidasPeriodo) {
     if (!p.conta) continue;
     const tipo = p.conta.tipo.toLowerCase();
@@ -113,6 +151,29 @@ function calcularPorCompetencia(
     let valor = 0;
     if (isReceita) valor = p.tipo === 'C' ? p.valor : -p.valor;
     if (isDespesa) valor = p.tipo === 'D' ? p.valor : -p.valor;
+
+    const semClassificacao = !p.conta.centro_resultado || p.conta.centro_resultado.trim() === '';
+    if (semClassificacao) {
+      const key = p.conta.codigo;
+      const desc = p.conta.descricao || p.conta.nome || p.conta.codigo;
+      const existing = naoClassMap.get(key);
+      if (existing) {
+        existing.valor += valor;
+        existing.partidas += 1;
+      } else {
+        naoClassMap.set(key, {
+          conta_id: p.conta.id,
+          codigo: p.conta.codigo,
+          descricao: desc,
+          tipo: isReceita ? 'receita' : 'despesa',
+          valor,
+          partidas: 1,
+          centro_resultado_sugerido: sugerirCentroResultado(p.conta.codigo, desc, p.conta.tipo),
+        });
+      }
+      totalNaoClassificado += valor;
+      continue;
+    }
 
     const grupo = classificarLinhaDRE(p.conta.centro_resultado, p.conta.codigo);
     if (isReceita && grupo === 'rec_financeira') buckets.rec_financeira += valor;
@@ -211,8 +272,23 @@ function calcularPorCompetencia(
     { codigo: '3.2', descricao: 'Lucros/Prejuízos Acumulados', valor: lucrosAcumulados, nivel: 1 },
   ];
 
+  // Linhas extras na DRE para "Não classificadas" (apenas se houver)
+  const naoClassificadas = Array.from(naoClassMap.values()).sort(
+    (a, b) => Math.abs(b.valor) - Math.abs(a.valor),
+  );
+  if (naoClassificadas.length > 0) {
+    linhas.push({
+      codigo: '99',
+      descricao: '⚠ NÃO CLASSIFICADAS (sem centro_resultado)',
+      valor: totalNaoClassificado,
+      percentual: pct(totalNaoClassificado),
+      nivel: 0,
+      tipo: totalNaoClassificado >= 0 ? 'receita' : 'despesa',
+    });
+  }
+
   return {
-    dre: { linhas, receitaBruta, lucroLiquido },
+    dre: { linhas, receitaBruta, lucroLiquido, naoClassificadas, totalNaoClassificado },
     balanco: {
       ativo,
       passivo,
@@ -252,7 +328,7 @@ export function useDemonstrativosContabeis(params: {
     queryFn: async () => {
       let q = supabase
         .from('partidas_contabeis')
-        .select('tipo, valor, conta:plano_contas(codigo, descricao, nome, tipo, natureza, centro_resultado), lancamento:lancamentos_contabeis!inner(data_lancamento, empresa_id)')
+        .select('tipo, valor, conta:plano_contas(id, codigo, descricao, nome, tipo, natureza, centro_resultado), lancamento:lancamentos_contabeis!inner(data_lancamento, empresa_id)')
         .lte('lancamento.data_lancamento', fim)
         .limit(20000);
       if (empresaId !== 'todas') q = q.eq('lancamento.empresa_id', empresaId);
@@ -357,7 +433,7 @@ export function useDemonstrativosContabeis(params: {
     const totalPassivo = passivoCirc + pl;
 
     return {
-      dre: { linhas, receitaBruta, lucroLiquido },
+      dre: { linhas, receitaBruta, lucroLiquido, naoClassificadas: [], totalNaoClassificado: 0 },
       balanco: {
         ativo: [
           { codigo: '1', descricao: 'ATIVO TOTAL', valor: totalAtivo, nivel: 0 },
