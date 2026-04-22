@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { formatCurrency } from '@/lib/formatters';
 import { useDemonstrativosContabeis, type FonteDemonstrativo, type BalancoLinha } from '@/hooks/useDemonstrativosContabeis';
 import { ExportDemonstrativoPDF } from '@/components/demonstrativos/ExportDemonstrativoPDF';
+import { BalancoDesequilibrioIndicator } from '@/components/demonstrativos/BalancoDesequilibrioIndicator';
 
 interface BalancoPatrimonialProps {
   periodo: string;
@@ -71,6 +72,14 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
 
   return (
     <div className="space-y-6">
+      <BalancoDesequilibrioIndicator
+        empresaId={empresaId}
+        mes={mes}
+        ano={ano}
+        totalAtivo={balanco.totalAtivo}
+        totalPassivo={balanco.totalPassivo}
+        equilibrado={balanco.equilibrado}
+      />
       <div className="flex justify-end">
         <ExportDemonstrativoPDF
           tipo="balanco"
