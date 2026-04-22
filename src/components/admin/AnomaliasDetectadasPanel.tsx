@@ -43,6 +43,7 @@ import {
   type Anomalia,
 } from "@/hooks/useAnomaliasDetectadas";
 import { useAnomaliaDetectionRun } from "@/hooks/useAnomaliaDetectionRun";
+import { useAnomaliasReabertasIndex } from "@/hooks/useAnomaliasReabertasIndex";
 import { useRefetchAnomaliasOnFocus } from "@/hooks/useRefetchAnomaliasOnFocus";
 import { DetectionRunProgress } from "./DetectionRunProgress";
 import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
