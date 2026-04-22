@@ -92,6 +92,7 @@ export function useSaveSSOSandboxRun() {
         resolved_role: payload.result.preview.resolved_role ?? null,
         matched_group: payload.result.preview.matched_group ?? null,
         has_errors: (payload.result.errors?.length ?? 0) > 0,
+        batch_id: payload.batchId ?? null,
       };
       const { error } = await (supabase as any).from('sso_sandbox_runs').insert(row);
       if (error) throw error;
