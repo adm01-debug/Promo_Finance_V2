@@ -125,17 +125,32 @@ export function useGerarSpedContabil() {
 export function useRegistrarTransmissaoSped() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ arquivoId, recibo }: { arquivoId: string; recibo: string }) => {
+    mutationFn: async ({
+      arquivoId,
+      recibo,
+      tipo,
+    }: { arquivoId: string; recibo: string; tipo?: 'ECD' | 'ECF' }) => {
       const { error } = await supabase
         .from('sped_contabil_arquivos')
         .update({ status: 'transmitido', recibo_transmissao: recibo })
         .eq('id', arquivoId);
       if (error) throw error;
+      return { recibo, tipo };
     },
-    onSuccess: () => {
+    onSuccess: ({ recibo, tipo }) => {
       qc.invalidateQueries({ queryKey: ['sped-contabil-historico'] });
-      toast.success('Transmissão registrada');
+      const label = tipo ? `SPED ${tipo}` : 'SPED';
+      // Alerta 1 — status transmitido
+      toast.success(`${label} marcada como transmitida`, {
+        description: 'Histórico atualizado · status alterado para “transmitido”.',
+        duration: 5000,
+      });
+      // Alerta 2 — recibo salvo
+      toast.success('Recibo salvo com sucesso', {
+        description: `Nº ${recibo}`,
+        duration: 6000,
+      });
     },
-    onError: (e: Error) => toast.error(`Falha: ${e.message}`),
+    onError: (e: Error) => toast.error('Falha ao registrar transmissão', { description: e.message }),
   });
 }
