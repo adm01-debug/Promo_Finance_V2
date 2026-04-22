@@ -75,19 +75,46 @@ export function ClearFiltersButton<T extends Record<string, unknown>>({
       const snapshot = await controller.performClear();
       setOpen(false);
 
-      const filtersDesc =
-        activeFilters.length > 0
-          ? activeFilters
-              .map((f) => `${f.label}${f.value !== undefined ? ` (${formatValue(f.value)})` : ''}`)
-              .join(', ')
-          : 'nenhum filtro ativo';
+      const previewChips = activeFilters.length > 0 ? (
+        <div className="mt-1 flex flex-wrap gap-1.5">
+          {activeFilters.slice(0, 6).map((f, i) => (
+            <span
+              key={`${f.label}-${i}`}
+              className="inline-flex items-center gap-1 rounded-md border border-border/60 bg-muted/60 px-1.5 py-0.5 text-xs text-foreground"
+            >
+              <span className="font-medium">{f.label}</span>
+              {f.value !== undefined && (
+                <span className="text-muted-foreground">· {formatValue(f.value)}</span>
+              )}
+            </span>
+          ))}
+          {activeFilters.length > 6 && (
+            <span className="inline-flex items-center rounded-md bg-muted/60 px-1.5 py-0.5 text-xs text-muted-foreground">
+              +{activeFilters.length - 6}
+            </span>
+          )}
+        </div>
+      ) : (
+        <span className="text-xs text-muted-foreground">Nenhum filtro ativo.</span>
+      );
 
-      const localDesc = localKeys.length > 0 ? `Removidas as preferências locais: ${localKeys.join(', ')}.` : '';
+      const description = (
+        <div className="space-y-1">
+          <p className="text-xs text-muted-foreground">
+            {activeFilters.length} {activeFilters.length === 1 ? 'filtro removido' : 'filtros removidos'}
+            {localKeys.length > 0 ? ' · preferências locais limpas' : ''}
+          </p>
+          {previewChips}
+          <p className="pt-1 text-[10px] text-muted-foreground">
+            Você tem 5s para desfazer.
+          </p>
+        </div>
+      );
 
       toastWithUndo({
         title: `Filtros de ${entityLabel} limpos`,
-        description: `Removidos: ${filtersDesc}.${localDesc ? ` ${localDesc}` : ''}`,
-        duration: 6000,
+        description,
+        duration: 5000,
         onUndo: async () => {
           await controller.restoreSnapshot(snapshot);
         },
