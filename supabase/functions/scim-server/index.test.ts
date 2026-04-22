@@ -135,7 +135,7 @@ e2eTest("Users: POST creates user_empresas + user_roles, isolated by empresa", a
     // user_roles upserted (additive)
     const { data: prof } = await admin.from("profiles").select("id").eq("email", email).single();
     const { data: roles } = await admin.from("user_roles").select("role").eq("user_id", prof!.id);
-    assert(roles?.some(r => r.role === "financeiro"), "user_roles must include financeiro");
+    assert(roles?.some((r: any) => r.role === "financeiro"), "user_roles must include financeiro");
   } finally { await teardown(ctx); }
 });
 
@@ -185,7 +185,7 @@ e2eTest("Users: PATCH enterprise.department updates role + user_roles", async ()
 
     const { data: prof } = await admin.from("profiles").select("id").eq("email", email).single();
     const { data: roles } = await admin.from("user_roles").select("role").eq("user_id", prof!.id);
-    assert(roles?.some(r => r.role === "operacional"));
+    assert(roles?.some((r: any) => r.role === "operacional"));
   } finally { await teardown(ctx); }
 });
 
@@ -292,7 +292,7 @@ e2eTest("Groups: PATCH add member updates user_empresas role + user_roles", asyn
     assertEquals(link?.role, "admin");
 
     const { data: roles } = await admin.from("user_roles").select("role").eq("user_id", link!.user_id);
-    assert(roles?.some(r => r.role === "admin"));
+    assert(roles?.some((r: any) => r.role === "admin"));
   } finally { await teardown(ctx); }
 });
 
