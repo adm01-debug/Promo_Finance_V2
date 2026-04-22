@@ -26,13 +26,13 @@ export function useProfilesByIds(userIds: Array<string | null | undefined>) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, email, full_name, user_id")
-        .in("user_id", ids);
+        .select("id, email, full_name")
+        .in("id", ids);
       if (error) throw error;
       const map = new Map<string, ProfileMini>();
       for (const row of data ?? []) {
-        const r = row as { id: string; email: string | null; full_name: string | null; user_id: string };
-        map.set(r.user_id, { id: r.id, email: r.email, full_name: r.full_name });
+        const r = row as { id: string; email: string | null; full_name: string | null };
+        map.set(r.id, r);
       }
       return map;
     },
