@@ -102,6 +102,12 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
   const ThemeIcon = getThemeIcon();
   const effectiveRole = roleAtual ?? role;
   const roleInfo = effectiveRole ? roleLabels[effectiveRole] : null;
+  const isFallbackGlobal = !roleAtual && !!role;
+  const currentEmpresa = useMemo(
+    () => vinculos.find((v) => v.empresa_id === currentEmpresaId)?.empresa ?? null,
+    [vinculos, currentEmpresaId],
+  );
+  const empresaLabel = currentEmpresa?.nome_fantasia || currentEmpresa?.razao_social || null;
 
   return (
     <header
