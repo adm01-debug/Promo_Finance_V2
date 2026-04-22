@@ -1,5 +1,14 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
+
+/** Basic UUID v1-v5 shape check — guards against malformed deep-link params. */
+function isValidId(value: string): boolean {
+  if (!value || value.length > 64) return false;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    value,
+  );
+}
 
 /**
  * Reads a search-param ID from the URL, scrolls the matching DOM node
