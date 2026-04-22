@@ -5,9 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Copy, ExternalLink, Info, Loader2, CheckCircle2, XCircle, PlugZap } from 'lucide-react';
+import { Copy, ExternalLink, Info, Loader2, CheckCircle2, XCircle, PlugZap, History, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 const SCIM_BASE = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scim-server/scim/v2`;
 
