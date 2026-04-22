@@ -609,6 +609,22 @@
   100% { transform: scale(1); box-shadow: 0 0 0 0 hsl(var(--primary) / 0); }
 }
 
+/* Highlight flash — used by useHighlightFromUrl when deep-linking
+   from an anomalia drill-down to a row in a list/page. */
+@keyframes row-highlight-flash {
+  0%   { background-color: hsl(var(--primary) / 0); box-shadow: 0 0 0 0 hsl(var(--primary) / 0); }
+  15%  { background-color: hsl(var(--primary) / 0.18); box-shadow: 0 0 0 3px hsl(var(--primary) / 0.45); }
+  60%  { background-color: hsl(var(--primary) / 0.12); box-shadow: 0 0 0 2px hsl(var(--primary) / 0.3); }
+  100% { background-color: hsl(var(--primary) / 0); box-shadow: 0 0 0 0 hsl(var(--primary) / 0); }
+}
+
+.row-highlight-flash {
+  animation: row-highlight-flash 3s ease-out;
+  scroll-margin-top: 96px;
+  position: relative;
+  z-index: 1;
+}
+
 /* Skeleton Shimmer */
 .skeleton-shimmer {
   background: linear-gradient(90deg, hsl(var(--muted)) 0%, hsl(var(--muted-foreground) / 0.1) 50%, hsl(var(--muted)) 100%);

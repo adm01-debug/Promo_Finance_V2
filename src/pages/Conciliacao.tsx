@@ -36,6 +36,7 @@ import { ExtratoBancarioPanel } from '@/components/conciliacao/ExtratoBancarioPa
 import { SessoesConciliacaoPanel } from '@/components/conciliacao/SessoesConciliacaoPanel';
 import { BulkActionsBar } from '@/components/ui/bulk-actions-bar';
 import { useConciliacaoPage } from '@/hooks/useConciliacaoPage';
+import { useHighlightFromUrl } from '@/hooks/useHighlightFromUrl';
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.06 } } } as const;
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } } } as const;
@@ -131,6 +132,8 @@ export default function Conciliacao() {
   }, [filteredTransacoes, sort]);
 
   const showCol = (key: string) => visibleCols.includes(key);
+
+  useHighlightFromUrl('txId', sortedTransacoes.length > 0);
 
   return (
     <MainLayout>
@@ -242,7 +245,7 @@ export default function Conciliacao() {
                     const isCredito = transacao.tipo === 'credito';
                     const isSelected = selectedIds.has(transacao.id);
                     return (
-                      <motion.div key={transacao.id} layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -100 }} transition={{ delay: Math.min(index * 0.02, 0.3) }}>
+                      <motion.div key={transacao.id} data-highlight-id={transacao.id} layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -100 }} transition={{ delay: Math.min(index * 0.02, 0.3) }}>
                         <Card className={cn("card-base transition-all hover:shadow-md", transacao.conciliada && "opacity-70", isSelected && "ring-2 ring-primary/50 bg-primary/5")}>
                           <CardContent className="p-4">
                             <div className="flex items-center gap-3">

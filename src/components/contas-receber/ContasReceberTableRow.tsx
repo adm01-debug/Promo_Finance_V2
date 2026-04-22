@@ -111,7 +111,7 @@ export function ContasReceberTableRow({
   } : {};
 
   return (
-    <RowComponent {...animationProps} className={cn("group hover:bg-muted/50 transition-colors", isSelected && "bg-primary/5")}>
+    <RowComponent data-highlight-id={conta.id} {...animationProps} className={cn("group hover:bg-muted/50 transition-colors", isSelected && "bg-primary/5")}>
       <TableCell>
         <Checkbox checked={isSelected} onChange={() => onToggleSelect(conta.id)} aria-label={`Selecionar ${conta.descricao}`} />
       </TableCell>

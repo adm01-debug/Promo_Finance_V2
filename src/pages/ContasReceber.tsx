@@ -23,6 +23,7 @@ import { ContasReceberKPIs } from '@/components/contas-receber/ContasReceberKPIs
 import { ContasReceberFilters } from '@/components/contas-receber/ContasReceberFilters';
 import { ContasReceberTableRow } from '@/components/contas-receber/ContasReceberTableRow';
 import { useContasReceberLogic } from '@/hooks/useContasReceberLogic';
+import { useHighlightFromUrl } from '@/hooks/useHighlightFromUrl';
 import { contasReceberColumns } from '@/lib/export-utils';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
@@ -55,6 +56,8 @@ export default function ContasReceber() {
     selectedIds, selectedCount, isProcessing, progress, isSelected, isAllSelected,
     selectAll, toggleSelect, clearSelection,
   } = useContasReceberLogic();
+
+  useHighlightFromUrl('highlight', (sortedContas?.length ?? 0) > 0);
 
   const bulkActions = [
     { id: 'mark-received', label: 'Marcar como Recebido', icon: <CheckCircle2 className="h-4 w-4" />, variant: 'default' as const, onClick: handleBulkMarkAsReceived },

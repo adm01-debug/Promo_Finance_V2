@@ -133,6 +133,7 @@ export function ContasPagarTableRow({
   return (
     <RowComponent
       key={conta.id}
+      data-highlight-id={conta.id}
       {...(getRowAnimation(index).transition ? getRowAnimation(index) : {})}
       className={cn(
         "group hover:bg-muted/50 transition-colors",

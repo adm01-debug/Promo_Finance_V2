@@ -20,6 +20,7 @@ import { BulkActionsBar } from '@/components/ui/bulk-actions-bar';
 import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { QuickDateFilters } from '@/components/ui/quick-date-filters';
 import { useContasPagarLogic } from '@/hooks/useContasPagarLogic';
+import { useHighlightFromUrl } from '@/hooks/useHighlightFromUrl';
 import { formatCurrency } from '@/lib/formatters';
 
 const containerVariants = {
@@ -34,6 +35,7 @@ const itemVariants = {
 
 export default function ContasPagar() {
   const logic = useContasPagarLogic();
+  useHighlightFromUrl('highlight', (logic.sortedContas?.length ?? 0) > 0);
 
   const bulkActions = [
     {
