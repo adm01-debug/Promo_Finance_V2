@@ -187,7 +187,7 @@ export function ScimSetupGuide() {
             ok: false,
             status: fr.status,
             latencyMs: fr.latencyMs,
-            message: fr.message,
+            message: (fr as Extract<TestResult, { ok: false }>).message,
           });
         }
       }
