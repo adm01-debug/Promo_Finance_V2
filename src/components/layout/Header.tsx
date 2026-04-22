@@ -30,6 +30,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { useAlertas } from '@/hooks/useAlertas';
+import { useUserEmpresas } from '@/hooks/useUserEmpresas';
 import { KeyboardShortcutsDialog } from './KeyboardShortcutsDialog';
 import { EmpresaSwitcher } from './EmpresaSwitcher';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -75,9 +76,10 @@ function getInitialsFromName(name?: string | null, email?: string | null): strin
 
 export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }, ref) => {
   const { theme, setTheme, isDark } = useTheme();
-  const { user, profile, role, roleAtual, signOut } = useAuth();
+  const { user, profile, role, roleAtual, currentEmpresaId, signOut } = useAuth();
   const navigate = useNavigate();
   const { data: alertas = [] } = useAlertas();
+  const { data: vinculos = [] } = useUserEmpresas();
 
   const unreadAlerts = useMemo(() => alertas.filter((a) => !a.lido).length, [alertas]);
 
@@ -100,6 +102,12 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
   const ThemeIcon = getThemeIcon();
   const effectiveRole = roleAtual ?? role;
   const roleInfo = effectiveRole ? roleLabels[effectiveRole] : null;
+  const isFallbackGlobal = !roleAtual && !!role;
+  const currentEmpresa = useMemo(
+    () => vinculos.find((v) => v.empresa_id === currentEmpresaId)?.empresa ?? null,
+    [vinculos, currentEmpresaId],
+  );
+  const empresaLabel = currentEmpresa?.nome_fantasia || currentEmpresa?.razao_social || null;
 
   return (
     <header
@@ -259,7 +267,10 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
                 <div className="hidden sm:flex flex-col items-start">
                   <span className="text-sm font-medium leading-tight">{displayName}</span>
                   {roleInfo && (
-                    <span className="text-[10px] text-muted-foreground leading-tight">{roleInfo.label}</span>
+                    <span className="text-[10px] text-muted-foreground leading-tight truncate max-w-[160px]">
+                      {roleInfo.label}
+                      {empresaLabel ? ` · ${empresaLabel}` : isFallbackGlobal ? ' · Global' : ''}
+                    </span>
                   )}
                 </div>
                 <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
@@ -278,10 +289,21 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
                     <span className="font-semibold truncate">{displayName}</span>
                     <span className="text-xs font-normal text-muted-foreground truncate">{user?.email}</span>
                     {roleInfo && (
-                      <Badge variant="outline" className={cn("mt-0.5 w-fit text-[10px]", roleInfo.color)}>
-                        <Shield className="h-2.5 w-2.5 mr-1" />
-                        {roleInfo.label}
-                      </Badge>
+                      <div className="flex flex-wrap items-center gap-1 mt-0.5">
+                        <Badge variant="outline" className={cn("w-fit text-[10px]", roleInfo.color)}>
+                          <Shield className="h-2.5 w-2.5 mr-1" />
+                          {roleInfo.label}
+                        </Badge>
+                        {empresaLabel ? (
+                          <Badge variant="secondary" className="w-fit text-[10px] max-w-[140px] truncate">
+                            {empresaLabel}
+                          </Badge>
+                        ) : isFallbackGlobal ? (
+                          <Badge variant="outline" className="w-fit text-[10px] text-muted-foreground">
+                            Global
+                          </Badge>
+                        ) : null}
+                      </div>
                     )}
                   </div>
                 </div>
