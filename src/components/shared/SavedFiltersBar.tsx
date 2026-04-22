@@ -210,6 +210,58 @@ export function SavedFiltersBar<T>({
                       )}
                     </span>
                     <span className="flex items-center gap-1 shrink-0">
+                      {entityType === "anomalias_detectadas" && (() => {
+                        const sub = subsByFilter.get(f.id);
+                        const active = !!sub;
+                        return (
+                          <button
+                            type="button"
+                            className={
+                              active
+                                ? "text-primary"
+                                : "opacity-50 hover:opacity-100"
+                            }
+                            title={
+                              active
+                                ? `Notificações ativas (${[
+                                    sub?.notify_inapp ? "in-app" : null,
+                                    sub?.notify_push ? "push" : null,
+                                  ]
+                                    .filter(Boolean)
+                                    .join(" + ")})`
+                                : "Receber notificação em tempo real"
+                            }
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              if (active && sub) {
+                                // Ciclo: in-app → in-app+push → off
+                                if (sub.notify_inapp && !sub.notify_push) {
+                                  if (!pushReady) await enablePush();
+                                  updateChannels.mutate({
+                                    id: sub.id,
+                                    notifyInapp: true,
+                                    notifyPush: true,
+                                  });
+                                } else {
+                                  unsubscribe.mutate(sub.id);
+                                }
+                              } else {
+                                subscribe.mutate({
+                                  savedFilterId: f.id,
+                                  notifyInapp: true,
+                                  notifyPush: false,
+                                });
+                              }
+                            }}
+                          >
+                            {active ? (
+                              <Bell className="h-3 w-3" />
+                            ) : (
+                              <BellOff className="h-3 w-3" />
+                            )}
+                          </button>
+                        );
+                      })()}
                       <button
                         type="button"
                         className="opacity-50 hover:opacity-100"
