@@ -503,6 +503,57 @@ export type Database = {
         }
         Relationships: []
       }
+      anomalia_detection_runs: {
+        Row: {
+          candidatas: number
+          created_at: string
+          current_step: string | null
+          duration_ms: number | null
+          error_message: string | null
+          finished_at: string | null
+          id: string
+          inseridas: number
+          started_at: string | null
+          status: string
+          step_index: number
+          total_steps: number
+          trigger_source: string
+          triggered_by: string | null
+        }
+        Insert: {
+          candidatas?: number
+          created_at?: string
+          current_step?: string | null
+          duration_ms?: number | null
+          error_message?: string | null
+          finished_at?: string | null
+          id?: string
+          inseridas?: number
+          started_at?: string | null
+          status?: string
+          step_index?: number
+          total_steps?: number
+          trigger_source?: string
+          triggered_by?: string | null
+        }
+        Update: {
+          candidatas?: number
+          created_at?: string
+          current_step?: string | null
+          duration_ms?: number | null
+          error_message?: string | null
+          finished_at?: string | null
+          id?: string
+          inseridas?: number
+          started_at?: string | null
+          status?: string
+          step_index?: number
+          total_steps?: number
+          trigger_source?: string
+          triggered_by?: string | null
+        }
+        Relationships: []
+      }
       anomalias_detectadas: {
         Row: {
           bitrix_task_id: string | null
