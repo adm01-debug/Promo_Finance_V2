@@ -1,11 +1,14 @@
 import { useSearchParams } from 'react-router-dom';
-import { BookOpen, FileText, Calculator, Building2, BookText, BarChart3, AlertTriangle, Plug, History } from 'lucide-react';
+import { BookOpen, FileText, Calculator, Building2, BookText, BarChart3, AlertTriangle, Plug, History, ArrowRight, LayoutGrid } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useEmpresas } from '@/hooks/useFinancialData';
 import { useSpedContabilHistorico } from '@/hooks/useSpedContabil';
@@ -17,7 +20,7 @@ import { DreBalancoTab } from '@/components/contabilidade/DreBalancoTab';
 import { VerificacaoIntegracoesPanel } from '@/components/contabilidade/VerificacaoIntegracoesPanel';
 import { AuditoriaLancamentosPanel } from '@/components/contabilidade/AuditoriaLancamentosPanel';
 
-const VALID_TABS = ['plano', 'lancamentos', 'razao', 'dre', 'integracoes', 'auditoria', 'ecd', 'ecf'] as const;
+const VALID_TABS = ['inicio', 'plano', 'lancamentos', 'razao', 'dre', 'integracoes', 'auditoria', 'ecd', 'ecf'] as const;
 type TabId = typeof VALID_TABS[number];
 
 const ANO_DEFAULT = new Date().getFullYear() - 1;
@@ -35,7 +38,7 @@ export default function Contabilidade() {
   const tabParam = searchParams.get('tab');
   const tab: TabId = (VALID_TABS as readonly string[]).includes(tabParam ?? '')
     ? (tabParam as TabId)
-    : 'plano';
+    : 'inicio';
 
   const empresaId = searchParams.get('empresa') ?? '';
   const anoParam = Number(searchParams.get('ano'));
@@ -104,7 +107,8 @@ export default function Contabilidade() {
         </div>
 
         <Tabs value={tab} onValueChange={setTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-8">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-9">
+            <TabsTrigger value="inicio" className="gap-1.5"><LayoutGrid className="h-4 w-4" />Início</TabsTrigger>
             <TabsTrigger value="plano" className="gap-1.5"><BookOpen className="h-4 w-4" />Plano</TabsTrigger>
             <TabsTrigger value="lancamentos" className="gap-1.5"><Calculator className="h-4 w-4" />Lançamentos</TabsTrigger>
             <TabsTrigger value="razao" className="gap-1.5"><BookText className="h-4 w-4" />Razão & Diário</TabsTrigger>
@@ -135,6 +139,14 @@ export default function Contabilidade() {
             </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="inicio">
+            <ContabilidadeHome
+              onSelect={setTab}
+              ecfPendente={ecfPendente}
+              ano={ano}
+              empresaSelecionada={!!empresaId}
+            />
+          </TabsContent>
           <TabsContent value="plano"><PlanoContasTab empresaId={empresaId} /></TabsContent>
           <TabsContent value="lancamentos"><LancamentosTab empresaId={empresaId} ano={ano} /></TabsContent>
           <TabsContent value="razao"><RazaoDiarioTab empresaId={empresaId} ano={ano} /></TabsContent>
