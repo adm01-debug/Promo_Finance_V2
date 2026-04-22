@@ -33,6 +33,7 @@ import {
   Cloud,
   Bell,
   BellOff,
+  RotateCcw,
 } from "lucide-react";
 import {
   useSavedFilters,
@@ -67,7 +68,7 @@ export function SavedFiltersBar<T>({
   onClear,
 }: SavedFiltersBarProps<T>) {
   const { user, currentEmpresaId } = useAuth();
-  const { filters, save, remove, setDefault, duplicate, updateSharing } =
+  const { filters, defaultFilter, save, remove, setDefault, duplicate, updateSharing } =
     useSavedFilters<T>(entityType);
   const {
     byFilterId: subsByFilter,
@@ -153,6 +154,24 @@ export function SavedFiltersBar<T>({
   ) => {
     setRoles(checked ? [...roles, role] : roles.filter((r) => r !== role));
   };
+
+  // Restaura ao preset padrão (se existir) ou ao estado inicial.
+  const handleRestoreDefault = () => {
+    if (defaultFilter) {
+      onLoad({ id: defaultFilter.id, payload: defaultFilter.filters });
+    } else {
+      onClear();
+    }
+  };
+
+  // Habilita o botão somente quando há algo a restaurar:
+  // - existe preset modificado, OU
+  // - há um preset ativo diferente do default, OU
+  // - não há preset ativo mas existe default disponível
+  const canRestore =
+    isModified ||
+    (defaultFilter && activePresetId !== defaultFilter.id) ||
+    (!activePresetId && !!defaultFilter);
 
   return (
     <>
@@ -333,6 +352,15 @@ export function SavedFiltersBar<T>({
                 Limpar seleção
               </DropdownMenuItem>
             )}
+            <DropdownMenuItem
+              onClick={handleRestoreDefault}
+              disabled={!canRestore}
+            >
+              <RotateCcw className="h-3.5 w-3.5 mr-2" />
+              {defaultFilter
+                ? `Restaurar padrão (${defaultFilter.name})`
+                : "Restaurar estado inicial"}
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <div
               className="px-2 py-1.5 text-[11px] text-muted-foreground flex items-start gap-1.5"
@@ -346,6 +374,23 @@ export function SavedFiltersBar<T>({
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-1.5 h-9"
+          onClick={handleRestoreDefault}
+          disabled={!canRestore}
+          title={
+            defaultFilter
+              ? `Restaurar preset padrão "${defaultFilter.name}"`
+              : "Voltar ao estado inicial (sem filtros)"
+          }
+          aria-label="Restaurar padrão"
+        >
+          <RotateCcw className="h-3.5 w-3.5" />
+          <span className="hidden md:inline">Restaurar padrão</span>
+        </Button>
       </div>
 
       {/* Salvar novo preset */}
