@@ -83,6 +83,8 @@ export interface ImportLoteInput {
   onProgress?: (done: number, total: number) => void;
 }
 
+const CHUNK_SIZE = 10; // lançamentos processados em paralelo
+
 export function useImportLancamentosLote() {
   const qc = useQueryClient();
   return useMutation({
@@ -90,9 +92,9 @@ export function useImportLancamentosLote() {
       const { data: { user } } = await supabase.auth.getUser();
       const result: ImportLoteResult = { sucesso: 0, falhas: [] };
       const total = input.lancamentos.length;
+      let processados = 0;
 
-      for (let i = 0; i < total; i++) {
-        const l = input.lancamentos[i];
+      const processarLancamento = async (l: ParsedLancamento) => {
         let lancId: string | null = null;
         try {
           if (!l.balanceado || l.partidas.length < 2) {
@@ -108,7 +110,7 @@ export function useImportLancamentosLote() {
               valor_total: l.total_debito,
               created_by: user?.id,
             })
-            .select()
+            .select('id')
             .maybeSingle();
           if (error || !lanc) throw error || new Error('Falha ao criar cabeçalho');
           lancId = lanc.id;
@@ -130,9 +132,18 @@ export function useImportLancamentosLote() {
             await supabase.from('lancamentos_contabeis').delete().eq('id', lancId);
           }
           result.falhas.push({ ref: l.ref, error: e instanceof Error ? e.message : 'Erro desconhecido' });
+        } finally {
+          processados++;
+          input.onProgress?.(processados, total);
         }
-        input.onProgress?.(i + 1, total);
+      };
+
+      // Processa em chunks paralelos para reduzir tempo total
+      for (let i = 0; i < total; i += CHUNK_SIZE) {
+        const chunk = input.lancamentos.slice(i, i + CHUNK_SIZE);
+        await Promise.all(chunk.map(processarLancamento));
       }
+
       return result;
     },
     onSuccess: (res) => {
