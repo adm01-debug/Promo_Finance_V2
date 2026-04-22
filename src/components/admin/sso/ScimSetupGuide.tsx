@@ -172,13 +172,14 @@ export function ScimSetupGuide() {
       clearTimeout(timeout);
       setTesting(false);
       if (finalResult) {
-        setResult(finalResult);
+        const fr: TestResult = finalResult;
+        setResult(fr);
         pushHistory({
           timestamp: Date.now(),
-          ok: finalResult.ok,
-          status: finalResult.status,
-          latencyMs: finalResult.latencyMs,
-          message: finalResult.ok ? undefined : finalResult.message,
+          ok: fr.ok,
+          status: fr.status,
+          latencyMs: fr.latencyMs,
+          message: fr.ok ? undefined : fr.message,
         });
       }
     }
