@@ -352,6 +352,15 @@ export function SavedFiltersBar<T>({
                 Limpar seleção
               </DropdownMenuItem>
             )}
+            <DropdownMenuItem
+              onClick={handleRestoreDefault}
+              disabled={!canRestore}
+            >
+              <RotateCcw className="h-3.5 w-3.5 mr-2" />
+              {defaultFilter
+                ? `Restaurar padrão (${defaultFilter.name})`
+                : "Restaurar estado inicial"}
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <div
               className="px-2 py-1.5 text-[11px] text-muted-foreground flex items-start gap-1.5"
@@ -365,6 +374,23 @@ export function SavedFiltersBar<T>({
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-1.5 h-9"
+          onClick={handleRestoreDefault}
+          disabled={!canRestore}
+          title={
+            defaultFilter
+              ? `Restaurar preset padrão "${defaultFilter.name}"`
+              : "Voltar ao estado inicial (sem filtros)"
+          }
+          aria-label="Restaurar padrão"
+        >
+          <RotateCcw className="h-3.5 w-3.5" />
+          <span className="hidden md:inline">Restaurar padrão</span>
+        </Button>
       </div>
 
       {/* Salvar novo preset */}
