@@ -31,3 +31,25 @@ export function dispatchOpenAnomaliaDrawer(id: string) {
     new CustomEvent(ANOMALIA_DRAWER_EVENT, { detail: { id } }),
   );
 }
+
+/**
+ * Resolve the list page (without highlight params) and a friendly label
+ * for the entity related to an anomaly. Used by breadcrumbs to let the
+ * user jump back to the filtered list of the related entity.
+ */
+export function getEntidadeListInfo(
+  entidade_tipo: string | null | undefined,
+): { url: string; label: string } | null {
+  switch (entidade_tipo) {
+    case "movimentacao":
+      return { url: "/movimentacoes", label: "Movimentações" };
+    case "conta_pagar":
+      return { url: "/contas-pagar", label: "Contas a pagar" };
+    case "conta_receber":
+      return { url: "/contas-receber", label: "Contas a receber" };
+    case "transacao_bancaria":
+      return { url: "/conciliacao", label: "Conciliação bancária" };
+    default:
+      return null;
+  }
+}
