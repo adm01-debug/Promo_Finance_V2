@@ -191,6 +191,7 @@ export function useHistoricoConciliacaoIA() {
 
           // Registrar feedback para treinar IA
           await registrarFeedback.mutateAsync({
+            transacaoId: match.transacaoId,
             transacaoDescricao: match.transacaoDescricao,
             lancamentoEntidade: match.sugestao.lancamento?.entidade || '',
             lancamentoDescricao: match.sugestao.lancamento?.descricao,
