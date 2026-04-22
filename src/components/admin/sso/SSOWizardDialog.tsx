@@ -408,6 +408,14 @@ export function SSOWizardDialog({ open, onOpenChange, editing }: Props) {
                 <Switch checked={!!form.force_sso_for_domains} onCheckedChange={v => setForm(p => ({ ...p, force_sso_for_domains: v }))} />
               </div>
             </div>
+
+            <SSOConsistencyPanel
+              issues={consistency.issues}
+              errors={consistency.errors}
+              warnings={consistency.warnings}
+              infos={consistency.infos}
+              onAutofix={applyAutofix}
+            />
           </div>
         )}
 
