@@ -8,8 +8,10 @@ import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Progress } from '@/components/ui/progress';
 import { useSpedEcdValidacao, useGerarSpedContabil, type SpedGeracaoResult } from '@/hooks/useSpedContabil';
+import { usePreValidacaoSped } from '@/hooks/usePreValidacaoSped';
 import { baixarSpedZip } from '@/lib/sped-zip';
 import { SpedChecklistRow } from './SpedChecklistRow';
+import { PreValidacaoSpedPanel } from './PreValidacaoSpedPanel';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -27,6 +29,7 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
   const [resultado, setResultado] = useState<SpedGeracaoResult | null>(null);
   const validar = useSpedEcdValidacao();
   const gerar = useGerarSpedContabil();
+  const preValidacao = usePreValidacaoSped(empresaId, anoCalendario);
 
   useEffect(() => {
     if (open && empresaId && anoCalendario) {
@@ -40,7 +43,7 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
   const data = validar.data;
   const erros = data?.validacoes.erros.length || 0;
   const avisos = data?.validacoes.avisos.length || 0;
-  const podeGerar = data && erros === 0;
+  const podeGerar = !!data && erros === 0 && preValidacao.podeGerar;
 
   const handleGerar = async () => {
     try {
@@ -149,6 +152,8 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                 <RefreshCw className="h-3.5 w-3.5" /> Re-validar
               </Button>
             </div>
+
+            <PreValidacaoSpedPanel resultado={preValidacao} />
 
             <div className="space-y-2">
               {data.checklist.map((item) => <SpedChecklistRow key={item.id} item={item} />)}
