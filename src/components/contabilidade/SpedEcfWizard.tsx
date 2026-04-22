@@ -476,15 +476,86 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               transition={{ duration: 0.25 }}
               className="space-y-4"
             >
-              <div className="rounded-xl border border-success/30 bg-gradient-to-br from-success/10 to-success/5 p-5 flex items-start gap-4 animate-scale-in">
-                <div className="h-10 w-10 rounded-full bg-success/20 flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="h-5 w-5 text-success" />
+              {downloadBloqueado ? (
+                <div className="rounded-xl border border-destructive/30 bg-gradient-to-br from-destructive/10 to-destructive/5 p-5 flex items-start gap-4 animate-scale-in">
+                  <div className="h-10 w-10 rounded-full bg-destructive/20 flex items-center justify-center shrink-0">
+                    <Ban className="h-5 w-5 text-destructive animate-pulse" />
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    <p className="text-lg font-semibold font-display tracking-tight text-destructive">Download bloqueado</p>
+                    <p className="text-sm text-muted-foreground">
+                      O arquivo foi gerado, mas a validação retornou {errosResultado.length} erro(s). Corrija e regenere antes de baixar.
+                    </p>
+                    <p className="text-xs text-muted-foreground font-mono mt-1">{resultado.file_name}</p>
+                  </div>
                 </div>
-                <div className="flex-1 space-y-1">
-                  <p className="text-lg font-semibold font-display tracking-tight">Arquivo gerado com sucesso</p>
-                  <p className="text-sm text-muted-foreground font-mono">{resultado.file_name}</p>
+              ) : (
+                <div className="rounded-xl border border-success/30 bg-gradient-to-br from-success/10 to-success/5 p-5 flex items-start gap-4 animate-scale-in">
+                  <div className="h-10 w-10 rounded-full bg-success/20 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="h-5 w-5 text-success" />
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    <p className="text-lg font-semibold font-display tracking-tight">Arquivo gerado com sucesso</p>
+                    <p className="text-sm text-muted-foreground font-mono">{resultado.file_name}</p>
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {errosResultado.length > 0 && (
+                <Alert variant="error">
+                  <AlertTitle className="flex items-center gap-2">
+                    <XCircle className="h-4 w-4" /> {errosResultado.length} erro(s) na validação
+                  </AlertTitle>
+                  <AlertDescription>
+                    <ScrollArea className="max-h-48 mt-2 rounded-md border border-destructive/20 bg-destructive/5 p-2">
+                      <ul className="space-y-1.5">
+                        {errosResultado.map((erro, i) => (
+                          <motion.li
+                            key={i}
+                            initial={{ opacity: 0, x: -6 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.03, duration: 0.2 }}
+                            className="flex items-start gap-2 text-xs"
+                          >
+                            <Badge variant="outline" className="border-destructive/40 text-destructive shrink-0 h-5 px-1.5 text-[10px] font-mono">
+                              {String(i + 1).padStart(2, '0')}
+                            </Badge>
+                            <span className="leading-snug">{erro}</span>
+                          </motion.li>
+                        ))}
+                      </ul>
+                    </ScrollArea>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {avisosResultado.length > 0 && (
+                <Alert variant="warning">
+                  <AlertTitle className="flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4" /> {avisosResultado.length} aviso(s)
+                  </AlertTitle>
+                  <AlertDescription>
+                    <ScrollArea className="max-h-40 mt-2 rounded-md border border-warning/20 bg-warning/5 p-2">
+                      <ul className="space-y-1.5">
+                        {avisosResultado.map((aviso, i) => (
+                          <motion.li
+                            key={i}
+                            initial={{ opacity: 0, x: -6 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.03, duration: 0.2 }}
+                            className="flex items-start gap-2 text-xs"
+                          >
+                            <Badge variant="outline" className="border-warning/40 text-warning shrink-0 h-5 px-1.5 text-[10px] font-mono">
+                              {String(i + 1).padStart(2, '0')}
+                            </Badge>
+                            <span className="leading-snug">{aviso}</span>
+                          </motion.li>
+                        ))}
+                      </ul>
+                    </ScrollArea>
+                  </AlertDescription>
+                </Alert>
+              )}
 
               <div className="grid grid-cols-2 gap-3">
                 <KpiCard label="Linhas" value={resultado.total_linhas} />
