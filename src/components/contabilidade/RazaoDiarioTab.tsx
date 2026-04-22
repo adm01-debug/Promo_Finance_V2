@@ -1,9 +1,18 @@
-import { useMemo, useState } from 'react';
-import { format } from 'date-fns';
-import { BookText, Download, FileSpreadsheet, FileText, Search } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  startOfYear,
+  endOfYear,
+  subDays,
+  startOfDay,
+  endOfDay,
+} from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { BookText, CalendarIcon, Download, FileSpreadsheet, FileText, Search, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -11,10 +20,13 @@ import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, Table
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 import { useLancamentosContabeis } from '@/hooks/useLancamentosContabeis';
 import { usePlanoContas } from '@/hooks/usePlanoContas';
 import { useEmpresas } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
+import { cn } from '@/lib/utils';
 import {
   exportDiarioCSV,
   exportDiarioPDF,
@@ -37,12 +49,70 @@ interface PartidaFlat {
   credito: number;
 }
 
+type DatePreset = 'all' | 'today' | 'last7' | 'last30' | 'mes' | 'ano' | 'custom';
+
+const toIsoDate = (d: Date) => format(d, 'yyyy-MM-dd');
+
 export function RazaoDiarioTab({ empresaId, ano }: Props) {
   const [modo, setModo] = useState<'diario' | 'razao'>('diario');
+  // Estado de filtros COMPARTILHADO entre Diário e Razão (sincronia explícita).
+  const [preset, setPreset] = useState<DatePreset>('ano');
   const [dataInicio, setDataInicio] = useState(`${ano}-01-01`);
   const [dataFim, setDataFim] = useState(`${ano}-12-31`);
   const [contaId, setContaId] = useState<string>('todas');
   const [busca, setBusca] = useState('');
+
+  // Quando o ano muda na página pai, recompõe o intervalo padrão "Ano de X".
+  useEffect(() => {
+    if (preset === 'ano') {
+      setDataInicio(`${ano}-01-01`);
+      setDataFim(`${ano}-12-31`);
+    }
+  }, [ano, preset]);
+
+  const handlePreset = (p: DatePreset) => {
+    setPreset(p);
+    const hoje = new Date();
+    switch (p) {
+      case 'all':
+        setDataInicio(`${ano}-01-01`);
+        setDataFim(`${ano}-12-31`);
+        break;
+      case 'today':
+        setDataInicio(toIsoDate(startOfDay(hoje)));
+        setDataFim(toIsoDate(endOfDay(hoje)));
+        break;
+      case 'last7':
+        setDataInicio(toIsoDate(startOfDay(subDays(hoje, 6))));
+        setDataFim(toIsoDate(endOfDay(hoje)));
+        break;
+      case 'last30':
+        setDataInicio(toIsoDate(startOfDay(subDays(hoje, 29))));
+        setDataFim(toIsoDate(endOfDay(hoje)));
+        break;
+      case 'mes':
+        setDataInicio(toIsoDate(startOfMonth(hoje)));
+        setDataFim(toIsoDate(endOfMonth(hoje)));
+        break;
+      case 'ano':
+        setDataInicio(toIsoDate(startOfYear(new Date(ano, 0, 1))));
+        setDataFim(toIsoDate(endOfYear(new Date(ano, 0, 1))));
+        break;
+      case 'custom':
+        break;
+    }
+  };
+
+  const limparFiltros = () => {
+    setBusca('');
+    setContaId('todas');
+    handlePreset('ano');
+  };
+
+  const filtrosAtivos =
+    busca !== '' ||
+    contaId !== 'todas' ||
+    preset !== 'ano';
 
   const { data: lancs = [], isLoading } = useLancamentosContabeis(empresaId, ano);
   const { data: plano = [] } = usePlanoContas(empresaId);
