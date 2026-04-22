@@ -13,6 +13,7 @@ import { HistoricoContextualCard } from "@/components/insights-ia/anomalia/Histo
 import { DetectoresContribuintesCard } from "@/components/insights-ia/anomalia/DetectoresContribuintesCard";
 import { AnomaliasRelacionadasCard } from "@/components/insights-ia/anomalia/AnomaliasRelacionadasCard";
 import { AcoesSugeridasCard } from "@/components/insights-ia/anomalia/AcoesSugeridasCard";
+import { AnomaliaHistoricoSection } from "@/components/admin/AnomaliaHistoricoSection";
 import { ExportarEvidenciasButton } from "@/components/insights-ia/anomalia/ExportarEvidenciasButton";
 import { AnomaliaBreadcrumb } from "@/components/insights-ia/anomalia/AnomaliaBreadcrumb";
 
@@ -167,6 +168,7 @@ export default function AnomaliaDetalhe() {
               <AnomaliasRelacionadasCard lista={data.relacionadas} />
               <AcoesSugeridasCard anomalia={data.anomalia} />
             </div>
+            <AnomaliaHistoricoSection anomaliaId={data.anomalia.id} />
           </>
         )}
       </div>
