@@ -154,6 +154,15 @@ export function PlanoContasTab({ empresaId }: Props) {
           <AuditoriaCFCPanel resultado={auditoria} empresa={empresa} />
         </DialogContent>
       </Dialog>
+
+      <Dialog open={historyOpen} onOpenChange={setHistoryOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle>Histórico do Plano de Contas</DialogTitle>
+          </DialogHeader>
+          <PlanoContaHistoryPanel entries={history.data ?? []} isLoading={history.isLoading} />
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
