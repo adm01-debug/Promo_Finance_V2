@@ -7736,6 +7736,47 @@ export type Database = {
           },
         ]
       }
+      saved_filter_subscriptions: {
+        Row: {
+          created_at: string
+          id: string
+          last_seen_at: string
+          notify_inapp: boolean
+          notify_push: boolean
+          saved_filter_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_seen_at?: string
+          notify_inapp?: boolean
+          notify_push?: boolean
+          saved_filter_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_seen_at?: string
+          notify_inapp?: boolean
+          notify_push?: boolean
+          saved_filter_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_filter_subscriptions_saved_filter_id_fkey"
+            columns: ["saved_filter_id"]
+            isOneToOne: false
+            referencedRelation: "saved_filters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saved_filters: {
         Row: {
           created_at: string
@@ -10138,6 +10179,10 @@ export type Database = {
           p_ultima_geracao: string
         }
         Returns: string
+      }
+      can_access_saved_filter: {
+        Args: { _filter_id: string; _user_id: string }
+        Returns: boolean
       }
       check_account_lockout: { Args: { _email: string }; Returns: boolean }
       cnpja_check_rate_limit: {
