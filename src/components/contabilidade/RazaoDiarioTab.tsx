@@ -46,6 +46,16 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
 
   const { data: lancs = [], isLoading } = useLancamentosContabeis(empresaId, ano);
   const { data: plano = [] } = usePlanoContas(empresaId);
+  const { data: empresas = [] } = useEmpresas();
+  const empresaHeader = useMemo<EmpresaHeader | undefined>(() => {
+    const e = (empresas as Array<Record<string, unknown>>).find((x) => x.id === empresaId);
+    if (!e) return undefined;
+    return {
+      razao_social: (e.razao_social as string) ?? null,
+      nome_fantasia: (e.nome_fantasia as string) ?? null,
+      cnpj: (e.cnpj as string) ?? null,
+    };
+  }, [empresas, empresaId]);
 
   // Achata todas as partidas com metadados do lançamento
   const todasPartidas = useMemo<PartidaFlat[]>(() => {
