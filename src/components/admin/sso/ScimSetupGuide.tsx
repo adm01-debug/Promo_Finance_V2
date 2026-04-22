@@ -5,9 +5,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Copy, ExternalLink, Info, Loader2, CheckCircle2, XCircle, PlugZap, History, Trash2 } from 'lucide-react';
+import { Copy, ExternalLink, Info, Loader2, CheckCircle2, XCircle, PlugZap, ListChecks } from 'lucide-react';
 import { toast } from 'sonner';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useMemo } from 'react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Progress } from '@/components/ui/progress';
+import { useScimChecklist } from '@/hooks/useScimChecklist';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 const SCIM_BASE = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scim-server/scim/v2`;
 
@@ -45,79 +50,30 @@ type TestResult =
   | { ok: true; status: number; latencyMs: number }
   | { ok: false; status?: number; latencyMs?: number; message: string; hint?: string };
 
-type TestHistoryEntry = {
-  timestamp: number;
-  ok: boolean;
-  status?: number;
-  latencyMs?: number;
-  message?: string;
-};
-
 const SCIM_SP_CONFIG_SCHEMA = 'urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig';
-const HISTORY_STORAGE_KEY = 'scim:test-history';
-const HISTORY_MAX = 5;
 
-function loadHistory(): TestHistoryEntry[] {
-  try {
-    const raw = localStorage.getItem(HISTORY_STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.slice(0, HISTORY_MAX) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveHistory(entries: TestHistoryEntry[]) {
-  try {
-    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(entries.slice(0, HISTORY_MAX)));
-  } catch {
-    /* ignore quota */
-  }
-}
-
-function formatRelative(ts: number): string {
-  const diff = Date.now() - ts;
-  const sec = Math.round(diff / 1000);
-  if (sec < 60) return `há ${sec}s`;
-  const min = Math.round(sec / 60);
-  if (min < 60) return `há ${min} min`;
-  const h = Math.round(min / 60);
-  if (h < 24) return `há ${h} h`;
-  const d = Math.round(h / 24);
-  return `há ${d} d`;
-}
-
-function formatTimestamp(ts: number): string {
-  const d = new Date(ts);
-  return d.toLocaleString('pt-BR', {
-    day: '2-digit', month: '2-digit', year: '2-digit',
-    hour: '2-digit', minute: '2-digit',
-  });
-}
+const CHECKLIST_ITEMS: Array<{ key: string; label: string; description: string }> = [
+  { key: 'token_generated', label: 'Token SCIM gerado e copiado', description: 'Gerei um token na aba "Tokens" e armazenei em local seguro (exibido uma única vez).' },
+  { key: 'tenant_url_configured', label: 'Tenant URL configurada no IdP', description: 'Colei a URL base SCIM no painel do provedor (Azure AD / Okta).' },
+  { key: 'auth_header_configured', label: 'Authorization header configurado', description: 'Configurei o header Bearer com o token SCIM.' },
+  { key: 'test_connection_passed', label: 'Test Connection retornou 200 OK', description: 'O teste de conexão do IdP passou sem erros.' },
+  { key: 'attr_userName', label: 'Mapeamento userName confirmado', description: 'userName apontando para userPrincipalName / email.' },
+  { key: 'attr_externalId', label: 'Mapeamento externalId confirmado', description: 'externalId apontando para objectId / user.id (estável).' },
+  { key: 'attr_active', label: 'Mapeamento active confirmado', description: 'Atributo active refletindo o status da conta no IdP.' },
+  { key: 'scope_assigned', label: 'Scope restrito a usuários atribuídos', description: 'Provisionamento limitado a usuários/grupos atribuídos.' },
+  { key: 'sync_enabled', label: 'Provisionamento ativado', description: 'Sync ativo no IdP e primeira execução validada.' },
+];
 
 export function ScimSetupGuide() {
   const [testing, setTesting] = useState(false);
   const [result, setResult] = useState<TestResult | null>(null);
-  const [history, setHistory] = useState<TestHistoryEntry[]>([]);
+  const { isConfirmed, toggle, loading: checklistLoading, saving, items } = useScimChecklist();
 
-  useEffect(() => {
-    setHistory(loadHistory());
-  }, []);
-
-  const pushHistory = useCallback((entry: TestHistoryEntry) => {
-    setHistory((prev) => {
-      const next = [entry, ...prev].slice(0, HISTORY_MAX);
-      saveHistory(next);
-      return next;
-    });
-  }, []);
-
-  const clearHistory = useCallback(() => {
-    setHistory([]);
-    saveHistory([]);
-    toast.success('Histórico limpo');
-  }, []);
+  const completedCount = useMemo(
+    () => CHECKLIST_ITEMS.filter((i) => isConfirmed(i.key)).length,
+    [isConfirmed],
+  );
+  const progressPct = Math.round((completedCount / CHECKLIST_ITEMS.length) * 100);
 
   const handleTest = async () => {
     setTesting(true);
@@ -126,7 +82,6 @@ export function ScimSetupGuide() {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
     const start = performance.now();
-    let finalResult: TestResult | null = null;
     try {
       const res = await fetch(url, {
         method: 'GET',
@@ -135,62 +90,42 @@ export function ScimSetupGuide() {
       });
       const latencyMs = Math.round(performance.now() - start);
       if (!res.ok) {
-        finalResult = {
+        setResult({
           ok: false,
           status: res.status,
           latencyMs,
           message: `Endpoint respondeu HTTP ${res.status} ${res.statusText}`,
           hint: res.status >= 500 ? 'Servidor SCIM com falha — verifique logs da edge function scim-server.' : undefined,
-        };
+        });
         return;
       }
       const json = await res.json().catch(() => null);
       const schemas: string[] = Array.isArray(json?.schemas) ? json.schemas : [];
       if (!schemas.includes(SCIM_SP_CONFIG_SCHEMA)) {
-        finalResult = {
+        setResult({
           ok: false,
           status: res.status,
           latencyMs,
           message: 'Resposta 200 mas o payload não é um ServiceProviderConfig SCIM 2.0 válido.',
           hint: 'Verifique se a URL aponta para /scim/v2/ServiceProviderConfig.',
-        };
+        });
         return;
       }
-      finalResult = { ok: true, status: res.status, latencyMs };
+      setResult({ ok: true, status: res.status, latencyMs });
     } catch (err) {
       const latencyMs = Math.round(performance.now() - start);
       const isAbort = (err as Error)?.name === 'AbortError';
-      finalResult = {
+      setResult({
         ok: false,
         latencyMs,
         message: isAbort ? 'Timeout: o endpoint não respondeu em 8s.' : `Falha ao conectar: ${(err as Error).message}`,
         hint: isAbort
           ? 'Tente novamente ou verifique a saúde da edge function scim-server.'
           : 'Se o erro for de CORS/rede, lembre que IdPs (Azure AD, Okta) chamam o endpoint a partir de servidores externos — esse teste local pode falhar mesmo com endpoint saudável em produção.',
-      };
+      });
     } finally {
       clearTimeout(timeout);
       setTesting(false);
-      const fr = finalResult;
-      if (fr) {
-        setResult(fr);
-        if (fr.ok) {
-          pushHistory({
-            timestamp: Date.now(),
-            ok: true,
-            status: fr.status,
-            latencyMs: fr.latencyMs,
-          });
-        } else {
-          pushHistory({
-            timestamp: Date.now(),
-            ok: false,
-            status: fr.status,
-            latencyMs: fr.latencyMs,
-            message: (fr as Extract<TestResult, { ok: false }>).message,
-          });
-        }
-      }
     }
   };
 
@@ -269,71 +204,62 @@ export function ScimSetupGuide() {
                 </div>
               </Alert>
             )}
+          </div>
+        </CardContent>
+      </Card>
 
-            {history.length > 0 && (
-              <div className="pt-3 border-t space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <History className="h-3.5 w-3.5 text-muted-foreground" />
-                    <p className="text-xs font-medium">
-                      Últimos testes ({history.length})
-                    </p>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={clearHistory}
-                    className="h-7 px-2 text-xs"
-                    aria-label="Limpar histórico de testes"
-                  >
-                    <Trash2 className="h-3.5 w-3.5 mr-1" />
-                    Limpar
-                  </Button>
-                </div>
-                <div className="rounded-md border overflow-hidden">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="h-8 text-xs">Quando</TableHead>
-                        <TableHead className="h-8 text-xs">Status</TableHead>
-                        <TableHead className="h-8 text-xs text-right">Latência</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {history.map((h) => (
-                        <TableRow key={h.timestamp}>
-                          <TableCell
-                            className="py-1.5 text-xs text-muted-foreground"
-                            title={formatTimestamp(h.timestamp)}
-                          >
-                            {formatRelative(h.timestamp)}
-                          </TableCell>
-                          <TableCell className="py-1.5">
-                            {h.ok ? (
-                              <Badge className="bg-success text-success-foreground gap-1 h-5">
-                                <CheckCircle2 className="h-3 w-3" />
-                                {h.status ?? 'OK'}
-                              </Badge>
-                            ) : (
-                              <Badge variant="destructive" className="gap-1 h-5" title={h.message}>
-                                <XCircle className="h-3 w-3" />
-                                {h.status ?? 'erro'}
-                              </Badge>
-                            )}
-                          </TableCell>
-                          <TableCell className="py-1.5 text-xs text-right font-mono">
-                            {h.latencyMs !== undefined ? `${h.latencyMs} ms` : '—'}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-                <p className="text-[10px] text-muted-foreground">
-                  Histórico armazenado localmente neste navegador (últimos {HISTORY_MAX} testes).
-                </p>
+      <Card>
+        <CardHeader>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <ListChecks className="h-5 w-5 text-primary" />
+              <div>
+                <CardTitle>Checklist de configuração</CardTitle>
+                <CardDescription>
+                  Marque cada item ao concluí-lo. Suas confirmações ficam salvas no servidor e persistem entre sessões.
+                </CardDescription>
               </div>
-            )}
+            </div>
+            <Badge variant={completedCount === CHECKLIST_ITEMS.length ? 'default' : 'outline'} className="shrink-0">
+              {completedCount}/{CHECKLIST_ITEMS.length}
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Progress value={progressPct} className="h-2" />
+          <div className="space-y-2">
+            {CHECKLIST_ITEMS.map((item) => {
+              const checked = isConfirmed(item.key);
+              const confirmedAt = items[item.key]?.confirmed_at;
+              const isSaving = saving === item.key;
+              return (
+                <div
+                  key={item.key}
+                  className="flex items-start gap-3 p-3 rounded-md border bg-card hover:bg-accent/30 transition-colors"
+                >
+                  <div className="flex-1">
+                    <Checkbox
+                      id={`scim-check-${item.key}`}
+                      checked={checked}
+                      disabled={checklistLoading || isSaving}
+                      onChange={(e) => toggle(item.key, e.target.checked)}
+                      label={
+                        <span className="flex items-center gap-2">
+                          <span>{item.label}</span>
+                          {isSaving && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
+                        </span>
+                      }
+                      description={item.description}
+                    />
+                  </div>
+                  {checked && confirmedAt && (
+                    <span className="text-xs text-muted-foreground shrink-0 pt-1">
+                      {formatDistanceToNow(new Date(confirmedAt), { addSuffix: true, locale: ptBR })}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </CardContent>
       </Card>
