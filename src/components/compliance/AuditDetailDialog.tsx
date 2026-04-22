@@ -1,7 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { maskIp } from "@/lib/ip-mask";
-import { useIpMaskPreference } from "@/hooks/useIpMaskPreference";
+import { AuditDiffView } from "@/components/audit/AuditDiffView";
 
 interface Props {
   open: boolean;
@@ -41,20 +40,10 @@ export function AuditDetailDialog({ open, onOpenChange, registro }: Props) {
                   ))}
               </dl>
             </div>
-            {antes && (
+            {(antes || depois) && (
               <div>
-                <p className="font-semibold mb-1">Antes</p>
-                <pre className="bg-muted p-3 rounded text-xs overflow-auto max-h-64">
-                  {JSON.stringify(antes, null, 2)}
-                </pre>
-              </div>
-            )}
-            {depois && (
-              <div>
-                <p className="font-semibold mb-1">Depois</p>
-                <pre className="bg-muted p-3 rounded text-xs overflow-auto max-h-64">
-                  {JSON.stringify(depois, null, 2)}
-                </pre>
+                <p className="font-semibold mb-2">Comparação antes/depois</p>
+                <AuditDiffView old={antes} new={depois} action={String(registro.acao ?? registro.action ?? "") || null} />
               </div>
             )}
           </div>
