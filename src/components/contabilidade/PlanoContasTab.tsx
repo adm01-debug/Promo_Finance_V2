@@ -49,6 +49,15 @@ export function PlanoContasTab({ empresaId }: Props) {
             <CardDescription>Estrutura contábil para ECD/ECF</CardDescription>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setHistoryOpen(true)} disabled={!empresaId}>
+              <History className="h-4 w-4 mr-2" />
+              Histórico
+              {!history.isLoading && (history.data?.length ?? 0) > 0 && (
+                <Badge variant="secondary" className="ml-2 h-5 px-1.5 text-[10px]">
+                  {history.data!.length}
+                </Badge>
+              )}
+            </Button>
             <Button variant="outline" onClick={() => setAuditOpen(true)} disabled={!empresaId}>
               <ShieldCheck className="h-4 w-4 mr-2" />
               Auditar CFC
