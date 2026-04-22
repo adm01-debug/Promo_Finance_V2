@@ -327,45 +327,90 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
                     </section>
                   </div>
 
-                  {equilibrado ? (
-                    <div className="sticky bottom-0 rounded-md border border-success/30 bg-success/10 px-4 py-3 flex items-center gap-3 backdrop-blur">
-                      <CheckCircle2 className="h-5 w-5 text-success shrink-0" />
-                      <div className="text-sm">
-                        <span className="font-semibold text-success">Balanço equilibrado</span>
-                        <span className="text-muted-foreground"> · Ativo = Passivo + PL = </span>
-                        <span className="font-mono font-semibold">{formatCurrency(balanco.totalAtivo)}</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="sticky bottom-0 rounded-md border-2 border-destructive/40 bg-destructive/10 px-4 py-3 backdrop-blur">
-                      <div className="flex items-center gap-2 mb-3">
+                  {/* Indicador detalhado: Ativo · Passivo · PL+Resultado · Diferença */}
+                  <div
+                    className={`sticky bottom-0 rounded-md backdrop-blur px-4 py-3 ${
+                      equilibrado
+                        ? 'border border-success/30 bg-success/10'
+                        : 'border-2 border-destructive/40 bg-destructive/10 shadow-[0_0_0_1px_hsl(var(--destructive)/0.2)]'
+                    }`}
+                    role="status"
+                    aria-live="polite"
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      {equilibrado ? (
+                        <CheckCircle2 className="h-5 w-5 text-success shrink-0" />
+                      ) : (
                         <AlertTriangle className="h-5 w-5 text-destructive shrink-0 animate-pulse" />
-                        <span className="font-semibold text-destructive">Balanço desequilibrado</span>
-                      </div>
-                      <div className="grid gap-3 sm:grid-cols-3">
-                        <div>
-                          <div className="text-xs text-muted-foreground">Ativo</div>
-                          <div className="font-mono text-sm tabular-nums">{formatCurrency(balanco.totalAtivo)}</div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-muted-foreground">Passivo + PL</div>
-                          <div className="font-mono text-sm tabular-nums">{formatCurrency(balanco.totalPassivoMaisPL)}</div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-muted-foreground">Diferença</div>
-                          <div className="font-mono text-base font-bold tabular-nums text-destructive">
-                            {balanco.diferenca >= 0 ? '+' : ''}{formatCurrency(balanco.diferenca)}
-                          </div>
-                          <div className="text-[11px] text-muted-foreground">
-                            {balanco.diferenca > 0 ? 'Ativo maior' : 'Passivo+PL maior'}
-                          </div>
-                        </div>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-3">
-                        Verifique lançamentos em aberto, contas sem mapeamento de natureza ou diferenças de arredondamento.
-                      </p>
+                      )}
+                      <span className={`font-semibold ${equilibrado ? 'text-success' : 'text-destructive'}`}>
+                        {equilibrado ? 'Balanço equilibrado' : 'Balanço desequilibrado'}
+                      </span>
+                      <span className="text-xs text-muted-foreground hidden sm:inline">
+                        · Ativo = Passivo + Patrimônio Líquido (incl. resultado do exercício)
+                      </span>
                     </div>
-                  )}
+
+                    <div className="grid gap-3 grid-cols-2 sm:grid-cols-4">
+                      <div className="rounded-md border bg-background/60 px-3 py-2">
+                        <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Ativo</div>
+                        <div className="font-mono text-sm font-semibold tabular-nums mt-0.5">
+                          {formatCurrency(balanco.totalAtivo)}
+                        </div>
+                      </div>
+                      <div className="rounded-md border bg-background/60 px-3 py-2">
+                        <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Passivo</div>
+                        <div className="font-mono text-sm font-semibold tabular-nums mt-0.5">
+                          {formatCurrency(balanco.totalPassivo)}
+                        </div>
+                      </div>
+                      <div className="rounded-md border bg-background/60 px-3 py-2">
+                        <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                          Patrimônio Líquido
+                        </div>
+                        <div className="font-mono text-sm font-semibold tabular-nums mt-0.5">
+                          {formatCurrency(balanco.totalPatrimonio + resultadoExercicio)}
+                        </div>
+                        <div className="text-[10px] text-muted-foreground mt-0.5">
+                          inclui resultado: {formatCurrency(resultadoExercicio)}
+                        </div>
+                      </div>
+                      <div
+                        className={`rounded-md border px-3 py-2 ${
+                          equilibrado
+                            ? 'border-success/30 bg-success/5'
+                            : 'border-destructive/40 bg-destructive/5'
+                        }`}
+                      >
+                        <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                          Diferença (A − P+PL)
+                        </div>
+                        <div
+                          className={`font-mono text-base font-bold tabular-nums mt-0.5 ${
+                            equilibrado ? 'text-success' : 'text-destructive'
+                          }`}
+                        >
+                          {balanco.diferenca >= 0 ? '+' : ''}
+                          {formatCurrency(balanco.diferenca)}
+                        </div>
+                        <div className="text-[10px] text-muted-foreground mt-0.5">
+                          {equilibrado
+                            ? 'dentro da tolerância'
+                            : balanco.diferenca > 0
+                              ? 'Ativo maior que Passivo + PL'
+                              : 'Passivo + PL maior que Ativo'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {!equilibrado && (
+                      <p className="text-xs text-muted-foreground mt-3">
+                        Verifique lançamentos em aberto, contas sem mapeamento de natureza ou diferenças
+                        de arredondamento. A equação contábil <strong>Ativo = Passivo + PL</strong> deve
+                        sempre fechar.
+                      </p>
+                    )}
+                  </div>
                 </>
               );
             })()}
