@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, AlertTriangle, XCircle, Loader2, Download, FileArchive, Copy, Check, ChevronRight, ShieldAlert, RefreshCw, Link2, Send, Building2, Hash, Calendar, FileText, Sparkles, Lock } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, XCircle, Loader2, Download, FileArchive, Copy, Check, ChevronRight, ShieldAlert, RefreshCw, Link2, Send, Building2, Hash, Calendar, FileText, Sparkles, Lock, Ban } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
@@ -155,6 +156,16 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
   const avisos = data?.validacoes.avisos.length || 0;
   const cfcCriticos = auditoriaCFC.problemasCriticos || 0;
   const podeGerar = !!data && erros === 0 && preValidacao.podeGerar && cfcCriticos === 0;
+  const errosLista = data?.validacoes.erros || [];
+  const avisosLista = data?.validacoes.avisos || [];
+  const motivosBloqueio: string[] = [];
+  if (data) {
+    if (erros > 0) motivosBloqueio.push(`${erros} erro(s) de validação`);
+    if (!data.ecd_referencia) motivosBloqueio.push('ECD do período não localizada');
+    if (!preValidacao.podeGerar) motivosBloqueio.push('Pré-validação SPED com pendências críticas');
+    if (cfcCriticos > 0) motivosBloqueio.push(`${cfcCriticos} pendência(s) CFC crítica(s)`);
+  }
+  const motivoBloqueio = motivosBloqueio.join(' · ');
 
   const handleGerar = async () => {
     try {
@@ -336,6 +347,62 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                 </Button>
               </div>
 
+              {errosLista.length > 0 && (
+                <Alert variant="error">
+                  <AlertTitle className="flex items-center gap-2">
+                    <XCircle className="h-4 w-4" /> {errosLista.length} erro(s) encontrado(s)
+                  </AlertTitle>
+                  <AlertDescription>
+                    <ScrollArea className="max-h-48 mt-2 rounded-md border border-destructive/20 bg-destructive/5 p-2">
+                      <ul className="space-y-1.5">
+                        {errosLista.map((erro, i) => (
+                          <motion.li
+                            key={i}
+                            initial={{ opacity: 0, x: -6 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.03, duration: 0.2 }}
+                            className="flex items-start gap-2 text-xs"
+                          >
+                            <Badge variant="outline" className="border-destructive/40 text-destructive shrink-0 h-5 px-1.5 text-[10px] font-mono">
+                              {String(i + 1).padStart(2, '0')}
+                            </Badge>
+                            <span className="leading-snug">{erro}</span>
+                          </motion.li>
+                        ))}
+                      </ul>
+                    </ScrollArea>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {avisosLista.length > 0 && (
+                <Alert variant="warning">
+                  <AlertTitle className="flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4" /> {avisosLista.length} aviso(s)
+                  </AlertTitle>
+                  <AlertDescription>
+                    <ScrollArea className="max-h-40 mt-2 rounded-md border border-warning/20 bg-warning/5 p-2">
+                      <ul className="space-y-1.5">
+                        {avisosLista.map((aviso, i) => (
+                          <motion.li
+                            key={i}
+                            initial={{ opacity: 0, x: -6 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.03, duration: 0.2 }}
+                            className="flex items-start gap-2 text-xs"
+                          >
+                            <Badge variant="outline" className="border-warning/40 text-warning shrink-0 h-5 px-1.5 text-[10px] font-mono">
+                              {String(i + 1).padStart(2, '0')}
+                            </Badge>
+                            <span className="leading-snug">{aviso}</span>
+                          </motion.li>
+                        ))}
+                      </ul>
+                    </ScrollArea>
+                  </AlertDescription>
+                </Alert>
+              )}
+
               <div className="rounded-xl border border-border/60 bg-card/60 backdrop-blur-sm p-1">
                 <PreValidacaoSpedPanel resultado={preValidacao} />
               </div>
@@ -358,32 +425,49 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                 </div>
               </div>
 
-              {erros > 0 && (
-                <Alert variant="error" title="Geração bloqueada">
-                  <AlertDescription className="flex items-center gap-2">
-                    <ShieldAlert className="h-4 w-4 animate-pulse" />
-                    Corrija os {erros} erro(s) acima antes de gerar o arquivo.
-                  </AlertDescription>
+              {!podeGerar && motivoBloqueio && (
+                <Alert variant="error">
+                  <AlertTitle className="flex items-center gap-2">
+                    <ShieldAlert className="h-4 w-4 animate-pulse" /> Geração de arquivo bloqueada
+                  </AlertTitle>
+                  <AlertDescription className="mt-1">{motivoBloqueio}</AlertDescription>
                 </Alert>
               )}
 
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setStep(1)}>Voltar</Button>
                 <div className="flex-1" />
-                <Button
-                  onClick={handleGerar}
-                  disabled={!podeGerar || gerar.isPending}
-                  variant={podeGerar ? 'premium' : 'outline'}
-                  className={cn('gap-2', podeGerar && 'hover-scale', !podeGerar && 'cursor-not-allowed')}
-                >
-                  {gerar.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : !podeGerar ? <Lock className="h-4 w-4" /> : <Download className="h-4 w-4" />}
-                  {!podeGerar ? 'Geração bloqueada' : 'Gerar arquivo SPED ECF'}
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span tabIndex={!podeGerar ? 0 : -1}>
+                        <Button
+                          onClick={handleGerar}
+                          disabled={!podeGerar || gerar.isPending}
+                          variant={podeGerar ? 'premium' : 'outline'}
+                          className={cn('gap-2', podeGerar && 'hover-scale', !podeGerar && 'cursor-not-allowed')}
+                        >
+                          {gerar.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : !podeGerar ? <Lock className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+                          {!podeGerar ? 'Geração bloqueada' : 'Gerar arquivo SPED ECF'}
+                        </Button>
+                      </span>
+                    </TooltipTrigger>
+                    {!podeGerar && motivoBloqueio && (
+                      <TooltipContent side="top" className="max-w-xs">
+                        {motivoBloqueio}
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </motion.div>
           )}
 
-          {step === 3 && resultado && (
+          {step === 3 && resultado && (() => {
+            const errosResultado = resultado.validacoes?.erros || [];
+            const avisosResultado = resultado.validacoes?.avisos || [];
+            const downloadBloqueado = errosResultado.length > 0;
+            return (
             <motion.div
               key="step-3"
               initial={{ opacity: 0, y: 8 }}
@@ -392,15 +476,86 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               transition={{ duration: 0.25 }}
               className="space-y-4"
             >
-              <div className="rounded-xl border border-success/30 bg-gradient-to-br from-success/10 to-success/5 p-5 flex items-start gap-4 animate-scale-in">
-                <div className="h-10 w-10 rounded-full bg-success/20 flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="h-5 w-5 text-success" />
+              {downloadBloqueado ? (
+                <div className="rounded-xl border border-destructive/30 bg-gradient-to-br from-destructive/10 to-destructive/5 p-5 flex items-start gap-4 animate-scale-in">
+                  <div className="h-10 w-10 rounded-full bg-destructive/20 flex items-center justify-center shrink-0">
+                    <Ban className="h-5 w-5 text-destructive animate-pulse" />
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    <p className="text-lg font-semibold font-display tracking-tight text-destructive">Download bloqueado</p>
+                    <p className="text-sm text-muted-foreground">
+                      O arquivo foi gerado, mas a validação retornou {errosResultado.length} erro(s). Corrija e regenere antes de baixar.
+                    </p>
+                    <p className="text-xs text-muted-foreground font-mono mt-1">{resultado.file_name}</p>
+                  </div>
                 </div>
-                <div className="flex-1 space-y-1">
-                  <p className="text-lg font-semibold font-display tracking-tight">Arquivo gerado com sucesso</p>
-                  <p className="text-sm text-muted-foreground font-mono">{resultado.file_name}</p>
+              ) : (
+                <div className="rounded-xl border border-success/30 bg-gradient-to-br from-success/10 to-success/5 p-5 flex items-start gap-4 animate-scale-in">
+                  <div className="h-10 w-10 rounded-full bg-success/20 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="h-5 w-5 text-success" />
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    <p className="text-lg font-semibold font-display tracking-tight">Arquivo gerado com sucesso</p>
+                    <p className="text-sm text-muted-foreground font-mono">{resultado.file_name}</p>
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {errosResultado.length > 0 && (
+                <Alert variant="error">
+                  <AlertTitle className="flex items-center gap-2">
+                    <XCircle className="h-4 w-4" /> {errosResultado.length} erro(s) na validação
+                  </AlertTitle>
+                  <AlertDescription>
+                    <ScrollArea className="max-h-48 mt-2 rounded-md border border-destructive/20 bg-destructive/5 p-2">
+                      <ul className="space-y-1.5">
+                        {errosResultado.map((erro, i) => (
+                          <motion.li
+                            key={i}
+                            initial={{ opacity: 0, x: -6 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.03, duration: 0.2 }}
+                            className="flex items-start gap-2 text-xs"
+                          >
+                            <Badge variant="outline" className="border-destructive/40 text-destructive shrink-0 h-5 px-1.5 text-[10px] font-mono">
+                              {String(i + 1).padStart(2, '0')}
+                            </Badge>
+                            <span className="leading-snug">{erro}</span>
+                          </motion.li>
+                        ))}
+                      </ul>
+                    </ScrollArea>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {avisosResultado.length > 0 && (
+                <Alert variant="warning">
+                  <AlertTitle className="flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4" /> {avisosResultado.length} aviso(s)
+                  </AlertTitle>
+                  <AlertDescription>
+                    <ScrollArea className="max-h-40 mt-2 rounded-md border border-warning/20 bg-warning/5 p-2">
+                      <ul className="space-y-1.5">
+                        {avisosResultado.map((aviso, i) => (
+                          <motion.li
+                            key={i}
+                            initial={{ opacity: 0, x: -6 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.03, duration: 0.2 }}
+                            className="flex items-start gap-2 text-xs"
+                          >
+                            <Badge variant="outline" className="border-warning/40 text-warning shrink-0 h-5 px-1.5 text-[10px] font-mono">
+                              {String(i + 1).padStart(2, '0')}
+                            </Badge>
+                            <span className="leading-snug">{aviso}</span>
+                          </motion.li>
+                        ))}
+                      </ul>
+                    </ScrollArea>
+                  </AlertDescription>
+                </Alert>
+              )}
 
               <div className="grid grid-cols-2 gap-3">
                 <KpiCard label="Linhas" value={resultado.total_linhas} />
@@ -450,12 +605,53 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               </Alert>
 
               <div className="flex flex-wrap gap-2">
-                <Button onClick={() => window.open(resultado.url, '_blank')} variant="premium" className="gap-2 hover-scale">
-                  <Download className="h-4 w-4" /> Baixar .txt
-                </Button>
-                <Button variant="outline" onClick={baixarZip} className="gap-2 hover-scale">
-                  <FileArchive className="h-4 w-4" /> Baixar .zip (com README)
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span tabIndex={downloadBloqueado ? 0 : -1}>
+                        <Button
+                          onClick={() => window.open(resultado.url, '_blank')}
+                          disabled={downloadBloqueado}
+                          variant={downloadBloqueado ? 'outline' : 'premium'}
+                          className={cn('gap-2', !downloadBloqueado && 'hover-scale', downloadBloqueado && 'cursor-not-allowed')}
+                        >
+                          {downloadBloqueado ? <Ban className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+                          Baixar .txt
+                        </Button>
+                      </span>
+                    </TooltipTrigger>
+                    {downloadBloqueado && (
+                      <TooltipContent side="top">
+                        Corrija os {errosResultado.length} erro(s) antes de baixar
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span tabIndex={downloadBloqueado ? 0 : -1}>
+                        <Button
+                          variant="outline"
+                          onClick={baixarZip}
+                          disabled={downloadBloqueado}
+                          className={cn('gap-2', !downloadBloqueado && 'hover-scale', downloadBloqueado && 'cursor-not-allowed')}
+                        >
+                          {downloadBloqueado ? <Ban className="h-4 w-4" /> : <FileArchive className="h-4 w-4" />}
+                          Baixar .zip (com README)
+                        </Button>
+                      </span>
+                    </TooltipTrigger>
+                    {downloadBloqueado && (
+                      <TooltipContent side="top">
+                        Corrija os {errosResultado.length} erro(s) antes de baixar
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                </TooltipProvider>
+                {downloadBloqueado && (
+                  <Button variant="outline" onClick={() => setStep(2)} className="gap-2 hover-scale">
+                    <RefreshCw className="h-4 w-4" /> Voltar e revalidar
+                  </Button>
+                )}
               </div>
 
               {resultado.arquivo_id && (
@@ -491,7 +687,8 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                 <Button variant="ghost" onClick={() => onOpenChange(false)}>Fechar</Button>
               </div>
             </motion.div>
-          )}
+            );
+          })()}
         </AnimatePresence>
       </DialogContent>
     </Dialog>
