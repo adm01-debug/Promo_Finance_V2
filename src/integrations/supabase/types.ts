@@ -8496,6 +8496,65 @@ export type Database = {
           },
         ]
       }
+      sso_sandbox_runs: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          created_by_email: string | null
+          email_masked: string | null
+          has_errors: boolean
+          id: string
+          input: Json
+          matched_group: string | null
+          outcome: string
+          provider_id: string | null
+          provider_nome: string | null
+          resolved_role: string | null
+          result: Json
+          use_provider_config: boolean
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          created_by_email?: string | null
+          email_masked?: string | null
+          has_errors?: boolean
+          id?: string
+          input: Json
+          matched_group?: string | null
+          outcome: string
+          provider_id?: string | null
+          provider_nome?: string | null
+          resolved_role?: string | null
+          result: Json
+          use_provider_config?: boolean
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          created_by_email?: string | null
+          email_masked?: string | null
+          has_errors?: boolean
+          id?: string
+          input?: Json
+          matched_group?: string | null
+          outcome?: string
+          provider_id?: string | null
+          provider_nome?: string | null
+          resolved_role?: string | null
+          result?: Json
+          use_provider_config?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sso_sandbox_runs_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "sso_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       templates_cobranca: {
         Row: {
           assunto: string | null
