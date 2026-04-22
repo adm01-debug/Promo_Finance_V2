@@ -23,7 +23,7 @@ export interface AnomaliaPreferences {
   id: string;
   user_id: string;
   toast_enabled: boolean;
-  /** @deprecated kept for backward-compat; use toast_severidades_ativas */
+  /** @deprecated mantido por compat — a fonte da verdade agora é toast_severidades_ativas */
   toast_min_severidade: Severidade;
   toast_severidades_ativas: Severidade[];
   toast_duracao_segundos: number;
@@ -64,7 +64,7 @@ const DEFAULT_PREFS: Omit<AnomaliaPreferences, "id" | "user_id"> = {
   tipos_silenciados: [],
 };
 
-/** Normaliza um registro vindo do banco preenchendo defaults para colunas novas. */
+/** Normaliza um registro do banco preenchendo defaults para colunas novas/legadas. */
 function normalizePrefs(raw: unknown): AnomaliaPreferences {
   const r = (raw ?? {}) as Partial<AnomaliaPreferences>;
   return {
@@ -101,6 +101,7 @@ export function shouldNotify(
     return false;
 
   const sev = (anomalia.severidade ?? "baixa") as Severidade;
+
   // Lista explícita de severidades ativas é a fonte da verdade
   if (
     prefs.toast_severidades_ativas &&
