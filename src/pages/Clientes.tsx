@@ -212,11 +212,9 @@ export default function Clientes() {
   const hasActiveFilters = statusFilter !== 'all' || estadoFilter !== 'all' || scoreFilter !== 'all';
   
   const clearFilters = () => {
-    setStatusFilter('all');
-    setEstadoFilter('all');
-    setScoreFilter('all');
     setSearchTerm('');
     setCurrentPage(1);
+    // setField'd values são limpos via ClearFiltersButton (snapshot+undo).
   };
 
   // Use server-side paginated data directly
@@ -308,6 +306,19 @@ export default function Clientes() {
           onEstadoChange={setEstadoFilter}
           onScoreChange={setScoreFilter}
           onClearFilters={clearFilters}
+          clearSlot={
+            <ClearFiltersButton
+              controller={filtersController}
+              entityLabel="clientes"
+              describeFilters={(v) => [
+                { label: 'Busca', value: v.search, isActive: !!v.search },
+                { label: 'Status', value: v.status, isActive: v.status !== 'all' },
+                { label: 'Estado', value: v.estado, isActive: v.estado !== 'all' },
+                { label: 'Score', value: v.score, isActive: v.score !== 'all' },
+              ]}
+              className="h-9 px-2 text-muted-foreground hover:text-foreground"
+            />
+          }
         />
 
         {/* Table */}
