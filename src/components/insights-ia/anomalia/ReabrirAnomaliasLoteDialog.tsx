@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { z } from "zod";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +16,12 @@ import { RotateCcw, Loader2, AlertTriangle } from "lucide-react";
 import { useReabrirAnomaliasLote } from "@/hooks/useAnomaliasDetectadas";
 import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
 
+const motivoSchema = z
+  .string()
+  .trim()
+  .min(10, { message: "O motivo deve ter pelo menos 10 caracteres." })
+  .max(1000, { message: "O motivo deve ter no máximo 1000 caracteres." });
+
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -29,15 +36,22 @@ export function ReabrirAnomaliasLoteDialog({
   onConcluido,
 }: Props) {
   const [motivo, setMotivo] = useState("");
+  const [tocado, setTocado] = useState(false);
   const reabrirLote = useReabrirAnomaliasLote();
   const sincronizar = useSincronizarAnomaliaBitrix();
 
   useEffect(() => {
-    if (!open) setMotivo("");
+    if (!open) {
+      setMotivo("");
+      setTocado(false);
+    }
   }, [open]);
 
   const motivoTrim = motivo.trim();
-  const valido = motivoTrim.length >= 10 && ids.length > 0;
+  const parsed = motivoSchema.safeParse(motivo);
+  const erroMotivo = parsed.success ? null : parsed.error.issues[0]?.message ?? null;
+  const mostrarErro = tocado && !!erroMotivo;
+  const valido = parsed.success && ids.length > 0;
 
   async function handleConfirmar() {
     if (!valido) return;
@@ -88,12 +102,28 @@ export function ReabrirAnomaliasLoteDialog({
           <Textarea
             id="motivo-reabertura-lote"
             value={motivo}
-            onChange={(e) => setMotivo(e.target.value)}
+            onChange={(e) => {
+              setMotivo(e.target.value);
+              if (!tocado) setTocado(true);
+            }}
+            onBlur={() => setTocado(true)}
             placeholder="Ex.: Auditoria identificou nova evidência que invalida a classificação anterior."
             rows={4}
             maxLength={1000}
             autoFocus
+            aria-invalid={mostrarErro}
+            aria-describedby={mostrarErro ? "motivo-reabertura-lote-erro" : undefined}
+            className={mostrarErro ? "border-destructive focus-visible:ring-destructive" : ""}
           />
+          {mostrarErro && (
+            <p
+              id="motivo-reabertura-lote-erro"
+              role="alert"
+              className="text-xs text-destructive"
+            >
+              {erroMotivo}
+            </p>
+          )}
         </div>
 
         <DialogFooter>
