@@ -234,9 +234,10 @@ export function SSOSandboxPanel() {
   }, [result, mappingFilter, mappingSearch]);
 
   return (
-    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'simular' | 'historico')}>
+    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'simular' | 'lote' | 'historico')}>
       <TabsList className="mb-4">
         <TabsTrigger value="simular" className="gap-2"><FlaskConical className="h-4 w-4" />Simular</TabsTrigger>
+        <TabsTrigger value="lote" className="gap-2"><Layers className="h-4 w-4" />Lote</TabsTrigger>
         <TabsTrigger value="historico" className="gap-2"><History className="h-4 w-4" />Histórico</TabsTrigger>
       </TabsList>
       <TabsContent value="simular">
