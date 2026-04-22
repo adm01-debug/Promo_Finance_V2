@@ -193,6 +193,24 @@ export function AnomaliasDetectadasPanel() {
     return sorted;
   }, [data, filters, sort]);
 
+  // Contagem da fila pendente por severidade (para o seletor de revisão)
+  const pendentesPorSev = useMemo(() => {
+    const acc: Record<Anomalia["severidade"] | "todas", number> = {
+      todas: pendentes.length,
+      critica: 0,
+      alta: 0,
+      media: 0,
+      baixa: 0,
+    };
+    for (const a of pendentes) acc[a.severidade] += 1;
+    return acc;
+  }, [pendentes]);
+
+  // Resolve nomes/emails de quem revisou as anomalias visíveis
+  const { data: profilesMap } = useProfilesByIds(
+    lista.map((a) => a.resolvida_por),
+  );
+
   const currentState: SavedFilterPayload<AnomaliaFilters> = useMemo(
     () => ({ v: 1, filters, sort, columns: visibleCols }),
     [filters, sort, visibleCols],
