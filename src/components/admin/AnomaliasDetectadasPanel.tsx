@@ -43,6 +43,7 @@ import {
   type Anomalia,
 } from "@/hooks/useAnomaliasDetectadas";
 import { useAnomaliaDetectionRun } from "@/hooks/useAnomaliaDetectionRun";
+import { useAnomaliasReabertasIndex } from "@/hooks/useAnomaliasReabertasIndex";
 import { useRefetchAnomaliasOnFocus } from "@/hooks/useRefetchAnomaliasOnFocus";
 import { DetectionRunProgress } from "./DetectionRunProgress";
 import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
@@ -108,6 +109,7 @@ interface AnomaliaFilters {
   tipos: Anomalia["tipo_anomalia"][];
   periodoInicio: string;
   periodoFim: string;
+  apenasReabertas: boolean;
 }
 
 const ENTITY_TYPE = "anomalias_detectadas";
@@ -125,6 +127,7 @@ const SORT_OPTIONS: { key: string; label: string }[] = [
   { key: "detectada_em", label: "Data de detecção" },
   { key: "severidade", label: "Severidade" },
   { key: "tipo_anomalia", label: "Tipo de anomalia" },
+  { key: "ultima_reabertura", label: "Última reabertura" },
 ];
 
 const DEFAULT_FILTERS: AnomaliaFilters = {
@@ -133,6 +136,7 @@ const DEFAULT_FILTERS: AnomaliaFilters = {
   tipos: [],
   periodoInicio: "",
   periodoFim: "",
+  apenasReabertas: false,
 };
 const DEFAULT_VISIBLE = COLUNAS.map((c) => c.key);
 const DEFAULT_PAYLOAD: SavedFilterPayload<AnomaliaFilters> = {
@@ -160,6 +164,7 @@ function parseFiltersFromUrl(sp: URLSearchParams): Partial<AnomaliaFilters> {
   if (ini) out.periodoInicio = ini;
   const fim = sp.get("fim");
   if (fim) out.periodoFim = fim;
+  if (sp.get("reopen") === "1") out.apenasReabertas = true;
   return out;
 }
 
@@ -178,6 +183,7 @@ function writeFiltersToUrl(
   setOrDel("tipos", f.tipos.join(","));
   setOrDel("ini", f.periodoInicio);
   setOrDel("fim", f.periodoFim);
+  setOrDel("reopen", f.apenasReabertas ? "1" : "");
   setOrDel("sort", s.key !== "detectada_em" ? s.key : "");
   setOrDel("dir", s.dir !== "desc" ? s.dir : "");
   return next;
@@ -276,6 +282,9 @@ export function AnomaliasDetectadasPanel() {
   };
   const limparSelecao = () => setSelecionados(new Set());
 
+  // Index de anomalias reabertas (audit_logs com REOPEN/REOPEN_BATCH)
+  const { data: reabertasIndex } = useAnomaliasReabertasIndex();
+
   // Lista filtrada SEM o termo de busca — usada para gerar sugestões e prévias
   const listaBase = useMemo(() => {
     let arr = data ?? [];
@@ -291,8 +300,11 @@ export function AnomaliasDetectadasPanel() {
       const fim = new Date(filters.periodoFim).getTime() + 86_400_000;
       arr = arr.filter((a) => new Date(a.detectada_em).getTime() <= fim);
     }
+    if (filters.apenasReabertas) {
+      arr = arr.filter((a) => reabertasIndex?.has(a.id));
+    }
     return arr;
-  }, [data, filters]);
+  }, [data, filters, reabertasIndex]);
 
   const lista = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
@@ -315,6 +327,13 @@ export function AnomaliasDetectadasPanel() {
         cmp = SEV_RANK[a.severidade] - SEV_RANK[b.severidade];
       } else if (sort.key === "tipo_anomalia") {
         cmp = a.tipo_anomalia.localeCompare(b.tipo_anomalia);
+      } else if (sort.key === "ultima_reabertura") {
+        const ta = reabertasIndex?.get(a.id)?.ultima_reabertura;
+        const tb = reabertasIndex?.get(b.id)?.ultima_reabertura;
+        // Anomalias sem reabertura vão para o final (independente de asc/desc)
+        const va = ta ? new Date(ta).getTime() : Number.NEGATIVE_INFINITY;
+        const vb = tb ? new Date(tb).getTime() : Number.NEGATIVE_INFINITY;
+        cmp = va - vb;
       } else {
         cmp =
           new Date(a.detectada_em).getTime() -
@@ -323,7 +342,7 @@ export function AnomaliasDetectadasPanel() {
       return sort.dir === "asc" ? cmp : -cmp;
     });
     return sorted;
-  }, [listaBase, searchTerm, sort]);
+  }, [listaBase, searchTerm, sort, reabertasIndex]);
 
   // Contagem da fila pendente por severidade (para o seletor de revisão)
   const pendentesPorSev = useMemo(() => {
@@ -521,6 +540,7 @@ export function AnomaliasDetectadasPanel() {
     filters.tipos.length +
     (filters.periodoInicio ? 1 : 0) +
     (filters.periodoFim ? 1 : 0) +
+    (filters.apenasReabertas ? 1 : 0) +
     (searchTerm.trim() ? 1 : 0);
 
   return (
@@ -746,6 +766,26 @@ export function AnomaliasDetectadasPanel() {
                 aria-label="Período fim"
               />
             </div>
+
+            <Button
+              type="button"
+              variant={filters.apenasReabertas ? "default" : "outline"}
+              size="sm"
+              className="gap-1.5"
+              onClick={() =>
+                setFilters((f) => ({ ...f, apenasReabertas: !f.apenasReabertas }))
+              }
+              aria-pressed={filters.apenasReabertas}
+              title="Mostrar apenas anomalias que já foram reabertas"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              Apenas reabertas
+              {filters.apenasReabertas && reabertasIndex && (
+                <Badge variant="secondary" className="ml-1 h-4 px-1 text-[10px]">
+                  {listaBase.length}
+                </Badge>
+              )}
+            </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
