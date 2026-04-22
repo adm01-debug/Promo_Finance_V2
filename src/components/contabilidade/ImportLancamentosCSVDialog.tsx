@@ -265,34 +265,132 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
 
             {parseResult.lancamentos.length > 0 && (
               <div className="border rounded-md">
-                <ScrollArea className="max-h-72">
+                <ScrollArea className="max-h-96">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-12">Status</TableHead>
+                        <TableHead className="w-10"></TableHead>
+                        <TableHead className="w-10">Status</TableHead>
                         <TableHead>Ref</TableHead>
                         <TableHead>Data</TableHead>
                         <TableHead>Histórico</TableHead>
-                        <TableHead className="text-right">Partidas</TableHead>
-                        <TableHead className="text-right">Total</TableHead>
+                        <TableHead className="text-right">Part.</TableHead>
+                        <TableHead className="text-right">Total D</TableHead>
+                        <TableHead className="text-right">Total C</TableHead>
+                        <TableHead className="text-right">Dif.</TableHead>
+                        <TableHead className="text-right">Erros</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {parseResult.lancamentos.slice(0, 100).map((l) => {
-                        const refsComErro = new Set(parseResult.errors.filter((e) => e.ref).map((e) => e.ref));
-                        const ok = l.balanceado && l.partidas.length >= 2 && !refsComErro.has(l.ref);
+                        const errosDoLanc = parseResult.errors.filter((e) => e.ref === l.ref);
+                        const warningsDoLanc = parseResult.warnings.filter((w) => w.ref === l.ref);
+                        const ok = l.balanceado && l.partidas.length >= 2 && errosDoLanc.length === 0;
+                        const dif = l.total_debito - l.total_credito;
+                        const temDetalhes = errosDoLanc.length > 0 || warningsDoLanc.length > 0 || l.partidas.length > 0;
                         return (
-                          <TableRow key={l.ref}>
-                            <TableCell>
-                              {ok ? <CheckCircle2 className="h-4 w-4 text-success" />
-                                : <XCircle className="h-4 w-4 text-destructive" />}
-                            </TableCell>
-                            <TableCell className="font-mono text-xs">{l.ref}</TableCell>
-                            <TableCell className="text-xs">{l.data ? format(new Date(l.data + 'T00:00:00'), 'dd/MM/yyyy') : '—'}</TableCell>
-                            <TableCell className="text-xs max-w-xs truncate">{l.historico || '—'}</TableCell>
-                            <TableCell className="text-right text-xs">{l.partidas.length}</TableCell>
-                            <TableCell className="text-right font-mono text-xs">{formatCurrency(l.total_debito)}</TableCell>
-                          </TableRow>
+                          <Collapsible key={l.ref} asChild>
+                            <>
+                              <TableRow className={cn(!ok && 'bg-destructive/5')}>
+                                <TableCell className="p-0 pl-2">
+                                  {temDetalhes && (
+                                    <CollapsibleTrigger asChild>
+                                      <Button variant="ghost" size="icon" className="h-6 w-6">
+                                        <ChevronRight className="h-3 w-3 transition-transform data-[state=open]:rotate-90" />
+                                      </Button>
+                                    </CollapsibleTrigger>
+                                  )}
+                                </TableCell>
+                                <TableCell>
+                                  {ok ? <CheckCircle2 className="h-4 w-4 text-success" />
+                                    : <XCircle className="h-4 w-4 text-destructive" />}
+                                </TableCell>
+                                <TableCell className="font-mono text-xs">{l.ref}</TableCell>
+                                <TableCell className="text-xs">{l.data ? format(new Date(l.data + 'T00:00:00'), 'dd/MM/yyyy') : '—'}</TableCell>
+                                <TableCell className="text-xs max-w-[200px] truncate">{l.historico || '—'}</TableCell>
+                                <TableCell className="text-right text-xs">{l.partidas.length}</TableCell>
+                                <TableCell className="text-right font-mono text-xs">{formatCurrency(l.total_debito)}</TableCell>
+                                <TableCell className="text-right font-mono text-xs">{formatCurrency(l.total_credito)}</TableCell>
+                                <TableCell className={cn('text-right font-mono text-xs', Math.abs(dif) > 0.005 ? 'text-destructive font-semibold' : 'text-muted-foreground')}>
+                                  {formatCurrency(dif)}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  {errosDoLanc.length > 0
+                                    ? <Badge variant="destructive" className="text-xs">{errosDoLanc.length}</Badge>
+                                    : <span className="text-xs text-muted-foreground">0</span>}
+                                </TableCell>
+                              </TableRow>
+                              <CollapsibleContent asChild>
+                                <TableRow className="bg-muted/30 hover:bg-muted/30">
+                                  <TableCell colSpan={10} className="p-3">
+                                    <div className="space-y-3">
+                                      {errosDoLanc.length > 0 && (
+                                        <div>
+                                          <p className="text-xs font-semibold text-destructive mb-1 flex items-center gap-1">
+                                            <XCircle className="h-3 w-3" /> Erros bloqueantes
+                                          </p>
+                                          <ul className="text-xs space-y-0.5 font-mono pl-4">
+                                            {errosDoLanc.map((e, i) => (
+                                              <li key={i} className="text-destructive">
+                                                <span className="font-semibold">Linha {e.line}</span> — {e.message}
+                                              </li>
+                                            ))}
+                                          </ul>
+                                        </div>
+                                      )}
+                                      {warningsDoLanc.length > 0 && (
+                                        <div>
+                                          <p className="text-xs font-semibold text-warning mb-1 flex items-center gap-1">
+                                            <AlertTriangle className="h-3 w-3" /> Avisos
+                                          </p>
+                                          <ul className="text-xs space-y-0.5 font-mono pl-4">
+                                            {warningsDoLanc.map((w, i) => (
+                                              <li key={i} className="text-warning">
+                                                <span className="font-semibold">Linha {w.line}</span> — {w.message}
+                                              </li>
+                                            ))}
+                                          </ul>
+                                        </div>
+                                      )}
+                                      {l.partidas.length > 0 && (
+                                        <div>
+                                          <p className="text-xs font-semibold text-muted-foreground mb-1">Partidas ({l.partidas.length})</p>
+                                          <div className="border rounded bg-background">
+                                            <Table>
+                                              <TableHeader>
+                                                <TableRow>
+                                                  <TableHead className="h-7 text-xs">Linha</TableHead>
+                                                  <TableHead className="h-7 text-xs">Conta</TableHead>
+                                                  <TableHead className="h-7 text-xs">Tipo</TableHead>
+                                                  <TableHead className="h-7 text-xs text-right">Valor</TableHead>
+                                                  <TableHead className="h-7 text-xs">Histórico</TableHead>
+                                                </TableRow>
+                                              </TableHeader>
+                                              <TableBody>
+                                                {l.partidas.map((p, i) => (
+                                                  <TableRow key={i}>
+                                                    <TableCell className="py-1 text-xs font-mono">L{p.linha}</TableCell>
+                                                    <TableCell className="py-1 text-xs font-mono">{p.conta_codigo}</TableCell>
+                                                    <TableCell className="py-1 text-xs">
+                                                      <Badge variant={p.tipo === 'D' ? 'default' : 'secondary'} className="text-[10px] px-1.5">
+                                                        {p.tipo}
+                                                      </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="py-1 text-xs font-mono text-right">{formatCurrency(p.valor)}</TableCell>
+                                                    <TableCell className="py-1 text-xs text-muted-foreground truncate max-w-[200px]">{p.historico_complementar || '—'}</TableCell>
+                                                  </TableRow>
+                                                ))}
+                                              </TableBody>
+                                            </Table>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              </CollapsibleContent>
+                            </>
+                          </Collapsible>
                         );
                       })}
                     </TableBody>
