@@ -1,6 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
+import { useManagedFilters } from '@/hooks/useManagedFilters';
+import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 import { EmptyState } from '@/components/ui/micro-interactions';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
 import { Plus, Package } from 'lucide-react';
@@ -50,10 +52,28 @@ export default function Fornecedores() {
   const [viewingFornecedor, setViewingFornecedor] = useState<ExternalCliente | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   
-  // Advanced filters
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [estadoFilter, setEstadoFilter] = useState<string>('all');
-  
+  // Advanced filters — gerenciados via useManagedFilters
+  const filtersController = useManagedFilters({
+    entityType: 'fornecedores',
+    defaults: { search: '', status: 'all', estado: 'all' },
+    localStorageKey: 'fornecedores-filters',
+  });
+  const { values: filterValues, setField: setFilterField } = filtersController;
+  const statusFilter = filterValues.status as string;
+  const estadoFilter = filterValues.estado as string;
+  const setStatusFilter = (v: string) => setFilterField('status', v);
+  const setEstadoFilter = (v: string) => setFilterField('estado', v);
+
+  useEffect(() => {
+    setFilterField('search', searchTerm);
+  }, [searchTerm, setFilterField]);
+  useEffect(() => {
+    if (filtersController.isHydrated && filterValues.search && !searchTerm) {
+      setSearchTerm(filterValues.search as string);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtersController.isHydrated]);
+
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -109,8 +129,6 @@ export default function Fornecedores() {
   const hasActiveFilters = statusFilter !== 'all' || estadoFilter !== 'all';
   
   const clearFilters = () => {
-    setStatusFilter('all');
-    setEstadoFilter('all');
     setSearchTerm('');
     setCurrentPage(1);
   };
@@ -201,6 +219,18 @@ export default function Fornecedores() {
           onClearFilters={clearFilters}
           filteredCount={filteredFornecedores.length}
           totalCount={fornecedores.length}
+          clearSlot={
+            <ClearFiltersButton
+              controller={filtersController}
+              entityLabel="fornecedores"
+              describeFilters={(v) => [
+                { label: 'Busca', value: v.search, isActive: !!v.search },
+                { label: 'Status', value: v.status, isActive: v.status !== 'all' },
+                { label: 'Estado', value: v.estado, isActive: v.estado !== 'all' },
+              ]}
+              className="h-9 px-2 text-muted-foreground hover:text-foreground"
+            />
+          }
         />
 
         {/* Table */}

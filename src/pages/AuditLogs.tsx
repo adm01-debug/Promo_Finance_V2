@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,6 +23,8 @@ import { AuditLogTable } from '@/components/audit/AuditLogTable';
 import { IpMaskToggle } from '@/components/admin/IpMaskToggle';
 import { useIpMaskPreference } from '@/hooks/useIpMaskPreference';
 import { maskIp } from '@/lib/ip-mask';
+import { useManagedFilters } from '@/hooks/useManagedFilters';
+import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 
 type AuditAction = 'INSERT' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'LOGOUT' | 'EXPORT' | 'APPROVE' | 'REJECT';
 
@@ -111,6 +113,27 @@ export default function AuditLogs() {
   const handleExportPDF = () => { if (!filteredLogs?.length) { toast.error('Nenhum registro para exportar'); return; } exportToPDF(filteredLogs, auditColumns, 'Logs de Auditoria'); toast.success('PDF gerado para impressão!'); };
   const clearFilters = () => { setSearchTerm(''); setActionFilter('all'); setTableFilter('all'); setUserFilter('all'); setDateRange({ from: subDays(new Date(), 7), to: new Date() }); };
 
+  const filtersController = useManagedFilters({
+    entityType: 'audit-logs',
+    defaults: { search: '', action: 'all', table: 'all', user: 'all' },
+    localStorageKey: 'audit-logs-filters',
+  });
+  // Sincroniza state local → controller (para snapshot/persistência)
+  useEffect(() => {
+    filtersController.setValues({ search: searchTerm, action: actionFilter, table: tableFilter, user: userFilter });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm, actionFilter, tableFilter, userFilter]);
+  // Sincroniza controller → state local (após clear/undo/hidratação)
+  useEffect(() => {
+    if (!filtersController.isHydrated) return;
+    const v = filtersController.values as Record<string, string>;
+    if (v.search !== searchTerm) setSearchTerm(v.search ?? '');
+    if (v.action !== actionFilter) setActionFilter(v.action ?? 'all');
+    if (v.table !== tableFilter) setTableFilter(v.table ?? 'all');
+    if (v.user !== userFilter) setUserFilter(v.user ?? 'all');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtersController.values, filtersController.isHydrated]);
+
   return (
     <MainLayout>
       <div className="space-y-6">
@@ -139,7 +162,18 @@ export default function AuditLogs() {
               <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("justify-start text-left font-normal", !dateRange && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{dateRange?.from ? (dateRange.to ? <>{format(dateRange.from, "dd/MM/yy")} - {format(dateRange.to, "dd/MM/yy")}</> : format(dateRange.from, "dd/MM/yyyy")) : <span>Selecionar período</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} locale={ptBR as unknown as Record<string, unknown>} /></PopoverContent></Popover>
             </div>
             <div className="flex items-center justify-between gap-2 mt-4 flex-wrap">
-              <Button variant="outline" size="sm" onClick={clearFilters}><X className="h-4 w-4 mr-1" /> Limpar Filtros</Button>
+              <ClearFiltersButton
+                controller={filtersController}
+                entityLabel="logs de auditoria"
+                variant="outline"
+                describeFilters={(v) => [
+                  { label: 'Busca', value: v.search, isActive: !!v.search },
+                  { label: 'Ação', value: v.action, isActive: v.action !== 'all' },
+                  { label: 'Tabela', value: v.table, isActive: v.table !== 'all' },
+                  { label: 'Usuário', value: v.user, isActive: v.user !== 'all' },
+                ]}
+                label="Limpar Filtros"
+              />
               <IpMaskToggle />
             </div>
           </CardContent>

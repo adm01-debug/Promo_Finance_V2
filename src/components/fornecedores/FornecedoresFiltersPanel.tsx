@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -22,12 +23,14 @@ interface Props {
   onClearFilters: () => void;
   filteredCount: number;
   totalCount: number;
+  /** Slot opcional para o ClearFiltersButton (substitui o botão padrão de Limpar). */
+  clearSlot?: ReactNode;
 }
 
 export function FornecedoresFiltersPanel({
   searchTerm, onSearchChange, statusFilter, onStatusChange,
   estadoFilter, onEstadoChange, estados, hasActiveFilters,
-  onClearFilters, filteredCount, totalCount,
+  onClearFilters, filteredCount, totalCount, clearSlot,
 }: Props) {
   return (
     <motion.div variants={itemVariants}>
@@ -72,16 +75,18 @@ export function FornecedoresFiltersPanel({
               </SelectContent>
             </Select>
 
-            {hasActiveFilters && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onClearFilters}
-                className="h-9 px-2 text-muted-foreground hover:text-foreground"
-              >
-                <X className="h-4 w-4 mr-1" />
-                Limpar
-              </Button>
+            {clearSlot ?? (
+              hasActiveFilters && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onClearFilters}
+                  className="h-9 px-2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Limpar
+                </Button>
+              )
             )}
 
             <div className="ml-auto text-sm text-muted-foreground">

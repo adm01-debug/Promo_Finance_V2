@@ -9094,6 +9094,27 @@ export type Database = {
           },
         ]
       }
+      user_active_filters: {
+        Row: {
+          entity_type: string
+          payload: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          entity_type: string
+          payload?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          entity_type?: string
+          payload?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_anomalia_preferences: {
         Row: {
           centros_custo_silenciados: string[]
