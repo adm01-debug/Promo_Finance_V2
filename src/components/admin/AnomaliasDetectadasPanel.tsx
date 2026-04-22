@@ -46,6 +46,10 @@ import { ReabrirAnomaliaDialog } from "@/components/insights-ia/anomalia/Reabrir
 import { dispatchOpenAnomaliaDrawer } from "@/lib/anomalia-routes";
 import { SavedFiltersBar } from "@/components/shared/SavedFiltersBar";
 import {
+  ViewExportButton,
+  type ViewExportColumn,
+} from "@/components/shared/ViewExportButton";
+import {
   ColumnVisibilityMenu,
   type ColumnDef,
 } from "@/components/shared/ColumnVisibilityMenu";
@@ -275,6 +279,65 @@ export function AnomaliasDetectadasPanel() {
     () => ({ v: 1, filters, sort, columns: visibleCols }),
     [filters, sort, visibleCols],
   );
+
+  const exportColumns = useMemo<ViewExportColumn<Anomalia>[]>(() => {
+    const all: ViewExportColumn<Anomalia>[] = [
+      { key: "severidade", header: "Severidade", accessor: (a) => a.severidade },
+      {
+        key: "tipo",
+        header: "Tipo",
+        accessor: (a) => TIPO_LABEL[a.tipo_anomalia] ?? a.tipo_anomalia,
+      },
+      {
+        key: "data",
+        header: "Detectada em",
+        accessor: (a) => new Date(a.detectada_em).toLocaleString("pt-BR"),
+      },
+      { key: "descricao", header: "Descrição", accessor: (a) => a.descricao ?? "" },
+      {
+        key: "observacoes",
+        header: "Observações",
+        accessor: (a) => a.observacoes ?? "",
+      },
+    ];
+    // Status e auditoria sempre úteis para auditoria, mesmo que coluna não esteja visível
+    const auditCols: ViewExportColumn<Anomalia>[] = [
+      { key: "status", header: "Status", accessor: (a) => a.status },
+      {
+        key: "resolvida_por",
+        header: "Resolvida por",
+        accessor: (a) =>
+          a.resolvida_por
+            ? formatProfileLabel(profilesMap?.get(a.resolvida_por))
+            : "",
+      },
+      {
+        key: "resolvida_em",
+        header: "Resolvida em",
+        accessor: (a) =>
+          a.resolvida_em ? new Date(a.resolvida_em).toLocaleString("pt-BR") : "",
+      },
+    ];
+    return [...all.filter((c) => visibleCols.includes(c.key)), ...auditCols];
+  }, [visibleCols, profilesMap]);
+
+  const exportMeta = useMemo(() => {
+    const sortLabel = SORT_OPTIONS.find((o) => o.key === sort.key)?.label ?? sort.key;
+    return {
+      ordenacao: `${sortLabel} (${sort.dir === "asc" ? "asc" : "desc"})`,
+      periodo:
+        filters.periodoInicio || filters.periodoFim
+          ? `${filters.periodoInicio || "—"} até ${filters.periodoFim || "—"}`
+          : "Sem período definido",
+      filtros: {
+        Status: filters.status,
+        Severidades: filters.severidades.join(", ") || "todas",
+        Tipos:
+          filters.tipos.map((t) => TIPO_LABEL[t]).join(", ") || "todos",
+        Colunas: visibleCols.join(", "),
+      },
+    };
+  }, [filters, sort, visibleCols]);
 
   const handleLoadPreset = (preset: {
     id: string;
@@ -557,6 +620,14 @@ export function AnomaliasDetectadasPanel() {
               columns={COLUNAS}
               visible={visibleCols}
               onChange={setVisibleCols}
+            />
+
+            <ViewExportButton
+              filename="anomalias_visualizacao"
+              title="Anomalias detectadas — visualização atual"
+              rows={lista}
+              columns={exportColumns}
+              meta={exportMeta}
             />
 
             {activeFilterCount > 0 && (
