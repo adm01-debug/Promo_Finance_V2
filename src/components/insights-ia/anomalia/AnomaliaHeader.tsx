@@ -89,9 +89,7 @@ export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() =>
-                    atualizarStatus.mutate({ id: anomalia.id, status: "investigando" })
-                  }
+                  onClick={handleInvestigar}
                 >
                   <Search className="h-3 w-3 mr-1" /> Investigar
                 </Button>
