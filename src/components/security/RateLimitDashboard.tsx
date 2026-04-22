@@ -101,7 +101,7 @@ export function RateLimitDashboard() {
                       <div>
                         <div className="flex items-center gap-2"><p className="font-medium">{alert.title}</p><Badge variant={alert.severity === 'critical' ? 'destructive' : alert.severity === 'high' ? 'default' : 'secondary'}>{alert.severity}</Badge>{alert.resolved && <Badge variant="outline" className="text-success">Resolvido</Badge>}</div>
                         {alert.description && <p className="text-sm text-muted-foreground mt-1">{alert.description}</p>}
-                        <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">{alert.ip_address && <span className="flex items-center gap-1"><Globe className="h-3 w-3" />{alert.ip_address}</span>}<span className="flex items-center gap-1"><Clock className="h-3 w-3" />{formatDistanceToNow(new Date(alert.created_at), { addSuffix: true, locale: ptBR })}</span></div>
+                        <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">{alert.ip_address && <span className="flex items-center gap-1"><Globe className="h-3 w-3" />{maskIp(alert.ip_address, maskIpsEnabled)}</span>}<span className="flex items-center gap-1"><Clock className="h-3 w-3" />{formatDistanceToNow(new Date(alert.created_at), { addSuffix: true, locale: ptBR })}</span></div>
                       </div>
                     </div>
                     {!alert.resolved && <Button variant="ghost" size="sm" onClick={() => resolveAlert(alert.id)}><CheckCircle2 className="h-4 w-4 mr-1" />Resolver</Button>}
