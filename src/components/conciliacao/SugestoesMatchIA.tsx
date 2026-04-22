@@ -137,21 +137,30 @@ export function SugestoesMatchIA({
   const confirmarRejeicao = async () => {
     if (!rejeicaoPendente) return;
     const { transacaoId, transacaoDescricao, sugestao } = rejeicaoPendente;
+    const motivo = motivoRejeicao;
+
+    // Atualização otimista: remove a sugestão e fecha o diálogo imediatamente
     setMatchesRejeitados(prev => new Set([...prev, `${transacaoId}-${sugestao.lancamentoId}`]));
+    onRejeitarMatch(transacaoId, sugestao.lancamentoId);
+    setRejeicaoPendente(null);
+    setMotivoRejeicao('');
+
     try {
       await registrarHistorico.mutateAsync({ transacaoId, lancamentoId: sugestao.lancamentoId, tipoLancamento: sugestao.lancamentoTipo, score: sugestao.score, confianca: sugestao.confianca, motivos: sugestao.motivos, analiseIA: sugestao.analiseIA, acao: 'rejeitado' });
-      await registrarFeedback.mutateAsync({ transacaoId, transacaoDescricao, lancamentoEntidade: sugestao.lancamento?.entidade || '', lancamentoDescricao: sugestao.lancamento?.descricao, tipoLancamento: sugestao.lancamentoTipo, scoreOriginal: sugestao.score, acao: 'rejeitado', motivoRejeicao: motivoRejeicao || undefined });
-      onRejeitarMatch(transacaoId, sugestao.lancamentoId);
-      if (motivoRejeicao.trim()) {
+      await registrarFeedback.mutateAsync({ transacaoId, transacaoDescricao, lancamentoEntidade: sugestao.lancamento?.entidade || '', lancamentoDescricao: sugestao.lancamento?.descricao, tipoLancamento: sugestao.lancamentoTipo, scoreOriginal: sugestao.score, acao: 'rejeitado', motivoRejeicao: motivo || undefined });
+      if (motivo.trim()) {
         toast.success('Rejeição registrada — IA aprenderá com este feedback');
       } else {
         toast.info('Rejeição registrada');
       }
     } catch {
+      // Reverte a remoção otimista em caso de falha
+      setMatchesRejeitados(prev => {
+        const next = new Set(prev);
+        next.delete(`${transacaoId}-${sugestao.lancamentoId}`);
+        return next;
+      });
       toast.error('Erro ao registrar rejeição');
-    } finally {
-      setRejeicaoPendente(null);
-      setMotivoRejeicao('');
     }
   };
 
