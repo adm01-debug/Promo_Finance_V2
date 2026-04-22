@@ -35,7 +35,8 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
 
   const erros = arquivo.validacoes?.erros ?? [];
   const avisos = arquivo.validacoes?.avisos ?? [];
-  const bloqueado = erros.length > 0;
+  const isRejeitado = arquivo.status === 'rejeitado';
+  const bloqueado = erros.length > 0 || isRejeitado;
   const hashCurto = arquivo.hash_sha256 ? `${arquivo.hash_sha256.slice(0, 12)}…` : '—';
 
   const handleDownloadTxt = () => {
