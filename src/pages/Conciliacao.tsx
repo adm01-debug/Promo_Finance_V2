@@ -105,7 +105,7 @@ export default function Conciliacao() {
   const handleLoadPreset = (preset: { id: string; payload: SavedFilterPayload<ConciliacaoFilterState> }) => {
     if (preset.payload.filters) setFilters(preset.payload.filters);
     if (preset.payload.sort) setSort(preset.payload.sort as ConciliacaoSort);
-    if (preset.payload.columns) setVisibleCols(preset.payload.columns);
+    if (preset.payload.columns) setVisibleCols(mergeLockedColumns(preset.payload.columns, CONCILIACAO_COLUMNS));
     setActivePresetId(preset.id);
   };
   const handleClearPreset = () => setActivePresetId(null);
