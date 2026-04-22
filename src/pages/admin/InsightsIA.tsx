@@ -11,6 +11,7 @@ import { useSavedFilterAlerts } from '@/hooks/useSavedFilterAlerts';
 
 export default function InsightsIA() {
   const [tab, setTab] = useState('anomalias');
+  useSavedFilterAlerts();
 
   return (
     <MainLayout>
