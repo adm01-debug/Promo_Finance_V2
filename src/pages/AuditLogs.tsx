@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -118,11 +118,21 @@ export default function AuditLogs() {
     defaults: { search: '', action: 'all', table: 'all', user: 'all' },
     localStorageKey: 'audit-logs-filters',
   });
-  // Mantém controller sincronizado com o state local para snapshot/undo
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useMemo(() => {
+  // Sincroniza state local → controller (para snapshot/persistência)
+  useEffect(() => {
     filtersController.setValues({ search: searchTerm, action: actionFilter, table: tableFilter, user: userFilter });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, actionFilter, tableFilter, userFilter]);
+  // Sincroniza controller → state local (após clear/undo/hidratação)
+  useEffect(() => {
+    if (!filtersController.isHydrated) return;
+    const v = filtersController.values as Record<string, string>;
+    if (v.search !== searchTerm) setSearchTerm(v.search ?? '');
+    if (v.action !== actionFilter) setActionFilter(v.action ?? 'all');
+    if (v.table !== tableFilter) setTableFilter(v.table ?? 'all');
+    if (v.user !== userFilter) setUserFilter(v.user ?? 'all');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtersController.values, filtersController.isHydrated]);
 
   return (
     <MainLayout>
