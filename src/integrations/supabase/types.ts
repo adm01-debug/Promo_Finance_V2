@@ -7739,31 +7739,43 @@ export type Database = {
       saved_filters: {
         Row: {
           created_at: string
+          created_by: string | null
+          empresa_id: string | null
           entity_type: string
           filters: Json
           id: string
           is_default: boolean
+          is_shared: boolean
           name: string
+          shared_with_roles: Database["public"]["Enums"]["app_role"][]
           updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          created_by?: string | null
+          empresa_id?: string | null
           entity_type: string
           filters?: Json
           id?: string
           is_default?: boolean
+          is_shared?: boolean
           name: string
+          shared_with_roles?: Database["public"]["Enums"]["app_role"][]
           updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
+          created_by?: string | null
+          empresa_id?: string | null
           entity_type?: string
           filters?: Json
           id?: string
           is_default?: boolean
+          is_shared?: boolean
           name?: string
+          shared_with_roles?: Database["public"]["Enums"]["app_role"][]
           updated_at?: string
           user_id?: string
         }
@@ -10151,6 +10163,10 @@ export type Database = {
         Returns: undefined
       }
       delete_cron_job: { Args: { job_id: number }; Returns: undefined }
+      duplicate_saved_filter: {
+        Args: { _new_name: string; _source_id: string }
+        Returns: string
+      }
       fn_verificar_vencidos: { Args: never; Returns: undefined }
       gerar_alertas_pendencias_conciliacao: { Args: never; Returns: undefined }
       gerar_alertas_vencimento: { Args: never; Returns: undefined }
@@ -10303,6 +10319,10 @@ export type Database = {
       toggle_cron_job: {
         Args: { is_active: boolean; job_id: number }
         Returns: undefined
+      }
+      user_role_in_empresa: {
+        Args: { _empresa_id: string; _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
       }
     }
     Enums: {
