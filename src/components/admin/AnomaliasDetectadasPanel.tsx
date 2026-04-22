@@ -109,6 +109,7 @@ interface AnomaliaFilters {
   tipos: Anomalia["tipo_anomalia"][];
   periodoInicio: string;
   periodoFim: string;
+  apenasReabertas: boolean;
 }
 
 const ENTITY_TYPE = "anomalias_detectadas";
@@ -126,6 +127,7 @@ const SORT_OPTIONS: { key: string; label: string }[] = [
   { key: "detectada_em", label: "Data de detecção" },
   { key: "severidade", label: "Severidade" },
   { key: "tipo_anomalia", label: "Tipo de anomalia" },
+  { key: "ultima_reabertura", label: "Última reabertura" },
 ];
 
 const DEFAULT_FILTERS: AnomaliaFilters = {
@@ -134,6 +136,7 @@ const DEFAULT_FILTERS: AnomaliaFilters = {
   tipos: [],
   periodoInicio: "",
   periodoFim: "",
+  apenasReabertas: false,
 };
 const DEFAULT_VISIBLE = COLUNAS.map((c) => c.key);
 const DEFAULT_PAYLOAD: SavedFilterPayload<AnomaliaFilters> = {
