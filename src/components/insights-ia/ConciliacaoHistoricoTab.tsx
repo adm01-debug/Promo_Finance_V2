@@ -7,6 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CheckCircle2, XCircle, Search, History } from 'lucide-react';
 import { useHistoricoConciliacaoIA } from '@/hooks/useHistoricoConciliacaoIA';
 import { formatDate } from '@/lib/formatters';
+import {
+  ViewExportButton,
+  type ViewExportColumn,
+} from '@/components/shared/ViewExportButton';
 
 export function ConciliacaoHistoricoTab() {
   const { feedback, isLoadingFeedback } = useHistoricoConciliacaoIA();
