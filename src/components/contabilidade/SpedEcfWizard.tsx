@@ -239,7 +239,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
 
   const handleRegistrar = async () => {
     if (!resultado?.arquivo_id || !recibo.trim()) return;
-    await transmitir.mutateAsync({ arquivoId: resultado.arquivo_id, recibo: recibo.trim() });
+    await transmitir.mutateAsync({ arquivoId: resultado.arquivo_id, recibo: recibo.trim(), tipo: 'ECF' });
     setRecibo('');
   };
 
