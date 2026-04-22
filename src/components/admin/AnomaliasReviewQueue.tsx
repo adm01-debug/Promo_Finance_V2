@@ -140,6 +140,12 @@ export function AnomaliasReviewQueue({
     });
   }
 
+  /**
+   * Recarrega do backend a anomalia em uma posição da fila para garantir
+   * que ela ainda está pendente (evita revisar dados desatualizados por
+   * concorrência). Se já foi resolvida, avança automaticamente para a próxima.
+   */
+  async function recarregarPosicao(novoIndex: number) {
     if (novoIndex >= snapshot.length) {
       setIndex(novoIndex);
       return;
