@@ -1,6 +1,8 @@
-import { Download, FileArchive, AlertTriangle, CheckCircle2, XCircle, ShieldAlert } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Download, FileArchive, AlertTriangle, CheckCircle2, XCircle, ShieldAlert, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
