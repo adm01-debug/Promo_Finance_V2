@@ -1,10 +1,12 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
 import { getCurrentEmpresaId } from '@/hooks/useUserEmpresas';
 import { broadcastSsoSlo, subscribeSsoSlo } from '@/lib/sso-sync';
+import { runAuthCleanup } from '@/lib/auth-cleanup';
 
 type AppRole = 'admin' | 'financeiro' | 'operacional' | 'visualizador';
 
@@ -37,6 +39,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -167,18 +170,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('current-empresa-changed', handler);
   }, [user]);
 
-  // Sincroniza SSO Single Logout entre abas: ao receber broadcast, faz signOut local + redirect.
+  // Sincroniza SSO Single Logout entre abas: ao receber broadcast, faz signOut local + cleanup + redirect duro.
   useEffect(() => {
     const unsubscribe = subscribeSsoSlo((msg) => {
       const dedupKey = String(msg.ts);
       if (sessionStorage.getItem('sso-slo-toast-shown') === dedupKey) return;
       sessionStorage.setItem('sso-slo-toast-shown', dedupKey);
       toast.info(`Sessão SSO encerrada em outra aba (${msg.providerNome})`, { id: 'sso-slo' });
-      supabase.auth.signOut({ scope: 'local' }).catch(() => { /* noop */ });
-      window.location.replace('/auth?slo=ok&from=tab-sync');
+      (async () => {
+        try {
+          await supabase.auth.signOut({ scope: 'local' });
+        } catch { /* noop */ }
+        await runAuthCleanup(queryClient);
+        window.location.replace('/auth?slo=ok&from=tab-sync');
+      })();
     });
     return unsubscribe;
-  }, []);
+  }, [queryClient]);
 
   const signOut = async () => {
     const ssoProviderId = (user?.user_metadata as Record<string, unknown> | undefined)?.sso_provider_id as string | undefined;
@@ -205,16 +213,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       toast.loading(`Encerrando sessão SSO via ${providerNome}…`, { id: 'sso-slo' });
     }
 
-    await supabase.auth.signOut();
-    setUser(null);
-    setSession(null);
-    setProfile(null);
-    setRole(null);
-    setRoleAtual(null);
-
-    if (ssoLogoutUrl) {
-      window.location.href = ssoLogoutUrl;
+    // Best-effort: marca a sessão atual como revogada no banco antes do signOut.
+    if (user) {
+      try {
+        await supabase
+          .from('user_sessions')
+          .update({ revoked: true, revoked_at: new Date().toISOString() })
+          .eq('user_id', user.id)
+          .eq('is_current', true)
+          .eq('revoked', false);
+      } catch (e) {
+        logger.warn('[useAuth] Falha ao revogar user_session — seguindo', e);
+      }
     }
+
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      logger.warn('[useAuth] supabase.auth.signOut falhou — seguindo com cleanup local', e);
+    }
+
+    // Revogação local reforçada: storages, cookies, caches do SW, IndexedDB e cache do React Query.
+    await runAuthCleanup(queryClient);
+
+    // Redirect duro com `replace` para descartar history e bundle React em memória.
+    window.location.replace(ssoLogoutUrl ?? '/auth');
   };
 
   const effectiveRole: AppRole | null = roleAtual ?? role;
