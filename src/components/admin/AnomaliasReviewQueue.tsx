@@ -25,6 +25,7 @@ import { Link } from "react-router-dom";
 import {
   usePendingAnomaliasQueue,
   useRevisarAnomalia,
+  AnomaliaJaRevisadaError,
   type Anomalia,
 } from "@/hooks/useAnomaliasDetectadas";
 import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
@@ -125,9 +126,16 @@ export function AnomaliasReviewQueue({ open, onOpenChange }: Props) {
         status === "confirmada" ? "Confirmada como problema real" : "Marcada como falso positivo"
       );
       avancar();
-    } catch {
-      // mutation já mostra toast; avança se foi conflito de concorrência
-      avancar();
+    } catch (err) {
+      if (err instanceof AnomaliaJaRevisadaError) {
+        toast.warning("Outro revisor já resolveu esta anomalia", {
+          description: "Pulando para a próxima da fila.",
+        });
+        setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
+        avancar();
+        return;
+      }
+      // demais erros: mutation já notifica via toast.error
     }
   }
 

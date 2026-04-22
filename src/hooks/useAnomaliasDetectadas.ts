@@ -118,6 +118,14 @@ export function usePendingAnomaliasQueue() {
   });
 }
 
+export class AnomaliaJaRevisadaError extends Error {
+  code = "ANOMALIA_JA_REVISADA" as const;
+  constructor(message = "Anomalia já foi revisada por outro usuário") {
+    super(message);
+    this.name = "AnomaliaJaRevisadaError";
+  }
+}
+
 export function useRevisarAnomalia() {
   const qc = useQueryClient();
   const audit = useLogAudit();
@@ -150,7 +158,7 @@ export function useRevisarAnomalia() {
 
       if (error) throw error;
       if (!data) {
-        throw new Error("Anomalia já foi revisada por outro usuário");
+        throw new AnomaliaJaRevisadaError();
       }
 
       await audit
@@ -167,7 +175,11 @@ export function useRevisarAnomalia() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["anomalias-detectadas"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => {
+      // Conflito de concorrência é tratado pelo componente — não mostrar toast genérico
+      if (e instanceof AnomaliaJaRevisadaError) return;
+      toast.error(e.message);
+    },
   });
 }
 
