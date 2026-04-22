@@ -1,10 +1,12 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
 import { getCurrentEmpresaId } from '@/hooks/useUserEmpresas';
 import { broadcastSsoSlo, subscribeSsoSlo } from '@/lib/sso-sync';
+import { runAuthCleanup } from '@/lib/auth-cleanup';
 
 type AppRole = 'admin' | 'financeiro' | 'operacional' | 'visualizador';
 
