@@ -73,6 +73,7 @@ const AdminTelemetria = lazy(() => import('./pages/AdminTelemetria'));
 const AdminEdgeHealth = lazy(() => import('./pages/AdminEdgeHealth'));
 const AdminSystemHealth = lazy(() => import('./pages/AdminSystemHealth'));
 const CentroPrivacidadeLGPD = lazy(() => import('./pages/CentroPrivacidadeLGPD'));
+const FiltrosSalvos = lazy(() => import('./pages/configuracoes/FiltrosSalvos'));
 const ContadorReadonly = lazy(() => import('./pages/ContadorReadonly'));
 const SSOAdmin = lazy(() => import('./pages/admin/SSOAdmin'));
 const SSOJitEvents = lazy(() => import('./pages/admin/SSOJitEvents'));
@@ -163,6 +164,7 @@ function AppRoutes() {
             <Route path="/admin/compliance" element={<ProtectedRoute><ComplianceAuditoria /></ProtectedRoute>} />
             <Route path="/admin/auditoria-ia" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><AuditoriaIA /></ProtectedRoute>} />
             <Route path="/configuracoes/privacidade" element={<ProtectedRoute><CentroPrivacidadeLGPD /></ProtectedRoute>} />
+            <Route path="/configuracoes/filtros-salvos" element={<ProtectedRoute><FiltrosSalvos /></ProtectedRoute>} />
             
             {/* 404 */}
             <Route path="*" element={<NotFound />} />

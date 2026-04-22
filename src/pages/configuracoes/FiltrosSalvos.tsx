@@ -1,0 +1,532 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import {
+  ArrowLeft,
+  CheckCircle2,
+  CloudOff,
+  Database,
+  HardDrive,
+  Loader2,
+  RefreshCw,
+  Search,
+  XCircle,
+} from 'lucide-react';
+import { MainLayout } from '@/components/layout/MainLayout';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { logger } from '@/lib/logger';
+import { toast } from 'sonner';
+
+/**
+ * Catálogo central de filtros gerenciados.
+ * Mantém em sincronia com instâncias de useManagedFilters em todo o app.
+ */
+interface FilterCatalogEntry {
+  entityType: string;
+  label: string;
+  area: string;
+  route: string;
+  localStorageKey?: string;
+  defaultsKeys: string[];
+}
+
+const CATALOG: FilterCatalogEntry[] = [
+  {
+    entityType: 'clientes',
+    label: 'Clientes',
+    area: 'Cadastros',
+    route: '/clientes',
+    localStorageKey: 'clientes-filters',
+    defaultsKeys: ['search', 'status', 'estado', 'score'],
+  },
+  {
+    entityType: 'fornecedores',
+    label: 'Fornecedores',
+    area: 'Cadastros',
+    route: '/fornecedores',
+    localStorageKey: 'fornecedores-filters',
+    defaultsKeys: ['search', 'status', 'estado'],
+  },
+  {
+    entityType: 'audit-logs',
+    label: 'Logs de Auditoria',
+    area: 'Administração',
+    route: '/audit-logs',
+    localStorageKey: 'audit-logs-filters',
+    defaultsKeys: ['search', 'action', 'table', 'user'],
+  },
+  {
+    entityType: 'lancamentos-contabeis',
+    label: 'Lançamentos Contábeis',
+    area: 'Contabilidade',
+    route: '/contabilidade',
+    localStorageKey: 'app-lancamentos-filters',
+    defaultsKeys: ['busca', 'preset', 'dataInicio', 'dataFim'],
+  },
+  {
+    entityType: 'razao-diario',
+    label: 'Razão & Diário',
+    area: 'Contabilidade',
+    route: '/contabilidade',
+    localStorageKey: 'app-razao-diario-filters',
+    defaultsKeys: ['modo', 'preset', 'dataInicio', 'dataFim', 'contaId', 'busca'],
+  },
+  {
+    entityType: 'auditoria-ia',
+    label: 'Auditoria IA',
+    area: 'Administração',
+    route: '/admin/auditoria-ia',
+    localStorageKey: 'app-auditoria-ia-filters',
+    defaultsKeys: ['userFilter', 'cnpjFilter', 'transacaoFilter', 'acaoFilter'],
+  },
+  {
+    entityType: 'sso-jit-events',
+    label: 'SSO JIT Events',
+    area: 'Administração',
+    route: '/admin/sso-jit',
+    localStorageKey: 'app-sso-jit-filters',
+    defaultsKeys: ['dateRange', 'search', 'providerFilter', 'roleFilter', 'viaFilter', 'originFilter'],
+  },
+  {
+    entityType: 'dashboard-receber',
+    label: 'Dashboard Receber',
+    area: 'Financeiro',
+    route: '/dashboard-receber',
+    localStorageKey: 'app-dashboard-receber-filters',
+    defaultsKeys: ['empresaId', 'vendedorId', 'ramoAtividade', 'statusFilter', 'clienteId', 'periodo', 'dataInicio', 'dataFim'],
+  },
+  {
+    entityType: 'expert-history',
+    label: 'Histórico do Expert',
+    area: 'IA',
+    route: '/expert',
+    localStorageKey: 'app-expert-history-filters',
+    defaultsKeys: ['searchQuery', 'dateFilter'],
+  },
+];
+
+interface DiagnosticState {
+  entityType: string;
+  remote: 'ok' | 'empty' | 'error' | 'loading';
+  remoteUpdatedAt: string | null;
+  remoteKeys: string[];
+  local: 'ok' | 'empty' | 'error';
+  localKeys: string[];
+  localUpdatedAt: string | null;
+  syncing: boolean;
+}
+
+function readLocalState(key?: string): { keys: string[]; ts: string | null; status: 'ok' | 'empty' | 'error' } {
+  if (!key || typeof window === 'undefined') return { keys: [], ts: null, status: 'empty' };
+  try {
+    const raw = window.localStorage.getItem(key);
+    if (!raw) return { keys: [], ts: null, status: 'empty' };
+    const parsed = JSON.parse(raw);
+    const filters = (parsed?.filters ?? parsed) as Record<string, unknown>;
+    const ts = parsed?.ts ? new Date(parsed.ts).toLocaleString('pt-BR') : null;
+    return { keys: Object.keys(filters || {}), ts, status: 'ok' };
+  } catch (e) {
+    logger.warn('[FiltrosSalvos] failed reading local', { key, e });
+    return { keys: [], ts: null, status: 'error' };
+  }
+}
+
+export default function FiltrosSalvos() {
+  const { user } = useAuth();
+  const [search, setSearch] = useState('');
+  const [diagnostics, setDiagnostics] = useState<Record<string, DiagnosticState>>({});
+  const [globalSyncing, setGlobalSyncing] = useState(false);
+
+  const refreshOne = useCallback(
+    async (entry: FilterCatalogEntry) => {
+      setDiagnostics((prev) => ({
+        ...prev,
+        [entry.entityType]: {
+          ...(prev[entry.entityType] ?? {
+            entityType: entry.entityType,
+            remote: 'loading',
+            remoteUpdatedAt: null,
+            remoteKeys: [],
+            local: 'empty',
+            localKeys: [],
+            localUpdatedAt: null,
+            syncing: false,
+          }),
+          syncing: true,
+          remote: 'loading',
+        },
+      }));
+
+      const local = readLocalState(entry.localStorageKey);
+
+      let remoteStatus: DiagnosticState['remote'] = 'empty';
+      let remoteKeys: string[] = [];
+      let remoteUpdatedAt: string | null = null;
+
+      if (user?.id) {
+        try {
+          const { data, error } = await supabase
+            .from('user_active_filters')
+            .select('payload, updated_at')
+            .eq('user_id', user.id)
+            .eq('entity_type', entry.entityType)
+            .maybeSingle();
+
+          if (error) {
+            remoteStatus = 'error';
+          } else if (data?.payload) {
+            const payload = data.payload as { filters?: Record<string, unknown> };
+            remoteKeys = Object.keys(payload?.filters ?? {});
+            remoteStatus = remoteKeys.length > 0 ? 'ok' : 'empty';
+            remoteUpdatedAt = data.updated_at ? new Date(data.updated_at).toLocaleString('pt-BR') : null;
+          } else {
+            remoteStatus = 'empty';
+          }
+        } catch (e) {
+          logger.warn('[FiltrosSalvos] remote fetch failed', { entityType: entry.entityType, e });
+          remoteStatus = 'error';
+        }
+      } else {
+        remoteStatus = 'empty';
+      }
+
+      setDiagnostics((prev) => ({
+        ...prev,
+        [entry.entityType]: {
+          entityType: entry.entityType,
+          remote: remoteStatus,
+          remoteUpdatedAt,
+          remoteKeys,
+          local: local.status,
+          localKeys: local.keys,
+          localUpdatedAt: local.ts,
+          syncing: false,
+        },
+      }));
+    },
+    [user?.id]
+  );
+
+  const refreshAll = useCallback(async () => {
+    setGlobalSyncing(true);
+    try {
+      await Promise.all(CATALOG.map((entry) => refreshOne(entry)));
+      toast.success('Diagnóstico atualizado', { description: `${CATALOG.length} telas verificadas.` });
+    } finally {
+      setGlobalSyncing(false);
+    }
+  }, [refreshOne]);
+
+  useEffect(() => {
+    refreshAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
+  const filteredCatalog = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return CATALOG;
+    return CATALOG.filter(
+      (e) =>
+        e.label.toLowerCase().includes(q) ||
+        e.entityType.toLowerCase().includes(q) ||
+        e.area.toLowerCase().includes(q) ||
+        (e.localStorageKey ?? '').toLowerCase().includes(q)
+    );
+  }, [search]);
+
+  const totals = useMemo(() => {
+    const list = Object.values(diagnostics);
+    return {
+      total: CATALOG.length,
+      remoteOk: list.filter((d) => d.remote === 'ok').length,
+      localOk: list.filter((d) => d.local === 'ok').length,
+      errors: list.filter((d) => d.remote === 'error').length,
+    };
+  }, [diagnostics]);
+
+  return (
+    <MainLayout>
+      <TooltipProvider>
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
+          className="space-y-6"
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="icon" asChild>
+                <Link to="/configuracoes" aria-label="Voltar para Configurações">
+                  <ArrowLeft className="h-4 w-4" />
+                </Link>
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight font-display">
+                  Filtros salvos
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Diagnóstico de hidratação por tela: Supabase (sua conta) e localStorage (este dispositivo).
+                </p>
+              </div>
+            </div>
+            <Button onClick={refreshAll} disabled={globalSyncing} className="gap-2">
+              {globalSyncing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
+              Forçar sincronização
+            </Button>
+          </div>
+
+          {/* Resumo */}
+          <div className="grid gap-3 md:grid-cols-4">
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-xs text-muted-foreground">Telas catalogadas</div>
+                <div className="text-2xl font-bold mt-1">{totals.total}</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Database className="h-3 w-3" /> Sincronizadas (conta)
+                </div>
+                <div className="text-2xl font-bold mt-1 text-success">{totals.remoteOk}</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                  <HardDrive className="h-3 w-3" /> Espelhadas (dispositivo)
+                </div>
+                <div className="text-2xl font-bold mt-1">{totals.localOk}</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                  <CloudOff className="h-3 w-3" /> Erros de leitura
+                </div>
+                <div className="text-2xl font-bold mt-1 text-destructive">{totals.errors}</div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Search */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Telas com filtros</CardTitle>
+              <CardDescription>
+                Cada linha mostra a entidade, a chave do localStorage e o status atual da hidratação.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="relative mb-4">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por entidade, área ou chave…"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+
+              <ScrollArea className="max-h-[60vh]">
+                <div className="space-y-2">
+                  {filteredCatalog.map((entry) => {
+                    const diag = diagnostics[entry.entityType];
+                    return (
+                      <FilterRow
+                        key={entry.entityType}
+                        entry={entry}
+                        diagnostic={diag}
+                        onRefresh={() => refreshOne(entry)}
+                      />
+                    );
+                  })}
+                  {filteredCatalog.length === 0 && (
+                    <p className="text-sm text-muted-foreground text-center py-6">
+                      Nenhuma tela encontrada para “{search}”.
+                    </p>
+                  )}
+                </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </TooltipProvider>
+    </MainLayout>
+  );
+}
+
+interface FilterRowProps {
+  entry: FilterCatalogEntry;
+  diagnostic?: DiagnosticState;
+  onRefresh: () => void;
+}
+
+function FilterRow({ entry, diagnostic, onRefresh }: FilterRowProps) {
+  const remoteBadge = renderRemoteBadge(diagnostic?.remote);
+  const localBadge = renderLocalBadge(diagnostic?.local);
+
+  return (
+    <div className="rounded-lg border border-border bg-card/60 p-4 hover:bg-card transition-colors">
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Link
+              to={entry.route}
+              className="font-semibold text-sm hover:underline underline-offset-4"
+            >
+              {entry.label}
+            </Link>
+            <Badge variant="outline" className="text-[10px]">
+              {entry.area}
+            </Badge>
+          </div>
+          <div className="text-xs text-muted-foreground mt-1 font-mono break-all">
+            entityType: <span className="text-foreground">{entry.entityType}</span>
+          </div>
+          {entry.localStorageKey && (
+            <div className="text-xs text-muted-foreground font-mono break-all">
+              localStorage: <span className="text-foreground">{entry.localStorageKey}</span>
+            </div>
+          )}
+          <div className="text-xs text-muted-foreground mt-1">
+            Campos padrão: {entry.defaultsKeys.join(', ')}
+          </div>
+        </div>
+
+        <div className="flex flex-col items-end gap-2 shrink-0">
+          <div className="flex items-center gap-2">
+            {remoteBadge}
+            {localBadge}
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onRefresh}
+            disabled={diagnostic?.syncing}
+            className="gap-1 h-7"
+          >
+            {diagnostic?.syncing ? (
+              <Loader2 className="h-3 w-3 animate-spin" />
+            ) : (
+              <RefreshCw className="h-3 w-3" />
+            )}
+            Sincronizar
+          </Button>
+        </div>
+      </div>
+
+      {(diagnostic?.remoteUpdatedAt || diagnostic?.localUpdatedAt) && (
+        <>
+          <Separator className="my-3" />
+          <div className="grid gap-2 md:grid-cols-2 text-xs text-muted-foreground">
+            <div>
+              <span className="font-medium text-foreground">Conta:</span>{' '}
+              {diagnostic?.remoteUpdatedAt ?? '—'}
+              {diagnostic?.remoteKeys.length ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="ml-2 underline decoration-dotted cursor-help">
+                      {diagnostic.remoteKeys.length} chave(s)
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p className="text-xs">{diagnostic.remoteKeys.join(', ')}</p>
+                  </TooltipContent>
+                </Tooltip>
+              ) : null}
+            </div>
+            <div>
+              <span className="font-medium text-foreground">Dispositivo:</span>{' '}
+              {diagnostic?.localUpdatedAt ?? '—'}
+              {diagnostic?.localKeys.length ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="ml-2 underline decoration-dotted cursor-help">
+                      {diagnostic.localKeys.length} chave(s)
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p className="text-xs">{diagnostic.localKeys.join(', ')}</p>
+                  </TooltipContent>
+                </Tooltip>
+              ) : null}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function renderRemoteBadge(status?: DiagnosticState['remote']) {
+  switch (status) {
+    case 'ok':
+      return (
+        <Badge variant="outline" className="gap-1 text-[10px] border-success/30 text-success">
+          <CheckCircle2 className="h-3 w-3" /> Conta
+        </Badge>
+      );
+    case 'empty':
+      return (
+        <Badge variant="outline" className="gap-1 text-[10px] text-muted-foreground">
+          <Database className="h-3 w-3" /> Conta vazia
+        </Badge>
+      );
+    case 'error':
+      return (
+        <Badge variant="outline" className="gap-1 text-[10px] border-destructive/30 text-destructive">
+          <XCircle className="h-3 w-3" /> Erro conta
+        </Badge>
+      );
+    case 'loading':
+    default:
+      return (
+        <Badge variant="outline" className="gap-1 text-[10px] text-muted-foreground">
+          <Loader2 className="h-3 w-3 animate-spin" /> Conta…
+        </Badge>
+      );
+  }
+}
+
+function renderLocalBadge(status?: DiagnosticState['local']) {
+  switch (status) {
+    case 'ok':
+      return (
+        <Badge variant="outline" className="gap-1 text-[10px] border-primary/30 text-primary">
+          <HardDrive className="h-3 w-3" /> Local
+        </Badge>
+      );
+    case 'error':
+      return (
+        <Badge variant="outline" className="gap-1 text-[10px] border-destructive/30 text-destructive">
+          <XCircle className="h-3 w-3" /> Erro local
+        </Badge>
+      );
+    case 'empty':
+    default:
+      return (
+        <Badge variant="outline" className="gap-1 text-[10px] text-muted-foreground">
+          <HardDrive className="h-3 w-3" /> Local vazio
+        </Badge>
+      );
+  }
+}
