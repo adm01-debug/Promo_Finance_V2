@@ -11,11 +11,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FlaskConical, CheckCircle2, XCircle, AlertCircle, Play, Code2, ChevronDown, ShieldCheck, UserPlus, UserCheck, Search, Filter, Target, ListChecks, History } from 'lucide-react';
+import { FlaskConical, CheckCircle2, XCircle, AlertCircle, Play, Code2, ChevronDown, ShieldCheck, UserPlus, UserCheck, Search, Filter, Target, ListChecks, History, Layers } from 'lucide-react';
 import { useSSOProviders, useTestSSOLogin, type AppRole } from '@/hooks/useSSO';
 import { useSaveSSOSandboxRun, type SandboxRun } from '@/hooks/useSSOSandboxRuns';
 import { computeOutcome } from './sandbox/outcome';
 import { SandboxHistory } from './sandbox/SandboxHistory';
+import { SandboxBulkPanel } from './sandbox/SandboxBulkPanel';
 import { IDP_PRESETS } from './IdpPresets';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -127,7 +128,35 @@ export function SSOSandboxPanel() {
   };
 
   const saveRun = useSaveSSOSandboxRun();
-  const [activeTab, setActiveTab] = useState<'simular' | 'historico'>('simular');
+  const [activeTab, setActiveTab] = useState<'simular' | 'lote' | 'historico'>('simular');
+
+  const applyClaimsFromBulk = (claims: Record<string, unknown>, base: {
+    provider_id?: string;
+    claim_mapping?: { email?: string; full_name?: string; groups?: string };
+    default_role?: string;
+    allowed_domains?: string[];
+    role_mappings?: Array<{ idp_group: string; app_role: string }>;
+  }) => {
+    setClaimsJson(JSON.stringify(claims, null, 2));
+    if (base.provider_id) {
+      setProviderId(base.provider_id);
+      setUseProviderConfig(true);
+    } else {
+      setUseProviderConfig(false);
+      if (base.claim_mapping) {
+        setManualEmail(base.claim_mapping.email ?? 'email');
+        setManualName(base.claim_mapping.full_name ?? 'name');
+        setManualGroups(base.claim_mapping.groups ?? 'groups');
+      }
+      if (base.default_role) setManualRole(base.default_role as AppRole);
+      if (base.allowed_domains) setManualDomains(base.allowed_domains.join(', '));
+      if (base.role_mappings) {
+        setManualMappings(base.role_mappings.map(m => `${m.idp_group}:${m.app_role}`).join('\n'));
+      }
+    }
+    setActiveTab('simular');
+    toast.success('Claims carregadas no Simular');
+  };
 
   const simulate = async () => {
     if (jsonError) { toast.error('JSON inválido', { description: jsonError }); return; }
@@ -205,9 +234,10 @@ export function SSOSandboxPanel() {
   }, [result, mappingFilter, mappingSearch]);
 
   return (
-    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'simular' | 'historico')}>
+    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'simular' | 'lote' | 'historico')}>
       <TabsList className="mb-4">
         <TabsTrigger value="simular" className="gap-2"><FlaskConical className="h-4 w-4" />Simular</TabsTrigger>
+        <TabsTrigger value="lote" className="gap-2"><Layers className="h-4 w-4" />Lote</TabsTrigger>
         <TabsTrigger value="historico" className="gap-2"><History className="h-4 w-4" />Histórico</TabsTrigger>
       </TabsList>
       <TabsContent value="simular">
@@ -418,6 +448,9 @@ export function SSOSandboxPanel() {
         </CardContent>
       </Card>
     </div>
+      </TabsContent>
+      <TabsContent value="lote">
+        <SandboxBulkPanel onOpenInSimulator={applyClaimsFromBulk} />
       </TabsContent>
       <TabsContent value="historico">
         <SandboxHistory onReplay={applyRun} />

@@ -18,6 +18,7 @@ export interface SandboxRun {
   resolved_role: string | null;
   matched_group: string | null;
   has_errors: boolean;
+  batch_id?: string | null;
 }
 
 export interface SandboxRunsFilters {
@@ -27,6 +28,7 @@ export interface SandboxRunsFilters {
   from?: Date;
   to?: Date;
   limit?: number;
+  batchId?: string;
 }
 
 export function useSSOSandboxRuns(filters: SandboxRunsFilters = {}) {
@@ -39,6 +41,7 @@ export function useSSOSandboxRuns(filters: SandboxRunsFilters = {}) {
       filters.from?.toISOString() ?? null,
       filters.to?.toISOString() ?? null,
       filters.limit ?? 50,
+      filters.batchId ?? null,
     ],
     queryFn: async () => {
       let q = (supabase as any)
@@ -51,6 +54,7 @@ export function useSSOSandboxRuns(filters: SandboxRunsFilters = {}) {
       if (filters.email) q = q.ilike('email_masked', `%${filters.email}%`);
       if (filters.from) q = q.gte('created_at', startOfDay(filters.from).toISOString());
       if (filters.to) q = q.lte('created_at', endOfDay(filters.to).toISOString());
+      if (filters.batchId) q = q.eq('batch_id', filters.batchId);
       const { data, error } = await q;
       if (error) throw error;
       return (data ?? []) as SandboxRun[];
@@ -65,6 +69,7 @@ interface SaveRunInput {
   input: Record<string, unknown>;
   result: SandboxResult;
   outcome: SandboxOutcome;
+  batchId?: string | null;
 }
 
 export function useSaveSSOSandboxRun() {
@@ -87,6 +92,7 @@ export function useSaveSSOSandboxRun() {
         resolved_role: payload.result.preview.resolved_role ?? null,
         matched_group: payload.result.preview.matched_group ?? null,
         has_errors: (payload.result.errors?.length ?? 0) > 0,
+        batch_id: payload.batchId ?? null,
       };
       const { error } = await (supabase as any).from('sso_sandbox_runs').insert(row);
       if (error) throw error;
