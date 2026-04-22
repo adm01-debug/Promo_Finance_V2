@@ -19,6 +19,27 @@ const TIPO_LABEL: Record<Anomalia["tipo_anomalia"], string> = {
 export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
   const { atualizarStatus } = useAnomaliasDetectadas();
   const sincronizar = useSincronizarAnomaliaBitrix();
+  const audit = useLogAudit();
+
+  const centroCustoId = (anomalia as { centro_custo_id?: string | null }).centro_custo_id ?? null;
+
+  const handleInvestigar = () => {
+    atualizarStatus.mutate(
+      { id: anomalia.id, status: "investigando" },
+      {
+        onSuccess: () => {
+          audit
+            .mutateAsync({
+              action: "UPDATE",
+              tableName: "anomalias_detectadas",
+              recordId: anomalia.id,
+              details: `INVESTIGAR_CLICK: status → investigando | severidade=${anomalia.severidade} | tipo=${anomalia.tipo_anomalia} | centro_custo_id=${centroCustoId ?? "—"} | empresa_id=${anomalia.empresa_id ?? "—"}`,
+            })
+            .catch(() => undefined);
+        },
+      },
+    );
+  };
 
   const revisarComBitrix = (status: "confirmada" | "falso_positivo") => {
     atualizarStatus.mutate(
