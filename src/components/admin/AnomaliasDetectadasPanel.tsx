@@ -241,7 +241,8 @@ export function AnomaliasDetectadasPanel() {
   const sincronizar = useSincronizarAnomaliaBitrix();
   const { data: pendentes = [] } = usePendingAnomaliasQueue();
 
-  const lista = useMemo(() => {
+  // Lista filtrada SEM o termo de busca — usada para gerar sugestões e prévias
+  const listaBase = useMemo(() => {
     let arr = data ?? [];
     if (filters.severidades.length > 0)
       arr = arr.filter((a) => filters.severidades.includes(a.severidade));
@@ -254,6 +255,24 @@ export function AnomaliasDetectadasPanel() {
     if (filters.periodoFim) {
       const fim = new Date(filters.periodoFim).getTime() + 86_400_000;
       arr = arr.filter((a) => new Date(a.detectada_em).getTime() <= fim);
+    }
+    return arr;
+  }, [data, filters]);
+
+  const lista = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    let arr = listaBase;
+    if (term) {
+      arr = arr.filter((a) => {
+        const tipoLabel = (TIPO_LABEL[a.tipo_anomalia] ?? "").toLowerCase();
+        return (
+          (a.descricao ?? "").toLowerCase().includes(term) ||
+          (a.observacoes ?? "").toLowerCase().includes(term) ||
+          a.tipo_anomalia.toLowerCase().includes(term) ||
+          tipoLabel.includes(term) ||
+          a.severidade.toLowerCase().includes(term)
+        );
+      });
     }
     const sorted = [...arr].sort((a, b) => {
       let cmp = 0;
@@ -269,7 +288,7 @@ export function AnomaliasDetectadasPanel() {
       return sort.dir === "asc" ? cmp : -cmp;
     });
     return sorted;
-  }, [data, filters, sort]);
+  }, [listaBase, searchTerm, sort]);
 
   // Contagem da fila pendente por severidade (para o seletor de revisão)
   const pendentesPorSev = useMemo(() => {
