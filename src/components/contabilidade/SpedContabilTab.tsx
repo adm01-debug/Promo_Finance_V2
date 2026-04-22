@@ -115,7 +115,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
 
   const handleConfirmarTransmissao = async () => {
     if (!transmissaoArquivo || !reciboInput.trim()) return;
-    await transmitir.mutateAsync({ arquivoId: transmissaoArquivo.id, recibo: reciboInput.trim() });
+    await transmitir.mutateAsync({ arquivoId: transmissaoArquivo.id, recibo: reciboInput.trim(), tipo });
     setTransmissaoArquivo(null);
     setReciboInput('');
   };
