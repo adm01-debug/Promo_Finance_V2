@@ -23,6 +23,7 @@ import { baixarSpedZip } from '@/lib/sped-zip';
 import { SpedChecklistRow } from './SpedChecklistRow';
 import { PreValidacaoSpedPanel } from './PreValidacaoSpedPanel';
 import { AuditoriaCFCPanel } from './AuditoriaCFCPanel';
+import { ValidacoesPreSpedDialog } from './ValidacoesPreSpedDialog';
 import { AnimatedCounter } from '@/components/reforma-tributaria/AnimatedCounter';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -136,6 +137,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
   const [resultado, setResultado] = useState<(SpedGeracaoResult & { arquivo_id?: string }) | null>(null);
   const [recibo, setRecibo] = useState('');
   const [hashCopied, setHashCopied] = useState(false);
+  const [validacoesOpen, setValidacoesOpen] = useState(false);
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const validar = useSpedEcfValidacao();
   const gerar = useGerarSpedContabil();
@@ -812,49 +814,18 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                 </AlertDescription>
               </Alert>
 
-              <div className="flex flex-wrap gap-2">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span tabIndex={downloadBloqueado ? 0 : -1}>
-                        <Button
-                          onClick={() => window.open(resultado.url, '_blank')}
-                          disabled={downloadBloqueado}
-                          variant={downloadBloqueado ? 'outline' : 'premium'}
-                          className={cn('gap-2', !downloadBloqueado && 'hover-scale', downloadBloqueado && 'cursor-not-allowed')}
-                        >
-                          {downloadBloqueado ? <Ban className="h-4 w-4" /> : <Download className="h-4 w-4" />}
-                          Baixar .txt
-                        </Button>
-                      </span>
-                    </TooltipTrigger>
-                    {downloadBloqueado && (
-                      <TooltipContent side="top">
-                        Corrija os {errosResultado.length} erro(s) antes de baixar
-                      </TooltipContent>
-                    )}
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span tabIndex={downloadBloqueado ? 0 : -1}>
-                        <Button
-                          variant="outline"
-                          onClick={baixarZip}
-                          disabled={downloadBloqueado}
-                          className={cn('gap-2', !downloadBloqueado && 'hover-scale', downloadBloqueado && 'cursor-not-allowed')}
-                        >
-                          {downloadBloqueado ? <Ban className="h-4 w-4" /> : <FileArchive className="h-4 w-4" />}
-                          Baixar .zip (com README)
-                        </Button>
-                      </span>
-                    </TooltipTrigger>
-                    {downloadBloqueado && (
-                      <TooltipContent side="top">
-                        Corrija os {errosResultado.length} erro(s) antes de baixar
-                      </TooltipContent>
-                    )}
-                  </Tooltip>
-                </TooltipProvider>
+              <div className="flex flex-wrap gap-2 items-center">
+                <Button
+                  onClick={() => setValidacoesOpen(true)}
+                  variant={downloadBloqueado ? 'outline' : 'premium'}
+                  className={cn(
+                    'gap-2 hover-scale',
+                    downloadBloqueado && 'border-destructive/40 text-destructive hover:bg-destructive/10',
+                  )}
+                >
+                  {downloadBloqueado ? <ShieldAlert className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+                  Ver validações & baixar
+                </Button>
                 {downloadBloqueado && (
                   <Button variant="outline" onClick={() => setStep(2)} className="gap-2 hover-scale">
                     <RefreshCw className="h-4 w-4" /> Voltar e revalidar
@@ -862,32 +833,55 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                 )}
               </div>
 
+              <ValidacoesPreSpedDialog
+                open={validacoesOpen}
+                onOpenChange={setValidacoesOpen}
+                arquivo={{
+                  tipo: 'ECF',
+                  ano_calendario: anoCalendario,
+                  hash_sha256: resultado.hash_sha256,
+                  status: downloadBloqueado ? 'rejeitado' : 'gerado',
+                  validacoes: { erros: errosResultado, avisos: avisosResultado },
+                }}
+                onDownloadTxt={() => window.open(resultado.url, '_blank')}
+                onDownloadZip={() => baixarZip()}
+              />
+
               {resultado.arquivo_id && (
-                <div className="rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5 p-5 space-y-3 animate-fade-in">
-                  <p className="text-sm font-semibold font-display tracking-tight flex items-center gap-2 text-primary">
-                    <Send className="h-4 w-4" /> Registrar transmissão à Receita Federal
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Após transmitir o arquivo no PVA-ECF, cole aqui o nº do recibo gerado para marcar como transmitido no histórico.
-                  </p>
-                  <div className="space-y-2">
-                    <Label htmlFor="recibo-ecf" className="text-[11px] uppercase tracking-wide text-muted-foreground font-medium">
-                      Nº do recibo de transmissão
-                    </Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="recibo-ecf"
-                        value={recibo}
-                        onChange={e => setRecibo(e.target.value)}
-                        placeholder="Ex.: 12345678901234567890"
-                        className="font-mono text-xs"
-                      />
-                      <Button onClick={handleRegistrar} disabled={!recibo.trim() || transmitir.isPending} size="sm" className="hover-scale">
-                        {transmitir.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Marcar como transmitido'}
-                      </Button>
+                downloadBloqueado ? (
+                  <Alert variant="warning" title="Registro de recibo bloqueado">
+                    <AlertDescription>
+                      Não é possível registrar o recibo de transmissão enquanto houver erros de validação.
+                      Corrija os {errosResultado.length} erro(s) e gere o arquivo novamente.
+                    </AlertDescription>
+                  </Alert>
+                ) : (
+                  <div className="rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5 p-5 space-y-3 animate-fade-in">
+                    <p className="text-sm font-semibold font-display tracking-tight flex items-center gap-2 text-primary">
+                      <Send className="h-4 w-4" /> Registrar transmissão à Receita Federal
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Após transmitir o arquivo no PVA-ECF, cole aqui o nº do recibo gerado para marcar como transmitido no histórico.
+                    </p>
+                    <div className="space-y-2">
+                      <Label htmlFor="recibo-ecf" className="text-[11px] uppercase tracking-wide text-muted-foreground font-medium">
+                        Nº do recibo de transmissão
+                      </Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="recibo-ecf"
+                          value={recibo}
+                          onChange={e => setRecibo(e.target.value)}
+                          placeholder="Ex.: 12345678901234567890"
+                          className="font-mono text-xs"
+                        />
+                        <Button onClick={handleRegistrar} disabled={!recibo.trim() || transmitir.isPending} size="sm" className="hover-scale">
+                          {transmitir.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Marcar como transmitido'}
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )
               )}
 
               <div className="flex">
