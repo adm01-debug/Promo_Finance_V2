@@ -53,6 +53,9 @@ export function SugestoesMatchIA({
   const { isAnalyzing, matchesIA, lastAnalysis, analisarConciliacao } = useConciliacaoIA();
   const { historico, registrarHistorico, registrarFeedback, aprovarEmLote, estatisticasHistorico, isLoadingHistorico } = useHistoricoConciliacaoIA();
 
+  // Bloqueia interações enquanto qualquer mutação de persistência está em andamento
+  const mutationPending = registrarHistorico.isPending || registrarFeedback.isPending || aprovarEmLote.isPending;
+
   // Conjunto de matches rejeitados persistidos no histórico (transacao_bancaria_id + lancamento_id)
   const rejeicoesPersistidas = useMemo(() => {
     const set = new Set<string>();
