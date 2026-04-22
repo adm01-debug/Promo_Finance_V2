@@ -29,7 +29,7 @@ import {
   type Anomalia,
 } from "@/hooks/useAnomaliasDetectadas";
 import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
-import { useProfilesByIds, formatProfileLabel } from "@/hooks/useProfilesByIds";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const TIPO_LABEL: Record<Anomalia["tipo_anomalia"], string> = {
