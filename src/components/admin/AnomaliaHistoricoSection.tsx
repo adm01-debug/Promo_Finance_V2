@@ -175,33 +175,43 @@ export function AnomaliaHistoricoSection({ anomaliaId }: Props) {
           <div className="relative">
             <div className="absolute left-2 top-1 bottom-1 w-px bg-border" />
             <ul className="space-y-3">
-              {entries.map((entry) => (
-                <li key={entry.id} className="relative pl-7">
-                  <div className="absolute left-1 top-1.5 h-2.5 w-2.5 rounded-full bg-primary border-2 border-background" />
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge
-                      variant={ACTION_VARIANT[entry.action] ?? "outline"}
-                      className="text-[10px] uppercase tracking-wide"
-                    >
-                      {actionLabel(entry)}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      {formatDateTime(entry.created_at)}
-                    </span>
-                  </div>
-                  <p className="text-sm font-medium mt-0.5">
-                    {actorLabel(entry)}
-                  </p>
-                  {entry.details && (
-                    <p
-                      className="text-xs text-muted-foreground italic mt-0.5 line-clamp-3"
-                      title={entry.details}
-                    >
-                      "{entry.details}"
+              {entries.map((entry) => {
+                const reopen = isReopen(entry);
+                return (
+                  <li key={entry.id} className="relative pl-7">
+                    <div
+                      className={`absolute left-1 top-1.5 h-2.5 w-2.5 rounded-full border-2 border-background ${
+                        reopen ? "bg-primary ring-2 ring-primary/30" : "bg-primary"
+                      }`}
+                    />
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge
+                        variant={reopen ? "outline" : ACTION_VARIANT[entry.action] ?? "outline"}
+                        className={`text-[10px] uppercase tracking-wide gap-1 ${
+                          reopen ? "border-primary/40 text-primary" : ""
+                        }`}
+                      >
+                        {reopen && <RotateCcw className="h-3 w-3" />}
+                        {actionLabel(entry)}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground tabular-nums">
+                        {formatDateTime(entry.created_at)}
+                      </span>
+                    </div>
+                    <p className="text-sm font-medium mt-0.5">
+                      {actorLabel(entry)}
                     </p>
-                  )}
-                </li>
-              ))}
+                    {entry.details && (
+                      <p
+                        className="text-xs text-muted-foreground italic mt-0.5 line-clamp-3"
+                        title={entry.details}
+                      >
+                        "{entry.details}"
+                      </p>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}
