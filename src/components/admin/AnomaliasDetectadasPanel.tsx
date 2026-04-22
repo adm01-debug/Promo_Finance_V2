@@ -46,6 +46,11 @@ import { ReabrirAnomaliaDialog } from "@/components/insights-ia/anomalia/Reabrir
 import { dispatchOpenAnomaliaDrawer } from "@/lib/anomalia-routes";
 import { SavedFiltersBar } from "@/components/shared/SavedFiltersBar";
 import {
+  AdvancedSearchPopover,
+  type SearchSuggestion,
+  type SeverityPreview,
+} from "@/components/shared/AdvancedSearchPopover";
+import {
   ViewExportButton,
   type ViewExportColumn,
 } from "@/components/shared/ViewExportButton";
@@ -194,6 +199,15 @@ export function AnomaliasDetectadasPanel() {
   const [visibleCols, setVisibleCols] = useState<string[]>(DEFAULT_VISIBLE);
   const [activePresetId, setActivePresetId] = useState<string | null>(null);
   const [bootstrapped, setBootstrapped] = useState(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem("anomalias.recent-searches");
+      return raw ? (JSON.parse(raw) as string[]) : [];
+    } catch {
+      return [];
+    }
+  });
 
   const { defaultFilter } = useSavedFilters<AnomaliaFilters>(ENTITY_TYPE);
 
@@ -227,7 +241,8 @@ export function AnomaliasDetectadasPanel() {
   const sincronizar = useSincronizarAnomaliaBitrix();
   const { data: pendentes = [] } = usePendingAnomaliasQueue();
 
-  const lista = useMemo(() => {
+  // Lista filtrada SEM o termo de busca — usada para gerar sugestões e prévias
+  const listaBase = useMemo(() => {
     let arr = data ?? [];
     if (filters.severidades.length > 0)
       arr = arr.filter((a) => filters.severidades.includes(a.severidade));
@@ -240,6 +255,24 @@ export function AnomaliasDetectadasPanel() {
     if (filters.periodoFim) {
       const fim = new Date(filters.periodoFim).getTime() + 86_400_000;
       arr = arr.filter((a) => new Date(a.detectada_em).getTime() <= fim);
+    }
+    return arr;
+  }, [data, filters]);
+
+  const lista = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    let arr = listaBase;
+    if (term) {
+      arr = arr.filter((a) => {
+        const tipoLabel = (TIPO_LABEL[a.tipo_anomalia] ?? "").toLowerCase();
+        return (
+          (a.descricao ?? "").toLowerCase().includes(term) ||
+          (a.observacoes ?? "").toLowerCase().includes(term) ||
+          a.tipo_anomalia.toLowerCase().includes(term) ||
+          tipoLabel.includes(term) ||
+          a.severidade.toLowerCase().includes(term)
+        );
+      });
     }
     const sorted = [...arr].sort((a, b) => {
       let cmp = 0;
@@ -255,7 +288,7 @@ export function AnomaliasDetectadasPanel() {
       return sort.dir === "asc" ? cmp : -cmp;
     });
     return sorted;
-  }, [data, filters, sort]);
+  }, [listaBase, searchTerm, sort]);
 
   // Contagem da fila pendente por severidade (para o seletor de revisão)
   const pendentesPorSev = useMemo(() => {
@@ -339,6 +372,95 @@ export function AnomaliasDetectadasPanel() {
     };
   }, [filters, sort, visibleCols]);
 
+  // Prévia por severidade — calculada a partir de listaBase (ignora termo)
+  // mostra o impacto que a busca aplicaria sobre o conjunto pré-filtrado
+  const severityPreview = useMemo<SeverityPreview[]>(() => {
+    const term = searchTerm.trim().toLowerCase();
+    const source = term
+      ? listaBase.filter((a) => {
+          const tipoLabel = (TIPO_LABEL[a.tipo_anomalia] ?? "").toLowerCase();
+          return (
+            (a.descricao ?? "").toLowerCase().includes(term) ||
+            (a.observacoes ?? "").toLowerCase().includes(term) ||
+            a.tipo_anomalia.toLowerCase().includes(term) ||
+            tipoLabel.includes(term) ||
+            a.severidade.toLowerCase().includes(term)
+          );
+        })
+      : listaBase;
+    const counts: Record<Anomalia["severidade"], number> = {
+      critica: 0,
+      alta: 0,
+      media: 0,
+      baixa: 0,
+    };
+    for (const a of source) counts[a.severidade] += 1;
+    return [
+      { key: "critica", label: "crítica", count: counts.critica, variant: "destructive" },
+      { key: "alta", label: "alta", count: counts.alta, variant: "destructive" },
+      { key: "media", label: "média", count: counts.media, variant: "secondary" },
+      { key: "baixa", label: "baixa", count: counts.baixa, variant: "outline" },
+    ];
+  }, [listaBase, searchTerm]);
+
+  // Sugestões: tipos com contagem + recentes + descrições únicas curtas
+  const searchSuggestions = useMemo<SearchSuggestion[]>(() => {
+    const tiposCount = new Map<Anomalia["tipo_anomalia"], number>();
+    const descSet = new Set<string>();
+    for (const a of listaBase) {
+      tiposCount.set(a.tipo_anomalia, (tiposCount.get(a.tipo_anomalia) ?? 0) + 1);
+      if (a.descricao && a.descricao.length <= 80) descSet.add(a.descricao);
+    }
+    const recent: SearchSuggestion[] = recentSearches.slice(0, 4).map((q) => ({
+      label: q,
+      value: q,
+      group: "Recente",
+    }));
+    const tipos: SearchSuggestion[] = Array.from(tiposCount.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([tipo, count]) => ({
+        label: TIPO_LABEL[tipo] ?? tipo,
+        value: TIPO_LABEL[tipo] ?? tipo,
+        group: "Tipo",
+        count,
+      }));
+    const descricoes: SearchSuggestion[] = Array.from(descSet)
+      .slice(0, 6)
+      .map((d) => ({ label: d, value: d, group: "Descrição" }));
+    return [...recent, ...tipos, ...descricoes];
+  }, [listaBase, recentSearches]);
+
+  const scopeLabel = useMemo(() => {
+    const parts: string[] = [];
+    if (filters.periodoInicio || filters.periodoFim) {
+      parts.push(
+        `Período: ${filters.periodoInicio || "—"} → ${filters.periodoFim || "—"}`,
+      );
+    } else {
+      parts.push("Todo o período");
+    }
+    if (activePresetId) parts.push("Preset ativo");
+    if (filters.severidades.length > 0)
+      parts.push(`${filters.severidades.length} severidade(s)`);
+    if (filters.tipos.length > 0) parts.push(`${filters.tipos.length} tipo(s)`);
+    return parts.join(" · ");
+  }, [filters, activePresetId]);
+
+  // Persiste termos pesquisados (apenas quando aplicados e não vazios)
+  useEffect(() => {
+    const term = searchTerm.trim();
+    if (!term || term.length < 2) return;
+    setRecentSearches((prev) => {
+      const next = [term, ...prev.filter((p) => p !== term)].slice(0, 8);
+      try {
+        localStorage.setItem("anomalias.recent-searches", JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }, [searchTerm]);
+
   const handleLoadPreset = (preset: {
     id: string;
     payload: SavedFilterPayload<AnomaliaFilters>;
@@ -354,6 +476,7 @@ export function AnomaliasDetectadasPanel() {
     setFilters(DEFAULT_FILTERS);
     setSort(DEFAULT_PAYLOAD.sort!);
     setVisibleCols(DEFAULT_VISIBLE);
+    setSearchTerm("");
   };
 
   const isVisible = (k: string) => visibleCols.includes(k);
@@ -361,7 +484,8 @@ export function AnomaliasDetectadasPanel() {
     filters.severidades.length +
     filters.tipos.length +
     (filters.periodoInicio ? 1 : 0) +
-    (filters.periodoFim ? 1 : 0);
+    (filters.periodoFim ? 1 : 0) +
+    (searchTerm.trim() ? 1 : 0);
 
   return (
     <div className="space-y-4">
@@ -457,6 +581,16 @@ export function AnomaliasDetectadasPanel() {
               activePresetId={activePresetId}
               onLoad={handleLoadPreset}
               onClear={handleClearPreset}
+            />
+
+            <AdvancedSearchPopover
+              value={searchTerm}
+              onApply={setSearchTerm}
+              totalPreview={lista.length}
+              severityPreview={severityPreview}
+              suggestions={searchSuggestions}
+              scopeLabel={scopeLabel}
+              placeholder="Buscar em descrição, tipo, observações…"
             />
 
             <Select
