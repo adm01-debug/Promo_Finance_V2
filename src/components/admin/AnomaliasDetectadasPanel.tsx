@@ -476,6 +476,7 @@ export function AnomaliasDetectadasPanel() {
     setFilters(DEFAULT_FILTERS);
     setSort(DEFAULT_PAYLOAD.sort!);
     setVisibleCols(DEFAULT_VISIBLE);
+    setSearchTerm("");
   };
 
   const isVisible = (k: string) => visibleCols.includes(k);
@@ -483,7 +484,8 @@ export function AnomaliasDetectadasPanel() {
     filters.severidades.length +
     filters.tipos.length +
     (filters.periodoInicio ? 1 : 0) +
-    (filters.periodoFim ? 1 : 0);
+    (filters.periodoFim ? 1 : 0) +
+    (searchTerm.trim() ? 1 : 0);
 
   return (
     <div className="space-y-4">
