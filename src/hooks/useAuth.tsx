@@ -213,16 +213,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       toast.loading(`Encerrando sessão SSO via ${providerNome}…`, { id: 'sso-slo' });
     }
 
-    await supabase.auth.signOut();
-    setUser(null);
-    setSession(null);
-    setProfile(null);
-    setRole(null);
-    setRoleAtual(null);
-
-    if (ssoLogoutUrl) {
-      window.location.href = ssoLogoutUrl;
+    // Best-effort: marca a sessão atual como revogada no banco antes do signOut.
+    if (user) {
+      try {
+        await supabase
+          .from('user_sessions')
+          .update({ revoked: true, revoked_at: new Date().toISOString() })
+          .eq('user_id', user.id)
+          .eq('is_current', true)
+          .eq('revoked', false);
+      } catch (e) {
+        logger.warn('[useAuth] Falha ao revogar user_session — seguindo', e);
+      }
     }
+
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      logger.warn('[useAuth] supabase.auth.signOut falhou — seguindo com cleanup local', e);
+    }
+
+    // Revogação local reforçada: storages, cookies, caches do SW, IndexedDB e cache do React Query.
+    await runAuthCleanup(queryClient);
+
+    // Redirect duro com `replace` para descartar history e bundle React em memória.
+    window.location.replace(ssoLogoutUrl ?? '/auth');
   };
 
   const effectiveRole: AppRole | null = roleAtual ?? role;
