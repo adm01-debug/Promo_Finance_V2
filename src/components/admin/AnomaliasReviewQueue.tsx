@@ -83,6 +83,64 @@ export function AnomaliasReviewQueue({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   /**
+   * Resolve um rótulo legível para o autor (full_name → email mascarado → fallback).
+   */
+  async function resolverAutor(userId: string | null) {
+    if (!userId) return { nome: "outro revisor", email: null as string | null };
+    try {
+      const { data: prof } = await supabase
+        .from("profiles")
+        .select("full_name, email")
+        .eq("id", userId)
+        .maybeSingle();
+      const nome = (prof?.full_name as string | null)?.trim() || null;
+      const email = (prof?.email as string | null)?.trim() || null;
+      return { nome: nome || email || "outro revisor", email };
+    } catch {
+      return { nome: "outro revisor", email: null };
+    }
+  }
+
+  /**
+   * Mostra um toast detalhado quando outro revisor já resolveu a anomalia.
+   * Inclui: identificação da anomalia (tipo + severidade + descrição truncada),
+   * quem resolveu (nome/email), a ação tomada, quando, e atalho para a auditoria.
+   */
+  async function notificarConflito(original: Anomalia, fresca: Anomalia) {
+    const { nome, email } = await resolverAutor(fresca.resolvida_por);
+    const acao =
+      fresca.status === "confirmada"
+        ? "confirmou como problema real"
+        : "marcou como falso positivo";
+    const quando = fresca.resolvida_em
+      ? ` (${tempoDecorrido(fresca.resolvida_em)})`
+      : "";
+    const descCurta =
+      original.descricao.length > 80
+        ? `${original.descricao.slice(0, 80)}…`
+        : original.descricao;
+    const tipoLabel = TIPO_LABEL[original.tipo_anomalia];
+    const titulo = `${nome} já revisou esta anomalia${quando}`;
+    const linhaAnomalia = `[${original.severidade.toUpperCase()} · ${tipoLabel}] ${descCurta}`;
+    const linhaAcao = `Ação: ${acao}.${email && nome !== email ? ` Contato: ${email}.` : ""} Avançando para a próxima.`;
+
+    toast.warning(titulo, {
+      description: `${linhaAnomalia}\n${linhaAcao}`,
+      duration: 8000,
+      action: {
+        label: "Ver no log",
+        onClick: () => {
+          window.open(
+            `/audit-logs?table=anomalias_detectadas&record=${original.id}`,
+            "_blank",
+            "noopener,noreferrer",
+          );
+        },
+      },
+    });
+  }
+
+  /**
    * Recarrega do backend a anomalia em uma posição da fila para garantir
    * que ela ainda está pendente (evita revisar dados desatualizados por
    * concorrência). Se já foi resolvida, avança automaticamente para a próxima.
@@ -120,24 +178,8 @@ export function AnomaliasReviewQueue({
 
         const fresca = data as Anomalia;
         if (fresca.status !== "nova" && fresca.status !== "investigando") {
-          // já foi resolvida por outro revisor — avisa e pula
-          let quem = "outro revisor";
-          if (fresca.resolvida_por) {
-            const { data: prof } = await supabase
-              .from("profiles")
-              .select("full_name, email")
-              .eq("id", fresca.resolvida_por)
-              .maybeSingle();
-            quem =
-              (prof?.full_name as string | null)?.trim() ||
-              (prof?.email as string | null)?.trim() ||
-              "outro revisor";
-          }
-          const acao =
-            fresca.status === "confirmada" ? "confirmou" : "marcou como falso positivo";
-          toast.warning("Anomalia já revisada", {
-            description: `${quem} ${acao} esta anomalia. Pulando para a próxima.`,
-          });
+          // já foi resolvida por outro revisor — avisa de forma detalhada e pula
+          await notificarConflito(candidato, fresca);
           setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
           cursor += 1;
           continue;
@@ -220,31 +262,26 @@ export function AnomaliasReviewQueue({
       avancar();
     } catch (err) {
       if (err instanceof AnomaliaJaRevisadaError) {
-        // Buscar quem resolveu pra dar feedback rico
-        let descricao = "Pulando para a próxima da fila.";
+        // Busca a versão fresca para mostrar quem resolveu, quando e qual ação
         try {
           const { data } = await supabase
             .from("anomalias_detectadas")
-            .select("status, resolvida_por, resolvida_em")
+            .select("*")
             .eq("id", atual.id)
             .maybeSingle();
-          if (data?.resolvida_por) {
-            const { data: prof } = await supabase
-              .from("profiles")
-              .select("full_name, email")
-              .eq("id", data.resolvida_por)
-              .maybeSingle();
-            const quem =
-              (prof?.full_name as string | null)?.trim() ||
-              (prof?.email as string | null)?.trim() ||
-              "outro admin";
-            const acao = data.status === "confirmada" ? "confirmou" : "marcou como falso positivo";
-            descricao = `${quem} ${acao} esta anomalia. Pulando para a próxima.`;
+          if (data) {
+            await notificarConflito(atual, data as Anomalia);
+          } else {
+            toast.warning(
+              `Anomalia [${atual.severidade.toUpperCase()} · ${TIPO_LABEL[atual.tipo_anomalia]}] foi removida`,
+              { description: "Avançando para a próxima da fila." },
+            );
           }
         } catch {
-          /* feedback básico já está OK */
+          toast.warning("Outro revisor já resolveu esta anomalia", {
+            description: "Avançando para a próxima da fila.",
+          });
         }
-        toast.warning("Outro revisor já resolveu esta anomalia", { description: descricao });
         setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
         avancar();
         return;
