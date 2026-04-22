@@ -34,6 +34,8 @@ import {
   Bell,
   BellOff,
   RotateCcw,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 import {
   useSavedFilters,
@@ -68,8 +70,16 @@ export function SavedFiltersBar<T>({
   onClear,
 }: SavedFiltersBarProps<T>) {
   const { user, currentEmpresaId } = useAuth();
-  const { filters, defaultFilter, save, remove, setDefault, duplicate, updateSharing } =
-    useSavedFilters<T>(entityType);
+  const {
+    filters,
+    defaultFilter,
+    isLoading: presetsLoading,
+    save,
+    remove,
+    setDefault,
+    duplicate,
+    updateSharing,
+  } = useSavedFilters<T>(entityType);
   const {
     byFilterId: subsByFilter,
     subscribe,
@@ -84,10 +94,28 @@ export function SavedFiltersBar<T>({
   const [makeDefault, setMakeDefault] = useState(false);
   const [shareEnabled, setShareEnabled] = useState(false);
   const [shareRoles, setShareRoles] = useState<AppRole[]>([]);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const [shareDialog, setShareDialog] = useState<SavedFilterRow<T> | null>(null);
   const [shareDialogEnabled, setShareDialogEnabled] = useState(false);
   const [shareDialogRoles, setShareDialogRoles] = useState<AppRole[]>([]);
+  const [shareError, setShareError] = useState<string | null>(null);
+
+  // Estados visuais para feedback por linha (evita cliques repetidos)
+  const [loadingPresetId, setLoadingPresetId] = useState<string | null>(null);
+  const [pendingRemoveId, setPendingRemoveId] = useState<string | null>(null);
+  const [pendingDefaultId, setPendingDefaultId] = useState<string | null>(null);
+  const [pendingDuplicateId, setPendingDuplicateId] = useState<string | null>(
+    null,
+  );
+
+  const anyMutationPending =
+    save.isPending ||
+    remove.isPending ||
+    setDefault.isPending ||
+    duplicate.isPending ||
+    updateSharing.isPending ||
+    !!loadingPresetId;
 
   const activePreset = useMemo(
     () => filters.find((f) => f.id === activePresetId) ?? null,
@@ -105,45 +133,109 @@ export function SavedFiltersBar<T>({
   const handleSave = async () => {
     const trimmed = name.trim();
     if (trimmed.length < 2) return;
-    await save.mutateAsync({
-      name: trimmed,
-      payload: currentState,
-      isDefault: makeDefault,
-      isShared: shareEnabled,
-      sharedWithRoles: shareEnabled ? shareRoles : [],
-    });
-    setDialogOpen(false);
-    setName("");
-    setMakeDefault(false);
-    setShareEnabled(false);
-    setShareRoles([]);
+    setSaveError(null);
+    try {
+      await save.mutateAsync({
+        name: trimmed,
+        payload: currentState,
+        isDefault: makeDefault,
+        isShared: shareEnabled,
+        sharedWithRoles: shareEnabled ? shareRoles : [],
+      });
+      setDialogOpen(false);
+      setName("");
+      setMakeDefault(false);
+      setShareEnabled(false);
+      setShareRoles([]);
+    } catch (err) {
+      setSaveError(
+        err instanceof Error ? err.message : "Falha ao salvar o preset.",
+      );
+    }
   };
 
   const handleOverwrite = async () => {
     if (!activePreset || !isOwner(activePreset)) return;
-    await save.mutateAsync({
-      name: activePreset.name,
-      payload: currentState,
-      isDefault: activePreset.is_default,
-      isShared: activePreset.is_shared,
-      sharedWithRoles: activePreset.shared_with_roles,
-    });
+    if (save.isPending) return;
+    try {
+      await save.mutateAsync({
+        name: activePreset.name,
+        payload: currentState,
+        isDefault: activePreset.is_default,
+        isShared: activePreset.is_shared,
+        sharedWithRoles: activePreset.shared_with_roles,
+      });
+    } catch {
+      /* toast já é exibido pelo hook */
+    }
   };
 
   const openShareDialog = (f: SavedFilterRow<T>) => {
     setShareDialog(f);
     setShareDialogEnabled(f.is_shared);
     setShareDialogRoles(f.shared_with_roles);
+    setShareError(null);
   };
 
   const handleSaveShare = async () => {
     if (!shareDialog) return;
-    await updateSharing.mutateAsync({
-      id: shareDialog.id,
-      isShared: shareDialogEnabled,
-      sharedWithRoles: shareDialogEnabled ? shareDialogRoles : [],
+    setShareError(null);
+    try {
+      await updateSharing.mutateAsync({
+        id: shareDialog.id,
+        isShared: shareDialogEnabled,
+        sharedWithRoles: shareDialogEnabled ? shareDialogRoles : [],
+      });
+      setShareDialog(null);
+    } catch (err) {
+      setShareError(
+        err instanceof Error
+          ? err.message
+          : "Falha ao atualizar compartilhamento.",
+      );
+    }
+  };
+
+  // Carrega preset com feedback visual e proteção contra cliques repetidos
+  const handleLoadPreset = (f: SavedFilterRow<T>) => {
+    if (loadingPresetId || anyMutationPending) return;
+    if (f.id === activePresetId) return; // já está ativo
+    setLoadingPresetId(f.id);
+    try {
+      onLoad({ id: f.id, payload: f.filters });
+    } finally {
+      // Limpa no próximo tick — onLoad é síncrono no consumidor,
+      // mas mantemos o feedback brevemente para evitar flicker.
+      setTimeout(() => setLoadingPresetId(null), 200);
+    }
+  };
+
+  const handleRemove = (f: SavedFilterRow<T>) => {
+    if (pendingRemoveId || remove.isPending) return;
+    setPendingRemoveId(f.id);
+    remove.mutate(f.id, {
+      onSettled: () => setPendingRemoveId(null),
+      onSuccess: () => {
+        if (f.id === activePresetId) onClear();
+      },
     });
-    setShareDialog(null);
+  };
+
+  const handleSetDefault = (f: SavedFilterRow<T>) => {
+    if (pendingDefaultId || setDefault.isPending) return;
+    setPendingDefaultId(f.id);
+    setDefault.mutate(f.id, {
+      onSettled: () => setPendingDefaultId(null),
+    });
+  };
+
+  const handleDuplicate = (f: SavedFilterRow<T>) => {
+    if (pendingDuplicateId || duplicate.isPending) return;
+    setPendingDuplicateId(f.id);
+    duplicate.mutate(
+      { sourceId: f.id },
+      { onSettled: () => setPendingDuplicateId(null) },
+    );
   };
 
   const toggleRole = (
@@ -178,8 +270,17 @@ export function SavedFiltersBar<T>({
       <div className="flex items-center gap-1.5 flex-wrap">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-1.5">
-              <Bookmark className="h-3.5 w-3.5" />
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              aria-busy={presetsLoading || !!loadingPresetId}
+            >
+              {presetsLoading || loadingPresetId ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Bookmark className="h-3.5 w-3.5" />
+              )}
               {activePreset ? activePreset.name : "Presets"}
               {isModified && (
                 <Badge variant="secondary" className="text-[10px] h-4 px-1">
@@ -190,27 +291,52 @@ export function SavedFiltersBar<T>({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-80">
-            <DropdownMenuLabel className="text-xs">
+            <DropdownMenuLabel className="text-xs flex items-center gap-1.5">
               Filtros salvos
+              {presetsLoading && (
+                <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+              )}
             </DropdownMenuLabel>
-            {filters.length === 0 ? (
+            {presetsLoading ? (
+              <div className="px-2 py-3 text-xs text-muted-foreground flex items-center justify-center gap-2">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                Carregando presets…
+              </div>
+            ) : filters.length === 0 ? (
               <div className="px-2 py-3 text-xs text-muted-foreground text-center">
                 Nenhum preset salvo ainda
               </div>
             ) : (
               filters.map((f) => {
                 const owner = isOwner(f);
+                const isLoadingThis = loadingPresetId === f.id;
+                const isRemovingThis = pendingRemoveId === f.id;
+                const isDefaultingThis = pendingDefaultId === f.id;
+                const isDuplicatingThis = pendingDuplicateId === f.id;
+                const rowDisabled =
+                  isRemovingThis ||
+                  isLoadingThis ||
+                  (!!loadingPresetId && loadingPresetId !== f.id);
                 return (
                   <DropdownMenuItem
                     key={f.id}
                     className="flex items-center justify-between gap-2"
-                    onClick={() => onLoad({ id: f.id, payload: f.filters })}
+                    disabled={rowDisabled}
+                    onSelect={(e) => {
+                      // Evita fechar o menu enquanto carrega; permite clique único
+                      if (rowDisabled) {
+                        e.preventDefault();
+                        return;
+                      }
+                      handleLoadPreset(f);
+                    }}
                   >
                     <span className="flex items-center gap-1.5 truncate">
-                      {f.is_default && (
+                      {isLoadingThis ? (
+                        <Loader2 className="h-3 w-3 animate-spin text-primary" />
+                      ) : f.is_default ? (
                         <Star className="h-3 w-3 fill-warning text-warning" />
-                      )}
-                      {f.is_shared ? (
+                      ) : f.is_shared ? (
                         <Users
                           className="h-3 w-3 text-primary"
                           aria-label="Compartilhado"
@@ -232,13 +358,19 @@ export function SavedFiltersBar<T>({
                       {entityType === "anomalias_detectadas" && (() => {
                         const sub = subsByFilter.get(f.id);
                         const active = !!sub;
+                        const subBusy =
+                          subscribe.isPending ||
+                          unsubscribe.isPending ||
+                          updateChannels.isPending;
                         return (
                           <button
                             type="button"
+                            disabled={subBusy}
                             className={
-                              active
+                              (active
                                 ? "text-primary"
-                                : "opacity-50 hover:opacity-100"
+                                : "opacity-50 hover:opacity-100") +
+                              " disabled:opacity-30 disabled:cursor-wait"
                             }
                             title={
                               active
@@ -252,8 +384,8 @@ export function SavedFiltersBar<T>({
                             }
                             onClick={async (e) => {
                               e.stopPropagation();
+                              if (subBusy) return;
                               if (active && sub) {
-                                // Ciclo: in-app → in-app+push → off
                                 if (sub.notify_inapp && !sub.notify_push) {
                                   if (!pushReady) await enablePush();
                                   updateChannels.mutate({
@@ -283,19 +415,25 @@ export function SavedFiltersBar<T>({
                       })()}
                       <button
                         type="button"
-                        className="opacity-50 hover:opacity-100"
+                        disabled={isDuplicatingThis || duplicate.isPending}
+                        className="opacity-50 hover:opacity-100 disabled:opacity-30 disabled:cursor-wait"
                         title="Duplicar para minha biblioteca"
                         onClick={(e) => {
                           e.stopPropagation();
-                          duplicate.mutate({ sourceId: f.id });
+                          handleDuplicate(f);
                         }}
                       >
-                        <Copy className="h-3 w-3" />
+                        {isDuplicatingThis ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <Copy className="h-3 w-3" />
+                        )}
                       </button>
                       {owner && (
                         <button
                           type="button"
-                          className="opacity-50 hover:opacity-100"
+                          disabled={updateSharing.isPending}
+                          className="opacity-50 hover:opacity-100 disabled:opacity-30 disabled:cursor-wait"
                           title="Compartilhar"
                           onClick={(e) => {
                             e.stopPropagation();
@@ -308,28 +446,37 @@ export function SavedFiltersBar<T>({
                       {owner && !f.is_default && (
                         <button
                           type="button"
-                          className="opacity-50 hover:opacity-100"
+                          disabled={isDefaultingThis || setDefault.isPending}
+                          className="opacity-50 hover:opacity-100 disabled:opacity-30 disabled:cursor-wait"
                           title="Definir como padrão"
                           onClick={(e) => {
                             e.stopPropagation();
-                            setDefault.mutate(f.id);
+                            handleSetDefault(f);
                           }}
                         >
-                          <Star className="h-3 w-3" />
+                          {isDefaultingThis ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <Star className="h-3 w-3" />
+                          )}
                         </button>
                       )}
                       {owner && (
                         <button
                           type="button"
-                          className="opacity-50 hover:opacity-100 hover:text-destructive"
+                          disabled={isRemovingThis || remove.isPending}
+                          className="opacity-50 hover:opacity-100 hover:text-destructive disabled:opacity-30 disabled:cursor-wait"
                           title="Remover preset"
                           onClick={(e) => {
                             e.stopPropagation();
-                            remove.mutate(f.id);
-                            if (f.id === activePresetId) onClear();
+                            handleRemove(f);
                           }}
                         >
-                          <Trash2 className="h-3 w-3" />
+                          {isRemovingThis ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-3 w-3" />
+                          )}
                         </button>
                       )}
                     </span>
@@ -338,23 +485,39 @@ export function SavedFiltersBar<T>({
               })
             )}
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setDialogOpen(true)}>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                setDialogOpen(true);
+              }}
+              disabled={save.isPending}
+            >
               <Save className="h-3.5 w-3.5 mr-2" /> Salvar como novo…
             </DropdownMenuItem>
             {activePreset && isModified && isOwner(activePreset) && (
-              <DropdownMenuItem onClick={handleOverwrite}>
-                <Save className="h-3.5 w-3.5 mr-2" /> Sobrescrever &quot;
-                {activePreset.name}&quot;
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  handleOverwrite();
+                }}
+                disabled={save.isPending}
+              >
+                {save.isPending ? (
+                  <Loader2 className="h-3.5 w-3.5 mr-2 animate-spin" />
+                ) : (
+                  <Save className="h-3.5 w-3.5 mr-2" />
+                )}
+                Sobrescrever &quot;{activePreset.name}&quot;
               </DropdownMenuItem>
             )}
             {activePreset && (
-              <DropdownMenuItem onClick={onClear}>
+              <DropdownMenuItem onClick={onClear} disabled={anyMutationPending}>
                 Limpar seleção
               </DropdownMenuItem>
             )}
             <DropdownMenuItem
               onClick={handleRestoreDefault}
-              disabled={!canRestore}
+              disabled={!canRestore || anyMutationPending}
             >
               <RotateCcw className="h-3.5 w-3.5 mr-2" />
               {defaultFilter
@@ -374,6 +537,7 @@ export function SavedFiltersBar<T>({
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
+
 
         <Button
           variant="ghost"
@@ -459,8 +623,24 @@ export function SavedFiltersBar<T>({
               )}
             </div>
           </div>
+          {saveError && (
+            <div
+              role="alert"
+              className="mt-2 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive"
+            >
+              <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+              <span>{saveError}</span>
+            </div>
+          )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSaveError(null);
+                setDialogOpen(false);
+              }}
+              disabled={save.isPending}
+            >
               Cancelar
             </Button>
             <Button
@@ -471,7 +651,14 @@ export function SavedFiltersBar<T>({
                 (shareEnabled && !currentEmpresaId)
               }
             >
-              Salvar
+              {save.isPending ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 mr-2 animate-spin" />
+                  Salvando…
+                </>
+              ) : (
+                "Salvar"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -530,8 +717,24 @@ export function SavedFiltersBar<T>({
               </div>
             )}
           </div>
+          {shareError && (
+            <div
+              role="alert"
+              className="mt-2 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive"
+            >
+              <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+              <span>{shareError}</span>
+            </div>
+          )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShareDialog(null)}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShareError(null);
+                setShareDialog(null);
+              }}
+              disabled={updateSharing.isPending}
+            >
               Cancelar
             </Button>
             <Button
@@ -541,7 +744,14 @@ export function SavedFiltersBar<T>({
                 (shareDialogEnabled && !currentEmpresaId)
               }
             >
-              Salvar
+              {updateSharing.isPending ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 mr-2 animate-spin" />
+                  Salvando…
+                </>
+              ) : (
+                "Salvar"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
