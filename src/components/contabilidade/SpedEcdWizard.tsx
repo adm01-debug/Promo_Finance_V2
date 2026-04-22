@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { CheckCircle2, AlertTriangle, XCircle, Loader2, Download, FileArchive, Copy, ChevronRight, ShieldAlert, RefreshCw, Lock, Ban } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { CheckCircle2, AlertTriangle, XCircle, Loader2, Download, FileArchive, Copy, Check, ChevronRight, ShieldAlert, RefreshCw, Lock, Ban } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -31,10 +31,14 @@ type Step = 1 | 2 | 3;
 export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: Props) {
   const [step, setStep] = useState<Step>(1);
   const [resultado, setResultado] = useState<SpedGeracaoResult | null>(null);
+  const [hashCopied, setHashCopied] = useState(false);
+  const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const validar = useSpedEcdValidacao();
   const gerar = useGerarSpedContabil();
   const preValidacao = usePreValidacaoSped(empresaId, anoCalendario);
   const auditoriaCFC = useAuditoriaCFC(empresaId);
+
+  useEffect(() => () => { if (copyTimer.current) clearTimeout(copyTimer.current); }, []);
 
   useEffect(() => {
     if (open && empresaId && anoCalendario) {
@@ -79,10 +83,16 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
     }
   };
 
-  const copyHash = () => {
-    if (resultado?.hash_sha256) {
-      navigator.clipboard.writeText(resultado.hash_sha256);
-      toast.success('Hash copiado');
+  const copyHash = async () => {
+    if (!resultado?.hash_sha256) return;
+    try {
+      await navigator.clipboard.writeText(resultado.hash_sha256);
+      setHashCopied(true);
+      toast.success('Hash SHA-256 copiado');
+      if (copyTimer.current) clearTimeout(copyTimer.current);
+      copyTimer.current = setTimeout(() => setHashCopied(false), 2000);
+    } catch {
+      toast.error('Não foi possível copiar o hash');
     }
   };
 
@@ -333,10 +343,36 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                   <div><p className="text-muted-foreground">Lançamentos</p><p className="font-mono font-medium">{resultado.total_lancamentos}</p></div>
                 </div>
                 <div>
-                  <p className="text-muted-foreground mb-1">Hash SHA-256</p>
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-muted-foreground">Hash SHA-256</p>
+                    <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Integridade do arquivo</span>
+                  </div>
                   <div className="flex items-center gap-2">
-                    <code className="flex-1 text-xs font-mono bg-muted p-2 rounded break-all">{resultado.hash_sha256}</code>
-                    <Button size="icon" variant="outline" onClick={copyHash}><Copy className="h-3.5 w-3.5" /></Button>
+                    <code className="flex-1 text-xs font-mono bg-muted p-2 rounded break-all select-all">{resultado.hash_sha256}</code>
+                    <TooltipProvider>
+                      <Tooltip open={hashCopied || undefined}>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size="icon"
+                            variant={hashCopied ? 'default' : 'outline'}
+                            onClick={copyHash}
+                            aria-label={hashCopied ? 'Hash copiado' : 'Copiar hash SHA-256'}
+                            className={cn('transition-colors', hashCopied && 'bg-success text-success-foreground hover:bg-success/90')}
+                          >
+                            {hashCopied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">
+                          {hashCopied ? (
+                            <span className="flex items-center gap-1.5 font-medium">
+                              <Check className="h-3.5 w-3.5" /> Copiado para a área de transferência
+                            </span>
+                          ) : (
+                            <span>Copiar hash SHA-256</span>
+                          )}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </div>
               </CardContent>
