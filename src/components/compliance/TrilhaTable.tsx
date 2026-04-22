@@ -84,6 +84,43 @@ export function TrilhaTable({ tipo, colunas, acoes, filename }: Props) {
   const total = data?.total ?? 0;
   const totalPaginas = Math.max(1, Math.ceil(total / 50));
 
+  // Deep-link: quando ?record=<id> e ?tab=<tipo> vierem da URL (ex.: clique
+  // no toast em tempo real), localiza e abre o registro automaticamente.
+  useEffect(() => {
+    const recordId = searchParams.get("record");
+    const tabParam = searchParams.get("tab");
+    if (!recordId || tabParam !== tipo) return;
+
+    let cancelled = false;
+    (async () => {
+      const local = (data?.rows ?? []).find(
+        (r) => (r as { id?: string }).id === recordId,
+      );
+      if (local) {
+        setDetalhe(local);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: row, error } = await (supabase as any)
+          .from(TIPO_TABLE[tipo])
+          .select("*")
+          .eq("id", recordId)
+          .maybeSingle();
+        if (cancelled) return;
+        if (!error && row) setDetalhe(row as Record<string, unknown>);
+        else toast.error("Registro de auditoria não encontrado");
+      }
+      const next = new URLSearchParams(searchParams);
+      next.delete("record");
+      setSearchParams(next, { replace: true });
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, tipo, data?.rows]);
+
+
   const construirLinhas = (rows: Record<string, unknown>[]) =>
     rows.map((r) => {
       const obj: Record<string, string> = {};
