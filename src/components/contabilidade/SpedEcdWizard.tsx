@@ -172,10 +172,53 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               <Badge variant="secondary" className="gap-1">
                 <AlertTriangle className="h-3 w-3" /> {avisos} aviso(s)
               </Badge>
+              {cfcCriticos > 0 && (
+                <Badge variant="destructive" className="gap-1">
+                  <ShieldAlert className="h-3 w-3" /> CFC: {cfcCriticos} crítico(s)
+                </Badge>
+              )}
               <Button size="sm" variant="ghost" onClick={() => validar.mutate({ empresaId, anoCalendario })} className="ml-auto gap-1">
                 <RefreshCw className="h-3.5 w-3.5" /> Re-validar
               </Button>
             </div>
+
+            {/* Lista detalhada de erros bloqueantes */}
+            {errosLista.length > 0 && (
+              <Alert variant="error" title={`${errosLista.length} erro(s) impedem a geração`}>
+                <div className="mt-2">
+                  <ScrollArea className="max-h-48 rounded-md border bg-destructive/5 p-2">
+                    <ul className="space-y-1.5 text-sm">
+                      {errosLista.map((e, i) => (
+                        <li key={i} className="flex gap-2 items-start">
+                          <Badge variant="destructive" className="h-5 px-1.5 shrink-0 mt-0.5">{i + 1}</Badge>
+                          <span className="text-foreground break-words">{e}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </ScrollArea>
+                </div>
+              </Alert>
+            )}
+
+            {/* Lista detalhada de avisos (não bloqueantes) */}
+            {avisosLista.length > 0 && (
+              <Alert>
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>{avisosLista.length} aviso(s) recomendam revisão</AlertTitle>
+                <AlertDescription>
+                  <ScrollArea className="max-h-40 rounded-md border bg-muted/30 p-2 mt-2">
+                    <ul className="space-y-1.5 text-sm">
+                      {avisosLista.map((a, i) => (
+                        <li key={i} className="flex gap-2 items-start">
+                          <Badge variant="outline" className="h-5 px-1.5 shrink-0 mt-0.5">{i + 1}</Badge>
+                          <span className="text-foreground break-words">{a}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </ScrollArea>
+                </AlertDescription>
+              </Alert>
+            )}
 
             <PreValidacaoSpedPanel resultado={preValidacao} />
 
@@ -185,19 +228,48 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               {data.checklist.map((item) => <SpedChecklistRow key={item.id} item={item} />)}
             </div>
 
-            {erros > 0 && (
-              <Alert variant="error" title="Geração bloqueada">
-                Corrija os {erros} erro(s) acima antes de gerar o arquivo.
+            {!podeGerar && data && (
+              <Alert variant="error" title="Geração de arquivo bloqueada">
+                <div className="space-y-1">
+                  <p className="font-medium">{motivoBloqueio}</p>
+                  <p className="text-xs opacity-90">
+                    Resolva os itens marcados acima e clique em <strong>Re-validar</strong> antes de tentar gerar novamente.
+                  </p>
+                </div>
               </Alert>
             )}
 
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => setStep(1)}>Voltar</Button>
               <div className="flex-1" />
-              <Button onClick={handleGerar} disabled={!podeGerar || gerar.isPending}>
-                {gerar.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Download className="h-4 w-4 mr-1" />}
-                Gerar arquivo SPED ECD
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span tabIndex={!podeGerar ? 0 : -1}>
+                      <Button
+                        onClick={handleGerar}
+                        disabled={!podeGerar || gerar.isPending}
+                        aria-disabled={!podeGerar || gerar.isPending}
+                      >
+                        {gerar.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                        ) : !podeGerar ? (
+                          <Lock className="h-4 w-4 mr-1" />
+                        ) : (
+                          <Download className="h-4 w-4 mr-1" />
+                        )}
+                        {!podeGerar ? 'Geração bloqueada' : 'Gerar arquivo SPED ECD'}
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+                  {!podeGerar && (
+                    <TooltipContent side="top" className="max-w-xs">
+                      <p className="font-medium mb-1">Não é possível gerar o SPED ECD</p>
+                      <p className="text-xs">{motivoBloqueio}</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
         )}
