@@ -19,6 +19,8 @@ import { ExpertWelcomeScreen } from '@/components/expert/ExpertWelcomeScreen';
 import { ExpertHistoryPanel } from '@/components/expert/ExpertHistoryPanel';
 import { isToday, isThisWeek, isThisMonth, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useManagedFilters } from '@/hooks/useManagedFilters';
+import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 
 interface LocalMessage {
   id: string; role: 'user' | 'assistant'; content: string; timestamp: Date; actions?: ExpertAction[]; actionsExecuted?: boolean;
@@ -34,8 +36,14 @@ export default function Expert() {
   const [executingActions, setExecutingActions] = useState<string | null>(null);
   const [showHistory, setShowHistory] = useState(false);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [dateFilter, setDateFilter] = useState<string>('all');
+  const expertFilters = useManagedFilters<{ searchQuery: string; dateFilter: string }>({
+    entityType: 'expert-history',
+    defaults: { searchQuery: '', dateFilter: 'all' },
+    localStorageKey: 'app-expert-history-filters',
+  });
+  const { searchQuery, dateFilter } = expertFilters.values;
+  const setSearchQuery = (v: string) => expertFilters.setField('searchQuery', v);
+  const setDateFilter = (v: string) => expertFilters.setField('dateFilter', v);
   const [showDocumentUpload, setShowDocumentUpload] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
