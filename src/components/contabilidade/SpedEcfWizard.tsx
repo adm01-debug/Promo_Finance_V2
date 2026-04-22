@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, AlertTriangle, XCircle, Loader2, Download, FileArchive, Copy, Check, ChevronRight, ShieldAlert, RefreshCw, Link2, Send, Building2, Hash, Calendar, FileText, Sparkles, Lock, Ban } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, XCircle, Loader2, Download, FileArchive, Copy, Check, ChevronRight, ShieldAlert, RefreshCw, Link2, Send, Building2, Hash, Calendar, FileText, Sparkles, Lock, Ban, FileDown } from 'lucide-react';
+import { exportChecklistEcfPdf } from '@/lib/sped-ecf-checklist-pdf';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -369,7 +370,28 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                 />
               </div>
 
-              <div className="flex justify-end">
+              <div className="flex justify-end gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    try {
+                      const name = exportChecklistEcfPdf({
+                        data,
+                        cfcCriticos,
+                        preValidacaoOk: preValidacao.podeGerar,
+                      });
+                      toast.success('Checklist exportado em PDF', { description: name });
+                    } catch (e) {
+                      toast.error('Falha ao exportar checklist', {
+                        description: e instanceof Error ? e.message : 'erro inesperado',
+                      });
+                    }
+                  }}
+                  className="gap-1 hover-scale"
+                >
+                  <FileDown className="h-3.5 w-3.5" /> Exportar checklist (PDF)
+                </Button>
                 <Button size="sm" variant="ghost" onClick={() => validar.mutate({ empresaId, anoCalendario })} className="gap-1 hover-scale">
                   <RefreshCw className="h-3.5 w-3.5" /> Re-validar
                 </Button>
