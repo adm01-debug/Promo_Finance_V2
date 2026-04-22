@@ -1,5 +1,7 @@
-import { useMemo, useState } from 'react';
-import { ShieldCheck, Search, X, Brain, CheckCircle2, XCircle, Filter } from 'lucide-react';
+import { useMemo } from 'react';
+import { ShieldCheck, Search, Brain, CheckCircle2, XCircle, Filter } from 'lucide-react';
+import { useManagedFilters } from '@/hooks/useManagedFilters';
+import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -22,10 +24,21 @@ function formatCnpj(cnpj: string | null): string {
 
 export default function AuditoriaIA() {
   const { data: rows = [], isLoading } = useAuditoriaIA();
-  const [userFilter, setUserFilter] = useState('');
-  const [cnpjFilter, setCnpjFilter] = useState('');
-  const [transacaoFilter, setTransacaoFilter] = useState('');
-  const [acaoFilter, setAcaoFilter] = useState<'all' | 'aprovado' | 'rejeitado'>('all');
+  const filtersController = useManagedFilters<{
+    userFilter: string;
+    cnpjFilter: string;
+    transacaoFilter: string;
+    acaoFilter: 'all' | 'aprovado' | 'rejeitado';
+  }>({
+    entityType: 'auditoria-ia',
+    defaults: { userFilter: '', cnpjFilter: '', transacaoFilter: '', acaoFilter: 'all' },
+    localStorageKey: 'app-auditoria-ia-filters',
+  });
+  const { userFilter, cnpjFilter, transacaoFilter, acaoFilter } = filtersController.values;
+  const setUserFilter = (v: string) => filtersController.setField('userFilter', v);
+  const setCnpjFilter = (v: string) => filtersController.setField('cnpjFilter', v);
+  const setTransacaoFilter = (v: string) => filtersController.setField('transacaoFilter', v);
+  const setAcaoFilter = (v: 'all' | 'aprovado' | 'rejeitado') => filtersController.setField('acaoFilter', v);
 
   const usuarios = useMemo(() => {
     const map = new Map<string, string>();
@@ -88,14 +101,7 @@ export default function AuditoriaIA() {
     motivo_rejeicao: r.motivo_rejeicao || '',
   }));
 
-  const clearAll = () => {
-    setUserFilter('');
-    setCnpjFilter('');
-    setTransacaoFilter('');
-    setAcaoFilter('all');
-  };
-
-  const hasFilters = userFilter || cnpjFilter || transacaoFilter || acaoFilter !== 'all';
+  const hasFilters = filtersController.hasActive;
 
   return (
     <ProtectedRoute requiredRoles={['admin', 'financeiro']}>
@@ -238,9 +244,17 @@ export default function AuditoriaIA() {
             </div>
             {hasFilters && (
               <div className="mt-3 flex justify-end">
-                <Button variant="ghost" size="sm" onClick={clearAll} className="gap-1">
-                  <X className="h-4 w-4" /> Limpar filtros
-                </Button>
+                <ClearFiltersButton
+                  controller={filtersController}
+                  entityLabel="auditoria da IA"
+                  describeFilters={(v) => [
+                    { label: 'Usuário', value: v.userFilter, isActive: !!v.userFilter },
+                    { label: 'CNPJ', value: v.cnpjFilter, isActive: !!v.cnpjFilter },
+                    { label: 'Transação', value: v.transacaoFilter, isActive: !!v.transacaoFilter },
+                    { label: 'Ação', value: v.acaoFilter, isActive: v.acaoFilter !== 'all' },
+                  ]}
+                  label="Limpar filtros"
+                />
               </div>
             )}
           </CardContent>
