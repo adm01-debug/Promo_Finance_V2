@@ -132,6 +132,32 @@ export function SSOWizardDialog({ open, onOpenChange, editing }: Props) {
     onOpenChange(false);
   };
 
+  const consistency = useSSOConsistency({
+    preset: form.preset ?? null,
+    claim_mapping: form.claim_mapping ?? null,
+    allowed_domains: form.allowed_domains ?? [],
+    role_mappings: roleMappings,
+    default_role: form.default_role ?? null,
+    auto_provision_users: form.auto_provision_users ?? null,
+    force_sso_for_domains: form.force_sso_for_domains ?? null,
+  });
+
+  const applyAutofix = (patch: AutoFix['patch']) => {
+    if (patch.allowed_domains !== undefined) {
+      setForm((p) => ({ ...p, allowed_domains: patch.allowed_domains as string[] }));
+    }
+    if (patch.claim_mapping !== undefined) {
+      setForm((p) => ({ ...p, claim_mapping: { ...p.claim_mapping, ...patch.claim_mapping } as SSOProvider['claim_mapping'] }));
+    }
+    if (patch.default_role !== undefined) {
+      setForm((p) => ({ ...p, default_role: patch.default_role as AppRole }));
+    }
+    if (patch.role_mappings !== undefined) {
+      setRoleMappings(patch.role_mappings as Array<{ idp_group: string; app_role: AppRole }>);
+    }
+    toast.success('Correção aplicada');
+  };
+
   const next = () => setStep(s => Math.min(s + 1, 3));
   const prev = () => setStep(s => Math.max(s - 1, 0));
 
