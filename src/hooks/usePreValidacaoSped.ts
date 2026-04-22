@@ -5,12 +5,14 @@ import { useMemo } from 'react';
 import { useLancamentosContabeis } from '@/hooks/useLancamentosContabeis';
 import { useDemonstrativosContabeis } from '@/hooks/useDemonstrativosContabeis';
 
+import { useAuditoriaCFC } from '@/hooks/useAuditoriaCFC';
+
 export type SeveridadeAlerta = 'error' | 'warning' | 'info';
 
 export interface PreValidacaoAlerta {
   id: string;
   severidade: SeveridadeAlerta;
-  categoria: 'razao' | 'dre' | 'cruzado' | 'cobertura';
+  categoria: 'razao' | 'dre' | 'cruzado' | 'cobertura' | 'cfc';
   titulo: string;
   detalhe: string;
   valor?: number;
@@ -63,9 +65,10 @@ export function usePreValidacaoSped(empresaId: string | undefined, anoCalendario
     mes: 11,
     fonte: 'competencia',
   });
+  const cfc = useAuditoriaCFC(empresaId);
 
   return useMemo<PreValidacaoResult>(() => {
-    const isLoading = loadingLancs || dre.isLoading;
+    const isLoading = loadingLancs || dre.isLoading || cfc.isLoading;
     const alertas: PreValidacaoAlerta[] = [];
 
     const lancamentos = (lancs as LancamentoInline[]) || [];
@@ -252,6 +255,48 @@ export function usePreValidacaoSped(empresaId: string | undefined, anoCalendario
       });
     }
 
+    // ============ Alertas CFC (Plano de Contas) ============
+    if (!cfc.isLoading) {
+      if (cfc.formatoInvalido.length > 0) {
+        alertas.push({
+          id: 'cfc-formato',
+          severidade: 'error',
+          categoria: 'cfc',
+          titulo: `${cfc.formatoInvalido.length} código(s) referencial(is) com formato inválido`,
+          detalhe: 'Códigos fora do padrão CFC (N.NN.NN.NN[.NNN]) causam rejeição na Receita. Use o botão "Auditar CFC" no Plano de Contas.',
+          valor: cfc.formatoInvalido.length,
+        });
+      }
+      if (cfc.duplicidades.length > 0) {
+        alertas.push({
+          id: 'cfc-duplicidade',
+          severidade: 'error',
+          categoria: 'cfc',
+          titulo: `${cfc.duplicidades.length} código(s) referencial(is) duplicado(s)`,
+          detalhe: 'O mesmo código CFC não pode ser usado em mais de uma conta analítica da mesma empresa.',
+          valor: cfc.duplicidades.length,
+        });
+      }
+      if (cfc.prefixoIncorreto.length > 0) {
+        alertas.push({
+          id: 'cfc-prefixo',
+          severidade: 'warning',
+          categoria: 'cfc',
+          titulo: `${cfc.prefixoIncorreto.length} código(s) com prefixo incompatível com a natureza`,
+          detalhe: 'Ex.: conta de receita com código começando em 1 (ativo). Pode causar inconsistências na ECF.',
+        });
+      }
+      if (cfc.semReferencial > 0) {
+        alertas.push({
+          id: 'cfc-sem-ref',
+          severidade: 'info',
+          categoria: 'cfc',
+          titulo: `${cfc.semReferencial} conta(s) analítica(s) sem código referencial`,
+          detalhe: 'Recomendado preencher para conformidade total com SPED ECD/ECF.',
+        });
+      }
+    }
+
     const totais = {
       erros: alertas.filter((a) => a.severidade === 'error').length,
       avisos: alertas.filter((a) => a.severidade === 'warning').length,
@@ -275,5 +320,5 @@ export function usePreValidacaoSped(empresaId: string | undefined, anoCalendario
       },
       podeGerar: !isLoading && totais.erros === 0,
     };
-  }, [lancs, dre, loadingLancs, anoCalendario]);
+  }, [lancs, dre, cfc, loadingLancs, anoCalendario]);
 }

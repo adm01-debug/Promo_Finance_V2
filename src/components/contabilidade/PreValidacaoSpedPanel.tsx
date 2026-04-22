@@ -42,6 +42,7 @@ const CATEGORIA_LABEL: Record<string, string> = {
   dre: 'DRE',
   cruzado: 'Cruzado',
   cobertura: 'Cobertura',
+  cfc: 'CFC',
 };
 
 export function PreValidacaoSpedPanel({ resultado, className }: Props) {
