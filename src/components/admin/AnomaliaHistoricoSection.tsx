@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { History, Loader2, FileSpreadsheet, FileText, Download } from "lucide-react";
+import { History, Loader2, FileSpreadsheet, FileText, Download, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -37,8 +37,19 @@ const ACTION_VARIANT: Record<
   DELETE: "destructive",
 };
 
+function isReopen(entry: AnomaliaAuditEntry): boolean {
+  return (
+    entry.details?.startsWith("REOPEN:") === true ||
+    entry.details?.startsWith("REOPEN_BATCH") === true
+  );
+}
+
+function isReopenBatch(entry: AnomaliaAuditEntry): boolean {
+  return entry.details?.startsWith("REOPEN_BATCH") === true;
+}
+
 function actionLabel(entry: AnomaliaAuditEntry): string {
-  // Detecções específicas via prefixo em details
+  if (isReopenBatch(entry)) return "Reaberta em lote";
   if (entry.details?.startsWith("REOPEN:")) return ACTION_LABEL.REOPEN;
   if (entry.details?.startsWith("BITRIX24_SYNC:")) return "Sincronização Bitrix24";
   return ACTION_LABEL[entry.action] ?? entry.action;
