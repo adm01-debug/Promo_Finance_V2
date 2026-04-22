@@ -3798,6 +3798,7 @@ export type Database = {
           motivo_rejeicao: string | null
           score_original: number
           tipo_lancamento: string
+          transacao_bancaria_id: string | null
           transacao_descricao: string
         }
         Insert: {
@@ -3810,6 +3811,7 @@ export type Database = {
           motivo_rejeicao?: string | null
           score_original: number
           tipo_lancamento: string
+          transacao_bancaria_id?: string | null
           transacao_descricao: string
         }
         Update: {
@@ -3822,9 +3824,18 @@ export type Database = {
           motivo_rejeicao?: string | null
           score_original?: number
           tipo_lancamento?: string
+          transacao_bancaria_id?: string | null
           transacao_descricao?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "feedback_conciliacao_ia_transacao_bancaria_id_fkey"
+            columns: ["transacao_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "transacoes_bancarias"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       fila_cobrancas: {
         Row: {
