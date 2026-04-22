@@ -687,7 +687,8 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                 <Button variant="ghost" onClick={() => onOpenChange(false)}>Fechar</Button>
               </div>
             </motion.div>
-          )}
+            );
+          })()}
         </AnimatePresence>
       </DialogContent>
     </Dialog>
