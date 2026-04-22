@@ -163,7 +163,7 @@ export function AprovacaoRapidaMobile() {
                         onClick={() => setRejectDialog(sol)}>
                         <X className="h-3.5 w-3.5" /> Rejeitar
                       </Button>
-                      <Button size="sm" className="flex-1 gap-1 bg-success hover:bg-success text-white"
+                      <Button size="sm" className="flex-1 gap-1 bg-success hover:bg-success/90 text-success-foreground"
                         onClick={() => handleAprovar(sol)} disabled={aprovarMutation.isPending}>
                         <Check className="h-3.5 w-3.5" /> Aprovar
                       </Button>
