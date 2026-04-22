@@ -1,9 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { ClientesTableBody } from '@/pages/clientes/ClientesTableBody';
 import { ClientesKPIs } from '@/pages/clientes/ClientesKPIs';
 import { ClientesFiltersPanel } from '@/pages/clientes/ClientesFiltersPanel';
+import { useManagedFilters } from '@/hooks/useManagedFilters';
+import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 import { EmptyState } from '@/components/ui/micro-interactions';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
 import {
@@ -112,12 +114,35 @@ export default function Clientes() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [viewingCliente, setViewingCliente] = useState<ExternalCliente | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
-  
-  // Advanced filters
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [estadoFilter, setEstadoFilter] = useState<string>('all');
-  const [scoreFilter, setScoreFilter] = useState<string>('all');
-  
+
+  // Advanced filters — gerenciados via useManagedFilters (persistência por conta + undo)
+  const filtersController = useManagedFilters({
+    entityType: 'clientes',
+    defaults: { search: '', status: 'all', estado: 'all', score: 'all' },
+    localStorageKey: 'clientes-filters',
+  });
+  const { values: filterValues, setField: setFilterField } = filtersController;
+  const statusFilter = filterValues.status as string;
+  const estadoFilter = filterValues.estado as string;
+  const scoreFilter = filterValues.score as string;
+
+  const setStatusFilter = (v: string) => setFilterField('status', v);
+  const setEstadoFilter = (v: string) => setFilterField('estado', v);
+  const setScoreFilter = (v: string) => setFilterField('score', v);
+
+  // Sync busca com o controller (search é local-only para responsividade do input)
+  useEffect(() => {
+    setFilterField('search', searchTerm);
+  }, [searchTerm, setFilterField]);
+
+  // Hidratação inicial: aplica search persistido
+  useEffect(() => {
+    if (filtersController.isHydrated && filterValues.search && !searchTerm) {
+      setSearchTerm(filterValues.search as string);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtersController.isHydrated]);
+
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
