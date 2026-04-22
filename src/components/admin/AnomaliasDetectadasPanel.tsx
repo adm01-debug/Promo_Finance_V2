@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AnomaliaPreferencesDialog } from "./AnomaliaPreferencesDialog";
 import { BellOff } from "lucide-react";
 import { useAnomaliasCriticasCount } from "@/hooks/useAnomaliasCriticasCount";
+import { CriticasBadgeSilencePopover } from "./CriticasBadgeSilencePopover";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -501,9 +502,7 @@ export function AnomaliasDetectadasPanel() {
               <AlertTriangle className="h-5 w-5 text-warning" />
               Anomalias detectadas
               {criticasCount > 0 && (
-                <Badge variant="destructive" className="ml-1" aria-live="polite">
-                  {criticasCount} crítica{criticasCount > 1 ? "s" : ""}
-                </Badge>
+                <CriticasBadgeSilencePopover count={criticasCount} />
               )}
             </CardTitle>
             <div className="flex items-center gap-2 flex-wrap">
