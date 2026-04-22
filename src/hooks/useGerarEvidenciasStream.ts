@@ -136,6 +136,11 @@ export function useGerarEvidenciasStream() {
       setResult(null);
       setError(null);
 
+      // Mantém um snapshot local dos eventos para persistir no fim do stream
+      // (evita depender do estado React assíncrono ao salvar).
+      const localEvents: ProgressEvent[] = [];
+      let localCurrent: ProgressEvent | null = null;
+
       abortRef.current?.abort();
       const ctrl = new AbortController();
       abortRef.current = ctrl;
@@ -190,6 +195,16 @@ export function useGerarEvidenciasStream() {
               setResult(final);
               setPercent(100);
               setStatus("success");
+              // Persiste manifest + parâmetros para sobreviver a refresh
+              saveSnapshot({
+                status: "success",
+                input,
+                events: localEvents,
+                current: localCurrent,
+                percent: 100,
+                result: final,
+                error: null,
+              });
               toast.success("Pacote de evidências pronto.");
               if (final.audit_warning) {
                 toast.warning("Trilha de auditoria não registrada", {
@@ -203,6 +218,8 @@ export function useGerarEvidenciasStream() {
             }
             if (typeof obj.percent === "number") {
               const ev = obj as unknown as ProgressEvent;
+              localEvents.push(ev);
+              localCurrent = ev;
               setEvents((prev) => [...prev, ev]);
               setCurrent(ev);
               setPercent(ev.percent);
@@ -215,6 +232,15 @@ export function useGerarEvidenciasStream() {
         const msg = e instanceof Error ? e.message : "Erro desconhecido";
         setError(msg);
         setStatus("error");
+        saveSnapshot({
+          status: "error",
+          input,
+          events: localEvents,
+          current: localCurrent,
+          percent: localCurrent?.percent ?? 0,
+          result: null,
+          error: msg,
+        });
         toast.error(`Falha ao gerar pacote: ${msg}`);
       }
     },
