@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -32,16 +32,89 @@ export interface GerarInput {
 const PROJECT_ID = import.meta.env.VITE_SUPABASE_PROJECT_ID as string;
 const FUNCTION_URL = `https://${PROJECT_ID}.supabase.co/functions/v1/gerar-pacote-evidencias?stream=1`;
 
+const STORAGE_KEY = "compliance:last-evidence-pack";
+const STORAGE_VERSION = 1;
+// TTL alinhado com a URL assinada do pacote (7 dias)
+const STORAGE_TTL_MS = 7 * 24 * 3600 * 1000;
+
+interface PersistedSnapshot {
+  v: number;
+  savedAt: number;
+  status: "success" | "error";
+  input: GerarInput | null;
+  events: ProgressEvent[];
+  current: ProgressEvent | null;
+  percent: number;
+  result: GerarResult | null;
+  error: string | null;
+}
+
+function loadSnapshot(): PersistedSnapshot | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as PersistedSnapshot;
+    if (parsed.v !== STORAGE_VERSION) return null;
+    if (Date.now() - parsed.savedAt > STORAGE_TTL_MS) {
+      window.localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function saveSnapshot(snap: Omit<PersistedSnapshot, "v" | "savedAt">) {
+  if (typeof window === "undefined") return;
+  try {
+    const payload: PersistedSnapshot = { v: STORAGE_VERSION, savedAt: Date.now(), ...snap };
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  } catch {
+    // quota/serialização: ignore silenciosamente
+  }
+}
+
+function clearSnapshot() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // ignore
+  }
+}
+
 export function useGerarEvidenciasStream() {
   const qc = useQueryClient();
-  const [status, setStatus] = useState<GerarStatus>("idle");
-  const [events, setEvents] = useState<ProgressEvent[]>([]);
-  const [current, setCurrent] = useState<ProgressEvent | null>(null);
-  const [percent, setPercent] = useState(0);
-  const [result, setResult] = useState<GerarResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const lastInputRef = useRef<GerarInput | null>(null);
+  const initial = loadSnapshot();
+  const [status, setStatus] = useState<GerarStatus>(initial?.status ?? "idle");
+  const [events, setEvents] = useState<ProgressEvent[]>(initial?.events ?? []);
+  const [current, setCurrent] = useState<ProgressEvent | null>(initial?.current ?? null);
+  const [percent, setPercent] = useState(initial?.percent ?? 0);
+  const [result, setResult] = useState<GerarResult | null>(initial?.result ?? null);
+  const [error, setError] = useState<string | null>(initial?.error ?? null);
+  const lastInputRef = useRef<GerarInput | null>(initial?.input ?? null);
   const abortRef = useRef<AbortController | null>(null);
+
+  // Sincroniza com mudanças vindas de outras abas do navegador
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== STORAGE_KEY) return;
+      const snap = loadSnapshot();
+      if (!snap) return;
+      setStatus(snap.status);
+      setEvents(snap.events);
+      setCurrent(snap.current);
+      setPercent(snap.percent);
+      setResult(snap.result);
+      setError(snap.error);
+      lastInputRef.current = snap.input;
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
 
   const reset = useCallback(() => {
     setStatus("idle");
@@ -50,6 +123,7 @@ export function useGerarEvidenciasStream() {
     setPercent(0);
     setResult(null);
     setError(null);
+    clearSnapshot();
   }, []);
 
   const start = useCallback(
