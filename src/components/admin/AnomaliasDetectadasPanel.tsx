@@ -220,7 +220,7 @@ export function AnomaliasDetectadasPanel() {
       setFilters({ ...DEFAULT_FILTERS, ...defaultFilter.filters.filters });
       if (defaultFilter.filters.sort) setSort(defaultFilter.filters.sort);
       if (defaultFilter.filters.columns)
-        setVisibleCols(defaultFilter.filters.columns);
+        setVisibleCols(mergeLockedColumns(defaultFilter.filters.columns, COLUNAS));
       setActivePresetId(defaultFilter.id);
     }
     setBootstrapped(true);
