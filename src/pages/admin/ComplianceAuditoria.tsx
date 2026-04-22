@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShieldCheck, Banknote, Receipt, Activity, ClipboardCheck, Package, Hash } from "lucide-react";
 import { MainLayout } from "@/components/layout/MainLayout";
@@ -9,9 +10,23 @@ import { TrilhaSistemaTab } from "@/components/compliance/TrilhaSistemaTab";
 import { ConformidadeFiscalTab } from "@/components/compliance/ConformidadeFiscalTab";
 import { EvidenciasTab } from "@/components/compliance/EvidenciasTab";
 import { VerificarIntegridadeTab } from "@/components/compliance/VerificarIntegridadeTab";
+import { useRealtimeAuditToasts } from "@/hooks/useRealtimeAuditToasts";
 
 export default function ComplianceAuditoria() {
-  const [tab, setTab] = useState("financeira");
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get("tab") || "financeira";
+  const [tab, setTab] = useState(initialTab);
+
+  // Stream realtime audit toasts with deep-link to the right trilha
+  useRealtimeAuditToasts();
+
+  // Sync tab when URL changes (e.g., toast click navigates here)
+  useEffect(() => {
+    const t = searchParams.get("tab");
+    if (t && t !== tab) setTab(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
 
   return (
     <MainLayout>
