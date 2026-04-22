@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, ShieldCheck } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -9,14 +9,21 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { usePlanoContas, useUpsertPlanoConta } from '@/hooks/usePlanoContas';
+import { useAuditoriaCFC } from '@/hooks/useAuditoriaCFC';
+import { useEmpresas } from '@/hooks/useFinancialData';
+import { AuditoriaCFCPanel } from './AuditoriaCFCPanel';
 
 interface Props { empresaId?: string }
 
 export function PlanoContasTab({ empresaId }: Props) {
   const [busca, setBusca] = useState('');
   const [open, setOpen] = useState(false);
+  const [auditOpen, setAuditOpen] = useState(false);
   const [form, setForm] = useState({ codigo: '', descricao: '', natureza: 'ativo', tipo: 'analitica', codigo_referencial: '' });
   const { data: contas = [], isLoading } = usePlanoContas(empresaId);
+  const { data: empresas = [] } = useEmpresas();
+  const empresa = empresas.find((e) => e.id === empresaId);
+  const auditoria = useAuditoriaCFC(empresaId);
   const upsert = useUpsertPlanoConta();
 
   const filtered = contas.filter(c =>
@@ -37,10 +44,20 @@ export function PlanoContasTab({ empresaId }: Props) {
             <CardTitle>Plano de Contas</CardTitle>
             <CardDescription>Estrutura contábil para ECD/ECF</CardDescription>
           </div>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button><Plus className="h-4 w-4 mr-2" />Nova conta</Button>
-            </DialogTrigger>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setAuditOpen(true)} disabled={!empresaId}>
+              <ShieldCheck className="h-4 w-4 mr-2" />
+              Auditar CFC
+              {!auditoria.isLoading && auditoria.totalProblemas > 0 && (
+                <Badge variant="destructive" className="ml-2 h-5 px-1.5 text-[10px]">
+                  {auditoria.totalProblemas}
+                </Badge>
+              )}
+            </Button>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button><Plus className="h-4 w-4 mr-2" />Nova conta</Button>
+              </DialogTrigger>
             <DialogContent>
               <DialogHeader><DialogTitle>Nova conta contábil</DialogTitle></DialogHeader>
               <div className="space-y-4">
@@ -78,7 +95,8 @@ export function PlanoContasTab({ empresaId }: Props) {
                 <Button onClick={handleSalvar} disabled={!form.codigo || !form.descricao || upsert.isPending} className="w-full">Salvar</Button>
               </div>
             </DialogContent>
-          </Dialog>
+            </Dialog>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
