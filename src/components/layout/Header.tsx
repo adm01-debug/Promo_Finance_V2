@@ -30,6 +30,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { useAlertas } from '@/hooks/useAlertas';
+import { useUserEmpresas } from '@/hooks/useUserEmpresas';
 import { KeyboardShortcutsDialog } from './KeyboardShortcutsDialog';
 import { EmpresaSwitcher } from './EmpresaSwitcher';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
