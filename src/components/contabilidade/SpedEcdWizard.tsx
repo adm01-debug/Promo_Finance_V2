@@ -48,7 +48,26 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
   const data = validar.data;
   const erros = data?.validacoes.erros.length || 0;
   const avisos = data?.validacoes.avisos.length || 0;
-  const podeGerar = !!data && erros === 0 && preValidacao.podeGerar && auditoriaCFC.problemasCriticos === 0;
+  const errosLista = data?.validacoes.erros ?? [];
+  const avisosLista = data?.validacoes.avisos ?? [];
+  const cfcCriticos = auditoriaCFC.problemasCriticos || 0;
+  const preValidacaoBloqueia = !preValidacao.podeGerar;
+  const totalBloqueios = erros + cfcCriticos + (preValidacaoBloqueia ? 1 : 0);
+  const podeGerar = !!data && totalBloqueios === 0;
+  const motivoBloqueio = !data
+    ? 'Aguarde a validação concluir antes de gerar o SPED ECD.'
+    : erros > 0
+      ? `${erros} erro(s) crítico(s) na validação do SPED ECD impedem a geração.`
+      : cfcCriticos > 0
+        ? `${cfcCriticos} problema(s) crítico(s) na auditoria CFC do plano de contas.`
+        : preValidacaoBloqueia
+          ? 'A pré-validação do período identificou bloqueios. Resolva-os antes de gerar.'
+          : '';
+
+  // Bloqueio adicional no Step 3 caso o backend retorne erros mesmo após gerar
+  const errosResultado = resultado?.validacoes.erros ?? [];
+  const avisosResultado = resultado?.validacoes.avisos ?? [];
+  const downloadBloqueado = errosResultado.length > 0;
 
   const handleGerar = async () => {
     try {
