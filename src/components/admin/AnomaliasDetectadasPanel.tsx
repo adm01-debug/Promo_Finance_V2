@@ -767,6 +767,26 @@ export function AnomaliasDetectadasPanel() {
               />
             </div>
 
+            <Button
+              type="button"
+              variant={filters.apenasReabertas ? "default" : "outline"}
+              size="sm"
+              className="gap-1.5"
+              onClick={() =>
+                setFilters((f) => ({ ...f, apenasReabertas: !f.apenasReabertas }))
+              }
+              aria-pressed={filters.apenasReabertas}
+              title="Mostrar apenas anomalias que já foram reabertas"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              Apenas reabertas
+              {filters.apenasReabertas && reabertasIndex && (
+                <Badge variant="secondary" className="ml-1 h-4 px-1 text-[10px]">
+                  {listaBase.length}
+                </Badge>
+              )}
+            </Button>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-1.5">
