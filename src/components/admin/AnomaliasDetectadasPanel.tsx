@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -32,6 +33,8 @@ import {
   ListChecks,
   Filter,
   ArrowUpDown,
+  RotateCcw,
+  X,
 } from "lucide-react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
@@ -46,6 +49,7 @@ import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitr
 import { AnomaliasReviewQueue } from "./AnomaliasReviewQueue";
 import { AnomaliaDrillDownDrawer } from "./AnomaliaDrillDownDrawer";
 import { ReabrirAnomaliaDialog } from "@/components/insights-ia/anomalia/ReabrirAnomaliaDialog";
+import { ReabrirAnomaliasLoteDialog } from "@/components/insights-ia/anomalia/ReabrirAnomaliasLoteDialog";
 import { dispatchOpenAnomaliaDrawer } from "@/lib/anomalia-routes";
 import { SavedFiltersBar } from "@/components/shared/SavedFiltersBar";
 import {
