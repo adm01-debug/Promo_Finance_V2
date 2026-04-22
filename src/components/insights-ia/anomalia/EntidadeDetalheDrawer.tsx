@@ -75,24 +75,37 @@ export function EntidadeDetalheDrawer({ open, onOpenChange, entidade }: Props) {
             </p>
           ) : (
             <dl className="grid grid-cols-1 gap-2">
-              {entries.map(([k, v]) => (
-                <div
-                  key={k}
-                  className="border rounded-md px-3 py-2 bg-muted/30"
-                >
-                  <dt className="text-xs uppercase tracking-wide text-muted-foreground">
-                    {k}
-                  </dt>
-                  <dd className="font-mono text-xs break-all whitespace-pre-wrap mt-1">
-                    {formatValue(v)}
-                  </dd>
-                </div>
-              ))}
+              {entries.map(([k, v]) => {
+                const isMono =
+                  k === "id" || k.endsWith("_id") || k === "uuid";
+                const isNumeric = typeof v === "number";
+                return (
+                  <div
+                    key={k}
+                    className="border border-border rounded-md px-3 py-2 bg-muted/40"
+                  >
+                    <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                      {k}
+                    </dt>
+                    <dd
+                      className={
+                        isMono
+                          ? "font-mono text-xs break-all whitespace-pre-wrap mt-1"
+                          : isNumeric
+                          ? "text-xs tabular-nums break-all whitespace-pre-wrap mt-1"
+                          : "text-xs break-all whitespace-pre-wrap mt-1"
+                      }
+                    >
+                      {formatValue(v)}
+                    </dd>
+                  </div>
+                );
+              })}
             </dl>
           )}
         </ScrollArea>
 
-        <SheetFooter className="gap-2 sm:gap-2 flex-wrap border-t pt-4">
+        <SheetFooter className="gap-2 sm:gap-2 flex-wrap border-t border-border pt-4">
           {entidade.encontrada && (
             <Button variant="outline" size="sm" onClick={handleCopyJson}>
               <Copy className="h-3 w-3 mr-1" /> Copiar JSON
