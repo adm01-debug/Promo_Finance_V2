@@ -32,6 +32,32 @@ export function ConciliacaoHistoricoTab() {
     return lista;
   }, [feedback, filtro, busca]);
 
+  type Row = (typeof filtrados)[number];
+  const exportColumns: ViewExportColumn<Row>[] = useMemo(
+    () => [
+      { key: 'created_at', header: 'Data', accessor: (r) => formatDate(r.created_at) },
+      { key: 'acao', header: 'Decisão', accessor: (r) => r.acao },
+      { key: 'score', header: 'Score', accessor: (r) => Math.round(r.score_original) },
+      { key: 'tipo', header: 'Tipo', accessor: (r) => r.tipo_lancamento },
+      { key: 'transacao', header: 'Transação', accessor: (r) => r.transacao_descricao ?? '' },
+      { key: 'entidade', header: 'Entidade', accessor: (r) => r.lancamento_entidade ?? '' },
+      { key: 'lancamento', header: 'Lançamento', accessor: (r) => r.lancamento_descricao ?? '' },
+      { key: 'motivo', header: 'Motivo rejeição', accessor: (r) => r.motivo_rejeicao ?? '' },
+    ],
+    [],
+  );
+
+  const exportMeta = useMemo(
+    () => ({
+      ordenacao: 'Data (desc)',
+      filtros: {
+        Decisão: filtro,
+        Busca: busca || '—',
+      },
+    }),
+    [filtro, busca],
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -65,6 +91,13 @@ export function ConciliacaoHistoricoTab() {
                 <SelectItem value="rejeitado">Rejeitados</SelectItem>
               </SelectContent>
             </Select>
+            <ViewExportButton
+              filename="conciliacoes_ia_visualizacao"
+              title="Conciliações IA — visualização atual"
+              rows={filtrados}
+              columns={exportColumns}
+              meta={exportMeta}
+            />
           </div>
         </div>
       </CardHeader>
