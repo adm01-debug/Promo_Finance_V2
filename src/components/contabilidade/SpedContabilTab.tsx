@@ -245,12 +245,38 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                   Pré-visualizar
                 </Button>
               )}
-              <Button disabled={!empresaId} onClick={() => setWizardOpen(true)} className="flex-1">
+              <Button disabled={!empresaId} variant="outline" onClick={() => setWizardOpen(true)} className="flex-1">
                 <Wand2 className="mr-2 h-4 w-4" />
                 Abrir wizard · {ano}
               </Button>
+              <Button
+                disabled={!empresaId || exportButton.disabled}
+                onClick={handleGerarExportar}
+                variant={exportButton.variant}
+                className={exportButton.className}
+              >
+                {exportButton.icon}
+                {exportButton.label}
+              </Button>
             </div>
           </div>
+
+          {exportStatus !== 'idle' && (
+            <div
+              className={cn(
+                'flex items-center gap-2 rounded-md border px-3 py-2 text-xs animate-fade-in',
+                exportStatus === 'queued' && 'border-muted-foreground/20 bg-muted/30 text-muted-foreground',
+                exportStatus === 'processing' && 'border-primary/30 bg-primary/5 text-primary',
+                exportStatus === 'done' && 'border-success/30 bg-success/5 text-success',
+                exportStatus === 'error' && 'border-destructive/30 bg-destructive/5 text-destructive',
+              )}
+            >
+              {exportStatus === 'queued' && <><Clock className="h-3.5 w-3.5" /><span>Em fila — preparando geração do SPED {tipo} para o ano {ano}.</span></>}
+              {exportStatus === 'processing' && <><Loader2 className="h-3.5 w-3.5 animate-spin" /><span>Processando — gerando arquivo SPED {tipo} ({ano}). Isso pode levar alguns segundos.</span></>}
+              {exportStatus === 'done' && <><CheckCircle2 className="h-3.5 w-3.5" /><span>Concluído — arquivo disponível no histórico abaixo e aberto em nova aba.</span></>}
+              {exportStatus === 'error' && <><AlertTriangle className="h-3.5 w-3.5" /><span>Falha na geração — verifique o histórico para detalhes ou tente novamente.</span></>}
+            </div>
+          )}
 
           <Alert variant="warning" title="Arquivo preliminar">
             <div className="flex items-start gap-2">
