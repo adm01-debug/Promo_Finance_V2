@@ -102,12 +102,28 @@ export function ReabrirAnomaliasLoteDialog({
           <Textarea
             id="motivo-reabertura-lote"
             value={motivo}
-            onChange={(e) => setMotivo(e.target.value)}
+            onChange={(e) => {
+              setMotivo(e.target.value);
+              if (!tocado) setTocado(true);
+            }}
+            onBlur={() => setTocado(true)}
             placeholder="Ex.: Auditoria identificou nova evidência que invalida a classificação anterior."
             rows={4}
             maxLength={1000}
             autoFocus
+            aria-invalid={mostrarErro}
+            aria-describedby={mostrarErro ? "motivo-reabertura-lote-erro" : undefined}
+            className={mostrarErro ? "border-destructive focus-visible:ring-destructive" : ""}
           />
+          {mostrarErro && (
+            <p
+              id="motivo-reabertura-lote-erro"
+              role="alert"
+              className="text-xs text-destructive"
+            >
+              {erroMotivo}
+            </p>
+          )}
         </div>
 
         <DialogFooter>
