@@ -40,6 +40,7 @@ import {
   type Anomalia,
 } from "@/hooks/useAnomaliasDetectadas";
 import { useAnomaliaDetectionRun } from "@/hooks/useAnomaliaDetectionRun";
+import { useRefetchAnomaliasOnFocus } from "@/hooks/useRefetchAnomaliasOnFocus";
 import { DetectionRunProgress } from "./DetectionRunProgress";
 import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
 import { AnomaliasReviewQueue } from "./AnomaliasReviewQueue";
@@ -251,6 +252,8 @@ export function AnomaliasDetectadasPanel() {
   const { data, isLoading, atualizarStatus } = useAnomaliasDetectadas(
     filters.status === "todas" ? undefined : filters.status,
   );
+  // Revalida a lista quando o usuário volta da tela completa da entidade
+  useRefetchAnomaliasOnFocus();
   const { activeRun, disparar, disparando } = useAnomaliaDetectionRun();
   const sincronizar = useSincronizarAnomaliaBitrix();
   const { data: pendentes = [] } = usePendingAnomaliasQueue();

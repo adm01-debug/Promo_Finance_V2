@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAnomaliaDetalhe } from "@/hooks/useAnomaliaDetalhe";
+import { useRefetchAnomaliasOnFocus } from "@/hooks/useRefetchAnomaliasOnFocus";
 import { useAnomaliaPreferences } from "@/hooks/useAnomaliaPreferences";
 import { useLogAudit } from "@/hooks/useAuditLog";
 import { AnomaliaHeader } from "@/components/insights-ia/anomalia/AnomaliaHeader";
@@ -30,6 +31,7 @@ import { ANOMALIA_DRAWER_EVENT, getEntidadeUrl } from "@/lib/anomalia-routes";
 export function AnomaliaDrillDownDrawer() {
   const [openId, setOpenId] = useState<string | null>(null);
   const { data, isLoading, error } = useAnomaliaDetalhe(openId ?? undefined);
+  useRefetchAnomaliasOnFocus(openId ?? undefined);
   const { preferences } = useAnomaliaPreferences();
   const queryClient = useQueryClient();
   const audit = useLogAudit();
