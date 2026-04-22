@@ -56,6 +56,7 @@ import {
 } from "@/components/shared/ViewExportButton";
 import {
   ColumnVisibilityMenu,
+  mergeLockedColumns,
   type ColumnDef,
 } from "@/components/shared/ColumnVisibilityMenu";
 import type { SavedFilterPayload } from "@/hooks/useSavedFilters";
@@ -219,7 +220,7 @@ export function AnomaliasDetectadasPanel() {
       setFilters({ ...DEFAULT_FILTERS, ...defaultFilter.filters.filters });
       if (defaultFilter.filters.sort) setSort(defaultFilter.filters.sort);
       if (defaultFilter.filters.columns)
-        setVisibleCols(defaultFilter.filters.columns);
+        setVisibleCols(mergeLockedColumns(defaultFilter.filters.columns, COLUNAS));
       setActivePresetId(defaultFilter.id);
     }
     setBootstrapped(true);
@@ -467,7 +468,8 @@ export function AnomaliasDetectadasPanel() {
   }) => {
     setFilters({ ...DEFAULT_FILTERS, ...preset.payload.filters });
     if (preset.payload.sort) setSort(preset.payload.sort);
-    if (preset.payload.columns) setVisibleCols(preset.payload.columns);
+    if (preset.payload.columns)
+      setVisibleCols(mergeLockedColumns(preset.payload.columns, COLUNAS));
     setActivePresetId(preset.id);
   };
 

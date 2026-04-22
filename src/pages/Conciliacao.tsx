@@ -26,7 +26,8 @@ import { RelatorioImportacaoDialog } from '@/components/conciliacao/RelatorioImp
 import { ConciliacaoDashboard } from '@/components/conciliacao/ConciliacaoDashboard';
 import { RegrasConciliacaoPanel } from '@/components/conciliacao/RegrasConciliacaoPanel';
 import { ConciliacaoFilters } from '@/components/conciliacao/ConciliacaoFilters';
-import { ConciliacaoToolbar, CONCILIACAO_DEFAULT_SORT, CONCILIACAO_DEFAULT_VISIBLE, type ConciliacaoSort } from '@/components/conciliacao/ConciliacaoToolbar';
+import { ConciliacaoToolbar, CONCILIACAO_COLUMNS, CONCILIACAO_DEFAULT_SORT, CONCILIACAO_DEFAULT_VISIBLE, type ConciliacaoSort } from '@/components/conciliacao/ConciliacaoToolbar';
+import { mergeLockedColumns } from '@/components/shared/ColumnVisibilityMenu';
 import { useSavedFilters, type SavedFilterPayload } from '@/hooks/useSavedFilters';
 import type { ConciliacaoFilterState } from '@/components/conciliacao/ConciliacaoFilters';
 import { useEffect, useMemo, useState } from 'react';
@@ -96,7 +97,7 @@ export default function Conciliacao() {
     const p = defaultFilter.filters;
     if (p?.filters) setFilters(p.filters);
     if (p?.sort) setSort(p.sort as ConciliacaoSort);
-    if (p?.columns) setVisibleCols(p.columns);
+    if (p?.columns) setVisibleCols(mergeLockedColumns(p.columns, CONCILIACAO_COLUMNS));
     setActivePresetId(defaultFilter.id);
     setBootstrapped(true);
   }, [defaultFilter, bootstrapped, setFilters]);
@@ -104,7 +105,7 @@ export default function Conciliacao() {
   const handleLoadPreset = (preset: { id: string; payload: SavedFilterPayload<ConciliacaoFilterState> }) => {
     if (preset.payload.filters) setFilters(preset.payload.filters);
     if (preset.payload.sort) setSort(preset.payload.sort as ConciliacaoSort);
-    if (preset.payload.columns) setVisibleCols(preset.payload.columns);
+    if (preset.payload.columns) setVisibleCols(mergeLockedColumns(preset.payload.columns, CONCILIACAO_COLUMNS));
     setActivePresetId(preset.id);
   };
   const handleClearPreset = () => setActivePresetId(null);
