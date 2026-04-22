@@ -156,6 +156,16 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
   const avisos = data?.validacoes.avisos.length || 0;
   const cfcCriticos = auditoriaCFC.problemasCriticos || 0;
   const podeGerar = !!data && erros === 0 && preValidacao.podeGerar && cfcCriticos === 0;
+  const errosLista = data?.validacoes.erros || [];
+  const avisosLista = data?.validacoes.avisos || [];
+  const motivosBloqueio: string[] = [];
+  if (data) {
+    if (erros > 0) motivosBloqueio.push(`${erros} erro(s) de validação`);
+    if (!data.ecd_referencia) motivosBloqueio.push('ECD do período não localizada');
+    if (!preValidacao.podeGerar) motivosBloqueio.push('Pré-validação SPED com pendências críticas');
+    if (cfcCriticos > 0) motivosBloqueio.push(`${cfcCriticos} pendência(s) CFC crítica(s)`);
+  }
+  const motivoBloqueio = motivosBloqueio.join(' · ');
 
   const handleGerar = async () => {
     try {
