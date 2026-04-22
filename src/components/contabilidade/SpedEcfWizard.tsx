@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, AlertTriangle, XCircle, Loader2, Download, FileArchive, Copy, Check, ChevronRight, ShieldAlert, RefreshCw, Link2, Send, Building2, Hash, Calendar, FileText, Sparkles, Lock, Ban } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, XCircle, Loader2, Download, FileArchive, Copy, Check, ChevronRight, ShieldAlert, RefreshCw, Link2, Send, Building2, Hash, Calendar, FileText, Sparkles, Lock, Ban, FileDown } from 'lucide-react';
+import { exportChecklistEcfPdf } from '@/lib/sped-ecf-checklist-pdf';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
