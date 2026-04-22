@@ -26,6 +26,20 @@ interface PartidaForm { conta_id: string; tipo: 'D' | 'C'; valor: number }
 
 type DatePreset = 'all' | 'today' | 'last7' | 'last30' | 'mes' | 'ano' | 'custom';
 
+interface LancamentosFilters extends Record<string, unknown> {
+  busca: string;
+  preset: DatePreset;
+  dataInicio: string | null; // ISO yyyy-MM-dd
+  dataFim: string | null;
+}
+
+const LANCAMENTOS_DEFAULTS: LancamentosFilters = {
+  busca: '',
+  preset: 'all',
+  dataInicio: null,
+  dataFim: null,
+};
+
 export function LancamentosTab({ empresaId, ano }: Props) {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState(format(new Date(), 'yyyy-MM-dd'));
@@ -35,11 +49,18 @@ export function LancamentosTab({ empresaId, ano }: Props) {
     { conta_id: '', tipo: 'C', valor: 0 },
   ]);
 
-  // Filtros
-  const [busca, setBusca] = useState('');
-  const [preset, setPreset] = useState<DatePreset>('all');
-  const [dataInicio, setDataInicio] = useState<Date | undefined>();
-  const [dataFim, setDataFim] = useState<Date | undefined>();
+  // Filtros gerenciados
+  const filtersController = useManagedFilters<LancamentosFilters>({
+    entityType: 'lancamentos-contabeis',
+    defaults: LANCAMENTOS_DEFAULTS,
+    localStorageKey: 'app-lancamentos-filters',
+  });
+  const { busca, preset, dataInicio: dataInicioStr, dataFim: dataFimStr } = filtersController.values;
+  const dataInicio = dataInicioStr ? new Date(`${dataInicioStr}T00:00:00`) : undefined;
+  const dataFim = dataFimStr ? new Date(`${dataFimStr}T23:59:59`) : undefined;
+  const setBusca = (v: string) => filtersController.setField('busca', v);
+  const setDataInicio = (d: Date | undefined) => filtersController.setField('dataInicio', d ? format(d, 'yyyy-MM-dd') : null);
+  const setDataFim = (d: Date | undefined) => filtersController.setField('dataFim', d ? format(d, 'yyyy-MM-dd') : null);
 
   const { data: lancs = [], isLoading } = useLancamentosContabeis(empresaId, ano);
   const { data: plano = [] } = usePlanoContas(empresaId);
@@ -51,21 +72,24 @@ export function LancamentosTab({ empresaId, ano }: Props) {
   const balanceado = Math.abs(totalD - totalC) < 0.01 && totalD > 0;
 
   const handlePreset = (p: DatePreset) => {
-    setPreset(p);
     const hoje = new Date();
+    let ini: Date | undefined; let fim: Date | undefined;
     switch (p) {
-      case 'all': setDataInicio(undefined); setDataFim(undefined); break;
-      case 'today': setDataInicio(startOfDay(hoje)); setDataFim(endOfDay(hoje)); break;
-      case 'last7': setDataInicio(startOfDay(subDays(hoje, 6))); setDataFim(endOfDay(hoje)); break;
-      case 'last30': setDataInicio(startOfDay(subDays(hoje, 29))); setDataFim(endOfDay(hoje)); break;
-      case 'mes': setDataInicio(startOfMonth(hoje)); setDataFim(endOfMonth(hoje)); break;
-      case 'ano': setDataInicio(startOfYear(new Date(ano, 0, 1))); setDataFim(endOfYear(new Date(ano, 0, 1))); break;
-      case 'custom': break;
+      case 'all': break;
+      case 'today': ini = startOfDay(hoje); fim = endOfDay(hoje); break;
+      case 'last7': ini = startOfDay(subDays(hoje, 6)); fim = endOfDay(hoje); break;
+      case 'last30': ini = startOfDay(subDays(hoje, 29)); fim = endOfDay(hoje); break;
+      case 'mes': ini = startOfMonth(hoje); fim = endOfMonth(hoje); break;
+      case 'ano': ini = startOfYear(new Date(ano, 0, 1)); fim = endOfYear(new Date(ano, 0, 1)); break;
+      case 'custom': return filtersController.setField('preset', p);
     }
+    filtersController.setValues({
+      ...filtersController.values,
+      preset: p,
+      dataInicio: ini ? format(ini, 'yyyy-MM-dd') : null,
+      dataFim: fim ? format(fim, 'yyyy-MM-dd') : null,
+    });
   };
-
-  const limparFiltros = () => { setBusca(''); setPreset('all'); setDataInicio(undefined); setDataFim(undefined); };
-  const filtrosAtivos = busca !== '' || dataInicio !== undefined || dataFim !== undefined;
 
   const lancsFiltrados = useMemo(() => {
     const termo = busca.trim().toLowerCase();
