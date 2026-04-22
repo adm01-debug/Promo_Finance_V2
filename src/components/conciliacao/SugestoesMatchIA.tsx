@@ -51,7 +51,20 @@ export function SugestoesMatchIA({
   }>({ open: false, transacao: null, sugestao: null });
   
   const { isAnalyzing, matchesIA, lastAnalysis, analisarConciliacao } = useConciliacaoIA();
-  const { historico, registrarHistorico, registrarFeedback, aprovarEmLote, estatisticasHistorico, isLoadingHistorico } = useHistoricoConciliacaoIA();
+  const { historico, feedback, registrarHistorico, registrarFeedback, aprovarEmLote, estatisticasHistorico, isLoadingHistorico } = useHistoricoConciliacaoIA();
+
+  // Mapa: transacao_bancaria_id -> motivo de rejeição mais recente (de feedback_conciliacao_ia)
+  const motivosRejeicaoPorTransacao = useMemo(() => {
+    const map = new Map<string, string>();
+    feedback.forEach((f) => {
+      if (f.acao !== 'rejeitado' || !f.transacao_bancaria_id) return;
+      const motivo = (f.motivo_rejeicao || '').trim();
+      if (!motivo) return;
+      // feedback já vem ordenado desc por created_at — só registramos a primeira ocorrência
+      if (!map.has(f.transacao_bancaria_id)) map.set(f.transacao_bancaria_id, motivo);
+    });
+    return map;
+  }, [feedback]);
 
   // Bloqueia interações enquanto qualquer mutação de persistência está em andamento
   const mutationPending = registrarHistorico.isPending || registrarFeedback.isPending || aprovarEmLote.isPending;
@@ -366,6 +379,18 @@ export function SugestoesMatchIA({
                                   <p className="text-xs text-accent-foreground flex items-center gap-1">
                                     <Sparkles className="h-3 w-3" />
                                     {melhorMatch.analiseIA}
+                                  </p>
+                                </div>
+                              )}
+
+                              {motivosRejeicaoPorTransacao.has(transacao.id) && (
+                                <div className="mt-2 ml-13 p-2 rounded-lg bg-destructive/10 border border-destructive/30">
+                                  <p className="text-xs text-destructive flex items-start gap-1.5">
+                                    <X className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                                    <span>
+                                      <span className="font-semibold">Motivo da rejeição anterior:</span>{' '}
+                                      {motivosRejeicaoPorTransacao.get(transacao.id)}
+                                    </span>
                                   </p>
                                 </div>
                               )}
