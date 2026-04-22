@@ -79,6 +79,7 @@ const SSOJitEvents = lazy(() => import('./pages/admin/SSOJitEvents'));
 const InsightsIA = lazy(() => import('./pages/admin/InsightsIA'));
 const AnomaliaDetalhe = lazy(() => import('./pages/admin/AnomaliaDetalhe'));
 const ComplianceAuditoria = lazy(() => import('./pages/admin/ComplianceAuditoria'));
+const AuditoriaIA = lazy(() => import('./pages/admin/AuditoriaIA'));
 const Contabilidade = lazy(() => import('./pages/Contabilidade'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
