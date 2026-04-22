@@ -37,10 +37,16 @@ export function useEvidenciasPacotes() {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      return data as { signed_url: string; pacote: EvidenciaPacote };
+      return data as { signed_url: string; pacote: EvidenciaPacote; audit_warning?: string | null };
     },
     onSuccess: (d) => {
       toast.success("Pacote gerado com sucesso");
+      if (d.audit_warning) {
+        toast.warning("Trilha de auditoria não registrada", {
+          description: d.audit_warning,
+          duration: 8000,
+        });
+      }
       window.open(d.signed_url, "_blank");
       qc.invalidateQueries({ queryKey: ["evidencias-pacotes"] });
       qc.invalidateQueries({ queryKey: ["compliance-kpis"] });
