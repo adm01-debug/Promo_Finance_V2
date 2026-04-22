@@ -5,8 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Label } from "@/components/ui/label";
-import { Package, Download, Loader2, FileArchive, FileSpreadsheet, FileText, X, Filter } from "lucide-react";
+import { Package, Download, Loader2, FileArchive, FileSpreadsheet, FileText } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,36 +55,8 @@ export function EvidenciasTab() {
     busca: "",
     acao: "todas",
     usuario: "",
+    escopos: [],
   });
-
-  // Filtros adicionais específicos da aba Evidências
-  const [coberturaInicio, setCoberturaInicio] = useState("");
-  const [coberturaFim, setCoberturaFim] = useState("");
-  const [escoposFiltro, setEscoposFiltro] = useState<string[]>([]);
-
-  const aplicarPresetGeracao = (dias: number) => {
-    setFiltros((f) => ({ ...f, inicio: isoDays(dias), fim: isoDays(0) }));
-  };
-
-  const limparFiltrosHistorico = () => {
-    setFiltros({ inicio: "", fim: "", busca: "", acao: "todas", usuario: "" });
-    setCoberturaInicio("");
-    setCoberturaFim("");
-    setEscoposFiltro([]);
-  };
-
-  const toggleEscopoFiltro = (v: string) => {
-    setEscoposFiltro((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]));
-  };
-
-  const filtrosAtivos =
-    !!filtros.inicio ||
-    !!filtros.fim ||
-    !!filtros.busca ||
-    !!filtros.usuario ||
-    !!coberturaInicio ||
-    !!coberturaFim ||
-    escoposFiltro.length > 0;
 
   const usuarios = useMemo(() => {
     const set = new Set<string>();
@@ -94,6 +65,7 @@ export function EvidenciasTab() {
   }, [data]);
 
   const pacotesFiltrados = useMemo(() => {
+    const escoposFiltro = filtros.escopos ?? [];
     return (data ?? []).filter((p) => {
       const dt = new Date(p.created_at);
       if (filtros.inicio && dt < new Date(`${filtros.inicio}T00:00:00`)) return false;
@@ -104,14 +76,11 @@ export function EvidenciasTab() {
           `${p.periodo_inicio} ${p.periodo_fim} ${p.escopos.join(" ")} ${p.gerado_por_email ?? ""}`.toLowerCase();
         if (!hay.includes(filtros.busca.toLowerCase())) return false;
       }
-      // Filtro por período de cobertura do pacote (sobreposição com [coberturaInicio, coberturaFim])
-      if (coberturaInicio && p.periodo_fim < coberturaInicio) return false;
-      if (coberturaFim && p.periodo_inicio > coberturaFim) return false;
-      // Filtro por escopos: pacote deve conter ao menos um dos escopos selecionados
+      // Escopos: pacote precisa conter ao menos um dos selecionados
       if (escoposFiltro.length > 0 && !p.escopos.some((e) => escoposFiltro.includes(e))) return false;
       return true;
     });
-  }, [data, filtros, coberturaInicio, coberturaFim, escoposFiltro]);
+  }, [data, filtros]);
 
   const toggleEscopo = (v: string) => {
     setEscopos((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]));
@@ -207,90 +176,13 @@ export function EvidenciasTab() {
           <CardTitle className="text-base">Histórico de pacotes</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <AuditFiltersBar value={filtros} onChange={setFiltros} usuarios={usuarios} />
-
-          <div className="rounded-md border bg-muted/20 p-3 space-y-3">
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Filter className="h-4 w-4" /> Filtros adicionais
-              </div>
-              <div className="flex items-center gap-1 flex-wrap">
-                <span className="text-xs text-muted-foreground mr-1">Geração:</span>
-                <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => aplicarPresetGeracao(7)}>
-                  7d
-                </Button>
-                <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => aplicarPresetGeracao(30)}>
-                  30d
-                </Button>
-                <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => aplicarPresetGeracao(90)}>
-                  90d
-                </Button>
-                <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => aplicarPresetGeracao(365)}>
-                  1a
-                </Button>
-                {filtrosAtivos && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-7 px-2 text-xs text-muted-foreground"
-                    onClick={limparFiltrosHistorico}
-                  >
-                    <X className="h-3 w-3 mr-1" /> Limpar
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">Cobertura — início</Label>
-                <Input
-                  type="date"
-                  value={coberturaInicio}
-                  onChange={(e) => setCoberturaInicio(e.target.value)}
-                  className="h-9"
-                />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">Cobertura — fim</Label>
-                <Input
-                  type="date"
-                  value={coberturaFim}
-                  onChange={(e) => setCoberturaFim(e.target.value)}
-                  className="h-9"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <Label className="text-xs text-muted-foreground">Escopos incluídos no pacote</Label>
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {ESCOPOS.map((e) => {
-                  const ativo = escoposFiltro.includes(e.value);
-                  return (
-                    <button
-                      key={e.value}
-                      type="button"
-                      onClick={() => toggleEscopoFiltro(e.value)}
-                      className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-full"
-                    >
-                      <Badge
-                        variant={ativo ? "default" : "outline"}
-                        className="cursor-pointer text-[11px] px-2.5 py-0.5"
-                      >
-                        {e.label}
-                      </Badge>
-                    </button>
-                  );
-                })}
-                {escoposFiltro.length === 0 && (
-                  <span className="text-xs text-muted-foreground self-center ml-1">
-                    (qualquer escopo)
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
+          <AuditFiltersBar
+            value={filtros}
+            onChange={setFiltros}
+            usuarios={usuarios}
+            escoposOptions={ESCOPOS}
+            escoposLabel="Escopos do pacote"
+          />
 
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">
