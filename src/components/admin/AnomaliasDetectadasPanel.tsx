@@ -468,7 +468,8 @@ export function AnomaliasDetectadasPanel() {
   }) => {
     setFilters({ ...DEFAULT_FILTERS, ...preset.payload.filters });
     if (preset.payload.sort) setSort(preset.payload.sort);
-    if (preset.payload.columns) setVisibleCols(preset.payload.columns);
+    if (preset.payload.columns)
+      setVisibleCols(mergeLockedColumns(preset.payload.columns, COLUNAS));
     setActivePresetId(preset.id);
   };
 
