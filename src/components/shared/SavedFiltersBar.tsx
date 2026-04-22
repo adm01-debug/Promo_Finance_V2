@@ -717,8 +717,24 @@ export function SavedFiltersBar<T>({
               </div>
             )}
           </div>
+          {shareError && (
+            <div
+              role="alert"
+              className="mt-2 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive"
+            >
+              <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+              <span>{shareError}</span>
+            </div>
+          )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShareDialog(null)}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShareError(null);
+                setShareDialog(null);
+              }}
+              disabled={updateSharing.isPending}
+            >
               Cancelar
             </Button>
             <Button
@@ -728,7 +744,14 @@ export function SavedFiltersBar<T>({
                 (shareDialogEnabled && !currentEmpresaId)
               }
             >
-              Salvar
+              {updateSharing.isPending ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 mr-2 animate-spin" />
+                  Salvando…
+                </>
+              ) : (
+                "Salvar"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
