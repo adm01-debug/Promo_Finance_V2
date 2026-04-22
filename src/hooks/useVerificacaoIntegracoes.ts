@@ -16,7 +16,7 @@ export interface LancamentoIntegracaoRow {
   diferenca: number;
   qtd_partidas: number;
   status_consistencia: StatusConsistencia;
-  external_ref?: string | null;
+  origem_id?: string | null;
 }
 
 export interface ResumoIntegracao {
@@ -51,7 +51,7 @@ interface RawLancamento {
   origem: string;
   valor_total: number;
   status: string;
-  external_ref?: string | null;
+  origem_id?: string | null;
   partidas: PartidaRow[] | null;
 }
 
@@ -69,7 +69,7 @@ export function useVerificacaoIntegracoes(empresaId?: string, ano?: number) {
 
       const { data, error } = await supabase
         .from('lancamentos_contabeis')
-        .select('id, numero_lancamento, data_lancamento, historico, origem, valor_total, status, external_ref, partidas:partidas_contabeis(tipo, valor)')
+        .select('id, numero_lancamento, data_lancamento, historico, origem, valor_total, status, origem_id, partidas:partidas_contabeis(tipo, valor)')
         .eq('empresa_id', empresaId)
         .neq('origem', 'manual')
         .gte('data_lancamento', inicio)
@@ -97,7 +97,7 @@ export function useVerificacaoIntegracoes(empresaId?: string, ano?: number) {
           origem: l.origem || 'desconhecida',
           valor_total: Number(l.valor_total || 0),
           status: l.status,
-          external_ref: l.external_ref ?? null,
+          origem_id: l.origem_id ?? null,
           total_debito: totalD,
           total_credito: totalC,
           diferenca: diff,

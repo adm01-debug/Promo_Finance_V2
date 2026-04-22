@@ -44,7 +44,7 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
       if (origemFiltro !== 'todas' && l.origem !== origemFiltro) return false;
       if (statusFiltro !== 'todos' && l.status_consistencia !== statusFiltro) return false;
       if (termo) {
-        const hay = `${l.historico} ${l.numero_lancamento} ${l.external_ref ?? ''}`.toLowerCase();
+        const hay = `${l.historico} ${l.numero_lancamento} ${l.origem_id ?? ''}`.toLowerCase();
         if (!hay.includes(termo)) return false;
       }
       return true;
