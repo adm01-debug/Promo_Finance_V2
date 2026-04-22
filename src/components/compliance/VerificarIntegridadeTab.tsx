@@ -414,7 +414,7 @@ export function VerificarIntegridadeTab() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Alert variant={integridadeOk ? "default" : "destructive"}>
+            <Alert variant={integridadeOk ? "success" : "error"}>
               {integridadeOk ? (
                 <CheckCircle2 className="h-4 w-4" />
               ) : (

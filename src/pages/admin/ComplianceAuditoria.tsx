@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShieldCheck, Banknote, Receipt, Activity, ClipboardCheck, Package } from "lucide-react";
+import { ShieldCheck, Banknote, Receipt, Activity, ClipboardCheck, Package, Hash } from "lucide-react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { ComplianceKpis } from "@/components/compliance/ComplianceKpis";
 import { TrilhaFinanceiraTab } from "@/components/compliance/TrilhaFinanceiraTab";
@@ -8,6 +8,7 @@ import { TrilhaTributariaTab } from "@/components/compliance/TrilhaTributariaTab
 import { TrilhaSistemaTab } from "@/components/compliance/TrilhaSistemaTab";
 import { ConformidadeFiscalTab } from "@/components/compliance/ConformidadeFiscalTab";
 import { EvidenciasTab } from "@/components/compliance/EvidenciasTab";
+import { VerificarIntegridadeTab } from "@/components/compliance/VerificarIntegridadeTab";
 
 export default function ComplianceAuditoria() {
   const [tab, setTab] = useState("financeira");
@@ -30,7 +31,7 @@ export default function ComplianceAuditoria() {
         <ComplianceKpis />
 
         <Tabs value={tab} onValueChange={setTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-6">
             <TabsTrigger value="financeira" className="gap-2">
               <Banknote className="h-4 w-4" />
               <span className="hidden sm:inline">Financeira</span>
@@ -51,6 +52,10 @@ export default function ComplianceAuditoria() {
               <Package className="h-4 w-4" />
               <span className="hidden sm:inline">Evidências</span>
             </TabsTrigger>
+            <TabsTrigger value="verificar" className="gap-2">
+              <Hash className="h-4 w-4" />
+              <span className="hidden sm:inline">Integridade</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="financeira"><TrilhaFinanceiraTab /></TabsContent>
@@ -58,6 +63,7 @@ export default function ComplianceAuditoria() {
           <TabsContent value="sistema"><TrilhaSistemaTab /></TabsContent>
           <TabsContent value="conformidade"><ConformidadeFiscalTab /></TabsContent>
           <TabsContent value="evidencias"><EvidenciasTab /></TabsContent>
+          <TabsContent value="verificar"><VerificarIntegridadeTab /></TabsContent>
         </Tabs>
       </div>
     </MainLayout>
