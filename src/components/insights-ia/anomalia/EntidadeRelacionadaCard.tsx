@@ -6,41 +6,52 @@ import { Link } from "react-router-dom";
 import type { EntidadeRelacionada } from "@/hooks/useAnomaliaDetalhe";
 import { EntidadeDetalheDrawer } from "./EntidadeDetalheDrawer";
 
+const MONO_KEYS = new Set(["id", "uuid", "external_id", "bitrix_id"]);
+
 export function EntidadeRelacionadaCard({ entidade }: { entidade: EntidadeRelacionada }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
     <>
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Database className="h-4 w-4" /> Entidade relacionada
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-sm font-semibold tracking-tight">
+            <Database className="h-4 w-4 text-muted-foreground" /> Entidade relacionada
             <span className="text-xs text-muted-foreground font-normal">({entidade.tipo})</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           {!entidade.encontrada ? (
             <p className="text-sm text-muted-foreground">
               Registro não localizado ou já removido.
             </p>
           ) : (
-            <div className="space-y-3">
-              <dl className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+            <>
+              <dl className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {Object.entries(entidade.registro ?? {})
                   .filter(([k]) => !["created_at", "updated_at"].includes(k))
                   .slice(0, 10)
-                  .map(([k, v]) => (
-                    <div key={k} className="border rounded-md px-2 py-1.5">
-                      <dt className="text-xs text-muted-foreground">{k}</dt>
-                      <dd className="font-mono text-xs truncate">
-                        {v === null || v === undefined
-                          ? "—"
-                          : typeof v === "object"
-                          ? JSON.stringify(v)
-                          : String(v)}
-                      </dd>
-                    </div>
-                  ))}
+                  .map(([k, v]) => {
+                    const isMono = MONO_KEYS.has(k) || k.endsWith("_id");
+                    return (
+                      <div key={k} className="border border-border rounded-md px-2 py-1.5">
+                        <dt className="text-xs font-medium text-muted-foreground">{k}</dt>
+                        <dd
+                          className={
+                            isMono
+                              ? "font-mono text-xs truncate"
+                              : "text-xs tabular-nums truncate"
+                          }
+                        >
+                          {v === null || v === undefined
+                            ? "—"
+                            : typeof v === "object"
+                            ? JSON.stringify(v)
+                            : String(v)}
+                        </dd>
+                      </div>
+                    );
+                  })}
               </dl>
               <div className="flex flex-wrap gap-2">
                 <Button
@@ -58,7 +69,7 @@ export function EntidadeRelacionadaCard({ entidade }: { entidade: EntidadeRelaci
                   </Button>
                 )}
               </div>
-            </div>
+            </>
           )}
         </CardContent>
       </Card>

@@ -6,23 +6,23 @@ import type { PontoHistorico } from "@/hooks/useAnomaliaDetalhe";
 export function HistoricoContextualCard({ pontos }: { pontos: PontoHistorico[] }) {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <TrendingUp className="h-4 w-4" /> Histórico contextual (30 dias)
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-sm font-semibold tracking-tight">
+          <TrendingUp className="h-4 w-4 text-muted-foreground" /> Histórico contextual (30 dias)
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
         {pontos.length === 0 ? (
           <p className="text-sm text-muted-foreground py-8 text-center">
             Sem dados históricos disponíveis para este tipo de entidade.
           </p>
         ) : (
-          <div className="h-64">
+          <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={pontos}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="data" stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                <XAxis dataKey="data" stroke="hsl(var(--muted-foreground))" fontSize={10} />
+                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} />
                 <Tooltip
                   contentStyle={{
                     background: "hsl(var(--card))",
