@@ -7,6 +7,7 @@ import { AnomaliasDetectadasPanel } from '@/components/admin/AnomaliasDetectadas
 import { ConciliacaoHistoricoTab } from '@/components/insights-ia/ConciliacaoHistoricoTab';
 import { AprendizadoMetricasTab } from '@/components/insights-ia/AprendizadoMetricasTab';
 import { AuditoriaDecisoesTab } from '@/components/insights-ia/AuditoriaDecisoesTab';
+import { useSavedFilterAlerts } from '@/hooks/useSavedFilterAlerts';
 
 export default function InsightsIA() {
   const [tab, setTab] = useState('anomalias');
