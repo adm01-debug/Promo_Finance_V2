@@ -56,6 +56,7 @@ import {
 } from "@/components/shared/ViewExportButton";
 import {
   ColumnVisibilityMenu,
+  mergeLockedColumns,
   type ColumnDef,
 } from "@/components/shared/ColumnVisibilityMenu";
 import type { SavedFilterPayload } from "@/hooks/useSavedFilters";
