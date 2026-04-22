@@ -83,10 +83,16 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
     }
   };
 
-  const copyHash = () => {
-    if (resultado?.hash_sha256) {
-      navigator.clipboard.writeText(resultado.hash_sha256);
-      toast.success('Hash copiado');
+  const copyHash = async () => {
+    if (!resultado?.hash_sha256) return;
+    try {
+      await navigator.clipboard.writeText(resultado.hash_sha256);
+      setHashCopied(true);
+      toast.success('Hash SHA-256 copiado');
+      if (copyTimer.current) clearTimeout(copyTimer.current);
+      copyTimer.current = setTimeout(() => setHashCopied(false), 2000);
+    } catch {
+      toast.error('Não foi possível copiar o hash');
     }
   };
 
