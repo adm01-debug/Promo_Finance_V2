@@ -467,6 +467,71 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
             const errosResultado = resultado.validacoes?.erros || [];
             const avisosResultado = resultado.validacoes?.avisos || [];
             const downloadBloqueado = errosResultado.length > 0;
+
+            // ---- Cross-check ECF × ECD ----
+            const ecdRef = data?.ecd_referencia ?? null;
+            const periodoEcfStr = `${resultado.periodo.inicio} → ${resultado.periodo.fim}`;
+            const periodoEcdStr = data ? `${data.periodo.inicio} → ${data.periodo.fim}` : '—';
+            const periodoMatch = !!data && periodoEcfStr === periodoEcdStr;
+            const cnpjMatch = !!data && resultado.empresa.cnpj === data.empresa.cnpj;
+            const ecdTransmitida = ecdRef?.status === 'transmitido';
+            const checklistAlertas = (data?.checklist || []).filter((c) => c.status !== 'ok');
+
+            type DivergRow = {
+              key: string;
+              label: string;
+              ecfValor: string;
+              ecdValor: string;
+              tone: 'success' | 'warning' | 'destructive' | 'info';
+              detalhe?: string;
+            };
+            const linhas: DivergRow[] = [];
+            linhas.push({
+              key: 'periodo',
+              label: 'Período',
+              ecfValor: periodoEcfStr,
+              ecdValor: periodoEcdStr,
+              tone: periodoMatch ? 'success' : 'destructive',
+              detalhe: periodoMatch ? 'Coincide com a ECD' : 'Períodos divergentes — revise antes de transmitir',
+            });
+            linhas.push({
+              key: 'cnpj',
+              label: 'CNPJ',
+              ecfValor: resultado.empresa.cnpj,
+              ecdValor: ecdRef ? data!.empresa.cnpj : '—',
+              tone: cnpjMatch ? 'success' : 'destructive',
+              detalhe: cnpjMatch ? 'Mesma empresa da ECD' : 'CNPJ não confere com a ECD',
+            });
+            linhas.push({
+              key: 'hash',
+              label: 'Hash SHA-256',
+              ecfValor: `${(resultado.hash_sha256 || '').substring(0, 16)}…`,
+              ecdValor: ecdRef?.hash_sha256 ? `${ecdRef.hash_sha256.substring(0, 16)}…` : '—',
+              tone: 'info',
+              detalhe: 'Hashes divergem por design (arquivos diferentes) — confira independentemente',
+            });
+            linhas.push({
+              key: 'ecd-status',
+              label: 'Status da ECD vinculada',
+              ecfValor: '—',
+              ecdValor: ecdRef ? ecdRef.status : 'não localizada',
+              tone: ecdTransmitida ? 'success' : ecdRef ? 'warning' : 'destructive',
+              detalhe: ecdTransmitida
+                ? 'ECD já transmitida à Receita Federal'
+                : ecdRef
+                  ? 'Recomenda-se transmitir a ECD antes da ECF'
+                  : 'ECD do período não encontrada',
+            });
+
+            const totalDiverg = linhas.filter((l) => l.tone === 'destructive' || l.tone === 'warning').length + checklistAlertas.length;
+
+            const toneClasses: Record<DivergRow['tone'], string> = {
+              success: 'bg-success/10 text-success border-success/30',
+              warning: 'bg-warning/10 text-warning border-warning/30',
+              destructive: 'bg-destructive/10 text-destructive border-destructive/30',
+              info: 'bg-muted/40 text-muted-foreground border-border/60',
+            };
+
             return (
             <motion.div
               key="step-3"
@@ -500,6 +565,99 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                   </div>
                 </div>
               )}
+
+              {/* ---- Cross-check ECF × ECD ---- */}
+              <div className="rounded-xl border border-border/60 bg-card/60 backdrop-blur-sm p-5 space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <p className="text-sm font-semibold font-display tracking-tight flex items-center gap-2">
+                      <Link2 className="h-4 w-4 text-primary" />
+                      Cross-check ECF × ECD
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Confira os campos que serão utilizados antes de liberar o download.
+                    </p>
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      'shrink-0 gap-1',
+                      totalDiverg === 0
+                        ? 'border-success/40 text-success bg-success/10'
+                        : 'border-warning/40 text-warning bg-warning/10',
+                    )}
+                  >
+                    {totalDiverg === 0 ? (
+                      <><CheckCircle2 className="h-3 w-3" /> Sem divergências</>
+                    ) : (
+                      <><AlertTriangle className="h-3 w-3" /> {totalDiverg} ponto(s) de atenção</>
+                    )}
+                  </Badge>
+                </div>
+
+                <div className="rounded-lg border border-border/60 overflow-hidden">
+                  <div className="grid grid-cols-12 gap-2 bg-muted/40 px-3 py-2 text-[10px] uppercase tracking-wide text-muted-foreground font-medium">
+                    <div className="col-span-3">Campo</div>
+                    <div className="col-span-4">ECF (atual)</div>
+                    <div className="col-span-4">ECD (referência)</div>
+                    <div className="col-span-1 text-right">Status</div>
+                  </div>
+                  <div className="divide-y divide-border/50">
+                    {linhas.map((row) => (
+                      <div key={row.key} className="grid grid-cols-12 gap-2 px-3 py-2.5 items-center text-xs">
+                        <div className="col-span-3 font-medium text-foreground">{row.label}</div>
+                        <div className="col-span-4 font-mono text-foreground/90 break-all">{row.ecfValor}</div>
+                        <div className="col-span-4 font-mono text-foreground/90 break-all">{row.ecdValor}</div>
+                        <div className="col-span-1 flex justify-end">
+                          <span
+                            className={cn(
+                              'inline-flex items-center justify-center rounded-md border px-1.5 py-0.5 text-[10px] font-medium',
+                              toneClasses[row.tone],
+                            )}
+                          >
+                            {row.tone === 'success' && 'OK'}
+                            {row.tone === 'warning' && 'Atenção'}
+                            {row.tone === 'destructive' && 'Diverg.'}
+                            {row.tone === 'info' && 'Info'}
+                          </span>
+                        </div>
+                        {row.detalhe && (
+                          <div className="col-span-12 text-[11px] text-muted-foreground pl-0.5">{row.detalhe}</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {checklistAlertas.length > 0 && (
+                  <div className="space-y-1.5">
+                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-medium">
+                      Pontos do cross-check do checklist
+                    </p>
+                    <ul className="space-y-1">
+                      {checklistAlertas.map((c) => (
+                        <li key={c.id} className="flex items-start gap-2 text-xs">
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              'shrink-0 h-5 px-1.5 text-[10px]',
+                              c.status === 'error'
+                                ? 'border-destructive/40 text-destructive bg-destructive/10'
+                                : 'border-warning/40 text-warning bg-warning/10',
+                            )}
+                          >
+                            {c.status === 'error' ? 'erro' : 'aviso'}
+                          </Badge>
+                          <div className="flex-1">
+                            <p className="text-foreground leading-snug">{c.label}</p>
+                            {c.detail && <p className="text-muted-foreground text-[11px]">{c.detail}</p>}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
 
               {errosResultado.length > 0 && (
                 <Alert variant="error">
