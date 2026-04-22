@@ -8498,6 +8498,7 @@ export type Database = {
       }
       sso_sandbox_runs: {
         Row: {
+          batch_id: string | null
           created_at: string
           created_by: string | null
           created_by_email: string | null
@@ -8514,6 +8515,7 @@ export type Database = {
           use_provider_config: boolean
         }
         Insert: {
+          batch_id?: string | null
           created_at?: string
           created_by?: string | null
           created_by_email?: string | null
@@ -8530,6 +8532,7 @@ export type Database = {
           use_provider_config?: boolean
         }
         Update: {
+          batch_id?: string | null
           created_at?: string
           created_by?: string | null
           created_by_email?: string | null
