@@ -99,7 +99,10 @@ describe('role_mappings', () => {
   });
 
   it('rm.no_admin_route quando nenhum mapping resolve admin', () => {
-    expect(ids(baseValid)).toContain('rm.no_admin_route');
+    expect(ids({
+      ...baseValid,
+      role_mappings: [{ idp_group: 'Admins-Financeiro', app_role: 'financeiro' }],
+    })).toContain('rm.no_admin_route');
   });
 });
 
