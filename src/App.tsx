@@ -79,6 +79,7 @@ const SSOJitEvents = lazy(() => import('./pages/admin/SSOJitEvents'));
 const InsightsIA = lazy(() => import('./pages/admin/InsightsIA'));
 const AnomaliaDetalhe = lazy(() => import('./pages/admin/AnomaliaDetalhe'));
 const ComplianceAuditoria = lazy(() => import('./pages/admin/ComplianceAuditoria'));
+const AuditoriaIA = lazy(() => import('./pages/admin/AuditoriaIA'));
 const Contabilidade = lazy(() => import('./pages/Contabilidade'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
@@ -160,6 +161,7 @@ function AppRoutes() {
             <Route path="/admin/insights-ia" element={<ProtectedRoute><InsightsIA /></ProtectedRoute>} />
             <Route path="/admin/insights-ia/anomalia/:id" element={<ProtectedRoute><AnomaliaDetalhe /></ProtectedRoute>} />
             <Route path="/admin/compliance" element={<ProtectedRoute><ComplianceAuditoria /></ProtectedRoute>} />
+            <Route path="/admin/auditoria-ia" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><AuditoriaIA /></ProtectedRoute>} />
             <Route path="/configuracoes/privacidade" element={<ProtectedRoute><CentroPrivacidadeLGPD /></ProtectedRoute>} />
             
             {/* 404 */}
