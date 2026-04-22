@@ -39,6 +39,8 @@ import {
   usePendingAnomaliasQueue,
   type Anomalia,
 } from "@/hooks/useAnomaliasDetectadas";
+import { useAnomaliaDetectionRun } from "@/hooks/useAnomaliaDetectionRun";
+import { DetectionRunProgress } from "./DetectionRunProgress";
 import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
 import { AnomaliasReviewQueue } from "./AnomaliasReviewQueue";
 import { AnomaliaDrillDownDrawer } from "./AnomaliaDrillDownDrawer";
@@ -236,9 +238,10 @@ export function AnomaliasDetectadasPanel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, sort, bootstrapped]);
 
-  const { data, isLoading, atualizarStatus, detectar } = useAnomaliasDetectadas(
+  const { data, isLoading, atualizarStatus } = useAnomaliasDetectadas(
     filters.status === "todas" ? undefined : filters.status,
   );
+  const { activeRun, disparar, disparando } = useAnomaliaDetectionRun();
   const sincronizar = useSincronizarAnomaliaBitrix();
   const { data: pendentes = [] } = usePendingAnomaliasQueue();
 
@@ -565,16 +568,18 @@ export function AnomaliasDetectadasPanel() {
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => detectar.mutate()}
-                disabled={detectar.isPending}
+                onClick={() => disparar()}
+                disabled={disparando || !!activeRun}
               >
                 <RefreshCw
-                  className={`h-3 w-3 mr-1 ${detectar.isPending ? "animate-spin" : ""}`}
+                  className={`h-3 w-3 mr-1 ${disparando || activeRun ? "animate-spin" : ""}`}
                 />
-                Detectar agora
+                {activeRun ? "Detecção em andamento…" : "Detectar agora"}
               </Button>
             </div>
           </div>
+
+          {activeRun && <DetectionRunProgress run={activeRun} />}
 
           <div className="flex flex-wrap items-center gap-2">
             <SavedFiltersBar

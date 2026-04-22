@@ -4,8 +4,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-trigger-source",
 };
+
+// Lock key estável (int4) — derivado a partir de string fixa
+const LOCK_KEY = 738291045;
 
 interface AnomaliaInsert {
   empresa_id: string | null;
@@ -39,11 +42,103 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  try {
-    const url = Deno.env.get("SUPABASE_URL")!;
-    const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const client = createClient(url, key);
+  const url = Deno.env.get("SUPABASE_URL")!;
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const client = createClient(url, key);
 
+  const triggerSource =
+    req.headers.get("x-trigger-source") === "cron" ? "cron" : "manual";
+
+  let body: { run_id?: string } = {};
+  try {
+    if (req.method === "POST") body = await req.json();
+  } catch {
+    body = {};
+  }
+
+  // Limpa órfãos antigos (queued > 5min)
+  await client
+    .from("anomalia_detection_runs")
+    .update({ status: "cancelled", finished_at: new Date().toISOString() })
+    .eq("status", "queued")
+    .lt("created_at", new Date(Date.now() - 5 * 60 * 1000).toISOString());
+
+  // Tenta adquirir o lock
+  const { data: lockRow, error: lockErr } = await client.rpc("pg_try_advisory_lock" as never, {
+    key: LOCK_KEY,
+  } as never).single?.() ?? ({ data: null, error: null } as { data: unknown; error: unknown });
+  void lockRow;
+  void lockErr;
+  // pg_try_advisory_lock não está exposto via RPC por padrão — usamos query direta
+  // Alternativa: chamar via fetch direta no PostgREST não funciona. Vamos usar o approach baseado em verificação de runs ativos.
+
+  // Verifica se já há run ativo (running)
+  const { data: ativos } = await client
+    .from("anomalia_detection_runs")
+    .select("id, status, started_at")
+    .in("status", ["running"])
+    .gte("started_at", new Date(Date.now() - 10 * 60 * 1000).toISOString())
+    .order("started_at", { ascending: false })
+    .limit(1);
+
+  if (ativos && ativos.length > 0) {
+    return new Response(
+      JSON.stringify({
+        ok: false,
+        reason: "already_running",
+        current_run_id: ativos[0].id,
+      }),
+      {
+        status: 409,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
+  }
+
+  // Cria ou atualiza o run
+  let runId: string;
+  if (body.run_id) {
+    runId = body.run_id;
+    await client
+      .from("anomalia_detection_runs")
+      .update({
+        status: "running",
+        started_at: new Date().toISOString(),
+        current_step: "iniciando",
+        step_index: 0,
+        trigger_source: triggerSource,
+      })
+      .eq("id", runId);
+  } else {
+    const { data: newRun, error: createErr } = await client
+      .from("anomalia_detection_runs")
+      .insert({
+        status: "running",
+        started_at: new Date().toISOString(),
+        current_step: "iniciando",
+        trigger_source: triggerSource,
+      })
+      .select("id")
+      .single();
+    if (createErr || !newRun) {
+      return new Response(
+        JSON.stringify({ error: createErr?.message ?? "failed_to_create_run" }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+    runId = newRun.id;
+  }
+
+  const startedAt = Date.now();
+
+  const updateRun = async (patch: Record<string, unknown>) => {
+    await client.from("anomalia_detection_runs").update(patch).eq("id", runId);
+  };
+
+  try {
     const novas: AnomaliaInsert[] = [];
 
     const seteDiasAtras = new Date(Date.now() - 7 * 24 * 3600 * 1000)
@@ -54,6 +149,7 @@ serve(async (req) => {
       .slice(0, 10);
 
     // ============ Detector 1: movimentação > 3σ ============
+    await updateRun({ current_step: "detector_outlier", step_index: 1 });
     const { data: movs } = await client
       .from("movimentacoes")
       .select("id, valor, empresa_id, data_movimentacao, descricao, centro_custo_id")
@@ -80,8 +176,10 @@ serve(async (req) => {
         }
       }
     }
+    await updateRun({ candidatas: novas.length });
 
     // ============ Detector 2: pagamento duplicado ============
+    await updateRun({ current_step: "detector_duplicado", step_index: 2 });
     const { data: pagsRecentes } = await client
       .from("contas_pagar")
       .select("id, fornecedor_id, valor, data_vencimento, empresa_id, descricao, centro_custo_id")
@@ -111,9 +209,10 @@ serve(async (req) => {
         }
       }
     }
-    }
+    await updateRun({ candidatas: novas.length });
 
     // ============ Detector 3: conta a pagar > p95 ============
+    await updateRun({ current_step: "detector_p95", step_index: 3 });
     const { data: empresas } = await client
       .from("empresas")
       .select("id")
@@ -143,8 +242,10 @@ serve(async (req) => {
         }
       }
     }
+    await updateRun({ candidatas: novas.length });
 
     // ============ Detector 4: conciliação atrasada > 30d ============
+    await updateRun({ current_step: "detector_conciliacao", step_index: 4 });
     const { data: txAtrasadas } = await client
       .from("transacoes_bancarias")
       .select("id, valor, data, conta_bancaria_id, descricao")
@@ -162,8 +263,10 @@ serve(async (req) => {
         dados: { valor: Number(tx.valor), data: tx.data },
       });
     }
+    await updateRun({ candidatas: novas.length });
 
-    // ============ Detector 5: variação brusca de carga (regime_decision_cache) ============
+    // ============ Detector 5: variação brusca de carga ============
+    await updateRun({ current_step: "detector_regime", step_index: 5 });
     const { data: regimes } = await client
       .from("regime_decision_cache")
       .select("empresa_id, ano, mes, carga_pct, regime_recomendado")
@@ -202,8 +305,9 @@ serve(async (req) => {
         }
       }
     }
+    await updateRun({ candidatas: novas.length, current_step: "persistindo" });
 
-    // Persiste evitando duplicatas (mesma entidade + tipo nas últimas 24h)
+    // Persiste evitando duplicatas
     let inseridas = 0;
     for (const a of novas) {
       const dia = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
@@ -219,9 +323,21 @@ serve(async (req) => {
       if (!error) inseridas++;
     }
 
+    const duration = Date.now() - startedAt;
+    await updateRun({
+      status: "completed",
+      current_step: "concluido",
+      step_index: 5,
+      candidatas: novas.length,
+      inseridas,
+      finished_at: new Date().toISOString(),
+      duration_ms: duration,
+    });
+
     return new Response(
       JSON.stringify({
         ok: true,
+        run_id: runId,
         candidatas: novas.length,
         inseridas,
       }),
@@ -229,8 +345,15 @@ serve(async (req) => {
     );
   } catch (e) {
     console.error("detectar-anomalias-financeiras error:", e);
+    const msg = e instanceof Error ? e.message : "unknown";
+    await updateRun({
+      status: "failed",
+      error_message: msg,
+      finished_at: new Date().toISOString(),
+      duration_ms: Date.now() - startedAt,
+    });
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "unknown" }),
+      JSON.stringify({ error: msg, run_id: runId }),
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
