@@ -77,6 +77,7 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
   const [step, setStep] = useState<Step>(1);
   const [resultado, setResultado] = useState<SpedGeracaoResult | null>(null);
   const [hashCopied, setHashCopied] = useState(false);
+  const [validacoesOpen, setValidacoesOpen] = useState(false);
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const validar = useSpedEcdValidacao();
   const gerar = useGerarSpedContabil();
