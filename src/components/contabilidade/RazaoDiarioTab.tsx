@@ -254,65 +254,122 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Filtros */}
-        <div className="grid gap-3 md:grid-cols-5">
-          <div className="space-y-1">
-            <Label className="text-xs">De</Label>
-            <Input type="date" value={dataInicio} onChange={(e) => setDataInicio(e.target.value)} />
+        {/*
+          Filtros COMPARTILHADOS entre Diário e Razão.
+          Padrão alinhado ao LancamentosTab: presets, popover de calendário,
+          busca, "Limpar" e contador no canto direito.
+        */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative flex-1 min-w-[220px] max-w-sm">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por histórico ou conta..."
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              className="pl-8"
+            />
           </div>
-          <div className="space-y-1">
-            <Label className="text-xs">Até</Label>
-            <Input type="date" value={dataFim} onChange={(e) => setDataFim(e.target.value)} />
-          </div>
-          <div className="space-y-1 md:col-span-2">
-            <Label className="text-xs">Conta</Label>
-            <Select value={contaId} onValueChange={setContaId}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todas">Todas as contas</SelectItem>
-                {plano.filter((c) => c.tipo === 'analitica').map((c) => (
-                  <SelectItem key={c.id} value={c.id}>{c.codigo} — {c.nome || c.descricao}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1">
-            <Label className="text-xs">Buscar</Label>
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input className="pl-7" placeholder="Histórico..." value={busca} onChange={(e) => setBusca(e.target.value)} />
-            </div>
+
+          <Select value={preset} onValueChange={(v) => handlePreset(v as DatePreset)}>
+            <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ano">Ano de {ano}</SelectItem>
+              <SelectItem value="all">Todo o período</SelectItem>
+              <SelectItem value="today">Hoje</SelectItem>
+              <SelectItem value="last7">Últimos 7 dias</SelectItem>
+              <SelectItem value="last30">Últimos 30 dias</SelectItem>
+              <SelectItem value="mes">Este mês</SelectItem>
+              <SelectItem value="custom">Personalizado</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className={cn('gap-2', !dataInicio && 'text-muted-foreground')}>
+                <CalendarIcon className="h-4 w-4" />
+                {dataInicio ? format(new Date(`${dataInicio}T00:00:00`), 'dd/MM/yyyy', { locale: ptBR }) : 'Início'}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={dataInicio ? new Date(`${dataInicio}T00:00:00`) : undefined}
+                onSelect={(d) => { if (d) { setDataInicio(toIsoDate(d)); setPreset('custom'); } }}
+                initialFocus
+                className={cn('p-3 pointer-events-auto')}
+              />
+            </PopoverContent>
+          </Popover>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className={cn('gap-2', !dataFim && 'text-muted-foreground')}>
+                <CalendarIcon className="h-4 w-4" />
+                {dataFim ? format(new Date(`${dataFim}T00:00:00`), 'dd/MM/yyyy', { locale: ptBR }) : 'Fim'}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={dataFim ? new Date(`${dataFim}T00:00:00`) : undefined}
+                onSelect={(d) => { if (d) { setDataFim(toIsoDate(d)); setPreset('custom'); } }}
+                initialFocus
+                className={cn('p-3 pointer-events-auto')}
+              />
+            </PopoverContent>
+          </Popover>
+
+          <Select value={contaId} onValueChange={setContaId}>
+            <SelectTrigger className="w-[220px]">
+              <SelectValue placeholder="Todas as contas" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todas">Todas as contas</SelectItem>
+              {plano.filter((c) => c.tipo === 'analitica').map((c) => (
+                <SelectItem key={c.id} value={c.id}>{c.codigo} — {c.nome || c.descricao}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {filtrosAtivos && (
+            <Button variant="ghost" size="sm" onClick={limparFiltros} className="gap-1">
+              <X className="h-3.5 w-3.5" /> Limpar
+            </Button>
+          )}
+
+          <div className="ml-auto text-xs text-muted-foreground">
+            {modo === 'diario'
+              ? `${diario.length.toLocaleString('pt-BR')} partidas`
+              : `${razao.length} conta(s) com movimento`}
           </div>
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <ToggleGroup type="single" value={modo} onValueChange={(v) => v && setModo(v as 'diario' | 'razao')}>
-            <ToggleGroupItem value="diario">Diário</ToggleGroupItem>
-            <ToggleGroupItem value="razao">Razão</ToggleGroupItem>
-          </ToggleGroup>
-
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">
-              {modo === 'diario'
-                ? `${diario.length.toLocaleString('pt-BR')} partidas`
-                : `${razao.length} conta(s) com movimento`}
+          <div className="flex items-center gap-3">
+            <ToggleGroup type="single" value={modo} onValueChange={(v) => v && setModo(v as 'diario' | 'razao')}>
+              <ToggleGroupItem value="diario">Diário</ToggleGroupItem>
+              <ToggleGroupItem value="razao">Razão</ToggleGroupItem>
+            </ToggleGroup>
+            <span className="text-xs text-muted-foreground hidden sm:inline">
+              Filtros aplicados a ambas as visões
             </span>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="outline">
-                  <Download className="h-3 w-3 mr-1" /> Exportar
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => exportar('csv')} className="gap-2">
-                  <FileSpreadsheet className="h-4 w-4" /> CSV
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => exportar('pdf')} className="gap-2">
-                  <FileText className="h-4 w-4" /> PDF
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" variant="outline">
+                <Download className="h-3 w-3 mr-1" /> Exportar
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => exportar('csv')} className="gap-2">
+                <FileSpreadsheet className="h-4 w-4" /> CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => exportar('pdf')} className="gap-2">
+                <FileText className="h-4 w-4" /> PDF
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {isLoading ? (
