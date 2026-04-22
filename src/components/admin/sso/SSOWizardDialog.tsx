@@ -12,6 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2, Check, ChevronLeft, ChevronRight, Copy, Download, ExternalLink, Plus, Trash2, X } from 'lucide-react';
 import { IDP_PRESETS, type IdpPreset } from './IdpPresets';
 import { useSaveSSOProvider, useTestSSOConfig, useGenerateSSOMetadata, useSaveSSORoleMappings, useSSORoleMappings, type SSOProvider, type AppRole } from '@/hooks/useSSO';
+import { useSSOConsistency } from '@/hooks/useSSOConsistency';
+import { SSOConsistencyPanel } from './SSOConsistencyPanel';
+import type { AutoFix } from '@/lib/sso/consistency';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -127,6 +130,32 @@ export function SSOWizardDialog({ open, onOpenChange, editing }: Props) {
       await saveMappings.mutateAsync({ providerId: saved.id, mappings: roleMappings });
     }
     onOpenChange(false);
+  };
+
+  const consistency = useSSOConsistency({
+    preset: form.preset ?? null,
+    claim_mapping: form.claim_mapping ?? null,
+    allowed_domains: form.allowed_domains ?? [],
+    role_mappings: roleMappings,
+    default_role: form.default_role ?? null,
+    auto_provision_users: form.auto_provision_users ?? null,
+    force_sso_for_domains: form.force_sso_for_domains ?? null,
+  });
+
+  const applyAutofix = (patch: AutoFix['patch']) => {
+    if (patch.allowed_domains !== undefined) {
+      setForm((p) => ({ ...p, allowed_domains: patch.allowed_domains as string[] }));
+    }
+    if (patch.claim_mapping !== undefined) {
+      setForm((p) => ({ ...p, claim_mapping: { ...p.claim_mapping, ...patch.claim_mapping } as SSOProvider['claim_mapping'] }));
+    }
+    if (patch.default_role !== undefined) {
+      setForm((p) => ({ ...p, default_role: patch.default_role as AppRole }));
+    }
+    if (patch.role_mappings !== undefined) {
+      setRoleMappings(patch.role_mappings as Array<{ idp_group: string; app_role: AppRole }>);
+    }
+    toast.success('Correção aplicada');
   };
 
   const next = () => setStep(s => Math.min(s + 1, 3));
@@ -379,6 +408,14 @@ export function SSOWizardDialog({ open, onOpenChange, editing }: Props) {
                 <Switch checked={!!form.force_sso_for_domains} onCheckedChange={v => setForm(p => ({ ...p, force_sso_for_domains: v }))} />
               </div>
             </div>
+
+            <SSOConsistencyPanel
+              issues={consistency.issues}
+              errors={consistency.errors}
+              warnings={consistency.warnings}
+              infos={consistency.infos}
+              onAutofix={applyAutofix}
+            />
           </div>
         )}
 
@@ -475,6 +512,14 @@ export function SSOWizardDialog({ open, onOpenChange, editing }: Props) {
               </div>
               <Switch checked={!!form.ativo} onCheckedChange={v => setForm(p => ({ ...p, ativo: v }))} />
             </div>
+
+            <SSOConsistencyPanel
+              issues={consistency.issues}
+              errors={consistency.errors}
+              warnings={consistency.warnings}
+              infos={consistency.infos}
+              onAutofix={applyAutofix}
+            />
           </div>
         )}
 
@@ -483,13 +528,22 @@ export function SSOWizardDialog({ open, onOpenChange, editing }: Props) {
           <Button variant="outline" onClick={prev} disabled={step === 0}>
             <ChevronLeft className="h-4 w-4 mr-1" />Voltar
           </Button>
-          <span className="text-sm text-muted-foreground">Passo {step + 1} de {STEPS.length}</span>
+          <span className="text-sm text-muted-foreground">
+            Passo {step + 1} de {STEPS.length}
+            {consistency.hasBlocker && step >= 2 && (
+              <span className="ml-2 text-destructive">· {consistency.errors.length} erro(s) a resolver</span>
+            )}
+          </span>
           {step < 3 ? (
             <Button onClick={next} disabled={(step === 0 && !preset) || (step === 1 && !form.nome)}>
               Próximo<ChevronRight className="h-4 w-4 ml-1" />
             </Button>
           ) : (
-            <Button onClick={handleSave} disabled={save.isPending}>
+            <Button
+              onClick={handleSave}
+              disabled={save.isPending || consistency.hasBlocker}
+              title={consistency.hasBlocker ? 'Resolva os erros de consistência antes de salvar' : undefined}
+            >
               {save.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               Salvar provedor
             </Button>
