@@ -97,7 +97,7 @@ export default function Conciliacao() {
     const p = defaultFilter.filters;
     if (p?.filters) setFilters(p.filters);
     if (p?.sort) setSort(p.sort as ConciliacaoSort);
-    if (p?.columns) setVisibleCols(p.columns);
+    if (p?.columns) setVisibleCols(mergeLockedColumns(p.columns, CONCILIACAO_COLUMNS));
     setActivePresetId(defaultFilter.id);
     setBootstrapped(true);
   }, [defaultFilter, bootstrapped, setFilters]);
