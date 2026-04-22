@@ -21,11 +21,23 @@ export interface BalancoLinha {
   nivel: number;
 }
 
+export interface ContaNaoClassificada {
+  conta_id?: string;
+  codigo: string;
+  descricao: string;
+  tipo: 'receita' | 'despesa';
+  valor: number;
+  partidas: number;
+  centro_resultado_sugerido: string | null;
+}
+
 export interface DemonstrativosResult {
   dre: {
     linhas: DRELinha[];
     receitaBruta: number;
     lucroLiquido: number;
+    naoClassificadas: ContaNaoClassificada[];
+    totalNaoClassificado: number;
   };
   balanco: {
     ativo: BalancoLinha[];
@@ -48,6 +60,7 @@ interface PartidaRow {
   tipo: 'D' | 'C' | string;
   valor: number;
   conta: {
+    id?: string;
     codigo: string;
     descricao: string | null;
     nome: string | null;
@@ -56,6 +69,27 @@ interface PartidaRow {
     centro_resultado: string | null;
   } | null;
   lancamento: { data_lancamento: string; empresa_id: string } | null;
+}
+
+// Sugere centro_resultado a partir do código/descrição da conta
+function sugerirCentroResultado(codigo: string, descricao: string, tipo: string): string | null {
+  const c = codigo.toLowerCase();
+  const d = (descricao || '').toLowerCase();
+  const t = tipo.toLowerCase();
+  if (t === 'receita') {
+    if (/financeir/.test(d)) return 'receita_financeira';
+    return 'receita_operacional';
+  }
+  if (t === 'despesa') {
+    if (/imposto|icms|iss|pis|cofins|simples/.test(d)) return 'deducao_receita';
+    if (/cmv|custo.*(merc|produ)/.test(d)) return 'cmv';
+    if (/admin|aluguel|escrit|contab/.test(d)) return 'despesa_administrativa';
+    if (/comercial|vendas|marketing|publicid/.test(d)) return 'despesa_comercial';
+    if (/financeir|juros|tarifa banc/.test(d)) return 'despesa_financeira';
+    if (/irpj|csll/.test(d) || c.startsWith('3.4') || c.startsWith('3.5')) return 'irpj_csll';
+    return 'despesa_operacional';
+  }
+  return null;
 }
 
 // ----------- Helpers de classificação -----------
