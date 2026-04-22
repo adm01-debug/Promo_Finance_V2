@@ -7937,6 +7937,39 @@ export type Database = {
           },
         ]
       }
+      scim_setup_checklist: {
+        Row: {
+          confirmed: boolean
+          confirmed_at: string | null
+          created_at: string
+          id: string
+          item_key: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          confirmed?: boolean
+          confirmed_at?: string | null
+          created_at?: string
+          id?: string
+          item_key: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          confirmed?: boolean
+          confirmed_at?: string | null
+          created_at?: string
+          id?: string
+          item_key?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       scim_tokens: {
         Row: {
           ativo: boolean
