@@ -62,6 +62,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
         empresa: { razao_social: '—', cnpj: '—' },
         periodo: { inicio: `${h.ano_calendario}-01-01`, fim: `${h.ano_calendario}-12-31` },
         totalLinhas: h.total_linhas, totalLancamentos: h.total_lancamentos,
+        tipo,
       });
       toast.success('ZIP baixado');
     } catch (e) {
