@@ -535,7 +535,23 @@ async function putUser(admin: SupabaseClient, providerId: string | null, empresa
   const role = await resolveRole(admin, providerId, ext?.department ?? null);
   const active = body?.active !== false;
   const externalId: string | null = body?.externalId ?? null;
-  const fullName = body?.name?.formatted || body?.displayName;
+  const fullName = body?.name?.formatted
+    || (body?.name?.givenName || body?.name?.familyName
+      ? `${body.name.givenName ?? ""} ${body.name.familyName ?? ""}`.trim()
+      : null)
+    || body?.displayName;
+
+  // PUT é replace completo: aceita troca de e-mail primário via userName ou emails[primary=true].value
+  const newEmail =
+    extractPrimaryEmail(body?.emails)
+    || (typeof body?.userName === "string" && body.userName.trim()
+        ? body.userName.trim().toLowerCase()
+        : null);
+
+  if (newEmail && newEmail !== (link as any).profiles.email) {
+    const errMsg = await updateUserEmail(admin, link.user_id as string, newEmail);
+    if (errMsg) return err(500, `Email update failed: ${errMsg}`);
+  }
 
   if (fullName) {
     await admin.from("profiles").update({ full_name: fullName }).eq("id", (link as any).profiles.id);
