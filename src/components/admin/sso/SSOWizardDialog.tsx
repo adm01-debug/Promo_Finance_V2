@@ -12,6 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2, Check, ChevronLeft, ChevronRight, Copy, Download, ExternalLink, Plus, Trash2, X } from 'lucide-react';
 import { IDP_PRESETS, type IdpPreset } from './IdpPresets';
 import { useSaveSSOProvider, useTestSSOConfig, useGenerateSSOMetadata, useSaveSSORoleMappings, useSSORoleMappings, type SSOProvider, type AppRole } from '@/hooks/useSSO';
+import { useSSOConsistency } from '@/hooks/useSSOConsistency';
+import { SSOConsistencyPanel } from './SSOConsistencyPanel';
+import type { AutoFix } from '@/lib/sso/consistency';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
