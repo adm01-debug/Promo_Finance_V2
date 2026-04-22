@@ -120,24 +120,8 @@ export function AnomaliasReviewQueue({
 
         const fresca = data as Anomalia;
         if (fresca.status !== "nova" && fresca.status !== "investigando") {
-          // já foi resolvida por outro revisor — avisa e pula
-          let quem = "outro revisor";
-          if (fresca.resolvida_por) {
-            const { data: prof } = await supabase
-              .from("profiles")
-              .select("full_name, email")
-              .eq("id", fresca.resolvida_por)
-              .maybeSingle();
-            quem =
-              (prof?.full_name as string | null)?.trim() ||
-              (prof?.email as string | null)?.trim() ||
-              "outro revisor";
-          }
-          const acao =
-            fresca.status === "confirmada" ? "confirmou" : "marcou como falso positivo";
-          toast.warning("Anomalia já revisada", {
-            description: `${quem} ${acao} esta anomalia. Pulando para a próxima.`,
-          });
+          // já foi resolvida por outro revisor — avisa de forma detalhada e pula
+          await notificarConflito(candidato, fresca);
           setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
           cursor += 1;
           continue;
