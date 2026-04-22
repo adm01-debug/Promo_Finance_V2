@@ -8983,33 +8983,45 @@ export type Database = {
         Row: {
           centros_custo_silenciados: string[]
           created_at: string
+          drawer_acoes: Json
           id: string
           silenciar_ate: string | null
           tipos_silenciados: string[]
+          toast_acoes: Json
+          toast_duracao_segundos: number
           toast_enabled: boolean
           toast_min_severidade: string
+          toast_severidades_ativas: string[]
           updated_at: string
           user_id: string
         }
         Insert: {
           centros_custo_silenciados?: string[]
           created_at?: string
+          drawer_acoes?: Json
           id?: string
           silenciar_ate?: string | null
           tipos_silenciados?: string[]
+          toast_acoes?: Json
+          toast_duracao_segundos?: number
           toast_enabled?: boolean
           toast_min_severidade?: string
+          toast_severidades_ativas?: string[]
           updated_at?: string
           user_id: string
         }
         Update: {
           centros_custo_silenciados?: string[]
           created_at?: string
+          drawer_acoes?: Json
           id?: string
           silenciar_ate?: string | null
           tipos_silenciados?: string[]
+          toast_acoes?: Json
+          toast_duracao_segundos?: number
           toast_enabled?: boolean
           toast_min_severidade?: string
+          toast_severidades_ativas?: string[]
           updated_at?: string
           user_id?: string
         }
