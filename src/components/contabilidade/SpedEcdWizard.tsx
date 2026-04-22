@@ -467,56 +467,18 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                 </AlertDescription>
               </Alert>
 
-              <div className="flex flex-wrap gap-2">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span tabIndex={downloadBloqueado ? 0 : -1}>
-                        <Button
-                          onClick={() => !downloadBloqueado && window.open(resultado.url, '_blank')}
-                          disabled={downloadBloqueado}
-                          aria-disabled={downloadBloqueado}
-                          variant={downloadBloqueado ? 'outline' : 'premium'}
-                          className={cn('gap-2', !downloadBloqueado && 'hover-scale')}
-                        >
-                          {downloadBloqueado ? <Ban className="h-4 w-4" /> : <Download className="h-4 w-4" />}
-                          Baixar .txt
-                        </Button>
-                      </span>
-                    </TooltipTrigger>
-                    {downloadBloqueado && (
-                      <TooltipContent side="top" className="max-w-xs">
-                        <p className="font-medium">Download bloqueado</p>
-                        <p className="text-xs">Corrija os {errosResultado.length} erro(s) antes de baixar.</p>
-                      </TooltipContent>
-                    )}
-                  </Tooltip>
-                </TooltipProvider>
-
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span tabIndex={downloadBloqueado ? 0 : -1}>
-                        <Button
-                          variant="outline"
-                          onClick={() => !downloadBloqueado && baixarZip()}
-                          disabled={downloadBloqueado}
-                          aria-disabled={downloadBloqueado}
-                          className={cn('gap-2', !downloadBloqueado && 'hover-scale')}
-                        >
-                          {downloadBloqueado ? <Ban className="h-4 w-4" /> : <FileArchive className="h-4 w-4" />}
-                          Baixar .zip (com README)
-                        </Button>
-                      </span>
-                    </TooltipTrigger>
-                    {downloadBloqueado && (
-                      <TooltipContent side="top" className="max-w-xs">
-                        <p className="font-medium">Download bloqueado</p>
-                        <p className="text-xs">Corrija os {errosResultado.length} erro(s) antes de baixar.</p>
-                      </TooltipContent>
-                    )}
-                  </Tooltip>
-                </TooltipProvider>
+              <div className="flex flex-wrap gap-2 items-center">
+                <Button
+                  onClick={() => setValidacoesOpen(true)}
+                  variant={downloadBloqueado ? 'outline' : 'premium'}
+                  className={cn(
+                    'gap-2 hover-scale',
+                    downloadBloqueado && 'border-destructive/40 text-destructive hover:bg-destructive/10',
+                  )}
+                >
+                  {downloadBloqueado ? <ShieldAlert className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+                  Ver validações & baixar
+                </Button>
 
                 <div className="flex-1" />
                 {downloadBloqueado && (
@@ -526,6 +488,20 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                 )}
                 <Button variant="ghost" onClick={() => onOpenChange(false)}>Fechar</Button>
               </div>
+
+              <ValidacoesPreSpedDialog
+                open={validacoesOpen}
+                onOpenChange={setValidacoesOpen}
+                arquivo={{
+                  tipo: 'ECD',
+                  ano_calendario: anoCalendario,
+                  hash_sha256: resultado.hash_sha256,
+                  status: downloadBloqueado ? 'rejeitado' : 'gerado',
+                  validacoes: { erros: errosResultado, avisos: avisosResultado },
+                }}
+                onDownloadTxt={() => window.open(resultado.url, '_blank')}
+                onDownloadZip={() => baixarZip()}
+              />
             </motion.div>
           )}
         </AnimatePresence>
