@@ -174,21 +174,22 @@ export function ScimSetupGuide() {
       const fr = finalResult;
       if (fr) {
         setResult(fr);
-        const entry: TestHistoryEntry = fr.ok
-          ? {
-              timestamp: Date.now(),
-              ok: true,
-              status: fr.status,
-              latencyMs: fr.latencyMs,
-            }
-          : {
-              timestamp: Date.now(),
-              ok: false,
-              status: fr.status,
-              latencyMs: fr.latencyMs,
-              message: fr.message,
-            };
-        pushHistory(entry);
+        if (fr.ok) {
+          pushHistory({
+            timestamp: Date.now(),
+            ok: true,
+            status: fr.status,
+            latencyMs: fr.latencyMs,
+          });
+        } else {
+          pushHistory({
+            timestamp: Date.now(),
+            ok: false,
+            status: fr.status,
+            latencyMs: fr.latencyMs,
+            message: fr.message,
+          });
+        }
       }
     }
   };
