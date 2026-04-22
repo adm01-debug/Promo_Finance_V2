@@ -16,6 +16,8 @@ import { toast } from 'sonner';
 import { SpedEcdWizard } from './SpedEcdWizard';
 import { SpedEcfWizard } from './SpedEcfWizard';
 import { SpedEcdPreviewDialog } from './SpedEcdPreviewDialog';
+import { ValidacoesPreSpedDialog, type ValidacoesPreSpedArquivo } from './ValidacoesPreSpedDialog';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { baixarSpedZip } from '@/lib/sped-zip';
 
 interface Props {
