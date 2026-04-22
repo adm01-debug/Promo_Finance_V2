@@ -134,7 +134,20 @@ Deno.serve(async (req) => {
     const extUrl = Deno.env.get('EXTERNAL_SUPABASE_URL')?.trim();
     const extKeyRaw = Deno.env.get('EXTERNAL_SUPABASE_SERVICE_KEY')?.trim();
     if (!extUrl || !extKeyRaw) {
-      console.warn('[external-data] EXTERNAL_SUPABASE_URL/SERVICE_KEY ausentes — retornando fallback vazio');
+      const missing: string[] = [];
+      if (!extUrl) missing.push('EXTERNAL_SUPABASE_URL');
+      if (!extKeyRaw) missing.push('EXTERNAL_SUPABASE_SERVICE_KEY');
+
+      const message =
+        `Integração de dados externos (clientes/fornecedores) não configurada. ` +
+        `Secret(s) ausente(s): ${missing.join(', ')}. ` +
+        `Configure em Lovable Cloud → Edge Functions → Secrets para habilitar a sincronização. ` +
+        `Enquanto isso, a listagem retorna vazia (fallback) sem interromper o app.`;
+
+      console.warn(
+        `[external-data] EXTERNAL_DB_NOT_CONFIGURED — missing=[${missing.join(', ')}] tabela=${tabela}`,
+      );
+
       return new Response(JSON.stringify({
         data: [],
         total: 0,
@@ -143,7 +156,10 @@ Deno.serve(async (req) => {
         total_pages: 0,
         fallback: true,
         error: 'EXTERNAL_DB_NOT_CONFIGURED',
-        message: 'Integração de dados externos (clientes/fornecedores) não configurada.',
+        message,
+        missing_secrets: missing,
+        hint: 'Adicione os secrets EXTERNAL_SUPABASE_URL e EXTERNAL_SUPABASE_SERVICE_KEY nas Edge Functions Secrets do projeto.',
+        docs_url: 'https://docs.lovable.dev/features/cloud#secrets',
       }), {
         status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
