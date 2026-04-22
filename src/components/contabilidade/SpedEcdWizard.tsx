@@ -15,6 +15,7 @@ import { baixarSpedZip } from '@/lib/sped-zip';
 import { SpedChecklistRow } from './SpedChecklistRow';
 import { PreValidacaoSpedPanel } from './PreValidacaoSpedPanel';
 import { AuditoriaCFCPanel } from './AuditoriaCFCPanel';
+import { ValidacoesPreSpedDialog } from './ValidacoesPreSpedDialog';
 import { AnimatedCounter } from '@/components/reforma-tributaria/AnimatedCounter';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
