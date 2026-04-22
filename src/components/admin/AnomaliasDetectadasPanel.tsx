@@ -125,6 +125,47 @@ const DEFAULT_PAYLOAD: SavedFilterPayload<AnomaliaFilters> = {
   columns: DEFAULT_VISIBLE,
 };
 
+function parseFiltersFromUrl(sp: URLSearchParams): Partial<AnomaliaFilters> {
+  const out: Partial<AnomaliaFilters> = {};
+  const status = sp.get("status");
+  if (status) out.status = status as AnomaliaFilters["status"];
+  const sev = sp.get("sev");
+  if (sev)
+    out.severidades = sev
+      .split(",")
+      .filter(Boolean) as Anomalia["severidade"][];
+  const tipos = sp.get("tipos");
+  if (tipos)
+    out.tipos = tipos
+      .split(",")
+      .filter(Boolean) as Anomalia["tipo_anomalia"][];
+  const ini = sp.get("ini");
+  if (ini) out.periodoInicio = ini;
+  const fim = sp.get("fim");
+  if (fim) out.periodoFim = fim;
+  return out;
+}
+
+function writeFiltersToUrl(
+  sp: URLSearchParams,
+  f: AnomaliaFilters,
+  s: { key: string; dir: "asc" | "desc" },
+): URLSearchParams {
+  const next = new URLSearchParams(sp);
+  const setOrDel = (k: string, v: string) => {
+    if (v) next.set(k, v);
+    else next.delete(k);
+  };
+  setOrDel("status", f.status !== "nova" ? f.status : "");
+  setOrDel("sev", f.severidades.join(","));
+  setOrDel("tipos", f.tipos.join(","));
+  setOrDel("ini", f.periodoInicio);
+  setOrDel("fim", f.periodoFim);
+  setOrDel("sort", s.key !== "detectada_em" ? s.key : "");
+  setOrDel("dir", s.dir !== "desc" ? s.dir : "");
+  return next;
+}
+
 export function AnomaliasDetectadasPanel() {
   const [reviewOpen, setReviewOpen] = useState(false);
   const [reviewSeveridade, setReviewSeveridade] = useState<
@@ -133,21 +174,30 @@ export function AnomaliasDetectadasPanel() {
   const [prefsOpen, setPrefsOpen] = useState(false);
   const { data: criticasCount = 0 } = useAnomaliasCriticasCount();
   const navigate = useNavigate();
-  const [filters, setFilters] = useState<AnomaliaFilters>(DEFAULT_FILTERS);
-  const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" }>({
-    key: "detectada_em",
-    dir: "desc",
-  });
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Inicializa do URL primeiro (drill-down preserva o estado)
+  const [filters, setFilters] = useState<AnomaliaFilters>(() => ({
+    ...DEFAULT_FILTERS,
+    ...parseFiltersFromUrl(searchParams),
+  }));
+  const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" }>(
+    () => ({
+      key: searchParams.get("sort") || "detectada_em",
+      dir: (searchParams.get("dir") as "asc" | "desc") || "desc",
+    }),
+  );
   const [visibleCols, setVisibleCols] = useState<string[]>(DEFAULT_VISIBLE);
   const [activePresetId, setActivePresetId] = useState<string | null>(null);
   const [bootstrapped, setBootstrapped] = useState(false);
 
   const { defaultFilter } = useSavedFilters<AnomaliaFilters>(ENTITY_TYPE);
 
-  // Bootstrap: aplica preset padrão do usuário no primeiro load
+  // Bootstrap: aplica preset padrão somente se a URL não traz filtros
   useEffect(() => {
     if (bootstrapped) return;
-    if (defaultFilter) {
+    const urlHasFilters = Object.keys(parseFiltersFromUrl(searchParams)).length > 0;
+    if (defaultFilter && !urlHasFilters) {
       setFilters({ ...DEFAULT_FILTERS, ...defaultFilter.filters.filters });
       if (defaultFilter.filters.sort) setSort(defaultFilter.filters.sort);
       if (defaultFilter.filters.columns)
@@ -155,7 +205,17 @@ export function AnomaliasDetectadasPanel() {
       setActivePresetId(defaultFilter.id);
     }
     setBootstrapped(true);
-  }, [defaultFilter, bootstrapped]);
+  }, [defaultFilter, bootstrapped, searchParams]);
+
+  // Persiste filtros/sort na URL para sobreviverem ao drill-down
+  useEffect(() => {
+    if (!bootstrapped) return;
+    const next = writeFiltersToUrl(searchParams, filters, sort);
+    if (next.toString() !== searchParams.toString()) {
+      setSearchParams(next, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, sort, bootstrapped]);
 
   const { data, isLoading, atualizarStatus, detectar } = useAnomaliasDetectadas(
     filters.status === "todas" ? undefined : filters.status,
