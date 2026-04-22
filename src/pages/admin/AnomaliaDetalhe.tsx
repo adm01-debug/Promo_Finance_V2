@@ -168,6 +168,7 @@ export default function AnomaliaDetalhe() {
               <AnomaliasRelacionadasCard lista={data.relacionadas} />
               <AcoesSugeridasCard anomalia={data.anomalia} />
             </div>
+            <AnomaliaHistoricoSection anomaliaId={data.anomalia.id} />
           </>
         )}
       </div>
