@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { formatCurrency } from '@/lib/formatters';
 import { useDemonstrativosContabeis, type FonteDemonstrativo, type BalancoLinha } from '@/hooks/useDemonstrativosContabeis';
+import { ExportDemonstrativoPDF } from '@/components/demonstrativos/ExportDemonstrativoPDF';
 
 interface BalancoPatrimonialProps {
   periodo: string;
