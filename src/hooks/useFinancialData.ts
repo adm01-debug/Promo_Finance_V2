@@ -29,13 +29,11 @@ export interface ExternalCliente {
   updated_at: string;
   score?: number | null;
   limite_credito?: number | null;
-  // Address fields (may come from external or be null)
   endereco?: string | null;
   cidade?: string | null;
   estado?: string | null;
   cep?: string | null;
   bairro?: string | null;
-  // External-specific
   website?: string;
   logo_url?: string;
   grupo_economico?: string;
@@ -43,7 +41,6 @@ export interface ExternalCliente {
   status_externo?: string;
   is_customer?: boolean;
   is_supplier?: boolean;
-  // Customer-specific
   vendedor_nome?: string;
   cliente_ativado?: boolean;
   ja_comprou?: boolean;
@@ -51,15 +48,81 @@ export interface ExternalCliente {
   valor_total_compras?: number;
   ticket_medio?: number;
   grupo_clientes?: string;
-  // Supplier-specific
   categoria?: string;
   tipo_fornecedor?: string;
   prazo_entrega_medio?: number;
   pedido_minimo?: number;
   forma_pagamento?: string;
   prazo_pagamento?: string;
-  // Allow any extra fields from mapping
   [key: string]: unknown;
+}
+
+interface ExternalListResponse<T> {
+  data?: T[];
+  total?: number;
+  total_pages?: number;
+  error?: string;
+  message?: string;
+  fallback?: boolean;
+  missing_secrets?: string[];
+}
+
+const EXTERNAL_DATA_NOT_CONFIGURED_MESSAGES = new Set([
+  'External DB not configured',
+  'EXTERNAL_DB_NOT_CONFIGURED',
+]);
+
+function isExternalDataNotConfigured(payload: ExternalListResponse<unknown> | null | undefined) {
+  if (!payload) return false;
+  return EXTERNAL_DATA_NOT_CONFIGURED_MESSAGES.has(payload.error ?? '')
+    || Boolean(payload.fallback)
+    || (payload.message?.toLowerCase().includes('não configurada') ?? false)
+    || (payload.message?.toLowerCase().includes('not configured') ?? false);
+}
+
+async function fetchExternalData<T>(params: {
+  tabela: 'clientes' | 'fornecedores';
+  limit: number;
+  page?: number;
+  search?: string;
+}): Promise<ExternalListResponse<T>> {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error('Não autenticado');
+
+  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+  const queryParams = new URLSearchParams({
+    tabela: params.tabela,
+    limit: String(params.limit),
+    ...(params.page ? { page: String(params.page) } : {}),
+    ...(params.search ? { search: params.search } : {}),
+  });
+
+  const response = await fetch(`https://${projectId}.supabase.co/functions/v1/external-data?${queryParams}`, {
+    headers: {
+      Authorization: `Bearer ${session.access_token}`,
+      apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+    },
+  });
+
+  const payload = await response.json().catch(() => null) as ExternalListResponse<T> | null;
+
+  if (!response.ok) {
+    if (isExternalDataNotConfigured(payload)) {
+      return { data: [], total: 0, total_pages: 0, fallback: true };
+    }
+
+    throw new Error(
+      payload?.message
+      || payload?.error
+      || `Erro ao buscar ${params.tabela} externos`
+    );
+  }
+
+  if (isExternalDataNotConfigured(payload)) {
+    return { ...payload, data: [], total: 0, total_pages: 0, fallback: true };
+  }
+
+  return payload ?? { data: [], total: 0, total_pages: 0 };
 }
 
 export function useEmpresas() {
@@ -114,25 +177,11 @@ export function useClientes() {
   return useQuery({
     queryKey: ['clientes', 'external'],
     queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('Não autenticado');
-
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      const url = `https://${projectId}.supabase.co/functions/v1/external-data?tabela=clientes&limit=200`;
-
-      const response = await fetch(url, {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
+      const result = await fetchExternalData<ExternalCliente>({
+        tabela: 'clientes',
+        limit: 200,
       });
 
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({ error: 'Erro ao buscar clientes externos' }));
-        throw new Error(err.error || 'Erro ao buscar clientes externos');
-      }
-
-      const result = await response.json();
       return (result.data || []) as ExternalCliente[];
     },
     retry: 2,
@@ -144,25 +193,11 @@ export function useFornecedores() {
   return useQuery({
     queryKey: ['fornecedores', 'external'],
     queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('Não autenticado');
-
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      const url = `https://${projectId}.supabase.co/functions/v1/external-data?tabela=fornecedores&limit=200`;
-
-      const response = await fetch(url, {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
+      const result = await fetchExternalData<ExternalCliente>({
+        tabela: 'fornecedores',
+        limit: 200,
       });
 
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({ error: 'Erro ao buscar fornecedores externos' }));
-        throw new Error(err.error || 'Erro ao buscar fornecedores externos');
-      }
-
-      const result = await response.json();
       return (result.data || []) as ExternalCliente[];
     },
     retry: 2,
@@ -212,7 +247,6 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
         .order('data_vencimento', { ascending: true })
         .range(from, to);
 
-      // Apply filters to both queries
       if (search) {
         const searchFilter = `fornecedor_nome.ilike.%${search}%,descricao.ilike.%${search}%`;
         countQuery = countQuery.or(searchFilter);
@@ -330,31 +364,13 @@ export function useClientesPaginated(params: PaginatedClientesParams) {
   return useQuery({
     queryKey: ['clientes', 'paginated', 'external', page, pageSize, search],
     queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('Não autenticado');
-
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      const queryParams = new URLSearchParams({
+      const result = await fetchExternalData<Cliente>({
         tabela: 'clientes',
-        page: String(page),
-        limit: String(pageSize),
-        search: search || '',
-      });
-      const url = `https://${projectId}.supabase.co/functions/v1/external-data?${queryParams}`;
-
-      const response = await fetch(url, {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
+        page,
+        limit: pageSize,
+        search,
       });
 
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || 'Erro ao buscar clientes externos');
-      }
-
-      const result = await response.json();
       return {
         data: (result.data || []) as Cliente[],
         totalCount: result.total || 0,
@@ -379,31 +395,13 @@ export function useFornecedoresPaginated(params: PaginatedFornecedoresParams) {
   return useQuery({
     queryKey: ['fornecedores', 'paginated', 'external', page, pageSize, search],
     queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('Não autenticado');
-
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      const queryParams = new URLSearchParams({
+      const result = await fetchExternalData<Fornecedor>({
         tabela: 'fornecedores',
-        page: String(page),
-        limit: String(pageSize),
-        search: search || '',
-      });
-      const url = `https://${projectId}.supabase.co/functions/v1/external-data?${queryParams}`;
-
-      const response = await fetch(url, {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
+        page,
+        limit: pageSize,
+        search,
       });
 
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || 'Erro ao buscar fornecedores externos');
-      }
-
-      const result = await response.json();
       return {
         data: (result.data || []) as Fornecedor[],
         totalCount: result.total || 0,
