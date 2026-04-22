@@ -71,6 +71,21 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
 
   return (
     <div className="space-y-6">
+      <div className="flex justify-end">
+        <ExportDemonstrativoPDF
+          tipo="balanco"
+          periodo={periodo}
+          mes={mes}
+          ano={ano}
+          empresa="Promo Finance"
+          linhas={linhasPDF}
+          resumoBalanco={{
+            totalAtivo: balanco.totalAtivo,
+            totalPassivo: balanco.totalPassivo,
+            equilibrado: balanco.equilibrado,
+          }}
+        />
+      </div>
       {origem === 'caixa' && (
         <Alert className="border-amber-500/30 bg-amber-500/5">
           <AlertDescription className="text-xs">
