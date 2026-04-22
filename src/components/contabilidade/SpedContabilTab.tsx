@@ -61,9 +61,43 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
   const [validacoesArquivo, setValidacoesArquivo] = useState<HistoricoRow | null>(null);
   const [reciboInput, setReciboInput] = useState('');
   const [expandedAudit, setExpandedAudit] = useState<Set<string>>(new Set());
+  const [exportStatus, setExportStatus] = useState<'idle' | 'queued' | 'processing' | 'done' | 'error'>('idle');
   const transmitir = useRegistrarTransmissaoSped();
+  const gerarSped = useGerarSpedContabil();
   const { data: historico = [], isLoading } = useSpedContabilHistorico(empresaId);
   const historicoTipo = (historico as unknown as HistoricoRow[]).filter((h) => h.tipo === tipo);
+
+  const handleGerarExportar = async () => {
+    if (!empresaId) return;
+    setExportStatus('queued');
+    // breve estado "em fila" para feedback visual antes da chamada
+    await new Promise((r) => setTimeout(r, 350));
+    setExportStatus('processing');
+    try {
+      await gerarSped.mutateAsync({ empresaId, anoCalendario: ano, tipo });
+      setExportStatus('done');
+      setTimeout(() => setExportStatus('idle'), 4000);
+    } catch {
+      setExportStatus('error');
+      setTimeout(() => setExportStatus('idle'), 5000);
+    }
+  };
+
+  const exportButton = (() => {
+    const base = 'flex-1';
+    switch (exportStatus) {
+      case 'queued':
+        return { icon: <Clock className="mr-2 h-4 w-4" />, label: 'Em fila…', disabled: true, variant: 'secondary' as const, className: cn(base, 'bg-muted text-muted-foreground') };
+      case 'processing':
+        return { icon: <Loader2 className="mr-2 h-4 w-4 animate-spin" />, label: 'Processando…', disabled: true, variant: 'secondary' as const, className: cn(base, 'bg-primary/10 text-primary') };
+      case 'done':
+        return { icon: <CheckCircle2 className="mr-2 h-4 w-4" />, label: 'Concluído', disabled: false, variant: 'default' as const, className: cn(base, 'bg-success hover:bg-success text-white') };
+      case 'error':
+        return { icon: <AlertTriangle className="mr-2 h-4 w-4" />, label: 'Falhou — tentar novamente', disabled: false, variant: 'destructive' as const, className: base };
+      default:
+        return { icon: <PlayCircle className="mr-2 h-4 w-4" />, label: `Gerar/Exportar SPED ${tipo}`, disabled: false, variant: 'default' as const, className: base };
+    }
+  })();
 
   const toggleAudit = (id: string) => {
     setExpandedAudit((prev) => {
