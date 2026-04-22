@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Search, ShieldCheck } from 'lucide-react';
+import { Plus, Search, ShieldCheck, History } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -10,8 +10,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { usePlanoContas, useUpsertPlanoConta } from '@/hooks/usePlanoContas';
 import { useAuditoriaCFC } from '@/hooks/useAuditoriaCFC';
+import { usePlanoContaHistory } from '@/hooks/usePlanoContaHistory';
 import { useEmpresas } from '@/hooks/useFinancialData';
 import { AuditoriaCFCPanel } from './AuditoriaCFCPanel';
+import { PlanoContaHistoryPanel } from './PlanoContaHistoryPanel';
 
 interface Props { empresaId?: string }
 
