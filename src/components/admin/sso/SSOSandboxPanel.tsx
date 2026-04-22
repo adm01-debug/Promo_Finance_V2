@@ -11,11 +11,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FlaskConical, CheckCircle2, XCircle, AlertCircle, Play, Code2, ChevronDown, ShieldCheck, UserPlus, UserCheck, Search, Filter, Target, ListChecks, History } from 'lucide-react';
+import { FlaskConical, CheckCircle2, XCircle, AlertCircle, Play, Code2, ChevronDown, ShieldCheck, UserPlus, UserCheck, Search, Filter, Target, ListChecks, History, Layers } from 'lucide-react';
 import { useSSOProviders, useTestSSOLogin, type AppRole } from '@/hooks/useSSO';
 import { useSaveSSOSandboxRun, type SandboxRun } from '@/hooks/useSSOSandboxRuns';
 import { computeOutcome } from './sandbox/outcome';
 import { SandboxHistory } from './sandbox/SandboxHistory';
+import { SandboxBulkPanel } from './sandbox/SandboxBulkPanel';
 import { IDP_PRESETS } from './IdpPresets';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
