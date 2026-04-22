@@ -97,7 +97,19 @@ export default function CorporateOnboarding() {
       window.location.href = data.redirect_url;
     } catch (e) {
       if (cancelRef.current) return;
-      const message = e instanceof Error ? e.message : 'Erro desconhecido';
+      const rawMessage = e instanceof Error ? e.message : 'Erro desconhecido';
+      const errorName = e instanceof Error ? e.name : '';
+      // Detecta erro provável de CORS: o navegador bloqueia a resposta e o
+      // SDK do Supabase entrega um TypeError "Failed to fetch" /
+      // "NetworkError" / FunctionsFetchError sem corpo. Mostramos uma
+      // mensagem específica para orientar o admin (vs. um genérico opaco).
+      const looksLikeCors =
+        errorName === 'FunctionsFetchError' ||
+        errorName === 'TypeError' ||
+        /failed to fetch|networkerror|cors|load failed|fetch failed/i.test(rawMessage);
+      const message = looksLikeCors
+        ? 'O navegador bloqueou a requisição ao endpoint de SSO (provável erro de CORS). Verifique se o domínio está autorizado nas configurações do provedor.'
+        : rawMessage;
       toast.error('Falha ao iniciar SSO', { description: message });
       setRedirecting(null);
       setSsoError({ provider: p, message });
