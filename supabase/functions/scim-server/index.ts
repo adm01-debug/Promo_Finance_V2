@@ -337,43 +337,143 @@ interface UserPatchResult {
   empresaUpdates: Record<string, unknown>;
   profileUpdates: Record<string, unknown>;
   newRoleHint: string | null;
-  emailChangeAttempted: boolean;
+  newEmail: string | null;
   invalidPath: string | null;
+  invalidOp: string | null;
+}
+
+const ENTERPRISE_URN = "urn:ietf:params:scim:schemas:extension:enterprise:2.0:user";
+const USER_URN = "urn:ietf:params:scim:schemas:core:2.0:user";
+
+/** Normaliza um path SCIM removendo o prefixo do schema URN do User core, deixando filtros intactos. */
+function normalizePath(rawPath: string): string {
+  let p = rawPath.trim();
+  // remove o URN do User core, se presente (case-insensitive)
+  const lower = p.toLowerCase();
+  if (lower.startsWith(`${USER_URN}:`)) p = p.slice(USER_URN.length + 1);
+  return p;
+}
+
+/** Extrai o "primary email" de um array SCIM emails. */
+function extractPrimaryEmail(emails: unknown): string | null {
+  if (!Array.isArray(emails)) return null;
+  const primary = emails.find((e) => e && typeof e === "object" && (e as any).primary === true);
+  const chosen = primary || emails.find((e) => e && typeof e === "object" && (e as any).value);
+  const v = chosen && (chosen as any).value;
+  return typeof v === "string" && v.trim() ? v.trim().toLowerCase() : null;
+}
+
+/** Aplica um valor a um campo "atômico" do User (compartilhado por PATCH com path e PATCH sem path). */
+function assignField(out: UserPatchResult, field: string, action: string, value: unknown): boolean {
+  switch (field) {
+    case "active":
+      out.empresaUpdates.ativo = action === "remove" ? false : !!value;
+      return true;
+    case "displayname":
+    case "name.formatted":
+      out.profileUpdates.full_name = action === "remove" ? "" : String(value ?? "");
+      return true;
+    case "name.givenname":
+    case "name.familyname": {
+      // Combina givenName + familyName quando possível
+      const current = (out.profileUpdates.full_name as string | undefined) ?? "";
+      const parts = current.split(" ").filter(Boolean);
+      if (field === "name.givenname") parts[0] = String(value ?? "");
+      else parts[parts.length === 0 ? 0 : parts.length - 1] = String(value ?? "");
+      out.profileUpdates.full_name = parts.join(" ").trim();
+      return true;
+    }
+    case "externalid":
+      out.empresaUpdates.scim_external_id = action === "remove" ? null : (value ?? null);
+      return true;
+    case `${ENTERPRISE_URN}:department`:
+    case "department":
+      out.newRoleHint = action === "remove" ? "visualizador" : String(value ?? "");
+      return true;
+    default:
+      return false;
+  }
 }
 
 function applyPatchOps(ops: any[]): UserPatchResult {
   const out: UserPatchResult = {
     empresaUpdates: {}, profileUpdates: {},
-    newRoleHint: null, emailChangeAttempted: false, invalidPath: null,
+    newRoleHint: null, newEmail: null,
+    invalidPath: null, invalidOp: null,
   };
-  const enterpriseDept = "urn:ietf:params:scim:schemas:extension:enterprise:2.0:user:department";
 
   for (const op of ops || []) {
     const action = String(op?.op || "").toLowerCase();
-    if (!["add", "replace", "remove"].includes(action)) { out.invalidPath = op?.op; return out; }
-    const rawPath = (op?.path ?? "").toLowerCase();
+    if (!["add", "replace", "remove"].includes(action)) {
+      out.invalidOp = op?.op ?? "(missing)";
+      return out;
+    }
+    const rawPath = String(op?.path ?? "");
+    const normalized = normalizePath(rawPath);
+    const path = normalized.toLowerCase();
     const value = op?.value;
 
-    // PATCH sem path: value é objeto com atributos top-level
-    if (!rawPath && value && typeof value === "object") {
+    // ---------- PATCH sem path: value é objeto com atributos top-level ----------
+    if (!path && value && typeof value === "object") {
       if ("active" in value) out.empresaUpdates.ativo = !!value.active;
       if ("displayName" in value) out.profileUpdates.full_name = String(value.displayName);
       if (value?.name?.formatted) out.profileUpdates.full_name = String(value.name.formatted);
+      if (value?.name?.givenName || value?.name?.familyName) {
+        const g = value.name.givenName ?? "";
+        const f = value.name.familyName ?? "";
+        out.profileUpdates.full_name = `${g} ${f}`.trim();
+      }
       if ("externalId" in value) out.empresaUpdates.scim_external_id = value.externalId ?? null;
       const ext = value["urn:ietf:params:scim:schemas:extension:enterprise:2.0:User"];
       if (ext?.department) out.newRoleHint = String(ext.department);
-      if (value?.emails) out.emailChangeAttempted = true;
+      if (Array.isArray(value.emails)) {
+        const e = extractPrimaryEmail(value.emails);
+        if (e) out.newEmail = e;
+      }
       continue;
     }
 
-    if (rawPath === "active") out.empresaUpdates.ativo = action === "remove" ? false : !!value;
-    else if (rawPath === "displayname" || rawPath === "name.formatted") out.profileUpdates.full_name = String(value ?? "");
-    else if (rawPath === "externalid") out.empresaUpdates.scim_external_id = value ?? null;
-    else if (rawPath === enterpriseDept) out.newRoleHint = action === "remove" ? "visualizador" : String(value ?? "");
-    else if (rawPath.startsWith("emails")) out.emailChangeAttempted = true;
-    else { out.invalidPath = op?.path; return out; }
+    // ---------- PATCH com filtro emails[primary eq true].value ----------
+    // Aceita variações: emails[primary eq true].value | emails[type eq "work"].value
+    if (path.startsWith("emails[")) {
+      // Para qualquer filtro em emails que ataque .value, aplicamos como troca de e-mail primário
+      if (path.endsWith(".value")) {
+        const v = typeof value === "string" ? value : (Array.isArray(value) ? value[0]?.value : null);
+        if (typeof v === "string" && v.trim()) {
+          out.newEmail = v.trim().toLowerCase();
+          continue;
+        }
+      }
+      out.invalidPath = rawPath;
+      return out;
+    }
+
+    // ---------- PATCH replace inteiro de emails ----------
+    if (path === "emails") {
+      const e = extractPrimaryEmail(value);
+      if (e) { out.newEmail = e; continue; }
+      out.invalidPath = rawPath;
+      return out;
+    }
+
+    // ---------- Campos atômicos ----------
+    if (assignField(out, path, action, value)) continue;
+
+    out.invalidPath = rawPath || "(empty)";
+    return out;
   }
   return out;
+}
+
+/** Atualiza o e-mail principal do usuário em auth.users + profiles. */
+async function updateUserEmail(admin: SupabaseClient, userId: string, newEmail: string): Promise<string | null> {
+  const { error: authErr } = await admin.auth.admin.updateUserById(userId, {
+    email: newEmail, email_confirm: true,
+  });
+  if (authErr) return authErr.message;
+  const { error: profErr } = await admin.from("profiles").update({ email: newEmail }).eq("id", userId);
+  if (profErr) return profErr.message;
+  return null;
 }
 
 async function patchUser(admin: SupabaseClient, providerId: string | null, empresaId: string, id: string, body: any) {
@@ -382,18 +482,36 @@ async function patchUser(admin: SupabaseClient, providerId: string | null, empre
     .eq("id", id).eq("empresa_id", empresaId).maybeSingle();
   if (!link) return err(404, "User not found");
 
-  const result = applyPatchOps(body?.Operations || []);
+  // Validação básica do envelope SCIM PatchOp
+  const schemas: string[] = Array.isArray(body?.schemas) ? body.schemas : [];
+  if (schemas.length && !schemas.some((s) => String(s).toLowerCase() === "urn:ietf:params:scim:api:messages:2.0:patchop")) {
+    return err(400, "Missing PatchOp schema", "invalidSyntax");
+  }
+  if (!Array.isArray(body?.Operations) || body.Operations.length === 0) {
+    return err(400, "Operations array required", "invalidValue");
+  }
+
+  const result = applyPatchOps(body.Operations);
+  if (result.invalidOp) return err(400, `Unsupported op: ${result.invalidOp}`, "invalidSyntax");
   if (result.invalidPath) return err(400, `Unsupported path: ${result.invalidPath}`, "invalidPath");
-  if (result.emailChangeAttempted) return err(400, "Email change via SCIM not supported", "mutability");
 
   if (result.newRoleHint) {
     const role = await resolveRole(admin, providerId, result.newRoleHint);
     result.empresaUpdates.role = role;
   }
 
+  // 1. Email primário (auth + profiles)
+  if (result.newEmail && result.newEmail !== (link as any).profiles.email) {
+    const errMsg = await updateUserEmail(admin, link.user_id as string, result.newEmail);
+    if (errMsg) return err(500, `Email update failed: ${errMsg}`);
+  }
+
+  // 2. Profile (full_name)
   if (Object.keys(result.profileUpdates).length) {
     await admin.from("profiles").update(result.profileUpdates).eq("id", (link as any).profiles.id);
   }
+
+  // 3. user_empresas (active, externalId, role)
   if (Object.keys(result.empresaUpdates).length) {
     await admin.from("user_empresas").update(result.empresaUpdates).eq("id", id);
   }
