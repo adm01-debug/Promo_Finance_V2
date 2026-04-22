@@ -306,18 +306,34 @@ async function listUsers(admin: SupabaseClient, empresaId: string, url: URL) {
     .eq("empresa_id", empresaId);
 
   for (const c of clauses) {
-    const a = c.attr.toLowerCase();
-    if (a === "username" || a === "emails" || a === "emails.value") q = q.eq("profiles.email", c.value.toLowerCase());
-    else if (a === "externalid") q = q.eq("scim_external_id", c.value);
-    else if (a === "active") q = q.eq("ativo", c.value === "true");
-    else return err(400, `Unsupported filter attribute: ${c.attr}`, "invalidFilter");
+    const a = normalizeFilterAttr(c.attr);
+    if (a === "username" || a === "emails" || a === "emails.value") {
+      q = q.eq("profiles.email", c.value.toLowerCase());
+    } else if (a === "externalid") {
+      q = q.eq("scim_external_id", c.value);
+    } else if (a === "active") {
+      q = q.eq("ativo", c.value === "true");
+    } else if (a === "id") {
+      q = q.eq("id", c.value);
+    } else if (a === "usertype" || a === "department") {
+      // userType / department mapeiam para a role aplicacional (admin|financeiro|operacional|visualizador)
+      const role = (APP_ROLES as readonly string[]).includes(c.value.toLowerCase())
+        ? c.value.toLowerCase()
+        : null;
+      if (!role) return err(400, `Unsupported value for ${c.attr}: ${c.value}`, "invalidValue");
+      q = q.eq("role", role);
+    } else {
+      return err(400, `Unsupported filter attribute: ${c.attr}`, "invalidFilter");
+    }
   }
 
   if (count === 0) {
     const { count: total } = await q;
     return ok(listResp([], total ?? 0, startIndex));
   }
-  const { data, count: total } = await q.range(startIndex - 1, startIndex - 1 + count - 1);
+  const { data, count: total } = await q
+    .order("created_at", { ascending: true })
+    .range(startIndex - 1, startIndex - 1 + count - 1);
   const Resources = (data ?? []).map((row: any) => userToScim(row.profiles, row, empresaId));
   return ok(listResp(Resources, total ?? Resources.length, startIndex));
 }
