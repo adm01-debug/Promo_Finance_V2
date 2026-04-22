@@ -86,6 +86,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
         periodo: resultado.periodo,
         totalLinhas: resultado.total_linhas,
         totalLancamentos: resultado.total_lancamentos,
+        tipo: 'ECF',
       });
       toast.success('ZIP baixado');
     } catch (e) {
