@@ -311,6 +311,33 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Fechar
           </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                data-testid="btn-exportar-validacoes"
+                disabled={erros.length === 0 && avisos.length === 0}
+                className="gap-2"
+              >
+                <FileDown className="h-4 w-4" />
+                Exportar validações
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel className="text-xs">
+                Relatório de validações
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={exportarPdf} className="gap-2">
+                <FileText className="h-4 w-4 text-destructive" />
+                PDF (.pdf)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={exportarJson} className="gap-2">
+                <FileJson className="h-4 w-4 text-primary" />
+                JSON (.json)
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
