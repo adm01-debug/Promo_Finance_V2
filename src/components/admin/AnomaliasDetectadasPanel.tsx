@@ -653,7 +653,11 @@ export function AnomaliasDetectadasPanel() {
           )}
         </CardContent>
       </Card>
-      <AnomaliasReviewQueue open={reviewOpen} onOpenChange={setReviewOpen} />
+      <AnomaliasReviewQueue
+        open={reviewOpen}
+        onOpenChange={setReviewOpen}
+        severidadeFilter={reviewSeveridade}
+      />
       <AnomaliaPreferencesDialog open={prefsOpen} onOpenChange={setPrefsOpen} />
       <AnomaliaDrillDownDrawer />
     </div>
