@@ -79,7 +79,85 @@ export function AnomaliasReviewQueue({
   const [index, setIndex] = useState(0);
   const [comentario, setComentario] = useState("");
   const [stats, setStats] = useState({ confirmadas: 0, rejeitadas: 0, puladas: 0 });
+  const [recarregando, setRecarregando] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  /**
+   * Recarrega do backend a anomalia em uma posição da fila para garantir
+   * que ela ainda está pendente (evita revisar dados desatualizados por
+   * concorrência). Se já foi resolvida, avança automaticamente para a próxima.
+   */
+  async function recarregarPosicao(novoIndex: number) {
+    if (novoIndex >= snapshot.length) {
+      setIndex(novoIndex);
+      return;
+    }
+    setRecarregando(true);
+    try {
+      let cursor = novoIndex;
+      while (cursor < snapshot.length) {
+        const candidato = snapshot[cursor];
+        const { data, error } = await supabase
+          .from("anomalias_detectadas")
+          .select("*")
+          .eq("id", candidato.id)
+          .maybeSingle();
+
+        if (error) {
+          // erro de leitura — segue com o snapshot existente
+          break;
+        }
+
+        if (!data) {
+          // anomalia removida — pula
+          toast.warning("Anomalia removida do sistema", {
+            description: "Pulando para a próxima da fila.",
+          });
+          setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
+          cursor += 1;
+          continue;
+        }
+
+        const fresca = data as Anomalia;
+        if (fresca.status !== "nova" && fresca.status !== "investigando") {
+          // já foi resolvida por outro revisor — avisa e pula
+          let quem = "outro revisor";
+          if (fresca.resolvida_por) {
+            const { data: prof } = await supabase
+              .from("profiles")
+              .select("full_name, email")
+              .eq("id", fresca.resolvida_por)
+              .maybeSingle();
+            quem =
+              (prof?.full_name as string | null)?.trim() ||
+              (prof?.email as string | null)?.trim() ||
+              "outro revisor";
+          }
+          const acao =
+            fresca.status === "confirmada" ? "confirmou" : "marcou como falso positivo";
+          toast.warning("Anomalia já revisada", {
+            description: `${quem} ${acao} esta anomalia. Pulando para a próxima.`,
+          });
+          setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
+          cursor += 1;
+          continue;
+        }
+
+        // ainda pendente — atualiza o snapshot com a versão fresca
+        setSnapshot((prev) => {
+          const copia = [...prev];
+          copia[cursor] = fresca;
+          return copia;
+        });
+        setIndex(cursor);
+        return;
+      }
+      // esgotou a fila
+      setIndex(snapshot.length);
+    } finally {
+      setRecarregando(false);
+    }
+  }
 
   // Snapshot da fila ao abrir (evita reordenação durante revisão)
   useEffect(() => {
@@ -119,7 +197,7 @@ export function AnomaliasReviewQueue({
 
   function avancar() {
     setComentario("");
-    setIndex((i) => i + 1);
+    void recarregarPosicao(index + 1);
   }
 
   async function handleAcao(status: "confirmada" | "falso_positivo") {
@@ -307,21 +385,26 @@ export function AnomaliasReviewQueue({
               <Button
                 variant="ghost"
                 onClick={handlePular}
-                disabled={revisar.isPending}
+                disabled={revisar.isPending || recarregando}
               >
-                <SkipForward className="h-4 w-4" /> Pular
+                {recarregando ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <SkipForward className="h-4 w-4" />
+                )}{" "}
+                Pular
               </Button>
               <Button
                 variant="outline"
                 onClick={() => handleAcao("falso_positivo")}
-                disabled={!comentarioValido || revisar.isPending}
+                disabled={!comentarioValido || revisar.isPending || recarregando}
               >
                 <XCircle className="h-4 w-4" /> Falso positivo
               </Button>
               <Button
                 variant="success"
                 onClick={() => handleAcao("confirmada")}
-                disabled={!comentarioValido || revisar.isPending}
+                disabled={!comentarioValido || revisar.isPending || recarregando}
               >
                 {revisar.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
