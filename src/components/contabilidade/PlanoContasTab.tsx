@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Search, ShieldCheck } from 'lucide-react';
+import { Plus, Search, ShieldCheck, History } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -10,8 +10,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { usePlanoContas, useUpsertPlanoConta } from '@/hooks/usePlanoContas';
 import { useAuditoriaCFC } from '@/hooks/useAuditoriaCFC';
+import { usePlanoContaHistory } from '@/hooks/usePlanoContaHistory';
 import { useEmpresas } from '@/hooks/useFinancialData';
 import { AuditoriaCFCPanel } from './AuditoriaCFCPanel';
+import { PlanoContaHistoryPanel } from './PlanoContaHistoryPanel';
 
 interface Props { empresaId?: string }
 
@@ -19,11 +21,13 @@ export function PlanoContasTab({ empresaId }: Props) {
   const [busca, setBusca] = useState('');
   const [open, setOpen] = useState(false);
   const [auditOpen, setAuditOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [form, setForm] = useState({ codigo: '', descricao: '', natureza: 'ativo', tipo: 'analitica', codigo_referencial: '' });
   const { data: contas = [], isLoading } = usePlanoContas(empresaId);
   const { data: empresas = [] } = useEmpresas();
   const empresa = empresas.find((e) => e.id === empresaId);
   const auditoria = useAuditoriaCFC(empresaId);
+  const history = usePlanoContaHistory({ empresaId, limit: 200 });
   const upsert = useUpsertPlanoConta();
 
   const filtered = contas.filter(c =>
@@ -45,6 +49,15 @@ export function PlanoContasTab({ empresaId }: Props) {
             <CardDescription>Estrutura contábil para ECD/ECF</CardDescription>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setHistoryOpen(true)} disabled={!empresaId}>
+              <History className="h-4 w-4 mr-2" />
+              Histórico
+              {!history.isLoading && (history.data?.length ?? 0) > 0 && (
+                <Badge variant="secondary" className="ml-2 h-5 px-1.5 text-[10px]">
+                  {history.data!.length}
+                </Badge>
+              )}
+            </Button>
             <Button variant="outline" onClick={() => setAuditOpen(true)} disabled={!empresaId}>
               <ShieldCheck className="h-4 w-4 mr-2" />
               Auditar CFC
@@ -139,6 +152,15 @@ export function PlanoContasTab({ empresaId }: Props) {
             <DialogTitle>Auditoria de códigos referenciais CFC</DialogTitle>
           </DialogHeader>
           <AuditoriaCFCPanel resultado={auditoria} empresa={empresa} />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={historyOpen} onOpenChange={setHistoryOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle>Histórico do Plano de Contas</DialogTitle>
+          </DialogHeader>
+          <PlanoContaHistoryPanel entries={history.data ?? []} isLoading={history.isLoading} />
         </DialogContent>
       </Dialog>
     </Card>

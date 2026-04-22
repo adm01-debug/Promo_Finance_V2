@@ -35,14 +35,43 @@ export function useUpsertPlanoConta() {
   return useMutation({
     mutationFn: async (input: Partial<PlanoContaRow> & { codigo: string; descricao: string; natureza: string; tipo: string }) => {
       const payload = { ...input, nome: input.nome || input.descricao, nivel: input.codigo.split('.').length };
-      const { data, error } = input.id
-        ? await supabase.from('plano_contas').update(payload).eq('id', input.id).select().maybeSingle()
+      const isUpdate = !!input.id;
+
+      // Snapshot anterior para auditoria (apenas em UPDATE)
+      let oldData: Record<string, unknown> | null = null;
+      if (isUpdate) {
+        const { data: prev } = await supabase.from('plano_contas').select('*').eq('id', input.id!).maybeSingle();
+        oldData = prev as Record<string, unknown> | null;
+      }
+
+      const { data, error } = isUpdate
+        ? await supabase.from('plano_contas').update(payload).eq('id', input.id!).select().maybeSingle()
         : await supabase.from('plano_contas').insert(payload as never).select().maybeSingle();
       if (error) throw error;
+
+      // Registra na trilha de auditoria — não bloqueia a operação principal.
+      try {
+        const recordId = (data as { id?: string } | null)?.id || input.id;
+        if (recordId) {
+          const empresaTag = input.empresa_id ? `empresa:${input.empresa_id} ` : '';
+          await supabase.rpc('log_audit', {
+            _action: isUpdate ? 'UPDATE' : 'INSERT',
+            _table_name: 'plano_contas',
+            _record_id: recordId,
+            _old_data: oldData ? JSON.stringify(oldData) : null,
+            _new_data: data ? JSON.stringify(data) : null,
+            _details: `${empresaTag}conta ${payload.codigo} — ${payload.descricao}`,
+          });
+        }
+      } catch (auditErr) {
+        console.warn('[plano_contas] Falha ao registrar auditoria', auditErr);
+      }
+
       return data;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['plano-contas'] });
+      qc.invalidateQueries({ queryKey: ['plano-conta-history'] });
       toast.success('Conta salva');
     },
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
