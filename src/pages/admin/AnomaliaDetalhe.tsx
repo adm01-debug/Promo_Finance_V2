@@ -13,6 +13,7 @@ import { DetectoresContribuintesCard } from "@/components/insights-ia/anomalia/D
 import { AnomaliasRelacionadasCard } from "@/components/insights-ia/anomalia/AnomaliasRelacionadasCard";
 import { AcoesSugeridasCard } from "@/components/insights-ia/anomalia/AcoesSugeridasCard";
 import { ExportarEvidenciasButton } from "@/components/insights-ia/anomalia/ExportarEvidenciasButton";
+import { AnomaliaBreadcrumb } from "@/components/insights-ia/anomalia/AnomaliaBreadcrumb";
 
 const SLOW_THRESHOLD_MS = 2_500;
 const VERY_SLOW_THRESHOLD_MS = 8_000;
