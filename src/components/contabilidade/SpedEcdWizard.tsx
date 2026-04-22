@@ -31,10 +31,14 @@ type Step = 1 | 2 | 3;
 export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: Props) {
   const [step, setStep] = useState<Step>(1);
   const [resultado, setResultado] = useState<SpedGeracaoResult | null>(null);
+  const [hashCopied, setHashCopied] = useState(false);
+  const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const validar = useSpedEcdValidacao();
   const gerar = useGerarSpedContabil();
   const preValidacao = usePreValidacaoSped(empresaId, anoCalendario);
   const auditoriaCFC = useAuditoriaCFC(empresaId);
+
+  useEffect(() => () => { if (copyTimer.current) clearTimeout(copyTimer.current); }, []);
 
   useEffect(() => {
     if (open && empresaId && anoCalendario) {
