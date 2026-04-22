@@ -1036,12 +1036,22 @@ export function AnomaliasDetectadasPanel() {
                       a.status === "falso_positivo") && (
                       <ReabrirAnomaliaDialog anomaliaId={a.id} />
                     )}
-                </div>
-              ))}
-            </div>
-          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </CardContent>
       </Card>
+      <ReabrirAnomaliasLoteDialog
+        open={reabrirLoteOpen}
+        onOpenChange={setReabrirLoteOpen}
+        ids={Array.from(selecionados)}
+        onConcluido={limparSelecao}
+      />
       <AnomaliasReviewQueue
         open={reviewOpen}
         onOpenChange={setReviewOpen}
