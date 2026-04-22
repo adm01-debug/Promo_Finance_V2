@@ -164,6 +164,39 @@ Windows: Get-FileHash trilha-financeira.csv -Algorithm SHA256
     .select()
     .single();
   if (insErr) throw insErr;
+
+  // Trilha de auditoria explícita: cada geração de pacote vira um EXPORT em audit_logs
+  // com manifest completo (incluindo SHA-256 por arquivo) em new_data e um
+  // resumo legível em details.
+  const arquivos = manifest.arquivos as Record<string, { linhas: number; sha256: string }>;
+  const totalLinhas = Object.values(arquivos).reduce((s, a) => s + a.linhas, 0);
+  const detalhes =
+    `Pacote de evidências gerado | período=${body.periodo_inicio}→${body.periodo_fim} | ` +
+    `escopos=${escopos.join(",")} | arquivos=${Object.keys(arquivos).length} | ` +
+    `linhas_total=${totalLinhas} | tamanho=${(zipBytes.byteLength / 1024 / 1024).toFixed(2)}MB | ` +
+    `storage=${storagePath}`;
+
+  const { error: auditErr } = await admin.rpc("log_audit", {
+    _action: "EXPORT",
+    _table_name: "evidencias_pacotes",
+    _record_id: (pacote as { id: string }).id,
+    _old_data: null,
+    _new_data: {
+      pacote_id: (pacote as { id: string }).id,
+      storage_path: storagePath,
+      tamanho_bytes: zipBytes.byteLength,
+      periodo_inicio: body.periodo_inicio,
+      periodo_fim: body.periodo_fim,
+      escopos,
+      manifest, // contém arquivos + sha256 + gerado_em
+    },
+    _details: detalhes,
+  });
+  if (auditErr) {
+    // Não bloqueia a geração — apenas loga e segue
+    console.error("audit_logs insert falhou:", auditErr.message);
+  }
+
   send("registrar", "Registrando pacote", "concluído");
 
   return { ok: true, pacote, signed_url: signed.signedUrl, manifest };
