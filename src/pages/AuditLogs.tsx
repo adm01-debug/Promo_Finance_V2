@@ -23,6 +23,8 @@ import { AuditLogTable } from '@/components/audit/AuditLogTable';
 import { IpMaskToggle } from '@/components/admin/IpMaskToggle';
 import { useIpMaskPreference } from '@/hooks/useIpMaskPreference';
 import { maskIp } from '@/lib/ip-mask';
+import { useManagedFilters } from '@/hooks/useManagedFilters';
+import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 
 type AuditAction = 'INSERT' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'LOGOUT' | 'EXPORT' | 'APPROVE' | 'REJECT';
 
@@ -111,6 +113,17 @@ export default function AuditLogs() {
   const handleExportPDF = () => { if (!filteredLogs?.length) { toast.error('Nenhum registro para exportar'); return; } exportToPDF(filteredLogs, auditColumns, 'Logs de Auditoria'); toast.success('PDF gerado para impressão!'); };
   const clearFilters = () => { setSearchTerm(''); setActionFilter('all'); setTableFilter('all'); setUserFilter('all'); setDateRange({ from: subDays(new Date(), 7), to: new Date() }); };
 
+  const filtersController = useManagedFilters({
+    entityType: 'audit-logs',
+    defaults: { search: '', action: 'all', table: 'all', user: 'all' },
+    localStorageKey: 'audit-logs-filters',
+  });
+  // Mantém controller sincronizado com o state local para snapshot/undo
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useMemo(() => {
+    filtersController.setValues({ search: searchTerm, action: actionFilter, table: tableFilter, user: userFilter });
+  }, [searchTerm, actionFilter, tableFilter, userFilter]);
+
   return (
     <MainLayout>
       <div className="space-y-6">
@@ -139,7 +152,18 @@ export default function AuditLogs() {
               <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("justify-start text-left font-normal", !dateRange && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{dateRange?.from ? (dateRange.to ? <>{format(dateRange.from, "dd/MM/yy")} - {format(dateRange.to, "dd/MM/yy")}</> : format(dateRange.from, "dd/MM/yyyy")) : <span>Selecionar período</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} locale={ptBR as unknown as Record<string, unknown>} /></PopoverContent></Popover>
             </div>
             <div className="flex items-center justify-between gap-2 mt-4 flex-wrap">
-              <Button variant="outline" size="sm" onClick={clearFilters}><X className="h-4 w-4 mr-1" /> Limpar Filtros</Button>
+              <ClearFiltersButton
+                controller={filtersController}
+                entityLabel="logs de auditoria"
+                variant="outline"
+                describeFilters={(v) => [
+                  { label: 'Busca', value: v.search, isActive: !!v.search },
+                  { label: 'Ação', value: v.action, isActive: v.action !== 'all' },
+                  { label: 'Tabela', value: v.table, isActive: v.table !== 'all' },
+                  { label: 'Usuário', value: v.user, isActive: v.user !== 'all' },
+                ]}
+                label="Limpar Filtros"
+              />
               <IpMaskToggle />
             </div>
           </CardContent>
