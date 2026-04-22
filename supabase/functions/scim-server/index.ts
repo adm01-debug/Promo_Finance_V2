@@ -44,7 +44,33 @@ async function logOp(admin: SupabaseClient, opts: {
   resource: string; operation: string;
   externalId: string | null; userId: string | null;
   status: number; reqBody: unknown; resBody: unknown; t0: number;
+  method?: string; path?: string; ip?: string | null; userAgent?: string | null;
+  errorDetail?: string | null;
 }) {
+  const duration = Date.now() - opts.t0;
+  // Structured console log — sempre emitido (visível em `supabase functions logs`).
+  const level = opts.status >= 500 ? "error" : opts.status >= 400 ? "warn" : "info";
+  const logLine = {
+    scim: true,
+    method: opts.method,
+    path: opts.path,
+    resource: opts.resource,
+    operation: opts.operation,
+    status: opts.status,
+    duration_ms: duration,
+    empresa_id: opts.empresaId,
+    token_id: opts.tokenId,
+    external_id: opts.externalId,
+    user_id: opts.userId,
+    ip: opts.ip ?? null,
+    user_agent: opts.userAgent ?? null,
+    error: opts.errorDetail ?? null,
+  };
+  if (level === "error") console.error(JSON.stringify(logLine));
+  else if (level === "warn") console.warn(JSON.stringify(logLine));
+  else console.info(JSON.stringify(logLine));
+
+  // Persistência best-effort em scim_operations_log.
   try {
     await admin.from("scim_operations_log").insert({
       token_id: opts.tokenId, empresa_id: opts.empresaId,
@@ -52,9 +78,19 @@ async function logOp(admin: SupabaseClient, opts: {
       external_id: opts.externalId, user_id: opts.userId, status_code: opts.status,
       request_body: truncate(opts.reqBody) as any,
       response_body: truncate(opts.resBody) as any,
-      duration_ms: Date.now() - opts.t0,
+      duration_ms: duration,
     });
   } catch {/* nunca derruba a request */}
+}
+
+/** Extrai detail de uma resposta SCIM Error (best-effort). */
+async function extractErrorDetail(resp: Response): Promise<string | null> {
+  if (resp.status < 400) return null;
+  if (!resp.headers.get("content-type")?.includes("scim+json")) return null;
+  try {
+    const body = await resp.clone().json();
+    return typeof body?.detail === "string" ? body.detail : null;
+  } catch { return null; }
 }
 
 // ============================== role resolver ==============================
@@ -784,32 +820,82 @@ Deno.serve(async (req) => {
   const resource = seg[2];
   const id = seg[3];
 
+  // Metadados de request — usados em todos os logs.
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+    || req.headers.get("cf-connecting-ip")
+    || null;
+  const userAgent = req.headers.get("user-agent");
+
+  // Helper local para logar e retornar uma resposta uniformemente.
+  const logAndReturn = async (
+    resp: Response,
+    extras: {
+      tokenId?: string | null; empresaId?: string | null; opName: string;
+      externalId?: string | null; userId?: string | null;
+      reqBody?: unknown;
+    },
+  ) => {
+    let resBodyForLog: unknown = null;
+    if (resp.status !== 204 && resp.headers.get("content-type")?.includes("scim+json")) {
+      try { resBodyForLog = await resp.clone().json(); } catch { /* ignore */ }
+    }
+    const errorDetail = await extractErrorDetail(resp);
+    await logOp(admin, {
+      tokenId: extras.tokenId ?? null,
+      empresaId: extras.empresaId ?? null,
+      resource: resource || "unknown",
+      operation: extras.opName,
+      externalId: extras.externalId ?? null,
+      userId: extras.userId ?? null,
+      status: resp.status,
+      reqBody: extras.reqBody ?? null,
+      resBody: resBodyForLog,
+      t0,
+      method: req.method,
+      path,
+      ip,
+      userAgent,
+      errorDetail,
+    });
+    return resp;
+  };
+
   try {
-    // ---------- Discovery (público) ----------
-    if (req.method === "GET" && resource === "ServiceProviderConfig") return ok(SP_CONFIG_PAYLOAD);
+    // ---------- Discovery (público — sem auth) ----------
+    if (req.method === "GET" && resource === "ServiceProviderConfig") {
+      return await logAndReturn(ok(SP_CONFIG_PAYLOAD), { opName: "discovery" });
+    }
     if (req.method === "GET" && resource === "ResourceTypes") {
-      if (id) {
-        const r = RESOURCE_TYPES_PAYLOAD.Resources.find(x => x.id === id);
-        return r ? ok(r) : err(404, "ResourceType not found");
-      }
-      return ok(listResp(RESOURCE_TYPES_PAYLOAD.Resources, RESOURCE_TYPES_PAYLOAD.Resources.length, 1));
+      const found = id ? RESOURCE_TYPES_PAYLOAD.Resources.find(x => x.id === id) : null;
+      const resp = id
+        ? (found ? ok(found) : err(404, "ResourceType not found"))
+        : ok(listResp(RESOURCE_TYPES_PAYLOAD.Resources, RESOURCE_TYPES_PAYLOAD.Resources.length, 1));
+      return await logAndReturn(resp, { opName: "discovery" });
     }
     if (req.method === "GET" && resource === "Schemas") {
-      if (id) {
-        const s = SCHEMAS_PAYLOAD.Resources.find(x => x.id === id);
-        return s ? ok(s) : err(404, "Schema not found");
-      }
-      return ok(listResp(SCHEMAS_PAYLOAD.Resources, SCHEMAS_PAYLOAD.Resources.length, 1));
+      const found = id ? SCHEMAS_PAYLOAD.Resources.find(x => x.id === id) : null;
+      const resp = id
+        ? (found ? ok(found) : err(404, "Schema not found"))
+        : ok(listResp(SCHEMAS_PAYLOAD.Resources, SCHEMAS_PAYLOAD.Resources.length, 1));
+      return await logAndReturn(resp, { opName: "discovery" });
     }
 
     // ---------- Auth ----------
     const auth = req.headers.get("Authorization");
-    if (!auth?.startsWith("Bearer ")) return err(401, "Missing bearer token");
+    if (!auth?.startsWith("Bearer ")) {
+      return await logAndReturn(err(401, "Missing bearer token"), { opName: "auth" });
+    }
     const tokenHash = await sha256(auth.slice(7));
     const { data: tok } = await admin.from("scim_tokens").select("*")
       .eq("token_hash", tokenHash).eq("ativo", true).maybeSingle();
-    if (!tok) return err(401, "Invalid token");
-    if (tok.expires_at && new Date(tok.expires_at) < new Date()) return err(401, "Token expired");
+    if (!tok) {
+      return await logAndReturn(err(401, "Invalid token"), { opName: "auth" });
+    }
+    if (tok.expires_at && new Date(tok.expires_at) < new Date()) {
+      return await logAndReturn(err(401, "Token expired"), {
+        opName: "auth", tokenId: tok.id, empresaId: tok.empresa_id,
+      });
+    }
     admin.from("scim_tokens").update({ last_used_at: new Date().toISOString() }).eq("id", tok.id).then(() => {});
 
     const empresaId = tok.empresa_id as string;
@@ -846,18 +932,12 @@ Deno.serve(async (req) => {
     }
     else resp = err(404, `Resource ${resource ?? "(none)"} not supported`);
 
-    // log (best-effort, não bloqueia resposta)
-    let resBodyForLog: unknown = null;
-    if (resp.status !== 204 && resp.headers.get("content-type")?.includes("scim+json")) {
-      try { resBodyForLog = await resp.clone().json(); } catch {}
-    }
-    await logOp(admin, {
-      tokenId: tok.id, empresaId, resource: resource || "unknown", operation: opName,
-      externalId, userId, status: resp.status,
-      reqBody, resBody: resBodyForLog, t0,
+    return await logAndReturn(resp, {
+      tokenId: tok.id, empresaId, opName, externalId, userId, reqBody,
     });
-    return resp;
   } catch (e) {
-    return err(500, e instanceof Error ? e.message : "unknown");
+    const detail = e instanceof Error ? e.message : "unknown";
+    console.error(JSON.stringify({ scim: true, fatal: true, method: req.method, path, error: detail }));
+    return await logAndReturn(err(500, detail), { opName: "fatal" });
   }
 });
