@@ -255,6 +255,55 @@ export function AnomaliasDetectadasPanel() {
               )}
             </CardTitle>
             <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5 rounded-md border bg-muted/30 px-2 py-1">
+                <ListChecks className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground hidden sm:inline">
+                  Revisar:
+                </span>
+                <Select
+                  value={reviewSeveridade}
+                  onValueChange={(v) =>
+                    setReviewSeveridade(v as Anomalia["severidade"] | "todas")
+                  }
+                >
+                  <SelectTrigger
+                    className="h-7 w-32 border-0 bg-transparent px-1 text-xs focus:ring-0"
+                    aria-label="Filtrar fila por severidade"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todas">
+                      Todas ({pendentesPorSev.todas})
+                    </SelectItem>
+                    <SelectItem value="critica">
+                      Crítica ({pendentesPorSev.critica})
+                    </SelectItem>
+                    <SelectItem value="alta">
+                      Alta ({pendentesPorSev.alta})
+                    </SelectItem>
+                    <SelectItem value="media">
+                      Média ({pendentesPorSev.media})
+                    </SelectItem>
+                    <SelectItem value="baixa">
+                      Baixa ({pendentesPorSev.baixa})
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button
+                  size="sm"
+                  variant="default"
+                  className="h-7 px-2 text-xs"
+                  disabled={
+                    (reviewSeveridade === "todas"
+                      ? pendentesPorSev.todas
+                      : pendentesPorSev[reviewSeveridade]) === 0
+                  }
+                  onClick={() => setReviewOpen(true)}
+                >
+                  Iniciar
+                </Button>
+              </div>
               <Button
                 size="sm"
                 variant="ghost"
