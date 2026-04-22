@@ -75,6 +75,86 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
     onDownloadZip();
   };
 
+  const baseFilename = `validacoes-sped-${arquivo.tipo.toLowerCase()}-${arquivo.ano_calendario}-${new Date().toISOString().slice(0, 10)}`;
+
+  const exportarJson = () => {
+    try {
+      const payload = {
+        tipo: arquivo.tipo,
+        ano_calendario: arquivo.ano_calendario,
+        status: arquivo.status,
+        hash_sha256: arquivo.hash_sha256,
+        gerado_em: new Date().toISOString(),
+        totais: { erros: erros.length, avisos: avisos.length },
+        erros,
+        avisos,
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${baseFilename}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success('Validações exportadas em JSON');
+    } catch (e) {
+      console.error(e);
+      toast.error('Erro ao exportar JSON');
+    }
+  };
+
+  const exportarPdf = () => {
+    try {
+      const doc = new jsPDF({ orientation: 'portrait' });
+      doc.setFontSize(14);
+      doc.text(`Validações SPED ${arquivo.tipo} · ${arquivo.ano_calendario}`, 14, 16);
+      doc.setFontSize(9);
+      const meta = [
+        `Gerado em: ${new Date().toLocaleString('pt-BR')}`,
+        `Status: ${arquivo.status}`,
+        `Hash: ${arquivo.hash_sha256 ?? '—'}`,
+        `Erros: ${erros.length}  ·  Avisos: ${avisos.length}`,
+      ];
+      meta.forEach((l, i) => doc.text(l, 14, 22 + i * 5));
+      let cursorY = 22 + meta.length * 5 + 4;
+
+      if (erros.length > 0) {
+        autoTable(doc, {
+          startY: cursorY,
+          head: [[`Erros (${erros.length})`]],
+          body: erros.map((e) => [e]),
+          theme: 'striped',
+          headStyles: { fillColor: [220, 38, 38] },
+          styles: { fontSize: 8, cellPadding: 2 },
+        });
+        cursorY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 6;
+      }
+
+      if (avisos.length > 0) {
+        autoTable(doc, {
+          startY: cursorY,
+          head: [[`Avisos (${avisos.length})`]],
+          body: avisos.map((a) => [a]),
+          theme: 'striped',
+          headStyles: { fillColor: [217, 119, 6] },
+          styles: { fontSize: 8, cellPadding: 2 },
+        });
+      }
+
+      if (erros.length === 0 && avisos.length === 0) {
+        doc.text('Nenhum erro ou aviso encontrado.', 14, cursorY);
+      }
+
+      doc.save(`${baseFilename}.pdf`);
+      toast.success('Validações exportadas em PDF');
+    } catch (e) {
+      console.error(e);
+      toast.error('Erro ao exportar PDF');
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
