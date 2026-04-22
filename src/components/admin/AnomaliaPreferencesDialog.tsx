@@ -225,7 +225,7 @@ export function AnomaliaPreferencesDialog({ open, onOpenChange }: Props) {
                   >
                     <Checkbox
                       checked={checked}
-                      onCheckedChange={(v) => toggleSeveridade(sev.value, !!v)}
+                      onChange={(e) => toggleSeveridade(sev.value, e.target.checked)}
                       className="mt-0.5"
                     />
                     <div className="flex-1 min-w-0">
