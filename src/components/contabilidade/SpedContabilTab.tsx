@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { useSpedContabilHistorico, useRegistrarTransmissaoSped } from '@/hooks/useSpedContabil';
+import { useSpedContabilHistorico, useRegistrarTransmissaoSped, useGerarSpedContabil } from '@/hooks/useSpedContabil';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { SpedEcdWizard } from './SpedEcdWizard';
