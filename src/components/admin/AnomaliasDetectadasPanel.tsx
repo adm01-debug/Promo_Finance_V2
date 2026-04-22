@@ -581,6 +581,16 @@ export function AnomaliasDetectadasPanel() {
               onClear={handleClearPreset}
             />
 
+            <AdvancedSearchPopover
+              value={searchTerm}
+              onApply={setSearchTerm}
+              totalPreview={lista.length}
+              severityPreview={severityPreview}
+              suggestions={searchSuggestions}
+              scopeLabel={scopeLabel}
+              placeholder="Buscar em descrição, tipo, observações…"
+            />
+
             <Select
               value={filters.status}
               onValueChange={(v) =>
