@@ -153,6 +153,8 @@ export function SpedEcdWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               </Button>
             </div>
 
+            <PreValidacaoSpedPanel resultado={preValidacao} />
+
             <div className="space-y-2">
               {data.checklist.map((item) => <SpedChecklistRow key={item.id} item={item} />)}
             </div>
