@@ -385,21 +385,26 @@ export function AnomaliasReviewQueue({
               <Button
                 variant="ghost"
                 onClick={handlePular}
-                disabled={revisar.isPending}
+                disabled={revisar.isPending || recarregando}
               >
-                <SkipForward className="h-4 w-4" /> Pular
+                {recarregando ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <SkipForward className="h-4 w-4" />
+                )}{" "}
+                Pular
               </Button>
               <Button
                 variant="outline"
                 onClick={() => handleAcao("falso_positivo")}
-                disabled={!comentarioValido || revisar.isPending}
+                disabled={!comentarioValido || revisar.isPending || recarregando}
               >
                 <XCircle className="h-4 w-4" /> Falso positivo
               </Button>
               <Button
                 variant="success"
                 onClick={() => handleAcao("confirmada")}
-                disabled={!comentarioValido || revisar.isPending}
+                disabled={!comentarioValido || revisar.isPending || recarregando}
               >
                 {revisar.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
