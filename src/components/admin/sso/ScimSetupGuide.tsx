@@ -45,11 +45,79 @@ type TestResult =
   | { ok: true; status: number; latencyMs: number }
   | { ok: false; status?: number; latencyMs?: number; message: string; hint?: string };
 
+type TestHistoryEntry = {
+  timestamp: number;
+  ok: boolean;
+  status?: number;
+  latencyMs?: number;
+  message?: string;
+};
+
 const SCIM_SP_CONFIG_SCHEMA = 'urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig';
+const HISTORY_STORAGE_KEY = 'scim:test-history';
+const HISTORY_MAX = 5;
+
+function loadHistory(): TestHistoryEntry[] {
+  try {
+    const raw = localStorage.getItem(HISTORY_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.slice(0, HISTORY_MAX) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory(entries: TestHistoryEntry[]) {
+  try {
+    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(entries.slice(0, HISTORY_MAX)));
+  } catch {
+    /* ignore quota */
+  }
+}
+
+function formatRelative(ts: number): string {
+  const diff = Date.now() - ts;
+  const sec = Math.round(diff / 1000);
+  if (sec < 60) return `há ${sec}s`;
+  const min = Math.round(sec / 60);
+  if (min < 60) return `há ${min} min`;
+  const h = Math.round(min / 60);
+  if (h < 24) return `há ${h} h`;
+  const d = Math.round(h / 24);
+  return `há ${d} d`;
+}
+
+function formatTimestamp(ts: number): string {
+  const d = new Date(ts);
+  return d.toLocaleString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: '2-digit',
+    hour: '2-digit', minute: '2-digit',
+  });
+}
 
 export function ScimSetupGuide() {
   const [testing, setTesting] = useState(false);
   const [result, setResult] = useState<TestResult | null>(null);
+  const [history, setHistory] = useState<TestHistoryEntry[]>([]);
+
+  useEffect(() => {
+    setHistory(loadHistory());
+  }, []);
+
+  const pushHistory = useCallback((entry: TestHistoryEntry) => {
+    setHistory((prev) => {
+      const next = [entry, ...prev].slice(0, HISTORY_MAX);
+      saveHistory(next);
+      return next;
+    });
+  }, []);
+
+  const clearHistory = useCallback(() => {
+    setHistory([]);
+    saveHistory([]);
+    toast.success('Histórico limpo');
+  }, []);
 
   const handleTest = async () => {
     setTesting(true);
