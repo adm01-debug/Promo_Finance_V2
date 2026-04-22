@@ -1,5 +1,14 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
+
+/** Basic UUID v1-v5 shape check — guards against malformed deep-link params. */
+function isValidId(value: string): boolean {
+  if (!value || value.length > 64) return false;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    value,
+  );
+}
 
 /**
  * Reads a search-param ID from the URL, scrolls the matching DOM node
@@ -25,6 +34,21 @@ export function useHighlightFromUrl(
     const id = searchParams.get(paramName);
     if (!id) return;
 
+    const cleanParam = () => {
+      const next = new URLSearchParams(searchParams);
+      next.delete(paramName);
+      setSearchParams(next, { replace: true });
+    };
+
+    // Param malformado → não tenta procurar, limpa a URL e avisa.
+    if (!isValidId(id)) {
+      toast.error("Link inválido", {
+        description: "O identificador na URL não está em um formato válido.",
+      });
+      cleanParam();
+      return;
+    }
+
     let attempts = 0;
     let timeoutId: number | undefined;
     let removeTimeoutId: number | undefined;
@@ -37,6 +61,14 @@ export function useHighlightFromUrl(
         attempts += 1;
         if (attempts < 12) {
           timeoutId = window.setTimeout(tryHighlight, 250);
+        } else {
+          // Esgotou retries: o item não está nesta lista (filtro ativo, paginação,
+          // permissão, ou registro removido). Avisa e limpa o param.
+          toast.warning("Item não encontrado", {
+            description:
+              "O registro vinculado não está visível aqui. Verifique filtros ativos ou se ele ainda existe.",
+          });
+          cleanParam();
         }
         return;
       }
@@ -48,10 +80,7 @@ export function useHighlightFromUrl(
         el.classList.remove("row-highlight-flash");
       }, durationMs);
 
-      // Limpa o param para não re-disparar em navegação/back/refresh
-      const next = new URLSearchParams(searchParams);
-      next.delete(paramName);
-      setSearchParams(next, { replace: true });
+      cleanParam();
     };
 
     // Aguarda um tick para o React montar a lista filtrada
