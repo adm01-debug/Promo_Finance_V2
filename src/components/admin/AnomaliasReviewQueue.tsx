@@ -434,6 +434,44 @@ export function AnomaliasReviewQueue({
               <Progress value={((index + 1) / total) * 100} className="h-1.5" />
             </div>
 
+            <div
+              className="flex flex-wrap items-center gap-1.5"
+              role="group"
+              aria-label="Pular para severidade"
+            >
+              <span className="text-xs text-muted-foreground mr-1">Pular para:</span>
+              {(["critica", "alta", "media", "baixa"] as const).map((sev) => {
+                const count = contagemPorSeveridade[sev];
+                const ativo = atual?.severidade === sev;
+                const desabilitado = count === 0 || recarregando;
+                return (
+                  <Button
+                    key={sev}
+                    type="button"
+                    size="sm"
+                    variant={ativo ? severidadeBadge(sev) : "outline"}
+                    className="h-7 px-2 text-xs capitalize gap-1"
+                    onClick={() => pularParaSeveridade(sev)}
+                    disabled={desabilitado}
+                    title={
+                      count === 0
+                        ? `Sem anomalias ${sev} restantes`
+                        : `Ir para a próxima ${sev} (${count} restante${count === 1 ? "" : "s"})`
+                    }
+                    aria-pressed={ativo}
+                  >
+                    {sev}
+                    <Badge
+                      variant="secondary"
+                      className="h-4 px-1 text-[10px] tabular-nums"
+                    >
+                      {count}
+                    </Badge>
+                  </Button>
+                );
+              })}
+            </div>
+
             <div className="rounded-lg border bg-card p-4 space-y-3">
               <div className="flex items-center gap-2 flex-wrap">
                 <Badge variant={severidadeBadge(atual.severidade)}>{atual.severidade}</Badge>
