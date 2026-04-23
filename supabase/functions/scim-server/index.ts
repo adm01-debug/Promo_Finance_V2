@@ -67,9 +67,10 @@ async function resolveRole(
   admin: SupabaseClient,
   providerId: string | null,
   hint: string | null | undefined,
+  fallback: AppRole = "visualizador",
 ): Promise<AppRole> {
   const h = (hint ?? "").trim();
-  if (!h) return "visualizador";
+  if (!h) return fallback;
   if ((APP_ROLES as readonly string[]).includes(h.toLowerCase())) {
     return h.toLowerCase() as AppRole;
   }
@@ -84,7 +85,7 @@ async function resolveRole(
       return data.app_role as AppRole;
     }
   }
-  return "visualizador";
+  return fallback;
 }
 
 async function syncUserRole(admin: SupabaseClient, userId: string, role: AppRole) {
