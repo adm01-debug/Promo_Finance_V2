@@ -149,6 +149,18 @@ interface EntityConfig<TRow, TFilters> {
   matches: (row: TRow, payload: SavedFilterPayload<TFilters>) => boolean;
   /** Query keys a invalidar. */
   invalidateKeys: readonly (readonly unknown[])[];
+  /**
+   * (Opcional) extrai a severidade do registro para comparar com
+   * `severidades_criticas` da assinatura. Se não definido, a regra é ignorada
+   * (toda assinatura recebe na prioridade calculada por `pushPriority`).
+   */
+  rowSeveridade?: (row: TRow) => "baixa" | "media" | "alta" | "critica" | null;
+  /**
+   * (Opcional) extrai o "tipo de evento" do registro para comparar com
+   * `tipos_eventos_ativos` da assinatura. Se não definido, a regra é ignorada
+   * (toda assinatura aceita qualquer tipo).
+   */
+  rowTipoEvento?: (row: TRow) => string | null;
 }
 
 function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
