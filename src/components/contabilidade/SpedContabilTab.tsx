@@ -552,6 +552,8 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {tipo === 'ECF' && empresaId && <SpedEcfHistorico empresaId={empresaId} />}
     </div>
   );
 }
