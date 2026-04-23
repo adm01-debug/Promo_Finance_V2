@@ -29,6 +29,7 @@ import {
   TOAST_DURACAO_DEFAULT,
 } from "@/hooks/useAnomaliaPreferences";
 import { useLogAudit } from "@/hooks/useAuditLog";
+import { PreviewAnomaliaToastDrawer } from "./PreviewAnomaliaToastDrawer";
 
 const TIPOS = [
   { value: "movimentacao_outlier", label: "Movimentação atípica" },
@@ -278,6 +279,16 @@ export function AnomaliaPreferencesDialog({ open, onOpenChange }: Props) {
               onCheckedChange={setEnabled}
             />
           </div>
+
+          {/* Prévia em tempo real do toast e do drawer */}
+          <PreviewAnomaliaToastDrawer
+            enabled={enabled}
+            severidadesAtivas={severidadesAtivas}
+            duracao={duracao}
+            toastAcoes={toastAcoes}
+            drawerAcoes={drawerAcoes}
+            silenciarAte={silenciarAte}
+          />
 
           <Separator />
 
