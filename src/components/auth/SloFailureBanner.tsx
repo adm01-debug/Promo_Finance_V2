@@ -122,9 +122,16 @@ export function SloFailureBanner({ failure, onDismiss }: Props) {
       <AlertDescription className="space-y-3">
         <p className="text-sm leading-relaxed">{copy.description}</p>
 
+        {hint && (
+          <div className="flex items-start gap-2 text-sm bg-muted/40 border border-border/50 rounded-md px-3 py-2">
+            <Lightbulb className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
+            <p className="leading-relaxed"><span className="font-medium">Dica:</span> {hint}</p>
+          </div>
+        )}
+
         {failure.message && (
-          <p className="text-xs text-muted-foreground font-mono bg-muted/50 px-2 py-1 rounded">
-            {failure.message}
+          <p className="text-xs text-muted-foreground font-mono bg-muted/50 px-2 py-1 rounded break-all">
+            <span className="font-sans font-medium not-italic">Detalhe técnico:</span> {failure.message}
           </p>
         )}
 
