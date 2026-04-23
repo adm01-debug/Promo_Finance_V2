@@ -2,6 +2,32 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { logger } from "@/lib/logger";
+
+/**
+ * Best-effort audit log para ações de compartilhamento de filtros salvos.
+ * Falhas de auditoria nunca derrubam a operação principal.
+ */
+async function logSavedFilterAudit(params: {
+  action: "UPDATE" | "INSERT";
+  filterId: string;
+  details: string;
+  oldData?: Record<string, unknown>;
+  newData?: Record<string, unknown>;
+}) {
+  try {
+    await supabase.rpc("log_audit", {
+      _action: params.action,
+      _table_name: "saved_filters",
+      _record_id: params.filterId,
+      _old_data: params.oldData ? JSON.stringify(params.oldData) : null,
+      _new_data: params.newData ? JSON.stringify(params.newData) : null,
+      _details: params.details,
+    });
+  } catch (err) {
+    logger.warn("[saved-filters] audit log falhou", err);
+  }
+}
 
 export type AppRole = "admin" | "financeiro" | "operacional" | "visualizador";
 
@@ -143,16 +169,36 @@ export function useSavedFilters<T = unknown>(entityType: string) {
       if (input.isShared && !empresaId) {
         throw new Error("Selecione uma empresa atual para compartilhar");
       }
+
+      // Captura estado anterior para auditoria
+      const previous = (list.data ?? []).find((f) => f.id === input.id);
+      const oldSnapshot = previous
+        ? {
+            is_shared: previous.is_shared,
+            shared_with_roles: previous.shared_with_roles,
+            empresa_id: previous.empresa_id,
+          }
+        : undefined;
+      const newSnapshot = {
+        is_shared: input.isShared,
+        shared_with_roles: input.sharedWithRoles,
+        empresa_id: empresaId,
+      };
+
       const { error } = await supabase
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .from("saved_filters" as any)
-        .update({
-          is_shared: input.isShared,
-          shared_with_roles: input.sharedWithRoles,
-          empresa_id: empresaId,
-        })
+        .update(newSnapshot)
         .eq("id", input.id);
       if (error) throw error;
+
+      await logSavedFilterAudit({
+        action: "UPDATE",
+        filterId: input.id,
+        details: `Compartilhamento atualizado para filtro "${previous?.name ?? input.id}" (entity=${entityType}); shared=${input.isShared}; roles=[${input.sharedWithRoles.join(",")}]; empresa=${empresaId ?? "—"}; user=${user?.id ?? "—"}`,
+        oldData: oldSnapshot,
+        newData: newSnapshot,
+      });
     },
     onSuccess: () => {
       toast.success("Compartilhamento atualizado");
@@ -164,12 +210,30 @@ export function useSavedFilters<T = unknown>(entityType: string) {
   /** Duplica um preset (próprio ou compartilhado) como cópia pessoal do usuário. */
   const duplicate = useMutation({
     mutationFn: async (input: { sourceId: string; newName?: string }) => {
+      const source = (list.data ?? []).find((f) => f.id === input.sourceId);
       const { data, error } = await supabase.rpc("duplicate_saved_filter", {
         _source_id: input.sourceId,
         _new_name: input.newName ?? "",
       });
       if (error) throw error;
-      return data as string;
+      const newId = data as string;
+
+      await logSavedFilterAudit({
+        action: "INSERT",
+        filterId: newId,
+        details: `Filtro duplicado a partir de "${source?.name ?? input.sourceId}" (entity=${entityType}); origem_user=${source?.user_id ?? "—"}; origem_empresa=${source?.empresa_id ?? "—"}; origem_roles=[${(source?.shared_with_roles ?? []).join(",")}]; novo_user=${user?.id ?? "—"}; novo_nome=${input.newName ?? `${source?.name ?? ""} (cópia)`}`,
+        oldData: source
+          ? {
+              source_id: source.id,
+              source_user_id: source.user_id,
+              source_empresa_id: source.empresa_id,
+              source_shared_with_roles: source.shared_with_roles,
+            }
+          : undefined,
+        newData: { new_filter_id: newId, owner_user_id: user?.id },
+      });
+
+      return newId;
     },
     onSuccess: () => {
       toast.success("Filtro duplicado para sua biblioteca");
