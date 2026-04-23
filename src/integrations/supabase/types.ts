@@ -7849,8 +7849,11 @@ export type Database = {
       saved_filter_subscriptions: {
         Row: {
           created_at: string
+          frequencia: Database["public"]["Enums"]["subscription_frequencia"]
+          horario_preferido: string
           id: string
           last_seen_at: string
+          next_dispatch_at: string | null
           notify_inapp: boolean
           notify_push: boolean
           saved_filter_id: string
@@ -7859,8 +7862,11 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          frequencia?: Database["public"]["Enums"]["subscription_frequencia"]
+          horario_preferido?: string
           id?: string
           last_seen_at?: string
+          next_dispatch_at?: string | null
           notify_inapp?: boolean
           notify_push?: boolean
           saved_filter_id: string
@@ -7869,8 +7875,11 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          frequencia?: Database["public"]["Enums"]["subscription_frequencia"]
+          horario_preferido?: string
           id?: string
           last_seen_at?: string
+          next_dispatch_at?: string | null
           notify_inapp?: boolean
           notify_push?: boolean
           saved_filter_id?: string
@@ -10628,6 +10637,7 @@ export type Database = {
         | "em_analise"
         | "atendida"
         | "rejeitada"
+      subscription_frequencia: "imediata" | "horaria" | "diaria"
       tipo_anomalia:
         | "movimentacao_outlier"
         | "pagamento_duplicado"
@@ -10821,6 +10831,7 @@ export const Constants = {
         "atendida",
         "rejeitada",
       ],
+      subscription_frequencia: ["imediata", "horaria", "diaria"],
       tipo_anomalia: [
         "movimentacao_outlier",
         "pagamento_duplicado",
