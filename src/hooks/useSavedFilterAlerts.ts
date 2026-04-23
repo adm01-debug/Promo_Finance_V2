@@ -467,6 +467,8 @@ export function useSavedFilterAlerts() {
         ? row.severidade
         : "media",
     matches: matchesAnomaliaFilters,
+    rowSeveridade: (row) => row.severidade,
+    rowTipoEvento: (row) => row.tipo_anomalia,
     invalidateKeys: [
       ["anomalias-detectadas"],
       ["anomalias-criticas-count"],
@@ -510,6 +512,7 @@ export function useSavedFilterAlertsConciliacao() {
     }),
     pushPriority: () => "media",
     matches: matchesConciliacaoFilters,
+    rowTipoEvento: (row) => (row.tipo === "credito" ? "credito" : "debito"),
     invalidateKeys: [["conciliacao-transacoes"], ["conciliacao-page"]],
   });
 }
