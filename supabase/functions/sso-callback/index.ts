@@ -254,7 +254,35 @@ async function applyPipeline(opts: {
   // Normaliza claims recebidos (vazio/email → null)
   const incomingFullName = normalizeClaim(fullName, email);
   const incomingAvatarUrl = normalizeClaim(avatarUrl, email);
-  const incomingTelefone = normalizeClaim(telefone, email);
+  const phoneNorm = normalizePhone(telefone);
+  const incomingTelefoneRaw = normalizeClaim(phoneNorm.raw, email);
+  const incomingTelefone = phoneNorm.value;
+
+  // Audita quando a normalização alterou o valor original do IdP
+  if (phoneNorm.changed && incomingTelefoneRaw) {
+    try {
+      await admin.from("audit_logs").insert({
+        user_id: existingUserId,
+        user_email: email,
+        action: "UPDATE",
+        table_name: "sso_phone_normalized",
+        record_id: existingUserId,
+        new_data: {
+          provider_id: providerId,
+          provider_nome: providerNome,
+          provider_tipo: (provider.tipo as string) ?? null,
+          raw: phoneNorm.raw,
+          normalized: phoneNorm.value,
+        },
+        details: `Telefone SSO normalizado (${providerNome}): "${phoneNorm.raw}" → "${phoneNorm.value ?? "—"}"`,
+      });
+    } catch (err) {
+      console.warn(
+        "[sso-callback] falha ao registrar audit_logs sso_phone_normalized:",
+        err instanceof Error ? err.message : String(err),
+      );
+    }
+  }
 
   // Resolve usuário (SAML traz existingUserId; OIDC busca/cria)
   let userId: string | null = existingUserId ?? null;
