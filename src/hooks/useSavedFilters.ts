@@ -119,15 +119,24 @@ export function useSavedFilters<T = unknown>(entityType: string) {
       empresaId?: string | null;
     }) => {
       if (!user) throw new Error("Sessão expirada");
-      const empresaId =
-        input.isShared
-          ? input.empresaId ?? currentEmpresaId ?? null
-          : null;
-      if (input.isShared && !empresaId) {
-        throw new Error(
-          "Selecione uma empresa atual para compartilhar o filtro",
-        );
-      }
+      const wantsShared = input.isShared ?? false;
+      const targetEmpresa = wantsShared
+        ? input.empresaId ?? currentEmpresaId ?? null
+        : null;
+
+      // Carrega papéis do tenant alvo (se houver) para validação cruzada.
+      const tenantRoles =
+        wantsShared && targetEmpresa
+          ? await fetchTenantRoles(targetEmpresa)
+          : [];
+
+      const normalized = validateSharing({
+        isShared: wantsShared,
+        sharedWithRoles: input.sharedWithRoles ?? [],
+        empresaId: targetEmpresa,
+        tenantRoles,
+      });
+
       const { error } = await supabase
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .from("saved_filters" as any)
@@ -139,9 +148,9 @@ export function useSavedFilters<T = unknown>(entityType: string) {
             name: input.name,
             filters: input.payload,
             is_default: input.isDefault ?? false,
-            is_shared: input.isShared ?? false,
-            empresa_id: empresaId,
-            shared_with_roles: input.sharedWithRoles ?? [],
+            is_shared: normalized.isShared,
+            empresa_id: normalized.empresaId,
+            shared_with_roles: normalized.sharedWithRoles,
           },
           { onConflict: "user_id,entity_type,name" },
         );
@@ -193,12 +202,21 @@ export function useSavedFilters<T = unknown>(entityType: string) {
       sharedWithRoles: AppRole[];
       empresaId?: string | null;
     }) => {
-      const empresaId = input.isShared
+      const targetEmpresa = input.isShared
         ? input.empresaId ?? currentEmpresaId ?? null
         : null;
-      if (input.isShared && !empresaId) {
-        throw new Error("Selecione uma empresa atual para compartilhar");
-      }
+
+      const tenantRoles =
+        input.isShared && targetEmpresa
+          ? await fetchTenantRoles(targetEmpresa)
+          : [];
+
+      const normalized = validateSharing({
+        isShared: input.isShared,
+        sharedWithRoles: input.sharedWithRoles,
+        empresaId: targetEmpresa,
+        tenantRoles,
+      });
 
       // Captura estado anterior para auditoria
       const previous = (list.data ?? []).find((f) => f.id === input.id);
@@ -210,9 +228,9 @@ export function useSavedFilters<T = unknown>(entityType: string) {
           }
         : undefined;
       const newSnapshot = {
-        is_shared: input.isShared,
-        shared_with_roles: input.sharedWithRoles,
-        empresa_id: empresaId,
+        is_shared: normalized.isShared,
+        shared_with_roles: normalized.sharedWithRoles,
+        empresa_id: normalized.empresaId,
       };
 
       const { error } = await supabase
@@ -225,7 +243,7 @@ export function useSavedFilters<T = unknown>(entityType: string) {
       await logSavedFilterAudit({
         action: "UPDATE",
         filterId: input.id,
-        details: `Compartilhamento atualizado para filtro "${previous?.name ?? input.id}" (entity=${entityType}); shared=${input.isShared}; roles=[${input.sharedWithRoles.join(",")}]; empresa=${empresaId ?? "—"}; user=${user?.id ?? "—"}`,
+        details: `Compartilhamento atualizado para filtro "${previous?.name ?? input.id}" (entity=${entityType}); shared=${normalized.isShared}; roles=[${normalized.sharedWithRoles.join(",")}]; empresa=${normalized.empresaId ?? "—"}; user=${user?.id ?? "—"}`,
         oldData: oldSnapshot,
         newData: newSnapshot,
       });
@@ -234,7 +252,10 @@ export function useSavedFilters<T = unknown>(entityType: string) {
       toast.success("Compartilhamento atualizado");
       qc.invalidateQueries({ queryKey });
     },
-    onError: (e: Error) => toast.error(`Erro: ${e.message}`),
+    onError: (e: Error) => {
+      const prefix = e instanceof SavedFilterSharingError ? "Validação" : "Erro";
+      toast.error(`${prefix}: ${e.message}`);
+    },
   });
 
   /** Duplica um preset (próprio ou compartilhado) como cópia pessoal do usuário. */
