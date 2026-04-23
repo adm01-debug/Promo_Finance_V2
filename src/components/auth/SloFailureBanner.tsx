@@ -82,7 +82,7 @@ export function SloFailureBanner({ failure, onDismiss }: Props) {
   };
 
   return (
-    <Alert variant="destructive" className="mb-4 border-destructive/40 bg-destructive/5">
+    <Alert variant="error" className="mb-4 border-destructive/40 bg-destructive/5">
       <AlertTriangle className="h-4 w-4" />
       <AlertTitle className="flex items-center justify-between gap-2 pr-6">
         <span>{copy.title}</span>
