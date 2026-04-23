@@ -92,6 +92,11 @@ export function SloFailureBanner({ failure, onDismiss }: Props) {
 
   const handleRetryLocal = async () => {
     setRetryingLocal(true);
+    await logSloRetry({
+      kind: 'slo_retry_local_started',
+      providerId: failure.providerId,
+      context: { reason: failure.reason },
+    });
     try {
       try {
         await supabase.auth.signOut({ scope: 'local' });
@@ -107,6 +112,13 @@ export function SloFailureBanner({ failure, onDismiss }: Props) {
           id: 'sso-slo-local',
         });
         logger.error('[SloFailureBanner] Sessão persistiu após cleanup', { userId: session.user.id });
+        await logSloRetry({
+          kind: 'slo_retry_local_failed',
+          providerId: failure.providerId,
+          errorCode: 'session_persisted',
+          errorMessage: 'Sessão ainda ativa após cleanup local',
+          context: { persisted_user_id: session.user.id },
+        });
         return;
       }
 
@@ -114,10 +126,21 @@ export function SloFailureBanner({ failure, onDismiss }: Props) {
         id: 'sso-slo-local',
         description: 'Cookies, storages e cache foram limpos com sucesso.',
       });
+      await logSloRetry({
+        kind: 'slo_retry_local_succeeded',
+        providerId: failure.providerId,
+      });
       clearSloFailure();
       onDismiss();
     } catch (e) {
       logger.error('[SloFailureBanner] runAuthCleanup falhou', e);
+      const rawMessage = e instanceof Error ? e.message : String(e);
+      await logSloRetry({
+        kind: 'slo_retry_local_failed',
+        providerId: failure.providerId,
+        errorCode: 'cleanup_exception',
+        errorMessage: rawMessage,
+      });
       toast.error('Falha ao limpar dados locais. Atualize a página e tente novamente.');
     } finally {
       setRetryingLocal(false);
