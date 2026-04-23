@@ -31,94 +31,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { logger } from '@/lib/logger';
 import { toast } from 'sonner';
-
-/**
- * Catálogo central de filtros gerenciados.
- * Mantém em sincronia com instâncias de useManagedFilters em todo o app.
- */
-interface FilterCatalogEntry {
-  entityType: string;
-  label: string;
-  area: string;
-  route: string;
-  localStorageKey?: string;
-  defaultsKeys: string[];
-}
-
-const CATALOG: FilterCatalogEntry[] = [
-  {
-    entityType: 'clientes',
-    label: 'Clientes',
-    area: 'Cadastros',
-    route: '/clientes',
-    localStorageKey: 'clientes-filters',
-    defaultsKeys: ['search', 'status', 'estado', 'score'],
-  },
-  {
-    entityType: 'fornecedores',
-    label: 'Fornecedores',
-    area: 'Cadastros',
-    route: '/fornecedores',
-    localStorageKey: 'fornecedores-filters',
-    defaultsKeys: ['search', 'status', 'estado'],
-  },
-  {
-    entityType: 'audit-logs',
-    label: 'Logs de Auditoria',
-    area: 'Administração',
-    route: '/audit-logs',
-    localStorageKey: 'audit-logs-filters',
-    defaultsKeys: ['search', 'action', 'table', 'user'],
-  },
-  {
-    entityType: 'lancamentos-contabeis',
-    label: 'Lançamentos Contábeis',
-    area: 'Contabilidade',
-    route: '/contabilidade',
-    localStorageKey: 'app-lancamentos-filters',
-    defaultsKeys: ['busca', 'preset', 'dataInicio', 'dataFim'],
-  },
-  {
-    entityType: 'razao-diario',
-    label: 'Razão & Diário',
-    area: 'Contabilidade',
-    route: '/contabilidade',
-    localStorageKey: 'app-razao-diario-filters',
-    defaultsKeys: ['modo', 'preset', 'dataInicio', 'dataFim', 'contaId', 'busca'],
-  },
-  {
-    entityType: 'auditoria-ia',
-    label: 'Auditoria IA',
-    area: 'Administração',
-    route: '/admin/auditoria-ia',
-    localStorageKey: 'app-auditoria-ia-filters',
-    defaultsKeys: ['userFilter', 'cnpjFilter', 'transacaoFilter', 'acaoFilter'],
-  },
-  {
-    entityType: 'sso-jit-events',
-    label: 'SSO JIT Events',
-    area: 'Administração',
-    route: '/admin/sso-jit',
-    localStorageKey: 'app-sso-jit-filters',
-    defaultsKeys: ['dateRange', 'search', 'providerFilter', 'roleFilter', 'viaFilter', 'originFilter'],
-  },
-  {
-    entityType: 'dashboard-receber',
-    label: 'Dashboard Receber',
-    area: 'Financeiro',
-    route: '/dashboard-receber',
-    localStorageKey: 'app-dashboard-receber-filters',
-    defaultsKeys: ['empresaId', 'vendedorId', 'ramoAtividade', 'statusFilter', 'clienteId', 'periodo', 'dataInicio', 'dataFim'],
-  },
-  {
-    entityType: 'expert-history',
-    label: 'Histórico do Expert',
-    area: 'IA',
-    route: '/expert',
-    localStorageKey: 'app-expert-history-filters',
-    defaultsKeys: ['searchQuery', 'dateFilter'],
-  },
-];
+import {
+  SAVED_FILTERS_CATALOG,
+  discoverLocalStorageEntities,
+  mergeWithDiscovered,
+  type FilterCatalogEntry,
+} from './savedFiltersCatalog';
 
 interface DiagnosticState {
   entityType: string;
@@ -198,6 +116,13 @@ export default function FiltrosSalvos() {
   const [search, setSearch] = useState('');
   const [diagnostics, setDiagnostics] = useState<Record<string, DiagnosticState>>({});
   const [globalSyncing, setGlobalSyncing] = useState(false);
+  /**
+   * Catálogo efetivo: união do catálogo central (savedFiltersCatalog.ts) com
+   * entityTypes descobertos em runtime no Supabase (`user_active_filters`)
+   * e no localStorage. Permite que novas telas com `useManagedFilters`
+   * apareçam aqui automaticamente, sem necessidade de editar o catálogo.
+   */
+  const [catalog, setCatalog] = useState<FilterCatalogEntry[]>(SAVED_FILTERS_CATALOG);
 
   const refreshOne = useCallback(
     async (entry: FilterCatalogEntry) => {
@@ -278,12 +203,41 @@ export default function FiltrosSalvos() {
   const refreshAll = useCallback(async () => {
     setGlobalSyncing(true);
     try {
-      await Promise.all(CATALOG.map((entry) => refreshOne(entry)));
-      toast.success('Diagnóstico atualizado', { description: `${CATALOG.length} telas verificadas.` });
+      // 1) Auto-discovery: lê localStorage local + lista de entityTypes
+      //    distintos persistidos no Supabase para o usuário corrente.
+      const localKeysByEntity = discoverLocalStorageEntities();
+
+      let remoteEntityTypes: string[] = [];
+      if (user?.id) {
+        try {
+          const { data, error } = await supabase
+            .from('user_active_filters')
+            .select('entity_type')
+            .eq('user_id', user.id);
+          if (error) throw error;
+          remoteEntityTypes = Array.from(
+            new Set((data ?? []).map((r) => r.entity_type as string)),
+          );
+        } catch (e) {
+          logger.warn('[FiltrosSalvos] discovery remoto falhou', { e });
+        }
+      }
+
+      const merged = mergeWithDiscovered(remoteEntityTypes, localKeysByEntity);
+      setCatalog(merged);
+
+      // 2) Diagnóstico de cada entrada (catalogada ou auto)
+      await Promise.all(merged.map((entry) => refreshOne(entry)));
+      const autoCount = merged.filter((m) => m.auto).length;
+      toast.success('Diagnóstico atualizado', {
+        description: autoCount
+          ? `${merged.length} telas (incluindo ${autoCount} descoberta(s) automaticamente).`
+          : `${merged.length} telas verificadas.`,
+      });
     } finally {
       setGlobalSyncing(false);
     }
-  }, [refreshOne]);
+  }, [refreshOne, user?.id]);
 
   useEffect(() => {
     refreshAll();
@@ -292,21 +246,21 @@ export default function FiltrosSalvos() {
 
   const filteredCatalog = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return CATALOG;
-    return CATALOG.filter(
+    if (!q) return catalog;
+    return catalog.filter(
       (e) =>
         e.label.toLowerCase().includes(q) ||
         e.entityType.toLowerCase().includes(q) ||
         e.area.toLowerCase().includes(q) ||
         (e.localStorageKey ?? '').toLowerCase().includes(q)
     );
-  }, [search]);
+  }, [search, catalog]);
 
   const totals = useMemo(() => {
     const list = Object.values(diagnostics);
     const divergences = list.map((d) => computeDivergence(d).direction);
     return {
-      total: CATALOG.length,
+      total: catalog.length,
       remoteOk: list.filter((d) => d.remote === 'ok').length,
       localOk: list.filter((d) => d.local === 'ok').length,
       errors: list.filter((d) => d.remote === 'error').length,
@@ -546,6 +500,25 @@ function FilterRow({ entry, diagnostic, onRefresh, userId }: FilterRowProps) {
             <Badge variant="outline" className="text-[10px]">
               {entry.area}
             </Badge>
+            {entry.auto && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] border-primary/40 text-primary"
+                  >
+                    Auto
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p className="text-xs">
+                    Descoberta automaticamente em runtime (Supabase ou localStorage). Adicione ao
+                    catálogo central em <code>savedFiltersCatalog.ts</code> para nomear, agrupar
+                    e linkar a tela correta.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            )}
           </div>
           <div className="text-xs text-muted-foreground mt-1 font-mono break-all">
             entityType: <span className="text-foreground">{entry.entityType}</span>
