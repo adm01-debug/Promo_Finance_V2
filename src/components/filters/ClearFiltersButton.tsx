@@ -37,20 +37,94 @@ interface ClearFiltersButtonProps<T extends Record<string, unknown>> {
   pinnedFields?: string[];
 }
 
+const MAX_VALUE_LEN = 32;
+const dateFmt = new Intl.DateTimeFormat('pt-BR', {
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+});
+const numberFmt = new Intl.NumberFormat('pt-BR');
+const decimalFmt = new Intl.NumberFormat('pt-BR', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+/** Trunca preservando reticências (…) Unicode. */
+function truncate(s: string, max = MAX_VALUE_LEN): string {
+  return s.length > max ? `${s.slice(0, max - 1).trimEnd()}…` : s;
+}
+
+/** Detecta strings ISO de data (YYYY-MM-DD) ou timestamps ISO. */
+function tryParseDate(s: string): Date | null {
+  if (!/^\d{4}-\d{2}-\d{2}(T|$)/.test(s)) return null;
+  const d = new Date(s);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+/**
+ * Formata um valor de filtro para exibição em chip/resumo.
+ * Centraliza a lógica de números (pt-BR), datas (dd/mm/yyyy), intervalos
+ * `{from, to}`, arrays curtos e objetos, sempre truncando ao final.
+ */
 function formatValue(v: unknown): string {
-  if (v == null) return '—';
-  if (typeof v === 'string') return v.length > 32 ? `${v.slice(0, 32)}…` : v;
-  if (typeof v === 'number' || typeof v === 'boolean') return String(v);
-  if (Array.isArray(v)) return `${v.length}`;
+  if (v == null || v === '') return '—';
+
+  // Date nativo
+  if (v instanceof Date) {
+    return Number.isNaN(v.getTime()) ? '—' : dateFmt.format(v);
+  }
+
+  // Booleanos
+  if (typeof v === 'boolean') return v ? 'Sim' : 'Não';
+
+  // Números — pt-BR com separador de milhar, 2 casas se houver fração
+  if (typeof v === 'number') {
+    if (!Number.isFinite(v)) return '—';
+    return Number.isInteger(v) ? numberFmt.format(v) : decimalFmt.format(v);
+  }
+
+  if (typeof v === 'string') {
+    const trimmed = v.trim();
+    if (!trimmed) return '—';
+    const asDate = tryParseDate(trimmed);
+    if (asDate) return dateFmt.format(asDate);
+    // Número em string ("1234.5") — só formata se claramente numérico
+    if (/^-?\d+([.,]\d+)?$/.test(trimmed)) {
+      const n = Number(trimmed.replace(',', '.'));
+      if (Number.isFinite(n)) {
+        return Number.isInteger(n) ? numberFmt.format(n) : decimalFmt.format(n);
+      }
+    }
+    return truncate(trimmed);
+  }
+
+  if (Array.isArray(v)) {
+    if (v.length === 0) return '—';
+    if (v.length <= 3) return truncate(v.map((x) => formatValue(x)).join(', '));
+    return `${v.length} itens`;
+  }
+
   if (typeof v === 'object') {
+    const obj = v as Record<string, unknown>;
+    // Intervalo { from, to } / { start, end } / { dataInicio, dataFim }
+    const from = obj.from ?? obj.start ?? obj.dataInicio ?? obj.inicio;
+    const to = obj.to ?? obj.end ?? obj.dataFim ?? obj.fim;
+    if (from !== undefined || to !== undefined) {
+      const a = from !== undefined ? formatValue(from) : '—';
+      const b = to !== undefined ? formatValue(to) : '—';
+      return truncate(`${a} → ${b}`);
+    }
+    // Objeto com label/nome legível
+    const labelLike = obj.label ?? obj.nome ?? obj.name ?? obj.titulo;
+    if (typeof labelLike === 'string') return truncate(labelLike);
     try {
-      const s = JSON.stringify(v);
-      return s.length > 32 ? `${s.slice(0, 32)}…` : s;
+      return truncate(JSON.stringify(v));
     } catch {
       return '—';
     }
   }
-  return String(v);
+
+  return truncate(String(v));
 }
 
 export function ClearFiltersButton<T extends Record<string, unknown>>({
