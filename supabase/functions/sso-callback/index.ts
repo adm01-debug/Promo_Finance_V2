@@ -175,6 +175,26 @@ function normalizeClaim(v: unknown, email: string): string | null {
 }
 
 /**
+ * Normaliza telefone:
+ *   - remove espaços, hífens, parênteses, pontos e demais separadores
+ *   - mantém apenas dígitos e um '+' inicial opcional
+ *   - retorna null se vazio após limpeza
+ * Retorna { value, changed, raw } para que o caller possa auditar normalizações
+ * que efetivamente alteraram o valor recebido do IdP.
+ */
+function normalizePhone(v: unknown): { value: string | null; changed: boolean; raw: string | null } {
+  if (v === null || v === undefined) return { value: null, changed: false, raw: null };
+  const raw = String(v);
+  const trimmed = raw.trim();
+  if (!trimmed) return { value: null, changed: raw !== "", raw };
+  const hasPlus = trimmed.startsWith("+");
+  const digits = trimmed.replace(/[^\d]/g, "");
+  if (!digits) return { value: null, changed: true, raw };
+  const value = (hasPlus ? "+" : "") + digits;
+  return { value, changed: value !== raw, raw };
+}
+
+/**
  * Calcula o delta entre o estado atual do perfil e os claims recebidos.
  * Só inclui campos cujo valor incoming é não-nulo E diferente do current.
  * Nunca sobrescreve com vazio.
