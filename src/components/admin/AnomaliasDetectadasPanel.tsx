@@ -712,6 +712,14 @@ export function AnomaliasDetectadasPanel() {
               activePresetId={activePresetId}
               onLoad={handleLoadPreset}
               onClear={handleClearPreset}
+              onRestoreState={({ presetId, payload }) => {
+                // Reaplica o estado anterior preservando o activePresetId (inclusive null).
+                setFilters({ ...DEFAULT_FILTERS, ...payload.filters });
+                if (payload.sort) setSort(payload.sort);
+                if (payload.columns)
+                  setVisibleCols(mergeLockedColumns(payload.columns, COLUNAS));
+                setActivePresetId(presetId);
+              }}
             />
 
             <AdvancedSearchPopover
