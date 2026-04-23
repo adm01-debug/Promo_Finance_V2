@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
-  usePendingAnomaliasQueue,
+  usePendingAnomaliasQueueInfinite,
   useRevisarAnomalia,
   AnomaliaJaRevisadaError,
   type Anomalia,
@@ -72,7 +72,13 @@ export function AnomaliasReviewQueue({
   onOpenChange,
   severidadeFilter = "todas",
 }: Props) {
-  const { data: fila = [], isLoading } = usePendingAnomaliasQueue();
+  const {
+    items: fila,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = usePendingAnomaliasQueueInfinite(100);
   const revisar = useRevisarAnomalia();
   const sincronizar = useSincronizarAnomaliaBitrix();
 
@@ -267,6 +273,34 @@ export function AnomaliasReviewQueue({
     }
   }, [open, isLoading, severidadeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Quando novas páginas chegam (lazy load), anexa ao snapshot mantendo
+  // os itens já revisados (índice atual) intactos. Itens já presentes
+  // por id são ignorados para preservar updates locais (recarregarPosicao).
+  useEffect(() => {
+    if (!open) return;
+    setSnapshot((prev) => {
+      if (!fila.length) return prev;
+      const filtrada =
+        severidadeFilter === "todas"
+          ? fila
+          : fila.filter((a) => a.severidade === severidadeFilter);
+      if (filtrada.length <= prev.length) return prev;
+      const existentes = new Set(prev.map((a) => a.id));
+      const novos = filtrada.filter((a) => !existentes.has(a.id));
+      if (novos.length === 0) return prev;
+      return [...prev, ...novos];
+    });
+  }, [fila, open, severidadeFilter]);
+
+  // Pré-carrega a próxima página quando o usuário se aproxima do fim
+  // do snapshot atual (janela de 20 itens), mantendo a UI fluida.
+  useEffect(() => {
+    if (!open || !hasNextPage || isFetchingNextPage) return;
+    if (snapshot.length - index <= 20) {
+      void fetchNextPage();
+    }
+  }, [open, index, snapshot.length, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
   const atual = snapshot[index];
   const total = snapshot.length;
   const finalizado = total > 0 && index >= total;
@@ -305,44 +339,23 @@ export function AnomaliasReviewQueue({
     }
   }, [atual]);
 
-  // Contagem de pendentes por severidade a partir da posição atual (inclusive),
-  // para refletir o que ainda há à frente na revisão.
-  const contagemPorSeveridade = useMemo(() => {
-    const base: Record<Anomalia["severidade"], number> = {
-      critica: 0,
-      alta: 0,
-      media: 0,
-      baixa: 0,
-    };
-    for (let i = index; i < snapshot.length; i++) {
+  // Conta total/revisado/restante por severidade em um único passo O(n)
+  // para suportar filas grandes sem múltiplas iterações por render.
+  const { contagemPorSeveridade, progressoPorSeveridade } = useMemo(() => {
+    const total: Record<Anomalia["severidade"], number> = { critica: 0, alta: 0, media: 0, baixa: 0 };
+    const revisado: Record<Anomalia["severidade"], number> = { critica: 0, alta: 0, media: 0, baixa: 0 };
+    const restante: Record<Anomalia["severidade"], number> = { critica: 0, alta: 0, media: 0, baixa: 0 };
+    for (let i = 0; i < snapshot.length; i++) {
       const sev = snapshot[i].severidade;
-      if (sev in base) base[sev] += 1;
+      if (!(sev in total)) continue;
+      total[sev] += 1;
+      if (i < index) revisado[sev] += 1;
+      else restante[sev] += 1;
     }
-    return base;
-  }, [snapshot, index]);
-
-  // Total por severidade no snapshot (não muda durante a sessão de revisão)
-  // e quantas já foram revisadas (passaram do index atual).
-  const progressoPorSeveridade = useMemo(() => {
-    const total: Record<Anomalia["severidade"], number> = {
-      critica: 0,
-      alta: 0,
-      media: 0,
-      baixa: 0,
+    return {
+      contagemPorSeveridade: restante,
+      progressoPorSeveridade: { total, revisado },
     };
-    const revisado: Record<Anomalia["severidade"], number> = {
-      critica: 0,
-      alta: 0,
-      media: 0,
-      baixa: 0,
-    };
-    snapshot.forEach((a, i) => {
-      if (a.severidade in total) {
-        total[a.severidade] += 1;
-        if (i < index) revisado[a.severidade] += 1;
-      }
-    });
-    return { total, revisado };
   }, [snapshot, index]);
 
   function pularParaSeveridade(sev: Anomalia["severidade"]) {
@@ -613,7 +626,13 @@ export function AnomaliasReviewQueue({
               <div className="flex items-center justify-between text-[11px] text-muted-foreground">
                 <span>
                   Posição geral: {index + 1} de {total}
+                  {hasNextPage && <span className="ml-1">+</span>}
                 </span>
+                {isFetchingNextPage && (
+                  <span className="flex items-center gap-1">
+                    <Loader2 className="h-3 w-3 animate-spin" /> carregando mais…
+                  </span>
+                )}
               </div>
               <Progress value={((index + 1) / total) * 100} className="h-1.5" />
             </div>
