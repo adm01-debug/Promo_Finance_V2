@@ -3,6 +3,36 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { logger } from "@/lib/logger";
+import {
+  validateSharing,
+  SavedFilterSharingError,
+} from "@/hooks/savedFiltersValidation";
+
+/**
+ * Busca papéis ativos no tenant (empresa) consultando user_empresas.
+ * É a fonte de verdade para "papéis válidos para compartilhar dentro deste tenant".
+ */
+async function fetchTenantRoles(empresaId: string): Promise<string[]> {
+  const { data, error } = await (supabase as unknown as {
+    from: (t: string) => {
+      select: (c: string) => {
+        eq: (k: string, v: unknown) => {
+          eq: (k: string, v: unknown) => Promise<{ data: { role: string }[] | null; error: { message: string } | null }>;
+        };
+      };
+    };
+  })
+    .from("user_empresas")
+    .select("role")
+    .eq("empresa_id", empresaId)
+    .eq("ativo", true);
+  if (error) throw new Error(error.message);
+  const set = new Set<string>();
+  (data ?? []).forEach((r) => {
+    if (r?.role) set.add(r.role);
+  });
+  return Array.from(set);
+}
 
 /**
  * Best-effort audit log para ações de compartilhamento de filtros salvos.
