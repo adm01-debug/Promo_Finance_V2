@@ -445,13 +445,89 @@ interface FilterRowProps {
   entry: FilterCatalogEntry;
   diagnostic?: DiagnosticState;
   onRefresh: () => void;
+  userId?: string | null;
 }
 
-function FilterRow({ entry, diagnostic, onRefresh }: FilterRowProps) {
+function FilterRow({ entry, diagnostic, onRefresh, userId }: FilterRowProps) {
   const remoteBadge = renderRemoteBadge(diagnostic?.remote);
   const localBadge = renderLocalBadge(diagnostic?.local);
   const divergence = computeDivergence(diagnostic);
   const divergenceBadge = renderDivergenceBadge(divergence);
+  const [applying, setApplying] = useState<null | 'remote-to-local' | 'local-to-remote'>(null);
+
+  const canPullToDevice =
+    !!entry.localStorageKey &&
+    diagnostic?.remote === 'ok' &&
+    !diagnostic?.syncing &&
+    applying === null;
+
+  const canPushToAccount =
+    !!userId &&
+    !!entry.localStorageKey &&
+    diagnostic?.local === 'ok' &&
+    !diagnostic?.syncing &&
+    applying === null;
+
+  /** Conta → Dispositivo: lê o payload do Supabase e grava no localStorage. */
+  const handlePullToDevice = async () => {
+    if (!entry.localStorageKey || !userId) return;
+    setApplying('remote-to-local');
+    try {
+      const { data, error } = await supabase
+        .from('user_active_filters')
+        .select('payload, updated_at')
+        .eq('user_id', userId)
+        .eq('entity_type', entry.entityType)
+        .maybeSingle();
+      if (error) throw error;
+      const payload = (data?.payload ?? {}) as { filters?: Record<string, unknown> };
+      const filters = payload.filters ?? payload;
+      const next = { filters, ts: data?.updated_at ?? new Date().toISOString() };
+      window.localStorage.setItem(entry.localStorageKey, JSON.stringify(next));
+      toast.success('Filtros aplicados neste dispositivo', {
+        description: `${entry.label}: a tela usará a versão da conta na próxima abertura.`,
+      });
+      onRefresh();
+    } catch (e) {
+      logger.error('[FiltrosSalvos] pull falhou', { entityType: entry.entityType, e });
+      toast.error('Não foi possível copiar da conta para o dispositivo');
+    } finally {
+      setApplying(null);
+    }
+  };
+
+  /** Dispositivo → Conta: lê o localStorage e faz upsert no Supabase. */
+  const handlePushToAccount = async () => {
+    if (!entry.localStorageKey || !userId) return;
+    setApplying('local-to-remote');
+    try {
+      const raw = window.localStorage.getItem(entry.localStorageKey);
+      if (!raw) throw new Error('localStorage vazio');
+      const parsed = JSON.parse(raw);
+      const filters = (parsed?.filters ?? parsed) as Record<string, unknown>;
+      const { error } = await supabase
+        .from('user_active_filters')
+        .upsert(
+          {
+            user_id: userId,
+            entity_type: entry.entityType,
+            payload: { filters },
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'user_id,entity_type' },
+        );
+      if (error) throw error;
+      toast.success('Filtros enviados para a conta', {
+        description: `${entry.label}: outros dispositivos receberão na próxima abertura.`,
+      });
+      onRefresh();
+    } catch (e) {
+      logger.error('[FiltrosSalvos] push falhou', { entityType: entry.entityType, e });
+      toast.error('Não foi possível copiar do dispositivo para a conta');
+    } finally {
+      setApplying(null);
+    }
+  };
 
   return (
     <div className="rounded-lg border border-border bg-card/60 p-4 hover:bg-card transition-colors">
@@ -487,20 +563,84 @@ function FilterRow({ entry, diagnostic, onRefresh }: FilterRowProps) {
             {localBadge}
             {divergenceBadge}
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onRefresh}
-            disabled={diagnostic?.syncing}
-            className="gap-1 h-7"
-          >
-            {diagnostic?.syncing ? (
-              <Loader2 className="h-3 w-3 animate-spin" />
-            ) : (
-              <RefreshCw className="h-3 w-3" />
-            )}
-            Sincronizar
-          </Button>
+          <div className="flex items-center gap-1 flex-wrap justify-end">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handlePullToDevice}
+                    disabled={!canPullToDevice}
+                    className="gap-1 h-7"
+                    aria-label="Aplicar agora: copiar filtros da conta para este dispositivo"
+                  >
+                    {applying === 'remote-to-local' ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <>
+                        <Database className="h-3 w-3" />
+                        <ArrowRight className="h-3 w-3" />
+                        <HardDrive className="h-3 w-3" />
+                      </>
+                    )}
+                    Aplicar agora
+                  </Button>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="text-xs">
+                  Copia o payload do Supabase para este dispositivo agora, sem esperar a próxima abertura da tela.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handlePushToAccount}
+                    disabled={!canPushToAccount}
+                    className="gap-1 h-7"
+                    aria-label="Aplicar agora: copiar filtros do dispositivo para a conta"
+                  >
+                    {applying === 'local-to-remote' ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <>
+                        <HardDrive className="h-3 w-3" />
+                        <ArrowRight className="h-3 w-3" />
+                        <Database className="h-3 w-3" />
+                      </>
+                    )}
+                    Aplicar agora
+                  </Button>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="text-xs">
+                  Envia o estado deste dispositivo para a conta no Supabase agora; outros dispositivos receberão na próxima abertura.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onRefresh}
+              disabled={diagnostic?.syncing || applying !== null}
+              className="gap-1 h-7"
+            >
+              {diagnostic?.syncing ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <RefreshCw className="h-3 w-3" />
+              )}
+              Recarregar
+            </Button>
+          </div>
         </div>
       </div>
 
