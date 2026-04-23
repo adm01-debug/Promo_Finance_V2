@@ -89,6 +89,8 @@ export default function Conciliacao() {
 
   // Saved filter presets / sort / column visibility
   const { defaultFilter } = useSavedFilters<ConciliacaoFilterState>('conciliacao_transacoes');
+  // Notifica em tempo real quando uma nova transação cai dentro de um preset assinado
+  useSavedFilterAlertsConciliacao();
   const [sort, setSort] = useState<ConciliacaoSort>(CONCILIACAO_DEFAULT_SORT);
   const [visibleCols, setVisibleCols] = useState<string[]>(CONCILIACAO_DEFAULT_VISIBLE);
   const [activePresetId, setActivePresetId] = useState<string | null>(null);
