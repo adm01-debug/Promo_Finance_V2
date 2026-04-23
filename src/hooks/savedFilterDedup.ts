@@ -73,10 +73,18 @@ export function clampRateLimit(input: {
   max?: number | null;
   windowMin?: number | null;
 }): { max: number; windowMin: number } {
-  const max = Math.min(100, Math.max(1, Math.round(Number(input.max) || 5)));
+  // Distingue ausência (null/undefined/NaN) de 0 — apenas o primeiro caso
+  // recebe o default; 0 é valor explícito que deve ser clampado para o
+  // mínimo permitido (1), espelhando o trigger do banco.
+  const rawMax = Number(input.max);
+  const rawWin = Number(input.windowMin);
+  const max = Math.min(
+    100,
+    Math.max(1, Math.round(Number.isFinite(rawMax) ? rawMax : 5)),
+  );
   const windowMin = Math.min(
     1440,
-    Math.max(1, Math.round(Number(input.windowMin) || 10)),
+    Math.max(1, Math.round(Number.isFinite(rawWin) ? rawWin : 10)),
   );
   return { max, windowMin };
 }
