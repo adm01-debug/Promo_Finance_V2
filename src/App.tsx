@@ -84,6 +84,7 @@ const InsightsIA = lazy(() => import('./pages/admin/InsightsIA'));
 const AnomaliaDetalhe = lazy(() => import('./pages/admin/AnomaliaDetalhe'));
 const ComplianceAuditoria = lazy(() => import('./pages/admin/ComplianceAuditoria'));
 const AuditoriaIA = lazy(() => import('./pages/admin/AuditoriaIA'));
+const SharedFiltersAdmin = lazy(() => import('./pages/admin/SharedFiltersAdmin'));
 const Contabilidade = lazy(() => import('./pages/Contabilidade'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
@@ -171,6 +172,7 @@ function AppRoutes() {
             <Route path="/admin/auditoria-ia" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><AuditoriaIA /></ProtectedRoute>} />
             <Route path="/configuracoes/privacidade" element={<ProtectedRoute><CentroPrivacidadeLGPD /></ProtectedRoute>} />
             <Route path="/configuracoes/filtros-salvos" element={<ProtectedRoute><FiltrosSalvos /></ProtectedRoute>} />
+            <Route path="/admin/filtros-compartilhados" element={<ProtectedRoute requiredRoles={['admin']}><SharedFiltersAdmin /></ProtectedRoute>} />
             
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
