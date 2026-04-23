@@ -72,7 +72,7 @@ export async function logSloRetry({
       _email: email ?? null,
       _event_type: eventType,
       _provider_id: providerId ?? null,
-      _context: fullContext,
+      _context: fullContext as never,
       _success: success,
       _error_code: errorCode ?? null,
       _error_message: errorMessage ?? null,
