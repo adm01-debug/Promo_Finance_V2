@@ -77,6 +77,42 @@ export function useSavedFilterSubscriptions() {
     },
   });
 
+  /**
+   * Defesa de permissão em tempo real: o trigger
+   * `fn_revoke_orphan_saved_filter_subscriptions` apaga assinaturas órfãs no
+   * banco quando um filtro perde acesso (UPDATE em saved_filters/user_empresas)
+   * ou é DELETE'd. Aqui escutamos esses eventos para invalidar a query local
+   * imediatamente — assim o `useSavedFilterAlerts` para de processar o filtro
+   * sem precisar de refresh manual.
+   */
+  useEffect(() => {
+    if (!user) return;
+    const ch = supabase
+      .channel(`saved-filter-permissions-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "saved_filters" },
+        () => {
+          qc.invalidateQueries({ queryKey });
+          qc.invalidateQueries({ queryKey: ["saved-filters"] });
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "DELETE", schema: "public", table: "saved_filter_subscriptions" },
+        () => {
+          qc.invalidateQueries({ queryKey });
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(ch);
+    };
+    // queryKey é derivado de user.id (estável dentro do mesmo user); evitamos
+    // recriar canal a cada render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, qc]);
+
   const subscribe = useMutation({
     mutationFn: async (input: {
       savedFilterId: string;
