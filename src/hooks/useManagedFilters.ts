@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { logger } from '@/lib/logger';
+import { recordHydrationEvent } from '@/lib/filterHydrationTelemetry';
 
 type AnyFilters = Record<string, unknown>;
 
@@ -112,6 +113,9 @@ export function useManagedFilters<T extends AnyFilters>(
     let cancelled = false;
     (async () => {
       let next: T | null = null;
+      let source: 'supabase' | 'localStorage' | 'defaults' | 'none' = 'defaults';
+      let supabaseFailure: { message: string } | null = null;
+      let localFailure: { message: string } | null = null;
 
       if (user?.id) {
         try {
@@ -121,21 +125,66 @@ export function useManagedFilters<T extends AnyFilters>(
             .eq('user_id', user.id)
             .eq('entity_type', entityType)
             .maybeSingle();
-          if (!error && data?.payload && typeof data.payload === 'object') {
+          if (error) {
+            supabaseFailure = { message: error.message };
+            logger.warn('[useManagedFilters] supabase read failed', { entityType, error });
+          } else if (data?.payload && typeof data.payload === 'object') {
             const payload = data.payload as { filters?: T };
-            if (payload?.filters) next = payload.filters;
+            if (payload?.filters) {
+              next = payload.filters;
+              source = 'supabase';
+            }
           }
         } catch (e) {
+          const message = e instanceof Error ? e.message : String(e);
+          supabaseFailure = { message };
           logger.warn('[useManagedFilters] supabase read failed', { entityType, e });
         }
       }
 
-      if (!next) next = readLocal<T>(localStorageKey, defaults);
+      if (!next) {
+        try {
+          const local = readLocal<T>(localStorageKey, defaults);
+          if (local) {
+            next = local;
+            source = 'localStorage';
+          }
+        } catch (e) {
+          const message = e instanceof Error ? e.message : String(e);
+          localFailure = { message };
+        }
+      }
 
       if (!cancelled) {
         if (next) setValuesState({ ...defaults, ...next });
         hasHydratedRef.current = true;
         setIsHydrated(true);
+
+        // Telemetria — falha quando ambas as fontes erraram, ou quando a
+        // leitura remota retornou erro mesmo que o fallback local funcione.
+        if (supabaseFailure) {
+          recordHydrationEvent({
+            entityType,
+            status: 'error',
+            source,
+            stage: 'supabase-read',
+            errorMessage: supabaseFailure.message,
+          });
+        } else if (localFailure && !next) {
+          recordHydrationEvent({
+            entityType,
+            status: 'error',
+            source: 'none',
+            stage: 'localStorage-read',
+            errorMessage: localFailure.message,
+          });
+        } else {
+          recordHydrationEvent({
+            entityType,
+            status: 'success',
+            source,
+          });
+        }
       }
     })();
     return () => {
