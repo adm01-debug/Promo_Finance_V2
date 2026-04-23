@@ -15,6 +15,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { SpedEcdWizard } from './SpedEcdWizard';
 import { SpedEcfWizard } from './SpedEcfWizard';
+import { SpedEcfHistorico } from './SpedEcfHistorico';
 import { SpedEcdPreviewDialog } from './SpedEcdPreviewDialog';
 import { ValidacoesPreSpedDialog, type ValidacoesPreSpedArquivo } from './ValidacoesPreSpedDialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -551,6 +552,8 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {tipo === 'ECF' && empresaId && <SpedEcfHistorico empresaId={empresaId} />}
     </div>
   );
 }
