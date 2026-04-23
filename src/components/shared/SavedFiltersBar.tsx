@@ -62,6 +62,15 @@ interface SavedFiltersBarProps<T> {
   activePresetId: string | null;
   onLoad: (preset: { id: string; payload: SavedFilterPayload<T> }) => void;
   onClear: () => void;
+  /**
+   * Restaura um snapshot completo (presetId + payload) — usado pelo "Desfazer"
+   * após Restaurar padrão. Se ausente, o undo recai em onLoad/onClear, o que
+   * pode não preservar o activePresetId quando o estado anterior era livre.
+   */
+  onRestoreState?: (state: {
+    presetId: string | null;
+    payload: SavedFilterPayload<T>;
+  }) => void;
 }
 
 const ALL_ROLES: { key: AppRole; label: string }[] = [
