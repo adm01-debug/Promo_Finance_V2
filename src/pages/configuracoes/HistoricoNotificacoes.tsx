@@ -155,6 +155,22 @@ export default function HistoricoNotificacoes() {
     };
   }, [data]);
 
+  // Lista de filtros distintos presentes no histórico (para o dropdown).
+  const knownFilters = useMemo(() => {
+    const set = new Set<string>();
+    (data ?? []).forEach((n) => {
+      const name = n.metadata?.filterName;
+      if (name) set.add(name);
+    });
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [data]);
+
+  const visibleRows = useMemo(() => {
+    const rows = data ?? [];
+    if (filterName === "all") return rows;
+    return rows.filter((n) => n.metadata?.filterName === filterName);
+  }, [data, filterName]);
+
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-5xl">
       <div className="flex items-start justify-between gap-4 flex-wrap">
