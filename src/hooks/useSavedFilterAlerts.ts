@@ -188,18 +188,17 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
     const items = pendingBySub.current.get(subId) ?? [];
     if (items.length === 0) return;
 
+    const summary =
+      items.length === 1
+        ? items[0].desc
+        : `${items.length} novos itens · ${items
+            .slice(0, 3)
+            .map((i) => i.desc.split("\n")[0])
+            .join(" • ")}${items.length > 3 ? ` +${items.length - 3}` : ""}`;
+    const batchTitle = `Resumo de "${sf.name}"`;
+
     if (sub.notify_inapp) {
-      const summary =
-        items.length === 1
-          ? items[0].desc
-          : `${items.length} novos itens · ${items
-              .slice(0, 3)
-              .map((i) => i.desc.split("\n")[0])
-              .join(" • ")}${items.length > 3 ? ` +${items.length - 3}` : ""}`;
-      toast(`Resumo de "${sf.name}"`, {
-        description: summary,
-        duration: 12_000,
-      });
+      toast(batchTitle, { description: summary, duration: 12_000 });
       for (const key of config.invalidateKeys) {
         queryClient.invalidateQueries({ queryKey: [...key] });
       }
@@ -210,7 +209,7 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
         .invoke("send-push-notification", {
           body: {
             userId: user.id,
-            title: `Resumo de "${sf.name}"`,
+            title: batchTitle,
             body: `${items.length} novos itens em ${config.moduleLabel}`,
             tag: `saved-filter-${sf.id}-batch`,
             prioridade: "media",
@@ -218,6 +217,34 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
         })
         .catch((e) =>
           logger.warn(`push batch falhou (${config.entityType})`, e),
+        );
+    }
+
+    // Histórico + e-mail (mesmo se in-app/push estiverem off, gravamos a
+    // entrega para o usuário ter rastro na central de notificações).
+    if (sub.notify_inapp || sub.notify_push || sub.notify_email) {
+      supabase.functions
+        .invoke("notify-saved-filter", {
+          body: {
+            sourceRef: sf.id,
+            filterName: sf.name,
+            title: batchTitle,
+            body: summary,
+            channels: {
+              inapp: sub.notify_inapp,
+              push: sub.notify_push,
+              email: sub.notify_email,
+            },
+            metadata: {
+              entityType: config.entityType,
+              moduleLabel: config.moduleLabel,
+              count: items.length,
+              batched: true,
+            },
+          },
+        })
+        .catch((e) =>
+          logger.warn(`notify-saved-filter batch falhou (${config.entityType})`, e),
         );
     }
 
