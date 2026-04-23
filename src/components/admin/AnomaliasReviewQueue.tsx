@@ -273,6 +273,7 @@ export function AnomaliasReviewQueue({
       setComentarioTocado(false);
       setStats({ confirmadas: 0, rejeitadas: 0, puladas: 0 });
       setConflito(null);
+      setTransicionando(false);
     }
   }, [open, isLoading, severidadeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
