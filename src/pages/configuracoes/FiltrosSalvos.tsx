@@ -130,6 +130,38 @@ export default function FiltrosSalvos() {
    * apareçam aqui automaticamente, sem necessidade de editar o catálogo.
    */
   const [catalog, setCatalog] = useState<FilterCatalogEntry[]>(SAVED_FILTERS_CATALOG);
+  /**
+   * Eventos de hidratação emitidos por `useManagedFilters` em qualquer tela.
+   * Atualizado em tempo real via subscribeHydrationEvents — falhas geram um
+   * card de alerta e log estruturado para o operador.
+   */
+  const [hydrationEvents, setHydrationEvents] = useState<HydrationEvent[]>([]);
+
+  useEffect(() => {
+    const unsub = subscribeHydrationEvents((events) => {
+      setHydrationEvents(events);
+      // Alerta na hora — apenas para a falha mais recente, evitando spam
+      const last = events[events.length - 1];
+      if (last && last.status === 'error') {
+        const previously = events.slice(0, -1).some(
+          (e) => e.entityType === last.entityType && e.at === last.at,
+        );
+        if (!previously) {
+          logger.error('[FiltrosSalvos] hidratação falhou', {
+            entityType: last.entityType,
+            stage: last.stage,
+            errorMessage: last.errorMessage,
+          });
+        }
+      }
+    });
+    return unsub;
+  }, []);
+
+  const hydrationFailures = useMemo(
+    () => hydrationEvents.filter((e) => e.status === 'error').slice(-20).reverse(),
+    [hydrationEvents],
+  );
 
   const refreshOne = useCallback(
     async (entry: FilterCatalogEntry) => {
