@@ -78,11 +78,38 @@ export default function AuditLogs() {
     },
   });
 
-  const filteredLogs = logs?.filter(log =>
-    log.user_email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    log.details?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    log.table_name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredLogs = logs?.filter(log => {
+    const term = searchTerm.toLowerCase();
+    const matchesTerm = !term
+      || log.user_email?.toLowerCase().includes(term)
+      || log.details?.toLowerCase().includes(term)
+      || log.table_name?.toLowerCase().includes(term);
+    if (!matchesTerm) return false;
+    if (isSsoProfileSyncScope) {
+      const nd = (log.new_data ?? {}) as Record<string, unknown>;
+      if (providerFilter !== 'all') {
+        const pn = (nd.provider_nome as string | undefined) ?? '';
+        if (pn !== providerFilter) return false;
+      }
+      if (ssoFieldFilter !== 'all') {
+        const fields = Array.isArray(nd.fields_changed) ? (nd.fields_changed as string[]) : [];
+        if (!fields.includes(ssoFieldFilter)) return false;
+      }
+    }
+    return true;
+  });
+
+  // Lista de providers derivada apenas dos logs sso_profile_sync já carregados
+  const uniqueSsoProviders = useMemo(() => {
+    const set = new Set<string>();
+    (logs ?? []).forEach(l => {
+      if (l.table_name !== 'sso_profile_sync') return;
+      const nd = (l.new_data ?? {}) as Record<string, unknown>;
+      const pn = (nd.provider_nome as string | undefined) ?? '';
+      if (pn) set.add(pn);
+    });
+    return [...set].sort();
+  }, [logs]);
 
   const securityAlerts = useMemo(() => {
     if (!logs) return [];
@@ -115,7 +142,7 @@ export default function AuditLogs() {
 
   const handleExportCSV = () => { if (!filteredLogs?.length) { toast.error('Nenhum registro para exportar'); return; } exportToCSV(filteredLogs, auditColumns, 'logs_auditoria'); toast.success('Exportado para CSV com sucesso!'); };
   const handleExportPDF = () => { if (!filteredLogs?.length) { toast.error('Nenhum registro para exportar'); return; } exportToPDF(filteredLogs, auditColumns, 'Logs de Auditoria'); toast.success('PDF gerado para impressão!'); };
-  const clearFilters = () => { setSearchTerm(''); setActionFilter('all'); setTableFilter('all'); setUserFilter('all'); setDateRange({ from: subDays(new Date(), 7), to: new Date() }); };
+  const clearFilters = () => { setSearchTerm(''); setActionFilter('all'); setTableFilter('all'); setUserFilter('all'); setProviderFilter('all'); setSsoFieldFilter('all'); setDateRange({ from: subDays(new Date(), 7), to: new Date() }); };
 
   const filtersController = useManagedFilters({
     entityType: 'audit-logs',
