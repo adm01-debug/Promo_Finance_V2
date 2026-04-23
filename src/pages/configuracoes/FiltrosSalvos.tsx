@@ -304,11 +304,15 @@ export default function FiltrosSalvos() {
 
   const totals = useMemo(() => {
     const list = Object.values(diagnostics);
+    const divergences = list.map((d) => computeDivergence(d).direction);
     return {
       total: CATALOG.length,
       remoteOk: list.filter((d) => d.remote === 'ok').length,
       localOk: list.filter((d) => d.local === 'ok').length,
       errors: list.filter((d) => d.remote === 'error').length,
+      divergent: divergences.filter((dir) =>
+        dir === 'remote-newer' || dir === 'remote-only' || dir === 'local-newer' || dir === 'local-only'
+      ).length,
     };
   }, [diagnostics]);
 
