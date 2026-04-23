@@ -198,14 +198,32 @@ export default function HistoricoNotificacoes() {
         <StatCard label="Falhas" value={stats.failed} accent="text-destructive" />
       </div>
 
-      <Tabs value={filter} onValueChange={(v) => setFilter(v as typeof filter)}>
-        <TabsList>
-          <TabsTrigger value="all">Todos</TabsTrigger>
-          <TabsTrigger value="inapp">No app</TabsTrigger>
-          <TabsTrigger value="push">Push</TabsTrigger>
-          <TabsTrigger value="email">E-mail</TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <div className="flex items-center gap-3 flex-wrap">
+        <Tabs value={filter} onValueChange={(v) => setFilter(v as typeof filter)}>
+          <TabsList>
+            <TabsTrigger value="all">Todos</TabsTrigger>
+            <TabsTrigger value="inapp">No app</TabsTrigger>
+            <TabsTrigger value="push">Push</TabsTrigger>
+            <TabsTrigger value="email">E-mail</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <div className="flex items-center gap-2 ml-auto">
+          <FilterIcon className="h-4 w-4 text-muted-foreground" />
+          <Select value={filterName} onValueChange={setFilterName}>
+            <SelectTrigger className="h-9 w-[220px]">
+              <SelectValue placeholder="Filtrar por preset" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os filtros</SelectItem>
+              {knownFilters.map((name) => (
+                <SelectItem key={name} value={name}>
+                  {name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
       <Card>
         <CardHeader>
