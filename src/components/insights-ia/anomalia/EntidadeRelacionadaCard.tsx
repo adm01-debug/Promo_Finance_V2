@@ -13,10 +13,10 @@ export function EntidadeRelacionadaCard({ entidade }: { entidade: EntidadeRelaci
 
   return (
     <>
-      <Card>
+      <Card className="border-l-4 border-l-primary">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold tracking-tight">
-            <Database className="h-4 w-4 text-muted-foreground" /> Entidade relacionada
+            <Database className="h-4 w-4 text-primary" /> Entidade relacionada
             <span className="text-xs text-muted-foreground font-normal">({entidade.tipo})</span>
           </CardTitle>
         </CardHeader>

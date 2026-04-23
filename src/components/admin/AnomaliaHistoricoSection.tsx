@@ -108,7 +108,7 @@ export function AnomaliaHistoricoSection({ anomaliaId }: Props) {
   const reopenCount = useMemo(() => entries.filter(isReopen).length, [entries]);
 
   return (
-    <div className="rounded-lg border bg-card">
+    <div className="rounded-lg border border-l-4 border-l-muted-foreground/40 bg-card">
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-2 flex-wrap">
           <History className="h-4 w-4 text-muted-foreground" />
