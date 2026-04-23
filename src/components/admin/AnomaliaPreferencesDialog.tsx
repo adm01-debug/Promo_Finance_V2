@@ -32,6 +32,7 @@ import { useLogAudit } from "@/hooks/useAuditLog";
 import { PreviewAnomaliaToastDrawer } from "./PreviewAnomaliaToastDrawer";
 import { AnomaliaPreferencePresetPicker } from "./AnomaliaPreferencePresetPicker";
 import type { AnomaliaPreferencePreset } from "./anomaliaPreferencePresets";
+import { AnomaliaToastHistorico } from "./AnomaliaToastHistorico";
 
 const TIPOS = [
   { value: "movimentacao_outlier", label: "Movimentação atípica" },
@@ -564,6 +565,9 @@ export function AnomaliaPreferencesDialog({ open, onOpenChange }: Props) {
               ))}
             </div>
           </div>
+
+          {/* Histórico de toasts disparados */}
+          <AnomaliaToastHistorico />
         </div>
 
         <DialogFooter>
