@@ -1,10 +1,11 @@
 import { useState, useCallback, useMemo } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { toastWithUndo } from '@/lib/toast-with-undo';
 import { logger } from '@/lib/logger';
+import { formatFilterValue } from '@/lib/format-filter-value';
+import { FilterPreviewChips } from '@/components/filters/FilterPreviewChips';
 import type { ManagedFiltersController } from '@/hooks/useManagedFilters';
 
 export interface DescribedFilter {
@@ -37,95 +38,8 @@ interface ClearFiltersButtonProps<T extends Record<string, unknown>> {
   pinnedFields?: string[];
 }
 
-const MAX_VALUE_LEN = 32;
-const dateFmt = new Intl.DateTimeFormat('pt-BR', {
-  day: '2-digit',
-  month: '2-digit',
-  year: 'numeric',
-});
-const numberFmt = new Intl.NumberFormat('pt-BR');
-const decimalFmt = new Intl.NumberFormat('pt-BR', {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+// Formatação centralizada em `@/lib/format-filter-value`.
 
-/** Trunca preservando reticências (…) Unicode. */
-function truncate(s: string, max = MAX_VALUE_LEN): string {
-  return s.length > max ? `${s.slice(0, max - 1).trimEnd()}…` : s;
-}
-
-/** Detecta strings ISO de data (YYYY-MM-DD) ou timestamps ISO. */
-function tryParseDate(s: string): Date | null {
-  if (!/^\d{4}-\d{2}-\d{2}(T|$)/.test(s)) return null;
-  const d = new Date(s);
-  return Number.isNaN(d.getTime()) ? null : d;
-}
-
-/**
- * Formata um valor de filtro para exibição em chip/resumo.
- * Centraliza a lógica de números (pt-BR), datas (dd/mm/yyyy), intervalos
- * `{from, to}`, arrays curtos e objetos, sempre truncando ao final.
- */
-function formatValue(v: unknown): string {
-  if (v == null || v === '') return '—';
-
-  // Date nativo
-  if (v instanceof Date) {
-    return Number.isNaN(v.getTime()) ? '—' : dateFmt.format(v);
-  }
-
-  // Booleanos
-  if (typeof v === 'boolean') return v ? 'Sim' : 'Não';
-
-  // Números — pt-BR com separador de milhar, 2 casas se houver fração
-  if (typeof v === 'number') {
-    if (!Number.isFinite(v)) return '—';
-    return Number.isInteger(v) ? numberFmt.format(v) : decimalFmt.format(v);
-  }
-
-  if (typeof v === 'string') {
-    const trimmed = v.trim();
-    if (!trimmed) return '—';
-    const asDate = tryParseDate(trimmed);
-    if (asDate) return dateFmt.format(asDate);
-    // Número em string ("1234.5") — só formata se claramente numérico
-    if (/^-?\d+([.,]\d+)?$/.test(trimmed)) {
-      const n = Number(trimmed.replace(',', '.'));
-      if (Number.isFinite(n)) {
-        return Number.isInteger(n) ? numberFmt.format(n) : decimalFmt.format(n);
-      }
-    }
-    return truncate(trimmed);
-  }
-
-  if (Array.isArray(v)) {
-    if (v.length === 0) return '—';
-    if (v.length <= 3) return truncate(v.map((x) => formatValue(x)).join(', '));
-    return `${v.length} itens`;
-  }
-
-  if (typeof v === 'object') {
-    const obj = v as Record<string, unknown>;
-    // Intervalo { from, to } / { start, end } / { dataInicio, dataFim }
-    const from = obj.from ?? obj.start ?? obj.dataInicio ?? obj.inicio;
-    const to = obj.to ?? obj.end ?? obj.dataFim ?? obj.fim;
-    if (from !== undefined || to !== undefined) {
-      const a = from !== undefined ? formatValue(from) : '—';
-      const b = to !== undefined ? formatValue(to) : '—';
-      return truncate(`${a} → ${b}`);
-    }
-    // Objeto com label/nome legível
-    const labelLike = obj.label ?? obj.nome ?? obj.name ?? obj.titulo;
-    if (typeof labelLike === 'string') return truncate(labelLike);
-    try {
-      return truncate(JSON.stringify(v));
-    } catch {
-      return '—';
-    }
-  }
-
-  return truncate(String(v));
-}
 
 export function ClearFiltersButton<T extends Record<string, unknown>>({
   controller,
@@ -180,59 +94,6 @@ export function ClearFiltersButton<T extends Record<string, unknown>>({
       const snapshot = await controller.performClear();
       setOpen(false);
 
-      const previewChips = activeFilters.length > 0 ? (
-        <div className="mt-1.5 flex flex-wrap gap-1.5" aria-hidden="true">
-          {activeFilters.slice(0, 6).map((f, i) => (
-            <Badge
-              key={`${f.label}-${i}`}
-              variant="secondary"
-              className="gap-1 font-normal"
-            >
-              <span className="font-medium">{f.label}</span>
-              {f.value !== undefined && (
-                <span className="text-muted-foreground">· {formatValue(f.value)}</span>
-              )}
-            </Badge>
-          ))}
-          {activeFilters.length > 6 && (
-            <Badge variant="outline" className="font-normal text-muted-foreground">
-              +{activeFilters.length - 6}
-            </Badge>
-          )}
-        </div>
-      ) : (
-        <span className="text-xs text-muted-foreground" aria-hidden="true">
-          Nenhum filtro ativo.
-        </span>
-      );
-
-      // Resumo fixo: sempre mostra os campos pinados (ex.: Busca, Período).
-      // Renderizado num grid para alinhamento estável independentemente da
-      // largura do toast.
-      const pinnedSummaryEl = pinnedSummary.length > 0 ? (
-        <div
-          className="grid grid-cols-[auto,1fr] gap-x-3 gap-y-1 rounded-md border border-border/60 bg-muted/40 px-2.5 py-2"
-          aria-hidden="true"
-        >
-          {pinnedSummary.map((f) => (
-            <div key={f.label} className="contents">
-              <span className="text-[11px] font-medium text-foreground">{f.label}</span>
-              <span
-                className={`text-[11px] truncate ${
-                  f.isActive ? 'text-foreground' : 'text-muted-foreground italic'
-                }`}
-                title={f.value !== undefined ? formatValue(f.value) : '—'}
-              >
-                {f.isActive && f.value !== undefined ? formatValue(f.value) : '—'}
-              </span>
-            </div>
-          ))}
-        </div>
-      ) : null;
-
-      // ---- Região acessível ----
-      // Frase narrável (aria-live) — leitores de tela anunciam imediatamente
-      // o estado geral da limpeza.
       const announcement = [
         `Filtros de ${entityLabel} limpos.`,
         `${activeFilters.length} ${
@@ -240,63 +101,44 @@ export function ClearFiltersButton<T extends Record<string, unknown>>({
         } no total.`,
         ...pinnedSummary.map((f) =>
           f.isActive && f.value !== undefined
-            ? `${f.label}: ${formatValue(f.value)}.`
+            ? `${f.label}: ${formatFilterValue(f.value)}.`
             : `${f.label}: vazio.`,
         ),
         activeFilters.length > 0
           ? `Filtros ativos: ${activeFilters
               .map((f) =>
-                f.value !== undefined ? `${f.label} ${formatValue(f.value)}` : f.label,
+                f.value !== undefined
+                  ? `${f.label} ${formatFilterValue(f.value)}`
+                  : f.label,
               )
               .join('; ')}.`
           : 'Nenhum filtro ativo.',
         'Pressione o botão Desfazer em até 5 segundos para restaurar.',
       ].join(' ');
 
-      const a11yRegion = (
-        <>
-          <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
-            {announcement}
-          </div>
-          {/* Lista semântica navegável por leitor de tela (modo de leitura
-              estrutural). Permanece invisível mas indexada. */}
-          <dl
-            className="sr-only"
-            aria-label={`Resumo dos filtros removidos de ${entityLabel}`}
-          >
-            {pinnedSummary.map((f) => (
-              <div key={`a11y-pin-${f.label}`}>
-                <dt>{f.label}</dt>
-                <dd>
-                  {f.isActive && f.value !== undefined ? formatValue(f.value) : 'vazio'}
-                </dd>
-              </div>
-            ))}
-            {activeFilters.map((f, i) => (
-              <div key={`a11y-active-${f.label}-${i}`}>
-                <dt>{f.label}</dt>
-                <dd>{f.value !== undefined ? formatValue(f.value) : 'ativo'}</dd>
-              </div>
-            ))}
-          </dl>
-        </>
-      );
-
       const description = (
         <div className="space-y-2">
-          {a11yRegion}
           <p className="text-xs text-muted-foreground">
             <span className="font-semibold text-foreground">{activeFilters.length}</span>{' '}
             {activeFilters.length === 1 ? 'filtro removido' : 'filtros removidos'} no total
             {localKeys.length > 0 ? ' · preferências locais limpas' : ''}
           </p>
-          {pinnedSummaryEl}
-          {previewChips}
-          <p className="pt-1 text-[10px] uppercase tracking-wide text-muted-foreground" aria-hidden="true">
+          <FilterPreviewChips
+            activeFilters={activeFilters}
+            pinnedSummary={pinnedSummary}
+            entityLabel={entityLabel}
+            announcement={announcement}
+            dense
+          />
+          <p
+            className="pt-1 text-[10px] uppercase tracking-wide text-muted-foreground"
+            aria-hidden="true"
+          >
             Você tem 5s para desfazer.
           </p>
         </div>
       );
+
 
       toastWithUndo({
         title: `Filtros de ${entityLabel} limpos`,
@@ -320,9 +162,7 @@ export function ClearFiltersButton<T extends Record<string, unknown>>({
 
   const count = activeFilters.length;
   const dialogDescription = count
-    ? `Você vai apagar ${count} filtro(s) ativo(s): ${activeFilters
-        .map((f) => f.label)
-        .join(', ')}. Isso também removerá suas preferências salvas para esta tela na sua conta${localKeys.length ? ' e neste dispositivo' : ''}.`
+    ? `Isso vai apagar ${count} filtro(s) ativo(s) e remover suas preferências salvas desta tela${localKeys.length ? ' (conta + dispositivo)' : ''}. Confira abaixo o que será removido.`
     : 'Nenhum filtro ativo para limpar.';
 
   return (
@@ -348,7 +188,18 @@ export function ClearFiltersButton<T extends Record<string, unknown>>({
         cancelLabel="Cancelar"
         variant="warning"
         isLoading={isLoading}
-      />
+      >
+        {count > 0 && (
+          <FilterPreviewChips
+            activeFilters={activeFilters}
+            pinnedSummary={pinnedSummary}
+            entityLabel={entityLabel}
+            announcement={`Pré-visualização. ${count} ${
+              count === 1 ? 'filtro será removido' : 'filtros serão removidos'
+            } de ${entityLabel}.`}
+          />
+        )}
+      </ConfirmDialog>
     </>
   );
 }
