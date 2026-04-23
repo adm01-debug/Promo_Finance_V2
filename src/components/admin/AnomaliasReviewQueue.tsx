@@ -401,6 +401,9 @@ export function AnomaliasReviewQueue({
         status,
         observacoes: comentarioTrim,
       });
+      // Marca a transição imediatamente após o sucesso para evitar
+      // qualquer renderização do card antigo enquanto avançamos.
+      setTransicionando(true);
       sincronizar.mutate({ anomaliaId: atual.id, evento: status });
       setStats((s) => ({
         ...s,
