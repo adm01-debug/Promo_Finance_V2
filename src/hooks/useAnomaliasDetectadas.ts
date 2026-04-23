@@ -112,7 +112,8 @@ export function usePendingAnomaliasQueue() {
         const sa = SEVERIDADE_ORDEM[a.severidade] ?? 9;
         const sb = SEVERIDADE_ORDEM[b.severidade] ?? 9;
         if (sa !== sb) return sa - sb;
-        return new Date(a.detectada_em).getTime() - new Date(b.detectada_em).getTime();
+        // Dentro da mesma severidade, mais recentes primeiro
+        return new Date(b.detectada_em).getTime() - new Date(a.detectada_em).getTime();
       });
     },
     staleTime: 30_000,
