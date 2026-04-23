@@ -271,6 +271,30 @@ export function AnomaliasReviewQueue({
     return base;
   }, [snapshot, index]);
 
+  // Total por severidade no snapshot (não muda durante a sessão de revisão)
+  // e quantas já foram revisadas (passaram do index atual).
+  const progressoPorSeveridade = useMemo(() => {
+    const total: Record<Anomalia["severidade"], number> = {
+      critica: 0,
+      alta: 0,
+      media: 0,
+      baixa: 0,
+    };
+    const revisado: Record<Anomalia["severidade"], number> = {
+      critica: 0,
+      alta: 0,
+      media: 0,
+      baixa: 0,
+    };
+    snapshot.forEach((a, i) => {
+      if (a.severidade in total) {
+        total[a.severidade] += 1;
+        if (i < index) revisado[a.severidade] += 1;
+      }
+    });
+    return { total, revisado };
+  }, [snapshot, index]);
+
   function pularParaSeveridade(sev: Anomalia["severidade"]) {
     // Procura a partir da posição atual; se não achar, busca do início da fila.
     let alvo = snapshot.findIndex((a, i) => i >= index && a.severidade === sev);
