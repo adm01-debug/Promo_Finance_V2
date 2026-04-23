@@ -264,6 +264,32 @@ export function SavedFiltersBar<T>({
     (defaultFilter && activePresetId !== defaultFilter.id) ||
     (!activePresetId && !!defaultFilter);
 
+  // Atalho Alt+R aciona "Restaurar padrão" rapidamente, ignorando campos editáveis.
+  const restoreButtonRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (!e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      if (e.key !== "r" && e.key !== "R") return;
+      const target = e.target as HTMLElement | null;
+      const tag = target?.tagName;
+      const isEditable =
+        tag === "INPUT" ||
+        tag === "TEXTAREA" ||
+        tag === "SELECT" ||
+        (target?.isContentEditable ?? false);
+      if (isEditable) return;
+      if (!canRestore || anyMutationPending) return;
+      e.preventDefault();
+      handleRestoreDefault();
+      // Feedback visual: leva o foco ao botão para indicar a ação executada.
+      requestAnimationFrame(() => restoreButtonRef.current?.focus());
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+    // handleRestoreDefault é estável dentro do mesmo render; dependências cobrem o relevante.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canRestore, anyMutationPending, defaultFilter, activePresetId]);
+
   return (
     <>
       <div className="flex items-center gap-1.5 flex-wrap">
