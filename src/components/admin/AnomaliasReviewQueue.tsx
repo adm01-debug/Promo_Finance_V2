@@ -339,44 +339,23 @@ export function AnomaliasReviewQueue({
     }
   }, [atual]);
 
-  // Contagem de pendentes por severidade a partir da posição atual (inclusive),
-  // para refletir o que ainda há à frente na revisão.
-  const contagemPorSeveridade = useMemo(() => {
-    const base: Record<Anomalia["severidade"], number> = {
-      critica: 0,
-      alta: 0,
-      media: 0,
-      baixa: 0,
-    };
-    for (let i = index; i < snapshot.length; i++) {
+  // Conta total/revisado/restante por severidade em um único passo O(n)
+  // para suportar filas grandes sem múltiplas iterações por render.
+  const { contagemPorSeveridade, progressoPorSeveridade } = useMemo(() => {
+    const total: Record<Anomalia["severidade"], number> = { critica: 0, alta: 0, media: 0, baixa: 0 };
+    const revisado: Record<Anomalia["severidade"], number> = { critica: 0, alta: 0, media: 0, baixa: 0 };
+    const restante: Record<Anomalia["severidade"], number> = { critica: 0, alta: 0, media: 0, baixa: 0 };
+    for (let i = 0; i < snapshot.length; i++) {
       const sev = snapshot[i].severidade;
-      if (sev in base) base[sev] += 1;
+      if (!(sev in total)) continue;
+      total[sev] += 1;
+      if (i < index) revisado[sev] += 1;
+      else restante[sev] += 1;
     }
-    return base;
-  }, [snapshot, index]);
-
-  // Total por severidade no snapshot (não muda durante a sessão de revisão)
-  // e quantas já foram revisadas (passaram do index atual).
-  const progressoPorSeveridade = useMemo(() => {
-    const total: Record<Anomalia["severidade"], number> = {
-      critica: 0,
-      alta: 0,
-      media: 0,
-      baixa: 0,
+    return {
+      contagemPorSeveridade: restante,
+      progressoPorSeveridade: { total, revisado },
     };
-    const revisado: Record<Anomalia["severidade"], number> = {
-      critica: 0,
-      alta: 0,
-      media: 0,
-      baixa: 0,
-    };
-    snapshot.forEach((a, i) => {
-      if (a.severidade in total) {
-        total[a.severidade] += 1;
-        if (i < index) revisado[a.severidade] += 1;
-      }
-    });
-    return { total, revisado };
   }, [snapshot, index]);
 
   function pularParaSeveridade(sev: Anomalia["severidade"]) {
