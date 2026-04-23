@@ -68,3 +68,4 @@ type: reference
 - [P14 Copilot Global + Onboarding + SLO](mem://features/p14-copilot-onboarding-slo) — Copilot IA contextual, tour react-joyride, painel SLO/SLA admin (snapshot diário 23:55)
 - [Auditoria Testes P15](mem://quality/auditoria-testes-p15) — Baseline 1.012 testes (100%), 0 erros TS, 4 RLS críticas corrigidas (notas_fiscais_ocr, resumos_executivos, acoes_recomendadas, storage relatorios-tributarios)
 - [Dedup e Auditoria Notificações](mem://features/saved-filter-dedup-audit) — Helper savedFilterDedup (Set + last_seen_at) + view vw_notification_history_duplicates
+- [Revogação Permissões Filtros](mem://features/saved-filter-permission-revocation) — Trigger fn_revoke_orphan_saved_filter_subscriptions + guarda permission_revoked no helper de dedup
