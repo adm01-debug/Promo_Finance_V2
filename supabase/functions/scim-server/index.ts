@@ -766,6 +766,10 @@ Deno.serve(async (req) => {
 
     const empresaId = tok.empresa_id as string;
     const providerId = (tok.provider_id ?? null) as string | null;
+    const tokenDefaultRole: AppRole =
+      tok.default_role && (APP_ROLES as readonly string[]).includes(tok.default_role)
+        ? (tok.default_role as AppRole)
+        : "visualizador";
 
     let resp: Response;
     let opName = req.method.toLowerCase();
@@ -777,9 +781,9 @@ Deno.serve(async (req) => {
     if (resource === "Users") {
       if (req.method === "GET" && !id) { resp = await listUsers(admin, empresaId, url); opName = "list"; }
       else if (req.method === "GET" && id) { resp = await getUser(admin, empresaId, id); opName = "get"; }
-      else if (req.method === "POST" && !id) { resp = await createUser(admin, providerId, empresaId, reqBody); opName = "create"; externalId = reqBody?.externalId ?? null; }
-      else if (req.method === "PATCH" && id) { resp = await patchUser(admin, providerId, empresaId, id, reqBody); opName = "patch"; }
-      else if (req.method === "PUT" && id) { resp = await putUser(admin, providerId, empresaId, id, reqBody); opName = "put"; }
+      else if (req.method === "POST" && !id) { resp = await createUser(admin, providerId, empresaId, tokenDefaultRole, reqBody); opName = "create"; externalId = reqBody?.externalId ?? null; }
+      else if (req.method === "PATCH" && id) { resp = await patchUser(admin, providerId, empresaId, tokenDefaultRole, id, reqBody); opName = "patch"; }
+      else if (req.method === "PUT" && id) { resp = await putUser(admin, providerId, empresaId, tokenDefaultRole, id, reqBody); opName = "put"; }
       else if (req.method === "DELETE" && id) {
         const r = await deleteUser(admin, empresaId, id);
         resp = r.resp; opName = "delete"; userId = r.userId; externalId = r.externalId;
