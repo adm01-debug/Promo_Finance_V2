@@ -370,10 +370,55 @@ export function AnomaliasReviewQueue({
     }
   }
 
-  function handlePular() {
-    if (!atual) return;
-    setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
-    avancar();
+  async function handlePular() {
+    if (!atual || recarregando) return;
+    setComentario("");
+    setComentarioTocado(false);
+    setRecarregando(true);
+    try {
+      const { data, error } = await supabase
+        .from("anomalias_detectadas")
+        .select("*")
+        .eq("id", atual.id)
+        .maybeSingle();
+
+      if (error) {
+        // sem conseguir validar — pula localmente
+        setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
+        await recarregarPosicao(index + 1);
+        return;
+      }
+
+      if (!data) {
+        toast.warning("Anomalia removida do sistema", {
+          description: "Pulando para a próxima da fila.",
+        });
+        setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
+        await recarregarPosicao(index + 1);
+        return;
+      }
+
+      const fresca = data as Anomalia;
+      if (fresca.status !== "nova" && fresca.status !== "investigando") {
+        // já resolvida por outro revisor — avisa e avança automaticamente
+        await notificarConflito(atual, fresca);
+        setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
+        await recarregarPosicao(index + 1);
+        return;
+      }
+
+      // ainda pendente — atualiza snapshot e contabiliza pulo manual
+      setSnapshot((prev) => {
+        const copia = [...prev];
+        copia[index] = fresca;
+        return copia;
+      });
+      setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
+      await recarregarPosicao(index + 1);
+    } finally {
+      setRecarregando(false);
+      window.setTimeout(() => textareaRef.current?.focus(), 0);
+    }
   }
 
   function handleKey(e: React.KeyboardEvent) {
