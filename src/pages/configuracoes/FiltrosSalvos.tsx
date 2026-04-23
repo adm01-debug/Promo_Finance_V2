@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
   ArrowLeft,
+  ArrowLeftRight,
+  ArrowRight,
   CheckCircle2,
   CloudOff,
   Database,
@@ -122,26 +124,73 @@ interface DiagnosticState {
   entityType: string;
   remote: 'ok' | 'empty' | 'error' | 'loading';
   remoteUpdatedAt: string | null;
+  remoteUpdatedAtIso: string | null;
   remoteKeys: string[];
   local: 'ok' | 'empty' | 'error';
   localKeys: string[];
   localUpdatedAt: string | null;
+  localUpdatedAtIso: string | null;
   syncing: boolean;
 }
 
-function readLocalState(key?: string): { keys: string[]; ts: string | null; status: 'ok' | 'empty' | 'error' } {
-  if (!key || typeof window === 'undefined') return { keys: [], ts: null, status: 'empty' };
+type DivergenceDirection = 'in-sync' | 'remote-newer' | 'local-newer' | 'remote-only' | 'local-only' | 'none' | 'unknown';
+
+interface Divergence {
+  direction: DivergenceDirection;
+  reason: string;
+}
+
+function readLocalState(key?: string): { keys: string[]; ts: string | null; tsIso: string | null; status: 'ok' | 'empty' | 'error' } {
+  if (!key || typeof window === 'undefined') return { keys: [], ts: null, tsIso: null, status: 'empty' };
   try {
     const raw = window.localStorage.getItem(key);
-    if (!raw) return { keys: [], ts: null, status: 'empty' };
+    if (!raw) return { keys: [], ts: null, tsIso: null, status: 'empty' };
     const parsed = JSON.parse(raw);
     const filters = (parsed?.filters ?? parsed) as Record<string, unknown>;
+    const tsIso = parsed?.ts ? new Date(parsed.ts).toISOString() : null;
     const ts = parsed?.ts ? new Date(parsed.ts).toLocaleString('pt-BR') : null;
-    return { keys: Object.keys(filters || {}), ts, status: 'ok' };
+    return { keys: Object.keys(filters || {}), ts, tsIso, status: 'ok' };
   } catch (e) {
     logger.warn('[FiltrosSalvos] failed reading local', { key, e });
-    return { keys: [], ts: null, status: 'error' };
+    return { keys: [], ts: null, tsIso: null, status: 'error' };
   }
+}
+
+/**
+ * Calcula a divergência entre o estado remoto (Supabase/conta) e local
+ * (localStorage/dispositivo). Direção indica para onde o sync deve fluir
+ * para reconciliar — quem está mais novo "vence" a próxima hidratação.
+ */
+function computeDivergence(d?: DiagnosticState): Divergence {
+  if (!d || d.remote === 'loading' || d.syncing) return { direction: 'unknown', reason: 'Carregando…' };
+  if (d.remote === 'error') return { direction: 'unknown', reason: 'Erro ao ler conta' };
+
+  const hasRemote = d.remote === 'ok';
+  const hasLocal = d.local === 'ok';
+
+  if (!hasRemote && !hasLocal) return { direction: 'none', reason: 'Sem filtros salvos' };
+  if (hasRemote && !hasLocal) return { direction: 'remote-only', reason: 'Existe na conta, ausente neste dispositivo' };
+  if (!hasRemote && hasLocal) return { direction: 'local-only', reason: 'Existe no dispositivo, ausente na conta' };
+
+  // Ambos presentes — compara chaves e timestamps
+  const remoteSet = new Set(d.remoteKeys);
+  const localSet = new Set(d.localKeys);
+  const sameKeys =
+    remoteSet.size === localSet.size && [...remoteSet].every((k) => localSet.has(k));
+
+  const rT = d.remoteUpdatedAtIso ? Date.parse(d.remoteUpdatedAtIso) : NaN;
+  const lT = d.localUpdatedAtIso ? Date.parse(d.localUpdatedAtIso) : NaN;
+
+  if (Number.isFinite(rT) && Number.isFinite(lT)) {
+    const diff = rT - lT;
+    // Tolerância de 2s para pequenos clock skews
+    if (Math.abs(diff) < 2000 && sameKeys) return { direction: 'in-sync', reason: 'Conta e dispositivo idênticos' };
+    if (diff > 0) return { direction: 'remote-newer', reason: 'Conta mais recente que dispositivo' };
+    if (diff < 0) return { direction: 'local-newer', reason: 'Dispositivo mais recente que conta' };
+  }
+
+  if (sameKeys) return { direction: 'in-sync', reason: 'Mesmas chaves em ambos' };
+  return { direction: 'unknown', reason: 'Chaves divergentes sem timestamp confiável' };
 }
 
 export default function FiltrosSalvos() {
@@ -159,10 +208,12 @@ export default function FiltrosSalvos() {
             entityType: entry.entityType,
             remote: 'loading',
             remoteUpdatedAt: null,
+            remoteUpdatedAtIso: null,
             remoteKeys: [],
             local: 'empty',
             localKeys: [],
             localUpdatedAt: null,
+            localUpdatedAtIso: null,
             syncing: false,
           }),
           syncing: true,
@@ -175,6 +226,7 @@ export default function FiltrosSalvos() {
       let remoteStatus: DiagnosticState['remote'] = 'empty';
       let remoteKeys: string[] = [];
       let remoteUpdatedAt: string | null = null;
+      let remoteUpdatedAtIso: string | null = null;
 
       if (user?.id) {
         try {
@@ -191,6 +243,7 @@ export default function FiltrosSalvos() {
             const payload = data.payload as { filters?: Record<string, unknown> };
             remoteKeys = Object.keys(payload?.filters ?? {});
             remoteStatus = remoteKeys.length > 0 ? 'ok' : 'empty';
+            remoteUpdatedAtIso = data.updated_at ? new Date(data.updated_at).toISOString() : null;
             remoteUpdatedAt = data.updated_at ? new Date(data.updated_at).toLocaleString('pt-BR') : null;
           } else {
             remoteStatus = 'empty';
@@ -209,10 +262,12 @@ export default function FiltrosSalvos() {
           entityType: entry.entityType,
           remote: remoteStatus,
           remoteUpdatedAt,
+          remoteUpdatedAtIso,
           remoteKeys,
           local: local.status,
           localKeys: local.keys,
           localUpdatedAt: local.ts,
+          localUpdatedAtIso: local.tsIso,
           syncing: false,
         },
       }));
@@ -249,11 +304,15 @@ export default function FiltrosSalvos() {
 
   const totals = useMemo(() => {
     const list = Object.values(diagnostics);
+    const divergences = list.map((d) => computeDivergence(d).direction);
     return {
       total: CATALOG.length,
       remoteOk: list.filter((d) => d.remote === 'ok').length,
       localOk: list.filter((d) => d.local === 'ok').length,
       errors: list.filter((d) => d.remote === 'error').length,
+      divergent: divergences.filter((dir) =>
+        dir === 'remote-newer' || dir === 'remote-only' || dir === 'local-newer' || dir === 'local-only'
+      ).length,
     };
   }, [diagnostics]);
 
@@ -294,7 +353,7 @@ export default function FiltrosSalvos() {
           </div>
 
           {/* Resumo */}
-          <div className="grid gap-3 md:grid-cols-4">
+          <div className="grid gap-3 md:grid-cols-5">
             <Card>
               <CardContent className="p-4">
                 <div className="text-xs text-muted-foreground">Telas catalogadas</div>
@@ -315,6 +374,14 @@ export default function FiltrosSalvos() {
                   <HardDrive className="h-3 w-3" /> Espelhadas (dispositivo)
                 </div>
                 <div className="text-2xl font-bold mt-1">{totals.localOk}</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                  <ArrowLeftRight className="h-3 w-3" /> Divergentes
+                </div>
+                <div className="text-2xl font-bold mt-1 text-warning">{totals.divergent}</div>
               </CardContent>
             </Card>
             <Card>
@@ -383,6 +450,8 @@ interface FilterRowProps {
 function FilterRow({ entry, diagnostic, onRefresh }: FilterRowProps) {
   const remoteBadge = renderRemoteBadge(diagnostic?.remote);
   const localBadge = renderLocalBadge(diagnostic?.local);
+  const divergence = computeDivergence(diagnostic);
+  const divergenceBadge = renderDivergenceBadge(divergence);
 
   return (
     <div className="rounded-lg border border-border bg-card/60 p-4 hover:bg-card transition-colors">
@@ -413,9 +482,10 @@ function FilterRow({ entry, diagnostic, onRefresh }: FilterRowProps) {
         </div>
 
         <div className="flex flex-col items-end gap-2 shrink-0">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
             {remoteBadge}
             {localBadge}
+            {divergenceBadge}
           </div>
           <Button
             variant="ghost"
@@ -527,6 +597,104 @@ function renderLocalBadge(status?: DiagnosticState['local']) {
         <Badge variant="outline" className="gap-1 text-[10px] text-muted-foreground">
           <HardDrive className="h-3 w-3" /> Local vazio
         </Badge>
+      );
+  }
+}
+
+/**
+ * Renderiza um chip indicando se conta e dispositivo estão sincronizados
+ * e, em caso negativo, em que direção a próxima reconciliação fluirá.
+ *
+ * - in-sync: tudo idêntico.
+ * - remote-newer / remote-only: conta → dispositivo (próxima abertura puxa do Supabase).
+ * - local-newer / local-only: dispositivo → conta (próximo save sobe pro Supabase).
+ * - none: nada salvo em nenhum lugar.
+ * - unknown: erro ou comparação inconclusiva.
+ */
+function renderDivergenceBadge(div: Divergence) {
+  switch (div.direction) {
+    case 'in-sync':
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Badge variant="outline" className="gap-1 text-[10px] border-success/30 text-success">
+              <CheckCircle2 className="h-3 w-3" /> Sincronizado
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p className="text-xs">{div.reason}</p>
+          </TooltipContent>
+        </Tooltip>
+      );
+    case 'remote-newer':
+    case 'remote-only':
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Badge
+              variant="outline"
+              className="gap-1 text-[10px] border-warning/40 text-warning"
+              aria-label="Divergente: conta mais recente que dispositivo"
+            >
+              <Database className="h-3 w-3" />
+              <ArrowRight className="h-3 w-3" />
+              <HardDrive className="h-3 w-3" />
+              Conta → Dispositivo
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs">
+            <p className="text-xs font-medium">Divergente</p>
+            <p className="text-xs text-muted-foreground">{div.reason}</p>
+            <p className="text-xs mt-1">
+              Próxima abertura nesta tela hidratará do Supabase.
+            </p>
+          </TooltipContent>
+        </Tooltip>
+      );
+    case 'local-newer':
+    case 'local-only':
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Badge
+              variant="outline"
+              className="gap-1 text-[10px] border-primary/40 text-primary"
+              aria-label="Divergente: dispositivo mais recente que conta"
+            >
+              <HardDrive className="h-3 w-3" />
+              <ArrowRight className="h-3 w-3" />
+              <Database className="h-3 w-3" />
+              Dispositivo → Conta
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs">
+            <p className="text-xs font-medium">Divergente</p>
+            <p className="text-xs text-muted-foreground">{div.reason}</p>
+            <p className="text-xs mt-1">
+              Próximo salvamento sincronizará com a conta no Supabase.
+            </p>
+          </TooltipContent>
+        </Tooltip>
+      );
+    case 'none':
+      return (
+        <Badge variant="outline" className="gap-1 text-[10px] text-muted-foreground">
+          <ArrowLeftRight className="h-3 w-3" /> Sem dados
+        </Badge>
+      );
+    case 'unknown':
+    default:
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Badge variant="outline" className="gap-1 text-[10px] text-muted-foreground">
+              <ArrowLeftRight className="h-3 w-3" /> —
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p className="text-xs">{div.reason}</p>
+          </TooltipContent>
+        </Tooltip>
       );
   }
 }
