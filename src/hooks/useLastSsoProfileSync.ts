@@ -48,7 +48,7 @@ export function useLastSsoProfileSync(userId?: string | null) {
       if (!userId) return null;
       const { data, error } = await supabase
         .from('audit_logs')
-        .select('id, created_at, new_data, details')
+        .select('id, created_at, new_data, old_data, details')
         .eq('user_id', userId)
         .eq('table_name', 'sso_profile_sync')
         .order('created_at', { ascending: false })
@@ -57,10 +57,22 @@ export function useLastSsoProfileSync(userId?: string | null) {
       if (error) throw error;
       if (!data) return null;
       const nd = (data.new_data ?? {}) as Record<string, unknown>;
+      const od = (data.old_data ?? {}) as Record<string, unknown>;
       const rawFields = Array.isArray(nd.fields_changed) ? (nd.fields_changed as unknown[]) : [];
       const fields_changed = rawFields
         .map(String)
         .filter((f): f is SsoSyncFieldKey => (FIELD_WHITELIST as string[]).includes(f));
+
+      const rawDetail = Array.isArray(nd.changes_detail) ? (nd.changes_detail as unknown[]) : [];
+      const changes_detail: SsoSyncChangeDetail[] = rawDetail
+        .map((item) => item as Record<string, unknown>)
+        .filter((it) => (FIELD_WHITELIST as string[]).includes(String(it.field)))
+        .map((it) => ({
+          field: it.field as SsoSyncFieldKey,
+          old: it.old,
+          new: it.new,
+        }));
+
       return {
         id: data.id,
         created_at: data.created_at,
@@ -68,6 +80,8 @@ export function useLastSsoProfileSync(userId?: string | null) {
         provider_tipo: (nd.provider_tipo as string) ?? null,
         fields_changed,
         changes: ((nd.changes as SsoSyncChanges) ?? {}) as SsoSyncChanges,
+        changes_detail,
+        old_data: od,
         details: data.details ?? null,
       };
     },
