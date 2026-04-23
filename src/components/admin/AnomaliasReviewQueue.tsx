@@ -221,12 +221,22 @@ export function AnomaliasReviewQueue({
   const total = snapshot.length;
   const finalizado = total > 0 && index >= total;
   const comentarioTrim = comentario.trim();
-  const comentarioValido = comentarioTrim.length >= 10;
-  const erroComentario = !comentarioValido
-    ? comentarioTrim.length === 0
-      ? "Informe um comentário descrevendo a decisão."
-      : `Faltam ${10 - comentarioTrim.length} caractere${10 - comentarioTrim.length === 1 ? "" : "s"} para atingir o mínimo de 10.`
-    : null;
+  const MIN_CONFIRMAR = 10;
+  const MIN_FALSO_POSITIVO = 15;
+  const validoConfirmar = comentarioTrim.length >= MIN_CONFIRMAR;
+  const validoFalsoPositivo = comentarioTrim.length >= MIN_FALSO_POSITIVO;
+  // Mantido para compatibilidade com handlers genéricos (pular, atalho de teclado, etc.)
+  const comentarioValido = validoConfirmar;
+  function mensagemErro(min: number, label: string): string | null {
+    if (comentarioTrim.length >= min) return null;
+    if (comentarioTrim.length === 0) return `Informe um comentário para ${label} (mínimo ${min} caracteres).`;
+    const faltam = min - comentarioTrim.length;
+    return `Faltam ${faltam} caractere${faltam === 1 ? "" : "s"} para ${label} (mínimo ${min}).`;
+  }
+  const erroConfirmar = mensagemErro(MIN_CONFIRMAR, "confirmar o problema");
+  const erroFalsoPositivo = mensagemErro(MIN_FALSO_POSITIVO, "marcar como falso positivo");
+  // Erro principal mostrado abaixo do textarea: prioriza o requisito mais brando ainda não atendido.
+  const erroComentario = erroConfirmar ?? erroFalsoPositivo;
   const mostrarErroComentario = comentarioTocado && !!erroComentario;
 
   // Foco no textarea quando troca de anomalia
@@ -252,7 +262,12 @@ export function AnomaliasReviewQueue({
   }
 
   async function handleAcao(status: "confirmada" | "falso_positivo") {
-    if (!atual || !comentarioValido) return;
+    if (!atual) return;
+    const minRequerido = status === "confirmada" ? MIN_CONFIRMAR : MIN_FALSO_POSITIVO;
+    if (comentarioTrim.length < minRequerido) {
+      setComentarioTocado(true);
+      return;
+    }
     try {
       await revisar.mutateAsync({
         id: atual.id,
@@ -412,7 +427,8 @@ export function AnomaliasReviewQueue({
               <Label htmlFor="comentario-revisao">
                 Comentário de revisão{" "}
                 <span className="text-muted-foreground font-normal">
-                  (mínimo 10 caracteres — {comentarioTrim.length})
+                  (confirmar ≥ {MIN_CONFIRMAR} · falso positivo ≥ {MIN_FALSO_POSITIVO} —{" "}
+                  {comentarioTrim.length})
                 </span>
               </Label>
               <Textarea
@@ -459,14 +475,24 @@ export function AnomaliasReviewQueue({
               <Button
                 variant="outline"
                 onClick={() => handleAcao("falso_positivo")}
-                disabled={!comentarioValido || revisar.isPending || recarregando}
+                disabled={!validoFalsoPositivo || revisar.isPending || recarregando}
+                title={
+                  !validoFalsoPositivo
+                    ? `Falso positivo exige mínimo ${MIN_FALSO_POSITIVO} caracteres no comentário`
+                    : undefined
+                }
               >
                 <XCircle className="h-4 w-4" /> Falso positivo
               </Button>
               <Button
                 variant="success"
                 onClick={() => handleAcao("confirmada")}
-                disabled={!comentarioValido || revisar.isPending || recarregando}
+                disabled={!validoConfirmar || revisar.isPending || recarregando}
+                title={
+                  !validoConfirmar
+                    ? `Confirmar exige mínimo ${MIN_CONFIRMAR} caracteres no comentário`
+                    : undefined
+                }
               >
                 {revisar.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
