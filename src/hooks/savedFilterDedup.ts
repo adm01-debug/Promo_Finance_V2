@@ -29,9 +29,21 @@ export interface DedupCheckInput {
   lastSeenAt: string | number;
   /** Conjunto in-memory de IDs já tratados nesta sessão. */
   seen: Set<string>;
+  /**
+   * (Opcional) ID do dono da assinatura. Quando fornecido junto a
+   * `currentUserId`, exigimos correspondência — protege contra processar
+   * assinatura órfã que ainda esteja em cache local após revogação no banco.
+   */
+  subscriptionUserId?: string;
+  /** (Opcional) ID do usuário logado, para o pareamento acima. */
+  currentUserId?: string;
 }
 
-export type DedupReason = "duplicate_in_session" | "older_than_last_seen" | null;
+export type DedupReason =
+  | "duplicate_in_session"
+  | "older_than_last_seen"
+  | "permission_revoked"
+  | null;
 
 export interface DedupCheckResult {
   /** True quando o evento deve gerar notificação. */
@@ -47,6 +59,17 @@ export interface DedupCheckResult {
  * "dry run" e inspecione decisões sem efeitos colaterais.
  */
 export function checkShouldDispatch(input: DedupCheckInput): DedupCheckResult {
+  // Defesa de permissão: rejeita silenciosamente se a assinatura não for do
+  // usuário logado. Cobre o gap entre revogação no banco
+  // (fn_revoke_orphan_saved_filter_subscriptions) e próxima sincronização do
+  // cliente.
+  if (
+    input.subscriptionUserId &&
+    input.currentUserId &&
+    input.subscriptionUserId !== input.currentUserId
+  ) {
+    return { shouldDispatch: false, reason: "permission_revoked" };
+  }
   if (input.seen.has(input.rowId)) {
     return { shouldDispatch: false, reason: "duplicate_in_session" };
   }
