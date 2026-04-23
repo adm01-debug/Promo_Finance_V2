@@ -12,6 +12,7 @@ import {
   type SloFailureSnapshot,
 } from '@/lib/sso-slo-state';
 import { inferSsoErrorCode, SSO_ERROR_MESSAGES } from '@/lib/sso-error-messages';
+import { logSloRetry } from '@/lib/sso-slo-audit';
 
 interface Props {
   failure: SloFailureSnapshot;
@@ -41,6 +42,11 @@ export function SloFailureBanner({ failure, onDismiss }: Props) {
       return;
     }
     setRetryingProvider(true);
+    await logSloRetry({
+      kind: 'slo_retry_provider_started',
+      providerId: failure.providerId,
+      context: { provider_nome: failure.providerNome ?? null, reason: failure.reason },
+    });
     try {
       const { data, error } = await supabase.functions.invoke('sso-logout', {
         body: {
@@ -50,6 +56,14 @@ export function SloFailureBanner({ failure, onDismiss }: Props) {
       });
       if (error) throw error;
       const logoutUrl = (data as { logout_url?: string } | null)?.logout_url;
+      await logSloRetry({
+        kind: 'slo_retry_provider_succeeded',
+        providerId: failure.providerId,
+        context: {
+          provider_nome: failure.providerNome ?? null,
+          had_logout_url: Boolean(logoutUrl),
+        },
+      });
       if (logoutUrl) {
         toast.loading(`Redirecionando para ${providerLabel}…`, { id: 'sso-slo-retry' });
         clearSloFailure();
@@ -62,6 +76,14 @@ export function SloFailureBanner({ failure, onDismiss }: Props) {
       onDismiss();
     } catch (e) {
       logger.warn('[SloFailureBanner] Retry de provider logout falhou', e);
+      const rawMessage = e instanceof Error ? e.message : String(e);
+      await logSloRetry({
+        kind: 'slo_retry_provider_failed',
+        providerId: failure.providerId,
+        errorCode: inferSsoErrorCode(rawMessage),
+        errorMessage: rawMessage,
+        context: { provider_nome: failure.providerNome ?? null },
+      });
       toast.error(`Não foi possível encerrar a sessão no ${providerLabel}. Tente novamente em instantes.`);
     } finally {
       setRetryingProvider(false);
