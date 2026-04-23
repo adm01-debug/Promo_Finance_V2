@@ -7903,6 +7903,8 @@ export type Database = {
           notify_inapp: boolean
           notify_push: boolean
           saved_filter_id: string
+          severidades_criticas: string[]
+          tipos_eventos_ativos: string[]
           updated_at: string
           user_id: string
         }
@@ -7917,6 +7919,8 @@ export type Database = {
           notify_inapp?: boolean
           notify_push?: boolean
           saved_filter_id: string
+          severidades_criticas?: string[]
+          tipos_eventos_ativos?: string[]
           updated_at?: string
           user_id: string
         }
@@ -7931,6 +7935,8 @@ export type Database = {
           notify_inapp?: boolean
           notify_push?: boolean
           saved_filter_id?: string
+          severidades_criticas?: string[]
+          tipos_eventos_ativos?: string[]
           updated_at?: string
           user_id?: string
         }
