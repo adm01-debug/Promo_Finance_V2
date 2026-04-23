@@ -175,6 +175,26 @@ function normalizeClaim(v: unknown, email: string): string | null {
 }
 
 /**
+ * Normaliza telefone:
+ *   - remove espaços, hífens, parênteses, pontos e demais separadores
+ *   - mantém apenas dígitos e um '+' inicial opcional
+ *   - retorna null se vazio após limpeza
+ * Retorna { value, changed, raw } para que o caller possa auditar normalizações
+ * que efetivamente alteraram o valor recebido do IdP.
+ */
+function normalizePhone(v: unknown): { value: string | null; changed: boolean; raw: string | null } {
+  if (v === null || v === undefined) return { value: null, changed: false, raw: null };
+  const raw = String(v);
+  const trimmed = raw.trim();
+  if (!trimmed) return { value: null, changed: raw !== "", raw };
+  const hasPlus = trimmed.startsWith("+");
+  const digits = trimmed.replace(/[^\d]/g, "");
+  if (!digits) return { value: null, changed: true, raw };
+  const value = (hasPlus ? "+" : "") + digits;
+  return { value, changed: value !== raw, raw };
+}
+
+/**
  * Calcula o delta entre o estado atual do perfil e os claims recebidos.
  * Só inclui campos cujo valor incoming é não-nulo E diferente do current.
  * Nunca sobrescreve com vazio.
@@ -234,7 +254,35 @@ async function applyPipeline(opts: {
   // Normaliza claims recebidos (vazio/email → null)
   const incomingFullName = normalizeClaim(fullName, email);
   const incomingAvatarUrl = normalizeClaim(avatarUrl, email);
-  const incomingTelefone = normalizeClaim(telefone, email);
+  const phoneNorm = normalizePhone(telefone);
+  const incomingTelefoneRaw = normalizeClaim(phoneNorm.raw, email);
+  const incomingTelefone = phoneNorm.value;
+
+  // Audita quando a normalização alterou o valor original do IdP
+  if (phoneNorm.changed && incomingTelefoneRaw) {
+    try {
+      await admin.from("audit_logs").insert({
+        user_id: existingUserId,
+        user_email: email,
+        action: "UPDATE",
+        table_name: "sso_phone_normalized",
+        record_id: existingUserId,
+        new_data: {
+          provider_id: providerId,
+          provider_nome: providerNome,
+          provider_tipo: (provider.tipo as string) ?? null,
+          raw: phoneNorm.raw,
+          normalized: phoneNorm.value,
+        },
+        details: `Telefone SSO normalizado (${providerNome}): "${phoneNorm.raw}" → "${phoneNorm.value ?? "—"}"`,
+      });
+    } catch (err) {
+      console.warn(
+        "[sso-callback] falha ao registrar audit_logs sso_phone_normalized:",
+        err instanceof Error ? err.message : String(err),
+      );
+    }
+  }
 
   // Resolve usuário (SAML traz existingUserId; OIDC busca/cria)
   let userId: string | null = existingUserId ?? null;
