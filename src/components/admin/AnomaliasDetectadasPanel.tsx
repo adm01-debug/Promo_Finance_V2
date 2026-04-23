@@ -172,6 +172,8 @@ function writeFiltersToUrl(
   sp: URLSearchParams,
   f: AnomaliaFilters,
   s: { key: string; dir: "asc" | "desc" },
+  cols: string[],
+  q: string,
 ): URLSearchParams {
   const next = new URLSearchParams(sp);
   const setOrDel = (k: string, v: string) => {
@@ -186,7 +188,37 @@ function writeFiltersToUrl(
   setOrDel("reopen", f.apenasReabertas ? "1" : "");
   setOrDel("sort", s.key !== "detectada_em" ? s.key : "");
   setOrDel("dir", s.dir !== "desc" ? s.dir : "");
+  // Colunas: só persiste se diferente do default (todas visíveis)
+  const colsDifere =
+    cols.length !== DEFAULT_VISIBLE.length ||
+    cols.some((c, i) => c !== DEFAULT_VISIBLE[i]);
+  setOrDel("cols", colsDifere ? cols.join(",") : "");
+  setOrDel("q", q.trim());
   return next;
+}
+
+const PERSIST_KEY = "anomalias-panel:state-v1";
+interface PersistedState {
+  filters: AnomaliaFilters;
+  sort: { key: string; dir: "asc" | "desc" };
+  cols: string[];
+  q: string;
+}
+function loadPersistedState(): PersistedState | null {
+  try {
+    const raw = localStorage.getItem(PERSIST_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as PersistedState;
+  } catch {
+    return null;
+  }
+}
+function savePersistedState(s: PersistedState) {
+  try {
+    localStorage.setItem(PERSIST_KEY, JSON.stringify(s));
+  } catch {
+    // quota cheia / modo privado — ignora silenciosamente
+  }
 }
 
 export function AnomaliasDetectadasPanel() {
