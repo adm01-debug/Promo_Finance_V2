@@ -265,6 +265,17 @@ export function SavedFiltersBar<T>({
     }
   };
 
+  // Confirmação anti-clique-acidental antes de restaurar/voltar ao estado inicial.
+  const [confirmRestoreOpen, setConfirmRestoreOpen] = useState(false);
+  const requestRestoreDefault = () => {
+    if (!canRestore || anyMutationPending) return;
+    setConfirmRestoreOpen(true);
+  };
+  const confirmRestoreDefault = () => {
+    handleRestoreDefault();
+    setConfirmRestoreOpen(false);
+  };
+
   // Habilita o botão somente quando há algo a restaurar:
   // - existe preset modificado, OU
   // - há um preset ativo diferente do default, OU
