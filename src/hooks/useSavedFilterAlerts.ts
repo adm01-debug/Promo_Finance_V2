@@ -360,6 +360,34 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
                 .catch((e) => logger.warn(`push falhou (${config.entityType})`, e));
             }
 
+            // Histórico unificado + e-mail (qualquer canal ativo)
+            if (sub.notify_inapp || sub.notify_push || sub.notify_email) {
+              const url = config.buildPushUrl(row);
+              supabase.functions
+                .invoke("notify-saved-filter", {
+                  body: {
+                    sourceRef: sf.id,
+                    filterName: sf.name,
+                    title,
+                    body: description,
+                    channels: {
+                      inapp: sub.notify_inapp,
+                      push: sub.notify_push,
+                      email: sub.notify_email,
+                    },
+                    ...(url ? { url } : {}),
+                    metadata: {
+                      entityType: config.entityType,
+                      moduleLabel: config.moduleLabel,
+                      rowId: row.id,
+                    },
+                  },
+                })
+                .catch((e) =>
+                  logger.warn(`notify-saved-filter falhou (${config.entityType})`, e),
+                );
+            }
+
             markSeen.mutate(sub.id);
           }
         },
