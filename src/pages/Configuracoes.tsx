@@ -202,7 +202,7 @@ export default function Configuracoes() {
       </div>
 
       {/* Atalhos rápidos */}
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-3 md:grid-cols-3">
         <Card className="border-dashed">
           <CardContent className="p-4 flex items-center justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-3 min-w-0">
