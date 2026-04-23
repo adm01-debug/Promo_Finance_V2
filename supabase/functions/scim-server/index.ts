@@ -67,9 +67,10 @@ async function resolveRole(
   admin: SupabaseClient,
   providerId: string | null,
   hint: string | null | undefined,
+  fallback: AppRole = "visualizador",
 ): Promise<AppRole> {
   const h = (hint ?? "").trim();
-  if (!h) return "visualizador";
+  if (!h) return fallback;
   if ((APP_ROLES as readonly string[]).includes(h.toLowerCase())) {
     return h.toLowerCase() as AppRole;
   }
@@ -84,7 +85,7 @@ async function resolveRole(
       return data.app_role as AppRole;
     }
   }
-  return "visualizador";
+  return fallback;
 }
 
 async function syncUserRole(admin: SupabaseClient, userId: string, role: AppRole) {
@@ -303,7 +304,7 @@ async function getUser(admin: SupabaseClient, empresaId: string, id: string) {
   return ok(userToScim((link as any).profiles, link, empresaId));
 }
 
-async function createUser(admin: SupabaseClient, providerId: string | null, empresaId: string, body: any) {
+async function createUser(admin: SupabaseClient, providerId: string | null, empresaId: string, defaultRole: AppRole, body: any) {
   const email = String(body?.userName || body?.emails?.[0]?.value || "").toLowerCase().trim();
   const fullName = body?.name?.formatted || body?.displayName || email;
   const externalId: string | null = body?.externalId ?? null;
@@ -312,7 +313,7 @@ async function createUser(admin: SupabaseClient, providerId: string | null, empr
   const departmentHint = ext?.department ?? null;
   if (!email) return err(400, "userName/emails.value required", "invalidValue");
 
-  const role = await resolveRole(admin, providerId, departmentHint);
+  const role = await resolveRole(admin, providerId, departmentHint, defaultRole);
 
   let user = await findAuthUserByEmail(admin, email);
   if (!user) {
@@ -482,7 +483,7 @@ async function updateUserEmail(admin: SupabaseClient, userId: string, newEmail: 
   return null;
 }
 
-async function patchUser(admin: SupabaseClient, providerId: string | null, empresaId: string, id: string, body: any) {
+async function patchUser(admin: SupabaseClient, providerId: string | null, empresaId: string, defaultRole: AppRole, id: string, body: any) {
   const { data: link } = await admin.from("user_empresas")
     .select("*, profiles!inner(id,email,full_name)")
     .eq("id", id).eq("empresa_id", empresaId).maybeSingle();
@@ -502,7 +503,7 @@ async function patchUser(admin: SupabaseClient, providerId: string | null, empre
   if (result.invalidPath) return err(400, `Unsupported path: ${result.invalidPath}`, "invalidPath", { path: result.invalidPath, supportedPaths: ["userName", "displayName", "name.formatted", "active", "emails", "emails[primary eq true].value", "externalId", "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:department"] });
 
   if (result.newRoleHint) {
-    const role = await resolveRole(admin, providerId, result.newRoleHint);
+    const role = await resolveRole(admin, providerId, result.newRoleHint, defaultRole);
     result.empresaUpdates.role = role;
   }
 
@@ -531,14 +532,14 @@ async function patchUser(admin: SupabaseClient, providerId: string | null, empre
   return ok(userToScim((fresh as any).profiles, fresh, empresaId));
 }
 
-async function putUser(admin: SupabaseClient, providerId: string | null, empresaId: string, id: string, body: any) {
+async function putUser(admin: SupabaseClient, providerId: string | null, empresaId: string, defaultRole: AppRole, id: string, body: any) {
   const { data: link } = await admin.from("user_empresas")
     .select("*, profiles!inner(id,email,full_name)")
     .eq("id", id).eq("empresa_id", empresaId).maybeSingle();
   if (!link) return err(404, "User not found");
 
   const ext = body?.["urn:ietf:params:scim:schemas:extension:enterprise:2.0:User"];
-  const role = await resolveRole(admin, providerId, ext?.department ?? null);
+  const role = await resolveRole(admin, providerId, ext?.department ?? null, defaultRole);
   const active = body?.active !== false;
   const externalId: string | null = body?.externalId ?? null;
   const fullName = body?.name?.formatted
@@ -765,6 +766,10 @@ Deno.serve(async (req) => {
 
     const empresaId = tok.empresa_id as string;
     const providerId = (tok.provider_id ?? null) as string | null;
+    const tokenDefaultRole: AppRole =
+      tok.default_role && (APP_ROLES as readonly string[]).includes(tok.default_role)
+        ? (tok.default_role as AppRole)
+        : "visualizador";
 
     let resp: Response;
     let opName = req.method.toLowerCase();
@@ -776,9 +781,9 @@ Deno.serve(async (req) => {
     if (resource === "Users") {
       if (req.method === "GET" && !id) { resp = await listUsers(admin, empresaId, url); opName = "list"; }
       else if (req.method === "GET" && id) { resp = await getUser(admin, empresaId, id); opName = "get"; }
-      else if (req.method === "POST" && !id) { resp = await createUser(admin, providerId, empresaId, reqBody); opName = "create"; externalId = reqBody?.externalId ?? null; }
-      else if (req.method === "PATCH" && id) { resp = await patchUser(admin, providerId, empresaId, id, reqBody); opName = "patch"; }
-      else if (req.method === "PUT" && id) { resp = await putUser(admin, providerId, empresaId, id, reqBody); opName = "put"; }
+      else if (req.method === "POST" && !id) { resp = await createUser(admin, providerId, empresaId, tokenDefaultRole, reqBody); opName = "create"; externalId = reqBody?.externalId ?? null; }
+      else if (req.method === "PATCH" && id) { resp = await patchUser(admin, providerId, empresaId, tokenDefaultRole, id, reqBody); opName = "patch"; }
+      else if (req.method === "PUT" && id) { resp = await putUser(admin, providerId, empresaId, tokenDefaultRole, id, reqBody); opName = "put"; }
       else if (req.method === "DELETE" && id) {
         const r = await deleteUser(admin, empresaId, id);
         resp = r.resp; opName = "delete"; userId = r.userId; externalId = r.externalId;

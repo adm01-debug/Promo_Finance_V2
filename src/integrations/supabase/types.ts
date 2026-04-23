@@ -7975,6 +7975,7 @@ export type Database = {
           ativo: boolean
           created_at: string
           created_by: string | null
+          default_role: Database["public"]["Enums"]["app_role"] | null
           empresa_id: string
           expires_at: string | null
           id: string
@@ -7988,6 +7989,7 @@ export type Database = {
           ativo?: boolean
           created_at?: string
           created_by?: string | null
+          default_role?: Database["public"]["Enums"]["app_role"] | null
           empresa_id: string
           expires_at?: string | null
           id?: string
@@ -8001,6 +8003,7 @@ export type Database = {
           ativo?: boolean
           created_at?: string
           created_by?: string | null
+          default_role?: Database["public"]["Enums"]["app_role"] | null
           empresa_id?: string
           expires_at?: string | null
           id?: string

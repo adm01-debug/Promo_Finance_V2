@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useEmpresas } from '@/hooks/useFinancialData';
-import { useScimTokens, useCreateScimToken, useRevokeScimToken } from '@/hooks/useScimTokens';
+import { useScimTokens, useCreateScimToken, useRevokeScimToken, type ScimDefaultRole } from '@/hooks/useScimTokens';
 import { ScimSetupGuide } from './ScimSetupGuide';
 import { toast } from 'sonner';
 
@@ -23,6 +23,7 @@ export function ScimTokensTab() {
   const [empresaId, setEmpresaId] = useState<string>('');
   const [open, setOpen] = useState(false);
   const [nome, setNome] = useState('');
+  const [defaultRole, setDefaultRole] = useState<ScimDefaultRole>('visualizador');
   const [issued, setIssued] = useState<string | null>(null);
 
   const { data: tokens = [] } = useScimTokens(empresaId);
@@ -31,9 +32,10 @@ export function ScimTokensTab() {
 
   const handleCreate = async () => {
     if (!empresaId || !nome) return;
-    const r = await create.mutateAsync({ empresa_id: empresaId, nome });
+    const r = await create.mutateAsync({ empresa_id: empresaId, nome, default_role: defaultRole });
     setIssued(r.token);
     setNome('');
+    setDefaultRole('visualizador');
   };
 
   const copy = (text: string, label = 'Copiado') => {
@@ -104,6 +106,7 @@ export function ScimTokensTab() {
                 <TableRow>
                   <TableHead>Nome</TableHead>
                   <TableHead>Prefixo</TableHead>
+                  <TableHead>Papel padrão</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Último uso</TableHead>
                   <TableHead>Criado em</TableHead>
@@ -115,6 +118,9 @@ export function ScimTokensTab() {
                   <TableRow key={t.id}>
                     <TableCell className="font-medium">{t.nome}</TableCell>
                     <TableCell className="font-mono text-xs">{t.token_prefix}…</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="capitalize">{t.default_role ?? 'visualizador'}</Badge>
+                    </TableCell>
                     <TableCell>
                       {t.ativo
                         ? <Badge className="bg-success text-success-foreground">ativo</Badge>
@@ -159,6 +165,21 @@ export function ScimTokensTab() {
               <div>
                 <Label>Nome do token *</Label>
                 <Input value={nome} onChange={e => setNome(e.target.value)} placeholder="Ex: Azure AD - Produção" />
+              </div>
+              <div>
+                <Label>Papel padrão *</Label>
+                <Select value={defaultRole} onValueChange={(v) => setDefaultRole(v as ScimDefaultRole)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="visualizador">Visualizador</SelectItem>
+                    <SelectItem value="operacional">Operacional</SelectItem>
+                    <SelectItem value="financeiro">Financeiro</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Aplicado quando o IdP não envia <code>department</code> ou grupo reconhecível.
+                </p>
               </div>
               <Button className="w-full" disabled={!nome || create.isPending} onClick={handleCreate}>
                 Gerar token
