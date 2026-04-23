@@ -255,6 +255,38 @@ export function AnomaliasReviewQueue({
     }
   }, [atual]);
 
+  // Contagem de pendentes por severidade a partir da posição atual (inclusive),
+  // para refletir o que ainda há à frente na revisão.
+  const contagemPorSeveridade = useMemo(() => {
+    const base: Record<Anomalia["severidade"], number> = {
+      critica: 0,
+      alta: 0,
+      media: 0,
+      baixa: 0,
+    };
+    for (let i = index; i < snapshot.length; i++) {
+      const sev = snapshot[i].severidade;
+      if (sev in base) base[sev] += 1;
+    }
+    return base;
+  }, [snapshot, index]);
+
+  function pularParaSeveridade(sev: Anomalia["severidade"]) {
+    // Procura a partir da posição atual; se não achar, busca do início da fila.
+    let alvo = snapshot.findIndex((a, i) => i >= index && a.severidade === sev);
+    if (alvo === -1) {
+      alvo = snapshot.findIndex((a) => a.severidade === sev);
+    }
+    if (alvo === -1) {
+      toast.info(`Sem anomalias ${sev} na fila atual`);
+      return;
+    }
+    if (alvo === index) return;
+    setComentario("");
+    setComentarioTocado(false);
+    void recarregarPosicao(alvo);
+  }
+
   function avancar() {
     setComentario("");
     setComentarioTocado(false);
@@ -400,6 +432,44 @@ export function AnomaliasReviewQueue({
                 </span>
               </div>
               <Progress value={((index + 1) / total) * 100} className="h-1.5" />
+            </div>
+
+            <div
+              className="flex flex-wrap items-center gap-1.5"
+              role="group"
+              aria-label="Pular para severidade"
+            >
+              <span className="text-xs text-muted-foreground mr-1">Pular para:</span>
+              {(["critica", "alta", "media", "baixa"] as const).map((sev) => {
+                const count = contagemPorSeveridade[sev];
+                const ativo = atual?.severidade === sev;
+                const desabilitado = count === 0 || recarregando;
+                return (
+                  <Button
+                    key={sev}
+                    type="button"
+                    size="sm"
+                    variant={ativo ? severidadeBadge(sev) : "outline"}
+                    className="h-7 px-2 text-xs capitalize gap-1"
+                    onClick={() => pularParaSeveridade(sev)}
+                    disabled={desabilitado}
+                    title={
+                      count === 0
+                        ? `Sem anomalias ${sev} restantes`
+                        : `Ir para a próxima ${sev} (${count} restante${count === 1 ? "" : "s"})`
+                    }
+                    aria-pressed={ativo}
+                  >
+                    {sev}
+                    <Badge
+                      variant="secondary"
+                      className="h-4 px-1 text-[10px] tabular-nums"
+                    >
+                      {count}
+                    </Badge>
+                  </Button>
+                );
+              })}
             </div>
 
             <div className="rounded-lg border bg-card p-4 space-y-3">
