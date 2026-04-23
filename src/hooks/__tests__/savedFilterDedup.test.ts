@@ -106,6 +106,47 @@ describe("savedFilterDedup > checkShouldDispatch", () => {
     });
     expect(r.shouldDispatch).toBe(true);
   });
+
+  // ----- Defesa de permissão (assinatura órfã / cross-user) -----
+  it("rejeita quando subscription pertence a outro usuário (permissão revogada)", () => {
+    // Cenário: trigger fn_revoke_orphan_saved_filter_subscriptions já apagou
+    // a assinatura no banco, mas o cliente ainda tem o snapshot antigo em
+    // cache. A guarda no helper bloqueia o disparo silenciosamente.
+    const r = checkShouldDispatch({
+      rowId: "row-X",
+      rowTimestamp: "2026-01-15T10:00:00Z",
+      lastSeenAt: "2026-01-15T09:00:00Z",
+      seen: new Set(),
+      subscriptionUserId: "user-other",
+      currentUserId: "user-me",
+    });
+    expect(r.shouldDispatch).toBe(false);
+    expect(r.reason).toBe("permission_revoked");
+  });
+
+  it("aceita quando subscription bate com o usuário logado", () => {
+    const r = checkShouldDispatch({
+      rowId: "row-Y",
+      rowTimestamp: "2026-01-15T10:00:00Z",
+      lastSeenAt: "2026-01-15T09:00:00Z",
+      seen: new Set(),
+      subscriptionUserId: "user-me",
+      currentUserId: "user-me",
+    });
+    expect(r.shouldDispatch).toBe(true);
+  });
+
+  it("ignora a guarda quando currentUserId não foi fornecido (compat retroativa)", () => {
+    // Mantém comportamento anterior se o chamador não passar o pareamento.
+    const r = checkShouldDispatch({
+      rowId: "row-Z",
+      rowTimestamp: "2026-01-15T10:00:00Z",
+      lastSeenAt: "2026-01-15T09:00:00Z",
+      seen: new Set(),
+      subscriptionUserId: "user-other",
+    });
+    expect(r.shouldDispatch).toBe(true);
+  });
 });
 
 describe("savedFilterDedup > clampRateLimit", () => {
