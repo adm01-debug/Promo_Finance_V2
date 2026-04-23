@@ -49,7 +49,16 @@ interface NotificationRow {
   channel: Channel;
   status: "sent" | "failed" | "queued";
   error_message: string | null;
-  metadata: Record<string, unknown> | null;
+  metadata:
+    | (Record<string, unknown> & {
+        filterName?: string;
+        entityType?: string;
+        url?: string | null;
+        matchCount?: number;
+        reason?: string;
+      })
+    | null;
+  source_ref: string | null;
   read_at: string | null;
   created_at: string;
 }
@@ -64,6 +73,7 @@ export default function HistoricoNotificacoes() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const [filter, setFilter] = useState<"all" | Channel>("all");
+  const [filterName, setFilterName] = useState<string>("all");
 
   const queryKey = ["notification-history", user?.id, filter];
 
