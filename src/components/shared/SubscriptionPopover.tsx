@@ -314,6 +314,44 @@ export function SubscriptionPopover({
           </div>
         )}
 
+        <div className="space-y-1 border-t pt-3">
+          <Label className="text-xs font-medium">Anti-spam (rajadas)</Label>
+          <p className="text-[10px] text-muted-foreground">
+            Em modo imediato, no máx. <b>{rateLimitMax}</b> notificações em{" "}
+            <b>{rateLimitWindow}</b> min. Excedente vira 1 resumo agrupado.
+          </p>
+          <div className="grid grid-cols-2 gap-2 pt-1">
+            <div className="space-y-0.5">
+              <Label htmlFor="sub-rate-max" className="text-[10px]">
+                Máx. por janela
+              </Label>
+              <Input
+                id="sub-rate-max"
+                type="number"
+                min={1}
+                max={100}
+                value={rateLimitMax}
+                onChange={(e) => setRateLimitMax(Number(e.target.value))}
+                className="h-8 text-xs"
+              />
+            </div>
+            <div className="space-y-0.5">
+              <Label htmlFor="sub-rate-window" className="text-[10px]">
+                Janela (min)
+              </Label>
+              <Input
+                id="sub-rate-window"
+                type="number"
+                min={1}
+                max={1440}
+                value={rateLimitWindow}
+                onChange={(e) => setRateLimitWindow(Number(e.target.value))}
+                className="h-8 text-xs"
+              />
+            </div>
+          </div>
+        </div>
+
         <div className="flex items-center justify-between gap-2 pt-1">
           {active ? (
             <Button
