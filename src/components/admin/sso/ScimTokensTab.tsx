@@ -162,6 +162,23 @@ export function ScimTokensTab() {
             </div>
           ) : (
             <div className="space-y-3">
+              <div className="rounded-lg border-2 border-primary/40 bg-primary/5 p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-primary" />
+                  <Label className="text-sm font-semibold text-primary m-0">Empresa alvo *</Label>
+                </div>
+                <p className="text-sm font-medium">
+                  {empresas.find(e => e.id === empresaId)?.nome_fantasia
+                    || empresas.find(e => e.id === empresaId)?.razao_social
+                    || '—'}
+                </p>
+                <Alert>
+                  <AlertDescription className="text-xs">
+                    <strong>Todos os usuários provisionados por este token serão vinculados a esta empresa.</strong>
+                    {' '}Para provisionar em outra empresa, gere um token separado.
+                  </AlertDescription>
+                </Alert>
+              </div>
               <div>
                 <Label>Nome do token *</Label>
                 <Input value={nome} onChange={e => setNome(e.target.value)} placeholder="Ex: Azure AD - Produção" />
@@ -181,7 +198,7 @@ export function ScimTokensTab() {
                   Aplicado quando o IdP não envia <code>department</code> ou grupo reconhecível.
                 </p>
               </div>
-              <Button className="w-full" disabled={!nome || create.isPending} onClick={handleCreate}>
+              <Button className="w-full" disabled={!nome || !empresaId || create.isPending} onClick={handleCreate}>
                 Gerar token
               </Button>
             </div>
