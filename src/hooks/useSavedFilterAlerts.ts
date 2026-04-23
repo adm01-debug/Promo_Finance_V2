@@ -274,6 +274,13 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
     }
 
     pendingBySub.current.delete(subId);
+    // Anti-spam: ao consolidar, limpa contadores e cancela timer pendente.
+    dispatchTimestampsBySub.current.delete(subId);
+    const tid = flushTimerBySub.current.get(subId);
+    if (tid !== undefined) {
+      window.clearTimeout(tid);
+      flushTimerBySub.current.delete(subId);
+    }
     // Avança last_seen_at + recalcula próximo dispatch
     const next = computeNextDispatch(sub.frequencia, sub.horario_preferido);
     supabase
