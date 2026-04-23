@@ -250,7 +250,8 @@ export function AnomaliasDetectadasPanel() {
       searchParams.has("sort") ||
       searchParams.has("dir") ||
       searchParams.has("cols") ||
-      searchParams.has("q"),
+      searchParams.has("q") ||
+      searchParams.has("preset"),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
