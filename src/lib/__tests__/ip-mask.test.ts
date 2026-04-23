@@ -64,4 +64,36 @@ describe('matchesIpFilter', () => {
   it('null não casa', () => {
     expect(matchesIpFilter(null, '10')).toBe(false);
   });
+
+  it('é case-insensitive contra IPv6', () => {
+    expect(matchesIpFilter('fe80::1', 'FE80')).toBe(true);
+    expect(matchesIpFilter('FE80::1', 'fe80')).toBe(true);
+  });
+});
+
+describe('maskIp + matchesIpFilter — invariantes', () => {
+  const ips = [
+    '192.168.1.42',
+    '192.168.1.99',
+    '10.0.0.1',
+    '172.16.0.1',
+    'fe80::1',
+  ];
+
+  it('mascarar é cosmético: filtragem produz o mesmo subconjunto com toggle on/off', () => {
+    const term = '192.168';
+    const filteredOriginal = ips.filter((ip) => matchesIpFilter(ip, term));
+    // Simula UI mascarada — o filtro continua recebendo o IP original
+    ips.forEach((ip) => maskIp(ip, true));
+    const filteredAfterMaskingDisplay = ips.filter((ip) =>
+      matchesIpFilter(ip, term),
+    );
+    expect(filteredAfterMaskingDisplay).toEqual(filteredOriginal);
+    expect(filteredOriginal).toEqual(['192.168.1.42', '192.168.1.99']);
+  });
+
+  it('substring que só existe no valor mascarado não casa nenhum IP original', () => {
+    expect(ips.some((ip) => matchesIpFilter(ip, '*.*'))).toBe(false);
+    expect(ips.some((ip) => matchesIpFilter(ip, '****'))).toBe(false);
+  });
 });
