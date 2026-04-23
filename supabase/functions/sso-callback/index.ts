@@ -441,6 +441,73 @@ async function applyPipeline(opts: {
     }
   }
 
+  // Sincroniza grupos do IdP em sso_user_groups (independente do JIT).
+  // Permite refletir alterações de grupo no IdP a cada login.
+  try {
+    const normalizedGroups = Array.from(
+      new Set((groups ?? []).map((g) => String(g).trim()).filter(Boolean)),
+    ).sort();
+    const { data: existingGroupsRow } = await admin
+      .from("sso_user_groups")
+      .select("groups, matched_group, matched_role")
+      .eq("user_id", userId)
+      .eq("provider_id", providerId)
+      .maybeSingle();
+
+    const prevGroups: string[] = Array.isArray(existingGroupsRow?.groups)
+      ? [...existingGroupsRow!.groups].map(String).sort()
+      : [];
+    const added = normalizedGroups.filter((g) => !prevGroups.includes(g));
+    const removed = prevGroups.filter((g) => !normalizedGroups.includes(g));
+    const groupsChanged = added.length > 0 || removed.length > 0;
+    const roleChanged =
+      (existingGroupsRow?.matched_role ?? null) !== role ||
+      (existingGroupsRow?.matched_group ?? null) !== matchedGroup;
+
+    await admin.from("sso_user_groups").upsert(
+      {
+        user_id: userId,
+        provider_id: providerId,
+        groups: normalizedGroups,
+        matched_group: matchedGroup,
+        matched_role: role,
+        last_synced_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id,provider_id" },
+    );
+
+    if (groupsChanged || roleChanged) {
+      await admin.from("audit_logs").insert({
+        user_id: userId,
+        user_email: email,
+        action: existingGroupsRow ? "UPDATE" : "INSERT",
+        table_name: "sso_user_groups",
+        record_id: userId,
+        old_data: {
+          groups: prevGroups,
+          matched_group: existingGroupsRow?.matched_group ?? null,
+          matched_role: existingGroupsRow?.matched_role ?? null,
+        },
+        new_data: {
+          provider_id: providerId,
+          provider_nome: providerNome,
+          provider_tipo: (provider.tipo as string) ?? null,
+          groups: normalizedGroups,
+          added,
+          removed,
+          matched_group: matchedGroup,
+          matched_role: role,
+        },
+        details: `Sync de grupos SSO (${providerNome}): +${added.length} / -${removed.length}`,
+      });
+    }
+  } catch (err) {
+    console.warn(
+      "[sso-callback] falha ao sincronizar sso_user_groups:",
+      err instanceof Error ? err.message : String(err),
+    );
+  }
+
   // Vínculo em user_empresas (com default exclusivo)
   if (empresaId) {
     await vincularEmpresaComoPadrao(admin, userId!, empresaId, role);
