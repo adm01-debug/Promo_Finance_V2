@@ -192,6 +192,32 @@ export default function AuditLogs() {
               <Select value={userFilter} onValueChange={setUserFilter}><SelectTrigger><SelectValue placeholder="Usuário" /></SelectTrigger><SelectContent><SelectItem value="all">Todos os Usuários</SelectItem>{uniqueUsers.map((u) => <SelectItem key={u} value={u!}>{u}</SelectItem>)}</SelectContent></Select>
               <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("justify-start text-left font-normal", !dateRange && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{dateRange?.from ? (dateRange.to ? <>{format(dateRange.from, "dd/MM/yy")} - {format(dateRange.to, "dd/MM/yy")}</> : format(dateRange.from, "dd/MM/yyyy")) : <span>Selecionar período</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} locale={ptBR as unknown as Record<string, unknown>} /></PopoverContent></Popover>
             </div>
+            {isSsoProfileSyncScope && (
+              <div className="grid gap-4 md:grid-cols-2 mt-4 p-3 rounded-lg border border-primary/30 bg-primary/5">
+                <div>
+                  <label className="text-xs font-medium text-primary mb-1 block">Provider SSO</label>
+                  <Select value={providerFilter} onValueChange={setProviderFilter}>
+                    <SelectTrigger><SelectValue placeholder="Provider" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos os providers</SelectItem>
+                      {uniqueSsoProviders.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-primary mb-1 block">Campo alterado</label>
+                  <Select value={ssoFieldFilter} onValueChange={setSsoFieldFilter}>
+                    <SelectTrigger><SelectValue placeholder="Campo" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos os campos</SelectItem>
+                      <SelectItem value="full_name">Nome completo</SelectItem>
+                      <SelectItem value="avatar_url">Foto de perfil</SelectItem>
+                      <SelectItem value="telefone">Telefone</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
             <div className="flex items-center justify-between gap-2 mt-4 flex-wrap">
               <ClearFiltersButton
                 controller={filtersController}
