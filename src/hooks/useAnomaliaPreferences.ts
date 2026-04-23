@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -129,9 +130,10 @@ export function shouldNotify(
 export function useAnomaliaPreferences() {
   const { user } = useAuth();
   const qc = useQueryClient();
+  const queryKey = ["anomalia-preferences", user?.id] as const;
 
   const query = useQuery({
-    queryKey: ["anomalia-preferences", user?.id],
+    queryKey,
     enabled: !!user?.id,
     staleTime: 60_000,
     queryFn: async (): Promise<AnomaliaPreferences | null> => {
@@ -144,9 +146,13 @@ export function useAnomaliaPreferences() {
       if (error) throw error;
       if (data) return normalizePrefs(data);
 
+      // Upsert defensivo: evita corrida com outra aba criando a mesma linha
       const { data: created, error: insErr } = await supabase
         .from("user_anomalia_preferences")
-        .insert({ user_id: user.id, ...DEFAULT_PREFS })
+        .upsert(
+          { user_id: user.id, ...DEFAULT_PREFS },
+          { onConflict: "user_id" },
+        )
         .select("*")
         .maybeSingle();
       if (insErr) throw insErr;
@@ -154,22 +160,75 @@ export function useAnomaliaPreferences() {
     },
   });
 
+  // Realtime cross-device: qualquer mudança nas prefs deste usuário
+  // (em outra aba, outro dispositivo, ou via SQL) atualiza o cache local
+  // imediatamente — mantém o useRealtimeAnomalias consistente sem F5.
+  useEffect(() => {
+    if (!user?.id) return;
+    const channel = supabase
+      .channel(`user-anomalia-preferences:${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "user_anomalia_preferences",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          if (payload.eventType === "DELETE") {
+            qc.setQueryData(queryKey, null);
+            return;
+          }
+          const next = normalizePrefs(payload.new);
+          qc.setQueryData(queryKey, next);
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, qc]);
+
   const update = useMutation({
     mutationFn: async (
       patch: Partial<Omit<AnomaliaPreferences, "id" | "user_id">>,
     ) => {
       if (!user?.id) throw new Error("not authenticated");
-      const merged = { ...DEFAULT_PREFS, ...(query.data ?? {}), ...patch };
+      // Re-lê o estado mais recente do servidor antes de mesclar, evitando
+      // sobrescrever mudanças vindas de outro dispositivo desde o último fetch.
+      const { data: latest, error: readErr } = await supabase
+        .from("user_anomalia_preferences")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (readErr) throw readErr;
+
+      const base = latest ? normalizePrefs(latest) : null;
+      const merged = {
+        ...DEFAULT_PREFS,
+        ...(base ?? {}),
+        ...patch,
+      };
+      // Remove campos auto-gerenciados antes do upsert
+      const { id: _id, user_id: _uid, ...payload } = merged as AnomaliaPreferences;
+      void _id;
+      void _uid;
+
       const { data, error } = await supabase
         .from("user_anomalia_preferences")
-        .upsert({ user_id: user.id, ...merged }, { onConflict: "user_id" })
+        .upsert(
+          { user_id: user.id, ...payload },
+          { onConflict: "user_id" },
+        )
         .select("*")
         .maybeSingle();
       if (error) throw error;
       return data ? normalizePrefs(data) : null;
     },
     onSuccess: (data) => {
-      if (data) qc.setQueryData(["anomalia-preferences", user?.id], data);
+      if (data) qc.setQueryData(queryKey, data);
     },
   });
 

@@ -14,7 +14,7 @@ Tabela `user_anomalia_preferences` (RLS por user_id, unique user_id):
 `anomalias_detectadas.centro_custo_id` (nullable) populada pela edge `detectar-anomalias-financeiras` para anomalias de movimentação/conta_pagar.
 
 Hooks:
-- `useAnomaliaPreferences` (upsert default na 1ª leitura, normaliza linhas legadas) + helper puro `shouldNotify(prefs, anomalia)` que checa `toast_severidades_ativas`.
+- `useAnomaliaPreferences` (upsert default na 1ª leitura, normaliza linhas legadas) + helper puro `shouldNotify(prefs, anomalia)` que checa `toast_severidades_ativas`. **Sincroniza cross-device via Supabase Realtime** (canal `user-anomalia-preferences:<uid>` filtrado por `user_id`) e re-lê o estado do servidor antes de cada upsert para evitar sobrescrever mudanças vindas de outra aba/dispositivo. Tabela publicada em `supabase_realtime` com `REPLICA IDENTITY FULL`.
 - `useAnomaliasCriticasCount` — contagem respeitando silêncios.
 - `useRealtimeAnomalias` — usa duração e ações configuradas; sonner mostra até 2 ações (action + cancel), extras em toasts secundários.
 
