@@ -20,6 +20,7 @@ import {
   Loader2,
   Sparkles,
   ScrollText,
+  AlertTriangle,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
