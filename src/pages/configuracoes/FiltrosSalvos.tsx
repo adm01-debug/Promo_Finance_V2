@@ -438,6 +438,8 @@ interface FilterRowProps {
 function FilterRow({ entry, diagnostic, onRefresh }: FilterRowProps) {
   const remoteBadge = renderRemoteBadge(diagnostic?.remote);
   const localBadge = renderLocalBadge(diagnostic?.local);
+  const divergence = computeDivergence(diagnostic);
+  const divergenceBadge = renderDivergenceBadge(divergence);
 
   return (
     <div className="rounded-lg border border-border bg-card/60 p-4 hover:bg-card transition-colors">
@@ -468,9 +470,10 @@ function FilterRow({ entry, diagnostic, onRefresh }: FilterRowProps) {
         </div>
 
         <div className="flex flex-col items-end gap-2 shrink-0">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
             {remoteBadge}
             {localBadge}
+            {divergenceBadge}
           </div>
           <Button
             variant="ghost"
