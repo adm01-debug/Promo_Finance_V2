@@ -353,7 +353,7 @@ export default function FiltrosSalvos() {
           </div>
 
           {/* Resumo */}
-          <div className="grid gap-3 md:grid-cols-4">
+          <div className="grid gap-3 md:grid-cols-5">
             <Card>
               <CardContent className="p-4">
                 <div className="text-xs text-muted-foreground">Telas catalogadas</div>
@@ -374,6 +374,14 @@ export default function FiltrosSalvos() {
                   <HardDrive className="h-3 w-3" /> Espelhadas (dispositivo)
                 </div>
                 <div className="text-2xl font-bold mt-1">{totals.localOk}</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                  <ArrowLeftRight className="h-3 w-3" /> Divergentes
+                </div>
+                <div className="text-2xl font-bold mt-1 text-warning">{totals.divergent}</div>
               </CardContent>
             </Card>
             <Card>
