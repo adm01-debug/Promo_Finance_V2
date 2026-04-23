@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
+  AlertTriangle,
   ArrowLeft,
   ArrowLeftRight,
   ArrowRight,
@@ -12,6 +13,7 @@ import {
   Loader2,
   RefreshCw,
   Search,
+  Trash2,
   XCircle,
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -37,6 +39,11 @@ import {
   mergeWithDiscovered,
   type FilterCatalogEntry,
 } from './savedFiltersCatalog';
+import {
+  subscribeHydrationEvents,
+  clearHydrationEvents,
+  type HydrationEvent,
+} from '@/lib/filterHydrationTelemetry';
 
 interface DiagnosticState {
   entityType: string;
@@ -123,6 +130,38 @@ export default function FiltrosSalvos() {
    * apareçam aqui automaticamente, sem necessidade de editar o catálogo.
    */
   const [catalog, setCatalog] = useState<FilterCatalogEntry[]>(SAVED_FILTERS_CATALOG);
+  /**
+   * Eventos de hidratação emitidos por `useManagedFilters` em qualquer tela.
+   * Atualizado em tempo real via subscribeHydrationEvents — falhas geram um
+   * card de alerta e log estruturado para o operador.
+   */
+  const [hydrationEvents, setHydrationEvents] = useState<HydrationEvent[]>([]);
+
+  useEffect(() => {
+    const unsub = subscribeHydrationEvents((events) => {
+      setHydrationEvents(events);
+      // Alerta na hora — apenas para a falha mais recente, evitando spam
+      const last = events[events.length - 1];
+      if (last && last.status === 'error') {
+        const previously = events.slice(0, -1).some(
+          (e) => e.entityType === last.entityType && e.at === last.at,
+        );
+        if (!previously) {
+          logger.error('[FiltrosSalvos] hidratação falhou', {
+            entityType: last.entityType,
+            stage: last.stage,
+            errorMessage: last.errorMessage,
+          });
+        }
+      }
+    });
+    return unsub;
+  }, []);
+
+  const hydrationFailures = useMemo(
+    () => hydrationEvents.filter((e) => e.status === 'error').slice(-20).reverse(),
+    [hydrationEvents],
+  );
 
   const refreshOne = useCallback(
     async (entry: FilterCatalogEntry) => {
@@ -347,6 +386,70 @@ export default function FiltrosSalvos() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Hydration failures alert */}
+          {hydrationFailures.length > 0 && (
+            <Card className="border-destructive/40 bg-destructive/5">
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="h-5 w-5 text-destructive mt-0.5" />
+                    <div>
+                      <CardTitle className="text-base text-destructive">
+                        Falhas de hidratação detectadas
+                      </CardTitle>
+                      <CardDescription>
+                        {hydrationFailures.length} tela(s) reportaram erro ao carregar filtros
+                        salvos. Eventos registrados pelo <code>useManagedFilters</code>.
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      clearHydrationEvents();
+                      toast.success('Alertas reconhecidos');
+                    }}
+                  >
+                    <Trash2 className="h-3.5 w-3.5 mr-1" />
+                    Limpar
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {hydrationFailures.map((evt, idx) => (
+                    <div
+                      key={`${evt.entityType}-${evt.at}-${idx}`}
+                      className="flex items-start justify-between gap-3 rounded-md border border-destructive/30 bg-background/60 p-3 text-sm"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-[10px] font-mono">
+                            {evt.entityType}
+                          </Badge>
+                          {evt.stage && (
+                            <Badge variant="secondary" className="text-[10px]">
+                              {evt.stage}
+                            </Badge>
+                          )}
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(evt.at).toLocaleString('pt-BR')}
+                          </span>
+                        </div>
+                        {evt.errorMessage && (
+                          <p className="text-xs text-muted-foreground mt-1 break-words">
+                            {evt.errorMessage}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Search */}
           <Card>
