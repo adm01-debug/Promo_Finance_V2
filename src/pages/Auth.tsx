@@ -20,6 +20,8 @@ import { LoginForm } from '@/components/auth/LoginForm';
 import { AccountLockoutBanner } from '@/components/auth/AccountLockoutBanner';
 import { RegisterForm } from '@/components/auth/RegisterForm';
 import { ForgotPasswordForm } from '@/components/auth/ForgotPasswordForm';
+import { SloFailureBanner } from '@/components/auth/SloFailureBanner';
+import { readSloFailure, type SloFailureSnapshot } from '@/lib/sso-slo-state';
 
 // Validation schemas
 const emailSchema = z.string().email('Email inválido');
@@ -53,6 +55,7 @@ export default function Auth() {
   const [lockoutMessage, setLockoutMessage] = useState('');
   const [biometricAvailable, setBiometricAvailable] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState({ isStrong: false, isLeaked: false });
+  const [sloFailure, setSloFailureState] = useState<SloFailureSnapshot | null>(() => readSloFailure());
   
   const { checkDevice } = useDeviceDetection();
   const { isSupported: webAuthnSupported, isLoading: webAuthnLoading, authenticate, isPlatformAuthenticatorAvailable } = useWebAuthn();
@@ -105,6 +108,13 @@ export default function Auth() {
       params.delete('slo');
       const qs = params.toString();
       window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : ''));
+    } else if (params.get('slo') === 'fail') {
+      // Banner é renderizado abaixo via state; apenas higieniza a URL.
+      params.delete('slo');
+      const qs = params.toString();
+      window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : ''));
+      // Recarrega snapshot caso tenha sido escrito após o mount inicial.
+      setSloFailureState(readSloFailure());
     } else if (params.get('sso_error')) {
       toast.error('Falha no login SSO', { description: params.get('sso_error') ?? undefined });
       params.delete('sso_error');
