@@ -220,6 +220,7 @@ export function AnomaliasReviewQueue({
           toast.warning("Anomalia removida do sistema", {
             description: "Pulando para a próxima da fila.",
           });
+          notificarRemovida(candidato);
           setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
           cursor += 1;
           continue;
