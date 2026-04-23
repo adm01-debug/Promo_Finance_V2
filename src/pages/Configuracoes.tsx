@@ -245,6 +245,27 @@ export default function Configuracoes() {
             </Button>
           </CardContent>
         </Card>
+        <Card className="border-dashed">
+          <CardContent className="p-4 flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                <Bell className="h-5 w-5" />
+              </div>
+              <div className="min-w-0">
+                <p className="font-semibold text-sm">Histórico de notificações</p>
+                <p className="text-xs text-muted-foreground truncate">
+                  Veja, filtre por canal e marque como lidas as notificações recebidas.
+                </p>
+              </div>
+            </div>
+            <Button variant="outline" size="sm" asChild>
+              <a href="/configuracoes/notificacoes/historico" className="gap-1">
+                Abrir painel
+                <ChevronRight className="h-4 w-4" />
+              </a>
+            </Button>
+          </CardContent>
+        </Card>
       </div>
 
       <Tabs defaultValue="regua" className="space-y-6">
