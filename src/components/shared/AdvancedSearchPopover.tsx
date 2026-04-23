@@ -126,13 +126,19 @@ export function AdvancedSearchPopover({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          ref={triggerRef}
           variant="outline"
           size="sm"
           className={`gap-1.5 ${triggerClassName ?? ""}`}
-          aria-label="Abrir busca avançada"
+          aria-label="Abrir busca avançada (atalho: /)"
+          aria-keyshortcuts="/"
+          title="Buscar (atalho: /)"
         >
           <Search className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">Buscar</span>
+          <kbd className="hidden md:inline-flex items-center justify-center h-4 min-w-[16px] px-1 rounded border bg-muted text-[9px] font-mono text-muted-foreground">
+            /
+          </kbd>
           {hasActiveSearch && (
             <Badge
               variant="secondary"
@@ -154,12 +160,26 @@ export function AdvancedSearchPopover({
               onChange={(e) => setDraft(e.target.value)}
               placeholder={placeholder}
               className="pl-8 pr-8 h-9"
+              aria-keyshortcuts="Escape"
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   onApply(draft);
                   setOpen(false);
+                  // devolve o foco ao trigger para preservar o fluxo de teclado
+                  setTimeout(() => triggerRef.current?.focus(), 0);
                 } else if (e.key === "Escape") {
-                  setOpen(false);
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (draft.length > 0) {
+                    // 1º Esc: limpa o termo e mantém o foco no input
+                    setDraft("");
+                    onApply("");
+                    requestAnimationFrame(() => inputRef.current?.focus());
+                  } else {
+                    // 2º Esc (input vazio): fecha e devolve foco ao trigger
+                    setOpen(false);
+                    setTimeout(() => triggerRef.current?.focus(), 0);
+                  }
                 }
               }}
             />
