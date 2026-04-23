@@ -182,13 +182,26 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
 
   /**
    * Buffer client-side de itens pendentes por assinatura para cadências
-   * `horaria` e `diaria`. Limpado quando o batch é despachado. Mantemos a
-   * referência por `subscriptionId` (não por filterId) porque a janela de
-   * agrupamento vive na assinatura.
+   * `horaria`/`diaria` E para o agrupamento anti-spam (rajadas) em modo
+   * imediato. Limpado quando o batch é despachado.
    */
   const pendingBySub = useRef<Map<string, Array<{ title: string; desc: string }>>>(
     new Map(),
   );
+
+  /**
+   * Anti-spam: timestamps (ms) dos últimos disparos individuais por assinatura,
+   * dentro da janela `rate_limit_window_min`. Usado para decidir se o próximo
+   * item vira disparo imediato ou entra no buffer de batch.
+   */
+  const dispatchTimestampsBySub = useRef<Map<string, number[]>>(new Map());
+
+  /**
+   * Anti-spam: timer (setTimeout id) que executa o flush do batch ao fim da
+   * janela. Reagendado a cada novo item enfileirado para coalescer mais
+   * eventos na mesma rajada.
+   */
+  const flushTimerBySub = useRef<Map<string, number>>(new Map());
 
   /** Despacha o batch acumulado para uma assinatura e reagenda a próxima janela. */
   const flushBatch = (
