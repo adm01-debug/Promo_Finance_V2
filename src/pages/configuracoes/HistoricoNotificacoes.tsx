@@ -236,14 +236,26 @@ export default function HistoricoNotificacoes() {
               <Loader2 className="h-4 w-4 animate-spin mr-2" /> Carregando…
             </div>
           )}
-          {!isLoading && (data ?? []).length === 0 && (
+          {!isLoading && visibleRows.length === 0 && (
             <p className="text-sm text-muted-foreground py-6 text-center">
-              Nenhuma notificação por aqui ainda.
+              {filterName === "all"
+                ? "Nenhuma notificação por aqui ainda."
+                : `Nenhuma notificação para o filtro "${filterName}".`}
             </p>
           )}
-          {(data ?? []).map((n) => {
+          {visibleRows.map((n) => {
             const Icon = CHANNEL_LABEL[n.channel].icon;
             const unread = !n.read_at;
+            const filterLabel = n.metadata?.filterName ?? null;
+            const entityType = n.metadata?.entityType ?? null;
+            const explicitUrl =
+              typeof n.metadata?.url === "string" ? n.metadata!.url : null;
+            const targetUrl = explicitUrl ?? getModuleRoute(entityType);
+            const reason = n.metadata?.reason ?? null;
+            const matchCount =
+              typeof n.metadata?.matchCount === "number"
+                ? n.metadata!.matchCount
+                : null;
             return (
               <div
                 key={n.id}
@@ -261,6 +273,22 @@ export default function HistoricoNotificacoes() {
                     <Badge variant="outline" className="text-[10px]">
                       {CHANNEL_LABEL[n.channel].label}
                     </Badge>
+                    {filterLabel && (
+                      <Badge
+                        variant="secondary"
+                        className="text-[10px] gap-1 cursor-pointer"
+                        onClick={() => setFilterName(filterLabel)}
+                        title="Filtrar por este preset"
+                      >
+                        <FilterIcon className="h-2.5 w-2.5" />
+                        {filterLabel}
+                      </Badge>
+                    )}
+                    {matchCount !== null && (
+                      <Badge variant="outline" className="text-[10px]">
+                        {matchCount} novo{matchCount === 1 ? "" : "s"}
+                      </Badge>
+                    )}
                     {n.status === "failed" && (
                       <Badge variant="destructive" className="text-[10px]">
                         Falhou
@@ -272,17 +300,48 @@ export default function HistoricoNotificacoes() {
                       {n.body}
                     </p>
                   )}
+                  {reason && (
+                    <p className="text-[11px] text-muted-foreground/90 mt-1 italic">
+                      Motivo: {reason}
+                    </p>
+                  )}
                   {n.error_message && (
                     <p className="text-[11px] text-destructive mt-1">
                       {n.error_message}
                     </p>
                   )}
-                  <p className="text-[11px] text-muted-foreground mt-1">
-                    {formatDistanceToNow(new Date(n.created_at), {
-                      addSuffix: true,
-                      locale: ptBR,
-                    })}
-                  </p>
+                  <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+                    <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      {format(new Date(n.created_at), "dd/MM/yyyy HH:mm", {
+                        locale: ptBR,
+                      })}
+                      <span className="text-muted-foreground/60">
+                        · {formatDistanceToNow(new Date(n.created_at), {
+                          addSuffix: true,
+                          locale: ptBR,
+                        })}
+                      </span>
+                    </span>
+                    {targetUrl && (
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="h-5 px-0 text-[11px] gap-1"
+                        asChild
+                      >
+                        <Link
+                          to={targetUrl}
+                          onClick={() => {
+                            if (unread) markRead.mutate(n.id);
+                          }}
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                          Abrir lista filtrada
+                        </Link>
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 {unread && (
                   <Button
