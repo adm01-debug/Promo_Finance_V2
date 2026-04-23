@@ -460,19 +460,60 @@ export default function SharedFiltersAdmin() {
               </p>
             </div>
           </div>
-          <Button
-            onClick={() => refetch()}
-            disabled={isFetching}
-            className="gap-2"
-            variant="outline"
-          >
-            {isFetching ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <RefreshCw className="h-4 w-4" />
-            )}
-            Atualizar
-          </Button>
+          <div className="flex items-center gap-2 flex-wrap">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={(e) => handlePickFile(e.target.files?.[0] ?? null)}
+            />
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={handleExport}
+              disabled={isLoading || exportableRows.length === 0}
+              title={
+                currentEmpresaId
+                  ? 'Exporta filtros compartilhados da empresa atual'
+                  : 'Exporta todos os filtros compartilhados visíveis'
+              }
+            >
+              <Download className="h-4 w-4" />
+              Exportar
+            </Button>
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={importBundle.isPending || !currentEmpresaId}
+              title={
+                currentEmpresaId
+                  ? 'Importa um bundle .json para a empresa atual'
+                  : 'Selecione uma empresa atual antes de importar'
+              }
+            >
+              {importBundle.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4" />
+              )}
+              Importar
+            </Button>
+            <Button
+              onClick={() => refetch()}
+              disabled={isFetching}
+              className="gap-2"
+              variant="outline"
+            >
+              {isFetching ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
+              Atualizar
+            </Button>
+          </div>
         </div>
 
         {/* Resumo */}
