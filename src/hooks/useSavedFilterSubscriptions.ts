@@ -51,6 +51,8 @@ export function useSavedFilterSubscriptions() {
       savedFilterId: string;
       notifyInapp?: boolean;
       notifyPush?: boolean;
+      frequencia?: SubscriptionFrequencia;
+      horarioPreferido?: string;
     }) => {
       if (!user) throw new Error("Sessão expirada");
       const { error } = await supabase
@@ -62,6 +64,8 @@ export function useSavedFilterSubscriptions() {
             saved_filter_id: input.savedFilterId,
             notify_inapp: input.notifyInapp ?? true,
             notify_push: input.notifyPush ?? false,
+            frequencia: input.frequencia ?? "imediata",
+            horario_preferido: input.horarioPreferido ?? "09:00:00",
             last_seen_at: new Date().toISOString(),
           },
           { onConflict: "user_id,saved_filter_id" },
@@ -75,19 +79,33 @@ export function useSavedFilterSubscriptions() {
     onError: (e: Error) => toast.error(`Erro ao assinar: ${e.message}`),
   });
 
+  /**
+   * Atualiza canais e/ou cadência. Todos os campos são opcionais para permitir
+   * patches focados (ex.: alternar push sem mexer na frequência salva).
+   */
   const updateChannels = useMutation({
     mutationFn: async (input: {
       id: string;
-      notifyInapp: boolean;
-      notifyPush: boolean;
+      notifyInapp?: boolean;
+      notifyPush?: boolean;
+      frequencia?: SubscriptionFrequencia;
+      horarioPreferido?: string;
     }) => {
+      const patch: Record<string, unknown> = {};
+      if (input.notifyInapp !== undefined) patch.notify_inapp = input.notifyInapp;
+      if (input.notifyPush !== undefined) patch.notify_push = input.notifyPush;
+      if (input.frequencia !== undefined) patch.frequencia = input.frequencia;
+      if (input.horarioPreferido !== undefined)
+        patch.horario_preferido = input.horarioPreferido;
+      // Reset do agendamento sempre que a cadência muda — o hook de alertas
+      // recalcula o próximo despacho com base nas novas regras.
+      if (input.frequencia !== undefined || input.horarioPreferido !== undefined) {
+        patch.next_dispatch_at = null;
+      }
       const { error } = await supabase
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .from("saved_filter_subscriptions" as any)
-        .update({
-          notify_inapp: input.notifyInapp,
-          notify_push: input.notifyPush,
-        })
+        .update(patch)
         .eq("id", input.id);
       if (error) throw error;
     },
