@@ -168,6 +168,93 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
 
   const seen = useRef<Set<string>>(new Set());
 
+  /**
+   * Buffer client-side de itens pendentes por assinatura para cadências
+   * `horaria` e `diaria`. Limpado quando o batch é despachado. Mantemos a
+   * referência por `subscriptionId` (não por filterId) porque a janela de
+   * agrupamento vive na assinatura.
+   */
+  const pendingBySub = useRef<Map<string, Array<{ title: string; desc: string }>>>(
+    new Map(),
+  );
+
+  /** Despacha o batch acumulado para uma assinatura e reagenda a próxima janela. */
+  const flushBatch = (
+    subId: string,
+    sf: { id: string; name: string },
+    sub: ReturnType<typeof subsRef.current.get>,
+  ) => {
+    if (!sub) return;
+    const items = pendingBySub.current.get(subId) ?? [];
+    if (items.length === 0) return;
+
+    if (sub.notify_inapp) {
+      const summary =
+        items.length === 1
+          ? items[0].desc
+          : `${items.length} novos itens · ${items
+              .slice(0, 3)
+              .map((i) => i.desc.split("\n")[0])
+              .join(" • ")}${items.length > 3 ? ` +${items.length - 3}` : ""}`;
+      toast(`Resumo de "${sf.name}"`, {
+        description: summary,
+        duration: 12_000,
+      });
+      for (const key of config.invalidateKeys) {
+        queryClient.invalidateQueries({ queryKey: [...key] });
+      }
+    }
+
+    if (sub.notify_push && user) {
+      supabase.functions
+        .invoke("send-push-notification", {
+          body: {
+            userId: user.id,
+            title: `Resumo de "${sf.name}"`,
+            body: `${items.length} novos itens em ${config.moduleLabel}`,
+            tag: `saved-filter-${sf.id}-batch`,
+            prioridade: "media",
+          },
+        })
+        .catch((e) =>
+          logger.warn(`push batch falhou (${config.entityType})`, e),
+        );
+    }
+
+    pendingBySub.current.delete(subId);
+    // Avança last_seen_at + recalcula próximo dispatch
+    const next = computeNextDispatch(sub.frequencia, sub.horario_preferido);
+    supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .from("saved_filter_subscriptions" as any)
+      .update({
+        last_seen_at: new Date().toISOString(),
+        next_dispatch_at: next ? next.toISOString() : null,
+      })
+      .eq("id", subId)
+      .then(({ error }) => {
+        if (error) logger.warn("update next_dispatch_at falhou", error);
+      });
+  };
+
+  /** Loop que verifica a cada 30s se alguma janela venceu. */
+  useEffect(() => {
+    if (!user) return;
+    const tick = () => {
+      for (const [, sub] of subsRef.current) {
+        if (sub.frequencia === "imediata") continue;
+        if (!shouldDispatchNow(sub.frequencia, sub.next_dispatch_at)) continue;
+        const sf = filtersRef.current.find((f) => f.id === sub.saved_filter_id);
+        if (!sf) continue;
+        flushBatch(sub.id, { id: sf.id, name: sf.name }, sub);
+      }
+    };
+    const interval = window.setInterval(tick, 30_000);
+    tick();
+    return () => window.clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
   useEffect(() => {
     if (!user) return;
     const channel = supabase
@@ -191,6 +278,33 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
             const baseDesc = config.buildBaseDescription(row);
             const description = buildDescription(baseDesc, sf.filters);
 
+            // Cadência diferente de imediata → enfileira em buffer e segue
+            if (sub.frequencia !== "imediata") {
+              const list = pendingBySub.current.get(sub.id) ?? [];
+              list.push({ title, desc: description });
+              pendingBySub.current.set(sub.id, list);
+              // Garante que existe um próximo agendamento persistido
+              if (!sub.next_dispatch_at) {
+                const next = computeNextDispatch(
+                  sub.frequencia,
+                  sub.horario_preferido,
+                );
+                if (next) {
+                  supabase
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    .from("saved_filter_subscriptions" as any)
+                    .update({ next_dispatch_at: next.toISOString() })
+                    .eq("id", sub.id)
+                    .then(({ error }) => {
+                      if (error)
+                        logger.warn("agendar next_dispatch_at falhou", error);
+                    });
+                }
+              }
+              continue;
+            }
+
+            // Imediata: comportamento original
             if (sub.notify_inapp) {
               const action = config.buildAction?.(row);
               toast(title, {
