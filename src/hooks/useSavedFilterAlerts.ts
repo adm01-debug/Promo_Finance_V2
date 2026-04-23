@@ -329,6 +329,12 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
           for (const sf of filtersRef.current) {
             const sub = subsRef.current.get(sf.id);
             if (!sub) continue;
+            // Defesa de permissão (camada cliente): só processa se a
+            // assinatura pertence ao usuário logado. O backend revoga
+            // assinaturas órfãs via fn_revoke_orphan_saved_filter_subscriptions,
+            // mas mantemos a checagem aqui para o gap entre revogação e
+            // próxima query/realtime do useSavedFilterSubscriptions.
+            if (!user || sub.user_id !== user.id) continue;
             // Centraliza dedup (in-session + cross-refresh) no helper puro
             // testado em savedFilterDedup.test.ts.
             const dedup = checkShouldDispatch({
