@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { BookOpen, FileText, Calculator, Building2, BookText, BarChart3, AlertTriangle, Plug, History, ArrowRight, LayoutGrid, Pin } from 'lucide-react';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
-import { formatCnpj } from '@/lib/brazilian-validators';
+import { formatCNPJ } from '@/lib/brazilian-validators';
 import { motion } from 'framer-motion';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
