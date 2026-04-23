@@ -1,17 +1,31 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
+  Download,
   Loader2,
   RefreshCw,
   Search,
   Shield,
   ShieldOff,
   Trash2,
+  Upload,
   Users,
 } from 'lucide-react';
+import {
+  buildBundle,
+  downloadBundle,
+  parseBundle,
+  SharedFilterBundleParseError,
+  type SharedFilterBundleItem,
+} from '@/lib/sharedFiltersExport';
+import {
+  validateSharing,
+  SavedFilterSharingError,
+  type AppRole as ValidatedAppRole,
+} from '@/hooks/savedFiltersValidation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import {
   Card,
