@@ -27,6 +27,84 @@ function getClientIp(req: Request): string | null {
 }
 
 /**
+ * Resolve um valor a partir de uma fonte de claims usando um mapeamento flexível.
+ *
+ * O `mapping[logicalKey]` pode ser:
+ *  - string única, ex.: "photoUrl"
+ *  - caminho com pontos para claims aninhadas, ex.: "profile.photo.url"
+ *  - array de fallbacks, ex.: ["photoUrl", "picture", "avatar"]
+ *
+ * Se nenhum mapeamento estiver definido, usamos `defaults` (na ordem) como fallback.
+ * Retorna a primeira string não-vazia encontrada, ou `null`.
+ */
+function resolveClaim(
+  sources: Array<Record<string, unknown> | undefined | null>,
+  mapping: Record<string, unknown>,
+  logicalKey: string,
+  defaults: string[],
+): string | null {
+  const raw = mapping?.[logicalKey];
+  const candidates: string[] = [];
+  if (Array.isArray(raw)) {
+    for (const k of raw) if (typeof k === "string" && k.trim()) candidates.push(k.trim());
+  } else if (typeof raw === "string" && raw.trim()) {
+    candidates.push(raw.trim());
+  }
+  for (const d of defaults) if (!candidates.includes(d)) candidates.push(d);
+
+  const getPath = (obj: Record<string, unknown> | undefined | null, path: string): unknown => {
+    if (!obj) return undefined;
+    if (path in obj) return obj[path];
+    const parts = path.split(".");
+    let cur: unknown = obj;
+    for (const p of parts) {
+      if (cur && typeof cur === "object" && p in (cur as Record<string, unknown>)) {
+        cur = (cur as Record<string, unknown>)[p];
+      } else {
+        return undefined;
+      }
+    }
+    return cur;
+  };
+
+  for (const key of candidates) {
+    for (const src of sources) {
+      const v = getPath(src, key);
+      if (typeof v === "string" && v.trim()) return v;
+      if (typeof v === "number" || typeof v === "boolean") return String(v);
+    }
+  }
+  return null;
+}
+
+/** Resolve uma lista (groups) seguindo a mesma lógica de fallback de `resolveClaim`. */
+function resolveClaimArray(
+  sources: Array<Record<string, unknown> | undefined | null>,
+  mapping: Record<string, unknown>,
+  logicalKey: string,
+  defaults: string[],
+): string[] {
+  const raw = mapping?.[logicalKey];
+  const candidates: string[] = [];
+  if (Array.isArray(raw)) {
+    for (const k of raw) if (typeof k === "string" && k.trim()) candidates.push(k.trim());
+  } else if (typeof raw === "string" && raw.trim()) {
+    candidates.push(raw.trim());
+  }
+  for (const d of defaults) if (!candidates.includes(d)) candidates.push(d);
+
+  for (const key of candidates) {
+    for (const src of sources) {
+      if (!src) continue;
+      const v = (src as Record<string, unknown>)[key];
+      if (Array.isArray(v)) return (v as unknown[]).map(String);
+      if (typeof v === "string" && v.trim()) return [v];
+    }
+  }
+  return [];
+}
+
+/**
  * Lookup determinístico por email (não depende de paginação).
  * 1) tenta admin.auth.admin.listUsers com filter (Supabase >= 2.x suporta query)
  * 2) fallback: profiles.email -> id (profiles é mantido em sync por trigger handle_new_user)
