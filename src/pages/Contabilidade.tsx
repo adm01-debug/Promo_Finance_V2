@@ -38,10 +38,6 @@ export default function Contabilidade() {
   const { data: empresas = [] } = useEmpresas();
   const [searchParams, setSearchParams] = useSearchParams();
 
-export default function Contabilidade() {
-  const { data: empresas = [] } = useEmpresas();
-  const [searchParams, setSearchParams] = useSearchParams();
-
   // CNPJ ativo persistido entre sessões (chave por usuário não é necessária:
   // o RLS já filtra empresas visíveis ao usuário logado)
   const [empresaPersistida, setEmpresaPersistida, resetEmpresaPersistida] =
