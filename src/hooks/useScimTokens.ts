@@ -46,7 +46,7 @@ export function useScimTokens(empresaId?: string) {
 export function useCreateScimToken() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (input: { empresa_id: string; nome: string; provider_id?: string; expires_at?: string }) => {
+    mutationFn: async (input: { empresa_id: string; nome: string; provider_id?: string; expires_at?: string; default_role?: ScimDefaultRole | null }) => {
       const token = generateToken();
       const token_hash = await sha256Hex(token);
       const token_prefix = token.slice(0, 12);
@@ -55,6 +55,7 @@ export function useCreateScimToken() {
         nome: input.nome,
         provider_id: input.provider_id ?? null,
         expires_at: input.expires_at ?? null,
+        default_role: input.default_role ?? null,
         token_hash, token_prefix,
       }).select().single();
       if (error) throw error;
