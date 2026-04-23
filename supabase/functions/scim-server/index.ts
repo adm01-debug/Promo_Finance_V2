@@ -532,14 +532,14 @@ async function patchUser(admin: SupabaseClient, providerId: string | null, empre
   return ok(userToScim((fresh as any).profiles, fresh, empresaId));
 }
 
-async function putUser(admin: SupabaseClient, providerId: string | null, empresaId: string, id: string, body: any) {
+async function putUser(admin: SupabaseClient, providerId: string | null, empresaId: string, defaultRole: AppRole, id: string, body: any) {
   const { data: link } = await admin.from("user_empresas")
     .select("*, profiles!inner(id,email,full_name)")
     .eq("id", id).eq("empresa_id", empresaId).maybeSingle();
   if (!link) return err(404, "User not found");
 
   const ext = body?.["urn:ietf:params:scim:schemas:extension:enterprise:2.0:User"];
-  const role = await resolveRole(admin, providerId, ext?.department ?? null);
+  const role = await resolveRole(admin, providerId, ext?.department ?? null, defaultRole);
   const active = body?.active !== false;
   const externalId: string | null = body?.externalId ?? null;
   const fullName = body?.name?.formatted
