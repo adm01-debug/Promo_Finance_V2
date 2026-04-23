@@ -7,6 +7,12 @@ export interface SsoSyncChanges {
   [field: string]: { from: unknown; to: unknown };
 }
 
+export interface SsoSyncChangeDetail {
+  field: SsoSyncFieldKey;
+  old: unknown;
+  new: unknown;
+}
+
 export interface LastSsoProfileSync {
   id: string;
   created_at: string;
@@ -14,6 +20,10 @@ export interface LastSsoProfileSync {
   provider_tipo: string | null;
   fields_changed: SsoSyncFieldKey[];
   changes: SsoSyncChanges;
+  /** Lista ordenada com old/new por atributo, pronta para depuração. */
+  changes_detail: SsoSyncChangeDetail[];
+  /** Espelho dos campos alterados gravado em audit_logs.old_data. */
+  old_data: Record<string, unknown>;
   details: string | null;
 }
 
