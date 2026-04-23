@@ -5,6 +5,10 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useSavedFilters, type SavedFilterPayload } from "@/hooks/useSavedFilters";
 import { useSavedFilterSubscriptions } from "@/hooks/useSavedFilterSubscriptions";
+import {
+  computeNextDispatch,
+  shouldDispatchNow,
+} from "@/hooks/savedFilterDispatchSchedule";
 import { dispatchOpenAnomaliaDrawer } from "@/lib/anomalia-routes";
 import { logger } from "@/lib/logger";
 
