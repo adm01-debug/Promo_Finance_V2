@@ -378,9 +378,14 @@ export function AnomaliasReviewQueue({
   }
 
   async function avancar() {
+    setTransicionando(true);
     setComentario("");
     setComentarioTocado(false);
-    await recarregarPosicao(index + 1);
+    try {
+      await recarregarPosicao(index + 1);
+    } finally {
+      setTransicionando(false);
+    }
   }
 
   async function handleAcao(status: "confirmada" | "falso_positivo") {
