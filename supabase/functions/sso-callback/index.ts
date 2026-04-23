@@ -807,21 +807,24 @@ Deno.serve(async (req) => {
       if (ui.ok) claims = { ...claims, ...(await ui.json()) };
     }
 
-    const cm = (provider.claim_mapping || {}) as Record<string, string>;
-    const email = String(claims[cm.email || "email"] || claims.email || "").toLowerCase();
-    const fullName = String(claims[cm.full_name || "name"] || claims.name || email);
-    const avatarUrl =
-      (claims[cm.avatar_url || "picture"] as string | undefined) ??
-      (claims.picture as string | undefined) ??
-      null;
-    const telefone =
-      (claims[cm.telefone || "phone_number"] as string | undefined) ??
-      (claims.phone_number as string | undefined) ??
-      (claims.phone as string | undefined) ??
-      null;
-    const groups: string[] = Array.isArray(claims[cm.groups || "groups"])
-      ? (claims[cm.groups || "groups"] as string[])
-      : [];
+    const cm = (provider.claim_mapping || {}) as Record<string, unknown>;
+    const sources = [claims];
+    const email = (resolveClaim(sources, cm, "email", ["email"]) || "").toLowerCase();
+    const fullName = resolveClaim(sources, cm, "full_name", ["name", "full_name"]) || email;
+    const avatarUrl = resolveClaim(sources, cm, "avatar_url", [
+      "picture",
+      "avatar_url",
+      "photoUrl",
+      "photo_url",
+    ]);
+    const telefone = resolveClaim(sources, cm, "telefone", [
+      "phone_number",
+      "phoneNumber",
+      "phone",
+      "mobile",
+      "mobilePhone",
+    ]);
+    const groups = resolveClaimArray(sources, cm, "groups", ["groups"]);
 
     if (!email) {
       await logAttempt({
