@@ -10,7 +10,7 @@ import {
   assertObjectMatch,
 } from "https://deno.land/std@0.224.0/assert/mod.ts";
 
-import { buildProfileSyncDelta } from "./index.ts";
+import { buildProfileSyncDelta } from "./profile-sync-delta.ts";
 
 const baseCurrent = {
   full_name: "Alice Silva",

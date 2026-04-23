@@ -198,38 +198,8 @@ function normalizePhone(v: unknown): { value: string | null; changed: boolean; r
   return { value, changed: value !== raw, raw };
 }
 
-/**
- * Calcula o delta entre o estado atual do perfil e os claims recebidos.
- * Só inclui campos cujo valor incoming é não-nulo E diferente do current.
- * Nunca sobrescreve com vazio.
- */
-function buildProfileSyncDelta(
-  current: { full_name: string | null; avatar_url: string | null; telefone: string | null },
-  incoming: { full_name?: string | null; avatar_url?: string | null; telefone?: string | null },
-): {
-  changes: Record<string, { from: unknown; to: unknown }>;
-  updates: Record<string, string>;
-} {
-  const changes: Record<string, { from: unknown; to: unknown }> = {};
-  const updates: Record<string, string> = {};
-  const fields: Array<keyof typeof incoming> = ["full_name", "avatar_url", "telefone"];
-  const norm = (v: unknown): string | null => {
-    if (v === null || v === undefined) return null;
-    const s = String(v).trim();
-    return s.length === 0 ? null : s;
-  };
-  for (const f of fields) {
-    const nextNorm = norm(incoming[f]);
-    if (nextNorm === null) continue; // nunca sobrescreve com vazio
-    const currNorm = norm(current[f]);
-    if (currNorm === nextNorm) continue; // idempotente: sem mudança real
-    changes[f] = { from: current[f] ?? null, to: nextNorm };
-    updates[f] = nextNorm;
-  }
-  return { changes, updates };
-}
-
-export { buildProfileSyncDelta };
+// buildProfileSyncDelta foi extraída para ./profile-sync-delta.ts
+import { buildProfileSyncDelta } from "./profile-sync-delta.ts";
 
 async function applyPipeline(opts: {
   admin: Admin;
