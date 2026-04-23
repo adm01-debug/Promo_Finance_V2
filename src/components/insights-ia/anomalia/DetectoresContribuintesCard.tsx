@@ -80,33 +80,35 @@ export function DetectoresContribuintesCard({ anomalia }: { anomalia: Anomalia }
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {detectores.map((d, i) => (
-          <div key={i} className="space-y-2 p-3 border border-border rounded-md bg-muted/40">
-            <div className="flex items-center justify-between">
-              <h4 className="text-sm font-semibold tracking-tight">{d.nome}</h4>
-              <span className="text-xs font-medium tabular-nums text-muted-foreground">
-                {d.contribuicao}%
-              </span>
-            </div>
-            <Progress value={d.contribuicao} className="h-1.5" />
-            <p className="font-mono text-[11px] text-muted-foreground">Regra: {d.regra}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-              <div>
-                <span className="text-muted-foreground">Observado: </span>
-                <span className="font-medium tabular-nums">{d.observado}</span>
+        <div className="space-y-3">
+          {detectores.map((d, i) => (
+            <div key={i} className="space-y-2 p-3 border border-border rounded-md bg-muted/40">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-semibold tracking-tight">{d.nome}</h4>
+                <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                  {d.contribuicao}%
+                </span>
               </div>
-              <div>
-                <span className="text-muted-foreground">Esperado: </span>
-                <span className="font-medium tabular-nums">{d.esperado}</span>
+              <Progress value={d.contribuicao} className="h-1.5" />
+              <p className="font-mono text-[11px] text-muted-foreground">Regra: {d.regra}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                <div>
+                  <span className="text-muted-foreground">Observado: </span>
+                  <span className="font-medium tabular-nums">{d.observado}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Esperado: </span>
+                  <span className="font-medium tabular-nums">{d.esperado}</span>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-        <details className="text-xs">
+          ))}
+        </div>
+        <details className="space-y-2 text-xs pt-4 border-t border-border">
           <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
             Payload bruto (JSON)
           </summary>
-          <pre className="mt-2 p-2 bg-muted rounded text-xs overflow-auto max-h-48">
+          <pre className="p-3 bg-muted rounded-md text-xs overflow-auto max-h-48">
             {JSON.stringify(anomalia.dados, null, 2)}
           </pre>
         </details>
