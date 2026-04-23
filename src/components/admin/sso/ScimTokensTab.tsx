@@ -106,6 +106,7 @@ export function ScimTokensTab() {
                 <TableRow>
                   <TableHead>Nome</TableHead>
                   <TableHead>Prefixo</TableHead>
+                  <TableHead>Papel padrão</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Último uso</TableHead>
                   <TableHead>Criado em</TableHead>
@@ -117,6 +118,9 @@ export function ScimTokensTab() {
                   <TableRow key={t.id}>
                     <TableCell className="font-medium">{t.nome}</TableCell>
                     <TableCell className="font-mono text-xs">{t.token_prefix}…</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="capitalize">{t.default_role ?? 'visualizador'}</Badge>
+                    </TableCell>
                     <TableCell>
                       {t.ativo
                         ? <Badge className="bg-success text-success-foreground">ativo</Badge>
