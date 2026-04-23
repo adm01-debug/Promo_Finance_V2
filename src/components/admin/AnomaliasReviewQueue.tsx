@@ -449,10 +449,29 @@ export function AnomaliasReviewQueue({
             <div className="space-y-1.5" aria-live="polite">
               <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <span>
-                  Revisando {index + 1} de {total}
+                  Revisando <span className="capitalize">{atual.severidade}</span>{" "}
+                  <span className="tabular-nums">
+                    {progressoPorSeveridade.revisado[atual.severidade] + 1}/
+                    {progressoPorSeveridade.total[atual.severidade]}
+                  </span>
+                  {(["critica", "alta", "media", "baixa"] as const)
+                    .filter((s) => s !== atual.severidade && progressoPorSeveridade.total[s] > 0)
+                    .map((s) => (
+                      <span key={s} className="ml-1">
+                        · <span className="capitalize">{s}</span>{" "}
+                        <span className="tabular-nums">
+                          {progressoPorSeveridade.revisado[s]}/{progressoPorSeveridade.total[s]}
+                        </span>
+                      </span>
+                    ))}
                 </span>
                 <span>
                   ✓ {stats.confirmadas} · ✗ {stats.rejeitadas} · ⤳ {stats.puladas}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                <span>
+                  Posição geral: {index + 1} de {total}
                 </span>
               </div>
               <Progress value={((index + 1) / total) * 100} className="h-1.5" />
