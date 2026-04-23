@@ -554,6 +554,54 @@ export type Database = {
         }
         Relationships: []
       }
+      anomalia_toast_eventos: {
+        Row: {
+          acoes_disponiveis: string[]
+          anomalia_id: string
+          centro_custo_id: string | null
+          centro_custo_nome: string | null
+          created_at: string
+          descricao: string | null
+          dispatched_at: string
+          duracao_segundos: number
+          id: string
+          severidade: string
+          tipo_anomalia: string | null
+          titulo: string
+          user_id: string
+        }
+        Insert: {
+          acoes_disponiveis?: string[]
+          anomalia_id: string
+          centro_custo_id?: string | null
+          centro_custo_nome?: string | null
+          created_at?: string
+          descricao?: string | null
+          dispatched_at?: string
+          duracao_segundos: number
+          id?: string
+          severidade: string
+          tipo_anomalia?: string | null
+          titulo: string
+          user_id: string
+        }
+        Update: {
+          acoes_disponiveis?: string[]
+          anomalia_id?: string
+          centro_custo_id?: string | null
+          centro_custo_nome?: string | null
+          created_at?: string
+          descricao?: string | null
+          dispatched_at?: string
+          duracao_segundos?: number
+          id?: string
+          severidade?: string
+          tipo_anomalia?: string | null
+          titulo?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       anomalias_detectadas: {
         Row: {
           bitrix_task_id: string | null
