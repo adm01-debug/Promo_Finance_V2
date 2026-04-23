@@ -162,9 +162,7 @@ export function ClearFiltersButton<T extends Record<string, unknown>>({
 
   const count = activeFilters.length;
   const dialogDescription = count
-    ? `Você vai apagar ${count} filtro(s) ativo(s): ${activeFilters
-        .map((f) => f.label)
-        .join(', ')}. Isso também removerá suas preferências salvas para esta tela na sua conta${localKeys.length ? ' e neste dispositivo' : ''}.`
+    ? `Isso vai apagar ${count} filtro(s) ativo(s) e remover suas preferências salvas desta tela${localKeys.length ? ' (conta + dispositivo)' : ''}. Confira abaixo o que será removido.`
     : 'Nenhum filtro ativo para limpar.';
 
   return (
@@ -190,7 +188,18 @@ export function ClearFiltersButton<T extends Record<string, unknown>>({
         cancelLabel="Cancelar"
         variant="warning"
         isLoading={isLoading}
-      />
+      >
+        {count > 0 && (
+          <FilterPreviewChips
+            activeFilters={activeFilters}
+            pinnedSummary={pinnedSummary}
+            entityLabel={entityLabel}
+            announcement={`Pré-visualização. ${count} ${
+              count === 1 ? 'filtro será removido' : 'filtros serão removidos'
+            } de ${entityLabel}.`}
+          />
+        )}
+      </ConfirmDialog>
     </>
   );
 }
