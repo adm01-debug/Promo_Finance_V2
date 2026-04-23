@@ -88,6 +88,9 @@ export function AnomaliasReviewQueue({
   const [comentarioTocado, setComentarioTocado] = useState(false);
   const [stats, setStats] = useState({ confirmadas: 0, rejeitadas: 0, puladas: 0 });
   const [recarregando, setRecarregando] = useState(false);
+  // Transição entre anomalias: cobre o intervalo entre o sucesso da ação
+  // e o snapshot/index serem atualizados, evitando flash do item antigo.
+  const [transicionando, setTransicionando] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   type ConflitoBanner = {
@@ -270,6 +273,7 @@ export function AnomaliasReviewQueue({
       setComentarioTocado(false);
       setStats({ confirmadas: 0, rejeitadas: 0, puladas: 0 });
       setConflito(null);
+      setTransicionando(false);
     }
   }, [open, isLoading, severidadeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -374,10 +378,15 @@ export function AnomaliasReviewQueue({
     void recarregarPosicao(alvo);
   }
 
-  function avancar() {
+  async function avancar() {
+    setTransicionando(true);
     setComentario("");
     setComentarioTocado(false);
-    void recarregarPosicao(index + 1);
+    try {
+      await recarregarPosicao(index + 1);
+    } finally {
+      setTransicionando(false);
+    }
   }
 
   async function handleAcao(status: "confirmada" | "falso_positivo") {
@@ -393,6 +402,9 @@ export function AnomaliasReviewQueue({
         status,
         observacoes: comentarioTrim,
       });
+      // Marca a transição imediatamente após o sucesso para evitar
+      // qualquer renderização do card antigo enquanto avançamos.
+      setTransicionando(true);
       sincronizar.mutate({ anomaliaId: atual.id, evento: status });
       setStats((s) => ({
         ...s,
@@ -402,9 +414,10 @@ export function AnomaliasReviewQueue({
       toast.success(
         status === "confirmada" ? "Confirmada como problema real" : "Marcada como falso positivo"
       );
-      avancar();
+      await avancar();
     } catch (err) {
       if (err instanceof AnomaliaJaRevisadaError) {
+        setTransicionando(true);
         // Busca a versão fresca para mostrar quem resolveu, quando e qual ação
         try {
           const { data } = await supabase
@@ -426,7 +439,7 @@ export function AnomaliasReviewQueue({
           });
         }
         setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
-        avancar();
+        await avancar();
         return;
       }
       // demais erros: mutation já notifica via toast.error
@@ -597,6 +610,11 @@ export function AnomaliasReviewQueue({
               </p>
             </div>
             <Button onClick={() => onOpenChange(false)}>Fechar</Button>
+          </div>
+        ) : transicionando ? (
+          <div className="py-12 flex flex-col items-center justify-center gap-2" aria-live="polite">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <p className="text-xs text-muted-foreground">Carregando próxima anomalia…</p>
           </div>
         ) : atual ? (
           <div className="space-y-4">
