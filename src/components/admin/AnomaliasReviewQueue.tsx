@@ -416,6 +416,7 @@ export function AnomaliasReviewQueue({
       await avancar();
     } catch (err) {
       if (err instanceof AnomaliaJaRevisadaError) {
+        setTransicionando(true);
         // Busca a versão fresca para mostrar quem resolveu, quando e qual ação
         try {
           const { data } = await supabase
