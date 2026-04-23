@@ -255,6 +255,38 @@ export function AnomaliasReviewQueue({
     }
   }, [atual]);
 
+  // Contagem de pendentes por severidade a partir da posição atual (inclusive),
+  // para refletir o que ainda há à frente na revisão.
+  const contagemPorSeveridade = useMemo(() => {
+    const base: Record<Anomalia["severidade"], number> = {
+      critica: 0,
+      alta: 0,
+      media: 0,
+      baixa: 0,
+    };
+    for (let i = index; i < snapshot.length; i++) {
+      const sev = snapshot[i].severidade;
+      if (sev in base) base[sev] += 1;
+    }
+    return base;
+  }, [snapshot, index]);
+
+  function pularParaSeveridade(sev: Anomalia["severidade"]) {
+    // Procura a partir da posição atual; se não achar, busca do início da fila.
+    let alvo = snapshot.findIndex((a, i) => i >= index && a.severidade === sev);
+    if (alvo === -1) {
+      alvo = snapshot.findIndex((a) => a.severidade === sev);
+    }
+    if (alvo === -1) {
+      toast.info(`Sem anomalias ${sev} na fila atual`);
+      return;
+    }
+    if (alvo === index) return;
+    setComentario("");
+    setComentarioTocado(false);
+    void recarregarPosicao(alvo);
+  }
+
   function avancar() {
     setComentario("");
     setComentarioTocado(false);
