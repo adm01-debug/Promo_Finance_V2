@@ -79,6 +79,7 @@ const SSOAdmin = lazy(() => import('./pages/admin/SSOAdmin'));
 const SSOJitEvents = lazy(() => import('./pages/admin/SSOJitEvents'));
 const ScimAudit = lazy(() => import('./pages/admin/ScimAudit'));
 const AuditSsoProfileSync = lazy(() => import('./pages/admin/AuditSsoProfileSync'));
+const SsoEvents = lazy(() => import('./pages/admin/SsoEvents'));
 const InsightsIA = lazy(() => import('./pages/admin/InsightsIA'));
 const AnomaliaDetalhe = lazy(() => import('./pages/admin/AnomaliaDetalhe'));
 const ComplianceAuditoria = lazy(() => import('./pages/admin/ComplianceAuditoria'));
@@ -163,6 +164,7 @@ function AppRoutes() {
             <Route path="/admin/sso-jit-events" element={<ProtectedRoute requiredRoles={['admin']}><SSOJitEvents /></ProtectedRoute>} />
             <Route path="/admin/scim-audit" element={<ProtectedRoute requiredRoles={['admin']}><ScimAudit /></ProtectedRoute>} />
             <Route path="/audit-sso-profile-sync" element={<ProtectedRoute requiredRoles={['admin']}><AuditSsoProfileSync /></ProtectedRoute>} />
+            <Route path="/admin/sso-events" element={<ProtectedRoute requiredRoles={['admin']}><SsoEvents /></ProtectedRoute>} />
             <Route path="/admin/insights-ia" element={<ProtectedRoute><InsightsIA /></ProtectedRoute>} />
             <Route path="/admin/insights-ia/anomalia/:id" element={<ProtectedRoute><AnomaliaDetalhe /></ProtectedRoute>} />
             <Route path="/admin/compliance" element={<ProtectedRoute><ComplianceAuditoria /></ProtectedRoute>} />
