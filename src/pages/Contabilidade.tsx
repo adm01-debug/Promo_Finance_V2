@@ -38,16 +38,31 @@ export default function Contabilidade() {
   const { data: empresas = [] } = useEmpresas();
   const [searchParams, setSearchParams] = useSearchParams();
 
+export default function Contabilidade() {
+  const { data: empresas = [] } = useEmpresas();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // CNPJ ativo persistido entre sessões (chave por usuário não é necessária:
+  // o RLS já filtra empresas visíveis ao usuário logado)
+  const [empresaPersistida, setEmpresaPersistida, resetEmpresaPersistida] =
+    useLocalStorageState<string>('contabilidade:empresa-ativa', '');
+
   const tabParam = searchParams.get('tab');
   const tab: TabId = (VALID_TABS as readonly string[]).includes(tabParam ?? '')
     ? (tabParam as TabId)
     : 'inicio';
 
-  const empresaId = searchParams.get('empresa') ?? '';
+  const empresaUrl = searchParams.get('empresa') ?? '';
+  const empresaId = empresaUrl || empresaPersistida;
   const anoParam = Number(searchParams.get('ano'));
   const ano = Number.isFinite(anoParam) && anoParam >= 2010 && anoParam <= new Date().getFullYear()
     ? anoParam
     : ANO_DEFAULT;
+
+  const empresaAtiva = useMemo(
+    () => empresas.find(e => e.id === empresaId) ?? null,
+    [empresas, empresaId],
+  );
 
   const updateParam = (key: string, value: string | null) => {
     setSearchParams(
@@ -62,8 +77,37 @@ export default function Contabilidade() {
   };
 
   const setTab = (v: string) => updateParam('tab', v);
-  const setEmpresaId = (v: string) => updateParam('empresa', v || null);
+  const setEmpresaId = (v: string) => {
+    updateParam('empresa', v || null);
+    setEmpresaPersistida(v || '');
+  };
   const setAno = (v: number) => updateParam('ano', String(v));
+
+  // Hidrata a URL com a empresa persistida quando ausente — garante que
+  // wizard/downloads/validações fiquem amarrados ao mesmo CNPJ entre sessões
+  useEffect(() => {
+    if (!empresaUrl && empresaPersistida && empresas.some(e => e.id === empresaPersistida)) {
+      updateParam('empresa', empresaPersistida);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [empresaUrl, empresaPersistida, empresas.length]);
+
+  // Mantém o localStorage sincronizado quando a URL muda (ex.: link compartilhado)
+  useEffect(() => {
+    if (empresaUrl && empresaUrl !== empresaPersistida) {
+      setEmpresaPersistida(empresaUrl);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [empresaUrl]);
+
+  // Limpa persistência se a empresa não existe mais (RLS, exclusão, troca de tenant)
+  useEffect(() => {
+    if (empresaPersistida && empresas.length > 0 && !empresas.some(e => e.id === empresaPersistida)) {
+      resetEmpresaPersistida();
+      updateParam('empresa', null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [empresaPersistida, empresas.length]);
 
   // Histórico SPED para detectar se a ECD do ano selecionado já foi gerada (sincroniza badge da ECF)
   const { data: historico = [] } = useSpedContabilHistorico(empresaId);
