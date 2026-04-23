@@ -56,8 +56,12 @@ export default function AuditLogs() {
   const [actionFilter, setActionFilter] = useState<string>(initialAction);
   const [tableFilter, setTableFilter] = useState<string>(initialTable);
   const [userFilter, setUserFilter] = useState<string>('all');
+  const [providerFilter, setProviderFilter] = useState<string>('all');
+  const [ssoFieldFilter, setSsoFieldFilter] = useState<string>('all');
   const [dismissedAlerts, setDismissedAlerts] = useState<Set<string>>(new Set());
   const [dateRange, setDateRange] = useState<DateRange | undefined>({ from: subDays(new Date(), 7), to: new Date() });
+
+  const isSsoProfileSyncScope = tableFilter === 'sso_profile_sync';
 
   const { data: logs, isLoading, refetch } = useQuery({
     queryKey: ['audit-logs', actionFilter, tableFilter, userFilter, dateRange],
@@ -74,11 +78,38 @@ export default function AuditLogs() {
     },
   });
 
-  const filteredLogs = logs?.filter(log =>
-    log.user_email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    log.details?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    log.table_name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredLogs = logs?.filter(log => {
+    const term = searchTerm.toLowerCase();
+    const matchesTerm = !term
+      || log.user_email?.toLowerCase().includes(term)
+      || log.details?.toLowerCase().includes(term)
+      || log.table_name?.toLowerCase().includes(term);
+    if (!matchesTerm) return false;
+    if (isSsoProfileSyncScope) {
+      const nd = (log.new_data ?? {}) as Record<string, unknown>;
+      if (providerFilter !== 'all') {
+        const pn = (nd.provider_nome as string | undefined) ?? '';
+        if (pn !== providerFilter) return false;
+      }
+      if (ssoFieldFilter !== 'all') {
+        const fields = Array.isArray(nd.fields_changed) ? (nd.fields_changed as string[]) : [];
+        if (!fields.includes(ssoFieldFilter)) return false;
+      }
+    }
+    return true;
+  });
+
+  // Lista de providers derivada apenas dos logs sso_profile_sync já carregados
+  const uniqueSsoProviders = useMemo(() => {
+    const set = new Set<string>();
+    (logs ?? []).forEach(l => {
+      if (l.table_name !== 'sso_profile_sync') return;
+      const nd = (l.new_data ?? {}) as Record<string, unknown>;
+      const pn = (nd.provider_nome as string | undefined) ?? '';
+      if (pn) set.add(pn);
+    });
+    return [...set].sort();
+  }, [logs]);
 
   const securityAlerts = useMemo(() => {
     if (!logs) return [];
@@ -111,7 +142,7 @@ export default function AuditLogs() {
 
   const handleExportCSV = () => { if (!filteredLogs?.length) { toast.error('Nenhum registro para exportar'); return; } exportToCSV(filteredLogs, auditColumns, 'logs_auditoria'); toast.success('Exportado para CSV com sucesso!'); };
   const handleExportPDF = () => { if (!filteredLogs?.length) { toast.error('Nenhum registro para exportar'); return; } exportToPDF(filteredLogs, auditColumns, 'Logs de Auditoria'); toast.success('PDF gerado para impressão!'); };
-  const clearFilters = () => { setSearchTerm(''); setActionFilter('all'); setTableFilter('all'); setUserFilter('all'); setDateRange({ from: subDays(new Date(), 7), to: new Date() }); };
+  const clearFilters = () => { setSearchTerm(''); setActionFilter('all'); setTableFilter('all'); setUserFilter('all'); setProviderFilter('all'); setSsoFieldFilter('all'); setDateRange({ from: subDays(new Date(), 7), to: new Date() }); };
 
   const filtersController = useManagedFilters({
     entityType: 'audit-logs',
@@ -161,6 +192,32 @@ export default function AuditLogs() {
               <Select value={userFilter} onValueChange={setUserFilter}><SelectTrigger><SelectValue placeholder="Usuário" /></SelectTrigger><SelectContent><SelectItem value="all">Todos os Usuários</SelectItem>{uniqueUsers.map((u) => <SelectItem key={u} value={u!}>{u}</SelectItem>)}</SelectContent></Select>
               <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("justify-start text-left font-normal", !dateRange && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{dateRange?.from ? (dateRange.to ? <>{format(dateRange.from, "dd/MM/yy")} - {format(dateRange.to, "dd/MM/yy")}</> : format(dateRange.from, "dd/MM/yyyy")) : <span>Selecionar período</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} locale={ptBR as unknown as Record<string, unknown>} /></PopoverContent></Popover>
             </div>
+            {isSsoProfileSyncScope && (
+              <div className="grid gap-4 md:grid-cols-2 mt-4 p-3 rounded-lg border border-primary/30 bg-primary/5">
+                <div>
+                  <label className="text-xs font-medium text-primary mb-1 block">Provider SSO</label>
+                  <Select value={providerFilter} onValueChange={setProviderFilter}>
+                    <SelectTrigger><SelectValue placeholder="Provider" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos os providers</SelectItem>
+                      {uniqueSsoProviders.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-primary mb-1 block">Campo alterado</label>
+                  <Select value={ssoFieldFilter} onValueChange={setSsoFieldFilter}>
+                    <SelectTrigger><SelectValue placeholder="Campo" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos os campos</SelectItem>
+                      <SelectItem value="full_name">Nome completo</SelectItem>
+                      <SelectItem value="avatar_url">Foto de perfil</SelectItem>
+                      <SelectItem value="telefone">Telefone</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
             <div className="flex items-center justify-between gap-2 mt-4 flex-wrap">
               <ClearFiltersButton
                 controller={filtersController}
