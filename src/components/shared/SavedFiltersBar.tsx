@@ -509,7 +509,11 @@ export function SavedFiltersBar<T>({
               </DropdownMenuItem>
             )}
             <DropdownMenuItem
-              onClick={handleRestoreDefault}
+              onSelect={(e) => {
+                // Mantém o menu controlando o foco e abre o diálogo de confirmação
+                e.preventDefault();
+                requestRestoreDefault();
+              }}
               disabled={!canRestore || anyMutationPending}
             >
               <RotateCcw className="h-3.5 w-3.5 mr-2" />
