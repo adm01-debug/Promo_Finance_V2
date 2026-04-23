@@ -7902,6 +7902,8 @@ export type Database = {
           notify_email: boolean
           notify_inapp: boolean
           notify_push: boolean
+          rate_limit_max: number
+          rate_limit_window_min: number
           saved_filter_id: string
           severidades_criticas: string[]
           tipos_eventos_ativos: string[]
@@ -7918,6 +7920,8 @@ export type Database = {
           notify_email?: boolean
           notify_inapp?: boolean
           notify_push?: boolean
+          rate_limit_max?: number
+          rate_limit_window_min?: number
           saved_filter_id: string
           severidades_criticas?: string[]
           tipos_eventos_ativos?: string[]
@@ -7934,6 +7938,8 @@ export type Database = {
           notify_email?: boolean
           notify_inapp?: boolean
           notify_push?: boolean
+          rate_limit_max?: number
+          rate_limit_window_min?: number
           saved_filter_id?: string
           severidades_criticas?: string[]
           tipos_eventos_ativos?: string[]
