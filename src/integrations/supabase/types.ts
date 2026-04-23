@@ -8709,6 +8709,50 @@ export type Database = {
           },
         ]
       }
+      sso_user_groups: {
+        Row: {
+          created_at: string
+          groups: string[]
+          id: string
+          last_synced_at: string
+          matched_group: string | null
+          matched_role: Database["public"]["Enums"]["app_role"] | null
+          provider_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          groups?: string[]
+          id?: string
+          last_synced_at?: string
+          matched_group?: string | null
+          matched_role?: Database["public"]["Enums"]["app_role"] | null
+          provider_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          groups?: string[]
+          id?: string
+          last_synced_at?: string
+          matched_group?: string | null
+          matched_role?: Database["public"]["Enums"]["app_role"] | null
+          provider_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sso_user_groups_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "sso_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       templates_cobranca: {
         Row: {
           assunto: string | null
