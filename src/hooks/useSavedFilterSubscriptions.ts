@@ -6,6 +6,15 @@ import { useAuth } from "@/hooks/useAuth";
 /** Cadência de entrega das notificações para uma assinatura. */
 export type SubscriptionFrequencia = "imediata" | "horaria" | "diaria";
 
+/** Severidades padronizadas reutilizadas pelos pickers de UI/validação. */
+export type SeveridadeAlerta = "baixa" | "media" | "alta" | "critica";
+export const SEVERIDADES_DISPONIVEIS: readonly SeveridadeAlerta[] = [
+  "baixa",
+  "media",
+  "alta",
+  "critica",
+] as const;
+
 export interface SavedFilterSubscription {
   id: string;
   user_id: string;
@@ -18,6 +27,16 @@ export interface SavedFilterSubscription {
   frequencia: SubscriptionFrequencia;
   /** Horário preferido (HH:MM:SS, timezone do usuário) para a cadência diária. */
   horario_preferido: string;
+  /**
+   * Severidades que o usuário considera críticas para esta assinatura.
+   * Eleva a prioridade do push e o uso de toast.error. Default: ['critica'].
+   */
+  severidades_criticas: SeveridadeAlerta[];
+  /**
+   * Lista de tipos de evento (ex.: tipo_anomalia) que disparam alerta.
+   * Vazio = todos os tipos disparam (compatibilidade retroativa).
+   */
+  tipos_eventos_ativos: string[];
   /** Próxima janela de despacho — usada pelo cliente para agrupar pendentes. */
   next_dispatch_at: string | null;
   last_seen_at: string;
@@ -56,6 +75,8 @@ export function useSavedFilterSubscriptions() {
       notifyEmail?: boolean;
       frequencia?: SubscriptionFrequencia;
       horarioPreferido?: string;
+      severidadesCriticas?: SeveridadeAlerta[];
+      tiposEventosAtivos?: string[];
     }) => {
       if (!user) throw new Error("Sessão expirada");
       const { error } = await supabase
@@ -70,6 +91,8 @@ export function useSavedFilterSubscriptions() {
             notify_email: input.notifyEmail ?? false,
             frequencia: input.frequencia ?? "imediata",
             horario_preferido: input.horarioPreferido ?? "09:00:00",
+            severidades_criticas: input.severidadesCriticas ?? ["critica"],
+            tipos_eventos_ativos: input.tiposEventosAtivos ?? [],
             last_seen_at: new Date().toISOString(),
           },
           { onConflict: "user_id,saved_filter_id" },
@@ -95,6 +118,8 @@ export function useSavedFilterSubscriptions() {
       notifyEmail?: boolean;
       frequencia?: SubscriptionFrequencia;
       horarioPreferido?: string;
+      severidadesCriticas?: SeveridadeAlerta[];
+      tiposEventosAtivos?: string[];
     }) => {
       const patch: Record<string, unknown> = {};
       if (input.notifyInapp !== undefined) patch.notify_inapp = input.notifyInapp;
@@ -103,6 +128,10 @@ export function useSavedFilterSubscriptions() {
       if (input.frequencia !== undefined) patch.frequencia = input.frequencia;
       if (input.horarioPreferido !== undefined)
         patch.horario_preferido = input.horarioPreferido;
+      if (input.severidadesCriticas !== undefined)
+        patch.severidades_criticas = input.severidadesCriticas;
+      if (input.tiposEventosAtivos !== undefined)
+        patch.tipos_eventos_ativos = input.tiposEventosAtivos;
       // Reset do agendamento sempre que a cadência muda — o hook de alertas
       // recalcula o próximo despacho com base nas novas regras.
       if (input.frequencia !== undefined || input.horarioPreferido !== undefined) {
