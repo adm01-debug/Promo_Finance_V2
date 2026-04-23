@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AlertTriangle, RefreshCw, ShieldOff, X } from 'lucide-react';
+import { AlertTriangle, Lightbulb, RefreshCw, ShieldOff, X } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,6 +11,7 @@ import {
   SLO_REASON_COPY,
   type SloFailureSnapshot,
 } from '@/lib/sso-slo-state';
+import { inferSsoErrorCode, SSO_ERROR_MESSAGES } from '@/lib/sso-error-messages';
 
 interface Props {
   failure: SloFailureSnapshot;
@@ -25,7 +26,13 @@ export function SloFailureBanner({ failure, onDismiss }: Props) {
   const [retryingProvider, setRetryingProvider] = useState(false);
   const [retryingLocal, setRetryingLocal] = useState(false);
 
-  const copy = SLO_REASON_COPY[failure.reason] ?? SLO_REASON_COPY.unknown;
+  // Resolve copy específica do código de erro (provider_not_found, endpoint_missing, network_error, …)
+  // e usa o motivo genérico (provider_logout_failed / local_cleanup_failed) como fallback.
+  const errorCode = inferSsoErrorCode(failure.message);
+  const codeCopy = SSO_ERROR_MESSAGES[errorCode];
+  const reasonCopy = SLO_REASON_COPY[failure.reason] ?? SLO_REASON_COPY.unknown;
+  const copy = errorCode === 'unknown' ? reasonCopy : codeCopy;
+  const hint = errorCode === 'unknown' ? null : codeCopy.hint;
   const providerLabel = failure.providerNome ?? 'provedor SSO';
 
   const handleRetryProvider = async () => {
@@ -115,9 +122,16 @@ export function SloFailureBanner({ failure, onDismiss }: Props) {
       <AlertDescription className="space-y-3">
         <p className="text-sm leading-relaxed">{copy.description}</p>
 
+        {hint && (
+          <div className="flex items-start gap-2 text-sm bg-muted/40 border border-border/50 rounded-md px-3 py-2">
+            <Lightbulb className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
+            <p className="leading-relaxed"><span className="font-medium">Dica:</span> {hint}</p>
+          </div>
+        )}
+
         {failure.message && (
-          <p className="text-xs text-muted-foreground font-mono bg-muted/50 px-2 py-1 rounded">
-            {failure.message}
+          <p className="text-xs text-muted-foreground font-mono bg-muted/50 px-2 py-1 rounded break-all">
+            <span className="font-sans font-medium not-italic">Detalhe técnico:</span> {failure.message}
           </p>
         )}
 
