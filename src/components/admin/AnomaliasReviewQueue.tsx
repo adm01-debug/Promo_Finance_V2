@@ -402,7 +402,7 @@ export function AnomaliasReviewQueue({
       toast.success(
         status === "confirmada" ? "Confirmada como problema real" : "Marcada como falso positivo"
       );
-      avancar();
+      await avancar();
     } catch (err) {
       if (err instanceof AnomaliaJaRevisadaError) {
         // Busca a versão fresca para mostrar quem resolveu, quando e qual ação
