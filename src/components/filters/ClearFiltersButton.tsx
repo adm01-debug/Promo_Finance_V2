@@ -179,7 +179,7 @@ export function ClearFiltersButton<T extends Record<string, unknown>>({
     } finally {
       setIsLoading(false);
     }
-  }, [activeFilters, controller, entityLabel, localKeys]);
+  }, [activeFilters, controller, entityLabel, localKeys, pinnedSummary]);
 
   const handleClick = useCallback(() => {
     if (!controller.hasActive) return;
