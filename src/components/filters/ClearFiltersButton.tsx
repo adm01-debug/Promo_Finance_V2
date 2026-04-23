@@ -28,6 +28,13 @@ interface ClearFiltersButtonProps<T extends Record<string, unknown>> {
   className?: string;
   /** Texto customizado (default: "Limpar"). */
   label?: string;
+  /**
+   * Nomes (label) dos filtros que devem aparecer SEMPRE no resumo do toast,
+   * mesmo quando não estavam ativos (mostrados como "—"). Default: ['Busca', 'Período'].
+   * Use para garantir que campos críticos sempre apareçam no undo, ajudando
+   * o usuário a confirmar o que perdeu.
+   */
+  pinnedFields?: string[];
 }
 
 function formatValue(v: unknown): string {
@@ -54,14 +61,37 @@ export function ClearFiltersButton<T extends Record<string, unknown>>({
   size = 'sm',
   className,
   label = 'Limpar',
+  pinnedFields = ['Busca', 'Período'],
 }: ClearFiltersButtonProps<T>) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const activeFilters = useMemo(
-    () => describeFilters(controller.values).filter((f) => f.isActive),
+  const allFilters = useMemo(
+    () => describeFilters(controller.values),
     [controller.values, describeFilters]
   );
+  const activeFilters = useMemo(
+    () => allFilters.filter((f) => f.isActive),
+    [allFilters]
+  );
+
+  /**
+   * Resumo fixo: para cada nome em `pinnedFields`, pega o filtro descrito
+   * correspondente (case-insensitive). Garante que "Busca" e "Período"
+   * apareçam sempre, com valor real ou "—" quando vazios.
+   */
+  const pinnedSummary = useMemo(() => {
+    return pinnedFields.map((name) => {
+      const match = allFilters.find(
+        (f) => f.label.toLowerCase() === name.toLowerCase(),
+      );
+      return {
+        label: name,
+        value: match?.value,
+        isActive: match?.isActive ?? false,
+      };
+    });
+  }, [allFilters, pinnedFields]);
 
   const localKeys = useMemo(() => {
     const keys: string[] = [];
