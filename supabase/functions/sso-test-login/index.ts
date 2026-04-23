@@ -1,23 +1,14 @@
 import { corsHeaders } from "npm:@supabase/supabase-js@2.95.0/cors";
 import { createClient } from "npm:@supabase/supabase-js@2.95.0";
-
-interface ClaimMapping {
-  email?: string;
-  full_name?: string;
-  groups?: string;
-}
+import {
+  type ClaimMapping,
+  evaluateClaims,
+  type RoleMapping,
+} from "./pipeline.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-
-function maskEmail(email: string): string {
-  const [user, domain] = email.split("@");
-  if (!user || !domain) return email;
-  const head = user.slice(0, 1);
-  const tail = user.length > 2 ? user.slice(-1) : "";
-  return `${head}${"*".repeat(Math.max(1, user.length - 2))}${tail}@${domain}`;
-}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -26,7 +17,7 @@ Deno.serve(async (req) => {
     const payload = await req.json() as {
       mock_claims: Record<string, unknown>;
       claim_mapping?: ClaimMapping;
-      role_mappings?: Array<{ idp_group: string; app_role: string }>;
+      role_mappings?: RoleMapping[];
       default_role?: string;
       allowed_domains?: string[];
       provider_id?: string;
@@ -76,120 +67,38 @@ Deno.serve(async (req) => {
         .eq("provider_id", payload.provider_id)
         .order("ordem");
       claim_mapping = (provider.claim_mapping ?? {}) as ClaimMapping;
-      role_mappings = (maps ?? []) as Array<{ idp_group: string; app_role: string }>;
+      role_mappings = (maps ?? []) as RoleMapping[];
       default_role = provider.default_role ?? "visualizador";
       allowed_domains = (provider.allowed_domains ?? []) as string[];
       auto_provision_users = !!provider.auto_provision_users;
       provider_nome = provider.nome;
     }
 
-    const mock_claims = payload.mock_claims ?? {};
-
-    const claim_mapping_used = {
-      email: claim_mapping.email ?? "email",
-      full_name: claim_mapping.full_name ?? "name",
-      groups: claim_mapping.groups ?? "groups",
-    };
-
-    const email_raw = mock_claims[claim_mapping_used.email];
-    const full_name_raw = mock_claims[claim_mapping_used.full_name];
-    const groups_raw = mock_claims[claim_mapping_used.groups];
-
-    const email = String(email_raw ?? "").toLowerCase();
-    const full_name = String(full_name_raw ?? "");
-    const groups: string[] = Array.isArray(groups_raw) ? groups_raw.map(String) : [];
-
-    const errors: string[] = [];
-    if (!email) errors.push("Claim de email não encontrada");
-    else if (!email.includes("@")) errors.push("Email inválido");
-
-    const domain = email.split("@")[1]?.toLowerCase() ?? "";
-    const domainAllowed = !allowed_domains.length
-      || allowed_domains.map(d => d.toLowerCase()).includes(domain);
-    if (!domainAllowed) errors.push(`Domínio "${domain}" não está na lista permitida`);
-
-    let resolved_role = default_role;
-    let matched_group: string | null = null;
-    const role_mappings_evaluated: Array<{
-      idp_group: string;
-      app_role: string;
-      status: "matched" | "skipped" | "no_match";
-      ordem: number;
-    }> = [];
-
-    let alreadyMatched = false;
-    role_mappings.forEach((m, i) => {
-      const groupPresent = groups.includes(m.idp_group);
-      let status: "matched" | "skipped" | "no_match";
-      if (groupPresent && !alreadyMatched) {
-        status = "matched";
-        resolved_role = m.app_role;
-        matched_group = m.idp_group;
-        alreadyMatched = true;
-      } else if (groupPresent && alreadyMatched) {
-        status = "skipped";
-      } else {
-        status = "no_match";
-      }
-      role_mappings_evaluated.push({
-        idp_group: m.idp_group,
-        app_role: m.app_role,
-        status,
-        ordem: i,
-      });
-    });
-
-    const default_role_used = !matched_group;
-
-    let user_exists = false;
-    let would_jit_provision = false;
-    let provision_blocked_reason: string | null = null;
-    if (email && email.includes("@")) {
+    // userLookup encapsulado para permitir injeção/mock em testes.
+    const userLookup = async (email: string): Promise<boolean | null> => {
       try {
         const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
         const { data: list } = await admin.auth.admin.listUsers();
-        const found = list?.users.find(u => u.email?.toLowerCase() === email);
-        user_exists = !!found;
-        if (!user_exists) {
-          if (auto_provision_users) {
-            would_jit_provision = true;
-          } else {
-            provision_blocked_reason = "auto_provision_users desabilitado no provider";
-          }
-        }
+        return !!list?.users.find((u) => u.email?.toLowerCase() === email);
       } catch {
-        // ignore
+        return null;
       }
-    }
+    };
 
-    return json({
-      success: errors.length === 0,
-      preview: {
-        email: email ? maskEmail(email) : null,
-        email_raw_domain: domain || null,
-        full_name,
-        groups,
-        domain,
-        domain_allowed: domainAllowed,
-        resolved_role,
-        matched_group,
-        user_exists,
-        would_jit_provision,
-        provision_blocked_reason,
-        provider_nome,
-        auto_provision_users,
-        claim_mapping_used,
-        claim_values: {
-          email_raw: email_raw ?? null,
-          full_name_raw: full_name_raw ?? null,
-          groups_raw: groups_raw ?? null,
-        },
-        role_mappings_evaluated,
+    const result = await evaluateClaims({
+      mock_claims: payload.mock_claims ?? {},
+      config: {
+        claim_mapping,
+        role_mappings,
         default_role,
-        default_role_used,
+        allowed_domains,
+        auto_provision_users,
+        provider_nome,
       },
-      errors,
-    }, 200);
+      userLookup,
+    });
+
+    return json(result, 200);
   } catch (e) {
     return json({ success: false, errors: [e instanceof Error ? e.message : "Erro"] }, 500);
   }
