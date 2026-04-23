@@ -395,6 +395,52 @@ export function AnomaliasReviewQueue({
     }
   }
 
+  // Atalhos globais enquanto o modal está aberto.
+  // Uso Alt+letra para não interferir com digitação no textarea (C, F, S são letras comuns).
+  // Após qualquer ação, devolvemos o foco ao textarea para o próximo item.
+  useEffect(() => {
+    if (!open || !atual) return;
+    function onKey(e: KeyboardEvent) {
+      // Ignora se algum modificador "destrutivo" estiver junto (Ctrl/Meta) — preserva atalhos do SO
+      if (!e.altKey || e.ctrlKey || e.metaKey) return;
+      const key = e.key.toLowerCase();
+      if (key !== "c" && key !== "f" && key !== "s") return;
+      e.preventDefault();
+      if (revisar.isPending || recarregando) return;
+
+      if (key === "s") {
+        handlePular();
+      } else if (key === "c") {
+        if (!validoConfirmar) {
+          setComentarioTocado(true);
+          const faltam = Math.max(0, MIN_CONFIRMAR - comentarioTrim.length);
+          toast.warning("Comentário muito curto para confirmar", {
+            description: `Faltam ${faltam} caractere${faltam === 1 ? "" : "s"} para o mínimo de ${MIN_CONFIRMAR}.`,
+          });
+          textareaRef.current?.focus();
+          return;
+        }
+        void handleAcao("confirmada");
+      } else if (key === "f") {
+        if (!validoFalsoPositivo) {
+          setComentarioTocado(true);
+          const faltam = Math.max(0, MIN_FALSO_POSITIVO - comentarioTrim.length);
+          toast.warning("Comentário muito curto para falso positivo", {
+            description: `Faltam ${faltam} caractere${faltam === 1 ? "" : "s"} para o mínimo de ${MIN_FALSO_POSITIVO}.`,
+          });
+          textareaRef.current?.focus();
+          return;
+        }
+        void handleAcao("falso_positivo");
+      }
+      // Mantém o foco no textarea para o próximo item da fila
+      window.setTimeout(() => textareaRef.current?.focus(), 0);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, atual?.id, validoConfirmar, validoFalsoPositivo, comentarioTrim, revisar.isPending, recarregando]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
