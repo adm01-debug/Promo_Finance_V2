@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RotateCcw, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { useReabrirAnomalia } from "@/hooks/useAnomaliasDetectadas";
 import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
 
@@ -87,6 +88,23 @@ export function ReabrirAnomaliaDialog({
               if (!tocado) setTocado(true);
             }}
             onBlur={() => setTocado(true)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                if (!valido) {
+                  setTocado(true);
+                  const faltam = Math.max(0, 10 - motivoTrim.length);
+                  toast.warning("Motivo muito curto para reabrir", {
+                    description:
+                      motivoTrim.length === 0
+                        ? "Informe um motivo com no mínimo 10 caracteres antes de usar Ctrl/Cmd+Enter."
+                        : `Faltam ${faltam} caractere${faltam === 1 ? "" : "s"} para atingir o mínimo de 10.`,
+                  });
+                  return;
+                }
+                void handleConfirmar();
+              }
+            }}
             placeholder="Ex.: Cliente confirmou que o lançamento estava errado e há novo dado contábil."
             rows={4}
             maxLength={1000}

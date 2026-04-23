@@ -321,8 +321,20 @@ export function AnomaliasReviewQueue({
   }
 
   function handleKey(e: React.KeyboardEvent) {
-    if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && comentarioValido) {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
+      if (!comentarioValido) {
+        setComentarioTocado(true);
+        const faltam = Math.max(0, MIN_CONFIRMAR - comentarioTrim.length);
+        toast.warning("Comentário muito curto para confirmar", {
+          description:
+            comentarioTrim.length === 0
+              ? `Informe um comentário com no mínimo ${MIN_CONFIRMAR} caracteres antes de usar Ctrl/Cmd+Enter.`
+              : `Faltam ${faltam} caractere${faltam === 1 ? "" : "s"} para atingir o mínimo de ${MIN_CONFIRMAR}.`,
+        });
+        textareaRef.current?.focus();
+        return;
+      }
       handleAcao("confirmada");
     }
   }
