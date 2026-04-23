@@ -76,6 +76,7 @@ const CentroPrivacidadeLGPD = lazy(() => import('./pages/CentroPrivacidadeLGPD')
 const FiltrosSalvos = lazy(() => import('./pages/configuracoes/FiltrosSalvos'));
 const MinhasPreferencias = lazy(() => import('./pages/configuracoes/MinhasPreferencias'));
 const HistoricoNotificacoes = lazy(() => import('./pages/configuracoes/HistoricoNotificacoes'));
+const SinoNotificacoesFiltros = lazy(() => import('./pages/configuracoes/SinoNotificacoesFiltros'));
 const ContadorReadonly = lazy(() => import('./pages/ContadorReadonly'));
 const SSOAdmin = lazy(() => import('./pages/admin/SSOAdmin'));
 const SSOJitEvents = lazy(() => import('./pages/admin/SSOJitEvents'));
@@ -176,6 +177,7 @@ function AppRoutes() {
             <Route path="/configuracoes/filtros-salvos" element={<ProtectedRoute><FiltrosSalvos /></ProtectedRoute>} />
             <Route path="/configuracoes/preferencias" element={<ProtectedRoute><MinhasPreferencias /></ProtectedRoute>} />
             <Route path="/configuracoes/notificacoes/historico" element={<ProtectedRoute><HistoricoNotificacoes /></ProtectedRoute>} />
+            <Route path="/configuracoes/notificacoes/sino" element={<ProtectedRoute><SinoNotificacoesFiltros /></ProtectedRoute>} />
             <Route path="/admin/filtros-compartilhados" element={<ProtectedRoute requiredRoles={['admin']}><SharedFiltersAdmin /></ProtectedRoute>} />
             
             {/* 404 */}
