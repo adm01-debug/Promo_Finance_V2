@@ -28,6 +28,13 @@ interface ClearFiltersButtonProps<T extends Record<string, unknown>> {
   className?: string;
   /** Texto customizado (default: "Limpar"). */
   label?: string;
+  /**
+   * Nomes (label) dos filtros que devem aparecer SEMPRE no resumo do toast,
+   * mesmo quando não estavam ativos (mostrados como "—"). Default: ['Busca', 'Período'].
+   * Use para garantir que campos críticos sempre apareçam no undo, ajudando
+   * o usuário a confirmar o que perdeu.
+   */
+  pinnedFields?: string[];
 }
 
 function formatValue(v: unknown): string {
@@ -54,14 +61,37 @@ export function ClearFiltersButton<T extends Record<string, unknown>>({
   size = 'sm',
   className,
   label = 'Limpar',
+  pinnedFields = ['Busca', 'Período'],
 }: ClearFiltersButtonProps<T>) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const activeFilters = useMemo(
-    () => describeFilters(controller.values).filter((f) => f.isActive),
+  const allFilters = useMemo(
+    () => describeFilters(controller.values),
     [controller.values, describeFilters]
   );
+  const activeFilters = useMemo(
+    () => allFilters.filter((f) => f.isActive),
+    [allFilters]
+  );
+
+  /**
+   * Resumo fixo: para cada nome em `pinnedFields`, pega o filtro descrito
+   * correspondente (case-insensitive). Garante que "Busca" e "Período"
+   * apareçam sempre, com valor real ou "—" quando vazios.
+   */
+  const pinnedSummary = useMemo(() => {
+    return pinnedFields.map((name) => {
+      const match = allFilters.find(
+        (f) => f.label.toLowerCase() === name.toLowerCase(),
+      );
+      return {
+        label: name,
+        value: match?.value,
+        isActive: match?.isActive ?? false,
+      };
+    });
+  }, [allFilters, pinnedFields]);
 
   const localKeys = useMemo(() => {
     const keys: string[] = [];
@@ -100,12 +130,35 @@ export function ClearFiltersButton<T extends Record<string, unknown>>({
         <span className="text-xs text-muted-foreground">Nenhum filtro ativo.</span>
       );
 
+      // Resumo fixo: sempre mostra os campos pinados (ex.: Busca, Período).
+      // Renderizado num grid para alinhamento estável independentemente da
+      // largura do toast.
+      const pinnedSummaryEl = pinnedSummary.length > 0 ? (
+        <div className="grid grid-cols-[auto,1fr] gap-x-3 gap-y-1 rounded-md border border-border/60 bg-muted/40 px-2.5 py-2">
+          {pinnedSummary.map((f) => (
+            <div key={f.label} className="contents">
+              <span className="text-[11px] font-medium text-foreground">{f.label}</span>
+              <span
+                className={`text-[11px] truncate ${
+                  f.isActive ? 'text-foreground' : 'text-muted-foreground italic'
+                }`}
+                title={f.value !== undefined ? formatValue(f.value) : '—'}
+              >
+                {f.isActive && f.value !== undefined ? formatValue(f.value) : '—'}
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : null;
+
       const description = (
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <p className="text-xs text-muted-foreground">
-            {activeFilters.length} {activeFilters.length === 1 ? 'filtro removido' : 'filtros removidos'}
+            <span className="font-semibold text-foreground">{activeFilters.length}</span>{' '}
+            {activeFilters.length === 1 ? 'filtro removido' : 'filtros removidos'} no total
             {localKeys.length > 0 ? ' · preferências locais limpas' : ''}
           </p>
+          {pinnedSummaryEl}
           {previewChips}
           <p className="pt-1 text-[10px] uppercase tracking-wide text-muted-foreground">
             Você tem 5s para desfazer.
@@ -126,7 +179,7 @@ export function ClearFiltersButton<T extends Record<string, unknown>>({
     } finally {
       setIsLoading(false);
     }
-  }, [activeFilters, controller, entityLabel, localKeys]);
+  }, [activeFilters, controller, entityLabel, localKeys, pinnedSummary]);
 
   const handleClick = useCallback(() => {
     if (!controller.hasActive) return;
