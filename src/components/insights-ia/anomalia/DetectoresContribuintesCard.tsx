@@ -73,10 +73,10 @@ function buildDetectores(a: Anomalia): Detector[] {
 export function DetectoresContribuintesCard({ anomalia }: { anomalia: Anomalia }) {
   const detectores = buildDetectores(anomalia);
   return (
-    <Card>
+    <Card className="border-l-4 border-l-warning">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-sm font-semibold tracking-tight">
-          <Brain className="h-4 w-4 text-muted-foreground" /> Detectores que contribuíram (XAI)
+          <Brain className="h-4 w-4 text-warning" /> Detectores que contribuíram (XAI)
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">

@@ -98,10 +98,10 @@ export function AcoesSugeridasCard({ anomalia }: { anomalia: Anomalia }) {
   const acoes = acoesPara(anomalia);
 
   return (
-    <Card>
+    <Card className="border-l-4 border-l-success">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-sm font-semibold tracking-tight">
-          <Lightbulb className="h-4 w-4 text-muted-foreground" /> Ações sugeridas
+          <Lightbulb className="h-4 w-4 text-success" /> Ações sugeridas
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">

@@ -7,10 +7,10 @@ import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
 
 export function AnomaliasRelacionadasCard({ lista }: { lista: Anomalia[] }) {
   return (
-    <Card>
+    <Card className="border-l-4 border-l-secondary">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-sm font-semibold tracking-tight">
-          <History className="h-4 w-4 text-muted-foreground" /> Outras anomalias relacionadas
+          <History className="h-4 w-4 text-secondary" /> Outras anomalias relacionadas
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
