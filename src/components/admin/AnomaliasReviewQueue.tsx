@@ -140,6 +140,19 @@ export function AnomaliasReviewQueue({
     const linhaAnomalia = `[${original.severidade.toUpperCase()} · ${tipoLabel}] ${descCurta}`;
     const linhaAcao = `Ação: ${acao}.${email && nome !== email ? ` Contato: ${email}.` : ""} Avançando para a próxima.`;
 
+    setConflito({
+      anomaliaId: original.id,
+      severidade: original.severidade,
+      tipoLabel,
+      descricao: descCurta,
+      statusLabel: fresca.status === "confirmada" ? "Confirmada" : "Falso positivo",
+      acaoLabel: acao,
+      autorNome: nome,
+      autorEmail: email,
+      resolvidaEm: fresca.resolvida_em ?? null,
+      motivo: "ja_resolvida",
+    });
+
     toast.warning(titulo, {
       description: `${linhaAnomalia}\n${linhaAcao}`,
       duration: 8000,
@@ -153,6 +166,26 @@ export function AnomaliasReviewQueue({
           );
         },
       },
+    });
+  }
+
+  function notificarRemovida(original: Anomalia) {
+    const tipoLabel = TIPO_LABEL[original.tipo_anomalia];
+    const descCurta =
+      original.descricao.length > 80
+        ? `${original.descricao.slice(0, 80)}…`
+        : original.descricao;
+    setConflito({
+      anomaliaId: original.id,
+      severidade: original.severidade,
+      tipoLabel,
+      descricao: descCurta,
+      statusLabel: "Removida",
+      acaoLabel: "removeu do sistema",
+      autorNome: "outro revisor",
+      autorEmail: null,
+      resolvidaEm: null,
+      motivo: "removida",
     });
   }
 
