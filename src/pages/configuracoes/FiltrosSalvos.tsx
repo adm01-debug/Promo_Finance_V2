@@ -508,12 +508,14 @@ function FilterRow({ entry, diagnostic, onRefresh, userId }: FilterRowProps) {
       const { error } = await supabase
         .from('user_active_filters')
         .upsert(
-          {
-            user_id: userId,
-            entity_type: entry.entityType,
-            payload: { filters },
-            updated_at: new Date().toISOString(),
-          },
+          [
+            {
+              user_id: userId,
+              entity_type: entry.entityType,
+              payload: { filters },
+              updated_at: new Date().toISOString(),
+            },
+          ],
           { onConflict: 'user_id,entity_type' },
         );
       if (error) throw error;
