@@ -78,13 +78,35 @@ function ValueCell({ v, kind }: { v: unknown; kind: "before" | "after" | "neutra
   );
 }
 
-function FieldRow({ field }: { field: DiffField }) {
+function FieldLabel({ name, isKey }: { name: string; isKey?: boolean }) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <p className="text-xs font-medium text-foreground">{name}</p>
+      {isKey && (
+        <Badge
+          variant="outline"
+          className="h-4 px-1 text-[9px] uppercase tracking-wide bg-primary/10 text-primary border-primary/30"
+        >
+          chave
+        </Badge>
+      )}
+    </div>
+  );
+}
+
+function FieldRow({ field, isKey = false }: { field: DiffField; isKey?: boolean }) {
+  // Wrapper destacado quando o campo é "campo-chave"
+  const wrapperBase = "py-1.5";
+  const wrapperKey =
+    "relative -mx-3 px-3 my-0.5 border-l-2 border-l-primary bg-primary/5 ring-1 ring-primary/20 rounded-r-md shadow-[0_0_0_1px_hsl(var(--primary)/0.05)]";
+  const wrapperCls = isKey ? `${wrapperBase} ${wrapperKey}` : wrapperBase;
+
   if (field.kind === "added") {
     return (
-      <div className="flex items-start gap-2 py-1.5">
+      <div className={`flex items-start gap-2 ${wrapperCls}`}>
         <Plus className="h-3.5 w-3.5 mt-1 text-success shrink-0" />
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium text-foreground">{field.key}</p>
+          <FieldLabel name={field.key} isKey={isKey} />
           <div className="mt-0.5">
             <ValueCell v={field.after} kind="after" />
           </div>
@@ -94,10 +116,10 @@ function FieldRow({ field }: { field: DiffField }) {
   }
   if (field.kind === "removed") {
     return (
-      <div className="flex items-start gap-2 py-1.5">
+      <div className={`flex items-start gap-2 ${wrapperCls}`}>
         <Minus className="h-3.5 w-3.5 mt-1 text-destructive shrink-0" />
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium text-foreground">{field.key}</p>
+          <FieldLabel name={field.key} isKey={isKey} />
           <div className="mt-0.5">
             <ValueCell v={field.before} kind="before" />
           </div>
@@ -107,11 +129,23 @@ function FieldRow({ field }: { field: DiffField }) {
   }
   // changed
   return (
-    <div className="py-1.5">
-      <p className="text-xs font-medium text-foreground mb-1">{field.key}</p>
-      <div className="flex items-start gap-2 flex-wrap">
+    <div className={wrapperCls}>
+      <div className="mb-1">
+        <FieldLabel name={field.key} isKey={isKey} />
+      </div>
+      <div
+        className={`flex items-start gap-2 flex-wrap ${
+          isKey
+            ? "rounded-md border-2 border-primary/40 bg-background/60 p-2 ring-2 ring-primary/20 ring-offset-1 ring-offset-background"
+            : ""
+        }`}
+      >
         <ValueCell v={field.before} kind="before" />
-        <ArrowRight className="h-3.5 w-3.5 mt-1 text-muted-foreground shrink-0" />
+        <ArrowRight
+          className={`h-3.5 w-3.5 mt-1 shrink-0 ${
+            isKey ? "text-primary" : "text-muted-foreground"
+          }`}
+        />
         <ValueCell v={field.after} kind="after" />
       </div>
     </div>
@@ -139,6 +173,21 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
     () => extractCamposChave(newData ?? oldData),
     [newData, oldData],
   );
+
+  // Conjunto de chaves dos campos-chave (para destacar no diff)
+  const keyFieldSet = useMemo(
+    () => new Set(camposChave.map((c) => c.key)),
+    [camposChave],
+  );
+
+  // Mapa key -> DiffField para campos-chave que sofreram alteração
+  const changedKeyFields = useMemo(() => {
+    const m = new Map<string, DiffField>();
+    for (const f of diff.changed) if (keyFieldSet.has(f.key)) m.set(f.key, f);
+    for (const f of diff.added) if (keyFieldSet.has(f.key)) m.set(f.key, f);
+    for (const f of diff.removed) if (keyFieldSet.has(f.key)) m.set(f.key, f);
+    return m;
+  }, [diff, keyFieldSet]);
 
   const toggleField = (key: string) => {
     setActiveFields((prev) => {
@@ -213,12 +262,25 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
 
   return (
     <div className="space-y-3">
-      {/* Campos-chave (clicáveis para filtrar) */}
+      {/* Campos-chave (clicáveis para filtrar; destacam alterações) */}
       {camposChave.length > 0 && (
         <div className="space-y-2 rounded-md border bg-muted/20 p-3">
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold text-muted-foreground">
-              Campos-chave {activeFields.size > 0 && `(${activeFields.size} filtrando)`}
+              Campos-chave{" "}
+              {changedKeyFields.size > 0 && (
+                <Badge
+                  variant="outline"
+                  className="ml-1 h-4 px-1 text-[9px] uppercase bg-primary/10 text-primary border-primary/30"
+                >
+                  {changedKeyFields.size} alterado(s)
+                </Badge>
+              )}
+              {activeFields.size > 0 && (
+                <span className="ml-2 text-muted-foreground">
+                  ({activeFields.size} filtrando)
+                </span>
+              )}
             </p>
             <span className="text-[10px] text-muted-foreground">
               Clique para filtrar
@@ -227,27 +289,64 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
           <div className="flex flex-wrap gap-1.5">
             {camposChave.map((c) => {
               const active = activeFields.has(c.key);
+              const changed = changedKeyFields.get(c.key);
+              const wasChanged = !!changed;
               return (
                 <button
                   key={c.key}
                   type="button"
                   onClick={() => toggleField(c.key)}
-                  className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-mono transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                  className={`group relative inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-mono transition-all hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                     active
                       ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-background border-border text-foreground"
+                      : wasChanged
+                        ? "bg-primary/5 border-primary/40 text-foreground ring-1 ring-primary/20 shadow-sm"
+                        : "bg-background border-border text-foreground"
                   }`}
                   aria-pressed={active}
                   title={
-                    active
-                      ? `Remover filtro: ${c.key}`
-                      : `Filtrar pelo campo: ${c.key}`
+                    wasChanged
+                      ? `Campo-chave alterado: ${c.key}`
+                      : active
+                        ? `Remover filtro: ${c.key}`
+                        : `Filtrar pelo campo: ${c.key}`
                   }
                 >
-                  <span className={active ? "opacity-80" : "text-muted-foreground"}>
+                  <span
+                    className={
+                      active
+                        ? "opacity-80"
+                        : wasChanged
+                          ? "text-primary font-semibold"
+                          : "text-muted-foreground"
+                    }
+                  >
                     {c.key}:
                   </span>
-                  <span>{formatValue(c.value)}</span>
+                  {wasChanged && changed!.kind === "changed" ? (
+                    <span className="inline-flex items-center gap-1">
+                      <span className="line-through opacity-60">
+                        {formatValue(changed!.before)}
+                      </span>
+                      <ArrowRight
+                        className={`h-2.5 w-2.5 ${
+                          active ? "" : "text-primary"
+                        }`}
+                        aria-hidden="true"
+                      />
+                      <span className="font-semibold">
+                        {formatValue(changed!.after)}
+                      </span>
+                    </span>
+                  ) : (
+                    <span>{formatValue(c.value)}</span>
+                  )}
+                  {wasChanged && !active && (
+                    <span
+                      className="ml-0.5 inline-block h-1.5 w-1.5 rounded-full bg-primary animate-pulse"
+                      aria-hidden="true"
+                    />
+                  )}
                 </button>
               );
             })}
@@ -346,7 +445,7 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
           <div className="rounded-md border divide-y">
             {insertEntries.map(([k, v]) => (
               <div key={k} className="px-3">
-                <FieldRow field={{ key: k, before: undefined, after: v, kind: "added" }} />
+                <FieldRow field={{ key: k, before: undefined, after: v, kind: "added" }} isKey={keyFieldSet.has(k)} />
               </div>
             ))}
           </div>
@@ -363,7 +462,7 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
           <div className="rounded-md border divide-y">
             {deleteEntries.map(([k, v]) => (
               <div key={k} className="px-3">
-                <FieldRow field={{ key: k, before: v, after: undefined, kind: "removed" }} />
+                <FieldRow field={{ key: k, before: v, after: undefined, kind: "removed" }} isKey={keyFieldSet.has(k)} />
               </div>
             ))}
           </div>
@@ -384,7 +483,7 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
               <div className="divide-y">
                 {filteredChanged.map((f) => (
                   <div key={f.key} className="px-3">
-                    <FieldRow field={f} />
+                    <FieldRow field={f} isKey={keyFieldSet.has(f.key)} />
                   </div>
                 ))}
               </div>
@@ -404,7 +503,7 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
                   <div className="divide-y">
                     {filteredAdded.map((f) => (
                       <div key={f.key} className="px-3">
-                        <FieldRow field={f} />
+                        <FieldRow field={f} isKey={keyFieldSet.has(f.key)} />
                       </div>
                     ))}
                   </div>
@@ -421,7 +520,7 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
                   <div className="divide-y">
                     {filteredRemoved.map((f) => (
                       <div key={f.key} className="px-3">
-                        <FieldRow field={f} />
+                        <FieldRow field={f} isKey={keyFieldSet.has(f.key)} />
                       </div>
                     ))}
                   </div>
