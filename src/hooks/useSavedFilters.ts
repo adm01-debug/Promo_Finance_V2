@@ -2,6 +2,32 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { logger } from "@/lib/logger";
+
+/**
+ * Best-effort audit log para ações de compartilhamento de filtros salvos.
+ * Falhas de auditoria nunca derrubam a operação principal.
+ */
+async function logSavedFilterAudit(params: {
+  action: "UPDATE" | "INSERT";
+  filterId: string;
+  details: string;
+  oldData?: Record<string, unknown>;
+  newData?: Record<string, unknown>;
+}) {
+  try {
+    await supabase.rpc("log_audit", {
+      _action: params.action,
+      _table_name: "saved_filters",
+      _record_id: params.filterId,
+      _old_data: params.oldData ? JSON.stringify(params.oldData) : null,
+      _new_data: params.newData ? JSON.stringify(params.newData) : null,
+      _details: params.details,
+    });
+  } catch (err) {
+    logger.warn("[saved-filters] audit log falhou", err);
+  }
+}
 
 export type AppRole = "admin" | "financeiro" | "operacional" | "visualizador";
 
