@@ -29,6 +29,7 @@ import { ConciliacaoFilters } from '@/components/conciliacao/ConciliacaoFilters'
 import { ConciliacaoToolbar, CONCILIACAO_COLUMNS, CONCILIACAO_DEFAULT_SORT, CONCILIACAO_DEFAULT_VISIBLE, type ConciliacaoSort } from '@/components/conciliacao/ConciliacaoToolbar';
 import { mergeLockedColumns } from '@/components/shared/ColumnVisibilityMenu';
 import { useSavedFilters, type SavedFilterPayload } from '@/hooks/useSavedFilters';
+import { useSavedFilterAlertsConciliacao } from '@/hooks/useSavedFilterAlerts';
 import type { ConciliacaoFilterState } from '@/components/conciliacao/ConciliacaoFilters';
 import { useEffect, useMemo, useState } from 'react';
 import { ConciliacaoExport } from '@/components/conciliacao/ConciliacaoExport';
@@ -88,6 +89,8 @@ export default function Conciliacao() {
 
   // Saved filter presets / sort / column visibility
   const { defaultFilter } = useSavedFilters<ConciliacaoFilterState>('conciliacao_transacoes');
+  // Notifica em tempo real quando uma nova transação cai dentro de um preset assinado
+  useSavedFilterAlertsConciliacao();
   const [sort, setSort] = useState<ConciliacaoSort>(CONCILIACAO_DEFAULT_SORT);
   const [visibleCols, setVisibleCols] = useState<string[]>(CONCILIACAO_DEFAULT_VISIBLE);
   const [activePresetId, setActivePresetId] = useState<string | null>(null);
