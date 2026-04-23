@@ -98,6 +98,7 @@ export function SubscriptionPopover({
         id: subscription.id,
         notifyInapp: inapp,
         notifyPush: push,
+        notifyEmail: email,
         frequencia: freq,
         horarioPreferido: horaCompleta,
       });
@@ -105,6 +106,7 @@ export function SubscriptionPopover({
       onSubscribe({
         notifyInapp: inapp,
         notifyPush: push,
+        notifyEmail: email,
         frequencia: freq,
         horarioPreferido: horaCompleta,
       });
@@ -164,6 +166,13 @@ export function SubscriptionPopover({
             Push do navegador
           </Label>
           <Switch id="sub-push" checked={push} onCheckedChange={setPush} />
+        </div>
+
+        <div className="flex items-center justify-between">
+          <Label htmlFor="sub-email" className="text-xs font-normal">
+            E-mail
+          </Label>
+          <Switch id="sub-email" checked={email} onCheckedChange={setEmail} />
         </div>
 
         <div className="space-y-1">
