@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useLocalStorageState } from "@/hooks/useLocalStorageState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -165,9 +166,30 @@ function matchesQuery(field: DiffField, q: string): boolean {
 }
 
 export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
-  const [showRaw, setShowRaw] = useState(false);
-  const [query, setQuery] = useState("");
-  const [activeFields, setActiveFields] = useState<Set<string>>(new Set());
+  // Preferências persistidas entre sessões (localStorage).
+  const [showRaw, setShowRaw] = useLocalStorageState<boolean>(
+    "audit:diff:showRaw",
+    false,
+  );
+  const [query, setQuery] = useLocalStorageState<string>(
+    "audit:diff:query",
+    "",
+  );
+  // Set não é serializável: persistimos como array e expomos como Set.
+  const [activeFieldsArr, setActiveFieldsArr] = useLocalStorageState<string[]>(
+    "audit:diff:activeFields",
+    [],
+  );
+  const activeFields = useMemo(() => new Set(activeFieldsArr), [activeFieldsArr]);
+  const setActiveFields = (
+    updater: Set<string> | ((prev: Set<string>) => Set<string>),
+  ) => {
+    setActiveFieldsArr((prev) => {
+      const prevSet = new Set(prev);
+      const next = typeof updater === "function" ? updater(prevSet) : updater;
+      return Array.from(next);
+    });
+  };
   const [copied, setCopied] = useState(false);
 
   const isInsert = !oldData && !!newData;

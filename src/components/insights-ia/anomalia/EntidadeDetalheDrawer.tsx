@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useLocalStorageState } from "@/hooks/useLocalStorageState";
 import { Link } from "react-router-dom";
 import {
   Sheet,
@@ -68,7 +68,10 @@ export function EntidadeDetalheDrawer({ open, onOpenChange, entidade }: Props) {
   const label = ENTIDADE_LABEL[entidade.tipo] ?? entidade.tipo;
   const registro = entidade.registro ?? {};
   const entries = Object.entries(registro);
-  const [view, setView] = useState<ViewMode>("resumo");
+  const [view, setView] = useLocalStorageState<ViewMode>(
+    "audit:entidade-drawer:view",
+    "resumo",
+  );
 
   const keyEntries = KEY_FIELDS.map((k) => [k, registro[k]] as const).filter(
     ([, v]) => v !== undefined && v !== null && v !== "",
