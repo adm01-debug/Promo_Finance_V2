@@ -378,6 +378,48 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
               continue;
             }
 
+            // ----------------------------------------------------------------
+            // Anti-spam (rajadas): em modo imediato, conta quantos disparos
+            // já foram feitos para esta assinatura na janela deslizante. Se
+            // exceder o limite, o item NÃO vira toast/push individual; vai
+            // para o buffer e um timer agenda 1 batch consolidado ao fim da
+            // janela. Itens "user critical" (severidade marcada) bypassam o
+            // limite — anti-spam não pode atrasar alerta crítico.
+            // ----------------------------------------------------------------
+            const limitMax = sub.rate_limit_max ?? 5;
+            const windowMs = (sub.rate_limit_window_min ?? 10) * 60_000;
+            const now = Date.now();
+            const stamps = (
+              dispatchTimestampsBySub.current.get(sub.id) ?? []
+            ).filter((t) => now - t < windowMs);
+            const overLimit = stamps.length >= limitMax;
+
+            if (overLimit && !isUserCritical) {
+              const list = pendingBySub.current.get(sub.id) ?? [];
+              list.push({ title, desc: description });
+              pendingBySub.current.set(sub.id, list);
+
+              // Reagenda flush para o fim da janela (debounce):
+              // tempo restante = janela - (idade do mais antigo timestamp).
+              const oldest = stamps[0] ?? now;
+              const remaining = Math.max(2_000, windowMs - (now - oldest));
+              const prevTimer = flushTimerBySub.current.get(sub.id);
+              if (prevTimer !== undefined) window.clearTimeout(prevTimer);
+              const tid = window.setTimeout(() => {
+                flushTimerBySub.current.delete(sub.id);
+                const fresh = subsRef.current.get(sf.id);
+                flushBatch(sub.id, { id: sf.id, name: sf.name }, fresh);
+              }, remaining);
+              flushTimerBySub.current.set(sub.id, tid);
+
+              markSeen.mutate(sub.id);
+              continue;
+            }
+
+            // Dentro do limite (ou crítico que bypassa): registra timestamp.
+            stamps.push(now);
+            dispatchTimestampsBySub.current.set(sub.id, stamps);
+
             // Imediata: comportamento original
             if (sub.notify_inapp) {
               const action = config.buildAction?.(row);
