@@ -588,3 +588,101 @@ function renderLocalBadge(status?: DiagnosticState['local']) {
       );
   }
 }
+
+/**
+ * Renderiza um chip indicando se conta e dispositivo estão sincronizados
+ * e, em caso negativo, em que direção a próxima reconciliação fluirá.
+ *
+ * - in-sync: tudo idêntico.
+ * - remote-newer / remote-only: conta → dispositivo (próxima abertura puxa do Supabase).
+ * - local-newer / local-only: dispositivo → conta (próximo save sobe pro Supabase).
+ * - none: nada salvo em nenhum lugar.
+ * - unknown: erro ou comparação inconclusiva.
+ */
+function renderDivergenceBadge(div: Divergence) {
+  switch (div.direction) {
+    case 'in-sync':
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Badge variant="outline" className="gap-1 text-[10px] border-success/30 text-success">
+              <CheckCircle2 className="h-3 w-3" /> Sincronizado
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p className="text-xs">{div.reason}</p>
+          </TooltipContent>
+        </Tooltip>
+      );
+    case 'remote-newer':
+    case 'remote-only':
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Badge
+              variant="outline"
+              className="gap-1 text-[10px] border-warning/40 text-warning"
+              aria-label="Divergente: conta mais recente que dispositivo"
+            >
+              <Database className="h-3 w-3" />
+              <ArrowRight className="h-3 w-3" />
+              <HardDrive className="h-3 w-3" />
+              Conta → Dispositivo
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs">
+            <p className="text-xs font-medium">Divergente</p>
+            <p className="text-xs text-muted-foreground">{div.reason}</p>
+            <p className="text-xs mt-1">
+              Próxima abertura nesta tela hidratará do Supabase.
+            </p>
+          </TooltipContent>
+        </Tooltip>
+      );
+    case 'local-newer':
+    case 'local-only':
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Badge
+              variant="outline"
+              className="gap-1 text-[10px] border-primary/40 text-primary"
+              aria-label="Divergente: dispositivo mais recente que conta"
+            >
+              <HardDrive className="h-3 w-3" />
+              <ArrowRight className="h-3 w-3" />
+              <Database className="h-3 w-3" />
+              Dispositivo → Conta
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs">
+            <p className="text-xs font-medium">Divergente</p>
+            <p className="text-xs text-muted-foreground">{div.reason}</p>
+            <p className="text-xs mt-1">
+              Próximo salvamento sincronizará com a conta no Supabase.
+            </p>
+          </TooltipContent>
+        </Tooltip>
+      );
+    case 'none':
+      return (
+        <Badge variant="outline" className="gap-1 text-[10px] text-muted-foreground">
+          <ArrowLeftRight className="h-3 w-3" /> Sem dados
+        </Badge>
+      );
+    case 'unknown':
+    default:
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Badge variant="outline" className="gap-1 text-[10px] text-muted-foreground">
+              <ArrowLeftRight className="h-3 w-3" /> —
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p className="text-xs">{div.reason}</p>
+          </TooltipContent>
+        </Tooltip>
+      );
+  }
+}
