@@ -304,7 +304,7 @@ async function getUser(admin: SupabaseClient, empresaId: string, id: string) {
   return ok(userToScim((link as any).profiles, link, empresaId));
 }
 
-async function createUser(admin: SupabaseClient, providerId: string | null, empresaId: string, body: any) {
+async function createUser(admin: SupabaseClient, providerId: string | null, empresaId: string, defaultRole: AppRole, body: any) {
   const email = String(body?.userName || body?.emails?.[0]?.value || "").toLowerCase().trim();
   const fullName = body?.name?.formatted || body?.displayName || email;
   const externalId: string | null = body?.externalId ?? null;
@@ -313,7 +313,7 @@ async function createUser(admin: SupabaseClient, providerId: string | null, empr
   const departmentHint = ext?.department ?? null;
   if (!email) return err(400, "userName/emails.value required", "invalidValue");
 
-  const role = await resolveRole(admin, providerId, departmentHint);
+  const role = await resolveRole(admin, providerId, departmentHint, defaultRole);
 
   let user = await findAuthUserByEmail(admin, email);
   if (!user) {
@@ -483,7 +483,7 @@ async function updateUserEmail(admin: SupabaseClient, userId: string, newEmail: 
   return null;
 }
 
-async function patchUser(admin: SupabaseClient, providerId: string | null, empresaId: string, id: string, body: any) {
+async function patchUser(admin: SupabaseClient, providerId: string | null, empresaId: string, defaultRole: AppRole, id: string, body: any) {
   const { data: link } = await admin.from("user_empresas")
     .select("*, profiles!inner(id,email,full_name)")
     .eq("id", id).eq("empresa_id", empresaId).maybeSingle();
@@ -503,7 +503,7 @@ async function patchUser(admin: SupabaseClient, providerId: string | null, empre
   if (result.invalidPath) return err(400, `Unsupported path: ${result.invalidPath}`, "invalidPath", { path: result.invalidPath, supportedPaths: ["userName", "displayName", "name.formatted", "active", "emails", "emails[primary eq true].value", "externalId", "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:department"] });
 
   if (result.newRoleHint) {
-    const role = await resolveRole(admin, providerId, result.newRoleHint);
+    const role = await resolveRole(admin, providerId, result.newRoleHint, defaultRole);
     result.empresaUpdates.role = role;
   }
 
