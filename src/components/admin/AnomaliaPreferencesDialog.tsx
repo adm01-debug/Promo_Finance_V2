@@ -280,6 +280,16 @@ export function AnomaliaPreferencesDialog({ open, onOpenChange }: Props) {
             />
           </div>
 
+          {/* Prévia em tempo real do toast e do drawer */}
+          <PreviewAnomaliaToastDrawer
+            enabled={enabled}
+            severidadesAtivas={severidadesAtivas}
+            duracao={duracao}
+            toastAcoes={toastAcoes}
+            drawerAcoes={drawerAcoes}
+            silenciarAte={silenciarAte}
+          />
+
           <Separator />
 
           {/* Severidades que disparam toast */}
