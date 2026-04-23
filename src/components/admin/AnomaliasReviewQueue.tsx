@@ -673,6 +673,20 @@ export function AnomaliasReviewQueue({
                 Confirmar problema
               </Button>
             </div>
+
+            <p className="text-[11px] text-muted-foreground text-right">
+              Atalhos:{" "}
+              <kbd className="px-1 py-0.5 rounded border bg-muted font-mono text-[10px]">Alt+C</kbd>{" "}
+              confirmar ·{" "}
+              <kbd className="px-1 py-0.5 rounded border bg-muted font-mono text-[10px]">Alt+F</kbd>{" "}
+              falso positivo ·{" "}
+              <kbd className="px-1 py-0.5 rounded border bg-muted font-mono text-[10px]">Alt+S</kbd>{" "}
+              pular ·{" "}
+              <kbd className="px-1 py-0.5 rounded border bg-muted font-mono text-[10px]">
+                Ctrl/Cmd+Enter
+              </kbd>{" "}
+              confirmar
+            </p>
           </div>
         ) : null}
       </DialogContent>
