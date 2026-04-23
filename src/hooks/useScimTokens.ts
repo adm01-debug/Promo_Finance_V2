@@ -2,6 +2,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+export type ScimDefaultRole = 'admin' | 'financeiro' | 'operacional' | 'visualizador';
+
 export interface ScimToken {
   id: string;
   provider_id: string | null;
@@ -11,6 +13,7 @@ export interface ScimToken {
   expires_at: string | null;
   last_used_at: string | null;
   ativo: boolean;
+  default_role: ScimDefaultRole | null;
   created_at: string;
 }
 
