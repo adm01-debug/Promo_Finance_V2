@@ -111,7 +111,14 @@ export function AcoesSugeridasCard({ anomalia }: { anomalia: Anomalia }) {
               <h4 className="text-sm font-semibold tracking-tight">{a.titulo}</h4>
               <p className="text-xs text-muted-foreground mt-1">{a.descricao}</p>
               {a.rota && a.cta && (
-                <Button asChild size="sm" variant="outline" className="mt-2">
+                <Button
+                  asChild
+                  size="sm"
+                  variant="outline"
+                  className="mt-2"
+                  aria-label={`${a.cta} — ${a.titulo}`}
+                  title={a.cta}
+                >
                   <Link to={a.rota}>{a.cta}</Link>
                 </Button>
               )}
@@ -148,9 +155,15 @@ export function AcoesSugeridasCard({ anomalia }: { anomalia: Anomalia }) {
                 },
               )
             }
-            disabled={atualizarStatus.isPending}
+            disabled={atualizarStatus.isPending || sincronizar.isPending || obs.trim() === (anomalia.observacoes ?? "").trim()}
+            aria-label="Salvar parecer da investigação"
+            title={
+              obs.trim() === (anomalia.observacoes ?? "").trim()
+                ? "Sem alterações para salvar"
+                : "Salvar parecer"
+            }
           >
-            <Save className="h-3 w-3 mr-1" /> Salvar parecer
+            <Save className="h-3 w-3 mr-1" aria-hidden="true" /> Salvar parecer
           </Button>
         </div>
       </CardContent>

@@ -62,13 +62,21 @@ export function EntidadeRelacionadaCard({ entidade }: { entidade: EntidadeRelaci
                   size="sm"
                   variant="outline"
                   onClick={() => setDrawerOpen(true)}
+                  aria-label="Ver detalhes da entidade relacionada"
+                  title="Ver detalhes"
                 >
-                  <Eye className="h-3 w-3 mr-1" /> Ver detalhes
+                  <Eye className="h-3 w-3 mr-1" aria-hidden="true" /> Ver detalhes
                 </Button>
                 {entidade.rotaUI && (
-                  <Button asChild size="sm" variant="outline">
+                  <Button
+                    asChild
+                    size="sm"
+                    variant="outline"
+                    aria-label="Abrir tela completa da entidade"
+                    title="Abrir tela completa"
+                  >
                     <Link to={entidade.rotaUI}>
-                      <ExternalLink className="h-3 w-3 mr-1" /> Abrir tela completa
+                      <ExternalLink className="h-3 w-3 mr-1" aria-hidden="true" /> Abrir tela completa
                     </Link>
                   </Button>
                 )}

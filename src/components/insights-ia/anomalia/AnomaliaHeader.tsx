@@ -90,22 +90,31 @@ export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
                   size="sm"
                   variant="outline"
                   onClick={handleInvestigar}
+                  disabled={atualizarStatus.isPending}
+                  aria-label="Marcar anomalia como em investigação"
+                  title="Marcar como investigando"
                 >
-                  <Search className="h-3 w-3 mr-1" /> Investigar
+                  <Search className="h-3 w-3 mr-1" aria-hidden="true" /> Investigar
                 </Button>
               )}
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={() => revisarComBitrix("falso_positivo")}
+                disabled={atualizarStatus.isPending || sincronizar.isPending}
+                aria-label="Marcar anomalia como falso positivo"
+                title="Falso positivo"
               >
-                <Eye className="h-3 w-3 mr-1" /> Falso positivo
+                <Eye className="h-3 w-3 mr-1" aria-hidden="true" /> Falso positivo
               </Button>
               <Button
                 size="sm"
                 onClick={() => revisarComBitrix("confirmada")}
+                disabled={atualizarStatus.isPending || sincronizar.isPending}
+                aria-label="Confirmar anomalia"
+                title="Confirmar anomalia"
               >
-                <CheckCircle2 className="h-3 w-3 mr-1" /> Confirmar
+                <CheckCircle2 className="h-3 w-3 mr-1" aria-hidden="true" /> Confirmar
               </Button>
             </>
           )}

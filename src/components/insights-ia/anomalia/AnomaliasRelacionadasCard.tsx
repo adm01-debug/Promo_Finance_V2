@@ -43,9 +43,16 @@ export function AnomaliasRelacionadasCard({ lista }: { lista: Anomalia[] }) {
                   </div>
                   <p className="text-sm leading-snug truncate">{a.descricao}</p>
                 </div>
-                <Button asChild variant="ghost" size="icon" className="h-7 w-7 shrink-0">
-                  <Link to={`/admin/insights-ia/anomalia/${a.id}`}>
-                    <ArrowRight className="h-3 w-3" />
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 shrink-0"
+                  aria-label={`Abrir anomalia: ${a.descricao}`}
+                  title="Abrir anomalia relacionada"
+                >
+                  <Link to={`/admin/insights-ia/anomalia/${a.id}`} aria-label={`Abrir anomalia: ${a.descricao}`}>
+                    <ArrowRight className="h-3 w-3" aria-hidden="true" />
                   </Link>
                 </Button>
               </li>
