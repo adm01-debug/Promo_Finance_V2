@@ -127,17 +127,35 @@ export default function Contabilidade() {
             </h1>
             <p className="text-muted-foreground">Plano de contas, lançamentos e geração de ECD/ECF</p>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap items-end gap-3">
             <div className="space-y-1">
               <Label className="text-xs">Empresa</Label>
               <Select value={empresaId} onValueChange={setEmpresaId}>
-                <SelectTrigger className="w-[220px]">
+                <SelectTrigger className="w-[260px]">
                   <Building2 className="mr-2 h-4 w-4" /><SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
-                  {empresas.map(e => <SelectItem key={e.id} value={e.id}>{e.nome_fantasia || e.razao_social}</SelectItem>)}
+                  {empresas.map(e => (
+                    <SelectItem key={e.id} value={e.id}>
+                      <div className="flex flex-col">
+                        <span>{e.nome_fantasia || e.razao_social}</span>
+                        {e.cnpj && (
+                          <span className="text-[10px] text-muted-foreground font-mono">
+                            {formatCNPJ(e.cnpj)}
+                          </span>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+              {empresaAtiva?.cnpj && (
+                <div className="flex items-center gap-1 text-[11px] text-muted-foreground animate-fade-in">
+                  <Pin className="h-3 w-3 text-primary" />
+                  <span className="font-mono">{formatCNPJ(empresaAtiva.cnpj)}</span>
+                  <span>· fixado para esta sessão</span>
+                </div>
+              )}
             </div>
             <div className="space-y-1">
               <Label className="text-xs">Ano-calendário</Label>
