@@ -126,7 +126,58 @@ export function usePendingAnomaliasQueue() {
   });
 }
 
-export class AnomaliaJaRevisadaError extends Error {
+/**
+ * Versão paginada/infinita da fila de pendentes para revisão em lote.
+ * Carrega em páginas de 100 itens por requisição usando keyset pagination
+ * (`detectada_em` ascendente) para suportar filas grandes sem travar a UI.
+ *
+ * Mantém a mesma ordenação (severidade desc → data asc) aplicando o sort
+ * em memória sobre o conjunto já carregado.
+ */
+export function usePendingAnomaliasQueueInfinite(pageSize = 100) {
+  const query = useInfiniteQuery({
+    queryKey: ["anomalias-detectadas", "pending-queue-infinite", pageSize],
+    queryFn: async ({ pageParam }: { pageParam: string | null }) => {
+      let q = supabase
+        .from("anomalias_detectadas")
+        .select("*")
+        .in("status", ["nova", "investigando"])
+        .order("detectada_em", { ascending: true })
+        .order("id", { ascending: true })
+        .limit(pageSize);
+      if (pageParam) q = q.gt("detectada_em", pageParam);
+      const { data, error } = await q;
+      if (error) throw error;
+      return (data ?? []) as Anomalia[];
+    },
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => {
+      if (!lastPage.length || lastPage.length < pageSize) return undefined;
+      return lastPage[lastPage.length - 1].detectada_em;
+    },
+    staleTime: 30_000,
+  });
+
+  // Achatar + ordenar (severidade primeiro, depois data) — O(n log n)
+  const items = useMemo(() => {
+    const flat = (query.data?.pages ?? []).flat();
+    return flat.sort((a, b) => {
+      const sa = SEVERIDADE_ORDEM[a.severidade] ?? 9;
+      const sb = SEVERIDADE_ORDEM[b.severidade] ?? 9;
+      if (sa !== sb) return sa - sb;
+      return new Date(b.detectada_em).getTime() - new Date(a.detectada_em).getTime();
+    });
+  }, [query.data]);
+
+  return {
+    items,
+    isLoading: query.isLoading,
+    isFetchingNextPage: query.isFetchingNextPage,
+    hasNextPage: query.hasNextPage ?? false,
+    fetchNextPage: query.fetchNextPage,
+    refetch: query.refetch,
+  };
+}
   code = "ANOMALIA_JA_REVISADA" as const;
   constructor(message = "Anomalia já foi revisada por outro usuário") {
     super(message);
