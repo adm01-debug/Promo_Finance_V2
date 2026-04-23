@@ -200,7 +200,7 @@ export function ScimTokensTab() {
                   Aplicado quando o IdP não envia <code>department</code> ou grupo reconhecível.
                 </p>
               </div>
-              <Button className="w-full" disabled={!nome || !empresaId || create.isPending} onClick={handleCreate}>
+              <Button className="w-full" disabled={!nome.trim() || !empresaId || !defaultRole || create.isPending} onClick={handleCreate}>
                 Gerar token
               </Button>
             </div>
