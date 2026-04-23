@@ -125,10 +125,11 @@ async function logAudit(params: {
 }
 
 export default function SharedFiltersAdmin() {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, currentEmpresaId } = useAuth();
   const qc = useQueryClient();
   const [search, setSearch] = useState('');
   const [entityFilter, setEntityFilter] = useState<string>('all');
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const queryKey = ['admin-shared-filters'] as const;
 
