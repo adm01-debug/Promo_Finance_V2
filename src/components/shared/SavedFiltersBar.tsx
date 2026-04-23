@@ -46,6 +46,7 @@ import {
 import { useSavedFilterSubscriptions } from "@/hooks/useSavedFilterSubscriptions";
 import { useWebPushSubscription } from "@/hooks/useWebPushSubscription";
 import { useAuth } from "@/hooks/useAuth";
+import { SubscriptionPopover } from "@/components/shared/SubscriptionPopover";
 
 interface SavedFiltersBarProps<T> {
   entityType: string;
