@@ -426,7 +426,7 @@ export function AnomaliasReviewQueue({
           });
         }
         setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
-        avancar();
+        await avancar();
         return;
       }
       // demais erros: mutation já notifica via toast.error
