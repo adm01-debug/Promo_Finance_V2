@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { assertValidAnomaliaPreferencesPatch } from "./anomaliaPreferencesValidation";
 
 export type Severidade = "baixa" | "media" | "alta" | "critica";
 
@@ -196,6 +197,9 @@ export function useAnomaliaPreferences() {
       patch: Partial<Omit<AnomaliaPreferences, "id" | "user_id">>,
     ) => {
       if (!user?.id) throw new Error("not authenticated");
+      // Validação client-side espelha o trigger Postgres + regras de UX.
+      // Falha rápida — não bate no banco se o patch for inválido.
+      assertValidAnomaliaPreferencesPatch(patch);
       // Re-lê o estado mais recente do servidor antes de mesclar, evitando
       // sobrescrever mudanças vindas de outro dispositivo desde o último fetch.
       const { data: latest, error: readErr } = await supabase

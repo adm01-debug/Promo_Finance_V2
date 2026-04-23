@@ -9,7 +9,7 @@ Tabela `user_anomalia_preferences` (RLS por user_id, unique user_id):
 - **toast_duracao_segundos INT** — 3..30, default 12 (validado por trigger).
 - **toast_acoes JSONB** — `{drill_down, abrir_pagina, copiar_id, marcar_lida}` booleans.
 - **drawer_acoes JSONB** — `{abrir_entidade, pagina_completa, copiar_id, marcar_lida}` booleans.
-- Trigger `validate_user_anomalia_preferences` valida range da duração e severidades.
+- Trigger `validate_user_anomalia_preferences` valida range da duração e severidades. **Espelhado client-side** em `src/hooks/anomaliaPreferencesValidation.ts` (`validateAnomaliaPreferencesPatch` / `assertValidAnomaliaPreferencesPatch`) — chamado pela mutation `update` para fail-fast sem ida ao banco. Regras extras de UX: drawer não pode ficar sem ações; toast+drawer ambos vazios é bloqueado; severidades vazias só com `toast_enabled=false`. Cobertura em `src/hooks/__tests__/anomaliaPreferencesValidation.test.ts` (28 cases incluindo `shouldNotify`).
 
 `anomalias_detectadas.centro_custo_id` (nullable) populada pela edge `detectar-anomalias-financeiras` para anomalias de movimentação/conta_pagar.
 
