@@ -154,7 +154,10 @@ export async function evaluateClaims(
     if (exists !== null) {
       user_exists = exists;
       if (!user_exists) {
-        if (auto_provision_users) {
+        if (!domainAllowed) {
+          // JIT não dispara em domínio bloqueado — bloqueio de allowlist prevalece.
+          provision_blocked_reason = null;
+        } else if (auto_provision_users) {
           would_jit_provision = true;
         } else {
           provision_blocked_reason =

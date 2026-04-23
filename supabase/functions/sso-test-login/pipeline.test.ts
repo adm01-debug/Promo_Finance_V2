@@ -118,6 +118,59 @@ Deno.test("pipeline: múltiplos grupos — primeiro match vence, demais 'skipped
   assert(result.preview.groups.includes("grupo-sem-mapping"));
 });
 
+Deno.test("pipeline: usuário EXISTE mas domínio fora da allowlist → success=false e não provisiona", async () => {
+  const email = "existente@jit-tests.example.com";
+  const lookup = makeUserLookup([email]);
+  let lookupCalls = 0;
+  const trackedLookup = async (e: string) => {
+    lookupCalls++;
+    return await lookup(e);
+  };
+
+  const result = await evaluateClaims({
+    config: { ...BASE_CONFIG, allowed_domains: ["only-this.example.com"] },
+    mock_claims: { email, name: "Existente Bloqueado", groups: ["sso-admins"] },
+    userLookup: trackedLookup,
+  });
+
+  // Bloqueio de domínio prevalece sobre a existência do usuário.
+  assertEquals(result.success, false);
+  assertEquals(result.preview.domain_allowed, false);
+  assert(
+    result.errors.some((e) => e.includes("não está na lista permitida")),
+  );
+
+  // user_exists ainda é reportado (lookup é executado para diagnóstico),
+  // mas would_jit_provision permanece false — JIT NÃO acontece em domínio bloqueado.
+  assertEquals(result.preview.user_exists, true);
+  assertEquals(result.preview.would_jit_provision, false);
+  assertEquals(result.preview.provision_blocked_reason, null);
+  assertEquals(lookupCalls, 1);
+
+  // Role mapping continua avaliado para diagnóstico.
+  assertEquals(result.preview.resolved_role, "admin");
+  assertEquals(result.preview.matched_group, "sso-admins");
+});
+
+Deno.test("pipeline: usuário NÃO existe e domínio fora da allowlist → success=false, sem JIT", async () => {
+  const email = "novo@jit-tests.example.com";
+  const result = await evaluateClaims({
+    config: { ...BASE_CONFIG, allowed_domains: ["only-this.example.com"] },
+    mock_claims: { email, name: "Novo Bloqueado", groups: ["sso-financeiro"] },
+    userLookup: makeUserLookup([]),
+  });
+
+  assertEquals(result.success, false);
+  assertEquals(result.preview.domain_allowed, false);
+  assertEquals(result.preview.user_exists, false);
+  // Mesmo com auto_provision_users=true, JIT não dispara em domínio bloqueado.
+  assertEquals(result.preview.would_jit_provision, false);
+  assertEquals(result.preview.provision_blocked_reason, null);
+  assert(
+    result.errors.some((e) => e.includes("jit-tests.example.com")),
+  );
+});
+
 Deno.test("pipeline: domínio fora da allowlist → success=false", async () => {
   const result = await evaluateClaims({
     config: { ...BASE_CONFIG, allowed_domains: ["only-this.example.com"] },
