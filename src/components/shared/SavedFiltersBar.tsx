@@ -366,6 +366,13 @@ export function SavedFiltersBar<T>({
                             filterName={f.name}
                             isBusy={subBusy}
                             pushReady={pushReady}
+                            tiposEventosOpcoes={[
+                              { value: "movimentacao_outlier", label: "Movimentação atípica" },
+                              { value: "pagamento_duplicado", label: "Pagamento duplicado" },
+                              { value: "conta_pagar_alta", label: "Conta a pagar alta" },
+                              { value: "conciliacao_atrasada", label: "Conciliação atrasada" },
+                              { value: "mudanca_regime_brusca", label: "Variação brusca de regime" },
+                            ]}
                             onEnablePush={enablePush}
                             onSubscribe={(input) =>
                               subscribe.mutate({
