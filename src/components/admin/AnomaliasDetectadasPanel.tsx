@@ -206,6 +206,7 @@ interface PersistedState {
   sort: { key: string; dir: "asc" | "desc" };
   cols: string[];
   q: string;
+  presetId?: string | null;
 }
 function loadPersistedState(): PersistedState | null {
   try {
