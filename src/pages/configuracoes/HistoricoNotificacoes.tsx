@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -6,10 +7,38 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bell, Mail, Smartphone, CheckCheck, Loader2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Bell,
+  Mail,
+  Smartphone,
+  CheckCheck,
+  Loader2,
+  Filter as FilterIcon,
+  ExternalLink,
+  Calendar,
+} from "lucide-react";
 import { toast } from "sonner";
-import { formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { findCatalogEntry } from "./savedFiltersCatalog";
+
+/** Fallback de rotas para entity_types fora do catálogo. */
+const ENTITY_TYPE_ROUTES: Record<string, string> = {
+  anomalias_detectadas: "/admin/insights-ia",
+  conciliacao_transacoes: "/conciliacao",
+};
+
+function getModuleRoute(entityType: string | null | undefined): string | null {
+  if (!entityType) return null;
+  return findCatalogEntry(entityType)?.route ?? ENTITY_TYPE_ROUTES[entityType] ?? null;
+}
 
 type Channel = "inapp" | "push" | "email";
 
