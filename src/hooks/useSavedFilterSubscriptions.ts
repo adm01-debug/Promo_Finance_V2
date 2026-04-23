@@ -3,12 +3,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
+/** Cadência de entrega das notificações para uma assinatura. */
+export type SubscriptionFrequencia = "imediata" | "horaria" | "diaria";
+
 export interface SavedFilterSubscription {
   id: string;
   user_id: string;
   saved_filter_id: string;
   notify_inapp: boolean;
   notify_push: boolean;
+  /** Cadência de entrega: imediata, agrupada por hora ou única vez por dia. */
+  frequencia: SubscriptionFrequencia;
+  /** Horário preferido (HH:MM:SS, timezone do usuário) para a cadência diária. */
+  horario_preferido: string;
+  /** Próxima janela de despacho — usada pelo cliente para agrupar pendentes. */
+  next_dispatch_at: string | null;
   last_seen_at: string;
   created_at: string;
   updated_at: string;
