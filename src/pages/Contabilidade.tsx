@@ -1,5 +1,8 @@
+import { useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { BookOpen, FileText, Calculator, Building2, BookText, BarChart3, AlertTriangle, Plug, History, ArrowRight, LayoutGrid } from 'lucide-react';
+import { BookOpen, FileText, Calculator, Building2, BookText, BarChart3, AlertTriangle, Plug, History, ArrowRight, LayoutGrid, Pin } from 'lucide-react';
+import { useLocalStorageState } from '@/hooks/useLocalStorageState';
+import { formatCNPJ } from '@/lib/brazilian-validators';
 import { motion } from 'framer-motion';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -35,16 +38,27 @@ export default function Contabilidade() {
   const { data: empresas = [] } = useEmpresas();
   const [searchParams, setSearchParams] = useSearchParams();
 
+  // CNPJ ativo persistido entre sessões (chave por usuário não é necessária:
+  // o RLS já filtra empresas visíveis ao usuário logado)
+  const [empresaPersistida, setEmpresaPersistida, resetEmpresaPersistida] =
+    useLocalStorageState<string>('contabilidade:empresa-ativa', '');
+
   const tabParam = searchParams.get('tab');
   const tab: TabId = (VALID_TABS as readonly string[]).includes(tabParam ?? '')
     ? (tabParam as TabId)
     : 'inicio';
 
-  const empresaId = searchParams.get('empresa') ?? '';
+  const empresaUrl = searchParams.get('empresa') ?? '';
+  const empresaId = empresaUrl || empresaPersistida;
   const anoParam = Number(searchParams.get('ano'));
   const ano = Number.isFinite(anoParam) && anoParam >= 2010 && anoParam <= new Date().getFullYear()
     ? anoParam
     : ANO_DEFAULT;
+
+  const empresaAtiva = useMemo(
+    () => empresas.find(e => e.id === empresaId) ?? null,
+    [empresas, empresaId],
+  );
 
   const updateParam = (key: string, value: string | null) => {
     setSearchParams(
@@ -59,8 +73,37 @@ export default function Contabilidade() {
   };
 
   const setTab = (v: string) => updateParam('tab', v);
-  const setEmpresaId = (v: string) => updateParam('empresa', v || null);
+  const setEmpresaId = (v: string) => {
+    updateParam('empresa', v || null);
+    setEmpresaPersistida(v || '');
+  };
   const setAno = (v: number) => updateParam('ano', String(v));
+
+  // Hidrata a URL com a empresa persistida quando ausente — garante que
+  // wizard/downloads/validações fiquem amarrados ao mesmo CNPJ entre sessões
+  useEffect(() => {
+    if (!empresaUrl && empresaPersistida && empresas.some(e => e.id === empresaPersistida)) {
+      updateParam('empresa', empresaPersistida);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [empresaUrl, empresaPersistida, empresas.length]);
+
+  // Mantém o localStorage sincronizado quando a URL muda (ex.: link compartilhado)
+  useEffect(() => {
+    if (empresaUrl && empresaUrl !== empresaPersistida) {
+      setEmpresaPersistida(empresaUrl);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [empresaUrl]);
+
+  // Limpa persistência se a empresa não existe mais (RLS, exclusão, troca de tenant)
+  useEffect(() => {
+    if (empresaPersistida && empresas.length > 0 && !empresas.some(e => e.id === empresaPersistida)) {
+      resetEmpresaPersistida();
+      updateParam('empresa', null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [empresaPersistida, empresas.length]);
 
   // Histórico SPED para detectar se a ECD do ano selecionado já foi gerada (sincroniza badge da ECF)
   const { data: historico = [] } = useSpedContabilHistorico(empresaId);
@@ -80,17 +123,35 @@ export default function Contabilidade() {
             </h1>
             <p className="text-muted-foreground">Plano de contas, lançamentos e geração de ECD/ECF</p>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap items-end gap-3">
             <div className="space-y-1">
               <Label className="text-xs">Empresa</Label>
               <Select value={empresaId} onValueChange={setEmpresaId}>
-                <SelectTrigger className="w-[220px]">
+                <SelectTrigger className="w-[260px]">
                   <Building2 className="mr-2 h-4 w-4" /><SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
-                  {empresas.map(e => <SelectItem key={e.id} value={e.id}>{e.nome_fantasia || e.razao_social}</SelectItem>)}
+                  {empresas.map(e => (
+                    <SelectItem key={e.id} value={e.id}>
+                      <div className="flex flex-col">
+                        <span>{e.nome_fantasia || e.razao_social}</span>
+                        {e.cnpj && (
+                          <span className="text-[10px] text-muted-foreground font-mono">
+                            {formatCNPJ(e.cnpj)}
+                          </span>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+              {empresaAtiva?.cnpj && (
+                <div className="flex items-center gap-1 text-[11px] text-muted-foreground animate-fade-in">
+                  <Pin className="h-3 w-3 text-primary" />
+                  <span className="font-mono">{formatCNPJ(empresaAtiva.cnpj)}</span>
+                  <span>· fixado para esta sessão</span>
+                </div>
+              )}
             </div>
             <div className="space-y-1">
               <Label className="text-xs">Ano-calendário</Label>
