@@ -168,6 +168,7 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
   const [showRaw, setShowRaw] = useState(false);
   const [query, setQuery] = useState("");
   const [activeFields, setActiveFields] = useState<Set<string>>(new Set());
+  const [copied, setCopied] = useState(false);
 
   const isInsert = !oldData && !!newData;
   const isDelete = !!oldData && !newData;
