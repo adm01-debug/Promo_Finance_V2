@@ -29,17 +29,8 @@ describe("savedFiltersValidation > normalizeRoles", () => {
     ]);
   });
   it("ignora não-strings e vazios", () => {
-    expect(
-      normalizeRoles([
-        "admin",
-        "",
-        "  ",
-        // @ts-expect-error testando entrada suja
-        null,
-        // @ts-expect-error testando entrada suja
-        123,
-      ]),
-    ).toEqual(["admin"]);
+    const dirty: unknown[] = ["admin", "", "  ", null, 123];
+    expect(normalizeRoles(dirty as string[])).toEqual(["admin"]);
   });
   it("ordena estável", () => {
     expect(normalizeRoles(["visualizador", "admin", "financeiro"])).toEqual([
