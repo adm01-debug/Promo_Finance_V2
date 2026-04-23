@@ -500,6 +500,25 @@ function FilterRow({ entry, diagnostic, onRefresh, userId }: FilterRowProps) {
             <Badge variant="outline" className="text-[10px]">
               {entry.area}
             </Badge>
+            {entry.auto && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] border-primary/40 text-primary"
+                  >
+                    Auto
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p className="text-xs">
+                    Descoberta automaticamente em runtime (Supabase ou localStorage). Adicione ao
+                    catálogo central em <code>savedFiltersCatalog.ts</code> para nomear, agrupar
+                    e linkar a tela correta.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            )}
           </div>
           <div className="text-xs text-muted-foreground mt-1 font-mono break-all">
             entityType: <span className="text-foreground">{entry.entityType}</span>
