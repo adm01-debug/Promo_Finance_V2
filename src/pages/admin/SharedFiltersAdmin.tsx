@@ -1,17 +1,31 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
+  Download,
   Loader2,
   RefreshCw,
   Search,
   Shield,
   ShieldOff,
   Trash2,
+  Upload,
   Users,
 } from 'lucide-react';
+import {
+  buildBundle,
+  downloadBundle,
+  parseBundle,
+  SharedFilterBundleParseError,
+  type SharedFilterBundleItem,
+} from '@/lib/sharedFiltersExport';
+import {
+  validateSharing,
+  SavedFilterSharingError,
+  type AppRole as ValidatedAppRole,
+} from '@/hooks/savedFiltersValidation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import {
   Card,
@@ -111,10 +125,11 @@ async function logAudit(params: {
 }
 
 export default function SharedFiltersAdmin() {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, currentEmpresaId } = useAuth();
   const qc = useQueryClient();
   const [search, setSearch] = useState('');
   const [entityFilter, setEntityFilter] = useState<string>('all');
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const queryKey = ['admin-shared-filters'] as const;
 
@@ -126,7 +141,7 @@ export default function SharedFiltersAdmin() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .from('saved_filters' as any)
         .select(
-          'id,user_id,created_by,entity_type,name,is_default,is_shared,empresa_id,shared_with_roles,created_at,updated_at',
+          'id,user_id,created_by,entity_type,name,filters,is_default,is_shared,empresa_id,shared_with_roles,created_at,updated_at',
         )
         .eq('is_shared', true)
         .order('updated_at', { ascending: false });
@@ -236,6 +251,138 @@ export default function SharedFiltersAdmin() {
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
   });
 
+  // ----- Export / Import de bundles -----
+  const exportableRows = useMemo(() => {
+    return currentEmpresaId
+      ? rows.filter((r) => r.empresa_id === currentEmpresaId)
+      : rows;
+  }, [rows, currentEmpresaId]);
+
+  function handleExport() {
+    if (exportableRows.length === 0) {
+      toast.error('Nenhum filtro compartilhado da empresa atual para exportar.');
+      return;
+    }
+    const bundle = buildBundle({
+      rows: exportableRows.map((r) => ({
+        entity_type: r.entity_type,
+        name: r.name,
+        filters: (r as unknown as { filters?: unknown }).filters ?? {},
+        shared_with_roles: r.shared_with_roles,
+        empresa_id: r.empresa_id,
+        user_id: r.user_id,
+      })),
+      ownersById: ownersMap,
+      exportedBy: user ? { id: user.id, email: user.email ?? null } : null,
+      fromEmpresaId: currentEmpresaId ?? null,
+    });
+    downloadBundle(bundle);
+    toast.success(`${bundle.items.length} filtro(s) exportados`);
+  }
+
+  async function fetchTenantRoles(empresaId: string): Promise<string[]> {
+    const { data, error } = await supabase
+      .from('user_empresas')
+      .select('role')
+      .eq('empresa_id', empresaId)
+      .eq('ativo', true);
+    if (error) throw new Error(error.message);
+    const set = new Set<string>();
+    (data ?? []).forEach((r: { role: string | null }) => {
+      if (r?.role) set.add(r.role);
+    });
+    return Array.from(set);
+  }
+
+  const importBundle = useMutation({
+    mutationFn: async (file: File) => {
+      if (!user) throw new Error('Sessão expirada');
+      if (!currentEmpresaId)
+        throw new Error('Selecione uma empresa atual antes de importar.');
+
+      const text = await file.text();
+      const bundle = parseBundle(text);
+      const tenantRoles = await fetchTenantRoles(currentEmpresaId);
+
+      let inserted = 0;
+      let skipped = 0;
+      const reasons: string[] = [];
+
+      for (const item of bundle.items as SharedFilterBundleItem[]) {
+        let normalized: { sharedWithRoles: ValidatedAppRole[] };
+        try {
+          normalized = validateSharing({
+            isShared: true,
+            sharedWithRoles: item.shared_with_roles,
+            empresaId: currentEmpresaId,
+            tenantRoles,
+          });
+        } catch (e) {
+          skipped++;
+          reasons.push(
+            `${item.name}: ${
+              e instanceof SavedFilterSharingError ? e.message : 'validação falhou'
+            }`,
+          );
+          continue;
+        }
+
+        const { error } = await supabase
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .from('saved_filters' as any)
+          .upsert(
+            {
+              user_id: user.id,
+              created_by: user.id,
+              entity_type: item.entity_type,
+              name: item.name,
+              filters: item.filters as never,
+              is_default: false,
+              is_shared: true,
+              empresa_id: currentEmpresaId,
+              shared_with_roles: normalized.sharedWithRoles,
+            },
+            { onConflict: 'user_id,entity_type,name' },
+          );
+        if (error) {
+          skipped++;
+          reasons.push(`${item.name}: ${error.message}`);
+          continue;
+        }
+        inserted++;
+      }
+
+      await logAudit({
+        filterId: '00000000-0000-0000-0000-000000000000',
+        details: `Import de bundle: ${inserted} importado(s), ${skipped} ignorado(s); origem_empresa=${bundle.exportedFromEmpresaId ?? '—'}; destino_empresa=${currentEmpresaId}; admin=${user.id}`,
+        oldData: { reasons },
+        newData: { inserted, skipped, total: bundle.items.length },
+      });
+
+      return { inserted, skipped, total: bundle.items.length, reasons };
+    },
+    onSuccess: (r) => {
+      if (r.inserted > 0)
+        toast.success(`${r.inserted} filtro(s) importado(s) com sucesso`);
+      if (r.skipped > 0)
+        toast.warning(
+          `${r.skipped} filtro(s) ignorado(s)${r.reasons[0] ? `: ${r.reasons[0]}` : ''}`,
+        );
+      qc.invalidateQueries({ queryKey });
+    },
+    onError: (e: Error) => {
+      const prefix = e instanceof SharedFilterBundleParseError ? 'Arquivo' : 'Erro';
+      toast.error(`${prefix}: ${e.message}`);
+    },
+  });
+
+  function handlePickFile(file: File | null) {
+    if (!file) return;
+    importBundle.mutate(file);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }
+
+
   const entityTypes = useMemo(
     () => Array.from(new Set(rows.map((r) => r.entity_type))).sort(),
     [rows],
@@ -313,19 +460,60 @@ export default function SharedFiltersAdmin() {
               </p>
             </div>
           </div>
-          <Button
-            onClick={() => refetch()}
-            disabled={isFetching}
-            className="gap-2"
-            variant="outline"
-          >
-            {isFetching ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <RefreshCw className="h-4 w-4" />
-            )}
-            Atualizar
-          </Button>
+          <div className="flex items-center gap-2 flex-wrap">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={(e) => handlePickFile(e.target.files?.[0] ?? null)}
+            />
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={handleExport}
+              disabled={isLoading || exportableRows.length === 0}
+              title={
+                currentEmpresaId
+                  ? 'Exporta filtros compartilhados da empresa atual'
+                  : 'Exporta todos os filtros compartilhados visíveis'
+              }
+            >
+              <Download className="h-4 w-4" />
+              Exportar
+            </Button>
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={importBundle.isPending || !currentEmpresaId}
+              title={
+                currentEmpresaId
+                  ? 'Importa um bundle .json para a empresa atual'
+                  : 'Selecione uma empresa atual antes de importar'
+              }
+            >
+              {importBundle.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4" />
+              )}
+              Importar
+            </Button>
+            <Button
+              onClick={() => refetch()}
+              disabled={isFetching}
+              className="gap-2"
+              variant="outline"
+            >
+              {isFetching ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
+              Atualizar
+            </Button>
+          </div>
         </div>
 
         {/* Resumo */}
