@@ -58,6 +58,8 @@ export interface SubscriptionPopoverProps {
     horarioPreferido: string;
     severidadesCriticas: SeveridadeAlerta[];
     tiposEventosAtivos: string[];
+    rateLimitMax: number;
+    rateLimitWindowMin: number;
   }) => void;
   onUpdate: (input: {
     id: string;
@@ -68,6 +70,8 @@ export interface SubscriptionPopoverProps {
     horarioPreferido: string;
     severidadesCriticas: SeveridadeAlerta[];
     tiposEventosAtivos: string[];
+    rateLimitMax: number;
+    rateLimitWindowMin: number;
   }) => void;
   onUnsubscribe: (id: string) => void;
 }
@@ -107,6 +111,12 @@ export function SubscriptionPopover({
   const [tiposAtivos, setTiposAtivos] = useState<string[]>(
     subscription?.tipos_eventos_ativos ?? [],
   );
+  const [rateLimitMax, setRateLimitMax] = useState<number>(
+    subscription?.rate_limit_max ?? 5,
+  );
+  const [rateLimitWindow, setRateLimitWindow] = useState<number>(
+    subscription?.rate_limit_window_min ?? 10,
+  );
 
   // Sincroniza estado local quando o popover (re)abre ou subscription muda
   useEffect(() => {
@@ -118,6 +128,8 @@ export function SubscriptionPopover({
     setHorario((subscription?.horario_preferido ?? "09:00:00").slice(0, 5));
     setSevsCriticas(subscription?.severidades_criticas ?? ["critica"]);
     setTiposAtivos(subscription?.tipos_eventos_ativos ?? []);
+    setRateLimitMax(subscription?.rate_limit_max ?? 5);
+    setRateLimitWindow(subscription?.rate_limit_window_min ?? 10);
   }, [open, subscription]);
 
   const horaCompleta = horario.length === 5 ? `${horario}:00` : horario;
@@ -135,6 +147,12 @@ export function SubscriptionPopover({
 
   const handleSave = async () => {
     if (push && !pushReady) await onEnablePush();
+    // Clamp defensivo — espelha o trigger do banco para evitar erro 4xx.
+    const safeMax = Math.min(100, Math.max(1, Math.round(rateLimitMax) || 5));
+    const safeWindow = Math.min(
+      1440,
+      Math.max(1, Math.round(rateLimitWindow) || 10),
+    );
     const payload = {
       notifyInapp: inapp,
       notifyPush: push,
@@ -143,6 +161,8 @@ export function SubscriptionPopover({
       horarioPreferido: horaCompleta,
       severidadesCriticas: sevsCriticas,
       tiposEventosAtivos: tiposAtivos,
+      rateLimitMax: safeMax,
+      rateLimitWindowMin: safeWindow,
     };
     if (subscription) {
       onUpdate({ id: subscription.id, ...payload });
