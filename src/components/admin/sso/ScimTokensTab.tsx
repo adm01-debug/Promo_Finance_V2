@@ -166,6 +166,21 @@ export function ScimTokensTab() {
                 <Label>Nome do token *</Label>
                 <Input value={nome} onChange={e => setNome(e.target.value)} placeholder="Ex: Azure AD - Produção" />
               </div>
+              <div>
+                <Label>Papel padrão *</Label>
+                <Select value={defaultRole} onValueChange={(v) => setDefaultRole(v as ScimDefaultRole)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="visualizador">Visualizador</SelectItem>
+                    <SelectItem value="operacional">Operacional</SelectItem>
+                    <SelectItem value="financeiro">Financeiro</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Aplicado quando o IdP não envia <code>department</code> ou grupo reconhecível.
+                </p>
+              </div>
               <Button className="w-full" disabled={!nome || create.isPending} onClick={handleCreate}>
                 Gerar token
               </Button>
