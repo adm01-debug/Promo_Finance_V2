@@ -13,6 +13,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { WebAuthnManager } from '@/components/auth/WebAuthnManager';
+import { SsoProfileSyncBanner } from '@/components/profile/SsoProfileSyncBanner';
 
 export default function MeuPerfil() {
   const { user, role } = useAuth();
@@ -79,6 +80,8 @@ export default function MeuPerfil() {
           <h1 className="text-3xl font-bold tracking-tight">Meu Perfil</h1>
           <p className="text-muted-foreground">Gerencie suas informações pessoais e segurança</p>
         </div>
+
+        <SsoProfileSyncBanner userId={user?.id} />
 
         {/* Dados Pessoais */}
         <Card>
