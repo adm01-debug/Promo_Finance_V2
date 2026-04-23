@@ -29,6 +29,7 @@ import {
   TOAST_DURACAO_DEFAULT,
 } from "@/hooks/useAnomaliaPreferences";
 import { useLogAudit } from "@/hooks/useAuditLog";
+import { PreviewAnomaliaToastDrawer } from "./PreviewAnomaliaToastDrawer";
 
 const TIPOS = [
   { value: "movimentacao_outlier", label: "Movimentação atípica" },
