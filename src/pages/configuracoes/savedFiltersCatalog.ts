@@ -19,6 +19,12 @@ export interface FilterCatalogEntry {
   localStorageKey?: string;
   /** Campos esperados em filters.payload — apenas informativo. */
   defaultsKeys: string[];
+  /**
+   * Marca entradas descobertas em runtime (Supabase ou localStorage) que ainda
+   * não foram catalogadas manualmente. Permite que novas telas com
+   * `useManagedFilters` apareçam em /configuracoes/filtros-salvos sem edição.
+   */
+  auto?: boolean;
 }
 
 export const SAVED_FILTERS_CATALOG: FilterCatalogEntry[] = [
