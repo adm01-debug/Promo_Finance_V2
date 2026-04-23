@@ -86,6 +86,7 @@ export function SavedFiltersBar<T>({
   activePresetId,
   onLoad,
   onClear,
+  onRestoreState,
 }: SavedFiltersBarProps<T>) {
   const { user, currentEmpresaId } = useAuth();
   const {
