@@ -31,8 +31,10 @@ export function ScimTokensTab() {
   const revoke = useRevokeScimToken();
 
   const handleCreate = async () => {
-    if (!empresaId || !nome) return;
-    const r = await create.mutateAsync({ empresa_id: empresaId, nome, default_role: defaultRole });
+    if (!empresaId) { toast.error('Selecione a empresa alvo'); return; }
+    if (!nome.trim()) { toast.error('Informe o nome do token'); return; }
+    if (!defaultRole) { toast.error('Selecione o papel padrão'); return; }
+    const r = await create.mutateAsync({ empresa_id: empresaId, nome: nome.trim(), default_role: defaultRole });
     setIssued(r.token);
     setNome('');
     setDefaultRole('visualizador');
@@ -198,7 +200,7 @@ export function ScimTokensTab() {
                   Aplicado quando o IdP não envia <code>department</code> ou grupo reconhecível.
                 </p>
               </div>
-              <Button className="w-full" disabled={!nome || !empresaId || create.isPending} onClick={handleCreate}>
+              <Button className="w-full" disabled={!nome.trim() || !empresaId || !defaultRole || create.isPending} onClick={handleCreate}>
                 Gerar token
               </Button>
             </div>
