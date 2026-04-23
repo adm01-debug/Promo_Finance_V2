@@ -611,6 +611,11 @@ export function AnomaliasReviewQueue({
             </div>
             <Button onClick={() => onOpenChange(false)}>Fechar</Button>
           </div>
+        ) : transicionando ? (
+          <div className="py-12 flex flex-col items-center justify-center gap-2" aria-live="polite">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <p className="text-xs text-muted-foreground">Carregando próxima anomalia…</p>
+          </div>
         ) : atual ? (
           <div className="space-y-4">
             <div className="space-y-1.5" aria-live="polite">
