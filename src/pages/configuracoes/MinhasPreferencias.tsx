@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
-  Columns3,
+  Columns,
   ExternalLink,
   Filter as FilterIcon,
   Loader2,
@@ -465,7 +465,7 @@ function PresetRow({ row, onToggleDefault, onStopSharing, onDelete, busy }: Pres
             </span>
           </div>
           <div className="flex items-start gap-1">
-            <Columns3 className="h-3 w-3 mt-0.5 shrink-0" />
+            <Columns className="h-3 w-3 mt-0.5 shrink-0" />
             <span>
               <span className="font-medium text-foreground">{columns.length}</span> coluna(s) sincronizada(s)
               {columns.length > 0 && (
