@@ -70,7 +70,21 @@ export function SloFailureBanner({ failure, onDismiss }: Props) {
         logger.warn('[SloFailureBanner] supabase.auth.signOut local falhou', e);
       }
       await runAuthCleanup();
-      toast.success('Revogação local concluída.', { id: 'sso-slo-local' });
+
+      // Revalida: confirma que não há mais sessão ativa nem acesso a áreas protegidas.
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        toast.error('Sessão ainda ativa após a limpeza. Atualize a página e tente novamente.', {
+          id: 'sso-slo-local',
+        });
+        logger.error('[SloFailureBanner] Sessão persistiu após cleanup', { userId: session.user.id });
+        return;
+      }
+
+      toast.success('Revogação local concluída. Nenhuma sessão ativa detectada.', {
+        id: 'sso-slo-local',
+        description: 'Cookies, storages e cache foram limpos com sucesso.',
+      });
       clearSloFailure();
       onDismiss();
     } catch (e) {
