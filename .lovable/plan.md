@@ -2,38 +2,34 @@
 
 ## Status atual
 
-Verifiquei cada tela citada. O mascaramento e/ou o toggle já estão presentes em quase todas — restam apenas duas lacunas reais.
+`src/lib/__tests__/ip-mask.test.ts` já cobre os casos básicos:
+- IPv4 mascarado / não mascarado
+- IPv6 mascarado nos 4 últimos hextets
+- `null` / `undefined` / `''` → `'-'`
+- string não-IP (`localhost`) preservada
+- `matchesIpFilter` com substring, IP nulo e termo vazio
+- Um caso afirmando que o filtro casa o IP original mesmo "se a UI estiver mascarada"
 
-| Tela | `maskIp` aplicado? | `IpMaskToggle` visível? |
-|---|---|---|
-| `AuditLogs` (página) | ✅ | ✅ |
-| `AuditLogTable` (linha + modal de detalhes) | ✅ (linha **e** campo "IP" do dialog) | herda da página |
-| `BlockedIPsTab` | ✅ | ✅ |
-| `RateLimitDashboard` — tabela de logs | ✅ | ✅ |
-| `RateLimitDashboard` — bloco de **alertas de segurança** | ❌ exibe `alert.ip_address` cru | — |
-| **Sessões (MFA / `KnownDevicesPanel` / `useSessions`)** | ❌ exibe `session.ip_address` cru | ❌ sem toggle |
+## Lacunas a cobrir
 
-O modal de detalhes do `AuditLogTable` **já** usa `maskIp(log.ip_address, maskIpsEnabled)` (linha do dialog "IP"), então nada a fazer ali.
+Para atender ao pedido (mascaramento + filtro por substring com toggle ligado), faltam casos que reforcem o invariante "a UI mascara, mas a busca continua funcionando contra o original":
 
-## Mudanças propostas
+1. **Trim de espaços** em `maskIp` (`'  192.168.1.42  '` → `'192.168.*.*'`).
+2. **IPv4 com octetos curtos** (`'1.2.3.4'` → `'1.2.*.*'`).
+3. **IPv6 comprimido** (`'::1'`, `'fe80::1'`) — confirma que formas exóticas não são corrompidas.
+4. **`matchesIpFilter` case-insensitive** com termo em maiúsculas contra IPv6 (`'FE80'` casa `'fe80::1'`).
+5. **Invariante combinado** (teste de integração da própria lib): para uma lista de IPs reais, `filter(ip => matchesIpFilter(ip, '192.168'))` produz o mesmo subconjunto independente de `maskIp(ip, true|false)` ter sido aplicado para exibição. Isso documenta de forma executável que mascarar **não** afeta o filtro.
+6. **Substring que só existiria no valor mascarado** (`'*.*'`) **não casa** nada — garante que ninguém acidentalmente use a saída mascarada como entrada de filtro.
 
-### 1. `src/components/security/RateLimitDashboard.tsx`
-- No bloco de alertas de segurança, trocar `{alert.ip_address}` por `{maskIp(alert.ip_address, maskIpsEnabled)}`. O hook `useIpMaskPreference` já está em escopo (usado na tabela de logs), então é apenas substituir a expressão.
+## Mudança proposta
 
-### 2. Sessões ativas (painel do usuário)
-Localizar o componente que lista sessões (provável: `src/components/security/SessionsPanel.tsx` ou similar consumindo `useSessions`) e:
-- Importar `maskIp`, `useIpMaskPreference` e `IpMaskToggle`.
-- Adicionar `<IpMaskToggle />` no header do card de sessões.
-- Aplicar `maskIp(session.ip_address, maskIpsEnabled)` em cada linha/cartão de sessão.
+**Único arquivo editado**: `src/lib/__tests__/ip-mask.test.ts` — adicionar um novo `describe('maskIp + matchesIpFilter — invariantes')` com os 6 casos acima, mais 2 casos pontuais nos `describe` existentes (trim e IPv4 curto).
 
-> Confirmarei o caminho exato do componente no momento da implementação (provavelmente referenciado por `MFASettings` ou pela aba "Dispositivos" em `Seguranca.tsx` via `KnownDevicesPanel`). Se `KnownDevicesPanel` já for o ponto de exibição de IPs de sessão, o toggle e o `maskIp` vão lá; caso contrário, no painel real de sessões.
-
-### 3. Sem mudanças necessárias
-- `AuditLogs`, `AuditLogTable` (incluindo modal), `BlockedIPsTab` e a tabela de logs do `RateLimitDashboard` já estão completos. Não duplicar toggles.
+Sem novos arquivos, sem mudanças em código de produção, sem mudanças de config (`vitest.config.ts` já inclui `src/**/*.test.ts`).
 
 ## Resultado esperado
 
-Após as duas mudanças, **todo IP exibido nas telas de segurança** (auditoria + modal, IPs bloqueados, rate limit logs **e alertas**, sessões/dispositivos) respeita a preferência única persistida em `localStorage` e sincronizada entre abas. Filtros de busca continuam casando o IP original via `matchesIpFilter`.
-
-Sem migrações, sem mudanças de RLS, sem impacto em exports CSV.
+- Suite cresce de ~9 para ~15 asserções na área de mascaramento.
+- Invariante "mascarar é cosmético; filtrar usa o original" fica documentado em teste e protegido contra regressão.
+- `npm test` continua passando; cobertura da lib `ip-mask` chega a 100% de branches.
 
