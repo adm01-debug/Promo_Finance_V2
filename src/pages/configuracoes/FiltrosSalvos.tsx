@@ -208,10 +208,12 @@ export default function FiltrosSalvos() {
             entityType: entry.entityType,
             remote: 'loading',
             remoteUpdatedAt: null,
+            remoteUpdatedAtIso: null,
             remoteKeys: [],
             local: 'empty',
             localKeys: [],
             localUpdatedAt: null,
+            localUpdatedAtIso: null,
             syncing: false,
           }),
           syncing: true,
@@ -224,6 +226,7 @@ export default function FiltrosSalvos() {
       let remoteStatus: DiagnosticState['remote'] = 'empty';
       let remoteKeys: string[] = [];
       let remoteUpdatedAt: string | null = null;
+      let remoteUpdatedAtIso: string | null = null;
 
       if (user?.id) {
         try {
@@ -240,6 +243,7 @@ export default function FiltrosSalvos() {
             const payload = data.payload as { filters?: Record<string, unknown> };
             remoteKeys = Object.keys(payload?.filters ?? {});
             remoteStatus = remoteKeys.length > 0 ? 'ok' : 'empty';
+            remoteUpdatedAtIso = data.updated_at ? new Date(data.updated_at).toISOString() : null;
             remoteUpdatedAt = data.updated_at ? new Date(data.updated_at).toLocaleString('pt-BR') : null;
           } else {
             remoteStatus = 'empty';
@@ -258,10 +262,12 @@ export default function FiltrosSalvos() {
           entityType: entry.entityType,
           remote: remoteStatus,
           remoteUpdatedAt,
+          remoteUpdatedAtIso,
           remoteKeys,
           local: local.status,
           localKeys: local.keys,
           localUpdatedAt: local.ts,
+          localUpdatedAtIso: local.tsIso,
           syncing: false,
         },
       }));
