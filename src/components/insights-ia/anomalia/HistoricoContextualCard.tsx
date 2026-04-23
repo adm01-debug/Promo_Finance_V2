@@ -7,7 +7,7 @@ export function HistoricoContextualCard({ pontos }: { pontos: PontoHistorico[] }
   return (
     <Card className="border-l-4 border-l-info">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-sm font-semibold tracking-tight">
+        <CardTitle className="flex items-center gap-2 text-base font-semibold tracking-tight">
           <TrendingUp className="h-4 w-4 text-info" /> Histórico contextual (30 dias)
         </CardTitle>
       </CardHeader>

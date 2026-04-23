@@ -100,7 +100,7 @@ export function AcoesSugeridasCard({ anomalia }: { anomalia: Anomalia }) {
   return (
     <Card className="border-l-4 border-l-success">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-sm font-semibold tracking-tight">
+        <CardTitle className="flex items-center gap-2 text-base font-semibold tracking-tight">
           <Lightbulb className="h-4 w-4 text-success" /> Ações sugeridas
         </CardTitle>
       </CardHeader>
@@ -108,7 +108,7 @@ export function AcoesSugeridasCard({ anomalia }: { anomalia: Anomalia }) {
         <div className="space-y-3">
           {acoes.map((a, i) => (
             <div key={i} className="border border-border rounded-md p-3 bg-muted/40">
-              <h4 className="text-sm font-semibold">{a.titulo}</h4>
+              <h4 className="text-sm font-semibold tracking-tight">{a.titulo}</h4>
               <p className="text-xs text-muted-foreground mt-1">{a.descricao}</p>
               {a.rota && a.cta && (
                 <Button asChild size="sm" variant="outline" className="mt-2">

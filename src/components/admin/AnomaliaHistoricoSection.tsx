@@ -112,7 +112,7 @@ export function AnomaliaHistoricoSection({ anomaliaId }: Props) {
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-2 flex-wrap">
           <History className="h-4 w-4 text-muted-foreground" />
-          <h3 className="text-sm font-semibold">Histórico de mudanças</h3>
+          <h3 className="text-base font-semibold tracking-tight">Histórico de mudanças</h3>
           {entries.length > 0 && (
             <Badge variant="secondary" className="text-xs">
               {entries.length}

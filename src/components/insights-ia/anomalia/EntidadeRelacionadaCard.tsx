@@ -15,9 +15,11 @@ export function EntidadeRelacionadaCard({ entidade }: { entidade: EntidadeRelaci
     <>
       <Card className="border-l-4 border-l-primary">
         <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-sm font-semibold tracking-tight">
+          <CardTitle className="flex items-center gap-2 text-base font-semibold tracking-tight">
             <Database className="h-4 w-4 text-primary" /> Entidade relacionada
-            <span className="text-xs text-muted-foreground font-normal">({entidade.tipo})</span>
+            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              {entidade.tipo}
+            </span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -35,7 +37,9 @@ export function EntidadeRelacionadaCard({ entidade }: { entidade: EntidadeRelaci
                     const isMono = MONO_KEYS.has(k) || k.endsWith("_id");
                     return (
                       <div key={k} className="border border-border rounded-md px-2 py-1.5">
-                        <dt className="text-xs font-medium text-muted-foreground">{k}</dt>
+                        <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                          {k}
+                        </dt>
                         <dd
                           className={
                             isMono

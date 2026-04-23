@@ -75,7 +75,7 @@ export function DetectoresContribuintesCard({ anomalia }: { anomalia: Anomalia }
   return (
     <Card className="border-l-4 border-l-warning">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-sm font-semibold tracking-tight">
+        <CardTitle className="flex items-center gap-2 text-base font-semibold tracking-tight">
           <Brain className="h-4 w-4 text-warning" /> Detectores que contribuíram (XAI)
         </CardTitle>
       </CardHeader>
@@ -83,7 +83,7 @@ export function DetectoresContribuintesCard({ anomalia }: { anomalia: Anomalia }
         {detectores.map((d, i) => (
           <div key={i} className="space-y-2 p-3 border border-border rounded-md bg-muted/40">
             <div className="flex items-center justify-between">
-              <h4 className="text-sm font-semibold">{d.nome}</h4>
+              <h4 className="text-sm font-semibold tracking-tight">{d.nome}</h4>
               <span className="text-xs font-medium tabular-nums text-muted-foreground">
                 {d.contribuicao}%
               </span>
