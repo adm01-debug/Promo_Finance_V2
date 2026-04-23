@@ -264,6 +264,78 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
     insertEntries.length +
     deleteEntries.length;
 
+  // Resumo textual: campos-chave + alterações principais
+  const buildResumo = (): string => {
+    const lines: string[] = [];
+    lines.push(`Auditoria: ${tipoLabel}`);
+    if (action) lines.push(`Ação: ${action}`);
+
+    if (camposChave.length > 0) {
+      lines.push("");
+      lines.push("Campos-chave:");
+      for (const c of camposChave) {
+        const ch = changedKeyFields.get(c.key);
+        if (ch && ch.kind === "changed") {
+          lines.push(`  • ${c.key}: ${formatValue(ch.before)} → ${formatValue(ch.after)} (alterado)`);
+        } else if (ch && ch.kind === "added") {
+          lines.push(`  • ${c.key}: ${formatValue(ch.after)} (adicionado)`);
+        } else if (ch && ch.kind === "removed") {
+          lines.push(`  • ${c.key}: ${formatValue(ch.before)} (removido)`);
+        } else {
+          lines.push(`  • ${c.key}: ${formatValue(c.value)}`);
+        }
+      }
+    }
+
+    if (isInsert && newData) {
+      lines.push("");
+      lines.push("Valores criados:");
+      for (const [k, v] of Object.entries(newData)) {
+        lines.push(`  + ${k}: ${formatValue(v)}`);
+      }
+    } else if (isDelete && oldData) {
+      lines.push("");
+      lines.push("Valores excluídos:");
+      for (const [k, v] of Object.entries(oldData)) {
+        lines.push(`  - ${k}: ${formatValue(v)}`);
+      }
+    } else {
+      if (diff.changed.length > 0) {
+        lines.push("");
+        lines.push(`Alterações (${diff.changed.length}):`);
+        for (const f of diff.changed) {
+          lines.push(`  ~ ${f.key}: ${formatValue(f.before)} → ${formatValue(f.after)}`);
+        }
+      }
+      if (diff.added.length > 0) {
+        lines.push("");
+        lines.push(`Adicionados (${diff.added.length}):`);
+        for (const f of diff.added) {
+          lines.push(`  + ${f.key}: ${formatValue(f.after)}`);
+        }
+      }
+      if (diff.removed.length > 0) {
+        lines.push("");
+        lines.push(`Removidos (${diff.removed.length}):`);
+        for (const f of diff.removed) {
+          lines.push(`  - ${f.key}: ${formatValue(f.before)}`);
+        }
+      }
+    }
+    return lines.join("\n");
+  };
+
+  const handleCopyResumo = async () => {
+    try {
+      await navigator.clipboard.writeText(buildResumo());
+      setCopied(true);
+      toast.success("Resumo copiado para a área de transferência");
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Falha ao copiar resumo");
+    }
+  };
+
   return (
     <div className="space-y-3">
       {/* Campos-chave (clicáveis para filtrar; destacam alterações) */}
