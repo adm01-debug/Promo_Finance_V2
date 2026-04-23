@@ -462,7 +462,7 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
           <div className="rounded-md border divide-y">
             {deleteEntries.map(([k, v]) => (
               <div key={k} className="px-3">
-                <FieldRow field={{ key: k, before: v, after: undefined, kind: "removed" }} />
+                <FieldRow field={{ key: k, before: v, after: undefined, kind: "removed" }} isKey={keyFieldSet.has(k)} />
               </div>
             ))}
           </div>
