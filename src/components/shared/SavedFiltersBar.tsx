@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -285,6 +285,32 @@ export function SavedFiltersBar<T>({
     (defaultFilter && activePresetId !== defaultFilter.id) ||
     (!activePresetId && !!defaultFilter);
 
+  // Atalho Alt+R aciona "Restaurar padrão" rapidamente, ignorando campos editáveis.
+  const restoreButtonRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (!e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      if (e.key !== "r" && e.key !== "R") return;
+      const target = e.target as HTMLElement | null;
+      const tag = target?.tagName;
+      const isEditable =
+        tag === "INPUT" ||
+        tag === "TEXTAREA" ||
+        tag === "SELECT" ||
+        (target?.isContentEditable ?? false);
+      if (isEditable) return;
+      if (!canRestore || anyMutationPending) return;
+      e.preventDefault();
+      handleRestoreDefault();
+      // Feedback visual: leva o foco ao botão para indicar a ação executada.
+      requestAnimationFrame(() => restoreButtonRef.current?.focus());
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+    // handleRestoreDefault é estável dentro do mesmo render; dependências cobrem o relevante.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canRestore, anyMutationPending, defaultFilter, activePresetId]);
+
   return (
     <>
       <div className="flex items-center gap-1.5 flex-wrap">
@@ -537,6 +563,7 @@ export function SavedFiltersBar<T>({
 
 
         <Button
+          ref={restoreButtonRef}
           variant="ghost"
           size="sm"
           className="gap-1.5 h-9"
@@ -544,13 +571,17 @@ export function SavedFiltersBar<T>({
           disabled={!canRestore || anyMutationPending}
           title={
             defaultFilter
-              ? `Restaurar preset padrão "${defaultFilter.name}"`
-              : "Voltar ao estado inicial (sem filtros)"
+              ? `Restaurar preset padrão "${defaultFilter.name}" (Alt+R)`
+              : "Voltar ao estado inicial (Alt+R)"
           }
-          aria-label="Restaurar padrão"
+          aria-label="Restaurar padrão (atalho: Alt+R)"
+          aria-keyshortcuts="Alt+R"
         >
           <RotateCcw className="h-3.5 w-3.5" />
           <span className="hidden md:inline">Restaurar padrão</span>
+          <kbd className="hidden lg:inline-flex items-center justify-center h-4 px-1 rounded border bg-muted text-[9px] font-mono text-muted-foreground">
+            Alt+R
+          </kbd>
         </Button>
       </div>
 
