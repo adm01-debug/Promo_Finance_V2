@@ -88,6 +88,9 @@ export function AnomaliasReviewQueue({
   const [comentarioTocado, setComentarioTocado] = useState(false);
   const [stats, setStats] = useState({ confirmadas: 0, rejeitadas: 0, puladas: 0 });
   const [recarregando, setRecarregando] = useState(false);
+  // Transição entre anomalias: cobre o intervalo entre o sucesso da ação
+  // e o snapshot/index serem atualizados, evitando flash do item antigo.
+  const [transicionando, setTransicionando] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   type ConflitoBanner = {
