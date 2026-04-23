@@ -512,7 +512,7 @@ function FilterRow({ entry, diagnostic, onRefresh, userId }: FilterRowProps) {
             {
               user_id: userId,
               entity_type: entry.entityType,
-              payload: { filters },
+              payload: { filters } as never,
               updated_at: new Date().toISOString(),
             },
           ],
