@@ -11,6 +11,7 @@ import {
 } from "@/hooks/savedFilterDispatchSchedule";
 import { dispatchOpenAnomaliaDrawer } from "@/lib/anomalia-routes";
 import { logger } from "@/lib/logger";
+import { checkShouldDispatch } from "@/hooks/savedFilterDedup";
 
 // ============================================================================
 // Tipos das entidades suportadas
@@ -323,15 +324,24 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
         { event: "INSERT", schema: "public", table: config.table },
         (msg) => {
           const row = msg.new as TRow;
-          if (!row?.id || seen.current.has(row.id)) return;
-          seen.current.add(row.id);
+          if (!row?.id) return;
 
           for (const sf of filtersRef.current) {
             const sub = subsRef.current.get(sf.id);
             if (!sub) continue;
-            const rowTs = new Date(config.rowTimestamp(row)).getTime();
-            if (rowTs <= new Date(sub.last_seen_at).getTime()) continue;
+            // Centraliza dedup (in-session + cross-refresh) no helper puro
+            // testado em savedFilterDedup.test.ts.
+            const dedup = checkShouldDispatch({
+              rowId: row.id,
+              rowTimestamp: config.rowTimestamp(row),
+              lastSeenAt: sub.last_seen_at,
+              seen: seen.current,
+            });
+            if (!dedup.shouldDispatch) continue;
             if (!config.matches(row, sf.filters)) continue;
+            // Marca apenas após passar nos filtros — evita "queimar" o ID
+            // por matches que não geram notificação para nenhuma assinatura.
+            seen.current.add(row.id);
 
             // Regra: tipos de evento ativos. Lista vazia = aceita todos.
             const tiposAtivos = sub.tipos_eventos_ativos ?? [];
