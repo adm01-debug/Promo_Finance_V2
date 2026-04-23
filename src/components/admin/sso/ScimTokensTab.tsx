@@ -23,6 +23,7 @@ export function ScimTokensTab() {
   const [empresaId, setEmpresaId] = useState<string>('');
   const [open, setOpen] = useState(false);
   const [nome, setNome] = useState('');
+  const [defaultRole, setDefaultRole] = useState<ScimDefaultRole>('visualizador');
   const [issued, setIssued] = useState<string | null>(null);
 
   const { data: tokens = [] } = useScimTokens(empresaId);
@@ -31,9 +32,10 @@ export function ScimTokensTab() {
 
   const handleCreate = async () => {
     if (!empresaId || !nome) return;
-    const r = await create.mutateAsync({ empresa_id: empresaId, nome });
+    const r = await create.mutateAsync({ empresa_id: empresaId, nome, default_role: defaultRole });
     setIssued(r.token);
     setNome('');
+    setDefaultRole('visualizador');
   };
 
   const copy = (text: string, label = 'Copiado') => {
