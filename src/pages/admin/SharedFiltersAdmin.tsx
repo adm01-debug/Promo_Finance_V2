@@ -141,7 +141,7 @@ export default function SharedFiltersAdmin() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .from('saved_filters' as any)
         .select(
-          'id,user_id,created_by,entity_type,name,is_default,is_shared,empresa_id,shared_with_roles,created_at,updated_at',
+          'id,user_id,created_by,entity_type,name,filters,is_default,is_shared,empresa_id,shared_with_roles,created_at,updated_at',
         )
         .eq('is_shared', true)
         .order('updated_at', { ascending: false });
