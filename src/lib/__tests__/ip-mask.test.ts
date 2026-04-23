@@ -26,6 +26,23 @@ describe('maskIp', () => {
   it('não mascara strings que não são IP reconhecível', () => {
     expect(maskIp('localhost', true)).toBe('localhost');
   });
+
+  it('faz trim de espaços antes de mascarar IPv4', () => {
+    expect(maskIp('  192.168.1.42  ', true)).toBe('192.168.*.*');
+  });
+
+  it('mascara IPv4 com octetos curtos', () => {
+    expect(maskIp('1.2.3.4', true)).toBe('1.2.*.*');
+  });
+
+  it('preserva formas IPv6 comprimidas exóticas', () => {
+    // '::1' tem só 3 hextets após split — não bate o branch de mascaramento
+    expect(maskIp('::1', true)).toBe('::1');
+    // 'fe80::1' tem 4+ hextets após split por ':' — entra no branch
+    const masked = maskIp('fe80::1', true);
+    expect(masked.startsWith('fe80:')).toBe(true);
+    expect(masked).toContain('****');
+  });
 });
 
 describe('matchesIpFilter', () => {
