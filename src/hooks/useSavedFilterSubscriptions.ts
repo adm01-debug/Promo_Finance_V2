@@ -37,6 +37,15 @@ export interface SavedFilterSubscription {
    * Vazio = todos os tipos disparam (compatibilidade retroativa).
    */
   tipos_eventos_ativos: string[];
+  /**
+   * Anti-spam — limite máximo de notificações individuais entregues numa
+   * janela deslizante. Ao exceder, o restante é agrupado num único batch.
+   * Aplicado apenas para frequência "imediata" (cadências horária/diária
+   * já agrupam por natureza).
+   */
+  rate_limit_max: number;
+  /** Tamanho da janela em minutos para o contador de rate limit. */
+  rate_limit_window_min: number;
   /** Próxima janela de despacho — usada pelo cliente para agrupar pendentes. */
   next_dispatch_at: string | null;
   last_seen_at: string;
@@ -77,6 +86,8 @@ export function useSavedFilterSubscriptions() {
       horarioPreferido?: string;
       severidadesCriticas?: SeveridadeAlerta[];
       tiposEventosAtivos?: string[];
+      rateLimitMax?: number;
+      rateLimitWindowMin?: number;
     }) => {
       if (!user) throw new Error("Sessão expirada");
       const { error } = await supabase
@@ -93,6 +104,8 @@ export function useSavedFilterSubscriptions() {
             horario_preferido: input.horarioPreferido ?? "09:00:00",
             severidades_criticas: input.severidadesCriticas ?? ["critica"],
             tipos_eventos_ativos: input.tiposEventosAtivos ?? [],
+            rate_limit_max: input.rateLimitMax ?? 5,
+            rate_limit_window_min: input.rateLimitWindowMin ?? 10,
             last_seen_at: new Date().toISOString(),
           },
           { onConflict: "user_id,saved_filter_id" },
@@ -120,6 +133,8 @@ export function useSavedFilterSubscriptions() {
       horarioPreferido?: string;
       severidadesCriticas?: SeveridadeAlerta[];
       tiposEventosAtivos?: string[];
+      rateLimitMax?: number;
+      rateLimitWindowMin?: number;
     }) => {
       const patch: Record<string, unknown> = {};
       if (input.notifyInapp !== undefined) patch.notify_inapp = input.notifyInapp;
@@ -132,6 +147,10 @@ export function useSavedFilterSubscriptions() {
         patch.severidades_criticas = input.severidadesCriticas;
       if (input.tiposEventosAtivos !== undefined)
         patch.tipos_eventos_ativos = input.tiposEventosAtivos;
+      if (input.rateLimitMax !== undefined)
+        patch.rate_limit_max = input.rateLimitMax;
+      if (input.rateLimitWindowMin !== undefined)
+        patch.rate_limit_window_min = input.rateLimitWindowMin;
       // Reset do agendamento sempre que a cadência muda — o hook de alertas
       // recalcula o próximo despacho com base nas novas regras.
       if (input.frequencia !== undefined || input.horarioPreferido !== undefined) {
