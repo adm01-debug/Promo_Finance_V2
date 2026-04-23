@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
   ArrowLeft,
+  ArrowLeftRight,
+  ArrowRight,
   CheckCircle2,
   CloudOff,
   Database,
