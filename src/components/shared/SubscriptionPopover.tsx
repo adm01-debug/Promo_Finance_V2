@@ -42,6 +42,7 @@ export interface SubscriptionPopoverProps {
   onSubscribe: (input: {
     notifyInapp: boolean;
     notifyPush: boolean;
+    notifyEmail: boolean;
     frequencia: SubscriptionFrequencia;
     horarioPreferido: string;
   }) => void;
@@ -49,6 +50,7 @@ export interface SubscriptionPopoverProps {
     id: string;
     notifyInapp: boolean;
     notifyPush: boolean;
+    notifyEmail: boolean;
     frequencia: SubscriptionFrequencia;
     horarioPreferido: string;
   }) => void;
@@ -69,6 +71,7 @@ export function SubscriptionPopover({
   const [open, setOpen] = useState(false);
   const [inapp, setInapp] = useState(subscription?.notify_inapp ?? true);
   const [push, setPush] = useState(subscription?.notify_push ?? false);
+  const [email, setEmail] = useState(subscription?.notify_email ?? false);
   const [freq, setFreq] = useState<SubscriptionFrequencia>(
     subscription?.frequencia ?? "imediata",
   );
@@ -81,6 +84,7 @@ export function SubscriptionPopover({
     if (!open) return;
     setInapp(subscription?.notify_inapp ?? true);
     setPush(subscription?.notify_push ?? false);
+    setEmail(subscription?.notify_email ?? false);
     setFreq(subscription?.frequencia ?? "imediata");
     setHorario((subscription?.horario_preferido ?? "09:00:00").slice(0, 5));
   }, [open, subscription]);
@@ -94,6 +98,7 @@ export function SubscriptionPopover({
         id: subscription.id,
         notifyInapp: inapp,
         notifyPush: push,
+        notifyEmail: email,
         frequencia: freq,
         horarioPreferido: horaCompleta,
       });
@@ -101,6 +106,7 @@ export function SubscriptionPopover({
       onSubscribe({
         notifyInapp: inapp,
         notifyPush: push,
+        notifyEmail: email,
         frequencia: freq,
         horarioPreferido: horaCompleta,
       });
@@ -162,6 +168,13 @@ export function SubscriptionPopover({
           <Switch id="sub-push" checked={push} onCheckedChange={setPush} />
         </div>
 
+        <div className="flex items-center justify-between">
+          <Label htmlFor="sub-email" className="text-xs font-normal">
+            E-mail
+          </Label>
+          <Switch id="sub-email" checked={email} onCheckedChange={setEmail} />
+        </div>
+
         <div className="space-y-1">
           <Label className="text-xs">Frequência</Label>
           <Select
@@ -221,7 +234,7 @@ export function SubscriptionPopover({
             size="sm"
             className="h-7 px-3 text-xs"
             onClick={handleSave}
-            disabled={!inapp && !push}
+            disabled={!inapp && !push && !email}
           >
             Salvar
           </Button>

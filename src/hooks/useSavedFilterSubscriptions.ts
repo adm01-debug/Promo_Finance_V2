@@ -12,6 +12,8 @@ export interface SavedFilterSubscription {
   saved_filter_id: string;
   notify_inapp: boolean;
   notify_push: boolean;
+  /** Se true, dispara também e-mail via edge function `notify-saved-filter`. */
+  notify_email: boolean;
   /** Cadência de entrega: imediata, agrupada por hora ou única vez por dia. */
   frequencia: SubscriptionFrequencia;
   /** Horário preferido (HH:MM:SS, timezone do usuário) para a cadência diária. */
@@ -51,6 +53,7 @@ export function useSavedFilterSubscriptions() {
       savedFilterId: string;
       notifyInapp?: boolean;
       notifyPush?: boolean;
+      notifyEmail?: boolean;
       frequencia?: SubscriptionFrequencia;
       horarioPreferido?: string;
     }) => {
@@ -64,6 +67,7 @@ export function useSavedFilterSubscriptions() {
             saved_filter_id: input.savedFilterId,
             notify_inapp: input.notifyInapp ?? true,
             notify_push: input.notifyPush ?? false,
+            notify_email: input.notifyEmail ?? false,
             frequencia: input.frequencia ?? "imediata",
             horario_preferido: input.horarioPreferido ?? "09:00:00",
             last_seen_at: new Date().toISOString(),
@@ -88,12 +92,14 @@ export function useSavedFilterSubscriptions() {
       id: string;
       notifyInapp?: boolean;
       notifyPush?: boolean;
+      notifyEmail?: boolean;
       frequencia?: SubscriptionFrequencia;
       horarioPreferido?: string;
     }) => {
       const patch: Record<string, unknown> = {};
       if (input.notifyInapp !== undefined) patch.notify_inapp = input.notifyInapp;
       if (input.notifyPush !== undefined) patch.notify_push = input.notifyPush;
+      if (input.notifyEmail !== undefined) patch.notify_email = input.notifyEmail;
       if (input.frequencia !== undefined) patch.frequencia = input.frequencia;
       if (input.horarioPreferido !== undefined)
         patch.horario_preferido = input.horarioPreferido;

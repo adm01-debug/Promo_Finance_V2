@@ -5570,6 +5570,51 @@ export type Database = {
           },
         ]
       }
+      notification_history: {
+        Row: {
+          body: string | null
+          channel: string
+          created_at: string
+          error_message: string | null
+          id: string
+          metadata: Json
+          read_at: string | null
+          source: string
+          source_ref: string | null
+          status: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          channel: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json
+          read_at?: string | null
+          source: string
+          source_ref?: string | null
+          status?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          channel?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json
+          read_at?: string | null
+          source?: string
+          source_ref?: string | null
+          status?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       open_finance_consents: {
         Row: {
           access_token: string | null
@@ -7854,6 +7899,7 @@ export type Database = {
           id: string
           last_seen_at: string
           next_dispatch_at: string | null
+          notify_email: boolean
           notify_inapp: boolean
           notify_push: boolean
           saved_filter_id: string
@@ -7867,6 +7913,7 @@ export type Database = {
           id?: string
           last_seen_at?: string
           next_dispatch_at?: string | null
+          notify_email?: boolean
           notify_inapp?: boolean
           notify_push?: boolean
           saved_filter_id: string
@@ -7880,6 +7927,7 @@ export type Database = {
           id?: string
           last_seen_at?: string
           next_dispatch_at?: string | null
+          notify_email?: boolean
           notify_inapp?: boolean
           notify_push?: boolean
           saved_filter_id?: string
