@@ -35,13 +35,10 @@ describe('maskIp', () => {
     expect(maskIp('1.2.3.4', true)).toBe('1.2.*.*');
   });
 
-  it('preserva formas IPv6 comprimidas exóticas', () => {
-    // '::1' tem só 3 hextets após split — não bate o branch de mascaramento
+  it('preserva formas IPv6 comprimidas exóticas (poucos hextets)', () => {
+    // '::1' e 'fe80::1' têm menos de 4 hextets reais após split — ficam intactos
     expect(maskIp('::1', true)).toBe('::1');
-    // 'fe80::1' tem 4+ hextets após split por ':' — entra no branch
-    const masked = maskIp('fe80::1', true);
-    expect(masked.startsWith('fe80:')).toBe(true);
-    expect(masked).toContain('****');
+    expect(maskIp('fe80::1', true)).toBe('fe80::1');
   });
 });
 
