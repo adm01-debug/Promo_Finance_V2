@@ -13,7 +13,7 @@ export function HistoricoContextualCard({ pontos }: { pontos: PontoHistorico[] }
       </CardHeader>
       <CardContent className="space-y-4">
         {pontos.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-8 text-center">
+          <p className="text-sm text-muted-foreground text-center">
             Sem dados históricos disponíveis para este tipo de entidade.
           </p>
         ) : (
