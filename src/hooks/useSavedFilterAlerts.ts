@@ -313,6 +313,21 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
             if (rowTs <= new Date(sub.last_seen_at).getTime()) continue;
             if (!config.matches(row, sf.filters)) continue;
 
+            // Regra: tipos de evento ativos. Lista vazia = aceita todos.
+            const tiposAtivos = sub.tipos_eventos_ativos ?? [];
+            if (tiposAtivos.length > 0 && config.rowTipoEvento) {
+              const tipo = config.rowTipoEvento(row);
+              if (!tipo || !tiposAtivos.includes(tipo)) continue;
+            }
+
+            // Regra: severidades consideradas "críticas" pelo usuário.
+            // Quando aplicável, eleva a prioridade do push para 'critica'
+            // independentemente da severidade nativa do registro.
+            const sevsCriticas = sub.severidades_criticas ?? ["critica"];
+            const sevAtual = config.rowSeveridade?.(row) ?? null;
+            const isUserCritical =
+              sevAtual !== null && sevsCriticas.includes(sevAtual);
+
             const title = config.buildTitle(row, sf.name);
             const baseDesc = config.buildBaseDescription(row);
             const description = buildDescription(baseDesc, sf.filters);
@@ -346,10 +361,11 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
             // Imediata: comportamento original
             if (sub.notify_inapp) {
               const action = config.buildAction?.(row);
-              toast(title, {
+              const toastFn = isUserCritical ? toast.error : toast;
+              toastFn(title, {
                 description,
                 ...(action ? { action } : {}),
-                duration: 10_000,
+                duration: isUserCritical ? 15_000 : 10_000,
               });
               for (const key of config.invalidateKeys) {
                 queryClient.invalidateQueries({ queryKey: [...key] });
@@ -358,6 +374,9 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
 
             if (sub.notify_push) {
               const url = config.buildPushUrl(row);
+              const prioridade = isUserCritical
+                ? "critica"
+                : config.pushPriority(row);
               supabase.functions
                 .invoke("send-push-notification", {
                   body: {
@@ -365,7 +384,7 @@ function useEntitySavedFilterAlerts<TRow extends { id: string }, TFilters>(
                     title,
                     body: description,
                     tag: `saved-filter-${sf.id}`,
-                    prioridade: config.pushPriority(row),
+                    prioridade,
                     ...(url ? { data: { url } } : {}),
                   },
                 })
