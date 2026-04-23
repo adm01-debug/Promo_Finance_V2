@@ -78,6 +78,7 @@ export function AnomaliasReviewQueue({
   const [snapshot, setSnapshot] = useState<Anomalia[]>([]);
   const [index, setIndex] = useState(0);
   const [comentario, setComentario] = useState("");
+  const [comentarioTocado, setComentarioTocado] = useState(false);
   const [stats, setStats] = useState({ confirmadas: 0, rejeitadas: 0, puladas: 0 });
   const [recarregando, setRecarregando] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -211,6 +212,7 @@ export function AnomaliasReviewQueue({
       setSnapshot(filtrada);
       setIndex(0);
       setComentario("");
+      setComentarioTocado(false);
       setStats({ confirmadas: 0, rejeitadas: 0, puladas: 0 });
     }
   }, [open, isLoading, severidadeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -220,6 +222,12 @@ export function AnomaliasReviewQueue({
   const finalizado = total > 0 && index >= total;
   const comentarioTrim = comentario.trim();
   const comentarioValido = comentarioTrim.length >= 10;
+  const erroComentario = !comentarioValido
+    ? comentarioTrim.length === 0
+      ? "Informe um comentário descrevendo a decisão."
+      : `Faltam ${10 - comentarioTrim.length} caractere${10 - comentarioTrim.length === 1 ? "" : "s"} para atingir o mínimo de 10.`
+    : null;
+  const mostrarErroComentario = comentarioTocado && !!erroComentario;
 
   // Foco no textarea quando troca de anomalia
   useEffect(() => {
@@ -239,6 +247,7 @@ export function AnomaliasReviewQueue({
 
   function avancar() {
     setComentario("");
+    setComentarioTocado(false);
     void recarregarPosicao(index + 1);
   }
 
@@ -410,12 +419,28 @@ export function AnomaliasReviewQueue({
                 id="comentario-revisao"
                 ref={textareaRef}
                 value={comentario}
-                onChange={(e) => setComentario(e.target.value)}
+                onChange={(e) => {
+                  setComentario(e.target.value);
+                  if (!comentarioTocado) setComentarioTocado(true);
+                }}
+                onBlur={() => setComentarioTocado(true)}
                 onKeyDown={handleKey}
                 placeholder="Ex.: Confirmado, fornecedor X duplicou NF 1234 no dia 03/04."
                 rows={3}
                 maxLength={1000}
+                aria-invalid={mostrarErroComentario}
+                aria-describedby={mostrarErroComentario ? "comentario-revisao-erro" : undefined}
+                className={mostrarErroComentario ? "border-destructive focus-visible:ring-destructive" : ""}
               />
+              {mostrarErroComentario && (
+                <p
+                  id="comentario-revisao-erro"
+                  role="alert"
+                  className="text-xs text-destructive"
+                >
+                  {erroComentario}
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">

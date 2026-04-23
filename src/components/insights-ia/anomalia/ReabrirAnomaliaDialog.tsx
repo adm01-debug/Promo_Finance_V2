@@ -30,11 +30,18 @@ export function ReabrirAnomaliaDialog({
 }: Props) {
   const [open, setOpen] = useState(false);
   const [motivo, setMotivo] = useState("");
+  const [tocado, setTocado] = useState(false);
   const reabrir = useReabrirAnomalia();
   const sincronizar = useSincronizarAnomaliaBitrix();
 
   const motivoTrim = motivo.trim();
   const valido = motivoTrim.length >= 10;
+  const erroMotivo = !valido
+    ? motivoTrim.length === 0
+      ? "Informe o motivo da reabertura."
+      : `Faltam ${10 - motivoTrim.length} caractere${10 - motivoTrim.length === 1 ? "" : "s"} para atingir o mínimo de 10.`
+    : null;
+  const mostrarErro = tocado && !!erroMotivo;
 
   async function handleConfirmar() {
     if (!valido) return;
@@ -43,6 +50,7 @@ export function ReabrirAnomaliaDialog({
       sincronizar.mutate({ anomaliaId, evento: "reaberta" });
       setOpen(false);
       setMotivo("");
+      setTocado(false);
     } catch {
       // toast já é exibido pelo hook
     }
@@ -74,12 +82,28 @@ export function ReabrirAnomaliaDialog({
           <Textarea
             id="motivo-reabertura"
             value={motivo}
-            onChange={(e) => setMotivo(e.target.value)}
+            onChange={(e) => {
+              setMotivo(e.target.value);
+              if (!tocado) setTocado(true);
+            }}
+            onBlur={() => setTocado(true)}
             placeholder="Ex.: Cliente confirmou que o lançamento estava errado e há novo dado contábil."
             rows={4}
             maxLength={1000}
             autoFocus
+            aria-invalid={mostrarErro}
+            aria-describedby={mostrarErro ? "motivo-reabertura-erro" : undefined}
+            className={mostrarErro ? "border-destructive focus-visible:ring-destructive" : ""}
           />
+          {mostrarErro && (
+            <p
+              id="motivo-reabertura-erro"
+              role="alert"
+              className="text-xs text-destructive"
+            >
+              {erroMotivo}
+            </p>
+          )}
         </div>
 
         <DialogFooter>
