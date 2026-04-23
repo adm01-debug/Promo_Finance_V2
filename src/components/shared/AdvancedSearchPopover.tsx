@@ -67,6 +67,7 @@ export function AdvancedSearchPopover({
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   // Sincroniza o rascunho quando o valor externo mudar (ex.: limpar filtros)
   useEffect(() => {
@@ -85,6 +86,26 @@ export function AdvancedSearchPopover({
       // foca o input quando abrir
       setTimeout(() => inputRef.current?.focus(), 50);
     }
+  }, [open]);
+
+  // Atalho global "/" abre o popover (ignora quando o foco está em campos editáveis)
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
+      const target = e.target as HTMLElement | null;
+      const tag = target?.tagName;
+      const isEditable =
+        tag === "INPUT" ||
+        tag === "TEXTAREA" ||
+        tag === "SELECT" ||
+        (target?.isContentEditable ?? false);
+      if (isEditable) return;
+      if (open) return;
+      e.preventDefault();
+      setOpen(true);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, [open]);
 
   const filteredSuggestions = useMemo(() => {
