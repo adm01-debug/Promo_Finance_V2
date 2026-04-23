@@ -226,7 +226,7 @@ export function SubscriptionPopover({
               >
                 <Checkbox
                   checked={sevsCriticas.includes(sev)}
-                  onCheckedChange={(c) => toggleSev(sev, c === true)}
+                  onChange={(e) => toggleSev(sev, e.target.checked)}
                 />
                 {SEVERIDADE_LABEL[sev]}
               </label>
@@ -248,7 +248,7 @@ export function SubscriptionPopover({
                 >
                   <Checkbox
                     checked={tiposAtivos.includes(opt.value)}
-                    onCheckedChange={(c) => toggleTipo(opt.value, c === true)}
+                    onChange={(e) => toggleTipo(opt.value, e.target.checked)}
                   />
                   {opt.label}
                 </label>
