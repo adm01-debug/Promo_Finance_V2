@@ -78,13 +78,35 @@ function ValueCell({ v, kind }: { v: unknown; kind: "before" | "after" | "neutra
   );
 }
 
-function FieldRow({ field }: { field: DiffField }) {
+function FieldLabel({ name, isKey }: { name: string; isKey?: boolean }) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <p className="text-xs font-medium text-foreground">{name}</p>
+      {isKey && (
+        <Badge
+          variant="outline"
+          className="h-4 px-1 text-[9px] uppercase tracking-wide bg-primary/10 text-primary border-primary/30"
+        >
+          chave
+        </Badge>
+      )}
+    </div>
+  );
+}
+
+function FieldRow({ field, isKey = false }: { field: DiffField; isKey?: boolean }) {
+  // Wrapper destacado quando o campo é "campo-chave"
+  const wrapperBase = "py-1.5";
+  const wrapperKey =
+    "relative -mx-3 px-3 my-0.5 border-l-2 border-l-primary bg-primary/5 ring-1 ring-primary/20 rounded-r-md shadow-[0_0_0_1px_hsl(var(--primary)/0.05)]";
+  const wrapperCls = isKey ? `${wrapperBase} ${wrapperKey}` : wrapperBase;
+
   if (field.kind === "added") {
     return (
-      <div className="flex items-start gap-2 py-1.5">
+      <div className={`flex items-start gap-2 ${wrapperCls}`}>
         <Plus className="h-3.5 w-3.5 mt-1 text-success shrink-0" />
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium text-foreground">{field.key}</p>
+          <FieldLabel name={field.key} isKey={isKey} />
           <div className="mt-0.5">
             <ValueCell v={field.after} kind="after" />
           </div>
@@ -94,10 +116,10 @@ function FieldRow({ field }: { field: DiffField }) {
   }
   if (field.kind === "removed") {
     return (
-      <div className="flex items-start gap-2 py-1.5">
+      <div className={`flex items-start gap-2 ${wrapperCls}`}>
         <Minus className="h-3.5 w-3.5 mt-1 text-destructive shrink-0" />
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium text-foreground">{field.key}</p>
+          <FieldLabel name={field.key} isKey={isKey} />
           <div className="mt-0.5">
             <ValueCell v={field.before} kind="before" />
           </div>
@@ -107,11 +129,23 @@ function FieldRow({ field }: { field: DiffField }) {
   }
   // changed
   return (
-    <div className="py-1.5">
-      <p className="text-xs font-medium text-foreground mb-1">{field.key}</p>
-      <div className="flex items-start gap-2 flex-wrap">
+    <div className={wrapperCls}>
+      <div className="mb-1">
+        <FieldLabel name={field.key} isKey={isKey} />
+      </div>
+      <div
+        className={`flex items-start gap-2 flex-wrap ${
+          isKey
+            ? "rounded-md border-2 border-primary/40 bg-background/60 p-2 ring-2 ring-primary/20 ring-offset-1 ring-offset-background"
+            : ""
+        }`}
+      >
         <ValueCell v={field.before} kind="before" />
-        <ArrowRight className="h-3.5 w-3.5 mt-1 text-muted-foreground shrink-0" />
+        <ArrowRight
+          className={`h-3.5 w-3.5 mt-1 shrink-0 ${
+            isKey ? "text-primary" : "text-muted-foreground"
+          }`}
+        />
         <ValueCell v={field.after} kind="after" />
       </div>
     </div>
