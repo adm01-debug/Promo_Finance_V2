@@ -538,6 +538,7 @@ export function SavedFiltersBar<T>({
 
 
         <Button
+          ref={restoreButtonRef}
           variant="ghost"
           size="sm"
           className="gap-1.5 h-9"
@@ -545,13 +546,17 @@ export function SavedFiltersBar<T>({
           disabled={!canRestore}
           title={
             defaultFilter
-              ? `Restaurar preset padrão "${defaultFilter.name}"`
-              : "Voltar ao estado inicial (sem filtros)"
+              ? `Restaurar preset padrão "${defaultFilter.name}" (Alt+R)`
+              : "Voltar ao estado inicial (Alt+R)"
           }
-          aria-label="Restaurar padrão"
+          aria-label="Restaurar padrão (atalho: Alt+R)"
+          aria-keyshortcuts="Alt+R"
         >
           <RotateCcw className="h-3.5 w-3.5" />
           <span className="hidden md:inline">Restaurar padrão</span>
+          <kbd className="hidden lg:inline-flex items-center justify-center h-4 px-1 rounded border bg-muted text-[9px] font-mono text-muted-foreground">
+            Alt+R
+          </kbd>
         </Button>
       </div>
 
