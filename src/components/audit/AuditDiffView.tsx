@@ -520,7 +520,7 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
                   <div className="divide-y">
                     {filteredRemoved.map((f) => (
                       <div key={f.key} className="px-3">
-                        <FieldRow field={f} />
+                        <FieldRow field={f} isKey={keyFieldSet.has(f.key)} />
                       </div>
                     ))}
                   </div>
