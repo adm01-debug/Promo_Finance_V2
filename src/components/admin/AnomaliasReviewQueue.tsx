@@ -626,7 +626,13 @@ export function AnomaliasReviewQueue({
               <div className="flex items-center justify-between text-[11px] text-muted-foreground">
                 <span>
                   Posição geral: {index + 1} de {total}
+                  {hasNextPage && <span className="ml-1">+</span>}
                 </span>
+                {isFetchingNextPage && (
+                  <span className="flex items-center gap-1">
+                    <Loader2 className="h-3 w-3 animate-spin" /> carregando mais…
+                  </span>
+                )}
               </div>
               <Progress value={((index + 1) / total) * 100} className="h-1.5" />
             </div>
