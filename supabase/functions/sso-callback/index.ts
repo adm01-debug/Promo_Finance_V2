@@ -617,43 +617,29 @@ async function handleSamlFinalize(req: Request): Promise<Response> {
     return jsonResp({ error: "user_not_found" }, 404);
   }
   const email = u.user.email.toLowerCase();
-  const cm = (provider.claim_mapping || {}) as Record<string, string>;
+  const cm = (provider.claim_mapping || {}) as Record<string, unknown>;
 
   // Em SAML pelo broker do Supabase, claims SAML chegam em user_metadata e app_metadata
   const meta = (u.user.user_metadata || {}) as Record<string, unknown>;
   const appMeta = (u.user.app_metadata || {}) as Record<string, unknown>;
+  const sources = [meta, appMeta];
+
   const fullName =
-    String(
-      meta[cm.full_name || "name"] ??
-        meta.full_name ??
-        meta.name ??
-        appMeta[cm.full_name || "name"] ??
-        email,
-    ) || email;
-
-  const avatarUrl =
-    (meta[cm.avatar_url || "picture"] as string | undefined) ??
-    (meta.picture as string | undefined) ??
-    (meta.avatar_url as string | undefined) ??
-    (appMeta[cm.avatar_url || "picture"] as string | undefined) ??
-    null;
-  const telefone =
-    (meta[cm.telefone || "phone_number"] as string | undefined) ??
-    (meta.phone_number as string | undefined) ??
-    (meta.phone as string | undefined) ??
-    (appMeta[cm.telefone || "phone_number"] as string | undefined) ??
-    null;
-
-  const rawGroups =
-    meta[cm.groups || "groups"] ??
-    appMeta[cm.groups || "groups"] ??
-    appMeta.groups ??
-    [];
-  const groups: string[] = Array.isArray(rawGroups)
-    ? (rawGroups as unknown[]).map(String)
-    : typeof rawGroups === "string"
-    ? [rawGroups]
-    : [];
+    resolveClaim(sources, cm, "full_name", ["name", "full_name"]) || email;
+  const avatarUrl = resolveClaim(sources, cm, "avatar_url", [
+    "picture",
+    "avatar_url",
+    "photoUrl",
+    "photo_url",
+  ]);
+  const telefone = resolveClaim(sources, cm, "telefone", [
+    "phone_number",
+    "phoneNumber",
+    "phone",
+    "mobile",
+    "mobilePhone",
+  ]);
+  const groups = resolveClaimArray(sources, cm, "groups", ["groups"]);
 
   const result = await applyPipeline({
     admin,
