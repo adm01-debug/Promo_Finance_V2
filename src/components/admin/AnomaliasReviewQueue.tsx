@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
-  usePendingAnomaliasQueue,
+  usePendingAnomaliasQueueInfinite,
   useRevisarAnomalia,
   AnomaliaJaRevisadaError,
   type Anomalia,
