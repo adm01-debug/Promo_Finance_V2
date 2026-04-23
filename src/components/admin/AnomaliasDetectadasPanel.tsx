@@ -174,6 +174,7 @@ function writeFiltersToUrl(
   s: { key: string; dir: "asc" | "desc" },
   cols: string[],
   q: string,
+  presetId: string | null,
 ): URLSearchParams {
   const next = new URLSearchParams(sp);
   const setOrDel = (k: string, v: string) => {
@@ -194,6 +195,8 @@ function writeFiltersToUrl(
     cols.some((c, i) => c !== DEFAULT_VISIBLE[i]);
   setOrDel("cols", colsDifere ? cols.join(",") : "");
   setOrDel("q", q.trim());
+  // Preset ativo: persistido para que reload mantenha o filtro nomeado.
+  setOrDel("preset", presetId ?? "");
   return next;
 }
 
