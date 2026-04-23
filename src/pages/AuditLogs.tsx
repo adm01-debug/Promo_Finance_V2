@@ -56,8 +56,12 @@ export default function AuditLogs() {
   const [actionFilter, setActionFilter] = useState<string>(initialAction);
   const [tableFilter, setTableFilter] = useState<string>(initialTable);
   const [userFilter, setUserFilter] = useState<string>('all');
+  const [providerFilter, setProviderFilter] = useState<string>('all');
+  const [ssoFieldFilter, setSsoFieldFilter] = useState<string>('all');
   const [dismissedAlerts, setDismissedAlerts] = useState<Set<string>>(new Set());
   const [dateRange, setDateRange] = useState<DateRange | undefined>({ from: subDays(new Date(), 7), to: new Date() });
+
+  const isSsoProfileSyncScope = tableFilter === 'sso_profile_sync';
 
   const { data: logs, isLoading, refetch } = useQuery({
     queryKey: ['audit-logs', actionFilter, tableFilter, userFilter, dateRange],
