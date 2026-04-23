@@ -174,6 +174,21 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
     [newData, oldData],
   );
 
+  // Conjunto de chaves dos campos-chave (para destacar no diff)
+  const keyFieldSet = useMemo(
+    () => new Set(camposChave.map((c) => c.key)),
+    [camposChave],
+  );
+
+  // Mapa key -> DiffField para campos-chave que sofreram alteração
+  const changedKeyFields = useMemo(() => {
+    const m = new Map<string, DiffField>();
+    for (const f of diff.changed) if (keyFieldSet.has(f.key)) m.set(f.key, f);
+    for (const f of diff.added) if (keyFieldSet.has(f.key)) m.set(f.key, f);
+    for (const f of diff.removed) if (keyFieldSet.has(f.key)) m.set(f.key, f);
+    return m;
+  }, [diff, keyFieldSet]);
+
   const toggleField = (key: string) => {
     setActiveFields((prev) => {
       const next = new Set(prev);
