@@ -445,7 +445,7 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
           <div className="rounded-md border divide-y">
             {insertEntries.map(([k, v]) => (
               <div key={k} className="px-3">
-                <FieldRow field={{ key: k, before: undefined, after: v, kind: "added" }} />
+                <FieldRow field={{ key: k, before: undefined, after: v, kind: "added" }} isKey={keyFieldSet.has(k)} />
               </div>
             ))}
           </div>
