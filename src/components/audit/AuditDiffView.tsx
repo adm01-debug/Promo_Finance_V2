@@ -1,7 +1,18 @@
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronRight, Plus, Minus, ArrowRight, FileCode } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import {
+  ChevronDown,
+  ChevronRight,
+  Plus,
+  Minus,
+  ArrowRight,
+  FileCode,
+  Search,
+  X,
+  Filter,
+} from "lucide-react";
 import {
   computeDiff,
   extractCamposChave,
@@ -107,8 +118,19 @@ function FieldRow({ field }: { field: DiffField }) {
   );
 }
 
+function matchesQuery(field: DiffField, q: string): boolean {
+  if (!q) return true;
+  const needle = q.toLowerCase();
+  if (field.key.toLowerCase().includes(needle)) return true;
+  const before = formatValue(field.before).toLowerCase();
+  const after = formatValue(field.after).toLowerCase();
+  return before.includes(needle) || after.includes(needle);
+}
+
 export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
   const [showRaw, setShowRaw] = useState(false);
+  const [query, setQuery] = useState("");
+  const [activeFields, setActiveFields] = useState<Set<string>>(new Set());
 
   const isInsert = !oldData && !!newData;
   const isDelete = !!oldData && !newData;
@@ -117,6 +139,54 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
     () => extractCamposChave(newData ?? oldData),
     [newData, oldData],
   );
+
+  const toggleField = (key: string) => {
+    setActiveFields((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  const clearFilters = () => {
+    setQuery("");
+    setActiveFields(new Set());
+  };
+
+  const hasFilters = query.trim().length > 0 || activeFields.size > 0;
+
+  const filterFields = (fields: DiffField[]): DiffField[] => {
+    return fields.filter((f) => {
+      if (activeFields.size > 0 && !activeFields.has(f.key)) return false;
+      if (!matchesQuery(f, query.trim())) return false;
+      return true;
+    });
+  };
+
+  const filteredChanged = useMemo(() => filterFields(diff.changed), [diff.changed, query, activeFields]);
+  const filteredAdded = useMemo(() => filterFields(diff.added), [diff.added, query, activeFields]);
+  const filteredRemoved = useMemo(() => filterFields(diff.removed), [diff.removed, query, activeFields]);
+
+  const insertEntries = useMemo(() => {
+    if (!isInsert || !newData) return [] as Array<[string, unknown]>;
+    const list = Object.entries(newData);
+    return list.filter(([k, v]) => {
+      if (activeFields.size > 0 && !activeFields.has(k)) return false;
+      if (!matchesQuery({ key: k, before: undefined, after: v, kind: "added" }, query.trim())) return false;
+      return true;
+    });
+  }, [isInsert, newData, query, activeFields]);
+
+  const deleteEntries = useMemo(() => {
+    if (!isDelete || !oldData) return [] as Array<[string, unknown]>;
+    const list = Object.entries(oldData);
+    return list.filter(([k, v]) => {
+      if (activeFields.size > 0 && !activeFields.has(k)) return false;
+      if (!matchesQuery({ key: k, before: v, after: undefined, kind: "removed" }, query.trim())) return false;
+      return true;
+    });
+  }, [isDelete, oldData, query, activeFields]);
 
   if (!oldData && !newData) {
     return (
@@ -134,26 +204,118 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
         ? "Sem alterações de dados"
         : `${diff.changed.length + diff.added.length + diff.removed.length} alteração(ões)`;
 
+  const totalFiltered =
+    filteredChanged.length +
+    filteredAdded.length +
+    filteredRemoved.length +
+    insertEntries.length +
+    deleteEntries.length;
+
   return (
     <div className="space-y-3">
-      {/* Campos-chave */}
+      {/* Campos-chave (clicáveis para filtrar) */}
       {camposChave.length > 0 && (
-        <div className="rounded-md border bg-muted/20 p-3">
-          <p className="text-xs font-semibold text-muted-foreground mb-2">Campos-chave</p>
+        <div className="space-y-2 rounded-md border bg-muted/20 p-3">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold text-muted-foreground">
+              Campos-chave {activeFields.size > 0 && `(${activeFields.size} filtrando)`}
+            </p>
+            <span className="text-[10px] text-muted-foreground">
+              Clique para filtrar
+            </span>
+          </div>
           <div className="flex flex-wrap gap-1.5">
-            {camposChave.map((c) => (
-              <Badge
-                key={c.key}
-                variant="outline"
-                className="text-[11px] font-mono gap-1 py-0.5"
-              >
-                <span className="text-muted-foreground">{c.key}:</span>
-                <span className="text-foreground">{formatValue(c.value)}</span>
-              </Badge>
-            ))}
+            {camposChave.map((c) => {
+              const active = activeFields.has(c.key);
+              return (
+                <button
+                  key={c.key}
+                  type="button"
+                  onClick={() => toggleField(c.key)}
+                  className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-mono transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                    active
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background border-border text-foreground"
+                  }`}
+                  aria-pressed={active}
+                  title={
+                    active
+                      ? `Remover filtro: ${c.key}`
+                      : `Filtrar pelo campo: ${c.key}`
+                  }
+                >
+                  <span className={active ? "opacity-80" : "text-muted-foreground"}>
+                    {c.key}:
+                  </span>
+                  <span>{formatValue(c.value)}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
+
+      {/* Busca + chips de filtro ativos */}
+      <div className="space-y-2">
+        <div className="relative">
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Buscar por campo ou valor..."
+            className="pl-7 h-8 text-xs"
+            aria-label="Buscar alterações por campo ou valor"
+          />
+          {query && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6"
+              onClick={() => setQuery("")}
+              aria-label="Limpar busca"
+            >
+              <X className="h-3 w-3" aria-hidden="true" />
+            </Button>
+          )}
+        </div>
+        {hasFilters && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <Filter className="h-3 w-3 text-muted-foreground" aria-hidden="true" />
+            {Array.from(activeFields).map((k) => (
+              <Badge
+                key={k}
+                variant="secondary"
+                className="text-[10px] gap-1 pr-1"
+              >
+                {k}
+                <button
+                  type="button"
+                  onClick={() => toggleField(k)}
+                  className="rounded-sm hover:bg-background/40 p-0.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  aria-label={`Remover filtro: ${k}`}
+                >
+                  <X className="h-2.5 w-2.5" aria-hidden="true" />
+                </button>
+              </Badge>
+            ))}
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-6 px-2 text-[11px]"
+              onClick={clearFilters}
+              aria-label="Limpar todos os filtros"
+            >
+              Limpar
+            </Button>
+            <span className="text-[11px] text-muted-foreground ml-auto">
+              {totalFiltered} resultado(s)
+            </span>
+          </div>
+        )}
+      </div>
 
       {/* Cabeçalho de tipo */}
       <div className="flex items-center justify-between flex-wrap gap-2">
@@ -176,38 +338,51 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
 
       {/* INSERT: tabela de valores novos */}
       {isInsert && newData && (
-        <div className="rounded-md border divide-y">
-          {Object.entries(newData).map(([k, v]) => (
-            <div key={k} className="px-3">
-              <FieldRow field={{ key: k, before: undefined, after: v, kind: "added" }} />
-            </div>
-          ))}
-        </div>
+        insertEntries.length === 0 ? (
+          <p className="text-sm text-muted-foreground italic text-center py-4">
+            Nenhum campo corresponde aos filtros.
+          </p>
+        ) : (
+          <div className="rounded-md border divide-y">
+            {insertEntries.map(([k, v]) => (
+              <div key={k} className="px-3">
+                <FieldRow field={{ key: k, before: undefined, after: v, kind: "added" }} />
+              </div>
+            ))}
+          </div>
+        )
       )}
 
       {/* DELETE: tabela de valores anteriores */}
       {isDelete && oldData && (
-        <div className="rounded-md border divide-y">
-          {Object.entries(oldData).map(([k, v]) => (
-            <div key={k} className="px-3">
-              <FieldRow field={{ key: k, before: v, after: undefined, kind: "removed" }} />
-            </div>
-          ))}
-        </div>
+        deleteEntries.length === 0 ? (
+          <p className="text-sm text-muted-foreground italic text-center py-4">
+            Nenhum campo corresponde aos filtros.
+          </p>
+        ) : (
+          <div className="rounded-md border divide-y">
+            {deleteEntries.map(([k, v]) => (
+              <div key={k} className="px-3">
+                <FieldRow field={{ key: k, before: v, after: undefined, kind: "removed" }} />
+              </div>
+            ))}
+          </div>
+        )
       )}
 
       {/* UPDATE */}
       {!isInsert && !isDelete && (
         <>
-          {diff.changed.length > 0 && (
+          {filteredChanged.length > 0 && (
             <div className="rounded-md border">
               <div className="px-3 py-2 border-b bg-muted/30">
                 <p className="text-xs font-semibold">
-                  Alterações ({diff.changed.length})
+                  Alterações ({filteredChanged.length}
+                  {filteredChanged.length !== diff.changed.length && ` de ${diff.changed.length}`})
                 </p>
               </div>
               <div className="divide-y">
-                {diff.changed.map((f) => (
+                {filteredChanged.map((f) => (
                   <div key={f.key} className="px-3">
                     <FieldRow field={f} />
                   </div>
@@ -216,17 +391,18 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
             </div>
           )}
 
-          {(diff.added.length > 0 || diff.removed.length > 0) && (
+          {(filteredAdded.length > 0 || filteredRemoved.length > 0) && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {diff.added.length > 0 && (
+              {filteredAdded.length > 0 && (
                 <div className="rounded-md border">
                   <div className="px-3 py-2 border-b bg-success/5">
                     <p className="text-xs font-semibold text-success">
-                      Adicionados ({diff.added.length})
+                      Adicionados ({filteredAdded.length}
+                      {filteredAdded.length !== diff.added.length && ` de ${diff.added.length}`})
                     </p>
                   </div>
                   <div className="divide-y">
-                    {diff.added.map((f) => (
+                    {filteredAdded.map((f) => (
                       <div key={f.key} className="px-3">
                         <FieldRow field={f} />
                       </div>
@@ -234,15 +410,16 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
                   </div>
                 </div>
               )}
-              {diff.removed.length > 0 && (
+              {filteredRemoved.length > 0 && (
                 <div className="rounded-md border">
                   <div className="px-3 py-2 border-b bg-destructive/5">
                     <p className="text-xs font-semibold text-destructive">
-                      Removidos ({diff.removed.length})
+                      Removidos ({filteredRemoved.length}
+                      {filteredRemoved.length !== diff.removed.length && ` de ${diff.removed.length}`})
                     </p>
                   </div>
                   <div className="divide-y">
-                    {diff.removed.map((f) => (
+                    {filteredRemoved.map((f) => (
                       <div key={f.key} className="px-3">
                         <FieldRow field={f} />
                       </div>
@@ -252,6 +429,16 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
               )}
             </div>
           )}
+
+          {hasFilters &&
+            filteredChanged.length === 0 &&
+            filteredAdded.length === 0 &&
+            filteredRemoved.length === 0 &&
+            !isEmptyDiff(diff) && (
+              <p className="text-sm text-muted-foreground italic text-center py-4">
+                Nenhuma alteração corresponde aos filtros.
+              </p>
+            )}
 
           {isEmptyDiff(diff) && (
             <p className="text-sm text-muted-foreground italic">
