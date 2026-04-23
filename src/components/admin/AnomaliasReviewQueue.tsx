@@ -84,6 +84,20 @@ export function AnomaliasReviewQueue({
   const [recarregando, setRecarregando] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  type ConflitoBanner = {
+    anomaliaId: string;
+    severidade: Anomalia["severidade"];
+    tipoLabel: string;
+    descricao: string;
+    statusLabel: string;
+    acaoLabel: string;
+    autorNome: string;
+    autorEmail: string | null;
+    resolvidaEm: string | null;
+    motivo: "ja_resolvida" | "removida";
+  };
+  const [conflito, setConflito] = useState<ConflitoBanner | null>(null);
+
   /**
    * Resolve um rótulo legível para o autor (full_name → email mascarado → fallback).
    */
