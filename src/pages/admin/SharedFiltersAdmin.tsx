@@ -251,6 +251,138 @@ export default function SharedFiltersAdmin() {
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
   });
 
+  // ----- Export / Import de bundles -----
+  const exportableRows = useMemo(() => {
+    return currentEmpresaId
+      ? rows.filter((r) => r.empresa_id === currentEmpresaId)
+      : rows;
+  }, [rows, currentEmpresaId]);
+
+  function handleExport() {
+    if (exportableRows.length === 0) {
+      toast.error('Nenhum filtro compartilhado da empresa atual para exportar.');
+      return;
+    }
+    const bundle = buildBundle({
+      rows: exportableRows.map((r) => ({
+        entity_type: r.entity_type,
+        name: r.name,
+        filters: (r as unknown as { filters?: unknown }).filters ?? {},
+        shared_with_roles: r.shared_with_roles,
+        empresa_id: r.empresa_id,
+        user_id: r.user_id,
+      })),
+      ownersById: ownersMap,
+      exportedBy: user ? { id: user.id, email: user.email ?? null } : null,
+      fromEmpresaId: currentEmpresaId ?? null,
+    });
+    downloadBundle(bundle);
+    toast.success(`${bundle.items.length} filtro(s) exportados`);
+  }
+
+  async function fetchTenantRoles(empresaId: string): Promise<string[]> {
+    const { data, error } = await supabase
+      .from('user_empresas')
+      .select('role')
+      .eq('empresa_id', empresaId)
+      .eq('ativo', true);
+    if (error) throw new Error(error.message);
+    const set = new Set<string>();
+    (data ?? []).forEach((r: { role: string | null }) => {
+      if (r?.role) set.add(r.role);
+    });
+    return Array.from(set);
+  }
+
+  const importBundle = useMutation({
+    mutationFn: async (file: File) => {
+      if (!user) throw new Error('Sessão expirada');
+      if (!currentEmpresaId)
+        throw new Error('Selecione uma empresa atual antes de importar.');
+
+      const text = await file.text();
+      const bundle = parseBundle(text);
+      const tenantRoles = await fetchTenantRoles(currentEmpresaId);
+
+      let inserted = 0;
+      let skipped = 0;
+      const reasons: string[] = [];
+
+      for (const item of bundle.items as SharedFilterBundleItem[]) {
+        let normalized: { sharedWithRoles: ValidatedAppRole[] };
+        try {
+          normalized = validateSharing({
+            isShared: true,
+            sharedWithRoles: item.shared_with_roles,
+            empresaId: currentEmpresaId,
+            tenantRoles,
+          });
+        } catch (e) {
+          skipped++;
+          reasons.push(
+            `${item.name}: ${
+              e instanceof SavedFilterSharingError ? e.message : 'validação falhou'
+            }`,
+          );
+          continue;
+        }
+
+        const { error } = await supabase
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .from('saved_filters' as any)
+          .upsert(
+            {
+              user_id: user.id,
+              created_by: user.id,
+              entity_type: item.entity_type,
+              name: item.name,
+              filters: item.filters as never,
+              is_default: false,
+              is_shared: true,
+              empresa_id: currentEmpresaId,
+              shared_with_roles: normalized.sharedWithRoles,
+            },
+            { onConflict: 'user_id,entity_type,name' },
+          );
+        if (error) {
+          skipped++;
+          reasons.push(`${item.name}: ${error.message}`);
+          continue;
+        }
+        inserted++;
+      }
+
+      await logAudit({
+        filterId: '00000000-0000-0000-0000-000000000000',
+        details: `Import de bundle: ${inserted} importado(s), ${skipped} ignorado(s); origem_empresa=${bundle.exportedFromEmpresaId ?? '—'}; destino_empresa=${currentEmpresaId}; admin=${user.id}`,
+        oldData: { reasons },
+        newData: { inserted, skipped, total: bundle.items.length },
+      });
+
+      return { inserted, skipped, total: bundle.items.length, reasons };
+    },
+    onSuccess: (r) => {
+      if (r.inserted > 0)
+        toast.success(`${r.inserted} filtro(s) importado(s) com sucesso`);
+      if (r.skipped > 0)
+        toast.warning(
+          `${r.skipped} filtro(s) ignorado(s)${r.reasons[0] ? `: ${r.reasons[0]}` : ''}`,
+        );
+      qc.invalidateQueries({ queryKey });
+    },
+    onError: (e: Error) => {
+      const prefix = e instanceof SharedFilterBundleParseError ? 'Arquivo' : 'Erro';
+      toast.error(`${prefix}: ${e.message}`);
+    },
+  });
+
+  function handlePickFile(file: File | null) {
+    if (!file) return;
+    importBundle.mutate(file);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }
+
+
   const entityTypes = useMemo(
     () => Array.from(new Set(rows.map((r) => r.entity_type))).sort(),
     [rows],
