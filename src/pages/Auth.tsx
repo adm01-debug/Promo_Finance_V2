@@ -424,6 +424,12 @@ export default function Auth() {
                 </CardHeader>
                 
                 <CardContent>
+                  {sloFailure && (
+                    <SloFailureBanner
+                      failure={sloFailure}
+                      onDismiss={() => setSloFailureState(null)}
+                    />
+                  )}
                   <Tabs defaultValue="login" className="w-full">
                     <TabsList className="grid w-full grid-cols-2 mb-6">
                       <TabsTrigger value="login" className="gap-2">
