@@ -494,21 +494,44 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
 
       {/* Cabeçalho de tipo */}
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <Badge
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge
+            variant="outline"
+            className={
+              isInsert
+                ? "bg-success/10 text-success border-success/20"
+                : isDelete
+                  ? "bg-destructive/10 text-destructive border-destructive/20"
+                  : "bg-accent/10 text-accent border-accent/20"
+            }
+          >
+            {tipoLabel}
+          </Badge>
+          {action && (
+            <span className="text-[11px] text-muted-foreground font-mono">{action}</span>
+          )}
+        </div>
+        <Button
+          type="button"
           variant="outline"
-          className={
-            isInsert
-              ? "bg-success/10 text-success border-success/20"
-              : isDelete
-                ? "bg-destructive/10 text-destructive border-destructive/20"
-                : "bg-accent/10 text-accent border-accent/20"
-          }
+          size="sm"
+          className="h-7 gap-1.5 text-xs"
+          onClick={handleCopyResumo}
+          aria-label="Copiar resumo das alterações"
+          title="Copia campos-chave e alterações em formato texto"
         >
-          {tipoLabel}
-        </Badge>
-        {action && (
-          <span className="text-[11px] text-muted-foreground font-mono">{action}</span>
-        )}
+          {copied ? (
+            <>
+              <Check className="h-3.5 w-3.5 text-success" aria-hidden="true" />
+              Copiado
+            </>
+          ) : (
+            <>
+              <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+              Copiar resumo
+            </>
+          )}
+        </Button>
       </div>
 
       {/* INSERT: tabela de valores novos */}
