@@ -116,6 +116,13 @@ export default function FiltrosSalvos() {
   const [search, setSearch] = useState('');
   const [diagnostics, setDiagnostics] = useState<Record<string, DiagnosticState>>({});
   const [globalSyncing, setGlobalSyncing] = useState(false);
+  /**
+   * Catálogo efetivo: união do catálogo central (savedFiltersCatalog.ts) com
+   * entityTypes descobertos em runtime no Supabase (`user_active_filters`)
+   * e no localStorage. Permite que novas telas com `useManagedFilters`
+   * apareçam aqui automaticamente, sem necessidade de editar o catálogo.
+   */
+  const [catalog, setCatalog] = useState<FilterCatalogEntry[]>(SAVED_FILTERS_CATALOG);
 
   const refreshOne = useCallback(
     async (entry: FilterCatalogEntry) => {
