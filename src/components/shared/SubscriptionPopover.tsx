@@ -234,7 +234,7 @@ export function SubscriptionPopover({
             size="sm"
             className="h-7 px-3 text-xs"
             onClick={handleSave}
-            disabled={!inapp && !push}
+            disabled={!inapp && !push && !email}
           >
             Salvar
           </Button>
