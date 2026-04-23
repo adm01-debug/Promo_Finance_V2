@@ -213,16 +213,23 @@ function buildProfileSyncDelta(
   const changes: Record<string, { from: unknown; to: unknown }> = {};
   const updates: Record<string, string> = {};
   const fields: Array<keyof typeof incoming> = ["full_name", "avatar_url", "telefone"];
+  const norm = (v: unknown): string | null => {
+    if (v === null || v === undefined) return null;
+    const s = String(v).trim();
+    return s.length === 0 ? null : s;
+  };
   for (const f of fields) {
-    const next = incoming[f];
-    if (next === null || next === undefined) continue;
-    const curr = current[f] ?? null;
-    if (curr === next) continue;
-    changes[f] = { from: curr, to: next };
-    updates[f] = next;
+    const nextNorm = norm(incoming[f]);
+    if (nextNorm === null) continue; // nunca sobrescreve com vazio
+    const currNorm = norm(current[f]);
+    if (currNorm === nextNorm) continue; // idempotente: sem mudança real
+    changes[f] = { from: current[f] ?? null, to: nextNorm };
+    updates[f] = nextNorm;
   }
   return { changes, updates };
 }
+
+export { buildProfileSyncDelta };
 
 async function applyPipeline(opts: {
   admin: Admin;
