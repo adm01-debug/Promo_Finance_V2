@@ -9,15 +9,20 @@
  * we pass `claim_mapping`, `role_mappings`, `default_role` and `allowed_domains`
  * inline, which exercises the same evaluation pipeline.
  */
-import "https://deno.land/std@0.224.0/dotenv/load.ts";
+import { load } from "https://deno.land/std@0.224.0/dotenv/mod.ts";
 import {
   assert,
   assertEquals,
   assertExists,
 } from "https://deno.land/std@0.224.0/assert/mod.ts";
 
-const SUPABASE_URL = Deno.env.get("VITE_SUPABASE_URL")!;
-const ANON_KEY = Deno.env.get("VITE_SUPABASE_PUBLISHABLE_KEY")!;
+// Carrega .env sem validar contra .env.example (que tem variáveis opcionais).
+await load({ export: true, examplePath: null }).catch(() => ({}));
+
+const SUPABASE_URL =
+  Deno.env.get("VITE_SUPABASE_URL") ??
+  "https://iikqosstymnnxaujzadw.supabase.co";
+const ANON_KEY = Deno.env.get("VITE_SUPABASE_PUBLISHABLE_KEY") ?? "";
 const FN_URL = `${SUPABASE_URL}/functions/v1/sso-test-login`;
 
 interface PreviewClaimValues {
