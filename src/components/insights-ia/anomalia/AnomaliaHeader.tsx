@@ -60,7 +60,7 @@ export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
 
   return (
     <Card>
-      <CardContent className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <CardContent className="p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="space-y-2">
           <div className="flex items-center gap-2 flex-wrap">
             <Badge variant={sevVariant}>{anomalia.severidade}</Badge>

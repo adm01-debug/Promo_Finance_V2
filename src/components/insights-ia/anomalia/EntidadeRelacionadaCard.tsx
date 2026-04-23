@@ -36,7 +36,7 @@ export function EntidadeRelacionadaCard({ entidade }: { entidade: EntidadeRelaci
                   .map(([k, v]) => {
                     const isMono = MONO_KEYS.has(k) || k.endsWith("_id");
                     return (
-                      <div key={k} className="border border-border rounded-md px-2 py-1.5">
+                      <div key={k} className="space-y-1 border border-border rounded-md p-3">
                         <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                           {k}
                         </dt>

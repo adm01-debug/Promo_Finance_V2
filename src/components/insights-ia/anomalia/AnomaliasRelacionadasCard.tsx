@@ -15,15 +15,15 @@ export function AnomaliasRelacionadasCard({ lista }: { lista: Anomalia[] }) {
       </CardHeader>
       <CardContent className="space-y-4">
         {lista.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-4 text-center">
+          <p className="text-sm text-muted-foreground text-center">
             Nenhuma anomalia adicional para esta entidade.
           </p>
         ) : (
-          <ul className="space-y-2">
+          <ul className="space-y-3">
             {lista.map((a) => (
               <li
                 key={a.id}
-                className="flex items-center justify-between gap-2 border-l-2 border-primary/40 pl-3 py-1.5"
+                className="flex items-center justify-between gap-2 border-l-2 border-primary/40 pl-3"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">

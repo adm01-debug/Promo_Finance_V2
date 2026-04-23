@@ -107,15 +107,14 @@ export function AcoesSugeridasCard({ anomalia }: { anomalia: Anomalia }) {
       <CardContent className="space-y-4">
         <div className="space-y-3">
           {acoes.map((a, i) => (
-            <div key={i} className="border border-border rounded-md p-3 bg-muted/40">
+            <div key={i} className="space-y-2 p-3 border border-border rounded-md bg-muted/40">
               <h4 className="text-sm font-semibold tracking-tight">{a.titulo}</h4>
-              <p className="text-xs text-muted-foreground mt-1">{a.descricao}</p>
+              <p className="text-xs text-muted-foreground">{a.descricao}</p>
               {a.rota && a.cta && (
                 <Button
                   asChild
                   size="sm"
                   variant="outline"
-                  className="mt-2"
                   aria-label={`${a.cta} — ${a.titulo}`}
                   title={a.cta}
                 >
@@ -126,7 +125,7 @@ export function AcoesSugeridasCard({ anomalia }: { anomalia: Anomalia }) {
           ))}
         </div>
 
-        <div className="space-y-2 pt-2 border-t border-border">
+        <div className="space-y-2 pt-4 border-t border-border">
           <label
             htmlFor="obs"
             className="text-xs font-medium uppercase tracking-wide text-muted-foreground"
