@@ -12,6 +12,8 @@ import {
   Search,
   X,
   Filter,
+  Copy,
+  Check,
 } from "lucide-react";
 import {
   computeDiff,
@@ -20,6 +22,7 @@ import {
   type DiffField,
 } from "@/lib/audit-diff";
 import { formatDate } from "@/lib/formatters";
+import { toast } from "sonner";
 
 interface Props {
   old?: Record<string, unknown> | null;
