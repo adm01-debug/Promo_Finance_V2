@@ -12,6 +12,8 @@ import {
   Search,
   X,
   Filter,
+  Copy,
+  Check,
 } from "lucide-react";
 import {
   computeDiff,
@@ -20,6 +22,7 @@ import {
   type DiffField,
 } from "@/lib/audit-diff";
 import { formatDate } from "@/lib/formatters";
+import { toast } from "sonner";
 
 interface Props {
   old?: Record<string, unknown> | null;
@@ -165,6 +168,7 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
   const [showRaw, setShowRaw] = useState(false);
   const [query, setQuery] = useState("");
   const [activeFields, setActiveFields] = useState<Set<string>>(new Set());
+  const [copied, setCopied] = useState(false);
 
   const isInsert = !oldData && !!newData;
   const isDelete = !!oldData && !newData;
@@ -259,6 +263,78 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
     filteredRemoved.length +
     insertEntries.length +
     deleteEntries.length;
+
+  // Resumo textual: campos-chave + alterações principais
+  const buildResumo = (): string => {
+    const lines: string[] = [];
+    lines.push(`Auditoria: ${tipoLabel}`);
+    if (action) lines.push(`Ação: ${action}`);
+
+    if (camposChave.length > 0) {
+      lines.push("");
+      lines.push("Campos-chave:");
+      for (const c of camposChave) {
+        const ch = changedKeyFields.get(c.key);
+        if (ch && ch.kind === "changed") {
+          lines.push(`  • ${c.key}: ${formatValue(ch.before)} → ${formatValue(ch.after)} (alterado)`);
+        } else if (ch && ch.kind === "added") {
+          lines.push(`  • ${c.key}: ${formatValue(ch.after)} (adicionado)`);
+        } else if (ch && ch.kind === "removed") {
+          lines.push(`  • ${c.key}: ${formatValue(ch.before)} (removido)`);
+        } else {
+          lines.push(`  • ${c.key}: ${formatValue(c.value)}`);
+        }
+      }
+    }
+
+    if (isInsert && newData) {
+      lines.push("");
+      lines.push("Valores criados:");
+      for (const [k, v] of Object.entries(newData)) {
+        lines.push(`  + ${k}: ${formatValue(v)}`);
+      }
+    } else if (isDelete && oldData) {
+      lines.push("");
+      lines.push("Valores excluídos:");
+      for (const [k, v] of Object.entries(oldData)) {
+        lines.push(`  - ${k}: ${formatValue(v)}`);
+      }
+    } else {
+      if (diff.changed.length > 0) {
+        lines.push("");
+        lines.push(`Alterações (${diff.changed.length}):`);
+        for (const f of diff.changed) {
+          lines.push(`  ~ ${f.key}: ${formatValue(f.before)} → ${formatValue(f.after)}`);
+        }
+      }
+      if (diff.added.length > 0) {
+        lines.push("");
+        lines.push(`Adicionados (${diff.added.length}):`);
+        for (const f of diff.added) {
+          lines.push(`  + ${f.key}: ${formatValue(f.after)}`);
+        }
+      }
+      if (diff.removed.length > 0) {
+        lines.push("");
+        lines.push(`Removidos (${diff.removed.length}):`);
+        for (const f of diff.removed) {
+          lines.push(`  - ${f.key}: ${formatValue(f.before)}`);
+        }
+      }
+    }
+    return lines.join("\n");
+  };
+
+  const handleCopyResumo = async () => {
+    try {
+      await navigator.clipboard.writeText(buildResumo());
+      setCopied(true);
+      toast.success("Resumo copiado para a área de transferência");
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Falha ao copiar resumo");
+    }
+  };
 
   return (
     <div className="space-y-3">
@@ -418,21 +494,44 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
 
       {/* Cabeçalho de tipo */}
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <Badge
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge
+            variant="outline"
+            className={
+              isInsert
+                ? "bg-success/10 text-success border-success/20"
+                : isDelete
+                  ? "bg-destructive/10 text-destructive border-destructive/20"
+                  : "bg-accent/10 text-accent border-accent/20"
+            }
+          >
+            {tipoLabel}
+          </Badge>
+          {action && (
+            <span className="text-[11px] text-muted-foreground font-mono">{action}</span>
+          )}
+        </div>
+        <Button
+          type="button"
           variant="outline"
-          className={
-            isInsert
-              ? "bg-success/10 text-success border-success/20"
-              : isDelete
-                ? "bg-destructive/10 text-destructive border-destructive/20"
-                : "bg-accent/10 text-accent border-accent/20"
-          }
+          size="sm"
+          className="h-7 gap-1.5 text-xs"
+          onClick={handleCopyResumo}
+          aria-label="Copiar resumo das alterações"
+          title="Copia campos-chave e alterações em formato texto"
         >
-          {tipoLabel}
-        </Badge>
-        {action && (
-          <span className="text-[11px] text-muted-foreground font-mono">{action}</span>
-        )}
+          {copied ? (
+            <>
+              <Check className="h-3.5 w-3.5 text-success" aria-hidden="true" />
+              Copiado
+            </>
+          ) : (
+            <>
+              <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+              Copiar resumo
+            </>
+          )}
+        </Button>
       </div>
 
       {/* INSERT: tabela de valores novos */}
