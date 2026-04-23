@@ -540,8 +540,8 @@ export function SavedFiltersBar<T>({
           variant="ghost"
           size="sm"
           className="gap-1.5 h-9"
-          onClick={handleRestoreDefault}
-          disabled={!canRestore}
+          onClick={requestRestoreDefault}
+          disabled={!canRestore || anyMutationPending}
           title={
             defaultFilter
               ? `Restaurar preset padrão "${defaultFilter.name}"`
