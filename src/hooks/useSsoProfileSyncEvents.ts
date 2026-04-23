@@ -1,6 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import type { SsoSyncFieldKey, SsoSyncChanges } from './useLastSsoProfileSync';
+import type {
+  SsoSyncFieldKey,
+  SsoSyncChanges,
+  SsoSyncChangeDetail,
+} from './useLastSsoProfileSync';
 
 export interface SsoProfileSyncEvent {
   id: string;
@@ -11,6 +15,10 @@ export interface SsoProfileSyncEvent {
   provider_tipo: string | null;
   fields_changed: SsoSyncFieldKey[];
   changes: SsoSyncChanges;
+  /** Lista ordenada [{ field, old, new }] para depuração rápida. */
+  changes_detail: SsoSyncChangeDetail[];
+  /** Espelho dos campos alterados gravado em audit_logs.old_data. */
+  old_data: Record<string, unknown>;
   details: string | null;
 }
 
@@ -34,7 +42,7 @@ export function useSsoProfileSyncEvents(params: UseSsoProfileSyncEventsParams = 
     queryFn: async (): Promise<SsoProfileSyncEvent[]> => {
       let q = supabase
         .from('audit_logs')
-        .select('id, created_at, user_id, user_email, new_data, details')
+        .select('id, created_at, user_id, user_email, new_data, old_data, details')
         .eq('table_name', 'sso_profile_sync')
         .order('created_at', { ascending: false })
         .limit(limit);
@@ -44,10 +52,22 @@ export function useSsoProfileSyncEvents(params: UseSsoProfileSyncEventsParams = 
       if (error) throw error;
       return (data ?? []).map((row) => {
         const nd = (row.new_data ?? {}) as Record<string, unknown>;
+        const od = (row.old_data ?? {}) as Record<string, unknown>;
         const rawFields = Array.isArray(nd.fields_changed) ? (nd.fields_changed as unknown[]) : [];
         const fields_changed = rawFields
           .map(String)
           .filter((f): f is SsoSyncFieldKey => (FIELD_WHITELIST as string[]).includes(f));
+
+        const rawDetail = Array.isArray(nd.changes_detail) ? (nd.changes_detail as unknown[]) : [];
+        const changes_detail: SsoSyncChangeDetail[] = rawDetail
+          .map((item) => item as Record<string, unknown>)
+          .filter((it) => (FIELD_WHITELIST as string[]).includes(String(it.field)))
+          .map((it) => ({
+            field: it.field as SsoSyncFieldKey,
+            old: it.old,
+            new: it.new,
+          }));
+
         return {
           id: row.id,
           created_at: row.created_at,
@@ -57,6 +77,8 @@ export function useSsoProfileSyncEvents(params: UseSsoProfileSyncEventsParams = 
           provider_tipo: (nd.provider_tipo as string) ?? null,
           fields_changed,
           changes: ((nd.changes as SsoSyncChanges) ?? {}) as SsoSyncChanges,
+          changes_detail,
+          old_data: od,
           details: row.details ?? null,
         };
       });

@@ -377,19 +377,42 @@ async function applyPipeline(opts: {
 
       // Trilha de auditoria — só quando houve alteração real
       try {
-        const fieldsChanged = Object.keys(changes);
+        // Ordem canônica para depuração rápida (sempre na mesma sequência).
+        const FIELD_ORDER = ["full_name", "avatar_url", "telefone"] as const;
+        const fieldsChanged = FIELD_ORDER.filter((f) => f in changes);
+
+        // Detalhe estruturado por atributo: [{ field, old, new }]
+        const changesDetail = fieldsChanged.map((f) => ({
+          field: f,
+          old: changes[f].from,
+          new: changes[f].to,
+        }));
+
+        // old_data / new_data espelham apenas os campos alterados,
+        // facilitando comparação direta no painel de auditoria.
+        const oldDataPerField: Record<string, unknown> = {};
+        const newDataPerField: Record<string, unknown> = {};
+        for (const f of fieldsChanged) {
+          oldDataPerField[f] = changes[f].from;
+          newDataPerField[f] = changes[f].to;
+        }
+
         await admin.from("audit_logs").insert({
           user_id: userId,
           user_email: email,
           action: "UPDATE",
           table_name: "sso_profile_sync",
           record_id: userId,
+          old_data: oldDataPerField,
           new_data: {
             provider_id: providerId,
             provider_nome: providerNome,
             provider_tipo: (provider.tipo as string) ?? null,
-            changes,
             fields_changed: fieldsChanged,
+            changes_detail: changesDetail,
+            // mantém compatibilidade retroativa com consumidores antigos
+            changes,
+            ...newDataPerField,
           },
           details: `Sincronização SSO (${providerNome}): ${fieldsChanged.length} campo(s) atualizado(s) — ${fieldsChanged.join(", ")}`,
         });
