@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
+  AlertTriangle,
   ArrowLeft,
   ArrowLeftRight,
   ArrowRight,
@@ -12,6 +13,7 @@ import {
   Loader2,
   RefreshCw,
   Search,
+  Trash2,
   XCircle,
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -37,6 +39,11 @@ import {
   mergeWithDiscovered,
   type FilterCatalogEntry,
 } from './savedFiltersCatalog';
+import {
+  subscribeHydrationEvents,
+  clearHydrationEvents,
+  type HydrationEvent,
+} from '@/lib/filterHydrationTelemetry';
 
 interface DiagnosticState {
   entityType: string;
