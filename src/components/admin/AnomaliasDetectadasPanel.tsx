@@ -284,7 +284,13 @@ export function AnomaliasDetectadasPanel() {
     }
     return DEFAULT_VISIBLE;
   });
-  const [activePresetId, setActivePresetId] = useState<string | null>(null);
+  const [activePresetId, setActivePresetId] = useState<string | null>(() => {
+    // Inicializa do URL primeiro, com fallback para o snapshot persistido.
+    const fromUrl = searchParams.get("preset");
+    if (fromUrl) return fromUrl;
+    if (!urlHasAnyState && persisted?.presetId) return persisted.presetId;
+    return null;
+  });
   const [bootstrapped, setBootstrapped] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>(() => {
     const fromUrl = searchParams.get("q");
@@ -316,16 +322,29 @@ export function AnomaliasDetectadasPanel() {
     setBootstrapped(true);
   }, [defaultFilter, bootstrapped, urlHasAnyState, persisted]);
 
-  // Persiste filtros/sort/colunas/busca na URL e em localStorage
+  // Persiste filtros/sort/colunas/busca/preset na URL e em localStorage
   useEffect(() => {
     if (!bootstrapped) return;
-    const next = writeFiltersToUrl(searchParams, filters, sort, visibleCols, searchTerm);
+    const next = writeFiltersToUrl(
+      searchParams,
+      filters,
+      sort,
+      visibleCols,
+      searchTerm,
+      activePresetId,
+    );
     if (next.toString() !== searchParams.toString()) {
       setSearchParams(next, { replace: true });
     }
-    savePersistedState({ filters, sort, cols: visibleCols, q: searchTerm });
+    savePersistedState({
+      filters,
+      sort,
+      cols: visibleCols,
+      q: searchTerm,
+      presetId: activePresetId,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, sort, visibleCols, searchTerm, bootstrapped]);
+  }, [filters, sort, visibleCols, searchTerm, activePresetId, bootstrapped]);
 
   // Salva o search atual para que a página de drill-down possa restaurar
   // o painel com os mesmos filtros/ordenação ao clicar em "Voltar para a lista".
