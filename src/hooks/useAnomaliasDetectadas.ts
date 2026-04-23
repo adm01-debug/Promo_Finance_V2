@@ -178,6 +178,8 @@ export function usePendingAnomaliasQueueInfinite(pageSize = 100) {
     refetch: query.refetch,
   };
 }
+
+export class AnomaliaJaRevisadaError extends Error {
   code = "ANOMALIA_JA_REVISADA" as const;
   constructor(message = "Anomalia já foi revisada por outro usuário") {
     super(message);
