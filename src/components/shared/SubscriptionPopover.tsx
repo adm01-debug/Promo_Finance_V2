@@ -42,6 +42,7 @@ export interface SubscriptionPopoverProps {
   onSubscribe: (input: {
     notifyInapp: boolean;
     notifyPush: boolean;
+    notifyEmail: boolean;
     frequencia: SubscriptionFrequencia;
     horarioPreferido: string;
   }) => void;
@@ -49,6 +50,7 @@ export interface SubscriptionPopoverProps {
     id: string;
     notifyInapp: boolean;
     notifyPush: boolean;
+    notifyEmail: boolean;
     frequencia: SubscriptionFrequencia;
     horarioPreferido: string;
   }) => void;
@@ -69,6 +71,7 @@ export function SubscriptionPopover({
   const [open, setOpen] = useState(false);
   const [inapp, setInapp] = useState(subscription?.notify_inapp ?? true);
   const [push, setPush] = useState(subscription?.notify_push ?? false);
+  const [email, setEmail] = useState(subscription?.notify_email ?? false);
   const [freq, setFreq] = useState<SubscriptionFrequencia>(
     subscription?.frequencia ?? "imediata",
   );
@@ -81,6 +84,7 @@ export function SubscriptionPopover({
     if (!open) return;
     setInapp(subscription?.notify_inapp ?? true);
     setPush(subscription?.notify_push ?? false);
+    setEmail(subscription?.notify_email ?? false);
     setFreq(subscription?.frequencia ?? "imediata");
     setHorario((subscription?.horario_preferido ?? "09:00:00").slice(0, 5));
   }, [open, subscription]);
