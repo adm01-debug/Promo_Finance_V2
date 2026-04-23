@@ -10262,6 +10262,20 @@ export type Database = {
           },
         ]
       }
+      vw_notification_history_duplicates: {
+        Row: {
+          channel: string | null
+          created_at: string | null
+          id: string | null
+          prev_created_at: string | null
+          seconds_since_prev: number | null
+          source: string | null
+          source_ref: string | null
+          title: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
       vw_saldos_contas: {
         Row: {
           agencia: string | null
