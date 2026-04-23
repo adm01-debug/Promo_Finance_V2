@@ -7,6 +7,7 @@ import { logger } from '@/lib/logger';
 import { getCurrentEmpresaId } from '@/hooks/useUserEmpresas';
 import { broadcastSsoSlo, subscribeSsoSlo } from '@/lib/sso-sync';
 import { runAuthCleanup } from '@/lib/auth-cleanup';
+import { setSloFailure } from '@/lib/sso-slo-state';
 
 type AppRole = 'admin' | 'financeiro' | 'operacional' | 'visualizador';
 
@@ -192,15 +193,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const ssoProviderId = (user?.user_metadata as Record<string, unknown> | undefined)?.sso_provider_id as string | undefined;
     let ssoLogoutUrl: string | null = null;
     let providerNome = 'SSO';
+    let providerLogoutFailed = false;
+    let providerErrorMessage: string | null = null;
+    let localCleanupFailed = false;
+    let localErrorMessage: string | null = null;
 
     if (ssoProviderId) {
       try {
         const { data, error } = await supabase.functions.invoke('sso-logout', {
           body: { provider_id: ssoProviderId, return_origin: window.location.origin },
         });
-        if (!error && data?.logout_url) ssoLogoutUrl = data.logout_url as string;
-        if (!error && data?.provider_nome) providerNome = data.provider_nome as string;
+        if (error) {
+          providerLogoutFailed = true;
+          providerErrorMessage = error.message ?? 'Erro ao chamar sso-logout';
+        } else {
+          if (data?.logout_url) ssoLogoutUrl = data.logout_url as string;
+          if (data?.provider_nome) providerNome = data.provider_nome as string;
+        }
       } catch (e) {
+        providerLogoutFailed = true;
+        providerErrorMessage = e instanceof Error ? e.message : 'Falha de rede ao contatar sso-logout';
         logger.warn('[useAuth] SSO logout falhou — seguindo com logout local', e);
       }
 
@@ -230,11 +242,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await supabase.auth.signOut();
     } catch (e) {
+      localCleanupFailed = true;
+      localErrorMessage = e instanceof Error ? e.message : 'supabase.auth.signOut falhou';
       logger.warn('[useAuth] supabase.auth.signOut falhou — seguindo com cleanup local', e);
     }
 
     // Revogação local reforçada: storages, cookies, caches do SW, IndexedDB e cache do React Query.
-    await runAuthCleanup(queryClient);
+    try {
+      await runAuthCleanup(queryClient);
+    } catch (e) {
+      localCleanupFailed = true;
+      localErrorMessage = e instanceof Error ? e.message : 'runAuthCleanup falhou';
+      logger.error('[useAuth] runAuthCleanup falhou', e);
+    }
+
+    // Persiste o motivo da falha (se houver) para o banner em /auth exibir.
+    if (providerLogoutFailed || localCleanupFailed) {
+      setSloFailure({
+        reason: localCleanupFailed
+          ? 'local_cleanup_failed'
+          : providerLogoutFailed
+          ? 'provider_logout_failed'
+          : 'unknown',
+        providerNome: ssoProviderId ? providerNome : null,
+        providerId: ssoProviderId ?? null,
+        message: localErrorMessage ?? providerErrorMessage,
+        providerLogoutFailed,
+        localCleanupFailed,
+      });
+      // Redirect com flag de falha para o /auth montar o banner imediatamente.
+      window.location.replace('/auth?slo=fail');
+      return;
+    }
 
     // Redirect duro com `replace` para descartar history e bundle React em memória.
     window.location.replace(ssoLogoutUrl ?? '/auth');
