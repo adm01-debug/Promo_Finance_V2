@@ -30,6 +30,8 @@ import {
 } from "@/hooks/useAnomaliaPreferences";
 import { useLogAudit } from "@/hooks/useAuditLog";
 import { PreviewAnomaliaToastDrawer } from "./PreviewAnomaliaToastDrawer";
+import { AnomaliaPreferencePresetPicker } from "./AnomaliaPreferencePresetPicker";
+import type { AnomaliaPreferencePreset } from "./anomaliaPreferencePresets";
 
 const TIPOS = [
   { value: "movimentacao_outlier", label: "Movimentação atípica" },
@@ -279,6 +281,26 @@ export function AnomaliaPreferencesDialog({ open, onOpenChange }: Props) {
               onCheckedChange={setEnabled}
             />
           </div>
+
+          {/* Presets rápidos */}
+          <AnomaliaPreferencePresetPicker
+            current={{
+              severidades: severidadesAtivas,
+              duracao,
+              toastAcoes,
+              drawerAcoes,
+            }}
+            onApply={(preset: AnomaliaPreferencePreset) => {
+              setSeveridadesAtivas(preset.severidades);
+              setDuracao(preset.duracao);
+              setToastAcoes(preset.toastAcoes);
+              setDrawerAcoes(preset.drawerAcoes);
+              if (!enabled) setEnabled(true);
+              toast.success(`Preset "${preset.nome}" aplicado`, {
+                description: "Revise e clique em Salvar para confirmar.",
+              });
+            }}
+          />
 
           {/* Prévia em tempo real do toast e do drawer */}
           <PreviewAnomaliaToastDrawer
