@@ -273,6 +273,34 @@ export function AnomaliasReviewQueue({
     }
   }, [open, isLoading, severidadeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Quando novas páginas chegam (lazy load), anexa ao snapshot mantendo
+  // os itens já revisados (índice atual) intactos. Itens já presentes
+  // por id são ignorados para preservar updates locais (recarregarPosicao).
+  useEffect(() => {
+    if (!open) return;
+    setSnapshot((prev) => {
+      if (!fila.length) return prev;
+      const filtrada =
+        severidadeFilter === "todas"
+          ? fila
+          : fila.filter((a) => a.severidade === severidadeFilter);
+      if (filtrada.length <= prev.length) return prev;
+      const existentes = new Set(prev.map((a) => a.id));
+      const novos = filtrada.filter((a) => !existentes.has(a.id));
+      if (novos.length === 0) return prev;
+      return [...prev, ...novos];
+    });
+  }, [fila, open, severidadeFilter]);
+
+  // Pré-carrega a próxima página quando o usuário se aproxima do fim
+  // do snapshot atual (janela de 20 itens), mantendo a UI fluida.
+  useEffect(() => {
+    if (!open || !hasNextPage || isFetchingNextPage) return;
+    if (snapshot.length - index <= 20) {
+      void fetchNextPage();
+    }
+  }, [open, index, snapshot.length, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
   const atual = snapshot[index];
   const total = snapshot.length;
   const finalizado = total > 0 && index >= total;
