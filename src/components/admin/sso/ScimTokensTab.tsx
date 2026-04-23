@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useEmpresas } from '@/hooks/useFinancialData';
-import { useScimTokens, useCreateScimToken, useRevokeScimToken } from '@/hooks/useScimTokens';
+import { useScimTokens, useCreateScimToken, useRevokeScimToken, type ScimDefaultRole } from '@/hooks/useScimTokens';
 import { ScimSetupGuide } from './ScimSetupGuide';
 import { toast } from 'sonner';
 
