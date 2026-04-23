@@ -191,8 +191,6 @@ export function AuditDiffView({ old: oldData, new: newData, action }: Props) {
     });
   };
   const [copied, setCopied] = useState(false);
-  // evita warning de linter de eslint para useEffect dummy
-  useEffect(() => undefined, []);
 
   const isInsert = !oldData && !!newData;
   const isDelete = !!oldData && !newData;
