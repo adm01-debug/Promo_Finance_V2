@@ -149,7 +149,8 @@ export function useRealtimeAnomalias() {
               }
             });
 
-          const duracaoMs = (prefs?.toast_duracao_segundos ?? 12) * 1000;
+          const duracaoSeg = prefs?.toast_duracao_segundos ?? 12;
+          const duracaoMs = duracaoSeg * 1000;
           const opts: Parameters<typeof fn>[1] = {
             description: descricaoToast,
             duration: duracaoMs,
@@ -170,6 +171,29 @@ export function useRealtimeAnomalias() {
               });
             }
           }
+
+          // Persiste evento no histórico de toasts (best-effort, não bloqueia UI)
+          const acoesDisponiveis = acoesOrdem.filter((k) => acoesAtivas[k]);
+          supabase
+            .from("anomalia_toast_eventos")
+            .insert({
+              user_id: user.id,
+              anomalia_id: a.id,
+              severidade: a.severidade ?? "baixa",
+              tipo_anomalia: a.tipo_anomalia ?? null,
+              titulo,
+              descricao: descricaoToast ?? null,
+              centro_custo_id: a.centro_custo_id ?? null,
+              centro_custo_nome: centroCustoNome,
+              acoes_disponiveis: acoesDisponiveis,
+              duracao_segundos: duracaoSeg,
+            })
+            .then(({ error }) => {
+              if (error) {
+                // Silencioso: não polui a UI por falha de logging
+                console.warn("[anomalia-toast-eventos] insert falhou", error);
+              }
+            });
         },
       )
       .subscribe();
