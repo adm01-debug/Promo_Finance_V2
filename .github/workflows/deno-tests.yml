@@ -1,0 +1,110 @@
+name: Deno Edge Function Tests
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+  workflow_dispatch:
+
+# Cancela runs anteriores no mesmo branch para economizar minutos.
+concurrency:
+  group: deno-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit-tests:
+    name: Unit tests (offline, determinísticos)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Cache Deno dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/deno
+            ~/.deno
+          key: deno-${{ runner.os }}-${{ hashFiles('supabase/functions/**/*.ts') }}
+          restore-keys: |
+            deno-${{ runner.os }}-
+
+      - name: Lint Deno files
+        run: deno lint supabase/functions/ || true
+
+      - name: Type-check pure modules
+        run: |
+          deno check \
+            supabase/functions/sso-test-login/pipeline.ts \
+            supabase/functions/sso-test-login/mocks.ts \
+            supabase/functions/sso-callback/profile-sync-delta.ts \
+            supabase/functions/sso-callback/claims.ts
+
+      - name: Run unit tests (no network required)
+        run: |
+          deno test \
+            --allow-env \
+            --no-check \
+            supabase/functions/sso-test-login/pipeline.test.ts \
+            supabase/functions/sso-callback/build-profile-sync-delta.test.ts \
+            supabase/functions/sso-callback/claims.test.ts
+
+  integration-tests:
+    name: Integration tests (edge functions live)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: unit-tests
+    # Integração só roda quando os secrets estão presentes (push em branches do
+    # próprio repo). PRs de forks não recebem secrets — pulamos com graça.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Cache Deno dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/deno
+            ~/.deno
+          key: deno-${{ runner.os }}-${{ hashFiles('supabase/functions/**/*.ts') }}
+          restore-keys: |
+            deno-${{ runner.os }}-
+
+      - name: Validate required secrets
+        id: secrets
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "::warning::Secrets VITE_SUPABASE_URL/VITE_SUPABASE_PUBLISHABLE_KEY ausentes — pulando integração."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run integration tests against deployed edge functions
+        if: steps.secrets.outputs.skip == 'false'
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          deno test \
+            --allow-net \
+            --allow-env \
+            --allow-read \
+            --no-check \
+            supabase/functions/sso-test-login/index.test.ts
