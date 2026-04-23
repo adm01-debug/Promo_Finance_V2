@@ -423,6 +423,7 @@ export default function FiltrosSalvos() {
                         entry={entry}
                         diagnostic={diag}
                         onRefresh={() => refreshOne(entry)}
+                        userId={user?.id}
                       />
                     );
                   })}
