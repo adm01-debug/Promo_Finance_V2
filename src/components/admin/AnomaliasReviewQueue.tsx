@@ -72,7 +72,13 @@ export function AnomaliasReviewQueue({
   onOpenChange,
   severidadeFilter = "todas",
 }: Props) {
-  const { data: fila = [], isLoading } = usePendingAnomaliasQueue();
+  const {
+    items: fila,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = usePendingAnomaliasQueueInfinite(100);
   const revisar = useRevisarAnomalia();
   const sincronizar = useSincronizarAnomaliaBitrix();
 
