@@ -203,12 +203,41 @@ export default function FiltrosSalvos() {
   const refreshAll = useCallback(async () => {
     setGlobalSyncing(true);
     try {
-      await Promise.all(CATALOG.map((entry) => refreshOne(entry)));
-      toast.success('Diagnóstico atualizado', { description: `${CATALOG.length} telas verificadas.` });
+      // 1) Auto-discovery: lê localStorage local + lista de entityTypes
+      //    distintos persistidos no Supabase para o usuário corrente.
+      const localKeysByEntity = discoverLocalStorageEntities();
+
+      let remoteEntityTypes: string[] = [];
+      if (user?.id) {
+        try {
+          const { data, error } = await supabase
+            .from('user_active_filters')
+            .select('entity_type')
+            .eq('user_id', user.id);
+          if (error) throw error;
+          remoteEntityTypes = Array.from(
+            new Set((data ?? []).map((r) => r.entity_type as string)),
+          );
+        } catch (e) {
+          logger.warn('[FiltrosSalvos] discovery remoto falhou', { e });
+        }
+      }
+
+      const merged = mergeWithDiscovered(remoteEntityTypes, localKeysByEntity);
+      setCatalog(merged);
+
+      // 2) Diagnóstico de cada entrada (catalogada ou auto)
+      await Promise.all(merged.map((entry) => refreshOne(entry)));
+      const autoCount = merged.filter((m) => m.auto).length;
+      toast.success('Diagnóstico atualizado', {
+        description: autoCount
+          ? `${merged.length} telas (incluindo ${autoCount} descoberta(s) automaticamente).`
+          : `${merged.length} telas verificadas.`,
+      });
     } finally {
       setGlobalSyncing(false);
     }
-  }, [refreshOne]);
+  }, [refreshOne, user?.id]);
 
   useEffect(() => {
     refreshAll();
@@ -217,21 +246,21 @@ export default function FiltrosSalvos() {
 
   const filteredCatalog = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return CATALOG;
-    return CATALOG.filter(
+    if (!q) return catalog;
+    return catalog.filter(
       (e) =>
         e.label.toLowerCase().includes(q) ||
         e.entityType.toLowerCase().includes(q) ||
         e.area.toLowerCase().includes(q) ||
         (e.localStorageKey ?? '').toLowerCase().includes(q)
     );
-  }, [search]);
+  }, [search, catalog]);
 
   const totals = useMemo(() => {
     const list = Object.values(diagnostics);
     const divergences = list.map((d) => computeDivergence(d).direction);
     return {
-      total: CATALOG.length,
+      total: catalog.length,
       remoteOk: list.filter((d) => d.remote === 'ok').length,
       localOk: list.filter((d) => d.local === 'ok').length,
       errors: list.filter((d) => d.remote === 'error').length,
