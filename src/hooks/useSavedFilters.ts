@@ -160,7 +160,10 @@ export function useSavedFilters<T = unknown>(entityType: string) {
       toast.success("Preset salvo");
       qc.invalidateQueries({ queryKey });
     },
-    onError: (e: Error) => toast.error(`Erro ao salvar: ${e.message}`),
+    onError: (e: Error) => {
+      const prefix = e instanceof SavedFilterSharingError ? "Validação" : "Erro ao salvar";
+      toast.error(`${prefix}: ${e.message}`);
+    },
   });
 
   const remove = useMutation({
