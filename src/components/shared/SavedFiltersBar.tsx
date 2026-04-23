@@ -268,12 +268,48 @@ export function SavedFiltersBar<T>({
   };
 
   // Restaura ao preset padrão (se existir) ou ao estado inicial.
+  // Captura snapshot do estado anterior e oferece "Desfazer" no toast.
   const handleRestoreDefault = () => {
+    // Snapshot do estado vigente para permitir undo dentro da janela do toast.
+    const previousPresetId = activePresetId;
+    const previousState: SavedFilterPayload<T> = currentState;
+
     if (defaultFilter) {
       onLoad({ id: defaultFilter.id, payload: defaultFilter.filters });
     } else {
       onClear();
     }
+
+    const undo = () => {
+      if (onRestoreState) {
+        onRestoreState({ presetId: previousPresetId, payload: previousState });
+      } else if (previousPresetId) {
+        // Fallback: reaplica como se fosse um preset com o id anterior.
+        onLoad({ id: previousPresetId, payload: previousState });
+      } else {
+        // Sem onRestoreState e sem preset anterior: melhor esforço.
+        onClear();
+      }
+      toast.success("Alteração desfeita", {
+        description: "Estado anterior dos filtros foi restaurado.",
+      });
+    };
+
+    const titulo = defaultFilter
+      ? `Preset padrão aplicado: "${defaultFilter.name}"`
+      : "Filtros limpos";
+    const descricao = defaultFilter
+      ? "Filtros, ordenação e colunas foram restaurados."
+      : "O painel voltou à configuração inicial.";
+
+    toast.success(titulo, {
+      description: descricao,
+      duration: 8000,
+      action: {
+        label: "Desfazer",
+        onClick: undo,
+      },
+    });
   };
 
   // Confirmação anti-clique-acidental antes de restaurar/voltar ao estado inicial.
