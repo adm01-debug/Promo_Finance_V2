@@ -374,10 +374,10 @@ export function AnomaliasReviewQueue({
     void recarregarPosicao(alvo);
   }
 
-  function avancar() {
+  async function avancar() {
     setComentario("");
     setComentarioTocado(false);
-    void recarregarPosicao(index + 1);
+    await recarregarPosicao(index + 1);
   }
 
   async function handleAcao(status: "confirmada" | "falso_positivo") {
