@@ -24,22 +24,24 @@ export function useSpedEcfHistorico(empresaId?: string) {
     queryKey: ['sped-ecf-historico', empresaId],
     queryFn: async (): Promise<SpedEcfHistoricoRow[]> => {
       if (!empresaId) return [];
-      const { data, error } = await supabase
-        .from('sped_contabil_arquivos')
-        .select('id, ano_calendario, created_at, total_lancamentos, total_linhas, status, hash_sha256, storage_path, recibo_transmissao, validacoes, empresas:empresa_id(cnpj, razao_social)')
-        .eq('empresa_id', empresaId)
-        .eq('tipo', 'ECF')
-        .order('created_at', { ascending: false })
-        .limit(50);
-      if (error) throw error;
-      type Row = {
-        id: string; ano_calendario: number; created_at: string;
-        total_lancamentos: number | null; total_linhas: number | null;
-        status: string; hash_sha256: string | null; storage_path: string;
-        recibo_transmissao: string | null; validacoes: unknown;
-        empresas: { cnpj: string | null; razao_social: string | null } | null;
-      };
-      return ((data || []) as Row[]).map((r) => {
+      const [arquivosRes, empresaRes] = await Promise.all([
+        supabase
+          .from('sped_contabil_arquivos')
+          .select('id, ano_calendario, created_at, total_lancamentos, total_linhas, status, hash_sha256, storage_path, recibo_transmissao, validacoes')
+          .eq('empresa_id', empresaId)
+          .eq('tipo', 'ECF')
+          .order('created_at', { ascending: false })
+          .limit(50),
+        supabase
+          .from('empresas')
+          .select('cnpj, razao_social')
+          .eq('id', empresaId)
+          .maybeSingle(),
+      ]);
+      if (arquivosRes.error) throw arquivosRes.error;
+      const cnpj = empresaRes.data?.cnpj ?? '—';
+      const razao = empresaRes.data?.razao_social ?? '—';
+      return (arquivosRes.data || []).map((r) => {
         const v = (r.validacoes ?? {}) as { erros?: string[]; avisos?: string[] };
         return {
           id: r.id,
@@ -52,8 +54,8 @@ export function useSpedEcfHistorico(empresaId?: string) {
           storage_path: r.storage_path,
           recibo_transmissao: r.recibo_transmissao,
           validacoes: { erros: v.erros ?? [], avisos: v.avisos ?? [] },
-          cnpj: r.empresas?.cnpj ?? '—',
-          razao_social: r.empresas?.razao_social ?? '—',
+          cnpj,
+          razao_social: razao,
         };
       });
     },
