@@ -536,6 +536,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               ecdValor: string;
               tone: 'success' | 'warning' | 'destructive' | 'info';
               detalhe?: string;
+              anchor?: { step: Step; targetId: string };
             };
             const linhas: DivergRow[] = [];
             linhas.push({
@@ -545,6 +546,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               ecdValor: periodoEcdStr,
               tone: periodoMatch ? 'success' : 'destructive',
               detalhe: periodoMatch ? 'Coincide com a ECD' : 'Períodos divergentes — revise antes de transmitir',
+              anchor: { step: 1, targetId: 'wz-meta-periodo' },
             });
             linhas.push({
               key: 'cnpj',
@@ -553,6 +555,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               ecdValor: ecdRef ? data!.empresa.cnpj : '—',
               tone: cnpjMatch ? 'success' : 'destructive',
               detalhe: cnpjMatch ? 'Mesma empresa da ECD' : 'CNPJ não confere com a ECD',
+              anchor: { step: 1, targetId: 'wz-meta-cnpj' },
             });
             linhas.push({
               key: 'hash',
@@ -561,6 +564,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               ecdValor: ecdRef?.hash_sha256 ? `${ecdRef.hash_sha256.substring(0, 16)}…` : '—',
               tone: 'info',
               detalhe: 'Hashes divergem por design (arquivos diferentes) — confira independentemente',
+              anchor: { step: 1, targetId: 'wz-ecd-hash' },
             });
             linhas.push({
               key: 'ecd-status',
@@ -573,6 +577,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                 : ecdRef
                   ? 'Recomenda-se transmitir a ECD antes da ECF'
                   : 'ECD do período não encontrada',
+              anchor: { step: 1, targetId: 'wz-ecd-status' },
             });
 
             const totalDiverg = linhas.filter((l) => l.tone === 'destructive' || l.tone === 'warning').length + checklistAlertas.length;
@@ -582,6 +587,33 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               warning: 'bg-warning/10 text-warning border-warning/30',
               destructive: 'bg-destructive/10 text-destructive border-destructive/30',
               info: 'bg-muted/40 text-muted-foreground border-border/60',
+            };
+
+            const goToAnchor = (targetStep: Step, targetId: string, label: string) => {
+              const focus = () => {
+                // Espera dois frames para a AnimatePresence montar o novo step
+                requestAnimationFrame(() => {
+                  requestAnimationFrame(() => {
+                    const el = document.getElementById(targetId);
+                    if (!el) {
+                      toast.warning('Seção não encontrada', {
+                        description: `Não foi possível localizar "${label}" no passo ${targetStep}.`,
+                      });
+                      return;
+                    }
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    el.classList.add('row-highlight-flash');
+                    window.setTimeout(() => el.classList.remove('row-highlight-flash'), 3000);
+                  });
+                });
+              };
+              if (step !== targetStep) {
+                setStep(targetStep);
+                // Dá tempo ao motion.div de entrar antes de focar
+                window.setTimeout(focus, 280);
+              } else {
+                focus();
+              }
             };
 
             return (
