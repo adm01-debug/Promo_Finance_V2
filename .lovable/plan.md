@@ -1,35 +1,44 @@
 
 
-## Status atual
+## Links de âncora no cross-check ECF × ECD
 
-`src/lib/__tests__/ip-mask.test.ts` já cobre os casos básicos:
-- IPv4 mascarado / não mascarado
-- IPv6 mascarado nos 4 últimos hextets
-- `null` / `undefined` / `''` → `'-'`
-- string não-IP (`localhost`) preservada
-- `matchesIpFilter` com substring, IP nulo e termo vazio
-- Um caso afirmando que o filtro casa o IP original mesmo "se a UI estiver mascarada"
+Adicionar, em cada linha "Diverg." ou "Atenção" do painel **Cross-check ECF × ECD** (Step 3 do `SpedEcfWizard`), um botão de âncora que leva o usuário diretamente à seção do wizard relacionada — voltando ao Step correto e fazendo scroll até o elemento alvo.
 
-## Lacunas a cobrir
+### Mapeamento campo → destino
 
-Para atender ao pedido (mascaramento + filtro por substring com toggle ligado), faltam casos que reforcem o invariante "a UI mascara, mas a busca continua funcionando contra o original":
+| Campo (cross-check)             | Destino                                        | Step | Ancor id              |
+|--------------------------------|------------------------------------------------|------|------------------------|
+| Período                        | Bloco de metadados (Step 1)                    | 1    | `wz-meta-periodo`      |
+| CNPJ                           | Bloco de metadados (Step 1)                    | 1    | `wz-meta-cnpj`         |
+| Hash SHA-256                   | Bloco "ECD vinculada localizada" (Step 1)      | 1    | `wz-ecd-hash`          |
+| Status da ECD vinculada        | Bloco "ECD vinculada localizada" (Step 1)      | 1    | `wz-ecd-status`        |
+| Pontos do checklist (item.id)  | Linha correspondente em `SpedChecklistRow`     | 2    | `wz-checklist-${id}`   |
 
-1. **Trim de espaços** em `maskIp` (`'  192.168.1.42  '` → `'192.168.*.*'`).
-2. **IPv4 com octetos curtos** (`'1.2.3.4'` → `'1.2.*.*'`).
-3. **IPv6 comprimido** (`'::1'`, `'fe80::1'`) — confirma que formas exóticas não são corrompidas.
-4. **`matchesIpFilter` case-insensitive** com termo em maiúsculas contra IPv6 (`'FE80'` casa `'fe80::1'`).
-5. **Invariante combinado** (teste de integração da própria lib): para uma lista de IPs reais, `filter(ip => matchesIpFilter(ip, '192.168'))` produz o mesmo subconjunto independente de `maskIp(ip, true|false)` ter sido aplicado para exibição. Isso documenta de forma executável que mascarar **não** afeta o filtro.
-6. **Substring que só existiria no valor mascarado** (`'*.*'`) **não casa** nada — garante que ninguém acidentalmente use a saída mascarada como entrada de filtro.
+### O que vai mudar
 
-## Mudança proposta
+**`src/components/contabilidade/SpedEcfWizard.tsx`**
 
-**Único arquivo editado**: `src/lib/__tests__/ip-mask.test.ts` — adicionar um novo `describe('maskIp + matchesIpFilter — invariantes')` com os 6 casos acima, mais 2 casos pontuais nos `describe` existentes (trim e IPv4 curto).
+1. **Adicionar `id` nos elementos-alvo** já existentes:
+   - `MetaField` Período → wrapper com `id="wz-meta-periodo"`.
+   - `MetaField` CNPJ → wrapper com `id="wz-meta-cnpj"`.
+   - Bloco "ECD vinculada localizada": Hash → `id="wz-ecd-hash"`; Status → `id="wz-ecd-status"`.
+2. **Estender o tipo `DivergRow`** com um campo opcional `anchor?: { step: 1 | 2 | 3; targetId: string }` e popular para Período, CNPJ, Hash, Status da ECD.
+3. **Botão "Ir para seção"** na coluna Status (ou ao lado do `detalhe`), exibido **apenas quando** `row.tone === 'destructive' || row.tone === 'warning'` e `row.anchor` existe. Ícone `ArrowUpRight` + texto "Ir para".
+4. **Ações do checklist (Step 2)**: cada item em `checklistAlertas` ganha um botão "Ir para seção" com âncora `wz-checklist-${c.id}`. Em `SpedChecklistRow`, propagar `id` para o wrapper `<div>` do item.
+5. **Helper `goToAnchor(step, targetId)`**:
+   - Se `step !== currentStep` → `setStep(step)`.
+   - Aguarda `requestAnimationFrame` (até a `AnimatePresence` montar) e então `document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'center' })`.
+   - Aplica classe temporária `row-highlight-flash` (já existe no projeto, usada em `useHighlightFromUrl`) por 3s para destacar o alvo.
+6. **Acessibilidade**: o botão é um `<button type="button">` com `aria-label="Ir para a seção {label} no passo {N}"`.
 
-Sem novos arquivos, sem mudanças em código de produção, sem mudanças de config (`vitest.config.ts` já inclui `src/**/*.test.ts`).
+**`src/components/contabilidade/SpedChecklistRow.tsx`**
 
-## Resultado esperado
+- Aceitar prop opcional `id?: string` e aplicá-la no wrapper externo do `Collapsible`, para servir de alvo das âncoras `wz-checklist-${item.id}`.
 
-- Suite cresce de ~9 para ~15 asserções na área de mascaramento.
-- Invariante "mascarar é cosmético; filtrar usa o original" fica documentado em teste e protegido contra regressão.
-- `npm test` continua passando; cobertura da lib `ip-mask` chega a 100% de branches.
+### Notas técnicas
+
+- Nenhuma mudança de roteamento/URL. As âncoras são internas ao `Dialog` do wizard.
+- O `setStep` reaproveita o mecanismo já existente de persistência de rascunho (`localStorage`) — não precisa tocá-lo.
+- Reaproveita a classe utilitária `row-highlight-flash` já presente no projeto, mantendo consistência visual com o `useHighlightFromUrl`.
+- Mudança restrita a 2 arquivos; sem impacto no `SpedEcdWizard` (que não tem painel de cross-check).
 
