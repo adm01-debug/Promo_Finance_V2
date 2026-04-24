@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, AlertTriangle, XCircle, Loader2, Download, FileArchive, Copy, Check, ChevronRight, ShieldAlert, RefreshCw, Link2, Send, Building2, Hash, Calendar, FileText, Sparkles, Lock, Ban, FileDown } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, XCircle, Loader2, Download, FileArchive, Copy, Check, ChevronRight, ShieldAlert, RefreshCw, Link2, Send, Building2, Hash, Calendar, FileText, Sparkles, Lock, Ban, FileDown, ArrowUpRight } from 'lucide-react';
 import { exportChecklistEcfPdf } from '@/lib/sped-ecf-checklist-pdf';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -290,10 +290,10 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
             >
               <div className="rounded-xl border border-border/60 bg-card/60 backdrop-blur-sm shadow-sm p-5">
                 <div className="grid grid-cols-2 gap-5">
-                  <MetaField icon={Building2} label="Empresa" value={data.empresa.razao_social} />
-                  <MetaField icon={Hash} label="CNPJ" value={data.empresa.cnpj} mono />
-                  <MetaField icon={Calendar} label="Período" value={`${data.periodo.inicio} → ${data.periodo.fim}`} />
-                  <MetaField icon={FileText} label="Lançamentos no período" value={String(data.total_lancamentos)} mono />
+                  <div><MetaField icon={Building2} label="Empresa" value={data.empresa.razao_social} /></div>
+                  <div id="wz-meta-cnpj" className="rounded-md transition-colors"><MetaField icon={Hash} label="CNPJ" value={data.empresa.cnpj} mono /></div>
+                  <div id="wz-meta-periodo" className="rounded-md transition-colors"><MetaField icon={Calendar} label="Período" value={`${data.periodo.inicio} → ${data.periodo.fim}`} /></div>
+                  <div><MetaField icon={FileText} label="Lançamentos no período" value={String(data.total_lancamentos)} mono /></div>
                 </div>
               </div>
 
@@ -307,7 +307,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                       <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-medium">Gerada em</p>
                       <p className="font-mono text-sm text-foreground">{format(new Date(ecd.created_at), 'dd/MM/yyyy HH:mm')}</p>
                     </div>
-                    <div className="space-y-1">
+                    <div id="wz-ecd-status" className="space-y-1 rounded-md transition-colors">
                       <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-medium">Status</p>
                       <Badge
                         className={cn(
@@ -318,7 +318,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                         {ecd.status}
                       </Badge>
                     </div>
-                    <div className="col-span-2 space-y-1">
+                    <div id="wz-ecd-hash" className="col-span-2 space-y-1 rounded-md transition-colors">
                       <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-medium">Hash SHA-256</p>
                       <code className="text-xs font-mono text-foreground">{(ecd.hash_sha256 || '').substring(0, 32)}…</code>
                     </div>
@@ -464,7 +464,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               </div>
 
               <div className="rounded-xl border border-border/60 bg-card/40 divide-y divide-border/50 overflow-hidden animate-fade-in">
-                {data.checklist.map((item) => <SpedChecklistRow key={item.id} item={item} />)}
+                {data.checklist.map((item) => <SpedChecklistRow key={item.id} item={item} id={`wz-checklist-${item.id}`} />)}
               </div>
 
               <div className="rounded-xl border border-border/60 bg-card/60 backdrop-blur-sm p-5 space-y-3">
@@ -536,6 +536,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               ecdValor: string;
               tone: 'success' | 'warning' | 'destructive' | 'info';
               detalhe?: string;
+              anchor?: { step: Step; targetId: string };
             };
             const linhas: DivergRow[] = [];
             linhas.push({
@@ -545,6 +546,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               ecdValor: periodoEcdStr,
               tone: periodoMatch ? 'success' : 'destructive',
               detalhe: periodoMatch ? 'Coincide com a ECD' : 'Períodos divergentes — revise antes de transmitir',
+              anchor: { step: 1, targetId: 'wz-meta-periodo' },
             });
             linhas.push({
               key: 'cnpj',
@@ -553,6 +555,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               ecdValor: ecdRef ? data!.empresa.cnpj : '—',
               tone: cnpjMatch ? 'success' : 'destructive',
               detalhe: cnpjMatch ? 'Mesma empresa da ECD' : 'CNPJ não confere com a ECD',
+              anchor: { step: 1, targetId: 'wz-meta-cnpj' },
             });
             linhas.push({
               key: 'hash',
@@ -561,6 +564,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               ecdValor: ecdRef?.hash_sha256 ? `${ecdRef.hash_sha256.substring(0, 16)}…` : '—',
               tone: 'info',
               detalhe: 'Hashes divergem por design (arquivos diferentes) — confira independentemente',
+              anchor: { step: 1, targetId: 'wz-ecd-hash' },
             });
             linhas.push({
               key: 'ecd-status',
@@ -573,6 +577,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                 : ecdRef
                   ? 'Recomenda-se transmitir a ECD antes da ECF'
                   : 'ECD do período não encontrada',
+              anchor: { step: 1, targetId: 'wz-ecd-status' },
             });
 
             const totalDiverg = linhas.filter((l) => l.tone === 'destructive' || l.tone === 'warning').length + checklistAlertas.length;
@@ -582,6 +587,33 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               warning: 'bg-warning/10 text-warning border-warning/30',
               destructive: 'bg-destructive/10 text-destructive border-destructive/30',
               info: 'bg-muted/40 text-muted-foreground border-border/60',
+            };
+
+            const goToAnchor = (targetStep: Step, targetId: string, label: string) => {
+              const focus = () => {
+                // Espera dois frames para a AnimatePresence montar o novo step
+                requestAnimationFrame(() => {
+                  requestAnimationFrame(() => {
+                    const el = document.getElementById(targetId);
+                    if (!el) {
+                      toast.warning('Seção não encontrada', {
+                        description: `Não foi possível localizar "${label}" no passo ${targetStep}.`,
+                      });
+                      return;
+                    }
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    el.classList.add('row-highlight-flash');
+                    window.setTimeout(() => el.classList.remove('row-highlight-flash'), 3000);
+                  });
+                });
+              };
+              if (step !== targetStep) {
+                setStep(targetStep);
+                // Dá tempo ao motion.div de entrar antes de focar
+                window.setTimeout(focus, 280);
+              } else {
+                focus();
+              }
             };
 
             return (
@@ -655,29 +687,48 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                     <div className="col-span-1 text-right">Status</div>
                   </div>
                   <div className="divide-y divide-border/50">
-                    {linhas.map((row) => (
-                      <div key={row.key} className="grid grid-cols-12 gap-2 px-3 py-2.5 items-center text-xs">
-                        <div className="col-span-3 font-medium text-foreground">{row.label}</div>
-                        <div className="col-span-4 font-mono text-foreground/90 break-all">{row.ecfValor}</div>
-                        <div className="col-span-4 font-mono text-foreground/90 break-all">{row.ecdValor}</div>
-                        <div className="col-span-1 flex justify-end">
-                          <span
-                            className={cn(
-                              'inline-flex items-center justify-center rounded-md border px-1.5 py-0.5 text-[10px] font-medium',
-                              toneClasses[row.tone],
-                            )}
-                          >
-                            {row.tone === 'success' && 'OK'}
-                            {row.tone === 'warning' && 'Atenção'}
-                            {row.tone === 'destructive' && 'Diverg.'}
-                            {row.tone === 'info' && 'Info'}
-                          </span>
+                    {linhas.map((row) => {
+                      const showJump =
+                        (row.tone === 'destructive' || row.tone === 'warning') && !!row.anchor;
+                      return (
+                        <div key={row.key} className="grid grid-cols-12 gap-2 px-3 py-2.5 items-center text-xs">
+                          <div className="col-span-3 font-medium text-foreground">{row.label}</div>
+                          <div className="col-span-4 font-mono text-foreground/90 break-all">{row.ecfValor}</div>
+                          <div className="col-span-4 font-mono text-foreground/90 break-all">{row.ecdValor}</div>
+                          <div className="col-span-1 flex justify-end">
+                            <span
+                              className={cn(
+                                'inline-flex items-center justify-center rounded-md border px-1.5 py-0.5 text-[10px] font-medium',
+                                toneClasses[row.tone],
+                              )}
+                            >
+                              {row.tone === 'success' && 'OK'}
+                              {row.tone === 'warning' && 'Atenção'}
+                              {row.tone === 'destructive' && 'Diverg.'}
+                              {row.tone === 'info' && 'Info'}
+                            </span>
+                          </div>
+                          {(row.detalhe || showJump) && (
+                            <div className="col-span-12 flex items-center justify-between gap-2 pl-0.5">
+                              {row.detalhe && (
+                                <span className="text-[11px] text-muted-foreground">{row.detalhe}</span>
+                              )}
+                              {showJump && row.anchor && (
+                                <button
+                                  type="button"
+                                  onClick={() => goToAnchor(row.anchor!.step, row.anchor!.targetId, row.label)}
+                                  aria-label={`Ir para a seção ${row.label} no passo ${row.anchor.step}`}
+                                  className="ml-auto inline-flex items-center gap-1 rounded-md border border-primary/30 bg-primary/5 px-2 py-0.5 text-[10px] font-medium text-primary hover:bg-primary/10 transition-colors hover-scale focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                >
+                                  Ir para passo {row.anchor.step}
+                                  <ArrowUpRight className="h-3 w-3" />
+                                </button>
+                              )}
+                            </div>
+                          )}
                         </div>
-                        {row.detalhe && (
-                          <div className="col-span-12 text-[11px] text-muted-foreground pl-0.5">{row.detalhe}</div>
-                        )}
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -704,6 +755,15 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                             <p className="text-foreground leading-snug">{c.label}</p>
                             {c.detail && <p className="text-muted-foreground text-[11px]">{c.detail}</p>}
                           </div>
+                          <button
+                            type="button"
+                            onClick={() => goToAnchor(2, `wz-checklist-${c.id}`, c.label)}
+                            aria-label={`Ir para "${c.label}" no passo 2`}
+                            className="shrink-0 inline-flex items-center gap-1 rounded-md border border-primary/30 bg-primary/5 px-2 py-0.5 text-[10px] font-medium text-primary hover:bg-primary/10 transition-colors hover-scale focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                          >
+                            Ir para passo 2
+                            <ArrowUpRight className="h-3 w-3" />
+                          </button>
                         </li>
                       ))}
                     </ul>

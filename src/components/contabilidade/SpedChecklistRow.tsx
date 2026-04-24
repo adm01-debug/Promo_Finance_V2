@@ -5,7 +5,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { cn } from '@/lib/utils';
 import type { ChecklistItem } from '@/hooks/useSpedContabil';
 
-export function SpedChecklistRow({ item }: { item: ChecklistItem }) {
+export function SpedChecklistRow({ item, id }: { item: ChecklistItem; id?: string }) {
   const [open, setOpen] = useState(false);
   const Icon = item.status === 'ok' ? CheckCircle2 : item.status === 'warn' ? AlertTriangle : XCircle;
   const color =
@@ -18,7 +18,7 @@ export function SpedChecklistRow({ item }: { item: ChecklistItem }) {
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
-      <div className={cn('rounded border bg-card border-l-4 p-3', border)}>
+      <div id={id} className={cn('rounded border bg-card border-l-4 p-3', border)}>
         <div className="flex items-start gap-3">
           <Icon className={cn('h-5 w-5 mt-0.5 shrink-0', color)} />
           <div className="flex-1 min-w-0">
