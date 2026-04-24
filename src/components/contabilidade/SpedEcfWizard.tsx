@@ -687,29 +687,48 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                     <div className="col-span-1 text-right">Status</div>
                   </div>
                   <div className="divide-y divide-border/50">
-                    {linhas.map((row) => (
-                      <div key={row.key} className="grid grid-cols-12 gap-2 px-3 py-2.5 items-center text-xs">
-                        <div className="col-span-3 font-medium text-foreground">{row.label}</div>
-                        <div className="col-span-4 font-mono text-foreground/90 break-all">{row.ecfValor}</div>
-                        <div className="col-span-4 font-mono text-foreground/90 break-all">{row.ecdValor}</div>
-                        <div className="col-span-1 flex justify-end">
-                          <span
-                            className={cn(
-                              'inline-flex items-center justify-center rounded-md border px-1.5 py-0.5 text-[10px] font-medium',
-                              toneClasses[row.tone],
-                            )}
-                          >
-                            {row.tone === 'success' && 'OK'}
-                            {row.tone === 'warning' && 'Atenção'}
-                            {row.tone === 'destructive' && 'Diverg.'}
-                            {row.tone === 'info' && 'Info'}
-                          </span>
+                    {linhas.map((row) => {
+                      const showJump =
+                        (row.tone === 'destructive' || row.tone === 'warning') && !!row.anchor;
+                      return (
+                        <div key={row.key} className="grid grid-cols-12 gap-2 px-3 py-2.5 items-center text-xs">
+                          <div className="col-span-3 font-medium text-foreground">{row.label}</div>
+                          <div className="col-span-4 font-mono text-foreground/90 break-all">{row.ecfValor}</div>
+                          <div className="col-span-4 font-mono text-foreground/90 break-all">{row.ecdValor}</div>
+                          <div className="col-span-1 flex justify-end">
+                            <span
+                              className={cn(
+                                'inline-flex items-center justify-center rounded-md border px-1.5 py-0.5 text-[10px] font-medium',
+                                toneClasses[row.tone],
+                              )}
+                            >
+                              {row.tone === 'success' && 'OK'}
+                              {row.tone === 'warning' && 'Atenção'}
+                              {row.tone === 'destructive' && 'Diverg.'}
+                              {row.tone === 'info' && 'Info'}
+                            </span>
+                          </div>
+                          {(row.detalhe || showJump) && (
+                            <div className="col-span-12 flex items-center justify-between gap-2 pl-0.5">
+                              {row.detalhe && (
+                                <span className="text-[11px] text-muted-foreground">{row.detalhe}</span>
+                              )}
+                              {showJump && row.anchor && (
+                                <button
+                                  type="button"
+                                  onClick={() => goToAnchor(row.anchor!.step, row.anchor!.targetId, row.label)}
+                                  aria-label={`Ir para a seção ${row.label} no passo ${row.anchor.step}`}
+                                  className="ml-auto inline-flex items-center gap-1 rounded-md border border-primary/30 bg-primary/5 px-2 py-0.5 text-[10px] font-medium text-primary hover:bg-primary/10 transition-colors hover-scale focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                >
+                                  Ir para passo {row.anchor.step}
+                                  <ArrowUpRight className="h-3 w-3" />
+                                </button>
+                              )}
+                            </div>
+                          )}
                         </div>
-                        {row.detalhe && (
-                          <div className="col-span-12 text-[11px] text-muted-foreground pl-0.5">{row.detalhe}</div>
-                        )}
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -736,6 +755,15 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                             <p className="text-foreground leading-snug">{c.label}</p>
                             {c.detail && <p className="text-muted-foreground text-[11px]">{c.detail}</p>}
                           </div>
+                          <button
+                            type="button"
+                            onClick={() => goToAnchor(2, `wz-checklist-${c.id}`, c.label)}
+                            aria-label={`Ir para "${c.label}" no passo 2`}
+                            className="shrink-0 inline-flex items-center gap-1 rounded-md border border-primary/30 bg-primary/5 px-2 py-0.5 text-[10px] font-medium text-primary hover:bg-primary/10 transition-colors hover-scale focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                          >
+                            Ir para passo 2
+                            <ArrowUpRight className="h-3 w-3" />
+                          </button>
                         </li>
                       ))}
                     </ul>
