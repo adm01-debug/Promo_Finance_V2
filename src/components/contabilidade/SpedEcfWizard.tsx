@@ -290,10 +290,10 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
             >
               <div className="rounded-xl border border-border/60 bg-card/60 backdrop-blur-sm shadow-sm p-5">
                 <div className="grid grid-cols-2 gap-5">
-                  <MetaField icon={Building2} label="Empresa" value={data.empresa.razao_social} />
-                  <MetaField icon={Hash} label="CNPJ" value={data.empresa.cnpj} mono />
-                  <MetaField icon={Calendar} label="Período" value={`${data.periodo.inicio} → ${data.periodo.fim}`} />
-                  <MetaField icon={FileText} label="Lançamentos no período" value={String(data.total_lancamentos)} mono />
+                  <div><MetaField icon={Building2} label="Empresa" value={data.empresa.razao_social} /></div>
+                  <div id="wz-meta-cnpj" className="rounded-md transition-colors"><MetaField icon={Hash} label="CNPJ" value={data.empresa.cnpj} mono /></div>
+                  <div id="wz-meta-periodo" className="rounded-md transition-colors"><MetaField icon={Calendar} label="Período" value={`${data.periodo.inicio} → ${data.periodo.fim}`} /></div>
+                  <div><MetaField icon={FileText} label="Lançamentos no período" value={String(data.total_lancamentos)} mono /></div>
                 </div>
               </div>
 
@@ -307,7 +307,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                       <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-medium">Gerada em</p>
                       <p className="font-mono text-sm text-foreground">{format(new Date(ecd.created_at), 'dd/MM/yyyy HH:mm')}</p>
                     </div>
-                    <div className="space-y-1">
+                    <div id="wz-ecd-status" className="space-y-1 rounded-md transition-colors">
                       <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-medium">Status</p>
                       <Badge
                         className={cn(
@@ -318,7 +318,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                         {ecd.status}
                       </Badge>
                     </div>
-                    <div className="col-span-2 space-y-1">
+                    <div id="wz-ecd-hash" className="col-span-2 space-y-1 rounded-md transition-colors">
                       <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-medium">Hash SHA-256</p>
                       <code className="text-xs font-mono text-foreground">{(ecd.hash_sha256 || '').substring(0, 32)}…</code>
                     </div>
