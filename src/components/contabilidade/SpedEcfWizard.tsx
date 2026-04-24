@@ -464,7 +464,7 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
               </div>
 
               <div className="rounded-xl border border-border/60 bg-card/40 divide-y divide-border/50 overflow-hidden animate-fade-in">
-                {data.checklist.map((item) => <SpedChecklistRow key={item.id} item={item} />)}
+                {data.checklist.map((item) => <SpedChecklistRow key={item.id} item={item} id={`wz-checklist-${item.id}`} />)}
               </div>
 
               <div className="rounded-xl border border-border/60 bg-card/60 backdrop-blur-sm p-5 space-y-3">
