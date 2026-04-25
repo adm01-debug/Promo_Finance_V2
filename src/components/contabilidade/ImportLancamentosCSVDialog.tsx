@@ -57,7 +57,7 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
     setStep('upload');
     setFile(null);
     setParseResult(null);
-    setProgress({ done: 0, total: 0 });
+    setProgress({ done: 0, total: 0, rate: 0, etaMs: 0, elapsedMs: 0 });
     setImportResult(null);
   };
 
