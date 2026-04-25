@@ -2,8 +2,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CalendarIcon, RotateCcw } from "lucide-react";
-import { useState } from "react";
+import { CalendarIcon, RotateCcw, ChevronDown, ChevronUp, SlidersHorizontal } from "lucide-react";
+import { useMemo, useState } from "react";
+import { usePersistedState } from "@/lib/persisted-ui-state";
 
 export interface FiltrosState {
   inicio: string;
