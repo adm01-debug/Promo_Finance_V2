@@ -91,6 +91,8 @@ export interface ImportLoteFalha {
 
 export interface ImportLoteResult {
   sucesso: number;
+  /** Quantos itens foram pulados por já estarem confirmados em um checkpoint anterior. */
+  pulados?: number;
   falhas: ImportLoteFalha[];
 }
 
@@ -106,6 +108,13 @@ export interface ImportLoteInput {
    * Default: 6 (alinhado ao limite típico de conexões HTTP/1.1 por origem).
    */
   concurrency?: number;
+  /**
+   * Chave estável para o checkpoint de retomada (tipicamente derivada de
+   * empresa+arquivo+hash). Quando fornecida, refs já confirmadas em uma
+   * execução anterior são automaticamente puladas, e cada novo sucesso é
+   * persistido imediatamente — permitindo retomar após falha/interrupção.
+   */
+  checkpointKey?: string;
   /** done = quantos itens já processados; total = total de itens; chunkSize = lote atual sugerido pelo controlador adaptativo. */
   onProgress?: (done: number, total: number, chunkSize?: number) => void;
 }
