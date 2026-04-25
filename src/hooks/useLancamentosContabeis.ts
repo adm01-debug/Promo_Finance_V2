@@ -194,7 +194,8 @@ export function useImportLancamentosLote() {
           );
           if (errPart) throw errPart;
           result.sucesso++;
-        } catch (e) {
+          // Persiste imediatamente — falha/crash após este ponto pula a ref.
+          checkpoint?.confirm(l.ref);
           // Compensação: remove cabeçalho órfão
           if (lancId) {
             await supabase.from('lancamentos_contabeis').delete().eq('id', lancId);
