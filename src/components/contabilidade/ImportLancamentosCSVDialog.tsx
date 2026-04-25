@@ -105,11 +105,37 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
   const handleImport = async () => {
     if (!empresaId || lancamentosImportaveis.length === 0) return;
     setStep('result');
-    setProgress({ done: 0, total: lancamentosImportaveis.length });
+    const total = lancamentosImportaveis.length;
+    const now = performance.now();
+    startedAtRef.current = now;
+    lastSampleRef.current = { t: now, done: 0 };
+    emaRateRef.current = 0;
+    setProgress({ done: 0, total, rate: 0, etaMs: 0, elapsedMs: 0 });
+
     const res = await importar.mutateAsync({
       empresa_id: empresaId,
       lancamentos: lancamentosImportaveis,
-      onProgress: (done, total) => setProgress({ done, total }),
+      onProgress: (done, totalArg, chunkSize) => {
+        const t = performance.now();
+        const last = lastSampleRef.current;
+        const dt = (t - last.t) / 1000; // segundos
+        const dn = done - last.done;
+        // Atualiza apenas quando há intervalo mínimo (≥120ms) ou no fim,
+        // evitando ruído em callbacks muito próximos e re-renders inúteis.
+        if (dt < 0.12 && done < totalArg) return;
+
+        const instantRate = dt > 0 ? dn / dt : 0;
+        // EMA com α=0.3 — suaviza picos sem atrasar muito a reação a mudanças.
+        const ALPHA = 0.3;
+        const ema = emaRateRef.current === 0 ? instantRate : ALPHA * instantRate + (1 - ALPHA) * emaRateRef.current;
+        emaRateRef.current = ema;
+        lastSampleRef.current = { t, done };
+
+        const restantes = Math.max(0, totalArg - done);
+        const etaMs = ema > 0 ? (restantes / ema) * 1000 : 0;
+        const elapsedMs = t - startedAtRef.current;
+        setProgress({ done, total: totalArg, chunkSize, rate: ema, etaMs, elapsedMs });
+      },
     });
     setImportResult(res);
   };
