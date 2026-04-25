@@ -220,18 +220,33 @@ export function useImportLancamentosLote() {
       });
 
       let i = 0;
+      let chunkIndex = 0;
       while (i < total) {
         const size = controller.size();
         const chunk = input.lancamentos.slice(i, i + size);
         const falhasAntes = result.falhas.length;
         const t0 = performance.now();
         // Cada item passa pelo semáforo — o lote pode ter N itens, mas só
-        // `limiter.limit()` deles executam simultaneamente.
-        await Promise.all(chunk.map((l) => limiter.run(() => processarLancamento(l))));
+        // `limiter.limit()` deles executam simultaneamente. Cada lançamento
+        // recebe seu contexto (chunkIndex, posição, índice global) para
+        // que falhas possam ser agrupadas e localizadas no resumo final.
+        await Promise.all(
+          chunk.map((l, idxNoChunk) =>
+            limiter.run(() =>
+              processarLancamento(l, {
+                indiceGlobal: i + idxNoChunk + 1,
+                chunkIndex,
+                chunkSize: chunk.length,
+                posicaoNoChunk: idxNoChunk + 1,
+              }),
+            ),
+          ),
+        );
         const durationMs = performance.now() - t0;
         const failed = result.falhas.length - falhasAntes;
         controller.report({ batchSize: chunk.length, durationMs, failed });
         i += chunk.length;
+        chunkIndex++;
       }
 
       return result;
