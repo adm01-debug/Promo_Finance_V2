@@ -145,14 +145,35 @@ export function useImportLancamentosLote() {
           result.falhas.push({ ref: l.ref, error: e instanceof Error ? e.message : 'Erro desconhecido' });
         } finally {
           processados++;
-          input.onProgress?.(processados, total);
+          input.onProgress?.(processados, total, controller.size());
         }
       };
 
-      // Processa em chunks paralelos para reduzir tempo total
-      for (let i = 0; i < total; i += CHUNK_SIZE) {
-        const chunk = input.lancamentos.slice(i, i + CHUNK_SIZE);
+      // Processa em chunks paralelos com tamanho adaptativo (AIMD).
+      // O controlador cresce o lote quando o backend responde rápido e sem
+      // falhas, e recua quando observa latência alta ou erros — ideal para
+      // arquivos grandes onde o regime ótimo varia ao longo da execução.
+      const controller = createAdaptiveChunkController({
+        ...ADAPTIVE_CHUNK,
+        onAdjust: (info) => {
+          if (import.meta.env.DEV) {
+            // eslint-disable-next-line no-console
+            console.debug('[adaptive-chunk]', info);
+          }
+        },
+      });
+
+      let i = 0;
+      while (i < total) {
+        const size = controller.size();
+        const chunk = input.lancamentos.slice(i, i + size);
+        const falhasAntes = result.falhas.length;
+        const t0 = performance.now();
         await Promise.all(chunk.map(processarLancamento));
+        const durationMs = performance.now() - t0;
+        const failed = result.falhas.length - falhasAntes;
+        controller.report({ batchSize: chunk.length, durationMs, failed });
+        i += chunk.length;
       }
 
       return result;
