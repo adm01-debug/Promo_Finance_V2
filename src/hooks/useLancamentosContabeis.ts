@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { ParsedLancamento } from '@/lib/lancamentos-csv-importer';
 import { createAdaptiveChunkController } from '@/lib/adaptive-chunk';
+import { createConcurrencyLimiter } from '@/lib/concurrency-limiter';
 
 export interface LancamentoContabilInput {
   empresa_id: string;
@@ -81,6 +82,14 @@ export interface ImportLoteInput {
   empresa_id: string;
   lancamentos: ParsedLancamento[];
   origem?: string;
+  /**
+   * Limite máximo de requests realmente executando em paralelo.
+   * O `chunkSize` adaptativo pode crescer livremente, mas o número de
+   * conexões simultâneas contra o backend nunca ultrapassa este valor —
+   * evitando saturar o connection pool / rate-limit do PostgREST.
+   * Default: 6 (alinhado ao limite típico de conexões HTTP/1.1 por origem).
+   */
+  concurrency?: number;
   /** done = quantos itens já processados; total = total de itens; chunkSize = lote atual sugerido pelo controlador adaptativo. */
   onProgress?: (done: number, total: number, chunkSize?: number) => void;
 }
@@ -95,6 +104,12 @@ const ADAPTIVE_CHUNK = {
   targetLatencyPerItemMs: 250,
   failureThreshold: 0.1,
 } as const;
+
+/** Limite padrão de conexões simultâneas contra o backend. */
+const DEFAULT_CONCURRENCY = 6;
+/** Faixa segura aceita para `concurrency` (clamp aplicado em runtime). */
+const CONCURRENCY_MIN = 1;
+const CONCURRENCY_MAX = 16;
 
 export function useImportLancamentosLote() {
   const qc = useQueryClient();
@@ -149,6 +164,16 @@ export function useImportLancamentosLote() {
         }
       };
 
+      // Concorrência configurável (clamp em faixa segura) — limita o número
+      // real de requests simultâneos contra o backend. O `chunkSize`
+      // adaptativo continua livre para crescer (amortizando overhead do
+      // loop), mas o paralelismo efetivo é controlado pelo semáforo.
+      const concurrencyCeil = Math.min(
+        CONCURRENCY_MAX,
+        Math.max(CONCURRENCY_MIN, input.concurrency ?? DEFAULT_CONCURRENCY),
+      );
+      const limiter = createConcurrencyLimiter(concurrencyCeil);
+
       // Processa em chunks paralelos com tamanho adaptativo (AIMD).
       // O controlador cresce o lote quando o backend responde rápido e sem
       // falhas, e recua quando observa latência alta ou erros — ideal para
@@ -156,9 +181,18 @@ export function useImportLancamentosLote() {
       const controller = createAdaptiveChunkController({
         ...ADAPTIVE_CHUNK,
         onAdjust: (info) => {
+          // Quando o controlador recua por latência/falhas, reduz também
+          // a concorrência efetiva pela metade (mantendo CONCURRENCY_MIN).
+          // Quando volta a crescer, restaura o teto configurado.
+          if (info.reason === 'decrease-failures' || info.reason === 'decrease-latency') {
+            const reduced = Math.max(CONCURRENCY_MIN, Math.floor(limiter.limit() / 2));
+            if (reduced !== limiter.limit()) limiter.setLimit(reduced);
+          } else if (info.reason === 'increase' && limiter.limit() < concurrencyCeil) {
+            limiter.setLimit(Math.min(concurrencyCeil, limiter.limit() + 1));
+          }
           if (import.meta.env.DEV) {
             // eslint-disable-next-line no-console
-            console.debug('[adaptive-chunk]', info);
+            console.debug('[adaptive-chunk]', { ...info, concurrency: limiter.limit() });
           }
         },
       });
@@ -169,7 +203,9 @@ export function useImportLancamentosLote() {
         const chunk = input.lancamentos.slice(i, i + size);
         const falhasAntes = result.falhas.length;
         const t0 = performance.now();
-        await Promise.all(chunk.map(processarLancamento));
+        // Cada item passa pelo semáforo — o lote pode ter N itens, mas só
+        // `limiter.limit()` deles executam simultaneamente.
+        await Promise.all(chunk.map((l) => limiter.run(() => processarLancamento(l))));
         const durationMs = performance.now() - t0;
         const failed = result.falhas.length - falhasAntes;
         controller.report({ batchSize: chunk.length, durationMs, failed });
