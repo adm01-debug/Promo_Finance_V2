@@ -186,7 +186,7 @@ export function SpedEcfHistorico({ empresaId }: Props) {
 
               {resumoAlertas.divergencias.length > 0 && (
                 <Alert variant="warning" role="alert">
-                  <Link2 className="h-4 w-4" aria-hidden="true" />
+                  
                   <AlertTitle>
                     Divergência(s) com a ECD do mesmo período em {resumoAlertas.divergencias.length} execução(ões)
                   </AlertTitle>
