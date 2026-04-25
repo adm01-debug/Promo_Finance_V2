@@ -298,6 +298,39 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
               </CardContent></Card>
             </div>
 
+            {retomada && (() => {
+              const aplicaveis = lancamentosImportaveis.filter((l) => retomada.refsConfirmadas.has(l.ref)).length;
+              if (aplicaveis === 0) return null;
+              return (
+                <Alert variant="warning">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle className="text-xs">Importação anterior detectada</AlertTitle>
+                  <AlertDescription className="text-xs space-y-2">
+                    <div>
+                      Encontramos <b>{aplicaveis}</b> de <b>{lancamentosImportaveis.length}</b> lançamento(s)
+                      {' '}já importados em uma execução anterior deste arquivo
+                      {' '}(checkpoint salvo em {format(new Date(retomada.updatedAt), "dd/MM/yyyy 'às' HH:mm")}).
+                      {' '}Ao importar, eles serão <b>pulados automaticamente</b>.
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 text-xs"
+                        onClick={() => {
+                          if (!checkpointKey) return;
+                          clearImportCheckpoint(checkpointKey);
+                          setRetomada(null);
+                        }}
+                      >
+                        Começar do zero (descartar checkpoint)
+                      </Button>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              );
+            })()}
+
             {lancsForaDoAno > 0 && (
               <Alert>
                 <AlertTriangle className="h-4 w-4" />
