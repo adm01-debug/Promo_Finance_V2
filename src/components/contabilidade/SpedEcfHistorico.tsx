@@ -141,6 +141,92 @@ export function SpedEcfHistorico({ empresaId }: Props) {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {(resumoAlertas.bloqueadas.length > 0 || resumoAlertas.divergencias.length > 0) && (
+            <div className="space-y-2" role="region" aria-label="Alertas do histórico ECF">
+              {resumoAlertas.bloqueadas.length > 0 && (
+                <Alert variant="destructive" role="alert">
+                  <Lock className="h-4 w-4" aria-hidden="true" />
+                  <AlertTitle>
+                    {resumoAlertas.bloqueadas.length} execução(ões) bloqueada(s) por erros de validação
+                  </AlertTitle>
+                  <AlertDescription className="space-y-2">
+                    <p className="text-xs">
+                      Ano(s) afetado(s):{' '}
+                      <span className="font-medium">
+                        {Array.from(resumoAlertas.anosBloq).sort((a, b) => b - a).join(', ')}
+                      </span>
+                      . O download do TXT/ZIP fica indisponível enquanto houver erros pendentes.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {resumoAlertas.bloqueadas.slice(0, 4).map(({ row, erros }) => (
+                        <Button
+                          key={row.id}
+                          size="sm"
+                          variant="outline"
+                          className="h-7 gap-1 text-xs"
+                          onClick={() => {
+                            setStatusFilter('bloqueada');
+                            setErrosAbertos(row);
+                          }}
+                          aria-label={`Ver ${erros} erro(s) da ECF ${row.ano_calendario}`}
+                        >
+                          <AlertTriangle className="h-3 w-3" />
+                          ECF {row.ano_calendario} · {erros} erro(s)
+                        </Button>
+                      ))}
+                      {resumoAlertas.bloqueadas.length > 4 && (
+                        <Badge variant="outline" className="text-[10px]">
+                          +{resumoAlertas.bloqueadas.length - 4}
+                        </Badge>
+                      )}
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {resumoAlertas.divergencias.length > 0 && (
+                <Alert
+                  className="border-warning/40 bg-warning/10 text-warning-foreground [&>svg]:text-warning"
+                  role="alert"
+                >
+                  <Link2 className="h-4 w-4" aria-hidden="true" />
+                  <AlertTitle>
+                    Divergência(s) com a ECD do mesmo período em {resumoAlertas.divergencias.length} execução(ões)
+                  </AlertTitle>
+                  <AlertDescription className="space-y-2">
+                    <p className="text-xs">
+                      Ano(s) com cross-check pendente:{' '}
+                      <span className="font-medium">
+                        {Array.from(resumoAlertas.anosDiv).sort((a, b) => b - a).join(', ')}
+                      </span>
+                      . Verifique hash, recibo e saldos K355 × L100 antes de transmitir.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {resumoAlertas.divergencias.slice(0, 4).map(({ row, total }) => (
+                        <Button
+                          key={row.id}
+                          size="sm"
+                          variant="outline"
+                          className="h-7 gap-1 text-xs border-warning/40"
+                          onClick={() => setErrosAbertos(row)}
+                          aria-label={`Ver ${total} divergência(s) ECD da ECF ${row.ano_calendario}`}
+                        >
+                          <Link2 className="h-3 w-3" />
+                          ECF {row.ano_calendario} · {total} ponto(s)
+                        </Button>
+                      ))}
+                      {resumoAlertas.divergencias.length > 4 && (
+                        <Badge variant="outline" className="text-[10px] border-warning/40">
+                          +{resumoAlertas.divergencias.length - 4}
+                        </Badge>
+                      )}
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
+            </div>
+          )}
+
           {historico.length > 0 && (
             <div
               role="region"
