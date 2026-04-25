@@ -245,11 +245,17 @@ export function useImportLancamentosLote() {
         },
       });
 
+      // Pré-mapeia índices originais para que `indiceGlobal` permaneça
+      // estável mesmo após filtrar refs já confirmadas (caso checkpoint).
+      const indicesOriginais = new Map<ParsedLancamento, number>();
+      input.lancamentos.forEach((l, idx) => indicesOriginais.set(l, idx + 1));
+
+      const pendentesTotal = pendentes.length;
       let i = 0;
       let chunkIndex = 0;
-      while (i < total) {
+      while (i < pendentesTotal) {
         const size = controller.size();
-        const chunk = input.lancamentos.slice(i, i + size);
+        const chunk = pendentes.slice(i, i + size);
         const falhasAntes = result.falhas.length;
         const t0 = performance.now();
         // Cada item passa pelo semáforo — o lote pode ter N itens, mas só
@@ -260,7 +266,7 @@ export function useImportLancamentosLote() {
           chunk.map((l, idxNoChunk) =>
             limiter.run(() =>
               processarLancamento(l, {
-                indiceGlobal: i + idxNoChunk + 1,
+                indiceGlobal: indicesOriginais.get(l) ?? i + idxNoChunk + 1,
                 chunkIndex,
                 chunkSize: chunk.length,
                 posicaoNoChunk: idxNoChunk + 1,
@@ -273,6 +279,12 @@ export function useImportLancamentosLote() {
         controller.report({ batchSize: chunk.length, durationMs, failed });
         i += chunk.length;
         chunkIndex++;
+      }
+
+      // Concluiu sem falhas e checkpoint estava em uso → descarta para que
+      // uma nova importação do mesmo arquivo não pule nada por engano.
+      if (checkpoint && result.falhas.length === 0 && input.checkpointKey) {
+        clearImportCheckpoint(input.checkpointKey);
       }
 
       return result;
