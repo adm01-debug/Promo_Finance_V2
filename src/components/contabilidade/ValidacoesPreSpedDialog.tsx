@@ -2,6 +2,12 @@ import { useMemo, useState } from 'react';
 import { Download, FileArchive, AlertTriangle, CheckCircle2, XCircle, ShieldAlert, Search, X, FileJson, FileText, FileDown } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import {
+  applyPdfLayout,
+  getAutoTableMargins,
+  getContentStartY,
+  PDF_BRAND,
+} from '@/lib/pdf-layout';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -126,23 +132,46 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
       const errosExp = apenasFiltrados ? errosFiltrados : erros;
       const avisosExp = apenasFiltrados ? avisosFiltrados : avisos;
       const doc = new jsPDF({ orientation: 'portrait' });
-      doc.setFontSize(14);
-      doc.text(
-        `Validações SPED ${arquivo.tipo} · ${arquivo.ano_calendario}${apenasFiltrados ? ' (filtrado)' : ''}`,
-        14,
-        16,
-      );
-      doc.setFontSize(9);
-      const meta = [
-        `Gerado em: ${new Date().toLocaleString('pt-BR')}`,
-        `Status: ${arquivo.status}`,
-        `Hash: ${arquivo.hash_sha256 ?? '—'}`,
-        apenasFiltrados
-          ? `Filtro: "${busca.trim()}"  ·  Erros: ${errosExp.length}/${erros.length}  ·  Avisos: ${avisosExp.length}/${avisos.length}`
-          : `Erros: ${erros.length}  ·  Avisos: ${avisos.length}`,
+      const margins = getAutoTableMargins();
+      const pageWidth = doc.internal.pageSize.getWidth();
+
+      // Bloco de metadados (cards) logo abaixo do cabeçalho
+      let cursorY = getContentStartY();
+      const metaItems: Array<[string, string]> = [
+        ['Status', String(arquivo.status).toUpperCase()],
+        ['Erros', `${errosExp.length}${apenasFiltrados ? ` / ${erros.length}` : ''}`],
+        ['Avisos', `${avisosExp.length}${apenasFiltrados ? ` / ${avisos.length}` : ''}`],
+        ['Hash', arquivo.hash_sha256 ? `${arquivo.hash_sha256.slice(0, 12)}…` : '—'],
       ];
-      meta.forEach((l, i) => doc.text(l, 14, 22 + i * 5));
-      let cursorY = 22 + meta.length * 5 + 4;
+      const cardW = (pageWidth - margins.left - margins.right - 6) / metaItems.length;
+      const cardH = 14;
+      metaItems.forEach(([label, value], i) => {
+        const x = margins.left + i * (cardW + 2);
+        doc.setDrawColor(PDF_BRAND.border[0], PDF_BRAND.border[1], PDF_BRAND.border[2]);
+        doc.setFillColor(PDF_BRAND.surface[0], PDF_BRAND.surface[1], PDF_BRAND.surface[2]);
+        doc.roundedRect(x, cursorY, cardW, cardH, 1.5, 1.5, 'FD');
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(PDF_BRAND.muted[0], PDF_BRAND.muted[1], PDF_BRAND.muted[2]);
+        doc.text(label.toUpperCase(), x + 2.5, cursorY + 4.5);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.setTextColor(
+          PDF_BRAND.foreground[0],
+          PDF_BRAND.foreground[1],
+          PDF_BRAND.foreground[2],
+        );
+        doc.text(value, x + 2.5, cursorY + 10.5);
+      });
+      cursorY += cardH + 6;
+
+      if (apenasFiltrados) {
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(8);
+        doc.setTextColor(PDF_BRAND.muted[0], PDF_BRAND.muted[1], PDF_BRAND.muted[2]);
+        doc.text(`Filtro aplicado: "${busca.trim()}"`, margins.left, cursorY);
+        cursorY += 5;
+      }
 
       if (errosExp.length > 0) {
         autoTable(doc, {
@@ -150,8 +179,14 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
           head: [[`Erros (${errosExp.length}${apenasFiltrados ? ` de ${erros.length}` : ''})`]],
           body: errosExp.map((e) => [e]),
           theme: 'striped',
-          headStyles: { fillColor: [220, 38, 38] },
-          styles: { fontSize: 8, cellPadding: 2 },
+          headStyles: {
+            fillColor: [PDF_BRAND.destructive[0], PDF_BRAND.destructive[1], PDF_BRAND.destructive[2]],
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+          },
+          alternateRowStyles: { fillColor: [252, 247, 244] },
+          styles: { fontSize: 8, cellPadding: 2.5, textColor: [PDF_BRAND.foreground[0], PDF_BRAND.foreground[1], PDF_BRAND.foreground[2]] },
+          margin: margins,
         });
         cursorY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 6;
       }
@@ -162,20 +197,35 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
           head: [[`Avisos (${avisosExp.length}${apenasFiltrados ? ` de ${avisos.length}` : ''})`]],
           body: avisosExp.map((a) => [a]),
           theme: 'striped',
-          headStyles: { fillColor: [217, 119, 6] },
-          styles: { fontSize: 8, cellPadding: 2 },
+          headStyles: {
+            fillColor: [PDF_BRAND.warning[0], PDF_BRAND.warning[1], PDF_BRAND.warning[2]],
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+          },
+          alternateRowStyles: { fillColor: [252, 249, 240] },
+          styles: { fontSize: 8, cellPadding: 2.5, textColor: [PDF_BRAND.foreground[0], PDF_BRAND.foreground[1], PDF_BRAND.foreground[2]] },
+          margin: margins,
         });
       }
 
       if (errosExp.length === 0 && avisosExp.length === 0) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(PDF_BRAND.muted[0], PDF_BRAND.muted[1], PDF_BRAND.muted[2]);
         doc.text(
           apenasFiltrados
             ? `Nenhum item corresponde ao filtro "${busca.trim()}".`
             : 'Nenhum erro ou aviso encontrado.',
-          14,
+          margins.left,
           cursorY,
         );
       }
+
+      applyPdfLayout(doc, {
+        titulo: `Validações SPED ${arquivo.tipo}`,
+        subtitulo: `Ano-calendário ${arquivo.ano_calendario}${apenasFiltrados ? ' · filtrado' : ''}`,
+        rodapeInfo: arquivo.hash_sha256 ? `SHA-256 ${arquivo.hash_sha256.slice(0, 16)}…` : undefined,
+      });
 
       doc.save(`${baseFilename}${apenasFiltrados ? '-filtrado' : ''}.pdf`);
       toast.success(
