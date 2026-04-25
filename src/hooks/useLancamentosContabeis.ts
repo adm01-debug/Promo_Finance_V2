@@ -135,7 +135,10 @@ export function useImportLancamentosLote() {
       const total = input.lancamentos.length;
       let processados = 0;
 
-      const processarLancamento = async (l: ParsedLancamento) => {
+      const processarLancamento = async (
+        l: ParsedLancamento,
+        ctx: { indiceGlobal: number; chunkIndex: number; chunkSize: number; posicaoNoChunk: number },
+      ) => {
         let lancId: string | null = null;
         try {
           if (!l.balanceado || l.partidas.length < 2) {
@@ -172,7 +175,11 @@ export function useImportLancamentosLote() {
           if (lancId) {
             await supabase.from('lancamentos_contabeis').delete().eq('id', lancId);
           }
-          result.falhas.push({ ref: l.ref, error: e instanceof Error ? e.message : 'Erro desconhecido' });
+          result.falhas.push({
+            ref: l.ref,
+            error: e instanceof Error ? e.message : 'Erro desconhecido',
+            ...ctx,
+          });
         } finally {
           processados++;
           input.onProgress?.(processados, total, controller.size());
