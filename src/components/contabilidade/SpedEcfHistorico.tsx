@@ -145,7 +145,7 @@ export function SpedEcfHistorico({ empresaId }: Props) {
             <div className="space-y-2" role="region" aria-label="Alertas do histórico ECF">
               {resumoAlertas.bloqueadas.length > 0 && (
                 <Alert variant="error" role="alert">
-                  <Lock className="h-4 w-4" aria-hidden="true" />
+                  
                   <AlertTitle>
                     {resumoAlertas.bloqueadas.length} execução(ões) bloqueada(s) por erros de validação
                   </AlertTitle>
