@@ -2,6 +2,12 @@ import { useMemo, useState } from 'react';
 import { Download, FileArchive, AlertTriangle, CheckCircle2, XCircle, ShieldAlert, Search, X, FileJson, FileText, FileDown } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import {
+  applyPdfLayout,
+  getAutoTableMargins,
+  getContentStartY,
+  PDF_BRAND,
+} from '@/lib/pdf-layout';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
