@@ -71,6 +71,11 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
     elapsedMs: number;
   }>({ done: 0, total: 0, rate: 0, etaMs: 0, elapsedMs: 0 });
   const [importResult, setImportResult] = useState<ImportLoteResult | null>(null);
+  const [checkpointKey, setCheckpointKey] = useState<string | null>(null);
+  const [retomada, setRetomada] = useState<{
+    refsConfirmadas: Set<string>;
+    updatedAt: number;
+  } | null>(null);
   // Refs para cálculo de taxa/ETA — evitam re-renders e mantêm continuidade
   // entre callbacks de progresso (que disparam várias vezes por segundo).
   const startedAtRef = useRef<number>(0);
