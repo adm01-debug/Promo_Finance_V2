@@ -77,54 +77,78 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
 
   const baseFilename = `validacoes-sped-${arquivo.tipo.toLowerCase()}-${arquivo.ano_calendario}-${new Date().toISOString().slice(0, 10)}`;
 
-  const exportarJson = () => {
+  const temFiltro = termo.length > 0;
+  const podeExportarFiltrado =
+    temFiltro && (errosFiltrados.length > 0 || avisosFiltrados.length > 0);
+
+  const exportarJson = (apenasFiltrados = false) => {
     try {
+      const errosExp = apenasFiltrados ? errosFiltrados : erros;
+      const avisosExp = apenasFiltrados ? avisosFiltrados : avisos;
       const payload = {
         tipo: arquivo.tipo,
         ano_calendario: arquivo.ano_calendario,
         status: arquivo.status,
         hash_sha256: arquivo.hash_sha256,
         gerado_em: new Date().toISOString(),
-        totais: { erros: erros.length, avisos: avisos.length },
-        erros,
-        avisos,
+        filtro: apenasFiltrados ? { termo: busca.trim() } : null,
+        totais: {
+          erros: errosExp.length,
+          avisos: avisosExp.length,
+          erros_total: erros.length,
+          avisos_total: avisos.length,
+        },
+        erros: errosExp,
+        avisos: avisosExp,
       };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${baseFilename}.json`;
+      a.download = `${baseFilename}${apenasFiltrados ? '-filtrado' : ''}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      toast.success('Validações exportadas em JSON');
+      toast.success(
+        apenasFiltrados
+          ? `JSON exportado com ${errosExp.length} erro(s) e ${avisosExp.length} aviso(s) filtrados`
+          : 'Validações exportadas em JSON',
+      );
     } catch (e) {
       console.error(e);
       toast.error('Erro ao exportar JSON');
     }
   };
 
-  const exportarPdf = () => {
+  const exportarPdf = (apenasFiltrados = false) => {
     try {
+      const errosExp = apenasFiltrados ? errosFiltrados : erros;
+      const avisosExp = apenasFiltrados ? avisosFiltrados : avisos;
       const doc = new jsPDF({ orientation: 'portrait' });
       doc.setFontSize(14);
-      doc.text(`Validações SPED ${arquivo.tipo} · ${arquivo.ano_calendario}`, 14, 16);
+      doc.text(
+        `Validações SPED ${arquivo.tipo} · ${arquivo.ano_calendario}${apenasFiltrados ? ' (filtrado)' : ''}`,
+        14,
+        16,
+      );
       doc.setFontSize(9);
       const meta = [
         `Gerado em: ${new Date().toLocaleString('pt-BR')}`,
         `Status: ${arquivo.status}`,
         `Hash: ${arquivo.hash_sha256 ?? '—'}`,
-        `Erros: ${erros.length}  ·  Avisos: ${avisos.length}`,
+        apenasFiltrados
+          ? `Filtro: "${busca.trim()}"  ·  Erros: ${errosExp.length}/${erros.length}  ·  Avisos: ${avisosExp.length}/${avisos.length}`
+          : `Erros: ${erros.length}  ·  Avisos: ${avisos.length}`,
       ];
       meta.forEach((l, i) => doc.text(l, 14, 22 + i * 5));
       let cursorY = 22 + meta.length * 5 + 4;
 
-      if (erros.length > 0) {
+      if (errosExp.length > 0) {
         autoTable(doc, {
           startY: cursorY,
-          head: [[`Erros (${erros.length})`]],
-          body: erros.map((e) => [e]),
+          head: [[`Erros (${errosExp.length}${apenasFiltrados ? ` de ${erros.length}` : ''})`]],
+          body: errosExp.map((e) => [e]),
           theme: 'striped',
           headStyles: { fillColor: [220, 38, 38] },
           styles: { fontSize: 8, cellPadding: 2 },
@@ -132,23 +156,33 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
         cursorY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 6;
       }
 
-      if (avisos.length > 0) {
+      if (avisosExp.length > 0) {
         autoTable(doc, {
           startY: cursorY,
-          head: [[`Avisos (${avisos.length})`]],
-          body: avisos.map((a) => [a]),
+          head: [[`Avisos (${avisosExp.length}${apenasFiltrados ? ` de ${avisos.length}` : ''})`]],
+          body: avisosExp.map((a) => [a]),
           theme: 'striped',
           headStyles: { fillColor: [217, 119, 6] },
           styles: { fontSize: 8, cellPadding: 2 },
         });
       }
 
-      if (erros.length === 0 && avisos.length === 0) {
-        doc.text('Nenhum erro ou aviso encontrado.', 14, cursorY);
+      if (errosExp.length === 0 && avisosExp.length === 0) {
+        doc.text(
+          apenasFiltrados
+            ? `Nenhum item corresponde ao filtro "${busca.trim()}".`
+            : 'Nenhum erro ou aviso encontrado.',
+          14,
+          cursorY,
+        );
       }
 
-      doc.save(`${baseFilename}.pdf`);
-      toast.success('Validações exportadas em PDF');
+      doc.save(`${baseFilename}${apenasFiltrados ? '-filtrado' : ''}.pdf`);
+      toast.success(
+        apenasFiltrados
+          ? `PDF exportado com ${errosExp.length} erro(s) e ${avisosExp.length} aviso(s) filtrados`
+          : 'Validações exportadas em PDF',
+      );
     } catch (e) {
       console.error(e);
       toast.error('Erro ao exportar PDF');
@@ -323,19 +357,54 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
                 Exportar validações
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel className="text-xs">
-                Relatório de validações
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={exportarPdf} className="gap-2">
+            <DropdownMenuContent align="end" className="w-64">
+              <DropdownMenuLabel className="text-xs">Relatório completo</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => exportarPdf(false)} className="gap-2">
                 <FileText className="h-4 w-4 text-destructive" />
                 PDF (.pdf)
+                <span className="ml-auto text-[10px] text-muted-foreground">
+                  {erros.length + avisos.length} item(ns)
+                </span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={exportarJson} className="gap-2">
+              <DropdownMenuItem onClick={() => exportarJson(false)} className="gap-2">
                 <FileJson className="h-4 w-4 text-primary" />
                 JSON (.json)
+                <span className="ml-auto text-[10px] text-muted-foreground">
+                  {erros.length + avisos.length} item(ns)
+                </span>
               </DropdownMenuItem>
+              {temFiltro && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel className="text-xs">
+                    Apenas filtrados ("{busca.trim()}")
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem
+                    onClick={() => exportarPdf(true)}
+                    disabled={!podeExportarFiltrado}
+                    data-testid="btn-exportar-pdf-filtrado"
+                    className="gap-2"
+                  >
+                    <FileText className="h-4 w-4 text-destructive" />
+                    PDF filtrado
+                    <span className="ml-auto text-[10px] text-muted-foreground">
+                      {errosFiltrados.length + avisosFiltrados.length} item(ns)
+                    </span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => exportarJson(true)}
+                    disabled={!podeExportarFiltrado}
+                    data-testid="btn-exportar-json-filtrado"
+                    className="gap-2"
+                  >
+                    <FileJson className="h-4 w-4 text-primary" />
+                    JSON filtrado
+                    <span className="ml-auto text-[10px] text-muted-foreground">
+                      {errosFiltrados.length + avisosFiltrados.length} item(ns)
+                    </span>
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
           <TooltipProvider>
