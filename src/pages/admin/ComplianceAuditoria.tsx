@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { usePersistedState } from "@/lib/persisted-ui-state";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShieldCheck, Banknote, Receipt, Activity, ClipboardCheck, Package, Hash } from "lucide-react";
 import { MainLayout } from "@/components/layout/MainLayout";
@@ -14,18 +15,18 @@ import { useRealtimeAuditToasts } from "@/hooks/useRealtimeAuditToasts";
 
 export default function ComplianceAuditoria() {
   const [searchParams] = useSearchParams();
-  const initialTab = searchParams.get("tab") || "financeira";
-  const [tab, setTab] = useState(initialTab);
+  const [tab, setTab] = usePersistedState<string>("compliance-auditoria:tab", "financeira");
+  // URL ?tab=… vence sobre o último valor persistido (ex.: clique em toast realtime).
+  const urlTab = searchParams.get("tab");
+  useEffect(() => {
+    if (urlTab && urlTab !== tab) setTab(urlTab);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlTab]);
 
   // Stream realtime audit toasts with deep-link to the right trilha
   useRealtimeAuditToasts();
 
-  // Sync tab when URL changes (e.g., toast click navigates here)
-  useEffect(() => {
-    const t = searchParams.get("tab");
-    if (t && t !== tab) setTab(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+
 
 
   return (

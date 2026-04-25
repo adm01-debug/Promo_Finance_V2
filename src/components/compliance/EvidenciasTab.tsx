@@ -182,6 +182,7 @@ export function EvidenciasTab() {
             usuarios={usuarios}
             escoposOptions={ESCOPOS}
             escoposLabel="Escopos do pacote"
+            storageKey="evidencias"
           />
 
           <div className="flex items-center justify-between">
