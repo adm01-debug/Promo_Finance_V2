@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { format } from 'date-fns';
-import { AlertTriangle, CheckCircle2, Download, FileArchive, Lock, FileText, ScrollText } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Download, FileArchive, Lock, FileText, ScrollText, Filter, X, Search } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -13,6 +15,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { baixarSpedZip } from '@/lib/sped-zip';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+
+type StatusFilter = 'all' | 'liberada' | 'bloqueada' | 'transmitida';
+type ValidacaoFilter = 'all' | 'com_erros' | 'com_avisos' | 'sem_alertas';
 
 interface Props {
   empresaId?: string;
