@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { format } from 'date-fns';
-import { AlertTriangle, CheckCircle2, Download, FileArchive, Lock, FileText, ScrollText, Filter, X, Search } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Download, FileArchive, Lock, FileText, ScrollText, Filter, X, Search, Link2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
