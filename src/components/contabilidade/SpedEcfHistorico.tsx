@@ -42,6 +42,30 @@ export function SpedEcfHistorico({ empresaId }: Props) {
     [historico],
   );
 
+  // Heurística: mensagens de aviso/erro relacionadas ao cross-check ECF × ECD.
+  const ECD_PATTERN = /\b(ECD|cross[-\s]?check|K355|L100|hash)\b/i;
+
+  const resumoAlertas = useMemo(() => {
+    const bloqueadas: { row: SpedEcfHistoricoRow; erros: number }[] = [];
+    const divergencias: { row: SpedEcfHistoricoRow; total: number }[] = [];
+    const anosBloq = new Set<number>();
+    const anosDiv = new Set<number>();
+    for (const h of historico) {
+      const erros = h.validacoes?.erros ?? [];
+      const avisos = h.validacoes?.avisos ?? [];
+      if (h.status === 'rejeitado' || erros.length > 0) {
+        bloqueadas.push({ row: h, erros: erros.length });
+        anosBloq.add(h.ano_calendario);
+      }
+      const divs = [...erros, ...avisos].filter((m) => ECD_PATTERN.test(m));
+      if (divs.length > 0) {
+        divergencias.push({ row: h, total: divs.length });
+        anosDiv.add(h.ano_calendario);
+      }
+    }
+    return { bloqueadas, divergencias, anosBloq, anosDiv };
+  }, [historico]);
+
   const filtrados = useMemo(() => {
     const q = searchAno.trim();
     return historico.filter((h) => {
