@@ -15,8 +15,9 @@ import { useRealtimeAuditToasts } from "@/hooks/useRealtimeAuditToasts";
 
 export default function ComplianceAuditoria() {
   const [searchParams] = useSearchParams();
-  const initialTab = searchParams.get("tab") || "financeira";
-  const [tab, setTab] = useState(initialTab);
+  const [persistedTab, setPersistedTab] = usePersistedState<string>("compliance-auditoria:tab", "financeira");
+  const initialTab = searchParams.get("tab") || persistedTab || "financeira";
+  const [tab, setTab] = usePersistedState<string>("compliance-auditoria:tab:active", initialTab);
 
   // Stream realtime audit toasts with deep-link to the right trilha
   useRealtimeAuditToasts();
