@@ -185,7 +185,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
             fontStyle: 'bold',
           },
           alternateRowStyles: { fillColor: [252, 247, 244] },
-          styles: { fontSize: 8, cellPadding: 2.5, textColor: PDF_BRAND.foreground as number[] },
+          styles: { fontSize: 8, cellPadding: 2.5, textColor: [PDF_BRAND.foreground[0], PDF_BRAND.foreground[1], PDF_BRAND.foreground[2]] },
           margin: margins,
         });
         cursorY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 6;
@@ -203,7 +203,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
             fontStyle: 'bold',
           },
           alternateRowStyles: { fillColor: [252, 249, 240] },
-          styles: { fontSize: 8, cellPadding: 2.5, textColor: PDF_BRAND.foreground as number[] },
+          styles: { fontSize: 8, cellPadding: 2.5, textColor: [PDF_BRAND.foreground[0], PDF_BRAND.foreground[1], PDF_BRAND.foreground[2]] },
           margin: margins,
         });
       }
