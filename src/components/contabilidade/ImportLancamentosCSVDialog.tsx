@@ -559,17 +559,110 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
                   </AlertDescription>
                 </Alert>
 
-                {importResult.falhas.length > 0 && (
-                  <ScrollArea className="max-h-48 border rounded-md p-2">
-                    <ul className="text-xs space-y-1 font-mono">
-                      {importResult.falhas.map((f, i) => (
-                        <li key={i} className="text-destructive">
-                          <span className="font-semibold">ref:{f.ref}</span> — {f.error}
-                        </li>
-                      ))}
-                    </ul>
-                  </ScrollArea>
-                )}
+                {importResult.falhas.length > 0 && (() => {
+                  // Agrupa as falhas pelo chunk em que ocorreram, ordenando os
+                  // chunks pela ordem de execução e os itens pelo índice global.
+                  const grupos = new Map<number, typeof importResult.falhas>();
+                  for (const f of importResult.falhas) {
+                    const arr = grupos.get(f.chunkIndex) ?? [];
+                    arr.push(f);
+                    grupos.set(f.chunkIndex, arr);
+                  }
+                  const ordenados = [...grupos.entries()]
+                    .sort(([a], [b]) => a - b)
+                    .map(([idx, arr]) => ({
+                      chunkIndex: idx,
+                      chunkSize: arr[0]?.chunkSize ?? arr.length,
+                      falhas: [...arr].sort((a, b) => a.indiceGlobal - b.indiceGlobal),
+                    }));
+
+                  return (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>
+                          {importResult.falhas.length} falha(s) em {ordenados.length} lote(s)
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 px-2 text-xs"
+                          onClick={() => {
+                            const linhas = [
+                              'lote;tamanho_lote;posicao_no_lote;indice_global;ref;erro',
+                              ...importResult.falhas.map((f) =>
+                                [
+                                  f.chunkIndex + 1,
+                                  f.chunkSize,
+                                  f.posicaoNoChunk,
+                                  f.indiceGlobal,
+                                  `"${f.ref.replace(/"/g, '""')}"`,
+                                  `"${f.error.replace(/"/g, '""')}"`,
+                                ].join(';'),
+                              ),
+                            ].join('\n');
+                            const blob = new Blob(['\uFEFF' + linhas], { type: 'text/csv;charset=utf-8' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `falhas-importacao-${new Date().toISOString().slice(0, 10)}.csv`;
+                            a.click();
+                            URL.revokeObjectURL(url);
+                          }}
+                        >
+                          <Download className="h-3 w-3 mr-1" /> Exportar CSV
+                        </Button>
+                      </div>
+                      <ScrollArea className="max-h-64 border rounded-md">
+                        <Accordion
+                          type="multiple"
+                          defaultValue={ordenados.slice(0, 1).map((g) => `chunk-${g.chunkIndex}`)}
+                        >
+                          {ordenados.map((g) => (
+                            <AccordionItem key={g.chunkIndex} value={`chunk-${g.chunkIndex}`} className="px-2">
+                              <AccordionTrigger className="text-xs hover:no-underline py-2">
+                                <span className="flex items-center gap-2">
+                                  <Badge variant="outline" className="text-[10px] font-mono">
+                                    Lote #{g.chunkIndex + 1}
+                                  </Badge>
+                                  <span className="text-muted-foreground">tamanho {g.chunkSize}</span>
+                                  <Badge variant="destructive" className="text-[10px]">
+                                    {g.falhas.length} falha(s)
+                                  </Badge>
+                                </span>
+                              </AccordionTrigger>
+                              <AccordionContent>
+                                <Table>
+                                  <TableHeader>
+                                    <TableRow>
+                                      <TableHead className="h-7 text-[10px] uppercase">#</TableHead>
+                                      <TableHead className="h-7 text-[10px] uppercase">Pos. no lote</TableHead>
+                                      <TableHead className="h-7 text-[10px] uppercase">Ref</TableHead>
+                                      <TableHead className="h-7 text-[10px] uppercase">Erro</TableHead>
+                                    </TableRow>
+                                  </TableHeader>
+                                  <TableBody>
+                                    {g.falhas.map((f) => (
+                                      <TableRow key={`${f.chunkIndex}-${f.indiceGlobal}`}>
+                                        <TableCell className="py-1 text-xs font-mono tabular-nums">
+                                          #{f.indiceGlobal}
+                                        </TableCell>
+                                        <TableCell className="py-1 text-xs font-mono tabular-nums text-muted-foreground">
+                                          {f.posicaoNoChunk}/{f.chunkSize}
+                                        </TableCell>
+                                        <TableCell className="py-1 text-xs font-mono">{f.ref}</TableCell>
+                                        <TableCell className="py-1 text-xs text-destructive">{f.error}</TableCell>
+                                      </TableRow>
+                                    ))}
+                                  </TableBody>
+                                </Table>
+                              </AccordionContent>
+                            </AccordionItem>
+                          ))}
+                        </Accordion>
+                      </ScrollArea>
+                    </div>
+                  );
+                })()}
 
                 <DialogFooter>
                   <Button onClick={() => handleClose(false)}>Fechar</Button>
