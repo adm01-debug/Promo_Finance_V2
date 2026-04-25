@@ -37,6 +37,7 @@ interface Props {
    * Quando omitida, o painel fica sempre expandido (comportamento legado).
    */
   storageKey?: string;
+}
 
 const PRESETS: { label: string; dias: number }[] = [
   { label: "7 dias", dias: 7 },
