@@ -1,4 +1,5 @@
 import { useState, useRef, useMemo } from 'react';
+import { Gauge, Timer } from 'lucide-react';
 import { Upload, FileText, Download, AlertCircle, CheckCircle2, XCircle, AlertTriangle, Loader2, ChevronRight } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { format } from 'date-fns';
