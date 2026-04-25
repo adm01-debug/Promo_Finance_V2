@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import type { ParsedLancamento } from '@/lib/lancamentos-csv-importer';
 import { createAdaptiveChunkController } from '@/lib/adaptive-chunk';
 import { createConcurrencyLimiter } from '@/lib/concurrency-limiter';
+import { createImportCheckpoint, clearImportCheckpoint } from '@/lib/import-checkpoint';
 
 export interface LancamentoContabilInput {
   empresa_id: string;
