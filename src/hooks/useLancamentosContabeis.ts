@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { ParsedLancamento } from '@/lib/lancamentos-csv-importer';
+import { createAdaptiveChunkController } from '@/lib/adaptive-chunk';
 
 export interface LancamentoContabilInput {
   empresa_id: string;
