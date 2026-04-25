@@ -141,9 +141,23 @@ export function useImportLancamentosLote() {
   return useMutation({
     mutationFn: async (input: ImportLoteInput): Promise<ImportLoteResult> => {
       const { data: { user } } = await supabase.auth.getUser();
-      const result: ImportLoteResult = { sucesso: 0, falhas: [] };
+
+      // Checkpoint de retomada: filtra refs já confirmadas em execuções
+      // anteriores. Itens pulados não geram requests, mas contam para o
+      // progresso (UI já mostrava "X de N").
+      const checkpoint = input.checkpointKey
+        ? createImportCheckpoint(input.checkpointKey, input.lancamentos.length)
+        : null;
+      const pendentes = checkpoint
+        ? input.lancamentos.filter((l) => !checkpoint.has(l.ref))
+        : input.lancamentos;
+      const pulados = input.lancamentos.length - pendentes.length;
+
+      const result: ImportLoteResult = { sucesso: 0, falhas: [], pulados };
       const total = input.lancamentos.length;
-      let processados = 0;
+      let processados = pulados;
+      // Reporta imediatamente os pulados como progresso.
+      if (pulados > 0) input.onProgress?.(processados, total, undefined);
 
       const processarLancamento = async (
         l: ParsedLancamento,
