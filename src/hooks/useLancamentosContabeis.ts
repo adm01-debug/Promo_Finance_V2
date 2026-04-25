@@ -82,6 +82,14 @@ export interface ImportLoteInput {
   empresa_id: string;
   lancamentos: ParsedLancamento[];
   origem?: string;
+  /**
+   * Limite máximo de requests realmente executando em paralelo.
+   * O `chunkSize` adaptativo pode crescer livremente, mas o número de
+   * conexões simultâneas contra o backend nunca ultrapassa este valor —
+   * evitando saturar o connection pool / rate-limit do PostgREST.
+   * Default: 6 (alinhado ao limite típico de conexões HTTP/1.1 por origem).
+   */
+  concurrency?: number;
   /** done = quantos itens já processados; total = total de itens; chunkSize = lote atual sugerido pelo controlador adaptativo. */
   onProgress?: (done: number, total: number, chunkSize?: number) => void;
 }
@@ -96,6 +104,12 @@ const ADAPTIVE_CHUNK = {
   targetLatencyPerItemMs: 250,
   failureThreshold: 0.1,
 } as const;
+
+/** Limite padrão de conexões simultâneas contra o backend. */
+const DEFAULT_CONCURRENCY = 6;
+/** Faixa segura aceita para `concurrency` (clamp aplicado em runtime). */
+const CONCURRENCY_MIN = 1;
+const CONCURRENCY_MAX = 16;
 
 export function useImportLancamentosLote() {
   const qc = useQueryClient();
