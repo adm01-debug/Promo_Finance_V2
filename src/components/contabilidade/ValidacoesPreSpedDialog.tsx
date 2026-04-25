@@ -357,19 +357,54 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
                 Exportar validações
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel className="text-xs">
-                Relatório de validações
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={exportarPdf} className="gap-2">
+            <DropdownMenuContent align="end" className="w-64">
+              <DropdownMenuLabel className="text-xs">Relatório completo</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => exportarPdf(false)} className="gap-2">
                 <FileText className="h-4 w-4 text-destructive" />
                 PDF (.pdf)
+                <span className="ml-auto text-[10px] text-muted-foreground">
+                  {erros.length + avisos.length} item(ns)
+                </span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={exportarJson} className="gap-2">
+              <DropdownMenuItem onClick={() => exportarJson(false)} className="gap-2">
                 <FileJson className="h-4 w-4 text-primary" />
                 JSON (.json)
+                <span className="ml-auto text-[10px] text-muted-foreground">
+                  {erros.length + avisos.length} item(ns)
+                </span>
               </DropdownMenuItem>
+              {temFiltro && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel className="text-xs">
+                    Apenas filtrados ("{busca.trim()}")
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem
+                    onClick={() => exportarPdf(true)}
+                    disabled={!podeExportarFiltrado}
+                    data-testid="btn-exportar-pdf-filtrado"
+                    className="gap-2"
+                  >
+                    <FileText className="h-4 w-4 text-destructive" />
+                    PDF filtrado
+                    <span className="ml-auto text-[10px] text-muted-foreground">
+                      {errosFiltrados.length + avisosFiltrados.length} item(ns)
+                    </span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => exportarJson(true)}
+                    disabled={!podeExportarFiltrado}
+                    data-testid="btn-exportar-json-filtrado"
+                    className="gap-2"
+                  >
+                    <FileJson className="h-4 w-4 text-primary" />
+                    JSON filtrado
+                    <span className="ml-auto text-[10px] text-muted-foreground">
+                      {errosFiltrados.length + avisosFiltrados.length} item(ns)
+                    </span>
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
           <TooltipProvider>
