@@ -73,9 +73,24 @@ export function useCriarLancamento() {
   });
 }
 
+export interface ImportLoteFalha {
+  /** Referência (lancamento_ref) original do CSV. */
+  ref: string;
+  /** Mensagem de erro. */
+  error: string;
+  /** Índice global (1-based) do lançamento na lista importada. */
+  indiceGlobal: number;
+  /** Índice (0-based) do chunk onde a falha ocorreu. */
+  chunkIndex: number;
+  /** Tamanho do chunk no momento da falha (definido pelo controlador adaptativo). */
+  chunkSize: number;
+  /** Posição (1-based) do lançamento dentro do chunk. */
+  posicaoNoChunk: number;
+}
+
 export interface ImportLoteResult {
   sucesso: number;
-  falhas: { ref: string; error: string }[];
+  falhas: ImportLoteFalha[];
 }
 
 export interface ImportLoteInput {
@@ -120,7 +135,10 @@ export function useImportLancamentosLote() {
       const total = input.lancamentos.length;
       let processados = 0;
 
-      const processarLancamento = async (l: ParsedLancamento) => {
+      const processarLancamento = async (
+        l: ParsedLancamento,
+        ctx: { indiceGlobal: number; chunkIndex: number; chunkSize: number; posicaoNoChunk: number },
+      ) => {
         let lancId: string | null = null;
         try {
           if (!l.balanceado || l.partidas.length < 2) {
@@ -157,7 +175,11 @@ export function useImportLancamentosLote() {
           if (lancId) {
             await supabase.from('lancamentos_contabeis').delete().eq('id', lancId);
           }
-          result.falhas.push({ ref: l.ref, error: e instanceof Error ? e.message : 'Erro desconhecido' });
+          result.falhas.push({
+            ref: l.ref,
+            error: e instanceof Error ? e.message : 'Erro desconhecido',
+            ...ctx,
+          });
         } finally {
           processados++;
           input.onProgress?.(processados, total, controller.size());
@@ -198,18 +220,33 @@ export function useImportLancamentosLote() {
       });
 
       let i = 0;
+      let chunkIndex = 0;
       while (i < total) {
         const size = controller.size();
         const chunk = input.lancamentos.slice(i, i + size);
         const falhasAntes = result.falhas.length;
         const t0 = performance.now();
         // Cada item passa pelo semáforo — o lote pode ter N itens, mas só
-        // `limiter.limit()` deles executam simultaneamente.
-        await Promise.all(chunk.map((l) => limiter.run(() => processarLancamento(l))));
+        // `limiter.limit()` deles executam simultaneamente. Cada lançamento
+        // recebe seu contexto (chunkIndex, posição, índice global) para
+        // que falhas possam ser agrupadas e localizadas no resumo final.
+        await Promise.all(
+          chunk.map((l, idxNoChunk) =>
+            limiter.run(() =>
+              processarLancamento(l, {
+                indiceGlobal: i + idxNoChunk + 1,
+                chunkIndex,
+                chunkSize: chunk.length,
+                posicaoNoChunk: idxNoChunk + 1,
+              }),
+            ),
+          ),
+        );
         const durationMs = performance.now() - t0;
         const failed = result.falhas.length - falhasAntes;
         controller.report({ batchSize: chunk.length, durationMs, failed });
         i += chunk.length;
+        chunkIndex++;
       }
 
       return result;
