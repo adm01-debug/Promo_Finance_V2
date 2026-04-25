@@ -81,10 +81,20 @@ export interface ImportLoteInput {
   empresa_id: string;
   lancamentos: ParsedLancamento[];
   origem?: string;
-  onProgress?: (done: number, total: number) => void;
+  /** done = quantos itens já processados; total = total de itens; chunkSize = lote atual sugerido pelo controlador adaptativo. */
+  onProgress?: (done: number, total: number, chunkSize?: number) => void;
 }
 
-const CHUNK_SIZE = 10; // lançamentos processados em paralelo
+// Configuração inicial do chunk adaptativo. Os limites foram calibrados para
+// inserts no Supabase (lançamento + partidas em ~2 round-trips por item).
+// O controlador AIMD reage a latência por item e taxa de falhas em tempo real.
+const ADAPTIVE_CHUNK = {
+  initial: 10,
+  min: 2,
+  max: 50,
+  targetLatencyPerItemMs: 250,
+  failureThreshold: 0.1,
+} as const;
 
 export function useImportLancamentosLote() {
   const qc = useQueryClient();
