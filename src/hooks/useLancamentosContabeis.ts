@@ -291,10 +291,11 @@ export function useImportLancamentosLote() {
     },
     onSuccess: (res) => {
       qc.invalidateQueries({ queryKey: ['lancamentos-contabeis'] });
+      const sufixoPulados = res.pulados ? ` (${res.pulados} retomado[s] de checkpoint)` : '';
       if (res.falhas.length === 0) {
-        toast.success(`${res.sucesso} lançamento(s) importado(s) com sucesso`);
+        toast.success(`${res.sucesso} lançamento(s) importado(s) com sucesso${sufixoPulados}`);
       } else {
-        toast.warning(`Importação concluída: ${res.sucesso} sucesso(s), ${res.falhas.length} falha(s)`);
+        toast.warning(`Importação concluída: ${res.sucesso} sucesso(s), ${res.falhas.length} falha(s)${sufixoPulados}`);
       }
     },
     onError: (e: Error) => toast.error(`Erro na importação: ${e.message}`),
