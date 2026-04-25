@@ -90,6 +90,8 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
     setParseResult(null);
     setProgress({ done: 0, total: 0, rate: 0, etaMs: 0, elapsedMs: 0 });
     setImportResult(null);
+    setCheckpointKey(null);
+    setRetomada(null);
   };
 
   const handleClose = (next: boolean) => {
