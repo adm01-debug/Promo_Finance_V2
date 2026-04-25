@@ -14,6 +14,7 @@ import { Progress } from '@/components/ui/progress';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useImportLancamentosLote, type ImportLoteResult } from '@/hooks/useLancamentosContabeis';
 import { parseLancamentosCsv, downloadLancamentosCsvTemplate, type CsvLancParseResult, type ParsedLancamento } from '@/lib/lancamentos-csv-importer';
+import { peekImportCheckpoint, clearImportCheckpoint, quickHash } from '@/lib/import-checkpoint';
 import type { PlanoContaRow } from '@/hooks/usePlanoContas';
 import { formatCurrency } from '@/lib/formatters';
 import { formatFileSize } from '@/lib/file';
