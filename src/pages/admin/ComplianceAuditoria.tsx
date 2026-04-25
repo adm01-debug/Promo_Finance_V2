@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { usePersistedState } from "@/lib/persisted-ui-state";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShieldCheck, Banknote, Receipt, Activity, ClipboardCheck, Package, Hash } from "lucide-react";
 import { MainLayout } from "@/components/layout/MainLayout";
