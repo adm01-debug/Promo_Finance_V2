@@ -164,6 +164,7 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
     const res = await importar.mutateAsync({
       empresa_id: empresaId,
       lancamentos: lancamentosImportaveis,
+      checkpointKey: checkpointKey ?? undefined,
       onProgress: (done, totalArg, chunkSize) => {
         const t = performance.now();
         const last = lastSampleRef.current;
