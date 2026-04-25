@@ -464,10 +464,61 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
                 <div className="flex items-center justify-center py-4">
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 </div>
-                <Progress value={progress.total > 0 ? (progress.done / progress.total) * 100 : 0} />
-                <p className="text-center text-sm text-muted-foreground">
-                  Importando {progress.done} de {progress.total}...
-                </p>
+                <Progress
+                  value={progress.total > 0 ? (progress.done / progress.total) * 100 : 0}
+                  aria-label={`Importação em ${formatPct(progress.done, progress.total)}%`}
+                />
+                <div
+                  className="flex items-center justify-between text-xs text-muted-foreground"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
+                  <span>
+                    Importando <span className="font-medium text-foreground">{progress.done}</span> de{' '}
+                    <span className="font-medium text-foreground">{progress.total}</span>
+                    {' '}({formatPct(progress.done, progress.total)}%)
+                  </span>
+                  <span className="font-mono">{formatDuration(progress.elapsedMs)}</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <Card>
+                    <CardContent className="p-2.5 flex items-center gap-2">
+                      <Gauge className="h-4 w-4 text-primary shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Taxa</div>
+                        <div className="text-sm font-semibold tabular-nums truncate">
+                          {progress.rate > 0 ? `${formatRate(progress.rate)}` : '—'}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-2.5 flex items-center gap-2">
+                      <Timer className="h-4 w-4 text-primary shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Tempo restante</div>
+                        <div className="text-sm font-semibold tabular-nums truncate">
+                          {progress.done >= progress.total
+                            ? 'finalizando…'
+                            : progress.etaMs > 0
+                              ? formatDuration(progress.etaMs)
+                              : 'calculando…'}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  {progress.chunkSize ? (
+                    <Card className="col-span-2 sm:col-span-1">
+                      <CardContent className="p-2.5 flex items-center gap-2">
+                        <Upload className="h-4 w-4 text-primary shrink-0" />
+                        <div className="min-w-0">
+                          <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Lote atual</div>
+                          <div className="text-sm font-semibold tabular-nums truncate">{progress.chunkSize} / lote</div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : null}
+                </div>
               </>
             ) : importResult ? (
               <>
