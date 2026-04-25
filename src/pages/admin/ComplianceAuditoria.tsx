@@ -26,12 +26,7 @@ export default function ComplianceAuditoria() {
   // Stream realtime audit toasts with deep-link to the right trilha
   useRealtimeAuditToasts();
 
-  // Sync tab when URL changes (e.g., toast click navigates here)
-  useEffect(() => {
-    const t = searchParams.get("tab");
-    if (t && t !== tab) setTab(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+
 
 
   return (
