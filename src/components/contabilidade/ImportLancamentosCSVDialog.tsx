@@ -1,4 +1,5 @@
 import { useState, useRef, useMemo } from 'react';
+import { Gauge, Timer } from 'lucide-react';
 import { Upload, FileText, Download, AlertCircle, CheckCircle2, XCircle, AlertTriangle, Loader2, ChevronRight } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { format } from 'date-fns';
@@ -26,14 +27,54 @@ interface Props {
 
 type Step = 'upload' | 'preview' | 'result';
 
+function formatPct(done: number, total: number): string {
+  if (total <= 0) return '0';
+  return ((done / total) * 100).toFixed(done >= total ? 0 : 1);
+}
+
+function formatRate(itemsPerSecond: number): string {
+  if (!isFinite(itemsPerSecond) || itemsPerSecond <= 0) return '—';
+  if (itemsPerSecond >= 1) return `${itemsPerSecond.toFixed(1)} itens/s`;
+  const perMin = itemsPerSecond * 60;
+  if (perMin >= 1) return `${perMin.toFixed(1)} itens/min`;
+  return `${(perMin * 60).toFixed(1)} itens/h`;
+}
+
+function formatDuration(ms: number): string {
+  if (!isFinite(ms) || ms <= 0) return '0s';
+  const totalSec = Math.round(ms / 1000);
+  if (totalSec < 60) return `${totalSec}s`;
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  if (m < 60) return s === 0 ? `${m}min` : `${m}min ${s}s`;
+  const h = Math.floor(m / 60);
+  const mm = m % 60;
+  return mm === 0 ? `${h}h` : `${h}h ${mm}min`;
+}
+
 export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Props) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>('upload');
   const [file, setFile] = useState<File | null>(null);
   const [parsing, setParsing] = useState(false);
   const [parseResult, setParseResult] = useState<CsvLancParseResult | null>(null);
-  const [progress, setProgress] = useState({ done: 0, total: 0 });
+  const [progress, setProgress] = useState<{
+    done: number;
+    total: number;
+    chunkSize?: number;
+    /** Taxa instantânea (EMA) em itens/segundo. */
+    rate: number;
+    /** Estimativa de tempo restante em ms. */
+    etaMs: number;
+    /** Tempo decorrido em ms desde o início da importação. */
+    elapsedMs: number;
+  }>({ done: 0, total: 0, rate: 0, etaMs: 0, elapsedMs: 0 });
   const [importResult, setImportResult] = useState<ImportLoteResult | null>(null);
+  // Refs para cálculo de taxa/ETA — evitam re-renders e mantêm continuidade
+  // entre callbacks de progresso (que disparam várias vezes por segundo).
+  const startedAtRef = useRef<number>(0);
+  const lastSampleRef = useRef<{ t: number; done: number }>({ t: 0, done: 0 });
+  const emaRateRef = useRef<number>(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const importar = useImportLancamentosLote();
 
@@ -41,7 +82,7 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
     setStep('upload');
     setFile(null);
     setParseResult(null);
-    setProgress({ done: 0, total: 0 });
+    setProgress({ done: 0, total: 0, rate: 0, etaMs: 0, elapsedMs: 0 });
     setImportResult(null);
   };
 
@@ -89,11 +130,37 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
   const handleImport = async () => {
     if (!empresaId || lancamentosImportaveis.length === 0) return;
     setStep('result');
-    setProgress({ done: 0, total: lancamentosImportaveis.length });
+    const total = lancamentosImportaveis.length;
+    const now = performance.now();
+    startedAtRef.current = now;
+    lastSampleRef.current = { t: now, done: 0 };
+    emaRateRef.current = 0;
+    setProgress({ done: 0, total, rate: 0, etaMs: 0, elapsedMs: 0 });
+
     const res = await importar.mutateAsync({
       empresa_id: empresaId,
       lancamentos: lancamentosImportaveis,
-      onProgress: (done, total) => setProgress({ done, total }),
+      onProgress: (done, totalArg, chunkSize) => {
+        const t = performance.now();
+        const last = lastSampleRef.current;
+        const dt = (t - last.t) / 1000; // segundos
+        const dn = done - last.done;
+        // Atualiza apenas quando há intervalo mínimo (≥120ms) ou no fim,
+        // evitando ruído em callbacks muito próximos e re-renders inúteis.
+        if (dt < 0.12 && done < totalArg) return;
+
+        const instantRate = dt > 0 ? dn / dt : 0;
+        // EMA com α=0.3 — suaviza picos sem atrasar muito a reação a mudanças.
+        const ALPHA = 0.3;
+        const ema = emaRateRef.current === 0 ? instantRate : ALPHA * instantRate + (1 - ALPHA) * emaRateRef.current;
+        emaRateRef.current = ema;
+        lastSampleRef.current = { t, done };
+
+        const restantes = Math.max(0, totalArg - done);
+        const etaMs = ema > 0 ? (restantes / ema) * 1000 : 0;
+        const elapsedMs = t - startedAtRef.current;
+        setProgress({ done, total: totalArg, chunkSize, rate: ema, etaMs, elapsedMs });
+      },
     });
     setImportResult(res);
   };
@@ -422,10 +489,61 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
                 <div className="flex items-center justify-center py-4">
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 </div>
-                <Progress value={progress.total > 0 ? (progress.done / progress.total) * 100 : 0} />
-                <p className="text-center text-sm text-muted-foreground">
-                  Importando {progress.done} de {progress.total}...
-                </p>
+                <Progress
+                  value={progress.total > 0 ? (progress.done / progress.total) * 100 : 0}
+                  aria-label={`Importação em ${formatPct(progress.done, progress.total)}%`}
+                />
+                <div
+                  className="flex items-center justify-between text-xs text-muted-foreground"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
+                  <span>
+                    Importando <span className="font-medium text-foreground">{progress.done}</span> de{' '}
+                    <span className="font-medium text-foreground">{progress.total}</span>
+                    {' '}({formatPct(progress.done, progress.total)}%)
+                  </span>
+                  <span className="font-mono">{formatDuration(progress.elapsedMs)}</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <Card>
+                    <CardContent className="p-2.5 flex items-center gap-2">
+                      <Gauge className="h-4 w-4 text-primary shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Taxa</div>
+                        <div className="text-sm font-semibold tabular-nums truncate">
+                          {progress.rate > 0 ? `${formatRate(progress.rate)}` : '—'}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-2.5 flex items-center gap-2">
+                      <Timer className="h-4 w-4 text-primary shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Tempo restante</div>
+                        <div className="text-sm font-semibold tabular-nums truncate">
+                          {progress.done >= progress.total
+                            ? 'finalizando…'
+                            : progress.etaMs > 0
+                              ? formatDuration(progress.etaMs)
+                              : 'calculando…'}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  {progress.chunkSize ? (
+                    <Card className="col-span-2 sm:col-span-1">
+                      <CardContent className="p-2.5 flex items-center gap-2">
+                        <Upload className="h-4 w-4 text-primary shrink-0" />
+                        <div className="min-w-0">
+                          <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Lote atual</div>
+                          <div className="text-sm font-semibold tabular-nums truncate">{progress.chunkSize} / lote</div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : null}
+                </div>
               </>
             ) : importResult ? (
               <>
