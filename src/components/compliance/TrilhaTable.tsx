@@ -175,7 +175,7 @@ export function TrilhaTable({ tipo, colunas, acoes, filename }: Props) {
 
   return (
     <div className="space-y-3">
-      <AuditFiltersBar value={filtros} onChange={setFiltros} acoes={acoes} usuarios={usuarios} />
+      <AuditFiltersBar value={filtros} onChange={setFiltros} acoes={acoes} usuarios={usuarios} storageKey={`trilha-${tipo}`} />
 
       <Card>
         <CardContent className="p-0">
