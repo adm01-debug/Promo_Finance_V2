@@ -14,6 +14,7 @@ import { Progress } from '@/components/ui/progress';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useImportLancamentosLote, type ImportLoteResult } from '@/hooks/useLancamentosContabeis';
 import { parseLancamentosCsv, downloadLancamentosCsvTemplate, type CsvLancParseResult, type ParsedLancamento } from '@/lib/lancamentos-csv-importer';
+import { peekImportCheckpoint, clearImportCheckpoint, quickHash } from '@/lib/import-checkpoint';
 import type { PlanoContaRow } from '@/hooks/usePlanoContas';
 import { formatCurrency } from '@/lib/formatters';
 import { formatFileSize } from '@/lib/file';
@@ -70,6 +71,11 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
     elapsedMs: number;
   }>({ done: 0, total: 0, rate: 0, etaMs: 0, elapsedMs: 0 });
   const [importResult, setImportResult] = useState<ImportLoteResult | null>(null);
+  const [checkpointKey, setCheckpointKey] = useState<string | null>(null);
+  const [retomada, setRetomada] = useState<{
+    refsConfirmadas: Set<string>;
+    updatedAt: number;
+  } | null>(null);
   // Refs para cálculo de taxa/ETA — evitam re-renders e mantêm continuidade
   // entre callbacks de progresso (que disparam várias vezes por segundo).
   const startedAtRef = useRef<number>(0);
@@ -84,6 +90,8 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
     setParseResult(null);
     setProgress({ done: 0, total: 0, rate: 0, etaMs: 0, elapsedMs: 0 });
     setImportResult(null);
+    setCheckpointKey(null);
+    setRetomada(null);
   };
 
   const handleClose = (next: boolean) => {
@@ -99,6 +107,22 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
     try {
       const r = await parseLancamentosCsv(f, planoContas);
       setParseResult(r);
+
+      // Gera uma checkpointKey estável a partir de empresa + arquivo +
+      // hash dos primeiros 64 KB do conteúdo. Isso reconhece o mesmo
+      // arquivo entre sessões mesmo após fechar o navegador.
+      if (empresaId) {
+        const head = await f.slice(0, 64 * 1024).text();
+        const key = `${empresaId}:${f.name}:${f.size}:${quickHash(head)}`;
+        setCheckpointKey(key);
+        const prev = peekImportCheckpoint(key);
+        if (prev && prev.refs.length > 0) {
+          setRetomada({ refsConfirmadas: new Set(prev.refs), updatedAt: prev.updatedAt });
+        } else {
+          setRetomada(null);
+        }
+      }
+
       setStep('preview');
     } catch (e) {
       setParseResult({
@@ -140,6 +164,7 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
     const res = await importar.mutateAsync({
       empresa_id: empresaId,
       lancamentos: lancamentosImportaveis,
+      checkpointKey: checkpointKey ?? undefined,
       onProgress: (done, totalArg, chunkSize) => {
         const t = performance.now();
         const last = lastSampleRef.current;
@@ -272,6 +297,39 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
                 </div>
               </CardContent></Card>
             </div>
+
+            {retomada && (() => {
+              const aplicaveis = lancamentosImportaveis.filter((l) => retomada.refsConfirmadas.has(l.ref)).length;
+              if (aplicaveis === 0) return null;
+              return (
+                <Alert variant="warning">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle className="text-xs">Importação anterior detectada</AlertTitle>
+                  <AlertDescription className="text-xs space-y-2">
+                    <div>
+                      Encontramos <b>{aplicaveis}</b> de <b>{lancamentosImportaveis.length}</b> lançamento(s)
+                      {' '}já importados em uma execução anterior deste arquivo
+                      {' '}(checkpoint salvo em {format(new Date(retomada.updatedAt), "dd/MM/yyyy 'às' HH:mm")}).
+                      {' '}Ao importar, eles serão <b>pulados automaticamente</b>.
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 text-xs"
+                        onClick={() => {
+                          if (!checkpointKey) return;
+                          clearImportCheckpoint(checkpointKey);
+                          setRetomada(null);
+                        }}
+                      >
+                        Começar do zero (descartar checkpoint)
+                      </Button>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              );
+            })()}
 
             {lancsForaDoAno > 0 && (
               <Alert>
@@ -474,10 +532,20 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
 
             <DialogFooter className="gap-2">
               <Button variant="outline" onClick={reset}>Cancelar</Button>
-              <Button onClick={handleImport} disabled={!podeImportar}>
-                <Upload className="h-4 w-4 mr-2" />
-                Importar {lancamentosImportaveis.length} lançamento(s)
-              </Button>
+              {(() => {
+                const aplicaveis = retomada
+                  ? lancamentosImportaveis.filter((l) => retomada.refsConfirmadas.has(l.ref)).length
+                  : 0;
+                const restantes = lancamentosImportaveis.length - aplicaveis;
+                return (
+                  <Button onClick={handleImport} disabled={!podeImportar}>
+                    <Upload className="h-4 w-4 mr-2" />
+                    {aplicaveis > 0
+                      ? `Retomar (${restantes} restante(s) · ${aplicaveis} já importado(s))`
+                      : `Importar ${lancamentosImportaveis.length} lançamento(s)`}
+                  </Button>
+                );
+              })()}
             </DialogFooter>
           </div>
         )}
@@ -555,7 +623,7 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
                     {importResult.falhas.length === 0 ? 'Importação concluída' : 'Importação concluída com falhas'}
                   </AlertTitle>
                   <AlertDescription>
-                    {importResult.sucesso} sucesso(s) · {importResult.falhas.length} falha(s)
+                    {importResult.sucesso} sucesso(s) · {importResult.falhas.length} falha(s){importResult.pulados ? ` · ${importResult.pulados} pulado(s) por checkpoint` : ''}
                   </AlertDescription>
                 </Alert>
 

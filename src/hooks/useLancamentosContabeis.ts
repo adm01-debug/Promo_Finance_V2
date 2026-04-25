@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import type { ParsedLancamento } from '@/lib/lancamentos-csv-importer';
 import { createAdaptiveChunkController } from '@/lib/adaptive-chunk';
 import { createConcurrencyLimiter } from '@/lib/concurrency-limiter';
+import { createImportCheckpoint, clearImportCheckpoint } from '@/lib/import-checkpoint';
 
 export interface LancamentoContabilInput {
   empresa_id: string;
@@ -90,6 +91,8 @@ export interface ImportLoteFalha {
 
 export interface ImportLoteResult {
   sucesso: number;
+  /** Quantos itens foram pulados por já estarem confirmados em um checkpoint anterior. */
+  pulados?: number;
   falhas: ImportLoteFalha[];
 }
 
@@ -105,6 +108,13 @@ export interface ImportLoteInput {
    * Default: 6 (alinhado ao limite típico de conexões HTTP/1.1 por origem).
    */
   concurrency?: number;
+  /**
+   * Chave estável para o checkpoint de retomada (tipicamente derivada de
+   * empresa+arquivo+hash). Quando fornecida, refs já confirmadas em uma
+   * execução anterior são automaticamente puladas, e cada novo sucesso é
+   * persistido imediatamente — permitindo retomar após falha/interrupção.
+   */
+  checkpointKey?: string;
   /** done = quantos itens já processados; total = total de itens; chunkSize = lote atual sugerido pelo controlador adaptativo. */
   onProgress?: (done: number, total: number, chunkSize?: number) => void;
 }
@@ -131,9 +141,23 @@ export function useImportLancamentosLote() {
   return useMutation({
     mutationFn: async (input: ImportLoteInput): Promise<ImportLoteResult> => {
       const { data: { user } } = await supabase.auth.getUser();
-      const result: ImportLoteResult = { sucesso: 0, falhas: [] };
+
+      // Checkpoint de retomada: filtra refs já confirmadas em execuções
+      // anteriores. Itens pulados não geram requests, mas contam para o
+      // progresso (UI já mostrava "X de N").
+      const checkpoint = input.checkpointKey
+        ? createImportCheckpoint(input.checkpointKey, input.lancamentos.length)
+        : null;
+      const pendentes = checkpoint
+        ? input.lancamentos.filter((l) => !checkpoint.has(l.ref))
+        : input.lancamentos;
+      const pulados = input.lancamentos.length - pendentes.length;
+
+      const result: ImportLoteResult = { sucesso: 0, falhas: [], pulados };
       const total = input.lancamentos.length;
-      let processados = 0;
+      let processados = pulados;
+      // Reporta imediatamente os pulados como progresso.
+      if (pulados > 0) input.onProgress?.(processados, total, undefined);
 
       const processarLancamento = async (
         l: ParsedLancamento,
@@ -170,6 +194,8 @@ export function useImportLancamentosLote() {
           );
           if (errPart) throw errPart;
           result.sucesso++;
+          // Persiste imediatamente — falha/crash após este ponto pula a ref.
+          checkpoint?.confirm(l.ref);
         } catch (e) {
           // Compensação: remove cabeçalho órfão
           if (lancId) {
@@ -219,11 +245,17 @@ export function useImportLancamentosLote() {
         },
       });
 
+      // Pré-mapeia índices originais para que `indiceGlobal` permaneça
+      // estável mesmo após filtrar refs já confirmadas (caso checkpoint).
+      const indicesOriginais = new Map<ParsedLancamento, number>();
+      input.lancamentos.forEach((l, idx) => indicesOriginais.set(l, idx + 1));
+
+      const pendentesTotal = pendentes.length;
       let i = 0;
       let chunkIndex = 0;
-      while (i < total) {
+      while (i < pendentesTotal) {
         const size = controller.size();
-        const chunk = input.lancamentos.slice(i, i + size);
+        const chunk = pendentes.slice(i, i + size);
         const falhasAntes = result.falhas.length;
         const t0 = performance.now();
         // Cada item passa pelo semáforo — o lote pode ter N itens, mas só
@@ -234,7 +266,7 @@ export function useImportLancamentosLote() {
           chunk.map((l, idxNoChunk) =>
             limiter.run(() =>
               processarLancamento(l, {
-                indiceGlobal: i + idxNoChunk + 1,
+                indiceGlobal: indicesOriginais.get(l) ?? i + idxNoChunk + 1,
                 chunkIndex,
                 chunkSize: chunk.length,
                 posicaoNoChunk: idxNoChunk + 1,
@@ -249,14 +281,21 @@ export function useImportLancamentosLote() {
         chunkIndex++;
       }
 
+      // Concluiu sem falhas e checkpoint estava em uso → descarta para que
+      // uma nova importação do mesmo arquivo não pule nada por engano.
+      if (checkpoint && result.falhas.length === 0 && input.checkpointKey) {
+        clearImportCheckpoint(input.checkpointKey);
+      }
+
       return result;
     },
     onSuccess: (res) => {
       qc.invalidateQueries({ queryKey: ['lancamentos-contabeis'] });
+      const sufixoPulados = res.pulados ? ` (${res.pulados} retomado[s] de checkpoint)` : '';
       if (res.falhas.length === 0) {
-        toast.success(`${res.sucesso} lançamento(s) importado(s) com sucesso`);
+        toast.success(`${res.sucesso} lançamento(s) importado(s) com sucesso${sufixoPulados}`);
       } else {
-        toast.warning(`Importação concluída: ${res.sucesso} sucesso(s), ${res.falhas.length} falha(s)`);
+        toast.warning(`Importação concluída: ${res.sucesso} sucesso(s), ${res.falhas.length} falha(s)${sufixoPulados}`);
       }
     },
     onError: (e: Error) => toast.error(`Erro na importação: ${e.message}`),
