@@ -107,6 +107,22 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
     try {
       const r = await parseLancamentosCsv(f, planoContas);
       setParseResult(r);
+
+      // Gera uma checkpointKey estável a partir de empresa + arquivo +
+      // hash dos primeiros 64 KB do conteúdo. Isso reconhece o mesmo
+      // arquivo entre sessões mesmo após fechar o navegador.
+      if (empresaId) {
+        const head = await f.slice(0, 64 * 1024).text();
+        const key = `${empresaId}:${f.name}:${f.size}:${quickHash(head)}`;
+        setCheckpointKey(key);
+        const prev = peekImportCheckpoint(key);
+        if (prev && prev.refs.length > 0) {
+          setRetomada({ refsConfirmadas: new Set(prev.refs), updatedAt: prev.updatedAt });
+        } else {
+          setRetomada(null);
+        }
+      }
+
       setStep('preview');
     } catch (e) {
       setParseResult({
