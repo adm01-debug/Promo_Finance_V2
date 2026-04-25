@@ -32,6 +32,48 @@ function formatCnpj(cnpj: string) {
 export function SpedEcfHistorico({ empresaId }: Props) {
   const { data: historico = [], isLoading } = useSpedEcfHistorico(empresaId);
   const [errosAbertos, setErrosAbertos] = useState<SpedEcfHistoricoRow | null>(null);
+  const [searchAno, setSearchAno] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [validacaoFilter, setValidacaoFilter] = useState<ValidacaoFilter>('all');
+
+  const anosDisponiveis = useMemo(
+    () => Array.from(new Set(historico.map((h) => h.ano_calendario))).sort((a, b) => b - a),
+    [historico],
+  );
+
+  const filtrados = useMemo(() => {
+    const q = searchAno.trim();
+    return historico.filter((h) => {
+      if (q && !String(h.ano_calendario).includes(q)) return false;
+
+      const erros = h.validacoes?.erros ?? [];
+      const avisos = h.validacoes?.avisos ?? [];
+      const bloqueada = h.status === 'rejeitado' || erros.length > 0;
+      const transmitida = h.status === 'transmitido';
+      const liberada = !bloqueada && !transmitida;
+
+      if (statusFilter === 'bloqueada' && !bloqueada) return false;
+      if (statusFilter === 'transmitida' && !transmitida) return false;
+      if (statusFilter === 'liberada' && !liberada) return false;
+
+      if (validacaoFilter === 'com_erros' && erros.length === 0) return false;
+      if (validacaoFilter === 'com_avisos' && avisos.length === 0) return false;
+      if (validacaoFilter === 'sem_alertas' && (erros.length > 0 || avisos.length > 0)) return false;
+
+      return true;
+    });
+  }, [historico, searchAno, statusFilter, validacaoFilter]);
+
+  const filtrosAtivos =
+    (searchAno.trim() ? 1 : 0) +
+    (statusFilter !== 'all' ? 1 : 0) +
+    (validacaoFilter !== 'all' ? 1 : 0);
+
+  const limparFiltros = () => {
+    setSearchAno('');
+    setStatusFilter('all');
+    setValidacaoFilter('all');
+  };
 
   const handleDownloadTxt = async (h: SpedEcfHistoricoRow) => {
     const { data, error } = await supabase.storage
