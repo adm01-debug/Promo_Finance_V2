@@ -532,10 +532,20 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
 
             <DialogFooter className="gap-2">
               <Button variant="outline" onClick={reset}>Cancelar</Button>
-              <Button onClick={handleImport} disabled={!podeImportar}>
-                <Upload className="h-4 w-4 mr-2" />
-                Importar {lancamentosImportaveis.length} lançamento(s)
-              </Button>
+              {(() => {
+                const aplicaveis = retomada
+                  ? lancamentosImportaveis.filter((l) => retomada.refsConfirmadas.has(l.ref)).length
+                  : 0;
+                const restantes = lancamentosImportaveis.length - aplicaveis;
+                return (
+                  <Button onClick={handleImport} disabled={!podeImportar}>
+                    <Upload className="h-4 w-4 mr-2" />
+                    {aplicaveis > 0
+                      ? `Retomar (${restantes} restante(s) · ${aplicaveis} já importado(s))`
+                      : `Importar ${lancamentosImportaveis.length} lançamento(s)`}
+                  </Button>
+                );
+              })()}
             </DialogFooter>
           </div>
         )}
