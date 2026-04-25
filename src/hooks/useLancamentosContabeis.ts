@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { ParsedLancamento } from '@/lib/lancamentos-csv-importer';
+import { createAdaptiveChunkController } from '@/lib/adaptive-chunk';
 
 export interface LancamentoContabilInput {
   empresa_id: string;
@@ -80,10 +81,20 @@ export interface ImportLoteInput {
   empresa_id: string;
   lancamentos: ParsedLancamento[];
   origem?: string;
-  onProgress?: (done: number, total: number) => void;
+  /** done = quantos itens já processados; total = total de itens; chunkSize = lote atual sugerido pelo controlador adaptativo. */
+  onProgress?: (done: number, total: number, chunkSize?: number) => void;
 }
 
-const CHUNK_SIZE = 10; // lançamentos processados em paralelo
+// Configuração inicial do chunk adaptativo. Os limites foram calibrados para
+// inserts no Supabase (lançamento + partidas em ~2 round-trips por item).
+// O controlador AIMD reage a latência por item e taxa de falhas em tempo real.
+const ADAPTIVE_CHUNK = {
+  initial: 10,
+  min: 2,
+  max: 50,
+  targetLatencyPerItemMs: 250,
+  failureThreshold: 0.1,
+} as const;
 
 export function useImportLancamentosLote() {
   const qc = useQueryClient();
@@ -134,14 +145,35 @@ export function useImportLancamentosLote() {
           result.falhas.push({ ref: l.ref, error: e instanceof Error ? e.message : 'Erro desconhecido' });
         } finally {
           processados++;
-          input.onProgress?.(processados, total);
+          input.onProgress?.(processados, total, controller.size());
         }
       };
 
-      // Processa em chunks paralelos para reduzir tempo total
-      for (let i = 0; i < total; i += CHUNK_SIZE) {
-        const chunk = input.lancamentos.slice(i, i + CHUNK_SIZE);
+      // Processa em chunks paralelos com tamanho adaptativo (AIMD).
+      // O controlador cresce o lote quando o backend responde rápido e sem
+      // falhas, e recua quando observa latência alta ou erros — ideal para
+      // arquivos grandes onde o regime ótimo varia ao longo da execução.
+      const controller = createAdaptiveChunkController({
+        ...ADAPTIVE_CHUNK,
+        onAdjust: (info) => {
+          if (import.meta.env.DEV) {
+            // eslint-disable-next-line no-console
+            console.debug('[adaptive-chunk]', info);
+          }
+        },
+      });
+
+      let i = 0;
+      while (i < total) {
+        const size = controller.size();
+        const chunk = input.lancamentos.slice(i, i + size);
+        const falhasAntes = result.falhas.length;
+        const t0 = performance.now();
         await Promise.all(chunk.map(processarLancamento));
+        const durationMs = performance.now() - t0;
+        const failed = result.falhas.length - falhasAntes;
+        controller.report({ batchSize: chunk.length, durationMs, failed });
+        i += chunk.length;
       }
 
       return result;
