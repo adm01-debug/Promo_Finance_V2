@@ -14,6 +14,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useSpedEcfHistorico, type SpedEcfHistoricoRow } from '@/hooks/useSpedEcfHistorico';
 import { supabase } from '@/integrations/supabase/client';
 import { baixarSpedZip } from '@/lib/sped-zip';
+import { agruparValidacoes } from '@/lib/sped-validacoes-categorias';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
