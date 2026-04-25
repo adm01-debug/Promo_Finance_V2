@@ -33,8 +33,23 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
   const [file, setFile] = useState<File | null>(null);
   const [parsing, setParsing] = useState(false);
   const [parseResult, setParseResult] = useState<CsvLancParseResult | null>(null);
-  const [progress, setProgress] = useState({ done: 0, total: 0 });
+  const [progress, setProgress] = useState<{
+    done: number;
+    total: number;
+    chunkSize?: number;
+    /** Taxa instantânea (EMA) em itens/segundo. */
+    rate: number;
+    /** Estimativa de tempo restante em ms. */
+    etaMs: number;
+    /** Tempo decorrido em ms desde o início da importação. */
+    elapsedMs: number;
+  }>({ done: 0, total: 0, rate: 0, etaMs: 0, elapsedMs: 0 });
   const [importResult, setImportResult] = useState<ImportLoteResult | null>(null);
+  // Refs para cálculo de taxa/ETA — evitam re-renders e mantêm continuidade
+  // entre callbacks de progresso (que disparam várias vezes por segundo).
+  const startedAtRef = useRef<number>(0);
+  const lastSampleRef = useRef<{ t: number; done: number }>({ t: 0, done: 0 });
+  const emaRateRef = useRef<number>(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const importar = useImportLancamentosLote();
 
