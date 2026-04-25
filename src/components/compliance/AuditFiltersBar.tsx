@@ -242,6 +242,8 @@ export function AuditFiltersBar({
           )}
         </div>
       )}
+      </div>
+      )}
     </div>
   );
 }
