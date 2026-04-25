@@ -32,7 +32,11 @@ interface Props {
   escoposEmptyLabel?: string;
   /** Label exibido para o grupo de escopos. Default: "Escopos". */
   escoposLabel?: string;
-}
+  /**
+   * Chave única para persistir o estado expandido/recolhido no localStorage.
+   * Quando omitida, o painel fica sempre expandido (comportamento legado).
+   */
+  storageKey?: string;
 
 const PRESETS: { label: string; dias: number }[] = [
   { label: "7 dias", dias: 7 },
