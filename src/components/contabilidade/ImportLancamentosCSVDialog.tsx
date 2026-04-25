@@ -623,7 +623,7 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
                     {importResult.falhas.length === 0 ? 'Importação concluída' : 'Importação concluída com falhas'}
                   </AlertTitle>
                   <AlertDescription>
-                    {importResult.sucesso} sucesso(s) · {importResult.falhas.length} falha(s)
+                    {importResult.sucesso} sucesso(s) · {importResult.falhas.length} falha(s){importResult.pulados ? ` · ${importResult.pulados} pulado(s) por checkpoint` : ''}
                   </AlertDescription>
                 </Alert>
 
