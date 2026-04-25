@@ -15,9 +15,13 @@ import { useRealtimeAuditToasts } from "@/hooks/useRealtimeAuditToasts";
 
 export default function ComplianceAuditoria() {
   const [searchParams] = useSearchParams();
-  const [persistedTab, setPersistedTab] = usePersistedState<string>("compliance-auditoria:tab", "financeira");
-  const initialTab = searchParams.get("tab") || persistedTab || "financeira";
-  const [tab, setTab] = usePersistedState<string>("compliance-auditoria:tab:active", initialTab);
+  const [tab, setTab] = usePersistedState<string>("compliance-auditoria:tab", "financeira");
+  // URL ?tab=… vence sobre o último valor persistido (ex.: clique em toast realtime).
+  const urlTab = searchParams.get("tab");
+  useEffect(() => {
+    if (urlTab && urlTab !== tab) setTab(urlTab);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlTab]);
 
   // Stream realtime audit toasts with deep-link to the right trilha
   useRealtimeAuditToasts();
