@@ -73,9 +73,24 @@ export function useCriarLancamento() {
   });
 }
 
+export interface ImportLoteFalha {
+  /** Referência (lancamento_ref) original do CSV. */
+  ref: string;
+  /** Mensagem de erro. */
+  error: string;
+  /** Índice global (1-based) do lançamento na lista importada. */
+  indiceGlobal: number;
+  /** Índice (0-based) do chunk onde a falha ocorreu. */
+  chunkIndex: number;
+  /** Tamanho do chunk no momento da falha (definido pelo controlador adaptativo). */
+  chunkSize: number;
+  /** Posição (1-based) do lançamento dentro do chunk. */
+  posicaoNoChunk: number;
+}
+
 export interface ImportLoteResult {
   sucesso: number;
-  falhas: { ref: string; error: string }[];
+  falhas: ImportLoteFalha[];
 }
 
 export interface ImportLoteInput {
