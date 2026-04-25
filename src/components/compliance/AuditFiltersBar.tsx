@@ -59,10 +59,33 @@ export function AuditFiltersBar({
   escoposOptions,
   escoposEmptyLabel = "(qualquer escopo)",
   escoposLabel = "Escopos",
+  storageKey,
 }: Props) {
   const [busca, setBusca] = useState(value.busca);
 
   const escoposSelecionados = value.escopos ?? [];
+
+  // Estado expandido/recolhido — persistido no localStorage por trilha quando
+  // `storageKey` é fornecido. Sem chave, o painel é sempre visível (legado).
+  const [expanded, setExpanded] = usePersistedState<boolean>(
+    storageKey ? `audit-filters:${storageKey}:expanded` : "audit-filters:__transient__:expanded",
+    true,
+  );
+  const isCollapsible = !!storageKey;
+  const isExpanded = !isCollapsible || expanded;
+
+  // Resumo curto exibido quando os filtros estão recolhidos.
+  const resumo = useMemo(() => {
+    const partes: string[] = [];
+    if (value.inicio || value.fim) {
+      partes.push(`${value.inicio || "…"} → ${value.fim || "…"}`);
+    }
+    if (value.busca) partes.push(`"${value.busca}"`);
+    if (value.acao && value.acao !== "todas") partes.push(`ação: ${value.acao}`);
+    if (value.usuario) partes.push(`usuário: ${value.usuario}`);
+    if (escoposSelecionados.length > 0) partes.push(`${escoposSelecionados.length} escopo(s)`);
+    return partes.length === 0 ? "Sem filtros aplicados" : partes.join(" · ");
+  }, [value, escoposSelecionados]);
 
   const toggleEscopo = (v: string) => {
     const atual = escoposSelecionados;
@@ -72,6 +95,28 @@ export function AuditFiltersBar({
 
   return (
     <div className="flex flex-col gap-2 p-3 border rounded-md bg-muted/30">
+      {isCollapsible && (
+        <div className="flex items-center justify-between gap-2">
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className="flex items-center gap-2 text-sm font-medium hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded px-1"
+            aria-expanded={isExpanded}
+            aria-controls={`audit-filters-${storageKey}`}
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            Filtros
+            {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+          </button>
+          {!isExpanded && (
+            <span className="text-xs text-muted-foreground truncate max-w-[60%]" title={resumo}>
+              {resumo}
+            </span>
+          )}
+        </div>
+      )}
+      {isExpanded && (
+      <div id={isCollapsible ? `audit-filters-${storageKey}` : undefined} className="flex flex-col gap-2">
       <div className="flex flex-col lg:flex-row gap-2 lg:items-end">
         <div className="flex gap-2 flex-1 flex-wrap">
           <div>
