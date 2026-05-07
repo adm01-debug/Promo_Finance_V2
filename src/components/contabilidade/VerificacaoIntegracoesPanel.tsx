@@ -1,6 +1,10 @@
 import { useMemo, useState } from 'react';
 import { format } from 'date-fns';
-import { CheckCircle2, AlertTriangle, XCircle, RefreshCw, Plug, Search, Filter, Activity, Zap, ShieldCheck } from 'lucide-react';
+import { 
+  CheckCircle2, AlertTriangle, XCircle, RefreshCw, Plug, Search, 
+  Filter, Activity, Zap, ShieldCheck, ArrowRight, ExternalLink,
+  History, Eye, ShieldAlert, Cpu
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useVerificacaoIntegracoes, type StatusConsistencia } from '@/hooks/useVerificacaoIntegracoes';
 import { formatCurrency } from '@/lib/formatters';
 import { useQueryClient } from '@tanstack/react-query';
@@ -18,13 +23,13 @@ interface Props { empresaId?: string; ano: number }
 const statusBadge = (s: StatusConsistencia) => {
   switch (s) {
     case 'ok':
-      return <Badge variant="outline" className="border-none bg-success/20 text-success font-black text-[10px] gap-1 px-2 rounded-full"><CheckCircle2 className="h-3 w-3" />D=C</Badge>;
+      return <Badge variant="outline" className="border-none bg-success/20 text-success font-black text-[10px] gap-1 px-3 py-1 rounded-full"><CheckCircle2 className="h-3 w-3" />CONCILIADO</Badge>;
     case 'desbalanceado':
-      return <Badge variant="outline" className="border-none bg-destructive/20 text-destructive font-black text-[10px] gap-1 px-2 rounded-full"><AlertTriangle className="h-3 w-3" />Divergência</Badge>;
+      return <Badge variant="outline" className="border-none bg-destructive/20 text-destructive font-black text-[10px] gap-1 px-3 py-1 rounded-full"><AlertTriangle className="h-3 w-3" />DIVERGENTE</Badge>;
     case 'sem_partidas':
-      return <Badge variant="outline" className="border-none bg-warning/20 text-warning font-black text-[10px] gap-1 px-2 rounded-full"><XCircle className="h-3 w-3" />Sem partidas</Badge>;
+      return <Badge variant="outline" className="border-none bg-warning/20 text-warning font-black text-[10px] gap-1 px-3 py-1 rounded-full"><ShieldAlert className="h-3 w-3" />SEM PARTIDAS</Badge>;
     case 'orfao':
-      return <Badge variant="outline" className="border-none bg-warning/20 text-warning font-black text-[10px] gap-1 px-2 rounded-full"><XCircle className="h-3 w-3" />Órfão</Badge>;
+      return <Badge variant="outline" className="border-none bg-warning/20 text-warning font-black text-[10px] gap-1 px-3 py-1 rounded-full"><History className="h-3 w-3" />ÓRFÃO</Badge>;
   }
 };
 
