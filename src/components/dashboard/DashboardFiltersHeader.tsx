@@ -71,129 +71,117 @@ export function DashboardFiltersHeader({
   const dateStr = formatDate();
 
   return (
-    <motion.div variants={itemVariants} className="relative">
-      {/* Premium Hero Header Card */}
-      <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-card via-card to-primary/[0.03] p-5 sm:p-6 md:p-8 shadow-[var(--shadow-md)]">
-        {/* Decorative Background Elements */}
-        <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-bl from-primary/[0.06] via-accent/[0.04] to-transparent rounded-full -translate-y-1/3 translate-x-1/3 blur-2xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-success/[0.05] to-transparent rounded-full translate-y-1/3 -translate-x-1/4 blur-xl pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gradient-radial from-primary/[0.02] to-transparent rounded-full pointer-events-none" />
+    <motion.div variants={itemVariants} className="relative px-1">
+      {/* Floating Premium Hero Header */}
+      <div className="relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-background/20 backdrop-blur-3xl p-8 sm:p-10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] ring-1 ring-white/10 group">
+        {/* Animated Accent Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-purple-500/5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+        
+        {/* Glass Orbs */}
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none animate-pulse" />
+        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none animate-pulse" style={{ animationDelay: '2s' }} />
 
-        <div className="relative z-10 flex flex-col gap-5">
-          {/* Top Row: Greeting + Actions */}
-          <div className="flex items-start justify-between gap-4">
-            <div className="space-y-3 flex-1 min-w-0">
-              {/* Date & Status Bar */}
-              <div className="flex items-center gap-3 flex-wrap">
+        <div className="relative z-10 flex flex-col gap-8">
+          {/* Header Top Section */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+            <div className="space-y-6">
+              {/* Status & Date Badges */}
+              <div className="flex items-center gap-4 flex-wrap">
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1, type: 'spring' }}
-                  className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/50 backdrop-blur-sm px-2.5 py-1 rounded-full border border-border/40"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md shadow-sm"
                 >
-                  <Calendar className="h-3 w-3" />
-                  <span className="capitalize">{dateStr}</span>
+                  <Calendar className="h-3.5 w-3.5 text-primary" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground/80">{dateStr}</span>
                 </motion.div>
-                <Badge variant="outline" className="h-6 px-2.5 gap-1.5 border-success/30 bg-success/5 shadow-none">
-                  <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
-                  <span className="text-[10px] text-success font-medium">Ao vivo</span>
-                </Badge>
+                
+                <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-success/10 border border-success/20">
+                  <div className="h-1.5 w-1.5 rounded-full bg-success animate-ping" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.15em] text-success">Sistema Autônomo Online</span>
+                </div>
               </div>
 
-              {/* Greeting */}
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.15 }}
-                className="flex items-center gap-2.5"
-              >
+              {/* Greeting with Dynamic Icon */}
+              <div className="flex items-center gap-6">
                 <motion.div 
-                  className="h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-gradient-to-br from-warning/20 to-warning/5 flex items-center justify-center border border-warning/20 shadow-sm"
-                  animate={{ rotate: [0, -5, 5, 0] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                  className="h-16 w-16 rounded-[1.5rem] bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-2xl shadow-primary/20 relative overflow-hidden"
+                  whileHover={{ scale: 1.05, rotate: 5 }}
                 >
-                  <GreetingIcon className="h-5 w-5 text-warning" />
+                  <div className="absolute inset-0 bg-white/20 blur-sm -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                  <GreetingIcon className="h-8 w-8 text-white relative z-10" />
                 </motion.div>
                 <div>
-                  <h1 className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-foreground tracking-tight">
-                    {greeting.emoji} {greeting.text}!
+                  <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-foreground flex items-center gap-3">
+                    {greeting.text}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600">Usuário</span>
                   </h1>
-                  <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-                    Aqui está seu painel financeiro executivo.
+                  <p className="text-lg font-medium text-muted-foreground/70 mt-1 max-w-xl italic">
+                    "{insight}"
                   </p>
                 </div>
-              </motion.div>
-
-              {/* Motivational Insight */}
-              <motion.div
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25 }}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/[0.04] border border-primary/10 max-w-lg"
-              >
-                <Sparkles className="h-3.5 w-3.5 text-primary shrink-0" />
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                  {insight}
-                </p>
-              </motion.div>
+              </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex items-center gap-2 shrink-0">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={onOpenConfig}
-                  className="h-9 w-9 rounded-xl border-border/60 bg-card/80 backdrop-blur-sm hover:bg-muted/80 hover:border-primary/30 transition-all shadow-sm"
-                >
-                  <Settings2 className="h-4 w-4" />
-                </Button>
-              </motion.div>
+            {/* Quick Actions Global */}
+            <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={onOpenConfig}
+                className="h-14 px-6 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 font-bold gap-3 transition-all hover:translate-y-[-2px] shadow-xl"
+              >
+                <Settings2 className="h-5 w-5 text-primary" />
+                Customizar Painel
+              </Button>
             </div>
           </div>
           
-          {/* Filters Row */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 pt-2 border-t border-border/30">
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 hidden sm:block">
-              Filtros
-            </span>
-            <div className="grid grid-cols-2 sm:flex items-center gap-2 sm:gap-3 flex-1">
-              <Select value={empresaFilter} onValueChange={setEmpresaFilter}>
-                <SelectTrigger className="w-full sm:w-[200px] h-9 rounded-lg border-border/50 bg-background/60 backdrop-blur-sm text-xs">
-                  <Building2 className="h-3.5 w-3.5 mr-2 shrink-0 text-muted-foreground" />
-                  <span className="truncate">
-                    <SelectValue placeholder="Todas Empresas" />
-                  </span>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas Empresas</SelectItem>
-                  {empresas.map(e => (
-                    <SelectItem key={e.id} value={e.id}>
-                      {e.nome_fantasia || e.razao_social}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+          {/* Intelligence Filters Bar */}
+          <div className="flex flex-col sm:flex-row items-center gap-6 p-2 rounded-[1.8rem] bg-black/20 border border-white/5 backdrop-blur-xl">
+            <div className="flex items-center gap-3 pl-6 border-r border-white/10 pr-6 h-10 hidden sm:flex">
+              <Sparkles className="h-4 w-4 text-purple-400" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Governança</span>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:flex items-center gap-4 flex-1 w-full px-4 sm:px-0">
+              <div className="flex items-center gap-3 flex-1">
+                <Building2 className="h-4 w-4 text-primary shrink-0" />
+                <Select value={empresaFilter} onValueChange={setEmpresaFilter}>
+                  <SelectTrigger className="w-full h-12 rounded-xl border-none bg-transparent hover:bg-white/5 transition-all font-bold text-sm focus:ring-0">
+                    <SelectValue placeholder="Selecione a Organização" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-2xl">
+                    <SelectItem value="all">Todas as Empresas</SelectItem>
+                    {empresas.map(e => (
+                      <SelectItem key={e.id} value={e.id} className="rounded-lg">
+                        {e.nome_fantasia || e.razao_social}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               
-              <Select value={centroCustoFilter} onValueChange={setCentroCustoFilter}>
-                <SelectTrigger className="w-full sm:w-[200px] h-9 rounded-lg border-border/50 bg-background/60 backdrop-blur-sm text-xs">
-                  <Target className="h-3.5 w-3.5 mr-2 shrink-0 text-muted-foreground" />
-                  <span className="truncate">
-                    <SelectValue placeholder="Todos Centros" />
-                  </span>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos Centros</SelectItem>
-                  {centrosCusto.map(cc => (
-                    <SelectItem key={cc.id} value={cc.id}>{cc.nome}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="w-px h-6 bg-white/10 hidden sm:block" />
+
+              <div className="flex items-center gap-3 flex-1">
+                <Target className="h-4 w-4 text-purple-400 shrink-0" />
+                <Select value={centroCustoFilter} onValueChange={setCentroCustoFilter}>
+                  <SelectTrigger className="w-full h-12 rounded-xl border-none bg-transparent hover:bg-white/5 transition-all font-bold text-sm focus:ring-0">
+                    <SelectValue placeholder="Centro de Custos" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-2xl">
+                    <SelectItem value="all">Filtro Global de Custos</SelectItem>
+                    {centrosCusto.map(cc => (
+                      <SelectItem key={cc.id} value={cc.id} className="rounded-lg">{cc.nome}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </motion.div>
   );
+}
 }
