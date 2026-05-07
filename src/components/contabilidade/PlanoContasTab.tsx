@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, Search, ShieldCheck, History } from 'lucide-react';
+import { Plus, Search, ShieldCheck, History, Wand2, Filter, ChevronDown, CheckCircle2, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -41,35 +42,54 @@ export function PlanoContasTab({ empresaId }: Props) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Plano de Contas</CardTitle>
-            <CardDescription>Estrutura contábil para ECD/ECF</CardDescription>
+    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+      <CardHeader className="p-8 pb-4 relative z-10">
+        <div className="flex flex-wrap items-center justify-between gap-6">
+          <div className="flex items-center gap-5">
+            <div className="p-4 rounded-2xl bg-primary shadow-xl shadow-primary/20 text-primary-foreground transform group-hover:scale-110 transition-all duration-500">
+              <ShieldCheck className="h-8 w-8" />
+            </div>
+            <div>
+              <CardTitle className="text-3xl font-black tracking-tighter">Plano de Contas</CardTitle>
+              <CardDescription className="text-sm font-medium opacity-60">Governança & Estrutura contábil para ECD/ECF</CardDescription>
+            </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={() => setHistoryOpen(true)} disabled={!empresaId}>
-              <History className="h-4 w-4 mr-2" />
+            <Button 
+              variant="outline" 
+              onClick={() => setHistoryOpen(true)} 
+              disabled={!empresaId}
+              className="h-12 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 font-bold px-5 transition-all hover:translate-y-[-2px] active:translate-y-[0px]"
+            >
+              <History className="h-4 w-4 mr-2 text-primary" />
               Histórico
               {!history.isLoading && (history.data?.length ?? 0) > 0 && (
-                <Badge variant="secondary" className="ml-2 h-5 px-1.5 text-[10px]">
+                <Badge variant="secondary" className="ml-2 h-5 px-1.5 text-[10px] font-black bg-primary/20 text-primary border-none">
                   {history.data!.length}
                 </Badge>
               )}
             </Button>
-            <Button variant="outline" onClick={() => setAuditOpen(true)} disabled={!empresaId}>
-              <ShieldCheck className="h-4 w-4 mr-2" />
+            <Button 
+              variant="outline" 
+              onClick={() => setAuditOpen(true)} 
+              disabled={!empresaId}
+              className="h-12 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 font-bold px-5 transition-all hover:translate-y-[-2px] active:translate-y-[0px]"
+            >
+              <ShieldCheck className="h-4 w-4 mr-2 text-success" />
               Auditar CFC
               {!auditoria.isLoading && auditoria.totalProblemas > 0 && (
-                <Badge variant="destructive" className="ml-2 h-5 px-1.5 text-[10px]">
+                <Badge variant="destructive" className="ml-2 h-5 px-1.5 text-[10px] font-black border-none">
                   {auditoria.totalProblemas}
                 </Badge>
               )}
             </Button>
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
-                <Button><Plus className="h-4 w-4 mr-2" />Nova conta</Button>
+                <Button className="h-12 rounded-2xl font-black px-6 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px] active:translate-y-[0px]">
+                  <Plus className="h-5 w-5 mr-2" />
+                  Nova Conta
+                </Button>
               </DialogTrigger>
             <DialogContent>
               <DialogHeader><DialogTitle>Nova conta contábil</DialogTitle></DialogHeader>
