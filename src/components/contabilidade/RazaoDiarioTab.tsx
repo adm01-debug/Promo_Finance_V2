@@ -407,39 +407,69 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
         </div>
 
         {isLoading ? (
-          <div className="space-y-2">
-            {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+          <div className="space-y-4 py-12">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex gap-4 items-center">
+                <Skeleton className="h-12 w-24 rounded-xl" />
+                <Skeleton className="h-12 flex-1 rounded-xl" />
+                <Skeleton className="h-12 w-32 rounded-xl" />
+              </div>
+            ))}
           </div>
         ) : modo === 'diario' ? (
           diario.length === 0 ? (
-            <p className="py-12 text-center text-sm text-muted-foreground">Nenhuma partida no período.</p>
+            <div className="flex flex-col items-center justify-center py-20 text-muted-foreground border border-dashed border-white/10 rounded-[2.5rem] bg-white/[0.02]">
+              <Activity className="h-10 w-10 opacity-20 mb-4" />
+              <p className="text-sm font-bold uppercase tracking-widest">Nenhuma partida no período</p>
+            </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Nº</TableHead>
-                  <TableHead>Histórico</TableHead>
-                  <TableHead>Conta</TableHead>
-                  <TableHead className="text-right">Débito</TableHead>
-                  <TableHead className="text-right">Crédito</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {diario.map((p, i) => (
-                  <TableRow key={i}>
-                    <TableCell className="whitespace-nowrap">{format(new Date(`${p.data}T00:00:00`), 'dd/MM/yyyy')}</TableCell>
-                    <TableCell className="font-mono text-xs">{p.numero ?? '—'}</TableCell>
-                    <TableCell className="max-w-[260px] truncate" title={p.historico}>{p.historico}</TableCell>
-                    <TableCell>
-                      <span className="font-mono text-xs">{p.conta_codigo}</span>
-                      <span className="text-muted-foreground"> — {p.conta_nome}</span>
-                    </TableCell>
-                    <TableCell className="text-right font-mono">{p.debito ? formatCurrency(p.debito) : '—'}</TableCell>
-                    <TableCell className="text-right font-mono">{p.credito ? formatCurrency(p.credito) : '—'}</TableCell>
+            <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-white/[0.01] shadow-inner">
+              <Table>
+                <TableHeader className="bg-white/5">
+                  <TableRow className="border-white/5 hover:bg-transparent">
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest p-6">Data</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest">Nº</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest">Histórico</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest">Conta Contábil</TableHead>
+                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Débito</TableHead>
+                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Crédito</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
+                </TableHeader>
+                <TableBody>
+                  <AnimatePresence>
+                    {diario.slice(0, 500).map((p, i) => (
+                      <motion.tr 
+                        key={i}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: (i % 20) * 0.005 }}
+                        className="border-white/5 hover:bg-white/5 transition-colors group/row"
+                      >
+                        <TableCell className="p-6 text-[10px] font-black uppercase tracking-widest opacity-60">
+                          {format(new Date(`${p.data}T00:00:00`), 'dd/MM/yyyy')}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="font-mono font-black text-[10px] border-none bg-primary/10 text-primary px-2 rounded-lg">
+                            {p.numero ?? '—'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="max-w-[300px] truncate font-bold text-foreground/80" title={p.historico}>{p.historico}</TableCell>
+                        <TableCell>
+                          <div className="flex flex-col">
+                            <span className="font-mono text-[11px] font-black text-primary">{p.conta_codigo}</span>
+                            <span className="text-[10px] font-bold opacity-40 uppercase tracking-widest truncate max-w-[200px]">{p.conta_nome}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right font-mono font-black text-xs tabular-nums text-success">
+                          {p.debito ? formatCurrency(p.debito) : '—'}
+                        </TableCell>
+                        <TableCell className="text-right font-mono font-black text-xs tabular-nums text-destructive">
+                          {p.credito ? formatCurrency(p.credito) : '—'}
+                        </TableCell>
+                      </motion.tr>
+                    ))}
+                  </AnimatePresence>
+                </TableBody>
               <TableFooter>
                 <TableRow>
                   <TableCell colSpan={4} className="font-semibold">Totais</TableCell>
