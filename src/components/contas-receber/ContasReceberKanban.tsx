@@ -14,10 +14,10 @@ interface ContasReceberKanbanProps {
 }
 
 const columns = [
-  { id: 'pendente', label: 'Pendente', icon: Clock, color: 'border-t-warning text-warning', bg: 'bg-warning/5' },
-  { id: 'vencido', label: 'Vencido', icon: AlertTriangle, color: 'border-t-destructive text-destructive', bg: 'bg-destructive/5' },
-  { id: 'parcial', label: 'Parcial', icon: Wallet, color: 'border-t-secondary text-secondary', bg: 'bg-secondary/5' },
-  { id: 'pago', label: 'Pago', icon: CheckCircle2, color: 'border-t-success text-success', bg: 'bg-success/5' },
+  { id: 'pendente', label: 'Hold / Pending', icon: Clock, color: 'text-warning', bg: 'bg-warning/5', ring: 'ring-warning/20' },
+  { id: 'vencido', label: 'Critical / Overdue', icon: AlertTriangle, color: 'text-destructive', bg: 'bg-destructive/5', ring: 'ring-destructive/20' },
+  { id: 'parcial', label: 'Partial Settle', icon: Wallet, color: 'text-secondary', bg: 'bg-secondary/5', ring: 'ring-secondary/20' },
+  { id: 'pago', label: 'Cleared / Settled', icon: CheckCircle2, color: 'text-success', bg: 'bg-success/5', ring: 'ring-success/20' },
 ];
 
 export function ContasReceberKanban({ contas, onSelectConta }: ContasReceberKanbanProps) {
