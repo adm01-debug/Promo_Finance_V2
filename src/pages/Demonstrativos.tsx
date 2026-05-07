@@ -66,14 +66,16 @@ const Demonstrativos = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="space-y-6"
+        className="space-y-10"
       >
         {/* Header */}
-        <motion.div variants={itemVariants} className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <motion.div variants={itemVariants} className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Demonstrativos Contábeis</h1>
-            <p className="text-muted-foreground">
-              DRE, Balanço Patrimonial e Fluxo de Caixa
+            <h1 className="text-4xl font-extrabold tracking-tight md:text-5xl lg:text-6xl text-display-xl">
+              Demonstrativos <span className="text-primary">Contábeis</span>
+            </h1>
+            <p className="text-lg text-muted-foreground mt-2 max-w-2xl">
+              Visão analítica completa da sua saúde financeira: DRE, Balanço Patrimonial e Fluxo de Caixa integrados.
             </p>
           </div>
 
