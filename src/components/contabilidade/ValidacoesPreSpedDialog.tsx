@@ -492,25 +492,19 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
                       <span className="text-xs font-bold">PDF Filtrado</span>
                       <span className="text-[10px] text-muted-foreground">{errosFiltrados.length + avisosFiltrados.length} item(ns)</span>
                     </div>
-                  </DropdownMenuItem>
-                  >
-                    <FileText className="h-4 w-4 text-destructive" />
-                    PDF filtrado
-                    <span className="ml-auto text-[10px] text-muted-foreground">
-                      {errosFiltrados.length + avisosFiltrados.length} item(ns)
-                    </span>
-                  </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => exportarJson(true)}
                     disabled={!podeExportarFiltrado}
                     data-testid="btn-exportar-json-filtrado"
-                    className="gap-2"
+                    className="gap-3 py-2 rounded-lg cursor-pointer"
                   >
-                    <FileJson className="h-4 w-4 text-primary" />
-                    JSON filtrado
-                    <span className="ml-auto text-[10px] text-muted-foreground">
-                      {errosFiltrados.length + avisosFiltrados.length} item(ns)
-                    </span>
+                    <div className="p-1.5 bg-primary/10 rounded-md">
+                      <FileJson className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold">JSON Filtrado</span>
+                      <span className="text-[10px] text-muted-foreground">{errosFiltrados.length + avisosFiltrados.length} item(ns)</span>
+                    </div>
                   </DropdownMenuItem>
                 </>
               )}
