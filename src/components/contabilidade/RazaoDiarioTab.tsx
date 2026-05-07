@@ -437,7 +437,7 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
                 </TableHeader>
                 <TableBody>
                   <AnimatePresence>
-                    {diario.slice(0, 500).map((p, i) => (
+                    {diario.slice(0, 1000).map((p, i) => (
                       <motion.tr 
                         key={i}
                         initial={{ opacity: 0, y: 10 }}
