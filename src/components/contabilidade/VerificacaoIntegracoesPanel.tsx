@@ -301,19 +301,19 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
           ) : filtrados.length === 0 ? (
             <p className="text-sm text-muted-foreground py-6 text-center">Nenhum lançamento encontrado com os filtros aplicados.</p>
           ) : (
-            <div className="rounded-[1.5rem] border border-white/5 overflow-hidden bg-white/[0.01]">
+            <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-white/[0.01] shadow-inner">
               <Table>
                 <TableHeader className="bg-white/5">
                   <TableRow className="border-white/5 hover:bg-transparent">
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest">Nº</TableHead>
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest">Data</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest p-6">ID / Ref</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest">Data Lanc.</TableHead>
                     <TableHead className="text-[10px] font-black uppercase tracking-widest">Origem</TableHead>
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest">Histórico</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest">Histórico Descritivo</TableHead>
                     <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Débito</TableHead>
                     <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Crédito</TableHead>
                     <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Diferença</TableHead>
-                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Partidas</TableHead>
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest">Consistência</TableHead>
+                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Itens</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest pr-8">Auditoria</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -323,14 +323,57 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
                         key={l.id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.01 }}
-                        className={cn("border-white/5 hover:bg-white/5 transition-colors", l.status_consistencia !== 'ok' ? 'bg-destructive/5' : undefined)}
+                        transition={{ delay: idx * 0.005 }}
+                        className={cn(
+                          "border-white/5 hover:bg-white/5 transition-colors group/row", 
+                          l.status_consistencia !== 'ok' ? 'bg-destructive/[0.03]' : undefined
+                        )}
                       >
-                        <TableCell className="font-mono text-xs font-bold opacity-60">{l.numero_lancamento}</TableCell>
-                        <TableCell className="text-[10px] font-black uppercase tracking-widest opacity-60">{format(new Date(l.data_lancamento + 'T00:00:00'), 'dd/MM/yyyy')}</TableCell>
-                        <TableCell><Badge variant="outline" className="capitalize border-none bg-primary/10 text-primary font-black text-[10px] px-2 rounded-lg">{l.origem}</Badge></TableCell>
-                        <TableCell className="max-w-xs truncate text-xs font-medium">{l.historico}</TableCell>
-                        <TableCell className="text-right font-mono text-xs font-bold">{formatCurrency(l.total_debito)}</TableCell>
+                        <TableCell className="p-6 font-mono text-[11px] font-black text-primary/60">{l.numero_lancamento || '—'}</TableCell>
+                        <TableCell className="text-[10px] font-black uppercase tracking-widest opacity-60">
+                          {format(new Date(l.data_lancamento + 'T00:00:00'), 'dd/MM/yyyy')}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="capitalize border-none bg-primary/10 text-primary font-black text-[10px] px-3 py-1 rounded-xl">
+                            {l.origem}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="max-w-xs truncate text-xs font-bold text-foreground/80" title={l.historico}>
+                          {l.historico}
+                        </TableCell>
+                        <TableCell className="text-right font-mono text-xs font-black tabular-nums text-success">{formatCurrency(l.total_debito)}</TableCell>
+                        <TableCell className="text-right font-mono text-xs font-black tabular-nums text-destructive">{formatCurrency(l.total_credito)}</TableCell>
+                        <TableCell className={cn("text-right font-mono text-xs font-black tabular-nums", l.diferenca > 0.01 ? "text-destructive" : "opacity-20")}>
+                          {l.diferenca > 0 ? formatCurrency(l.diferenca) : '—'}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Badge variant="outline" className="font-mono text-[10px] border-none bg-white/5 font-black px-2.5 rounded-lg">
+                            {l.qtd_partidas}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="pr-8">
+                          <div className="flex items-center gap-2">
+                            {statusBadge(l.status_consistencia)}
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg opacity-0 group-hover/row:opacity-100 transition-opacity">
+                                    <ExternalLink className="h-4 w-4 opacity-40 hover:opacity-100" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent className="rounded-xl border-white/10 bg-background/95 backdrop-blur-xl">
+                                  <p className="text-[10px] font-black uppercase tracking-widest">Ver Lançamento Completo</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
+                        </TableCell>
+                      </motion.tr>
+                    ))}
+                  </AnimatePresence>
+                </TableBody>
+              </Table>
+            </div>
                         <TableCell className="text-right font-mono text-xs font-bold">{formatCurrency(l.total_credito)}</TableCell>
                         <TableCell className={cn("text-right font-mono text-xs font-black", l.diferenca > 0.01 ? 'text-destructive' : 'opacity-20')}>
                           {l.diferenca > 0.01 ? formatCurrency(l.diferenca) : '—'}
