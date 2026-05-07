@@ -229,7 +229,6 @@ const Demonstrativos = () => {
         </motion.div>
       </div>
     </MainLayout>
-    </MainLayout>
   );
 };
 
