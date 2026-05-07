@@ -92,14 +92,28 @@ export function PlanoContasTab({ empresaId }: Props) {
                   Nova Conta
                 </Button>
               </DialogTrigger>
-            <DialogContent>
-              <DialogHeader><DialogTitle>Nova conta contábil</DialogTitle></DialogHeader>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div><Label>Código</Label><Input value={form.codigo} onChange={e => setForm({ ...form, codigo: e.target.value })} placeholder="1.1.01.001" /></div>
-                  <div><Label>Cód. referencial CFC</Label><Input value={form.codigo_referencial} onChange={e => setForm({ ...form, codigo_referencial: e.target.value })} placeholder="1.01.01.01.01" /></div>
+            <DialogContent className="max-w-xl border-none bg-background/95 backdrop-blur-2xl shadow-3xl rounded-[2rem] p-8">
+              <DialogHeader className="mb-6">
+                <DialogTitle className="text-2xl font-black tracking-tight flex items-center gap-3">
+                  <Plus className="h-6 w-6 text-primary" />
+                  Nova Conta Contábil
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Código Estrutural</Label>
+                    <Input value={form.codigo} onChange={e => setForm({ ...form, codigo: e.target.value })} placeholder="1.1.01.001" className="h-12 bg-white/5 border-white/10 rounded-xl font-bold transition-all focus:ring-primary/20" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Cód. Referencial CFC</Label>
+                    <Input value={form.codigo_referencial} onChange={e => setForm({ ...form, codigo_referencial: e.target.value })} placeholder="1.01.01.01.01" className="h-12 bg-white/5 border-white/10 rounded-xl font-bold transition-all focus:ring-primary/20" />
+                  </div>
                 </div>
-                <div><Label>Descrição</Label><Input value={form.descricao} onChange={e => setForm({ ...form, descricao: e.target.value })} /></div>
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Descrição da Conta</Label>
+                  <Input value={form.descricao} onChange={e => setForm({ ...form, descricao: e.target.value })} className="h-12 bg-white/5 border-white/10 rounded-xl font-bold transition-all focus:ring-primary/20" />
+                </div>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Natureza</Label>
