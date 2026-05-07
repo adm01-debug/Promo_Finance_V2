@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { format } from 'date-fns';
-import { motion } from 'framer-motion';
-import { Download, FileText, AlertTriangle, CheckCircle2, ShieldAlert, FileArchive, Wand2, Send, FileSearch, ChevronDown, ChevronRight, ScrollText, XCircle, Hash, Lock, Unlock, Loader2, Clock, PlayCircle, Filter, X, Search, Link2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Download, FileText, AlertTriangle, CheckCircle2, ShieldAlert, 
+  FileArchive, Wand2, Send, FileSearch, ChevronDown, ChevronRight, 
+  ScrollText, XCircle, Hash, Lock, Unlock, Loader2, Clock, 
+  PlayCircle, Filter, X, Search, Link2, Zap, ShieldCheck,
+  History, ExternalLink, Activity, Layers, Cpu
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
