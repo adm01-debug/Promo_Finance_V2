@@ -44,16 +44,16 @@ export function RegisterForm({
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="register-name">Nome Completo</Label>
-        <div className="relative">
-          <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Label htmlFor="register-name" className="text-xs font-bold uppercase tracking-widest opacity-70 ml-1">Nome Completo</Label>
+        <div className="relative group">
+          <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
             id="register-name"
             type="text"
-            placeholder="Seu nome completo"
+            placeholder="Como podemos te chamar?"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            className="pl-10"
+            className="pl-10 rounded-xl border-border/50 bg-background/50 focus:bg-background transition-all duration-300 h-11"
             autoComplete="name"
           />
         </div>
