@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Download, FileText, AlertTriangle, CheckCircle2, ShieldAlert, FileArchive, Wand2, Send, FileSearch, ChevronDown, ChevronRight, ScrollText, XCircle, Hash, Lock, Unlock, Loader2, Clock, PlayCircle, Filter, X, Search, Link2 } from 'lucide-react';
@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useSpedContabilHistorico, useRegistrarTransmissaoSped, useGerarSpedContabil } from '@/hooks/useSpedContabil';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -75,6 +76,11 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
       return new Set();
     }
   });
+
+  const [statusFilter, setStatusFilter] = useState<'all' | 'liberada' | 'bloqueada' | 'transmitida'>('all');
+  const [validacaoFilter, setValidacaoFilter] = useState<'all' | 'com_erros' | 'com_avisos' | 'sem_alertas'>('all');
+  const [searchAno, setSearchAno] = useState('');
+
   const [exportStatus, setExportStatus] = useState<'idle' | 'queued' | 'processing' | 'done' | 'error'>('idle');
   const [empresaDados, setEmpresaDados] = useState<{ cnpj: string; razao_social: string } | null>(null);
   const transmitir = useRegistrarTransmissaoSped();
