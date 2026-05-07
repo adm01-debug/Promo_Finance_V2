@@ -151,13 +151,18 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
                 <Tooltip delayDuration={300}>
                   <TooltipTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-11 w-11 rounded-xl bg-white/5 hover:bg-primary/10 hover:text-primary border border-white/5 transition-all duration-300">
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={theme}
-                        initial={{ scale: 0, rotate: -180 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        exit={{ scale: 0, rotate: 180 }}
-                        transition={{ duration: 0.2 }}
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={theme}
+                          initial={{ scale: 0, rotate: -180 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          exit={{ scale: 0, rotate: 180 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <ThemeIcon className="h-5 w-5" />
+                        </motion.div>
+                      </AnimatePresence>
+                    </Button>
                       >
                         <ThemeIcon className="h-5 w-5" />
                       </motion.div>
