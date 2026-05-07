@@ -44,13 +44,13 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
       animate={{ width: collapsed ? 80 : 280 }}
       transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
       className={cn(
-        'fixed left-0 top-0 z-40 h-screen bg-background/40 backdrop-blur-3xl border-r border-white/10 flex flex-col shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] ring-1 ring-white/5'
+        'fixed left-0 top-0 z-40 h-screen bg-background/20 backdrop-blur-2xl border-r border-primary/5 flex flex-col shadow-[20px_0_40px_-20px_rgba(0,0,0,0.05)] transition-all duration-700 ease-apple'
       )}
       data-tour="sidebar"
     >
       {/* Logo Section */}
-      <div className="h-24 flex items-center justify-between px-6 border-b border-white/5 relative overflow-hidden group/logo">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5 opacity-0 group-hover/logo:opacity-100 transition-opacity duration-1000" />
+      <div className="h-24 flex items-center justify-between px-6 border-b border-primary/5 relative overflow-hidden group/logo">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-purple-500/10 opacity-0 group-hover/logo:opacity-100 transition-opacity duration-1000" />
         
         <AnimatePresence mode="wait">
           {!collapsed ? (
@@ -98,7 +98,7 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
       {/* Collapse Button */}
       <button
         onClick={() => handleCollapse(!collapsed)}
-        className="absolute -right-4 top-24 h-8 w-8 rounded-xl bg-background/80 backdrop-blur-md border border-white/10 flex items-center justify-center shadow-2xl hover:bg-primary hover:text-white transition-all duration-300 group/btn hover:scale-110 active:scale-90 z-50"
+        className="absolute -right-4 top-24 h-8 w-8 rounded-full bg-background border border-primary/10 flex items-center justify-center shadow-xl hover:bg-primary hover:text-white transition-all duration-500 group/btn hover:scale-110 active:scale-95 z-50"
       >
         {collapsed ? (
           <ChevronRight className="h-4 w-4 group-hover/btn:translate-x-0.5 transition-transform" />

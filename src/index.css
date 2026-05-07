@@ -7,14 +7,14 @@
 /* ========== DESIGN TOKENS ========== */
 @layer base {
   :root {
-    --background: 210 20% 98%;
+    --background: 210 30% 99%;
     --foreground: 224 71% 4%;
     --card: 0 0% 100%;
     --card-foreground: 224 71% 4%;
     --card-elevated: 0 0% 100%;
     --popover: 0 0% 100%;
     --popover-foreground: 224 71% 4%;
-    --primary: 221 83% 53%;
+    --primary: 221 100% 50%;
     --primary-foreground: 210 20% 98%;
     --primary-glow: 221 83% 65%;
     --secondary: 210 20% 96%;
@@ -34,7 +34,7 @@
     --border: 214 32% 91%;
     --input: 214 32% 91%;
     --ring: 221 83% 53%;
-    --radius: 0.75rem;
+    --radius: 1.25rem;
     --glass-bg: 0 0% 100% / 0.7;
     --glass-border: 0 0% 100% / 0.2;
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
