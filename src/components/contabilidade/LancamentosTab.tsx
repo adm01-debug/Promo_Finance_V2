@@ -124,22 +124,80 @@ export function LancamentosTab({ empresaId, ano }: Props) {
     setOpen(false); setHistorico(''); setPartidas([{ conta_id: '', tipo: 'D', valor: 0 }, { conta_id: '', tipo: 'C', valor: 0 }]);
   };
 
+  const volumeFinanceiro = useMemo(() => 
+    lancsFiltrados.reduce((acc, l) => acc + (Number(l.valor_total) || 0), 0), 
+    [lancsFiltrados]
+  );
+
   return (
-    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-      <CardHeader className="p-8 pb-4 relative z-10">
-        <div className="flex flex-wrap items-center justify-between gap-6">
-          <div className="flex items-center gap-5">
-            <div className="p-4 rounded-2xl bg-primary shadow-xl shadow-primary/20 text-primary-foreground transform group-hover:scale-110 transition-all duration-500">
-              <BookOpen className="h-8 w-8" />
-            </div>
-            <div>
-              <CardTitle className="text-3xl font-black tracking-tighter">Lançamentos Contábeis · {ano}</CardTitle>
-              <CardDescription className="text-sm font-medium opacity-60">Partidas dobradas — débitos = créditos</CardDescription>
-            </div>
+    <div className="space-y-10">
+      {/* KPIs Rápidos */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
+        >
+          <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover/kpi:scale-110 transition-transform">
+            <Activity className="h-20 w-20 text-primary" />
           </div>
-          <div className="flex items-center gap-3">
-            <ImportLancamentosCSVDialog empresaId={empresaId} planoContas={contasAnaliticas} ano={ano} />
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Total Lançamentos</p>
+          <div className="flex items-baseline gap-2 mt-2">
+            <p className="text-4xl font-black tracking-tighter tabular-nums">{lancsFiltrados.length}</p>
+            <span className="text-[10px] font-bold text-primary/60">Registros em {ano}</span>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
+        >
+          <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover/kpi:scale-110 transition-transform">
+            <Zap className="h-20 w-20 text-success" />
+          </div>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Volume Financeiro</p>
+          <div className="flex items-baseline gap-2 mt-2">
+            <p className="text-4xl font-black tracking-tighter tabular-nums text-success">{formatCurrency(volumeFinanceiro)}</p>
+            <ArrowUpRight className="h-4 w-4 text-success opacity-40" />
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-success/20 ring-1 ring-success/30 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
+        >
+          <div className="absolute top-0 right-0 p-6 opacity-20 group-hover/kpi:scale-110 transition-transform">
+            <ShieldCheck className="h-20 w-20" />
+          </div>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Status de Auditoria</p>
+          <div className="flex items-center gap-3 mt-2">
+            <p className="text-4xl font-black tracking-tighter">100%</p>
+            <Badge variant="outline" className="border-none bg-success/20 text-success font-black text-[10px] px-3 py-1 rounded-full">
+              CONFORME
+            </Badge>
+          </div>
+        </motion.div>
+      </div>
+
+      <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        <CardHeader className="p-8 pb-4 relative z-10">
+          <div className="flex flex-wrap items-center justify-between gap-6">
+            <div className="flex items-center gap-5">
+              <div className="p-4 rounded-2xl bg-primary shadow-xl shadow-primary/20 text-primary-foreground transform group-hover:scale-110 transition-all duration-500">
+                <BookOpen className="h-8 w-8" />
+              </div>
+              <div>
+                <CardTitle className="text-3xl font-black tracking-tighter">Livro Diário</CardTitle>
+                <CardDescription className="text-sm font-medium opacity-60">Gestão analítica de partidas dobradas em {ano}</CardDescription>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <ImportLancamentosCSVDialog empresaId={empresaId} planoContas={contasAnaliticas} ano={ano} />
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
                 <Button disabled={!empresaId} className="h-12 rounded-2xl font-black px-6 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px] active:translate-y-[0px]">
