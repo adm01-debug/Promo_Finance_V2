@@ -90,29 +90,30 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
 
       {/* Recentes */}
       {recentItems.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 px-2 py-1">
+        <div className="space-y-3">
+          <div className="flex items-center justify-between px-1">
             <button
               onClick={() => setIsRecentOpen(!isRecentOpen)}
-              className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-foreground transition-colors group"
+              className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 hover:text-foreground transition-all group"
             >
-              <div className="p-1 rounded-md bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
-                <Clock className="h-3 w-3" />
+              <div className="p-1.5 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors shadow-sm">
+                <Clock className="h-3.5 w-3.5" />
               </div>
-              <span>Recentes</span>
+              <span>Recent Activity</span>
               <motion.div
                 animate={{ rotate: isRecentOpen ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: 0.4, ease: "backOut" }}
+                className="opacity-40 group-hover:opacity-100"
               >
-                <ChevronDown className="h-3 w-3" />
+                <ChevronDown className="h-3.5 w-3.5" />
               </motion.div>
             </button>
-            <div className="flex-1" />
             <Button
               variant="ghost"
               size="icon"
-              className="h-4 w-4 opacity-50 hover:opacity-100"
+              className="h-6 w-6 opacity-30 hover:opacity-100 hover:bg-destructive/10 hover:text-destructive rounded-md transition-all"
               onClick={clearRecent}
+              title="Clear history"
             >
               <X className="h-3 w-3" />
             </Button>
