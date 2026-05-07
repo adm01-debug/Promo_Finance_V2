@@ -35,14 +35,23 @@ const Demonstrativos = () => {
   const { data: empresas } = useEmpresas();
 
   // Detecta cobertura de contabilidade para o período (decide se permite competência)
-  const { cobertura } = useDemonstrativosContabeis({
+  const demoData = useDemonstrativosContabeis({
     empresaId,
     ano: parseInt(ano),
     mes: parseInt(mes),
     fonte: 'competencia',
   });
+  const { cobertura } = demoData;
   const hasContabilidade = cobertura.totalPartidas > 0;
   const fonteEfetiva: FonteDemonstrativo = hasContabilidade ? fonte : 'caixa';
+
+  // Dados com fonte efetiva para exportação na barra de ferramentas
+  const exportData = useDemonstrativosContabeis({
+    empresaId,
+    ano: parseInt(ano),
+    mes: parseInt(mes),
+    fonte: fonteEfetiva,
+  });
 
   const meses = [
     'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
