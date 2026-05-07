@@ -330,27 +330,31 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
   );
 }
 
-function KPI({ label, value, tone }: { label: string; value: number; tone?: 'success' | 'warning' }) {
+function KPI({ label, value, tone, icon: Icon, trend }: { label: string; value: number; tone?: 'success' | 'warning'; icon?: any; trend?: string }) {
   return (
     <motion.div
-      whileHover={{ y: -2 }}
+      whileHover={{ y: -2, scale: 1.02 }}
       className={cn(
-        'rounded-2xl border bg-white/[0.03] px-4 py-3 shadow-sm transition-all',
+        'rounded-[1.5rem] border bg-white/[0.03] p-5 shadow-sm transition-all group/kpi relative overflow-hidden',
         tone === 'success' && 'border-success/20 bg-success/5 shadow-success/10',
         tone === 'warning' && 'border-warning/20 bg-warning/5 shadow-warning/10',
         !tone && 'border-white/5'
       )}
     >
-      <p className="text-[9px] uppercase font-black tracking-[0.2em] text-muted-foreground opacity-60 mb-1">{label}</p>
-      <p
-        className={cn(
-          'font-mono font-black text-xl tracking-tighter tabular-nums',
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-[9px] uppercase font-black tracking-[0.2em] text-muted-foreground opacity-40">{label}</p>
+        {Icon && <Icon className="h-3 w-3 opacity-20 group-hover/kpi:scale-110 transition-transform" />}
+      </div>
+      <div className="flex items-baseline gap-2">
+        <p className={cn(
+          'font-mono font-black text-2xl tracking-tighter tabular-nums',
           tone === 'success' && 'text-success',
           tone === 'warning' && 'text-warning',
-        )}
-      >
-        {value.toLocaleString('pt-BR')}
-      </p>
+        )}>
+          {value.toLocaleString('pt-BR')}
+        </p>
+        {trend && <span className="text-[10px] font-bold opacity-40">{trend}</span>}
+      </div>
     </motion.div>
   );
 }
