@@ -21,22 +21,24 @@ export function QuickCreateButton({ collapsed }: QuickCreateButtonProps) {
 
   const button = (
     <motion.button
-      whileHover={{ scale: 1.02, y: -1 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={{ scale: 1.05, y: -2 }}
+      whileTap={{ scale: 0.95 }}
       onClick={() => setOpen(true)}
       className={cn(
-        'flex items-center gap-3 w-full rounded-2xl transition-all duration-300',
-        'bg-gradient-to-br from-primary to-primary-glow text-primary-foreground',
-        'shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30',
-        'ring-1 ring-white/20',
-        collapsed ? 'p-3 justify-center' : 'px-5 py-3.5'
+        'flex items-center gap-4 w-full rounded-2xl transition-all duration-500 relative overflow-hidden',
+        'bg-gradient-to-br from-primary to-blue-600 text-white',
+        'shadow-[0_20px_40px_-12px_rgba(var(--primary),0.3)] hover:shadow-[0_25px_50px_-12px_rgba(var(--primary),0.4)]',
+        'ring-1 ring-white/20 group/create',
+        collapsed ? 'p-4 justify-center' : 'px-6 py-4'
       )}
     >
-      <div className="bg-white/20 p-1 rounded-lg">
-        <Plus className="h-4.5 w-4.5 font-black" />
+      <div className="absolute inset-0 bg-white/20 blur-md -translate-x-full group-hover/create:translate-x-full transition-transform duration-1000" />
+      
+      <div className="bg-white/20 p-1.5 rounded-xl relative z-10">
+        <Plus className="h-5 w-5 font-black" />
       </div>
       {!collapsed && (
-        <span className="font-bold text-sm tracking-tight">Novo Registro</span>
+        <span className="font-black text-sm uppercase tracking-[0.1em] relative z-10">NOVO COMANDO</span>
       )}
     </motion.button>
   );
