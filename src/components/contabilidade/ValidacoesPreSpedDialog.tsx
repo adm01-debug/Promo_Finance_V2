@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
-import { Download, FileArchive, AlertTriangle, CheckCircle2, XCircle, ShieldAlert, Search, X, FileJson, FileText, FileDown } from 'lucide-react';
+import { useMemo, useState, useEffect } from 'react';
+import { Download, FileArchive, AlertTriangle, CheckCircle2, XCircle, ShieldAlert, Search, X, FileJson, FileText, FileDown, ChevronRight, ChevronDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import {
@@ -10,11 +11,11 @@ import {
 } from '@/lib/pdf-layout';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { agruparValidacoes, type ValidacoesAgrupadas } from '@/lib/sped-validacoes-categorias';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   DropdownMenu,
@@ -61,6 +62,7 @@ interface Props {
 
 export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloadTxt, onDownloadZip }: Props) {
   const [busca, setBusca] = useState('');
+  const [expandedCats, setExpandedCats] = useState<Set<string>>(new Set());
 
   const erros = arquivo?.validacoes?.erros ?? [];
   const avisos = arquivo?.validacoes?.avisos ?? [];
@@ -77,6 +79,25 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
     () => (termo ? avisos.filter((a) => a.toLowerCase().includes(termo)) : avisos),
     [avisos, termo],
   );
+
+  const toggleCategoria = (id: string) => {
+    setExpandedCats((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const agrupados = useMemo(() => {
+    return agruparValidacoes(errosFiltrados, avisosFiltrados);
+  }, [errosFiltrados, avisosFiltrados]);
+
+  // Expandir automaticamente se houver busca ou se houver poucos grupos
+  useEffect(() => {
+    if (busca.trim() || agrupados.length <= 2) {
+      setExpandedCats(new Set(agrupados.map(a => a.categoria.id)));
+    }
+  }, [busca, agrupados]);
 
   if (!arquivo) return null;
 
@@ -157,10 +178,14 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
       const pageWidth = doc.internal.pageSize.getWidth();
 
       let cursorY = getContentStartY();
+
+      // Agrupar por categoria para o PDF
+      const agrupadosPdf = agruparValidacoes(errosExp, avisosExp);
+
       const metaItems: Array<[string, string]> = [
         ['Status', String(arquivo.status).toUpperCase()],
-        ['Erros', `${errosExp.length}${apenasFiltrados ? ` / ${erros.length}` : ''}`],
-        ['Avisos', `${avisosExp.length}${apenasFiltrados ? ` / ${avisos.length}` : ''}`],
+        ['Itens', `${errosExp.length + avisosExp.length}${apenasFiltrados ? ` (filtrados)` : ''}`],
+        ['Categorias', String(agrupadosPdf.length)],
         ['Hash', arquivo.hash_sha256 ? `${arquivo.hash_sha256.slice(0, 12)}…` : '—'],
       ];
       const cardW = (pageWidth - margins.left - margins.right - 6) / metaItems.length;
@@ -217,42 +242,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
         cursorY += 5;
       }
 
-      if (errosExp.length > 0) {
-        autoTable(doc, {
-          startY: cursorY,
-          head: [[`Erros (${errosExp.length}${apenasFiltrados ? ` de ${erros.length}` : ''})`]],
-          body: errosExp.map((e) => [e]),
-          theme: 'striped',
-          headStyles: {
-            fillColor: [PDF_BRAND.destructive[0], PDF_BRAND.destructive[1], PDF_BRAND.destructive[2]],
-            textColor: [255, 255, 255],
-            fontStyle: 'bold',
-          },
-          alternateRowStyles: { fillColor: [252, 247, 244] },
-          styles: { fontSize: 8, cellPadding: 2.5, textColor: [PDF_BRAND.foreground[0], PDF_BRAND.foreground[1], PDF_BRAND.foreground[2]] },
-          margin: margins,
-        });
-        cursorY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 6;
-      }
-
-      if (avisosExp.length > 0) {
-        autoTable(doc, {
-          startY: cursorY,
-          head: [[`Avisos (${avisosExp.length}${apenasFiltrados ? ` de ${avisos.length}` : ''})`]],
-          body: avisosExp.map((a) => [a]),
-          theme: 'striped',
-          headStyles: {
-            fillColor: [PDF_BRAND.warning[0], PDF_BRAND.warning[1], PDF_BRAND.warning[2]],
-            textColor: [255, 255, 255],
-            fontStyle: 'bold',
-          },
-          alternateRowStyles: { fillColor: [252, 249, 240] },
-          styles: { fontSize: 8, cellPadding: 2.5, textColor: [PDF_BRAND.foreground[0], PDF_BRAND.foreground[1], PDF_BRAND.foreground[2]] },
-          margin: margins,
-        });
-      }
-
-      if (errosExp.length === 0 && avisosExp.length === 0) {
+      if (agrupadosPdf.length === 0) {
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
         doc.setTextColor(PDF_BRAND.muted[0], PDF_BRAND.muted[1], PDF_BRAND.muted[2]);
@@ -263,6 +253,27 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
           margins.left,
           cursorY,
         );
+      } else {
+        agrupadosPdf.forEach((grupo) => {
+          autoTable(doc, {
+            startY: cursorY,
+            head: [[{ content: `${grupo.categoria.label} (${grupo.total})`, styles: { halign: 'left' } }]],
+            body: [
+              ...grupo.erros.map(e => [{ content: `• ERROR: ${e}`, styles: { textColor: PDF_BRAND.destructive } }]),
+              ...grupo.avisos.map(a => [{ content: `• WARN: ${a}`, styles: { textColor: PDF_BRAND.warning } }])
+            ],
+            theme: 'striped',
+            headStyles: {
+              fillColor: [PDF_BRAND.foreground[0], PDF_BRAND.foreground[1], PDF_BRAND.foreground[2]],
+              textColor: [255, 255, 255],
+              fontStyle: 'bold',
+            },
+            styles: { fontSize: 7.5, cellPadding: 2, font: 'courier' },
+            margin: margins,
+          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          cursorY = (doc as any).lastAutoTable.finalY + 6;
+        });
       }
 
       applyPdfLayout(doc, {
@@ -287,47 +298,49 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <ShieldAlert className="h-5 w-5 text-primary" />
+          <DialogTitle className="flex items-center gap-2 text-xl font-bold">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <ShieldAlert className="h-6 w-6 text-primary" />
+            </div>
             Validações SPED {arquivo.tipo} · {arquivo.ano_calendario}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-xs font-medium">
             Revise erros e avisos antes de baixar e transmitir o arquivo no PVA-{arquivo.tipo}.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-md border p-3 text-center">
-            <div className="text-xs text-muted-foreground">Erros</div>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="rounded-xl border bg-muted/20 p-4 text-center transition-all hover:bg-muted/30">
+            <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Erros</div>
             <div
               data-testid="contador-erros"
-              className={`text-2xl font-bold ${erros.length > 0 ? 'text-destructive' : 'text-success'}`}
+              className={cn("text-3xl font-black tabular-nums", erros.length > 0 ? 'text-destructive' : 'text-success')}
             >
               {erros.length}
             </div>
           </div>
-          <div className="rounded-md border p-3 text-center">
-            <div className="text-xs text-muted-foreground">Avisos</div>
+          <div className="rounded-xl border bg-muted/20 p-4 text-center transition-all hover:bg-muted/30">
+            <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Avisos</div>
             <div
               data-testid="contador-avisos"
-              className={`text-2xl font-bold ${avisos.length > 0 ? 'text-warning' : 'text-muted-foreground'}`}
+              className={cn("text-3xl font-black tabular-nums", avisos.length > 0 ? 'text-warning' : 'text-muted-foreground')}
             >
               {avisos.length}
             </div>
           </div>
-          <div className="rounded-md border p-3 text-center">
-            <div className="text-xs text-muted-foreground">Hash</div>
-            <div className="text-xs font-mono mt-2 truncate" title={arquivo.hash_sha256 ?? ''}>
+          <div className="rounded-xl border bg-muted/20 p-4 text-center transition-all hover:bg-muted/30 flex flex-col justify-center overflow-hidden">
+            <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Hash</div>
+            <div className="text-[10px] font-mono mt-1 truncate bg-background/50 p-1.5 rounded border" title={arquivo.hash_sha256 ?? ''}>
               {hashCurto}
             </div>
           </div>
         </div>
 
         {bloqueado && (
-          <Alert variant="error" data-testid="banner-bloqueio">
-            <XCircle className="h-4 w-4" />
-            <AlertTitle>{isRejeitado ? 'Arquivo rejeitado pela transmissão' : 'Download bloqueado'}</AlertTitle>
-            <AlertDescription>
+          <Alert variant="error" className="bg-destructive/5 border-destructive/20 shadow-sm" data-testid="banner-bloqueio">
+            <XCircle className="h-4 w-4 text-destructive" />
+            <AlertTitle className="font-bold text-destructive">{isRejeitado ? 'ARQUIVO REJEITADO PELA TRANSMISSÃO' : 'DOWNLOAD BLOQUEADO'}</AlertTitle>
+            <AlertDescription className="text-xs">
               {isRejeitado
                 ? `A transmissão deste SPED foi rejeitada${erros.length > 0 ? ` com ${erros.length} erro(s)` : ''}. Corrija as inconsistências e gere o arquivo novamente antes de retransmitir ao PVA.`
                 : `Este SPED contém ${erros.length} erro(s) bloqueante(s). Corrija as inconsistências e gere o arquivo novamente antes de transmitir ao PVA.`}
@@ -335,170 +348,164 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
           </Alert>
         )}
 
-        <Tabs defaultValue={erros.length > 0 ? 'erros' : 'avisos'}>
-          <div className="flex items-center justify-between mb-2 gap-4">
-            <TabsList className="grid grid-cols-2 flex-1">
-              <TabsTrigger value="erros" className="gap-1.5">
-                <XCircle className="h-3.5 w-3.5" />
-                Erros
-                <Badge variant={erros.length > 0 ? 'destructive' : 'outline'} className="ml-1">
-                  {erros.length}
-                </Badge>
-              </TabsTrigger>
-              <TabsTrigger value="avisos" className="gap-1.5">
-                <AlertTriangle className="h-3.5 w-3.5" />
-                Avisos
-                <Badge variant="outline" className="ml-1">
-                  {avisos.length}
-                </Badge>
-              </TabsTrigger>
-            </TabsList>
-
-          {(erros.length > 0 || avisos.length > 0) && (
-            <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-              <Input
-                data-testid="input-busca-validacoes"
-                value={busca}
-                onChange={(e) => setBusca(e.target.value)}
-                placeholder="Buscar nos erros e avisos..."
-                className="h-8 pl-8 pr-8 text-xs"
-              />
-              {busca && (
-                <button
-                  type="button"
-                  onClick={() => setBusca('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  aria-label="Limpar busca"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              )}
-            </div>
-          )}
+        <div className="flex items-center justify-between mb-2 gap-4">
+          <div className="relative flex-1 group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary pointer-events-none" />
+            <Input
+              data-testid="input-busca-validacoes"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar nas validações (ex: código de conta, descrição)..."
+              className="h-10 pl-10 pr-10 text-xs bg-muted/30 border-none focus-visible:ring-1 focus-visible:ring-primary/50 transition-all rounded-xl"
+            />
+            {busca && (
+              <button
+                type="button"
+                onClick={() => setBusca('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Limpar busca"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
         </div>
 
-          <TabsContent value="erros">
-            {erros.length === 0 ? (
-              <div className="flex items-center gap-2 text-sm text-success p-4 justify-center">
-                <CheckCircle2 className="h-4 w-4" /> Nenhum erro encontrado
-              </div>
-            ) : errosFiltrados.length === 0 ? (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground p-4 justify-center">
-                <Search className="h-4 w-4" /> Nenhum erro corresponde a "{busca}"
-              </div>
-            ) : (
-              <>
-                {termo && (
-                  <p className="text-[11px] text-muted-foreground px-1 pb-1">
-                    {errosFiltrados.length} de {erros.length} erro(s)
-                  </p>
-                )}
-                <ScrollArea className="max-h-72 border rounded-md p-3">
-                  <ol data-testid="lista-erros" className="space-y-2 text-xs font-mono list-decimal list-inside">
-                    {errosFiltrados.map((e, i) => (
-                      <li key={i} className="text-destructive">
-                        {e}
-                      </li>
-                    ))}
-                  </ol>
-                </ScrollArea>
-              </>
-            )}
-          </TabsContent>
-
-          <TabsContent value="avisos">
-            {avisos.length === 0 ? (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground p-4 justify-center">
-                <CheckCircle2 className="h-4 w-4" /> Nenhum aviso
-              </div>
-            ) : avisosFiltrados.length === 0 ? (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground p-4 justify-center">
-                <Search className="h-4 w-4" /> Nenhum aviso corresponde a "{busca}"
-              </div>
-            ) : (
-              <>
-                {termo && (
-                  <p className="text-[11px] text-muted-foreground px-1 pb-1">
-                    {avisosFiltrados.length} de {avisos.length} aviso(s)
-                  </p>
-                )}
-                <ScrollArea className="max-h-72 border rounded-md p-3">
-                  <ol data-testid="lista-avisos" className="space-y-2 text-xs font-mono list-decimal list-inside">
-                    {avisosFiltrados.map((a, i) => (
-                      <li key={i} className="text-warning">
-                        {a}
-                      </li>
-                    ))}
-                  </ol>
-                </ScrollArea>
-              </>
-            )}
-          </TabsContent>
-        </Tabs>
+        <ScrollArea className="max-h-[50vh] pr-4">
+          {agrupados.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
+              <CheckCircle2 className="h-10 w-10 text-success/20 mb-3" />
+              <p className="text-sm font-medium">Nenhuma validação pendente</p>
+              {busca && <p className="text-xs">Nenhum item corresponde a "{busca}"</p>}
+            </div>
+          ) : (
+            <div className="space-y-4 pb-4">
+              {agrupados.map(({ categoria, erros: catErros, avisos: catAvisos, total }) => {
+                const isOpen = expandedCats.has(categoria.id);
+                return (
+                  <div key={categoria.id} className={cn("border rounded-2xl overflow-hidden transition-all duration-300 shadow-sm", isOpen ? "bg-card border-primary/20 ring-1 ring-primary/5" : "bg-card/50 hover:border-primary/20")}>
+                    <button
+                      onClick={() => toggleCategoria(categoria.id)}
+                      className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors text-left"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className={cn(
+                          "p-3 rounded-xl transition-all shadow-sm",
+                          catErros.length > 0 ? "bg-destructive/10 text-destructive" : "bg-warning/10 text-warning",
+                          isOpen && (catErros.length > 0 ? "bg-destructive text-white" : "bg-warning text-white")
+                        )}>
+                          {catErros.length > 0 ? <XCircle className="h-5 w-5" /> : <AlertTriangle className="h-5 w-5" />}
+                        </div>
+                        <div>
+                          <div className="text-sm font-black flex items-center gap-2 tracking-tight">
+                            {categoria.label.toUpperCase()}
+                            <Badge variant="secondary" className="text-[10px] h-5 px-2 font-black rounded-full bg-muted/50">
+                              {total}
+                            </Badge>
+                          </div>
+                          <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-70">{categoria.description}</p>
+                        </div>
+                      </div>
+                      <div className={cn("p-1.5 rounded-full transition-all", isOpen ? "bg-primary/10 text-primary" : "text-muted-foreground")}>
+                        {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                      </div>
+                    </button>
+                    
+                    {isOpen && (
+                      <div className="p-4 pt-0 space-y-2 bg-gradient-to-b from-transparent to-muted/5">
+                        {catErros.map((e, i) => (
+                          <div key={`e-${i}`} className="flex gap-3 text-xs font-mono p-3 rounded-xl bg-destructive/5 text-destructive border border-destructive/10 leading-relaxed shadow-sm transition-all hover:bg-destructive/10">
+                            <span className="shrink-0 opacity-40 font-bold">ERR</span>
+                            <span>{e}</span>
+                          </div>
+                        ))}
+                        {catAvisos.map((a, i) => (
+                          <div key={`a-${i}`} className="flex gap-3 text-xs font-mono p-3 rounded-xl bg-warning/5 text-warning-foreground border border-warning/10 leading-relaxed shadow-sm transition-all hover:bg-warning/10">
+                            <span className="shrink-0 opacity-40 font-bold">WRN</span>
+                            <span>{a}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </ScrollArea>
 
 
         <DialogFooter className="gap-2">
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Fechar
           </Button>
+          <div className="h-6 w-px bg-border mx-2 hidden sm:block" />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
+                size="sm"
                 data-testid="btn-exportar-validacoes"
                 disabled={erros.length === 0 && avisos.length === 0}
-                className="gap-2"
+                className="gap-2 font-bold shadow-sm"
               >
                 <FileDown className="h-4 w-4" />
-                Exportar validações
+                Exportar
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64">
-              <DropdownMenuLabel className="text-xs">Relatório completo</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => exportarPdf(false)} className="gap-2">
-                <FileText className="h-4 w-4 text-destructive" />
-                PDF (.pdf)
-                <span className="ml-auto text-[10px] text-muted-foreground">
-                  {erros.length + avisos.length} item(ns)
-                </span>
+            <DropdownMenuContent align="end" className="w-64 p-2 rounded-xl">
+              <DropdownMenuLabel className="text-[10px] uppercase tracking-widest opacity-50 px-2 py-1">Relatório Completo</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => exportarPdf(false)} className="gap-3 py-2 rounded-lg cursor-pointer">
+                <div className="p-1.5 bg-destructive/10 rounded-md">
+                  <FileText className="h-4 w-4 text-destructive" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold">PDF (.pdf)</span>
+                  <span className="text-[10px] text-muted-foreground">{erros.length + avisos.length} item(ns)</span>
+                </div>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => exportarJson(false)} className="gap-2">
-                <FileJson className="h-4 w-4 text-primary" />
-                JSON (.json)
-                <span className="ml-auto text-[10px] text-muted-foreground">
-                  {erros.length + avisos.length} item(ns)
-                </span>
+              <DropdownMenuItem onClick={() => exportarJson(false)} className="gap-3 py-2 rounded-lg cursor-pointer">
+                <div className="p-1.5 bg-primary/10 rounded-md">
+                  <FileJson className="h-4 w-4 text-primary" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold">JSON (.json)</span>
+                  <span className="text-[10px] text-muted-foreground">{erros.length + avisos.length} item(ns)</span>
+                </div>
               </DropdownMenuItem>
               {temFiltro && (
                 <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuLabel className="text-xs">
-                    Apenas filtrados ("{busca.trim()}")
+                  <DropdownMenuSeparator className="my-2" />
+                  <DropdownMenuLabel className="text-[10px] uppercase tracking-widest opacity-50 px-2 py-1">
+                    Apenas Filtrados
                   </DropdownMenuLabel>
                   <DropdownMenuItem
                     onClick={() => exportarPdf(true)}
                     disabled={!podeExportarFiltrado}
                     data-testid="btn-exportar-pdf-filtrado"
-                    className="gap-2"
+                    className="gap-3 py-2 rounded-lg cursor-pointer"
                   >
-                    <FileText className="h-4 w-4 text-destructive" />
-                    PDF filtrado
-                    <span className="ml-auto text-[10px] text-muted-foreground">
-                      {errosFiltrados.length + avisosFiltrados.length} item(ns)
-                    </span>
+                    <div className="p-1.5 bg-destructive/10 rounded-md">
+                      <FileText className="h-4 w-4 text-destructive" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold">PDF Filtrado</span>
+                      <span className="text-[10px] text-muted-foreground">{errosFiltrados.length + avisosFiltrados.length} item(ns)</span>
+                    </div>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => exportarJson(true)}
                     disabled={!podeExportarFiltrado}
                     data-testid="btn-exportar-json-filtrado"
-                    className="gap-2"
+                    className="gap-3 py-2 rounded-lg cursor-pointer"
                   >
-                    <FileJson className="h-4 w-4 text-primary" />
-                    JSON filtrado
-                    <span className="ml-auto text-[10px] text-muted-foreground">
-                      {errosFiltrados.length + avisosFiltrados.length} item(ns)
-                    </span>
+                    <div className="p-1.5 bg-primary/10 rounded-md">
+                      <FileJson className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold">JSON Filtrado</span>
+                      <span className="text-[10px] text-muted-foreground">{errosFiltrados.length + avisosFiltrados.length} item(ns)</span>
+                    </div>
                   </DropdownMenuItem>
                 </>
               )}
