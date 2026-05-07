@@ -156,7 +156,6 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
       const margins = getAutoTableMargins();
       const pageWidth = doc.internal.pageSize.getWidth();
 
-      // Bloco de metadados (cards) logo abaixo do cabeçalho
       let cursorY = getContentStartY();
       const metaItems: Array<[string, string]> = [
         ['Status', String(arquivo.status).toUpperCase()],
@@ -185,6 +184,30 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
         doc.text(value, x + 2.5, cursorY + 10.5);
       });
       cursorY += cardH + 6;
+
+      // Bloco de metadados do arquivo (autoexplicativo)
+      autoTable(doc, {
+        startY: cursorY,
+        theme: 'plain',
+        styles: { fontSize: 8.5, cellPadding: 1.5, textColor: [PDF_BRAND.foreground[0], PDF_BRAND.foreground[1], PDF_BRAND.foreground[2]] },
+        body: [
+          ['Empresa', arquivo.razao_social ?? '—'],
+          ['CNPJ', arquivo.cnpj ?? '—'],
+          ['Período', `${arquivo.periodo_inicio ?? `${arquivo.ano_calendario}-01-01`}  →  ${arquivo.periodo_fim ?? `${arquivo.ano_calendario}-12-31`}`],
+          ['Tipo', `SPED ${arquivo.tipo}`],
+          ['Ano-calendário', String(arquivo.ano_calendario)],
+          ['Gerado em', arquivo.created_at ? new Date(arquivo.created_at).toLocaleString('pt-BR') : new Date().toLocaleString('pt-BR')],
+          ['Gerado por', arquivo.gerado_por ?? '—'],
+          ['Total lançamentos', String(arquivo.total_lancamentos ?? '—')],
+          ['Total linhas', String(arquivo.total_linhas ?? '—')],
+          ['Hash SHA-256', arquivo.hash_sha256 ?? '—'],
+        ],
+        columnStyles: {
+          0: { fontStyle: 'bold', cellWidth: 42, textColor: [PDF_BRAND.muted[0], PDF_BRAND.muted[1], PDF_BRAND.muted[2]] },
+        },
+      });
+      // @ts-expect-error - jspdf-autotable lastAutoTable
+      cursorY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 6;
 
       if (apenasFiltrados) {
         doc.setFont('helvetica', 'italic');
