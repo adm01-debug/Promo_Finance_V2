@@ -41,43 +41,49 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
     <motion.aside
       ref={ref}
       initial={false}
-      animate={{ width: collapsed ? 72 : 280 }}
+      animate={{ width: collapsed ? 80 : 280 }}
       transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
       className={cn(
-        'fixed left-0 top-0 z-40 h-screen bg-background border-r border-border/30 flex flex-col shadow-2xl backdrop-blur-3xl'
+        'fixed left-0 top-0 z-40 h-screen bg-background/40 backdrop-blur-3xl border-r border-white/10 flex flex-col shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] ring-1 ring-white/5'
       )}
       data-tour="sidebar"
     >
-      {/* Logo */}
-      <div className="h-20 flex items-center justify-between px-6 border-b border-border/30">
+      {/* Logo Section */}
+      <div className="h-24 flex items-center justify-between px-6 border-b border-white/5 relative overflow-hidden group/logo">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5 opacity-0 group-hover/logo:opacity-100 transition-opacity duration-1000" />
+        
         <AnimatePresence mode="wait">
-          {!collapsed && (
+          {!collapsed ? (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex items-center gap-2"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              className="flex items-center gap-3 relative z-10"
             >
-              <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-glow-primary">
-                <CreditCard className="h-5 w-5 text-primary-foreground" />
+              <div className="h-11 w-11 rounded-[1.25rem] bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-2xl shadow-primary/30 relative overflow-hidden">
+                <div className="absolute inset-0 bg-white/20 blur-sm -translate-x-full group-hover/logo:translate-x-full transition-transform duration-1000" />
+                <CreditCard className="h-6 w-6 text-white relative z-10" />
               </div>
               <div className="flex flex-col">
-                <span className="font-display font-bold text-lg text-foreground leading-tight">
-                  Promo
+                <span className="font-display font-black text-xl text-foreground tracking-tighter leading-none">
+                  PROMO
                 </span>
-                <span className="text-[10px] text-muted-foreground leading-tight uppercase tracking-wider">
-                  Finance
+                <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] leading-none mt-1">
+                  FINANCE
                 </span>
               </div>
             </motion.div>
+          ) : (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="h-11 w-11 rounded-[1.25rem] bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-2xl shadow-primary/30 mx-auto relative overflow-hidden"
+            >
+              <CreditCard className="h-6 w-6 text-white relative z-10" />
+            </motion.div>
           )}
         </AnimatePresence>
-
-        {collapsed && (
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-glow-primary mx-auto">
-            <CreditCard className="h-5 w-5 text-primary-foreground" />
-          </div>
-        )}
       </div>
 
       {/* Quick Create Button */}
