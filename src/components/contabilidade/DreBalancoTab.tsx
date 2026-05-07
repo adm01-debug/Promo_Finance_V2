@@ -369,61 +369,141 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
             {Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
           </div>
         ) : modo === 'dre' ? (
-          <div className="space-y-4">
-            <section className="space-y-1">
-              <h3 className="text-sm font-semibold text-success px-2">(+) Receitas</h3>
-              {dreNovo.linhas.filter(l => l.tipo === 'receita' && l.nivel > 0).length === 0 ? (
-                <p className="text-xs text-muted-foreground px-2 py-1">Nenhuma receita detalhada no período.</p>
-              ) : dreNovo.linhas.filter(l => l.tipo === 'receita' && l.nivel > 0).map((l, i) => (
-                <div key={i} className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-muted/20" style={{ paddingLeft: `${l.nivel * 1}rem` }}>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-muted-foreground">{l.codigo}</span>
-                    <span className="truncate text-sm">{l.descricao}</span>
-                  </div>
-                  <span className="font-mono text-sm tabular-nums">{formatCurrency(l.valor)}</span>
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="bg-white/5 border-white/5 p-4 rounded-3xl relative overflow-hidden group/kpi">
+                <div className="absolute top-0 right-0 p-3 opacity-10 group-hover/kpi:scale-110 transition-transform">
+                  <TrendingUp className="h-12 w-12 text-success" />
                 </div>
-              ))}
-              <div className="flex items-center justify-between px-2 py-2 border-t font-semibold">
-                <span>Total Receita Bruta</span>
-                <span className="font-mono tabular-nums text-success">{formatCurrency(dreNovo.receitaBruta)}</span>
-              </div>
-            </section>
-            
-            <section className="space-y-1">
-              <h3 className="text-sm font-semibold text-destructive px-2">(−) Despesas e Deduções</h3>
-              {dreNovo.linhas.filter(l => l.tipo === 'despesa').map((l, i) => (
-                <div key={i} className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-muted/20" style={{ paddingLeft: `${l.nivel * 1}rem` }}>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-muted-foreground">{l.codigo}</span>
-                    <span className="truncate text-sm">{l.descricao}</span>
-                  </div>
-                  <span className="font-mono text-sm tabular-nums text-destructive">{formatCurrency(l.valor)}</span>
+                <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Receita Bruta</p>
+                <p className="text-2xl font-black mt-2 font-mono text-success tabular-nums">{formatCurrency(dreNovo.receitaBruta)}</p>
+                <div className="flex items-center gap-1 mt-2">
+                  <ArrowUpRight className="h-3 w-3 text-success" />
+                  <span className="text-[10px] font-bold text-success/60">Faturamento Mensal</span>
                 </div>
-              ))}
-            </section>
+              </Card>
 
-            <section className={`flex items-center justify-between px-3 py-3 rounded-md ${dreNovo.lucroLiquido >= 0 ? 'bg-success/10' : 'bg-destructive/10'}`}>
-              <div className="flex flex-col">
-                <span className="font-semibold text-sm">(=) Lucro/Prejuízo Líquido</span>
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Modo: {origem}</span>
-              </div>
-              <span className={`font-mono tabular-nums font-bold text-base ${dreNovo.lucroLiquido >= 0 ? 'text-success' : 'text-destructive'}`}>
-                {formatCurrency(dreNovo.lucroLiquido)}
-              </span>
-            </section>
+              <Card className="bg-white/5 border-white/5 p-4 rounded-3xl relative overflow-hidden group/kpi">
+                <div className="absolute top-0 right-0 p-3 opacity-10 group-hover/kpi:scale-110 transition-transform">
+                  <TrendingDown className="h-12 w-12 text-destructive" />
+                </div>
+                <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Custos & Despesas</p>
+                <p className="text-2xl font-black mt-2 font-mono text-destructive tabular-nums">
+                  {formatCurrency(dreNovo.receitaBruta - dreNovo.lucroLiquido)}
+                </p>
+                <div className="flex items-center gap-1 mt-2">
+                  <Layers className="h-3 w-3 text-destructive" />
+                  <span className="text-[10px] font-bold text-destructive/60">Operacional Total</span>
+                </div>
+              </Card>
 
-            {dreNovo.naoClassificadas.length > 0 && (
-              <Alert variant="warning" className="bg-warning/5 border-warning/20">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertTitle className="text-xs font-bold uppercase">Contas não classificadas</AlertTitle>
-                <AlertDescription className="text-[11px] space-y-2">
-                  <p>Existem {dreNovo.naoClassificadas.length} contas sem centro de resultado definido que impactam o resultado em {formatCurrency(dreNovo.totalNaoClassificado)}.</p>
-                  <Button variant="link" size="sm" className="h-auto p-0 text-[11px] font-bold" onClick={() => toast.info('Acesse o Plano de Contas para configurar os centros de resultado.')}>
-                    Como resolver?
-                  </Button>
-                </AlertDescription>
-              </Alert>
-            )}
+              <Card className={cn(
+                "border-none p-4 rounded-3xl relative overflow-hidden group/kpi",
+                dreNovo.lucroLiquido >= 0 ? "bg-success/20 shadow-lg shadow-success/10" : "bg-destructive/20 shadow-lg shadow-destructive/10"
+              )}>
+                <div className="absolute top-0 right-0 p-3 opacity-20 group-hover/kpi:scale-110 transition-transform">
+                  <Zap className="h-12 w-12" />
+                </div>
+                <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Lucro Líquido</p>
+                <p className="text-2xl font-black mt-2 font-mono tabular-nums">{formatCurrency(dreNovo.lucroLiquido)}</p>
+                <div className="flex items-center gap-1 mt-2">
+                  <span className="text-[10px] font-bold opacity-60 uppercase tracking-tighter">Margem Líquida: {((dreNovo.lucroLiquido / (dreNovo.receitaBruta || 1)) * 100).toFixed(1)}%</span>
+                </div>
+              </Card>
+            </div>
+
+            <div className="space-y-4">
+              <section className="bg-white/[0.02] rounded-3xl border border-white/5 overflow-hidden">
+                <div className="bg-white/5 px-6 py-4 border-b border-white/5 flex items-center justify-between">
+                  <h3 className="text-sm font-black uppercase tracking-widest opacity-80 flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4 text-success" /> (+) Receitas Operacionais
+                  </h3>
+                  <Badge variant="outline" className="font-mono text-[10px] border-success/20 bg-success/10 text-success">
+                    {formatCurrency(dreNovo.receitaBruta)}
+                  </Badge>
+                </div>
+                <div className="p-2">
+                  <AnimatePresence>
+                    {dreNovo.linhas.filter(l => l.tipo === 'receita' && l.nivel > 0).length === 0 ? (
+                      <div className="py-8 text-center opacity-40 text-xs font-bold uppercase tracking-widest">Nenhuma receita detalhada</div>
+                    ) : dreNovo.linhas.filter(l => l.tipo === 'receita' && l.nivel > 0).map((l, i) => (
+                      <motion.div 
+                        key={i}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/5 transition-colors group/row" 
+                        style={{ marginLeft: `${(l.nivel - 1) * 1.5}rem` }}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-1.5 h-1.5 rounded-full bg-success opacity-40" />
+                          <div className="flex flex-col">
+                            <span className="text-xs font-bold text-foreground/80">{l.descricao}</span>
+                            <span className="font-mono text-[9px] opacity-40 uppercase tracking-tighter">{l.codigo}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <span className="text-[10px] font-black opacity-30 tracking-tighter">{l.percentual.toFixed(1)}%</span>
+                          <span className="font-mono text-sm font-black tabular-nums text-success">{formatCurrency(l.valor)}</span>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </section>
+              
+              <section className="bg-white/[0.02] rounded-3xl border border-white/5 overflow-hidden">
+                <div className="bg-white/5 px-6 py-4 border-b border-white/5 flex items-center justify-between">
+                  <h3 className="text-sm font-black uppercase tracking-widest opacity-80 flex items-center gap-2">
+                    <TrendingDown className="h-4 w-4 text-destructive" /> (−) Custos e Despesas
+                  </h3>
+                  <Badge variant="outline" className="font-mono text-[10px] border-destructive/20 bg-destructive/10 text-destructive">
+                    {formatCurrency(dreNovo.receitaBruta - dreNovo.lucroLiquido)}
+                  </Badge>
+                </div>
+                <div className="p-2">
+                  <AnimatePresence>
+                    {dreNovo.linhas.filter(l => l.tipo === 'despesa').map((l, i) => (
+                      <motion.div 
+                        key={i}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/5 transition-colors group/row" 
+                        style={{ marginLeft: `${(l.nivel - 1) * 1.5}rem` }}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-1.5 h-1.5 rounded-full bg-destructive opacity-40" />
+                          <div className="flex flex-col">
+                            <span className="text-xs font-bold text-foreground/80">{l.descricao}</span>
+                            <span className="font-mono text-[9px] opacity-40 uppercase tracking-tighter">{l.codigo}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <span className="text-[10px] font-black opacity-30 tracking-tighter">{l.percentual.toFixed(1)}%</span>
+                          <span className="font-mono text-sm font-black tabular-nums text-destructive">{formatCurrency(l.valor)}</span>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </section>
+
+              {dreNovo.naoClassificadas.length > 0 && (
+                <Alert className="bg-warning/10 border-warning/20 rounded-3xl p-6">
+                  <AlertTriangle className="h-6 w-6 text-warning" />
+                  <div className="ml-4">
+                    <AlertTitle className="text-sm font-black uppercase tracking-widest text-warning">Divergência de Classificação</AlertTitle>
+                    <AlertDescription className="text-xs font-medium opacity-70 mt-1">
+                      Existem {dreNovo.naoClassificadas.length} contas sem centro de resultado definido impactando o lucro em {formatCurrency(dreNovo.totalNaoClassificado)}.
+                    </AlertDescription>
+                    <Button variant="link" size="sm" className="h-auto p-0 text-[10px] font-black uppercase tracking-widest text-warning mt-2 flex items-center gap-1">
+                      Corrigir no Plano de Contas <ChevronRight className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </Alert>
+              )}
+            </div>
           </div>
         ) : (
           <div className="space-y-4">
