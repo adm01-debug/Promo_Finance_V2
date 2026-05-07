@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { AlertTriangle, CheckCircle2, Download, FileArchive, Lock, FileText, ScrollText, Filter, X, Search, Link2, ChevronDown, ChevronRight, Hash, Unlock } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
