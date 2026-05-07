@@ -320,6 +320,8 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
                 </TooltipContent>
               </Tooltip>
             ) : (
+              <button
+                onClick={() => toggleGroup(group.id)}
                 className={cn(
                   'w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-700 group mt-4 first:mt-0',
                   hasActive
