@@ -132,38 +132,84 @@ export function PlanoContasTab({ empresaId }: Props) {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Buscar por código ou descrição..." value={busca} onChange={e => setBusca(e.target.value)} className="pl-10" />
+      <CardContent className="p-8 pt-2 relative z-10 space-y-8">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="relative flex-1 min-w-[320px] group/search">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within/search:text-primary" />
+            <Input 
+              placeholder="Buscar por código, descrição ou referencial..." 
+              value={busca} 
+              onChange={e => setBusca(e.target.value)} 
+              className="h-14 pl-12 bg-white/5 border-white/5 rounded-2xl font-bold text-lg transition-all focus:ring-primary/20 placeholder:text-muted-foreground/40" 
+            />
+          </div>
+          <div className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 bg-white/5 px-5 py-4 rounded-2xl border border-white/5">
+            {filtered.length} / {contas.length} registros
+          </div>
         </div>
+
         {isLoading ? (
-          <p className="text-sm text-muted-foreground">Carregando...</p>
+          <div className="flex items-center justify-center py-20 text-muted-foreground animate-pulse">
+            <Wand2 className="h-8 w-8 animate-spin mr-3 opacity-20" /> 
+            <span className="font-black uppercase tracking-widest text-xs">Mapeando estrutura...</span>
+          </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-32">Código</TableHead>
-                <TableHead>Descrição</TableHead>
-                <TableHead>Natureza</TableHead>
-                <TableHead>Tipo</TableHead>
-                <TableHead>Cód. referencial</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.slice(0, 200).map(c => (
-                <TableRow key={c.id}>
-                  <TableCell className="font-mono">{c.codigo}</TableCell>
-                  <TableCell>{c.descricao}</TableCell>
-                  <TableCell><Badge variant="outline">{c.natureza}</Badge></TableCell>
-                  <TableCell>{c.tipo}</TableCell>
-                  <TableCell className="font-mono text-xs">{c.codigo_referencial || <span className="text-muted-foreground">—</span>}</TableCell>
+          <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-white/[0.01] shadow-inner">
+            <Table>
+              <TableHeader className="bg-white/5">
+                <TableRow className="border-white/5 hover:bg-transparent">
+                  <TableHead className="w-40 text-[10px] font-black uppercase tracking-widest p-6">Código</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest">Descrição</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest">Natureza</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest">Tipo</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest">Cód. Referencial</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                <AnimatePresence>
+                  {filtered.slice(0, 200).map((c, idx) => (
+                    <motion.tr 
+                      key={c.id}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.005 }}
+                      className="border-white/5 hover:bg-white/5 transition-colors group/row"
+                    >
+                      <TableCell className="p-6">
+                        <Badge variant="outline" className="font-mono font-black text-xs border-none bg-primary/10 text-primary px-3 py-1 rounded-lg">
+                          {c.codigo}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="font-bold text-foreground/80">{c.descricao}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={cn(
+                          "uppercase text-[10px] font-black tracking-widest border-none px-3 rounded-full",
+                          c.natureza === 'ativo' ? "bg-success/20 text-success" : 
+                          c.natureza === 'passivo' ? "bg-destructive/20 text-destructive" :
+                          "bg-primary/20 text-primary"
+                        )}>
+                          {c.natureza}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <span className={cn(
+                          "text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full",
+                          c.tipo === 'analitica' ? "bg-purple-500/10 text-purple-400" : "bg-blue-500/10 text-blue-400"
+                        )}>
+                          {c.tipo}
+                        </span>
+                      </TableCell>
+                      <TableCell className="font-mono text-xs opacity-60 font-black tracking-tighter">
+                        {c.codigo_referencial || <span className="opacity-20">—</span>}
+                      </TableCell>
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
+              </TableBody>
+            </Table>
+          </div>
         )}
-        {filtered.length > 200 && <p className="text-xs text-muted-foreground">Exibindo 200 de {filtered.length} contas. Refine a busca.</p>}
+        {filtered.length > 200 && <p className="text-[10px] font-black uppercase tracking-widest opacity-40 text-center mt-4">Exibindo 200 de {filtered.length} contas. Refine a busca para ver mais.</p>}
       </CardContent>
 
       <Dialog open={auditOpen} onOpenChange={setAuditOpen}>
