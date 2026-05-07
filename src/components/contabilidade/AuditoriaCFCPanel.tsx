@@ -11,7 +11,12 @@ import {
   FileSpreadsheet,
   Loader2,
   Sparkles,
+  ChevronDown,
+  ChevronRight,
+  ShieldAlert,
+  Zap,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,6 +27,7 @@ import { cn } from '@/lib/utils';
 import type { AuditoriaCFCResult } from '@/hooks/useAuditoriaCFC';
 import type { EmpresaHeader } from '@/lib/export-contabil';
 import { exportAuditoriaCFCCSV, exportAuditoriaCFCPDF } from '@/lib/export-contabil';
+import { toast } from 'sonner';
 
 interface Props {
   resultado: AuditoriaCFCResult;
@@ -32,10 +38,10 @@ interface Props {
 }
 
 function scoreColor(score: number) {
-  if (score >= 95) return { tone: 'text-success', bg: 'bg-success/10', border: 'border-success/40', label: 'Excelente' };
-  if (score >= 80) return { tone: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/40', label: 'Bom' };
-  if (score >= 60) return { tone: 'text-warning', bg: 'bg-warning/10', border: 'border-warning/40', label: 'Atenção' };
-  return { tone: 'text-destructive', bg: 'bg-destructive/10', border: 'border-destructive/40', label: 'Crítico' };
+  if (score >= 95) return { tone: 'text-success', bg: 'bg-success/10', border: 'border-success/20', label: 'Excelente', shadow: 'shadow-success/20' };
+  if (score >= 80) return { tone: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/20', label: 'Bom', shadow: 'shadow-primary/20' };
+  if (score >= 60) return { tone: 'text-warning', bg: 'bg-warning/10', border: 'border-warning/20', label: 'Atenção', shadow: 'shadow-warning/20' };
+  return { tone: 'text-destructive', bg: 'bg-destructive/10', border: 'border-destructive/20', label: 'Crítico', shadow: 'shadow-destructive/20' };
 }
 
 export function AuditoriaCFCPanel({ resultado, empresa, className, compact = false }: Props) {
@@ -56,10 +62,12 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
 
   const copy = (s: string) => {
     navigator.clipboard.writeText(s);
+    toast.success('Código copiado', { description: s });
   };
 
   return (
-    <Card className={className}>
+    <Card className={cn("border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2rem] overflow-hidden ring-1 ring-white/10 relative group", className)}>
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
       <CardHeader className="pb-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -95,14 +103,17 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
       </CardHeader>
       <CardContent className="space-y-4">
         {/* KPI de score + totais */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          <div className={cn('rounded-lg border p-4 col-span-2 sm:col-span-1', score.bg, score.border)}>
-            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Score</p>
-            <p className={cn('text-3xl font-bold font-mono', score.tone)}>{resultado.scoreConformidade}</p>
-            <Badge variant="outline" className={cn('mt-1 text-[10px]', score.tone, score.border)}>
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+          <motion.div 
+            whileHover={{ scale: 1.05 }}
+            className={cn('rounded-[1.5rem] border p-5 col-span-2 sm:col-span-1 shadow-lg backdrop-blur-md transition-all', score.bg, score.border, score.shadow)}
+          >
+            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground opacity-60 mb-1">Score</p>
+            <p className={cn('text-4xl font-black font-mono tracking-tighter', score.tone)}>{resultado.scoreConformidade}</p>
+            <Badge variant="outline" className={cn('mt-2 text-[10px] font-black uppercase border-none bg-current/10', score.tone)}>
               {score.label}
             </Badge>
-          </div>
+          </motion.div>
           <KPI label="Contas ativas" value={resultado.totalContas} />
           <KPI label="Analíticas" value={resultado.totalAnaliticas} />
           <KPI
