@@ -30,48 +30,59 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
     'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
   return (
-    <Card className="border-none bg-background/40 backdrop-blur-xl shadow-2xl rounded-3xl overflow-hidden ring-1 ring-white/10">
-      <CardHeader className="p-8 pb-4">
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <CardTitle className="text-3xl font-bold tracking-tight flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-primary/10 text-primary">
-                <TrendingUp className="h-6 w-6" />
+    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative">
+      {/* Decorative gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5 pointer-events-none" />
+      
+      <CardHeader className="p-10 pb-6 relative z-10">
+        <div className="flex items-center justify-between flex-wrap gap-8">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-2xl bg-primary shadow-[0_0_20px_rgba(var(--primary),0.3)] text-primary-foreground">
+                <TrendingUp className="h-7 w-7" />
               </div>
-              Demonstração do Resultado
-            </CardTitle>
-            <CardDescription className="text-lg mt-1">
-              Análise de performance para {meses[mes]} de {ano}
-            </CardDescription>
+              <div>
+                <CardTitle className="text-4xl font-black tracking-tight">
+                  Demonstração do Resultado
+                </CardTitle>
+                <CardDescription className="text-lg font-medium opacity-70">
+                  Performance Financeira Analítica • {meses[mes]} {ano}
+                </CardDescription>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-3 flex-wrap bg-muted/30 p-2 rounded-2xl border border-border/50">
-            <Badge variant="outline" className="text-xs font-semibold py-1 px-3 rounded-lg border-primary/20 bg-primary/5 text-primary">
-              Regime: {origem === 'competencia' ? 'Competência' : 'Caixa'}
-            </Badge>
-            {temNaoClass && origem === 'competencia' && (
-              <Badge variant="outline" className="text-xs border-warning/40 text-warning gap-1.5 py-1 px-3 rounded-lg bg-warning/5">
-                <AlertTriangle className="h-3.5 w-3.5" />
-                {naoClassificadas.length} pendentes
+          
+          <div className="flex items-center gap-4 flex-wrap bg-white/5 p-2.5 rounded-[2rem] border border-white/10 backdrop-blur-md shadow-inner">
+            <div className="flex items-center gap-3 px-6 py-2 rounded-[1.5rem] bg-white/5 border border-white/10">
+              <span className="text-xs font-bold uppercase tracking-widest opacity-50">Regime</span>
+              <Badge variant="outline" className="text-[10px] font-black py-0.5 px-2 rounded-md border-primary/40 bg-primary/10 text-primary uppercase">
+                {origem === 'competencia' ? 'Competência' : 'Caixa'}
               </Badge>
-            )}
+            </div>
+
             <div className={cn(
-              "flex items-center gap-2 px-4 py-1.5 rounded-xl font-bold text-sm shadow-sm",
-              dre.lucroLiquido >= 0 ? "bg-success/10 text-success border border-success/20" : "bg-destructive/10 text-destructive border border-destructive/20"
+              "flex flex-col px-8 py-2 rounded-[1.5rem] border transition-all duration-500 shadow-lg",
+              dre.lucroLiquido >= 0 
+                ? "bg-success/10 border-success/20 text-success shadow-success/5" 
+                : "bg-destructive/10 border-destructive/20 text-destructive shadow-destructive/5"
             )}>
-              <span className="opacity-70 font-medium">{dre.lucroLiquido >= 0 ? 'Lucro Líquido' : 'Prejuízo'}:</span>
-              {formatCurrency(Math.abs(dre.lucroLiquido))}
+              <span className="text-[10px] font-black uppercase tracking-widest opacity-70 mb-0.5">
+                {dre.lucroLiquido >= 0 ? 'Resultado Líquido (Lucro)' : 'Resultado Líquido (Prejuízo)'}
+              </span>
+              <span className="text-2xl font-black tabular-nums tracking-tighter">
+                {formatCurrency(Math.abs(dre.lucroLiquido))}
+              </span>
             </div>
             
-            <div className="flex items-center gap-2 ml-2">
+            <div className="flex items-center gap-2 pl-2">
               {temNaoClass && origem === 'competencia' && (
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="icon"
                   onClick={() => setNaoClassOpen(true)}
-                  className="h-9 gap-2 text-warning hover:bg-warning/10 rounded-lg px-4"
+                  className="h-12 w-12 text-warning hover:bg-warning/10 rounded-2xl transition-transform hover:scale-105"
                 >
-                  <Settings2 className="h-4 w-4" />
-                  Classificar
+                  <Settings2 className="h-6 w-6" />
                 </Button>
               )}
               <ExportDemonstrativoPDF
@@ -88,85 +99,133 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-8 pt-0">
+
+      <CardContent className="p-10 pt-2 relative z-10">
         {temNaoClass && origem === 'competencia' && (
-          <Alert className="mb-6 border-warning/20 bg-warning/5 rounded-2xl p-4">
-            <AlertTriangle className="h-5 w-5 text-warning" />
-            <AlertDescription className="text-sm flex items-center justify-between gap-4 flex-wrap ml-2">
-              <span className="text-muted-foreground">
-                <strong className="text-warning">{naoClassificadas.length} contas</strong> pendentes de classificação no período.
-              </span>
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 overflow-hidden rounded-[2rem] border border-warning/20 bg-warning/5 p-6 backdrop-blur-sm"
+          >
+            <div className="flex items-center justify-between gap-6 flex-wrap">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-warning/20 text-warning">
+                  <AlertTriangle className="h-6 w-6" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-warning">Contas Pendentes</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Existem <strong className="text-warning">{naoClassificadas.length} contas</strong> aguardando classificação para maior precisão.
+                  </p>
+                </div>
+              </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setNaoClassOpen(true)}
-                className="bg-warning/10 border-warning/20 text-warning hover:bg-warning/20 rounded-xl"
+                className="bg-warning/10 border-warning/20 text-warning hover:bg-warning/20 rounded-xl px-6 h-10 font-bold"
               >
-                Revisar agora
+                Revisar Classificações
               </Button>
-            </AlertDescription>
-          </Alert>
+            </div>
+          </motion.div>
         )}
+
         {isLoading ? (
-          <Skeleton className="h-96 w-full rounded-3xl" />
+          <div className="space-y-4">
+            <Skeleton className="h-20 w-full rounded-2xl bg-white/5" />
+            <Skeleton className="h-96 w-full rounded-2xl bg-white/5" />
+          </div>
         ) : (
-          <div className="rounded-2xl border border-border/50 overflow-hidden bg-muted/10">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-muted/30">
-                  <th className="text-left p-4 font-bold text-xs uppercase tracking-wider text-muted-foreground">Código</th>
-                  <th className="text-left p-4 font-bold text-xs uppercase tracking-wider text-muted-foreground">Descrição</th>
-                  <th className="text-right p-4 font-bold text-xs uppercase tracking-wider text-muted-foreground">Valor</th>
-                  <th className="text-right p-4 font-bold text-xs uppercase tracking-wider text-muted-foreground">AV</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dre.linhas.map((linha, index) => (
-                  <motion.tr
-                    key={linha.codigo}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ 
-                      delay: index * 0.02,
-                      duration: 0.4,
-                      ease: [0.25, 0.1, 0.25, 1]
-                    }}
-                    className={`
-                      border-t border-border/40 transition-all duration-300 hover:bg-primary/5
-                      ${linha.nivel === 0 ? 'font-bold bg-muted/20' : ''}
-                      ${linha.codigo === '11' ? 'bg-primary/5 font-extrabold' : ''}
-                      ${linha.codigo === '99' ? 'bg-warning/5 font-semibold border-l-4 border-l-warning' : ''}
-                    `}
-                  >
-                    <td className="p-4 text-xs font-mono text-muted-foreground opacity-60">{linha.codigo}</td>
-                    <td className={`p-4 text-sm ${linha.nivel === 1 ? 'pl-10' : ''}`}>
-                      {linha.descricao}
-                    </td>
-                    <td className={`p-4 text-sm text-right tabular-nums font-medium ${
-                      linha.valor > 0 ? 'text-success' : linha.valor < 0 ? 'text-destructive' : ''
-                    }`}>
-                      <span className="flex items-center justify-end gap-1.5">
-                        {formatCurrency(Math.abs(linha.valor))}
-                        {linha.valor > 0 && linha.tipo !== 'resultado' && (
-                          <TrendingUp className="h-3.5 w-3.5 opacity-50" />
-                        )}
-                        {linha.valor < 0 && (
-                          <TrendingDown className="h-3.5 w-3.5 opacity-50" />
-                        )}
-                      </span>
-                    </td>
-                    <td className="p-4 text-xs text-right tabular-nums font-semibold text-muted-foreground">
-                      {linha.percentual.toFixed(1)}%
-                    </td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-black/20 shadow-2xl">
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="bg-white/[0.02] border-b border-white/5">
+                    <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Ref.</th>
+                    <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Descrição Detalhada</th>
+                    <th className="text-right p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Valor Realizado</th>
+                    <th className="text-right p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Análise (AV)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {dre.linhas.map((linha, index) => (
+                    <motion.tr
+                      key={linha.codigo}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ 
+                        delay: index * 0.01,
+                        duration: 0.5,
+                        ease: [0.23, 1, 0.32, 1]
+                      }}
+                      className={cn(
+                        "group transition-all duration-300 hover:bg-white/[0.03]",
+                        linha.nivel === 0 ? "bg-white/[0.02] font-black" : "font-medium",
+                        linha.codigo === '11' ? "bg-primary/5 border-l-4 border-l-primary" : "",
+                        linha.codigo === '99' ? "bg-warning/5 border-l-4 border-l-warning" : ""
+                      )}
+                    >
+                      <td className="p-6 text-[11px] font-mono text-muted-foreground/40 group-hover:text-primary transition-colors">
+                        {linha.codigo}
+                      </td>
+                      <td className={cn(
+                        "p-6 text-sm tracking-tight transition-all",
+                        linha.nivel === 1 ? "pl-14 opacity-80" : "text-base",
+                        linha.nivel === 0 ? "text-foreground" : "text-muted-foreground"
+                      )}>
+                        {linha.descricao}
+                      </td>
+                      <td className={cn(
+                        "p-6 text-right tabular-nums font-bold text-base",
+                        linha.valor > 0 ? "text-success" : linha.valor < 0 ? "text-destructive" : "text-muted-foreground"
+                      )}>
+                        <div className="flex items-center justify-end gap-3">
+                          {formatCurrency(Math.abs(linha.valor))}
+                          {linha.valor !== 0 && (
+                            <div className={cn(
+                              "p-1 rounded-md bg-current/10 transition-transform group-hover:scale-110",
+                              linha.valor > 0 ? "text-success" : "text-destructive"
+                            )}>
+                              {linha.valor > 0 ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="p-6 text-right">
+                        <div className="flex items-center justify-end gap-3">
+                          <div className="w-16 h-1.5 rounded-full bg-white/5 overflow-hidden">
+                            <motion.div 
+                              initial={{ width: 0 }}
+                              animate={{ width: `${Math.min(linha.percentual, 100)}%` }}
+                              transition={{ duration: 1, delay: 0.5 + index * 0.01 }}
+                              className={cn(
+                                "h-full rounded-full",
+                                linha.valor >= 0 ? "bg-primary" : "bg-destructive"
+                              )}
+                            />
+                          </div>
+                          <span className="text-xs font-black tabular-nums text-muted-foreground/60 w-10">
+                            {linha.percentual.toFixed(1)}%
+                          </span>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
-        <div className="mt-4 text-xs text-muted-foreground">
-          <p>AV = Análise Vertical (% sobre Receita Bruta) — {origem === 'competencia' ? 'valores apurados a partir das partidas contábeis' : 'valores estimados a partir de contas pagas/recebidas no período'}.</p>
+        <div className="mt-8 flex items-center gap-3 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+          <div className="p-2 rounded-lg bg-white/5">
+            <Settings2 className="h-4 w-4 text-muted-foreground" />
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            <strong className="text-foreground">Nota Metodológica:</strong> AV (Análise Vertical) representa o peso relativo de cada linha sobre a Receita Bruta. 
+            {origem === 'competencia' ? ' Dados baseados em lançamentos contábeis oficiais.' : ' Valores estimados via fluxo de caixa operacional.'}
+          </p>
         </div>
       </CardContent>
 
