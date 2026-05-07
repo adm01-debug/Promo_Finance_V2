@@ -140,9 +140,14 @@ export function LancamentosTab({ empresaId, ano }: Props) {
                   Novo Lançamento
                 </Button>
               </DialogTrigger>
-            <DialogContent className="max-w-3xl">
-              <DialogHeader><DialogTitle>Novo lançamento contábil</DialogTitle></DialogHeader>
-              <div className="space-y-4">
+            <DialogContent className="max-w-3xl border-none bg-background/95 backdrop-blur-2xl shadow-3xl rounded-[2.5rem] p-8 overflow-hidden">
+              <DialogHeader className="mb-6">
+                <DialogTitle className="text-2xl font-black tracking-tight flex items-center gap-3">
+                  <Plus className="h-6 w-6 text-primary" />
+                  Novo Lançamento Contábil
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div><Label>Data</Label><Input type="date" value={data} onChange={e => setData(e.target.value)} /></div>
                 </div>
