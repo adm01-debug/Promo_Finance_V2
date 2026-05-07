@@ -68,34 +68,41 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
   return (
     <Card className={cn("border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2rem] overflow-hidden ring-1 ring-white/10 relative group", className)}>
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-      <CardHeader className="pb-3">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <ShieldCheck className={cn('h-5 w-5', score.tone)} />
-              Auditoria CFC do Plano de Contas
-            </CardTitle>
-            <CardDescription>
-              Validação de formato, prefixo por natureza e duplicidades dos códigos referenciais usados no SPED.
-            </CardDescription>
+      <CardHeader className="p-8 pb-4">
+        <div className="flex flex-wrap items-start justify-between gap-6">
+          <div className="flex items-center gap-5">
+            <div className={cn("p-4 rounded-2xl shadow-xl transform group-hover:scale-110 transition-all duration-500", score.bg, score.tone)}>
+              <ShieldCheck className="h-8 w-8" />
+            </div>
+            <div>
+              <CardTitle className="text-2xl font-black tracking-tight flex items-center gap-2">
+                Auditoria CFC
+                {tudoOk && <Zap className="h-5 w-5 text-yellow-400 fill-yellow-400 animate-pulse" />}
+              </CardTitle>
+              <CardDescription className="text-sm font-medium opacity-60">
+                Governança de códigos referenciais para conformidade SPED
+              </CardDescription>
+            </div>
           </div>
           {!compact && (
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <Button
                 size="sm"
                 variant="outline"
+                className="rounded-xl font-bold gap-2 border-white/10 bg-white/5 hover:bg-white/10"
                 onClick={() => exportAuditoriaCFCCSV(resultado, empresa)}
                 disabled={tudoOk}
               >
-                <FileSpreadsheet className="h-4 w-4 mr-1" /> CSV
+                <FileSpreadsheet className="h-4 w-4 text-success" /> CSV
               </Button>
               <Button
                 size="sm"
                 variant="outline"
+                className="rounded-xl font-bold gap-2 border-white/10 bg-white/5 hover:bg-white/10"
                 onClick={() => exportAuditoriaCFCPDF(resultado, empresa)}
                 disabled={tudoOk}
               >
-                <FileText className="h-4 w-4 mr-1" /> PDF
+                <FileText className="h-4 w-4 text-destructive" /> PDF
               </Button>
             </div>
           )}
