@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { Download, FileArchive, AlertTriangle, CheckCircle2, XCircle, ShieldAlert, Search, X, FileJson, FileText, FileDown } from 'lucide-react';
+import { useMemo, useState, useEffect } from 'react';
+import { Download, FileArchive, AlertTriangle, CheckCircle2, XCircle, ShieldAlert, Search, X, FileJson, FileText, FileDown, ChevronRight, ChevronDown } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import {
@@ -10,6 +10,7 @@ import {
 } from '@/lib/pdf-layout';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { agruparValidacoes, type ValidacoesAgrupadas } from '@/lib/sped-validacoes-categorias';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -61,6 +62,7 @@ interface Props {
 
 export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloadTxt, onDownloadZip }: Props) {
   const [busca, setBusca] = useState('');
+  const [expandedCats, setExpandedCats] = useState<Set<string>>(new Set());
 
   const erros = arquivo?.validacoes?.erros ?? [];
   const avisos = arquivo?.validacoes?.avisos ?? [];
@@ -335,104 +337,88 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
           </Alert>
         )}
 
-        <Tabs defaultValue={erros.length > 0 ? 'erros' : 'avisos'}>
-          <div className="flex items-center justify-between mb-2 gap-4">
-            <TabsList className="grid grid-cols-2 flex-1">
-              <TabsTrigger value="erros" className="gap-1.5">
-                <XCircle className="h-3.5 w-3.5" />
-                Erros
-                <Badge variant={erros.length > 0 ? 'destructive' : 'outline'} className="ml-1">
-                  {erros.length}
-                </Badge>
-              </TabsTrigger>
-              <TabsTrigger value="avisos" className="gap-1.5">
-                <AlertTriangle className="h-3.5 w-3.5" />
-                Avisos
-                <Badge variant="outline" className="ml-1">
-                  {avisos.length}
-                </Badge>
-              </TabsTrigger>
-            </TabsList>
-
-          {(erros.length > 0 || avisos.length > 0) && (
-            <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-              <Input
-                data-testid="input-busca-validacoes"
-                value={busca}
-                onChange={(e) => setBusca(e.target.value)}
-                placeholder="Buscar nos erros e avisos..."
-                className="h-8 pl-8 pr-8 text-xs"
-              />
-              {busca && (
-                <button
-                  type="button"
-                  onClick={() => setBusca('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  aria-label="Limpar busca"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              )}
-            </div>
-          )}
+        <div className="flex items-center justify-between mb-2 gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+            <Input
+              data-testid="input-busca-validacoes"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar nos erros e avisos..."
+              className="h-9 pl-9 pr-9 text-xs"
+            />
+            {busca && (
+              <button
+                type="button"
+                onClick={() => setBusca('')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                aria-label="Limpar busca"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
         </div>
 
-          <TabsContent value="erros">
-            {erros.length === 0 ? (
-              <div className="flex items-center gap-2 text-sm text-success p-4 justify-center">
-                <CheckCircle2 className="h-4 w-4" /> Nenhum erro encontrado
-              </div>
-            ) : errosFiltrados.length === 0 ? (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground p-4 justify-center">
-                <Search className="h-4 w-4" /> Nenhum erro corresponde a "{busca}"
-              </div>
-            ) : (
-              <>
-                {termo && (
-                  <p className="text-[11px] text-muted-foreground px-1 pb-1">
-                    {errosFiltrados.length} de {erros.length} erro(s)
-                  </p>
-                )}
-                <ScrollArea className="max-h-72 border rounded-md p-3">
-                  <ol data-testid="lista-erros" className="space-y-2 text-xs font-mono list-decimal list-inside">
-                    {errosFiltrados.map((e, i) => (
-                      <li key={i} className="text-destructive">
-                        {e}
-                      </li>
-                    ))}
-                  </ol>
-                </ScrollArea>
-              </>
-            )}
-          </TabsContent>
-
-          <TabsContent value="avisos">
-            {avisos.length === 0 ? (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground p-4 justify-center">
-                <CheckCircle2 className="h-4 w-4" /> Nenhum aviso
-              </div>
-            ) : avisosFiltrados.length === 0 ? (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground p-4 justify-center">
-                <Search className="h-4 w-4" /> Nenhum aviso corresponde a "{busca}"
-              </div>
-            ) : (
-              <>
-                {termo && (
-                  <p className="text-[11px] text-muted-foreground px-1 pb-1">
-                    {avisosFiltrados.length} de {avisos.length} aviso(s)
-                  </p>
-                )}
-                <ScrollArea className="max-h-72 border rounded-md p-3">
-                  <ol data-testid="lista-avisos" className="space-y-2 text-xs font-mono list-decimal list-inside">
-                    {avisosFiltrados.map((a, i) => (
-                      <li key={i} className="text-warning">
-                        {a}
-                      </li>
-                    ))}
-                  </ol>
-                </ScrollArea>
-              </>
+        <ScrollArea className="max-h-[50vh] pr-4">
+          {agrupados.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
+              <CheckCircle2 className="h-10 w-10 text-success/20 mb-3" />
+              <p className="text-sm font-medium">Nenhuma validação pendente</p>
+              {busca && <p className="text-xs">Nenhum item corresponde a "{busca}"</p>}
+            </div>
+          ) : (
+            <div className="space-y-4 pb-4">
+              {agrupados.map(({ categoria, erros: catErros, avisos: catAvisos, total }) => {
+                const isOpen = expandedCats.has(categoria.id);
+                return (
+                  <div key={categoria.id} className="border rounded-xl overflow-hidden bg-card/50">
+                    <button
+                      onClick={() => toggleCategoria(categoria.id)}
+                      className="w-full flex items-center justify-between p-3 hover:bg-muted/50 transition-colors text-left"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={cn(
+                          "p-2 rounded-lg",
+                          catErros.length > 0 ? "bg-destructive/10 text-destructive" : "bg-warning/10 text-warning"
+                        )}>
+                          {catErros.length > 0 ? <XCircle className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
+                        </div>
+                        <div>
+                          <div className="text-sm font-bold flex items-center gap-2">
+                            {categoria.label}
+                            <Badge variant="secondary" className="text-[10px] h-4.5 px-1.5 font-bold">
+                              {total}
+                            </Badge>
+                          </div>
+                          <p className="text-[10px] text-muted-foreground">{categoria.description}</p>
+                        </div>
+                      </div>
+                      {isOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+                    </button>
+                    
+                    {isOpen && (
+                      <div className="p-3 pt-0 space-y-2">
+                        {catErros.map((e, i) => (
+                          <div key={`e-${i}`} className="flex gap-2 text-xs font-mono p-2 rounded bg-destructive/5 text-destructive border border-destructive/10">
+                            <span className="shrink-0 opacity-50">•</span>
+                            <span>{e}</span>
+                          </div>
+                        ))}
+                        {catAvisos.map((a, i) => (
+                          <div key={`a-${i}`} className="flex gap-2 text-xs font-mono p-2 rounded bg-warning/5 text-warning border border-warning/10">
+                            <span className="shrink-0 opacity-50">•</span>
+                            <span>{a}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </ScrollArea>
             )}
           </TabsContent>
         </Tabs>
