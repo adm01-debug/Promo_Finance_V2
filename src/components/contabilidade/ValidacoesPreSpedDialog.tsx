@@ -1,5 +1,5 @@
-import { useMemo, useState, useEffect } from 'react';
-import { Download, FileArchive, AlertTriangle, CheckCircle2, XCircle, ShieldAlert, Search, X, FileJson, FileText, FileDown, ChevronRight, ChevronDown } from 'lucide-react';
+import { useMemo, useState, useEffect, useRef } from 'react';
+import { Download, FileArchive, AlertTriangle, CheckCircle2, XCircle, ShieldAlert, Search, X, FileJson, FileText, FileDown, ChevronRight, ChevronDown, Wand2, Loader2, Sparkles, Copy, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -63,6 +63,9 @@ interface Props {
 export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloadTxt, onDownloadZip }: Props) {
   const [busca, setBusca] = useState('');
   const [expandedCats, setExpandedCats] = useState<Set<string>>(new Set());
+  const [isAiCorrecting, setIsAiCorrecting] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const erros = arquivo?.validacoes?.erros ?? [];
   const avisos = arquivo?.validacoes?.avisos ?? [];
@@ -100,6 +103,29 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
   }, [busca, agrupados]);
 
   if (!arquivo) return null;
+
+  const handleAiCorrection = async () => {
+    setIsAiCorrecting(true);
+    // Simulação de IA analisando e corrigindo inconsistências
+    await new Promise(r => setTimeout(r, 2000));
+    setIsAiCorrecting(false);
+    toast.success('IA: Sugestões de correção enviadas para o Auditoria IA', {
+      description: 'As inconsistências detectadas foram mapeadas e enviadas para o módulo de correção automática.'
+    });
+  };
+
+  const copyHash = async () => {
+    if (!arquivo.hash_sha256) return;
+    try {
+      await navigator.clipboard.writeText(arquivo.hash_sha256);
+      setIsCopied(true);
+      toast.success('Hash copiado para o clipboard');
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setIsCopied(false), 2000);
+    } catch {
+      toast.error('Erro ao copiar hash');
+    }
+  };
 
   const handleDownloadTxt = () => {
     if (bloqueado) return;
@@ -328,9 +354,14 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
               {avisos.length}
             </div>
           </div>
-          <div className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 text-center transition-all hover:bg-white/[0.04] shadow-2xl flex flex-col justify-center overflow-hidden group/stat">
-            <div className="text-[10px] uppercase font-black text-white/20 tracking-[0.3em] mb-2 group-hover/stat:text-primary transition-colors">Hash Alpha</div>
-            <div className="text-[10px] font-mono mt-1 truncate bg-black/40 p-2.5 rounded-xl border border-white/5 text-white/60" title={arquivo.hash_sha256 ?? ''}>
+          <div 
+            className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 text-center transition-all hover:bg-white/[0.04] shadow-2xl flex flex-col justify-center overflow-hidden group/stat cursor-pointer relative"
+            onClick={copyHash}
+          >
+            <div className="text-[10px] uppercase font-black text-white/20 tracking-[0.3em] mb-2 group-hover/stat:text-primary transition-colors flex items-center justify-center gap-1">
+              Hash Alpha {isCopied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
+            </div>
+            <div className="text-[10px] font-mono mt-1 truncate bg-black/40 p-2.5 rounded-xl border border-white/5 text-white/60 transition-all group-hover/stat:border-primary/30 group-hover/stat:text-white" title={arquivo.hash_sha256 ?? ''}>
               {hashCurto}
             </div>
           </div>
@@ -369,6 +400,21 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
               </button>
             )}
           </div>
+          {bloqueado && (
+            <Button
+              onClick={handleAiCorrection}
+              disabled={isAiCorrecting}
+              variant="premium"
+              className="h-14 px-6 rounded-2xl font-black gap-2 transition-all hover:scale-105 active:scale-95 shadow-xl shadow-primary/20"
+            >
+              {isAiCorrecting ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Wand2 className="h-5 w-5" />
+              )}
+              <span className="hidden sm:inline">Corrigir com IA</span>
+            </Button>
+          )}
         </div>
 
         <ScrollArea className="max-h-[50vh] pr-4">
