@@ -508,7 +508,7 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
                 </TableRow>
               </TableFooter>
             </Table>
-          )
+          </div>
         ) : razao.length === 0 ? (
           <p className="py-12 text-center text-sm text-muted-foreground">Nenhuma conta com movimento no período.</p>
         ) : (
