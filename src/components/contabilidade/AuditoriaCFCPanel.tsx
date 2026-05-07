@@ -366,44 +366,47 @@ function ProblemKPI({
   icon: Icon,
   label,
   value,
+  description,
   critical,
 }: {
-  icon: typeof AlertCircle;
+  icon: any;
   label: string;
   value: number;
+  description?: string;
   critical?: boolean;
 }) {
   const ok = value === 0;
   return (
     <motion.div
-      whileHover={{ scale: 1.02 }}
+      whileHover={{ scale: 1.02, y: -2 }}
       className={cn(
-        'rounded-2xl border px-4 py-3 flex items-center gap-4 transition-all shadow-lg backdrop-blur-md',
+        'rounded-[1.5rem] border p-6 flex items-center gap-5 transition-all shadow-xl backdrop-blur-md relative overflow-hidden group',
         ok && 'border-success/20 bg-success/5 shadow-success/10',
         !ok && critical && 'border-destructive/20 bg-destructive/5 shadow-destructive/10',
         !ok && !critical && 'border-warning/20 bg-warning/5 shadow-warning/10',
       )}
     >
       <div className={cn(
-        'p-2.5 rounded-xl transition-all',
-        ok && 'bg-success/10 text-success',
-        !ok && critical && 'bg-destructive/10 text-destructive',
-        !ok && !critical && 'bg-warning/10 text-warning',
+        'p-3.5 rounded-2xl transition-all shadow-lg transform group-hover:rotate-12',
+        ok && 'bg-success/20 text-success',
+        !ok && critical && 'bg-destructive/20 text-destructive',
+        !ok && !critical && 'bg-warning/20 text-warning',
       )}>
-        <Icon className="h-5 w-5 shrink-0" />
+        <Icon className="h-6 w-6 shrink-0" />
       </div>
       <div>
-        <p className="text-[9px] uppercase font-black tracking-[0.2em] text-muted-foreground opacity-60 mb-0.5">{label}</p>
-        <p
-          className={cn(
-            'font-mono font-black text-xl tracking-tighter tabular-nums',
+        <p className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground opacity-40 mb-0.5">{label}</p>
+        <div className="flex items-baseline gap-2">
+          <p className={cn(
+            'font-mono font-black text-2xl tracking-tighter tabular-nums',
             ok && 'text-success',
             !ok && critical && 'text-destructive',
             !ok && !critical && 'text-warning',
-          )}
-        >
-          {value.toLocaleString('pt-BR')}
-        </p>
+          )}>
+            {value.toLocaleString('pt-BR')}
+          </p>
+          {description && <span className="text-[9px] font-bold opacity-30 uppercase">{description}</span>}
+        </div>
       </div>
     </motion.div>
   );
