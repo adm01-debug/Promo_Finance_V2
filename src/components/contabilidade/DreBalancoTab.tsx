@@ -231,24 +231,40 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
 
   if (!empresaId) {
     return (
-      <Card>
-        <CardContent className="py-12 text-center text-sm text-muted-foreground">
-          Selecione uma empresa para visualizar a DRE e o Balanço.
+      <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group p-12">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
+        <CardContent className="relative z-10 text-center space-y-4">
+          <div className="p-4 bg-primary/10 rounded-3xl w-fit mx-auto animate-pulse">
+            <PieChart className="h-12 w-12 text-primary opacity-40" />
+          </div>
+          <div className="space-y-2">
+            <p className="text-xl font-black tracking-tight">DRE & Balanço</p>
+            <p className="text-sm font-medium opacity-60 max-w-xs mx-auto">Selecione uma empresa para visualizar as demonstrações financeiras e patrimoniais.</p>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          {modo === 'dre' ? <BarChart3 className="h-5 w-5 text-primary" /> : <Scale className="h-5 w-5 text-primary" />}
-          DRE & Balanço Patrimonial
-        </CardTitle>
-        <CardDescription className="text-xs">Visualize e exporte as demonstrações contábeis do período.</CardDescription>
+    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+      <CardHeader className="p-8 pb-4 relative z-10">
+        <div className="flex flex-wrap items-center justify-between gap-6">
+          <div className="flex items-center gap-5">
+            <div className={cn("p-4 rounded-2xl bg-primary shadow-xl shadow-primary/20 text-primary-foreground transform group-hover:scale-110 transition-all duration-500")}>
+              {modo === 'dre' ? <BarChart3 className="h-8 w-8" /> : <Scale className="h-8 w-8" />}
+            </div>
+            <div>
+              <CardTitle className="text-3xl font-black tracking-tighter">
+                {modo === 'dre' ? 'Demonstração de Resultado' : 'Balanço Patrimonial'}
+              </CardTitle>
+              <CardDescription className="text-sm font-medium opacity-60">Performance financeira e saúde patrimonial corporativa</CardDescription>
+            </div>
+          </div>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="p-8 pt-2 relative z-10 space-y-8">
         <div className="flex flex-wrap items-center gap-4 bg-muted/30 p-4 rounded-xl border border-border/50">
           <div className="flex items-center gap-3">
             <ToggleGroup type="single" value={modo} onValueChange={(v) => v && setModo(v as 'dre' | 'balanco')} className="bg-background border rounded-lg p-1">
