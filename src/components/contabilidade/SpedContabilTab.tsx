@@ -716,7 +716,13 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                           );
                         })()}
                         {h.status !== 'transmitido' && h.status !== 'rejeitado' && (
-                          <Button size="sm" variant="outline" onClick={() => { setTransmissaoArquivo(h); setReciboInput(''); }} title="Registrar transmissão">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => { setTransmissaoArquivo(h); setReciboInput(''); }} 
+                            className="h-9 w-9 rounded-xl border-white/5 bg-white/5 hover:bg-primary/20 text-primary transition-all"
+                            title="Registrar transmissão"
+                          >
                             <Send className="h-4 w-4" />
                           </Button>
                         )}
