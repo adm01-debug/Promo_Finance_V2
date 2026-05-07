@@ -39,7 +39,17 @@ export interface ValidacoesPreSpedArquivo {
   hash_sha256: string | null;
   status: string;
   validacoes: { erros: string[]; avisos: string[] };
+  /** Metadados autoexplicativos do arquivo */
+  cnpj?: string;
+  razao_social?: string;
+  periodo_inicio?: string;
+  periodo_fim?: string;
+  gerado_por?: string | null;
+  created_at?: string;
+  total_lancamentos?: number | null;
+  total_linhas?: number | null;
 }
+
 
 interface Props {
   open: boolean;
