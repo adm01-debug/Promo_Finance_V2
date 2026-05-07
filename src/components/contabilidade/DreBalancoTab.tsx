@@ -1,5 +1,11 @@
 import { useMemo, useState } from 'react';
-import { BarChart3, Scale, Download, AlertTriangle, CheckCircle2, FileJson, FileText, Calendar as CalendarIcon, Filter } from 'lucide-react';
+import { 
+  BarChart3, Scale, Download, AlertTriangle, CheckCircle2, 
+  FileJson, FileText, Calendar as CalendarIcon, Filter,
+  TrendingUp, TrendingDown, Layers, PieChart, ArrowUpRight,
+  ChevronRight, Info, Zap
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useDemonstrativosContabeis, type FonteDemonstrativo } from '@/hooks/useDemonstrativosContabeis';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -18,7 +24,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { usePlanoContas } from '@/hooks/usePlanoContas';
 import { useEmpresas } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
 import { applyPdfLayout, getAutoTableMargins, getContentStartY, PDF_BRAND } from '@/lib/pdf-layout';
