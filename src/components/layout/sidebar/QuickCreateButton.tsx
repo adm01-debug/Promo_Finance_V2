@@ -21,19 +21,22 @@ export function QuickCreateButton({ collapsed }: QuickCreateButtonProps) {
 
   const button = (
     <motion.button
-      whileHover={{ scale: 1.02 }}
+      whileHover={{ scale: 1.02, y: -1 }}
       whileTap={{ scale: 0.98 }}
       onClick={() => setOpen(true)}
       className={cn(
-        'flex items-center gap-3 w-full rounded-xl transition-all duration-200',
-        'bg-primary hover:bg-primary/90 text-primary-foreground',
-        'shadow-md hover:shadow-lg',
-        collapsed ? 'p-2.5 justify-center' : 'px-4 py-2.5'
+        'flex items-center gap-3 w-full rounded-2xl transition-all duration-300',
+        'bg-gradient-to-br from-primary to-primary-glow text-primary-foreground',
+        'shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30',
+        'ring-1 ring-white/20',
+        collapsed ? 'p-3 justify-center' : 'px-5 py-3.5'
       )}
     >
-      <Plus className="h-5 w-5" />
+      <div className="bg-white/20 p-1 rounded-lg">
+        <Plus className="h-4.5 w-4.5 font-black" />
+      </div>
       {!collapsed && (
-        <span className="font-medium text-sm">Criar Novo</span>
+        <span className="font-bold text-sm tracking-tight">Novo Registro</span>
       )}
     </motion.button>
   );
