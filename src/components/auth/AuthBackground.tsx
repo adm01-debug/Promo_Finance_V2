@@ -83,21 +83,22 @@ export function AuthSocialProof() {
       transition={{ delay: 0.6 }}
       className="flex flex-col items-center gap-4"
     >
-      <div className="flex items-center gap-2">
-        <div className="flex -space-x-2">
+      <div className="flex items-center gap-3">
+        <div className="flex -space-x-3">
           {[1, 2, 3, 4].map((i) => (
             <motion.div
               key={i}
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.7 + i * 0.1 }}
-              className="h-8 w-8 rounded-full bg-muted border-2 border-background flex items-center justify-center text-xs font-medium"
+              initial={{ scale: 0, x: -20 }}
+              animate={{ scale: 1, x: 0 }}
+              transition={{ delay: 0.7 + i * 0.1, type: 'spring' }}
+              className="h-10 w-10 rounded-full bg-muted border-2 border-[#02040a] flex items-center justify-center text-xs font-bold shadow-lg"
+              style={{ backgroundColor: `hsl(221, 83%, ${30 + i * 10}%)`, color: 'white' }}
             >
               {String.fromCharCode(64 + i)}
             </motion.div>
           ))}
         </div>
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm font-semibold text-white/70">
           +500 empresas usando
         </span>
       </div>
