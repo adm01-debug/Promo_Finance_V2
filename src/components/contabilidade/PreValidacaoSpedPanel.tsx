@@ -68,32 +68,33 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
   }
 
   return (
-    <Card className={cn("border-none bg-white/[0.02] backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] rounded-[2.5rem] overflow-hidden ring-1 ring-white/10", className)}>
-      <CardHeader className="p-8 pb-4">
+    <Card className={cn("border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10", className)}>
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+      <CardHeader className="p-8 pb-4 relative z-10">
         <div className="flex flex-wrap items-center justify-between gap-6">
-          <CardTitle className="text-xl font-black tracking-tight flex items-center gap-4">
+          <div className="flex items-center gap-5">
             <div className={cn(
-              "p-2.5 rounded-xl transition-all shadow-lg",
+              "p-4 rounded-2xl shadow-xl transform group-hover:scale-110 transition-all duration-500",
               podeGerar ? "bg-success/20 text-success" : "bg-white/5 text-white/20"
             )}>
-              <CheckCircle2 className="h-6 w-6" />
+              {podeGerar ? <ShieldCheck className="h-8 w-8" /> : <ShieldAlert className="h-8 w-8" />}
             </div>
-            Validations Analytics
-          </CardTitle>
-          <div className="flex flex-wrap gap-2">
-            <Badge variant={totais.erros > 0 ? 'destructive' : 'secondary'} className="gap-1">
-              <AlertCircle className="h-3 w-3" /> {totais.erros} erro(s)
+            <div>
+              <CardTitle className="text-2xl font-black tracking-tighter">Validations Analytics</CardTitle>
+              <CardDescription className="text-sm font-medium opacity-60">Pré-auditoria cruzada para transmissão SPED</CardDescription>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Badge variant={totais.erros > 0 ? 'destructive' : 'secondary'} className="gap-2 h-8 px-4 rounded-full font-black text-[10px] uppercase tracking-widest border-none">
+              <AlertCircle className="h-3 w-3" /> {totais.erros} Erros
             </Badge>
-            <Badge variant="secondary" className="gap-1">
-              <AlertTriangle className="h-3 w-3" /> {totais.avisos} aviso(s)
-            </Badge>
-            <Badge variant="outline" className="gap-1">
-              <Info className="h-3 w-3" /> {totais.info} info
+            <Badge variant="secondary" className="gap-2 h-8 px-4 rounded-full font-black text-[10px] uppercase tracking-widest border-none bg-warning/20 text-warning">
+              <AlertTriangle className="h-3 w-3" /> {totais.avisos} Avisos
             </Badge>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-8 pt-2 space-y-8">
+      <CardContent className="p-8 pt-2 relative z-10 space-y-10">
         {/* Resumo numérico */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
           <ResumoBox label="Lançamentos" value={resumo.totalLancamentos.toLocaleString('pt-BR')} />
