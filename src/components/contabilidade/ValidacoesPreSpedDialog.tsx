@@ -335,8 +335,9 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
           </Alert>
         )}
 
-        <Tabs defaultValue={erros.length > 0 ? 'erros' : 'avisos'}>
-          <TabsList className="grid grid-cols-2 w-full">
+        <div className="flex items-center justify-between mb-2">
+          <Tabs defaultValue={erros.length > 0 ? 'erros' : 'avisos'} className="flex-1">
+            <TabsList className="grid grid-cols-2 w-full">
             <TabsTrigger value="erros" className="gap-1.5">
               <XCircle className="h-3.5 w-3.5" />
               Erros
@@ -434,6 +435,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
             )}
           </TabsContent>
         </Tabs>
+
 
         <DialogFooter className="gap-2">
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
