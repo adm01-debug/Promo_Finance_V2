@@ -27,23 +27,24 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
   if (!hasItems || collapsed) return null;
 
   return (
-    <div className="px-3 py-4 space-y-4 border-b border-sidebar-border/30">
+    <div className="px-4 py-6 space-y-6 border-b border-white/5 bg-black/10">
       {/* Favoritos */}
       {favoriteItems.length > 0 && (
-        <div className="space-y-2">
+        <div className="space-y-3">
           <button
             onClick={() => setIsFavoritesOpen(!isFavoritesOpen)}
-            className="w-full flex items-center gap-2 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-foreground transition-colors group"
+            className="w-full flex items-center gap-3 px-1 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 hover:text-foreground transition-all group"
           >
-            <div className="p-1 rounded-md bg-warning/10 text-warning group-hover:bg-warning/20 transition-colors">
-              <Star className="h-3 w-3 fill-warning" />
+            <div className="p-1.5 rounded-lg bg-warning/10 text-warning group-hover:bg-warning/20 transition-colors shadow-sm">
+              <Star className="h-3.5 w-3.5 fill-warning" />
             </div>
-            <span className="flex-1 text-left">Favoritos</span>
+            <span className="flex-1 text-left">Priority Access</span>
             <motion.div
               animate={{ rotate: isFavoritesOpen ? 180 : 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.4, ease: "backOut" }}
+              className="opacity-40 group-hover:opacity-100"
             >
-              <ChevronDown className="h-3 w-3" />
+              <ChevronDown className="h-3.5 w-3.5" />
             </motion.div>
           </button>
           
