@@ -132,19 +132,25 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-2">
-          {/* Empresa atual (vínculos do usuário) */}
-          <EmpresaSwitcher />
+        <div className="flex items-center gap-3">
+          {/* Empresa switcher with better styling */}
+          <div className="bg-white/5 p-1 rounded-2xl border border-white/5">
+            <EmpresaSwitcher />
+          </div>
 
-          {/* Keyboard Shortcuts */}
-          <KeyboardShortcutsDialog />
+          <div className="w-px h-6 bg-white/10 mx-2 hidden lg:block" />
 
-          {/* Theme Toggle */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild data-tour="theme">
-              <Tooltip delayDuration={300}>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-11 w-11 rounded-xl hover:bg-primary/10 hover:text-primary transition-all duration-300">
+          {/* Action Buttons Grid */}
+          <div className="flex items-center gap-1.5">
+            {/* Keyboard Shortcuts */}
+            <KeyboardShortcutsDialog />
+
+            {/* Theme Toggle */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild data-tour="theme">
+                <Tooltip delayDuration={300}>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-11 w-11 rounded-xl bg-white/5 hover:bg-primary/10 hover:text-primary border border-white/5 transition-all duration-300">
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={theme}
