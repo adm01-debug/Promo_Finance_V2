@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Download, FileArchive, AlertTriangle, CheckCircle2, XCircle, ShieldAlert, Search, X, FileJson, FileText, FileDown, ChevronRight, ChevronDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import {
