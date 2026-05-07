@@ -50,25 +50,43 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ 
-        delay: index * 0.02,
-        duration: 0.4,
-        ease: [0.25, 0.1, 0.25, 1]
+        delay: index * 0.01,
+        duration: 0.5,
+        ease: [0.23, 1, 0.32, 1]
       }}
-      className={`
-        border-t border-border/40 transition-all duration-300 hover:bg-primary/5
-        ${conta.nivel === 0 ? 'font-bold bg-muted/20' : ''}
-        ${conta.nivel === 1 ? 'font-semibold bg-muted/10' : ''}
-      `}
+      className={cn(
+        "group transition-all duration-300 hover:bg-white/[0.03]",
+        conta.nivel === 0 ? "bg-white/[0.02] font-black" : "font-medium",
+        conta.nivel === 1 ? "bg-white/[0.01]" : ""
+      )}
     >
-      <td className="p-4 text-xs font-mono text-muted-foreground opacity-60">{conta.codigo}</td>
-      <td className={`p-4 text-sm ${conta.nivel === 2 ? 'pl-10' : conta.nivel === 1 ? 'pl-6' : ''}`}>
+      <td className="p-6 text-[11px] font-mono text-muted-foreground/40 group-hover:text-primary transition-colors">
+        {conta.codigo}
+      </td>
+      <td className={cn(
+        "p-6 text-sm tracking-tight transition-all",
+        conta.nivel === 2 ? "pl-14 opacity-80" : conta.nivel === 1 ? "pl-10" : "text-base",
+        conta.nivel === 0 ? "text-foreground" : "text-muted-foreground"
+      )}>
         {conta.descricao}
       </td>
-      <td className="p-4 text-sm text-right tabular-nums font-medium">
+      <td className="p-6 text-right tabular-nums font-bold text-base">
         {formatCurrency(conta.valor)}
       </td>
-      <td className="p-4 text-xs text-right tabular-nums font-semibold text-muted-foreground">
-        {total > 0 ? ((conta.valor / total) * 100).toFixed(1) : 0}%
+      <td className="p-6 text-right">
+        <div className="flex items-center justify-end gap-3">
+          <div className="w-16 h-1.5 rounded-full bg-white/5 overflow-hidden">
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: `${total > 0 ? Math.min((conta.valor / total) * 100, 100) : 0}%` }}
+              transition={{ duration: 1, delay: 0.5 + index * 0.01 }}
+              className="h-full rounded-full bg-primary"
+            />
+          </div>
+          <span className="text-xs font-black tabular-nums text-muted-foreground/60 w-10">
+            {total > 0 ? ((conta.valor / total) * 100).toFixed(1) : 0}%
+          </span>
+        </div>
       </td>
     </motion.tr>
   );
