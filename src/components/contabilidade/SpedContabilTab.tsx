@@ -689,43 +689,60 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                             </div>
                           </div>
 
-                          {/* Erros que bloquearam */}
-                          {erros.length > 0 && (
-                            <div className="space-y-1.5">
-                              <p className="text-[11px] uppercase tracking-wide text-destructive font-semibold flex items-center gap-1.5">
-                                <XCircle className="h-3.5 w-3.5" /> Erros que impediram a geração ({erros.length})
-                              </p>
-                              <ul className="space-y-1 rounded-md border border-destructive/20 bg-destructive/5 p-2">
-                                {erros.map((e, i) => (
-                                  <li key={i} className="flex items-start gap-2 text-xs">
-                                    <Badge variant="outline" className="border-destructive/40 text-destructive shrink-0 h-5 px-1.5 text-[10px] font-mono">
-                                      {String(i + 1).padStart(2, '0')}
-                                    </Badge>
-                                    <span className="leading-snug">{e}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
+                          {/* Agrupamento por Categoria */}
+                          {(() => {
+                            const grupos = agruparValidacoes(erros, avisos);
+                            if (grupos.length === 0) return null;
 
-                          {/* Avisos tolerados */}
-                          {avisos.length > 0 && (
-                            <div className="space-y-1.5">
-                              <p className="text-[11px] uppercase tracking-wide text-warning font-semibold flex items-center gap-1.5">
-                                <AlertTriangle className="h-3.5 w-3.5" /> Avisos tolerados ({avisos.length})
-                              </p>
-                              <ul className="space-y-1 rounded-md border border-warning/20 bg-warning/5 p-2">
-                                {avisos.map((a, i) => (
-                                  <li key={i} className="flex items-start gap-2 text-xs">
-                                    <Badge variant="outline" className="border-warning/40 text-warning shrink-0 h-5 px-1.5 text-[10px] font-mono">
-                                      {String(i + 1).padStart(2, '0')}
-                                    </Badge>
-                                    <span className="leading-snug">{a}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
+                            return (
+                              <div className="grid gap-4 md:grid-cols-2">
+                                {grupos.map(({ categoria, erros: gErros, avisos: gAvisos }) => {
+                                  const tone = gErros.length > 0 ? 'destructive' : 'warning';
+                                  return (
+                                    <div 
+                                      key={categoria.id} 
+                                      className={cn(
+                                        "rounded-xl border p-4 space-y-3",
+                                        tone === 'destructive' ? "bg-destructive/5 border-destructive/10" : "bg-warning/5 border-warning/10"
+                                      )}
+                                    >
+                                      <div className="flex items-center justify-between gap-2">
+                                        <div className="flex items-center gap-2">
+                                          <div className={cn(
+                                            "p-1.5 rounded-lg",
+                                            tone === 'destructive' ? "bg-destructive/10 text-destructive" : "bg-warning/10 text-warning"
+                                          )}>
+                                            <AlertTriangle className="h-3.5 w-3.5" />
+                                          </div>
+                                          <div>
+                                            <h4 className={cn("text-xs font-black uppercase tracking-wider", tone === 'destructive' ? "text-destructive" : "text-warning")}>
+                                              {categoria.label}
+                                            </h4>
+                                            <p className="text-[10px] text-muted-foreground opacity-70">{categoria.description}</p>
+                                          </div>
+                                        </div>
+                                        <div className="flex gap-1">
+                                          {gErros.length > 0 && <Badge variant="destructive" className="h-5 px-1.5 text-[10px]">{gErros.length}</Badge>}
+                                          {gAvisos.length > 0 && <Badge variant="outline" className="h-5 px-1.5 text-[10px] border-warning/30 text-warning bg-warning/5">{gAvisos.length}</Badge>}
+                                        </div>
+                                      </div>
+                                      
+                                      <ul className="space-y-1.5">
+                                        {[...gErros.map(e => ({ text: e, type: 'error' as const })), ...gAvisos.map(a => ({ text: a, type: 'warn' as const }))].map((item, idx) => (
+                                          <li key={idx} className={cn(
+                                            "text-[11px] leading-relaxed p-2 rounded-lg border",
+                                            item.type === 'error' ? "bg-destructive/10 border-destructive/10 text-destructive" : "bg-warning/10 border-warning/10 text-warning-foreground"
+                                          )}>
+                                            {item.text}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            );
+                          })()}
 
                           {erros.length === 0 && avisos.length === 0 && (
                             <p className="text-xs text-muted-foreground italic">
