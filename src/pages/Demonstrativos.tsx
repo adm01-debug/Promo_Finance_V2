@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, TrendingUp, Scale, Wallet, Download, Calendar, Building2 } from 'lucide-react';
+import { FileText, TrendingUp, Scale, Wallet, Calendar, Building2 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DREStatement } from '@/components/demonstrativos/DREStatement';
 import { BalancoPatrimonial } from '@/components/demonstrativos/BalancoPatrimonial';
 import { FluxoCaixaContabil } from '@/components/demonstrativos/FluxoCaixaContabil';
 import { FonteDadosToggle } from '@/components/demonstrativos/FonteDadosToggle';
+import { ExportDemonstrativoPDF } from '@/components/demonstrativos/ExportDemonstrativoPDF';
 import { useEmpresas } from '@/hooks/useFinancialData';
 import { useDemonstrativosContabeis, type FonteDemonstrativo } from '@/hooks/useDemonstrativosContabeis';
 
