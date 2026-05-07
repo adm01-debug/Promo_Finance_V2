@@ -506,105 +506,160 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {(() => {
               const equilibrado = balancoNovo.equilibrado;
               const sectionClass = cn(
-                "border rounded-xl p-4 space-y-4 transition-all",
-                equilibrado ? "bg-card/50" : "border-destructive/30 bg-destructive/5"
+                "border-none bg-white/[0.02] shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/5 group/card"
               );
 
               return (
                 <>
-                  <div className="grid gap-4 md:grid-cols-2">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <section className={sectionClass}>
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-bold uppercase tracking-wider opacity-70">ATIVO</h3>
-                        <Badge variant="outline" className="text-[10px]">{balancoNovo.ativo.length} itens</Badge>
-                      </div>
-                      <div className="space-y-1">
-                        {balancoNovo.ativo.map((l, i) => (
-                          <div key={i} className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-muted/20" style={{ paddingLeft: `${l.nivel * 1}rem` }}>
-                            <div className="flex items-center gap-2">
-                              <span className="font-mono text-[10px] text-muted-foreground">{l.codigo}</span>
-                              <span className="text-xs font-medium">{l.descricao}</span>
-                            </div>
-                            <span className="font-mono text-xs tabular-nums">{formatCurrency(l.valor)}</span>
+                      <div className="bg-white/5 px-8 py-6 flex items-center justify-between border-b border-white/5">
+                        <div className="flex items-center gap-4">
+                          <div className="p-3 bg-primary/20 rounded-2xl">
+                            <ArrowUpRight className="h-6 w-6 text-primary" />
                           </div>
-                        ))}
+                          <div>
+                            <h3 className="text-sm font-black uppercase tracking-widest opacity-80">Ativo Total</h3>
+                            <p className="text-[10px] font-bold text-primary uppercase">Bens e Direitos</p>
+                          </div>
+                        </div>
+                        <Badge variant="outline" className="font-mono text-xs border-none bg-white/5 px-4 h-10 rounded-xl">
+                          {balancoNovo.ativo.length} Contas
+                        </Badge>
                       </div>
-                      <div className="pt-2 border-t flex items-center justify-between font-bold">
-                        <span className="text-xs uppercase">Total Ativo</span>
-                        <span className="font-mono text-sm tabular-nums">{formatCurrency(balancoNovo.totalAtivo)}</span>
+                      <div className="p-4 space-y-1 max-h-[500px] overflow-y-auto custom-scrollbar">
+                        <AnimatePresence>
+                          {balancoNovo.ativo.map((l, i) => (
+                            <motion.div 
+                              key={i} 
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: i * 0.02 }}
+                              className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/5 transition-colors group/row" 
+                              style={{ marginLeft: `${l.nivel * 1.5}rem` }}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className={cn("w-1.5 h-1.5 rounded-full opacity-40", l.nivel === 0 ? "bg-primary" : "bg-white/40")} />
+                                <div className="flex flex-col">
+                                  <span className={cn("text-xs font-bold", l.nivel === 0 ? "text-foreground" : "text-foreground/70")}>{l.descricao}</span>
+                                  <span className="font-mono text-[9px] opacity-40 uppercase tracking-tighter">{l.codigo}</span>
+                                </div>
+                              </div>
+                              <span className={cn("font-mono text-xs font-black tabular-nums", l.nivel === 0 ? "text-primary" : "text-foreground/60")}>
+                                {formatCurrency(l.valor)}
+                              </span>
+                            </motion.div>
+                          ))}
+                        </AnimatePresence>
+                      </div>
+                      <div className="bg-white/5 p-6 border-t border-white/5 flex items-center justify-between font-black">
+                        <span className="text-xs uppercase tracking-widest opacity-60">Total do Ativo</span>
+                        <span className="font-mono text-lg text-primary tabular-nums">{formatCurrency(balancoNovo.totalAtivo)}</span>
                       </div>
                     </section>
 
                     <section className={sectionClass}>
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-bold uppercase tracking-wider opacity-70">PASSIVO + PL</h3>
-                        <Badge variant="outline" className="text-[10px]">{balancoNovo.passivo.length} itens</Badge>
-                      </div>
-                      <div className="space-y-1">
-                        {balancoNovo.passivo.map((l, i) => (
-                          <div key={i} className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-muted/20" style={{ paddingLeft: `${l.nivel * 1}rem` }}>
-                            <div className="flex items-center gap-2">
-                              <span className="font-mono text-[10px] text-muted-foreground">{l.codigo}</span>
-                              <span className="text-xs font-medium">{l.descricao}</span>
-                            </div>
-                            <span className="font-mono text-xs tabular-nums">{formatCurrency(l.valor)}</span>
+                      <div className="bg-white/5 px-8 py-6 flex items-center justify-between border-b border-white/5">
+                        <div className="flex items-center gap-4">
+                          <div className="p-3 bg-secondary/20 rounded-2xl">
+                            <Scale className="h-6 w-6 text-secondary" />
                           </div>
-                        ))}
+                          <div>
+                            <h3 className="text-sm font-black uppercase tracking-widest opacity-80">Passivo + PL</h3>
+                            <p className="text-[10px] font-bold text-secondary uppercase">Dívidas e Capital</p>
+                          </div>
+                        </div>
+                        <Badge variant="outline" className="font-mono text-xs border-none bg-white/5 px-4 h-10 rounded-xl">
+                          {balancoNovo.passivo.length} Contas
+                        </Badge>
                       </div>
-                      <div className="pt-2 border-t flex items-center justify-between font-bold">
-                        <span className="text-xs uppercase">Total Passivo + PL</span>
-                        <span className="font-mono text-sm tabular-nums">{formatCurrency(balancoNovo.totalPassivo)}</span>
+                      <div className="p-4 space-y-1 max-h-[500px] overflow-y-auto custom-scrollbar">
+                        <AnimatePresence>
+                          {balancoNovo.passivo.map((l, i) => (
+                            <motion.div 
+                              key={i} 
+                              initial={{ opacity: 0, x: 10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: i * 0.02 }}
+                              className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/5 transition-colors group/row" 
+                              style={{ marginLeft: `${l.nivel * 1.5}rem` }}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className={cn("w-1.5 h-1.5 rounded-full opacity-40", l.nivel === 0 ? "bg-secondary" : "bg-white/40")} />
+                                <div className="flex flex-col">
+                                  <span className={cn("text-xs font-bold", l.nivel === 0 ? "text-foreground" : "text-foreground/70")}>{l.descricao}</span>
+                                  <span className="font-mono text-[9px] opacity-40 uppercase tracking-tighter">{l.codigo}</span>
+                                </div>
+                              </div>
+                              <span className={cn("font-mono text-xs font-black tabular-nums", l.nivel === 0 ? "text-secondary" : "text-foreground/60")}>
+                                {formatCurrency(l.valor)}
+                              </span>
+                            </motion.div>
+                          ))}
+                        </AnimatePresence>
+                      </div>
+                      <div className="bg-white/5 p-6 border-t border-white/5 flex items-center justify-between font-black">
+                        <span className="text-xs uppercase tracking-widest opacity-60">Total Passivo + PL</span>
+                        <span className="font-mono text-lg text-secondary tabular-nums">{formatCurrency(balancoNovo.totalPassivo)}</span>
                       </div>
                     </section>
                   </div>
 
-                  <div className={cn(
-                    "rounded-xl border p-4 backdrop-blur-sm transition-all shadow-sm",
-                    equilibrado ? "bg-success/5 border-success/20" : "bg-destructive/5 border-destructive/20"
+                  <Card className={cn(
+                    "rounded-[2.5rem] border-none p-8 transition-all shadow-3xl relative overflow-hidden group",
+                    equilibrado ? "bg-success/20 ring-1 ring-success/30" : "bg-destructive/20 ring-1 ring-destructive/30"
                   )}>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent opacity-50" />
+                    <div className="relative z-10 flex flex-wrap items-center justify-between gap-8">
+                      <div className="flex items-center gap-6">
                         <div className={cn(
-                          "p-2 rounded-lg",
-                          equilibrado ? "bg-success/20 text-success" : "bg-destructive/20 text-destructive"
+                          "p-5 rounded-[2rem] shadow-xl transform group-hover:scale-110 transition-transform duration-500",
+                          equilibrado ? "bg-success text-success-foreground" : "bg-destructive text-destructive-foreground"
                         )}>
-                          {equilibrado ? <CheckCircle2 className="h-5 w-5" /> : <AlertTriangle className="h-5 w-5 animate-pulse" />}
+                          {equilibrado ? <CheckCircle2 className="h-8 w-8" /> : <AlertTriangle className="h-8 w-8 animate-bounce" />}
                         </div>
                         <div>
-                          <p className={cn("text-sm font-bold", equilibrado ? "text-success" : "text-destructive")}>
-                            {equilibrado ? "BALANÇO EQUILIBRADO" : "DIVERGÊNCIA DETECTADA"}
-                          </p>
-                          <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">Equação Contábil: Ativo = Passivo + PL</p>
+                          <h2 className={cn("text-2xl font-black tracking-tighter", equilibrado ? "text-success" : "text-destructive")}>
+                            {equilibrado ? "BALANÇO CONSOLIDADO" : "ERRO DE EQUILÍBRIO PATRIMONIAL"}
+                          </h2>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Info className="h-3 w-3 opacity-40" />
+                            <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Verificação de Integridade Contábil (Ativo = Passivo + PL)</p>
+                          </div>
                         </div>
                       </div>
-                      {!equilibrado && (
-                        <div className="text-right">
-                          <p className="text-[10px] text-muted-foreground uppercase font-bold">Diferença</p>
-                          <p className="text-lg font-mono font-black text-destructive tabular-nums">
-                            {formatCurrency(balancoNovo.totalAtivo - balancoNovo.totalPassivo)}
-                          </p>
-                        </div>
-                      )}
-                    </div>
+                      
+                      <div className="flex items-center gap-12">
+                        {!equilibrado && (
+                          <div className="text-right">
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-destructive opacity-60">Diferença Residual</p>
+                            <p className="text-4xl font-mono font-black text-destructive tabular-nums mt-1 tracking-tighter">
+                              {formatCurrency(balancoNovo.totalAtivo - balancoNovo.totalPassivo)}
+                            </p>
+                          </div>
+                        )}
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      {[
-                        { label: 'Ativo Circulante', val: balancoNovo.ativoCirculante },
-                        { label: 'Ativo Ñ Circulante', val: balancoNovo.ativoNaoCirculante },
-                        { label: 'Passivo Circulante', val: balancoNovo.passivoCirculante },
-                        { label: 'Patrimônio Líquido', val: balancoNovo.patrimonioLiquido },
-                      ].map((item, i) => (
-                        <div key={i} className="bg-background/40 border rounded-lg p-3">
-                          <p className="text-[9px] uppercase font-black text-muted-foreground tracking-widest">{item.label}</p>
-                          <p className="text-xs font-mono font-bold mt-1 tabular-nums">{formatCurrency(item.val)}</p>
+                        <div className="grid grid-cols-2 gap-4">
+                          {[
+                            { label: 'Liquidez', val: balancoNovo.ativoCirculante, icon: <Zap className="h-3 w-3" />, color: 'text-primary' },
+                            { label: 'Equity', val: balancoNovo.patrimonioLiquido, icon: <Scale className="h-3 w-3" />, color: 'text-secondary' },
+                          ].map((item, i) => (
+                            <div key={i} className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 min-w-[140px]">
+                              <div className="flex items-center gap-2 opacity-40">
+                                {item.icon}
+                                <p className="text-[9px] font-black uppercase tracking-widest">{item.label}</p>
+                              </div>
+                              <p className={cn("text-sm font-mono font-black mt-2 tabular-nums", item.color)}>{formatCurrency(item.val)}</p>
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      </div>
                     </div>
-                  </div>
+                  </Card>
                 </>
               );
             })()}
