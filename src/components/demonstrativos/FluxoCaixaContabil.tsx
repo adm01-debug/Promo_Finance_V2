@@ -163,25 +163,44 @@ export const FluxoCaixaContabil = ({ periodo, mes, ano, empresaId }: FluxoCaixaC
   const renderLinha = (linha: FluxoLinha, index: number) => (
     <motion.tr
       key={linha.codigo}
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.03 }}
-      className={`
-        border-t border-border/30 transition-colors hover:bg-muted/30
-        ${linha.nivel === 0 ? 'font-bold bg-muted/30' : ''}
-      `}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ 
+        delay: index * 0.01,
+        duration: 0.5,
+        ease: [0.23, 1, 0.32, 1]
+      }}
+      className={cn(
+        "group transition-all duration-300 hover:bg-white/[0.03]",
+        linha.nivel === 0 ? "bg-white/[0.02] font-black" : "font-medium"
+      )}
     >
-      <td className="p-3 text-sm text-muted-foreground">{linha.codigo}</td>
-      <td className={`p-3 text-sm ${linha.nivel === 1 ? 'pl-8' : ''}`}>
-        <div className="flex items-center gap-2">
-          {linha.tipo === 'entrada' && <ArrowUpCircle className="h-4 w-4 text-success" />}
-          {linha.tipo === 'saida' && <ArrowDownCircle className="h-4 w-4 text-destructive" />}
+      <td className="p-6 text-[11px] font-mono text-muted-foreground/40 group-hover:text-primary transition-colors">
+        {linha.codigo}
+      </td>
+      <td className={cn(
+        "p-6 text-sm tracking-tight transition-all",
+        linha.nivel === 1 ? "pl-14 opacity-80" : "text-base",
+        linha.nivel === 0 ? "text-foreground" : "text-muted-foreground"
+      )}>
+        <div className="flex items-center gap-4">
+          {linha.tipo === 'entrada' && (
+            <div className="p-1.5 rounded-lg bg-success/10 text-success">
+              <ArrowUpCircle className="h-4 w-4" />
+            </div>
+          )}
+          {linha.tipo === 'saida' && (
+            <div className="p-1.5 rounded-lg bg-destructive/10 text-destructive">
+              <ArrowDownCircle className="h-4 w-4" />
+            </div>
+          )}
           {linha.descricao}
         </div>
       </td>
-      <td className={`p-3 text-sm text-right tabular-nums ${
-        linha.valor > 0 ? 'text-success' : linha.valor < 0 ? 'text-destructive' : ''
-      }`}>
+      <td className={cn(
+        "p-6 text-right tabular-nums font-bold text-base",
+        linha.valor > 0 ? "text-success" : linha.valor < 0 ? "text-destructive" : "text-muted-foreground"
+      )}>
         {formatCurrency(Math.abs(linha.valor))}
       </td>
     </motion.tr>
