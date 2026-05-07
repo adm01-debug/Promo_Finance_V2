@@ -1,8 +1,13 @@
 // Painel visual de pré-validação cruzada Razão × DRE para SPED ECD/ECF.
-import { AlertCircle, AlertTriangle, CheckCircle2, Info, Loader2 } from 'lucide-react';
+import { 
+  AlertCircle, AlertTriangle, CheckCircle2, Info, Loader2, 
+  Activity, ArrowRightLeft, PieChart, ShieldAlert, Zap,
+  Search, ShieldCheck, Target, Layers
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
@@ -15,34 +20,37 @@ interface Props {
 
 const SEV_META: Record<
   SeveridadeAlerta,
-  { icon: typeof AlertCircle; label: string; tone: string; iconClass: string }
+  { icon: any; label: string; tone: string; iconClass: string; bg: string }
 > = {
   error: {
     icon: AlertCircle,
-    label: 'Erro',
+    label: 'Crítico',
     tone: 'border-destructive/40 bg-destructive/5',
+    bg: 'bg-destructive/10',
     iconClass: 'text-destructive',
   },
   warning: {
     icon: AlertTriangle,
-    label: 'Aviso',
+    label: 'Atenção',
     tone: 'border-warning/40 bg-warning/5',
+    bg: 'bg-warning/10',
     iconClass: 'text-warning',
   },
   info: {
     icon: Info,
     label: 'Info',
     tone: 'border-primary/30 bg-primary/5',
+    bg: 'bg-primary/10',
     iconClass: 'text-primary',
   },
 };
 
 const CATEGORIA_LABEL: Record<string, string> = {
-  razao: 'Razão',
-  dre: 'DRE',
-  cruzado: 'Cruzado',
-  cobertura: 'Cobertura',
-  cfc: 'CFC',
+  razao: 'Escrituração',
+  dre: 'Resultado',
+  cruzado: 'Integridade Cruzada',
+  cobertura: 'Cobertura Fiscal',
+  cfc: 'CFC Referencial',
 };
 
 export function PreValidacaoSpedPanel({ resultado, className }: Props) {
