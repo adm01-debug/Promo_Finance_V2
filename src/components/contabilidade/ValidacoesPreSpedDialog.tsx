@@ -102,11 +102,22 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
       const errosExp = apenasFiltrados ? errosFiltrados : erros;
       const avisosExp = apenasFiltrados ? avisosFiltrados : avisos;
       const payload = {
-        tipo: arquivo.tipo,
-        ano_calendario: arquivo.ano_calendario,
-        status: arquivo.status,
-        hash_sha256: arquivo.hash_sha256,
-        gerado_em: new Date().toISOString(),
+        arquivo: {
+          tipo: arquivo.tipo,
+          ano_calendario: arquivo.ano_calendario,
+          status: arquivo.status,
+          hash_sha256: arquivo.hash_sha256,
+          cnpj: arquivo.cnpj ?? null,
+          razao_social: arquivo.razao_social ?? null,
+          periodo: {
+            inicio: arquivo.periodo_inicio ?? `${arquivo.ano_calendario}-01-01`,
+            fim: arquivo.periodo_fim ?? `${arquivo.ano_calendario}-12-31`,
+          },
+          gerado_por: arquivo.gerado_por ?? null,
+          gerado_em: arquivo.created_at ?? new Date().toISOString(),
+          total_lancamentos: arquivo.total_lancamentos ?? null,
+          total_linhas: arquivo.total_linhas ?? null,
+        },
         filtro: apenasFiltrados ? { termo: busca.trim() } : null,
         totais: {
           erros: errosExp.length,
