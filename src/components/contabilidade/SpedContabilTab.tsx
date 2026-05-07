@@ -632,28 +632,48 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                         {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                       </Button>
                     </TableCell>
-                    <TableCell className="font-medium">{h.ano_calendario}</TableCell>
-                    <TableCell>{format(new Date(h.created_at), 'dd/MM/yyyy HH:mm')}</TableCell>
-                    <TableCell>{h.total_lancamentos}</TableCell>
-                    <TableCell>{h.total_linhas}</TableCell>
-                    <TableCell>
+                    <TableCell className="p-6">
+                      <Badge variant="outline" className="font-mono text-[11px] font-black border-none bg-primary/10 text-primary px-2.5 py-0.5 rounded-lg">
+                        {h.ano_calendario}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="p-6">
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-foreground/80">{format(new Date(h.created_at), 'dd/MM/yyyy HH:mm')}</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest opacity-30 mt-1">Lote: #{h.id.substring(0, 8)}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="p-6">
+                      <div className="flex items-center gap-3">
+                        <div className="flex flex-col">
+                          <span className="text-[10px] font-black text-foreground/60">{h.total_lancamentos.toLocaleString('pt-BR')} Lanç.</span>
+                          <span className="text-[9px] font-bold opacity-30 uppercase">{h.total_linhas.toLocaleString('pt-BR')} Linhas</span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="p-6">
                       {h.status === 'rejeitado' ? (
-                        <Badge variant="destructive" className="gap-1"><AlertTriangle className="h-3 w-3" />{erros.length} erros</Badge>
+                        <Badge variant="destructive" className="gap-1.5 font-black text-[9px] uppercase tracking-widest border-none px-3 py-1 rounded-full"><AlertTriangle className="h-3 w-3" />{erros.length} erros</Badge>
                       ) : h.status === 'transmitido' ? (
-                        <Badge className="gap-1 bg-success hover:bg-success"><CheckCircle2 className="h-3 w-3" />Transmitido</Badge>
+                        <Badge className="gap-1.5 bg-success/20 text-success font-black text-[9px] uppercase tracking-widest border-none px-3 py-1 rounded-full"><ShieldCheck className="h-3 w-3" />Transmitido</Badge>
                       ) : (
-                        <Badge variant="secondary" className="gap-1"><CheckCircle2 className="h-3 w-3" />Gerado</Badge>
+                        <Badge variant="secondary" className="gap-1.5 font-black text-[9px] uppercase tracking-widest border-none px-3 py-1 rounded-full"><CheckCircle2 className="h-3 w-3" />Gerado</Badge>
                       )}
                     </TableCell>
-                    <TableCell>
-                      {h.recibo_transmissao ? (
-                        <span className="font-mono text-xs">{h.recibo_transmissao.substring(0, 12)}…</span>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">—</span>
-                      )}
+                    <TableCell className="p-6">
+                      <div className="flex flex-col gap-1">
+                        {h.recibo_transmissao ? (
+                          <div className="flex items-center gap-1.5">
+                            <Hash className="h-3 w-3 opacity-30" />
+                            <span className="font-mono text-[10px] font-black text-primary">{h.recibo_transmissao.substring(0, 16)}</span>
+                          </div>
+                        ) : (
+                          <span className="text-[10px] font-bold opacity-20 uppercase tracking-widest">Aguardando Protocolo</span>
+                        )}
+                        <span className="font-mono text-[9px] opacity-30">{h.hash_sha256?.substring(0, 16)}…</span>
+                      </div>
                     </TableCell>
-                    <TableCell className="font-mono text-xs">{h.hash_sha256?.substring(0, 12)}…</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right pr-8">
                       <div className="flex justify-end gap-1">
                         {(() => {
                           const isRejeitado = h.status === 'rejeitado';
