@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Brain, RefreshCw, Sparkles, TrendingUp, TrendingDown, Activity, AlertTriangle, BarChart3, PieChart, Target } from 'lucide-react';
 import { logger } from '@/lib/logger';
+import { cn } from '@/lib/utils';
 import { PrevisaoIAVisaoGeral } from './previsao-ia/PrevisaoIAVisaoGeral';
 import { PrevisaoIATendencias } from './previsao-ia/PrevisaoIATendencias';
 import { PrevisaoIAProjecoes } from './previsao-ia/PrevisaoIAProjecoes';
