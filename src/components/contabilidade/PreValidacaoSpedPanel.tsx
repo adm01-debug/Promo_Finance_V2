@@ -1,8 +1,13 @@
 // Painel visual de pré-validação cruzada Razão × DRE para SPED ECD/ECF.
-import { AlertCircle, AlertTriangle, CheckCircle2, Info, Loader2 } from 'lucide-react';
+import { 
+  AlertCircle, AlertTriangle, CheckCircle2, Info, Loader2, 
+  Activity, ArrowRightLeft, PieChart, ShieldAlert, Zap,
+  Search, ShieldCheck, Target, Layers
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
@@ -15,34 +20,37 @@ interface Props {
 
 const SEV_META: Record<
   SeveridadeAlerta,
-  { icon: typeof AlertCircle; label: string; tone: string; iconClass: string }
+  { icon: any; label: string; tone: string; iconClass: string; bg: string }
 > = {
   error: {
     icon: AlertCircle,
-    label: 'Erro',
+    label: 'Crítico',
     tone: 'border-destructive/40 bg-destructive/5',
+    bg: 'bg-destructive/10',
     iconClass: 'text-destructive',
   },
   warning: {
     icon: AlertTriangle,
-    label: 'Aviso',
+    label: 'Atenção',
     tone: 'border-warning/40 bg-warning/5',
+    bg: 'bg-warning/10',
     iconClass: 'text-warning',
   },
   info: {
     icon: Info,
     label: 'Info',
     tone: 'border-primary/30 bg-primary/5',
+    bg: 'bg-primary/10',
     iconClass: 'text-primary',
   },
 };
 
 const CATEGORIA_LABEL: Record<string, string> = {
-  razao: 'Razão',
-  dre: 'DRE',
-  cruzado: 'Cruzado',
-  cobertura: 'Cobertura',
-  cfc: 'CFC',
+  razao: 'Escrituração',
+  dre: 'Resultado',
+  cruzado: 'Integridade Cruzada',
+  cobertura: 'Cobertura Fiscal',
+  cfc: 'CFC Referencial',
 };
 
 export function PreValidacaoSpedPanel({ resultado, className }: Props) {
@@ -60,61 +68,70 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
   }
 
   return (
-    <Card className={cn("border-none bg-white/[0.02] backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] rounded-[2.5rem] overflow-hidden ring-1 ring-white/10", className)}>
-      <CardHeader className="p-8 pb-4">
+    <Card className={cn("border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10", className)}>
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+      <CardHeader className="p-8 pb-4 relative z-10">
         <div className="flex flex-wrap items-center justify-between gap-6">
-          <CardTitle className="text-xl font-black tracking-tight flex items-center gap-4">
+          <div className="flex items-center gap-5">
             <div className={cn(
-              "p-2.5 rounded-xl transition-all shadow-lg",
+              "p-4 rounded-2xl shadow-xl transform group-hover:scale-110 transition-all duration-500",
               podeGerar ? "bg-success/20 text-success" : "bg-white/5 text-white/20"
             )}>
-              <CheckCircle2 className="h-6 w-6" />
+              {podeGerar ? <ShieldCheck className="h-8 w-8" /> : <ShieldAlert className="h-8 w-8" />}
             </div>
-            Validations Analytics
-          </CardTitle>
-          <div className="flex flex-wrap gap-2">
-            <Badge variant={totais.erros > 0 ? 'destructive' : 'secondary'} className="gap-1">
-              <AlertCircle className="h-3 w-3" /> {totais.erros} erro(s)
+            <div>
+              <CardTitle className="text-2xl font-black tracking-tighter">Validations Analytics</CardTitle>
+              <CardDescription className="text-sm font-medium opacity-60">Pré-auditoria cruzada para transmissão SPED</CardDescription>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Badge variant={totais.erros > 0 ? 'destructive' : 'secondary'} className="gap-2 h-8 px-4 rounded-full font-black text-[10px] uppercase tracking-widest border-none">
+              <AlertCircle className="h-3 w-3" /> {totais.erros} Erros
             </Badge>
-            <Badge variant="secondary" className="gap-1">
-              <AlertTriangle className="h-3 w-3" /> {totais.avisos} aviso(s)
-            </Badge>
-            <Badge variant="outline" className="gap-1">
-              <Info className="h-3 w-3" /> {totais.info} info
+            <Badge variant="secondary" className="gap-2 h-8 px-4 rounded-full font-black text-[10px] uppercase tracking-widest border-none bg-warning/20 text-warning">
+              <AlertTriangle className="h-3 w-3" /> {totais.avisos} Avisos
             </Badge>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-8 pt-2 space-y-8">
+      <CardContent className="p-8 pt-2 relative z-10 space-y-10">
         {/* Resumo numérico */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-          <ResumoBox label="Lançamentos" value={resumo.totalLancamentos.toLocaleString('pt-BR')} />
-          <ResumoBox label="Partidas" value={resumo.totalPartidas.toLocaleString('pt-BR')} />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <ResumoBox label="Fatos Contábeis" value={resumo.totalLancamentos.toLocaleString('pt-BR')} icon={Activity} />
+          <ResumoBox label="Partidas (D/C)" value={resumo.totalPartidas.toLocaleString('pt-BR')} icon={ArrowRightLeft} />
           <ResumoBox
-            label="Débitos Razão"
-            value={formatCurrency(resumo.debitoRazao)}
+            label="Inconsistência Razão"
+            value={formatCurrency(resumo.diferencaRazao)}
             highlight={Math.abs(resumo.diferencaRazao) > 0.01}
+            icon={Target}
           />
-          <ResumoBox
-            label="Créditos Razão"
-            value={formatCurrency(resumo.creditoRazao)}
-            highlight={Math.abs(resumo.diferencaRazao) > 0.01}
-          />
-          <ResumoBox label="Receita Bruta (DRE)" value={formatCurrency(resumo.receitaBruta)} />
-          <ResumoBox
-            label="Lucro Líquido (DRE)"
-            value={formatCurrency(resumo.lucroLiquido)}
+          <ResumoBox 
+            label="Performance (DRE)" 
+            value={formatCurrency(resumo.lucroLiquido)} 
             highlight={resumo.lucroLiquido < 0}
+            icon={PieChart}
+          />
+          <ResumoBox 
+            label="Débitos Totais" 
+            value={formatCurrency(resumo.debitoRazao)}
+            icon={Layers} 
+          />
+          <ResumoBox 
+            label="Créditos Totais" 
+            value={formatCurrency(resumo.creditoRazao)}
+            icon={Layers} 
           />
           <ResumoBox
-            label="Lanç. desbalanceados"
+            label="Desbalanceados"
             value={resumo.lancamentosNaoBalanceados.toLocaleString('pt-BR')}
             highlight={resumo.lancamentosNaoBalanceados > 0}
+            icon={ShieldAlert}
           />
           <ResumoBox
-            label="Partidas s/ conta"
+            label="Partidas s/ Conta"
             value={resumo.partidasSemConta.toLocaleString('pt-BR')}
             highlight={resumo.partidasSemConta > 0}
+            icon={Search}
           />
         </div>
 
@@ -129,40 +146,47 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
             </AlertDescription>
           </Alert>
         ) : (
-          <ul className="space-y-2" role="list" aria-label="Lista de alertas de pré-validação">
-            {alertas.map((a) => {
-              const meta = SEV_META[a.severidade];
-              const Icon = meta.icon;
-              return (
-                <li
-                  key={a.id}
-                  className={cn('flex gap-3 rounded-md border p-3 text-xs', meta.tone)}
-                >
-                  <Icon className={cn('h-4 w-4 mt-0.5 shrink-0', meta.iconClass)} aria-hidden />
-                  <div className="flex-1 space-y-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-semibold">{a.titulo}</span>
-                      <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                        {CATEGORIA_LABEL[a.categoria] ?? a.categoria}
-                      </Badge>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          'text-[10px] px-1.5 py-0',
-                          a.severidade === 'error' && 'border-destructive/50 text-destructive',
-                          a.severidade === 'warning' && 'border-warning/50 text-warning',
-                          a.severidade === 'info' && 'border-primary/40 text-primary',
-                        )}
-                      >
-                        {meta.label}
-                      </Badge>
+          <div className="space-y-3" role="list" aria-label="Lista de alertas de pré-validação">
+            <AnimatePresence>
+              {alertas.map((a, idx) => {
+                const meta = SEV_META[a.severidade];
+                const Icon = meta.icon;
+                return (
+                  <motion.div
+                    key={a.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className={cn('flex gap-4 rounded-[1.5rem] border p-5 text-xs shadow-lg backdrop-blur-md group/row', meta.tone)}
+                  >
+                    <div className={cn('p-2.5 rounded-xl h-fit shadow-inner', meta.bg, meta.iconClass)}>
+                      <Icon className="h-5 w-5" aria-hidden />
                     </div>
-                    <p className="text-muted-foreground leading-relaxed">{a.detalhe}</p>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+                    <div className="flex-1 space-y-2">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <span className="font-black uppercase tracking-tight text-sm text-foreground/80">{a.titulo}</span>
+                        <Badge variant="outline" className="text-[9px] font-black uppercase border-white/10 bg-white/5 opacity-60">
+                          {CATEGORIA_LABEL[a.categoria] ?? a.categoria}
+                        </Badge>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            'text-[9px] font-black uppercase border-none px-3 py-1 rounded-full',
+                            a.severidade === 'error' && 'bg-destructive/20 text-destructive',
+                            a.severidade === 'warning' && 'bg-warning/20 text-warning',
+                            a.severidade === 'info' && 'bg-primary/20 text-primary',
+                          )}
+                        >
+                          {meta.label}
+                        </Badge>
+                      </div>
+                      <p className="text-muted-foreground font-medium leading-relaxed">{a.detalhe}</p>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
         )}
 
         {totais.erros > 0 && (
@@ -180,16 +204,19 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
   );
 }
 
-function ResumoBox({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+function ResumoBox({ label, value, highlight, icon: Icon }: { label: string; value: string; highlight?: boolean; icon?: any }) {
   return (
     <div
       className={cn(
-        'rounded-2xl border bg-black/20 p-4 transition-all duration-500 hover:bg-black/30 shadow-inner group/box',
-        highlight && 'border-warning/40 bg-warning/5 ring-1 ring-warning/20',
+        'rounded-2xl border bg-white/[0.03] p-5 transition-all duration-500 hover:bg-white/[0.06] shadow-xl group/box relative overflow-hidden',
+        highlight ? 'border-destructive/40 bg-destructive/5 ring-1 ring-destructive/20' : 'border-white/5',
       )}
     >
-      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-1 group-hover/box:text-primary transition-colors">{label}</p>
-      <p className={cn('font-black text-lg tracking-tight tabular-nums', highlight ? 'text-warning' : 'text-white')}>{value}</p>
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-40 group-hover/box:text-primary transition-colors">{label}</p>
+        {Icon && <Icon className="h-3 w-3 opacity-20 group-hover/box:scale-110 transition-transform" />}
+      </div>
+      <p className={cn('font-black text-lg tracking-tighter tabular-nums', highlight ? 'text-destructive' : 'text-foreground/90')}>{value}</p>
     </div>
   );
 }
