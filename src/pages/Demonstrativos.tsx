@@ -129,9 +129,16 @@ const Demonstrativos = () => {
               </SelectContent>
             </Select>
 
-            <Button variant="outline" size="icon">
-              <Download className="h-4 w-4" />
-            </Button>
+            <ExportDemonstrativoPDF
+              tipo="dre"
+              periodo={periodo}
+              mes={parseInt(mes)}
+              ano={parseInt(ano)}
+              empresa="Promo Finance"
+              linhas={exportData.dre.linhas}
+              resumoDRE={{ lucroLiquido: exportData.dre.lucroLiquido }}
+              fonte={fonteEfetiva}
+            />
           </div>
         </motion.div>
 
