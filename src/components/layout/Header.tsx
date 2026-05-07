@@ -113,8 +113,8 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
     <header
       ref={ref}
       className={cn(
-        'fixed top-0 right-0 z-30 h-20 bg-background/20 backdrop-blur-2xl border-b border-primary/5 transition-all duration-700 ease-apple',
-        sidebarCollapsed ? 'left-[72px]' : 'left-[280px]'
+        'fixed top-0 right-0 z-30 h-20 bg-[#0A0D14]/60 backdrop-blur-3xl border-b border-white/5 transition-all duration-700 ease-apple',
+        sidebarCollapsed ? 'left-[80px]' : 'left-[300px]'
       )}
       style={{ boxShadow: '0 4px 24px -1px rgba(0, 0, 0, 0.03)' }}
     >

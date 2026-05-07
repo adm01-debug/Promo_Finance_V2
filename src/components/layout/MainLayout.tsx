@@ -82,7 +82,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         id="main-content"
         initial={false}
         animate={{
-          marginLeft: isMobile ? 0 : (sidebarCollapsed ? 72 : 280),
+          marginLeft: isMobile ? 0 : (sidebarCollapsed ? 80 : 300),
         }}
         transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
         className={cn(
@@ -90,7 +90,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           isMobile ? 'pt-4 pb-24' : 'pt-20'
         )}
         style={{
-          width: isMobile ? '100%' : `calc(100% - ${sidebarCollapsed ? 72 : 280}px)`,
+          width: isMobile ? '100%' : `calc(100% - ${sidebarCollapsed ? 80 : 300}px)`,
         }}
       >
         <div className="w-full max-w-[1600px] mx-auto p-6 md:p-8 lg:p-10">
