@@ -438,9 +438,6 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
             </div>
           )}
         </ScrollArea>
-            )}
-          </TabsContent>
-        </Tabs>
 
 
         <DialogFooter className="gap-2">
