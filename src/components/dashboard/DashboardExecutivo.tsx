@@ -278,4 +278,3 @@ export const DashboardExecutivo = () => {
     </div>
   );
 };
-};
