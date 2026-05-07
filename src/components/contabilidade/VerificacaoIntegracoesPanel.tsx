@@ -131,107 +131,128 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
         <CardHeader className="p-8 pb-4 relative z-10">
           <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2"><Plug className="h-5 w-5 text-primary" />Status por Integração</CardTitle>
-              <CardDescription>Saúde dos lançamentos importados de cada fonte (Bitrix24, Bling, Asaas, etc.)</CardDescription>
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-primary/20 rounded-2xl shadow-xl">
+                <Plug className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="text-xl font-black tracking-tight">Status por Integração</CardTitle>
+                <CardDescription className="text-xs font-medium opacity-60">Saúde dos lançamentos importados de cada fonte</CardDescription>
+              </div>
             </div>
             <Button
               size="sm"
               variant="outline"
               onClick={() => qc.invalidateQueries({ queryKey: ['verificacao-integracoes', empresaId, ano] })}
               disabled={isFetching}
-              className="gap-1.5"
+              className="gap-2 rounded-xl font-bold border-white/10 bg-white/5 hover:bg-white/10 transition-all hover:translate-y-[-2px]"
             >
-              <RefreshCw className={`h-3.5 w-3.5 ${isFetching ? 'animate-spin' : ''}`} />
+              <RefreshCw className={cn("h-4 w-4", isFetching && "animate-spin")} />
               Reanalisar
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-8 pt-0 relative z-10">
           {isLoading ? (
-            <p className="text-sm text-muted-foreground">Analisando...</p>
+            <div className="flex items-center justify-center py-12 text-muted-foreground animate-pulse">
+              <RefreshCw className="h-6 w-6 animate-spin mr-3" /> Analisando integridade...
+            </div>
           ) : resumos.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhum lançamento importado em {ano}. Lançamentos manuais não aparecem aqui.</p>
+            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border border-dashed border-white/10 rounded-[1.5rem] bg-white/[0.02]">
+              <Activity className="h-10 w-10 opacity-20 mb-4" />
+              <p className="text-sm font-bold uppercase tracking-widest">Nenhum lançamento importado</p>
+            </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Origem</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
-                  <TableHead className="text-right">D=C</TableHead>
-                  <TableHead className="text-right">Divergentes</TableHead>
-                  <TableHead className="text-right">Sem partidas</TableHead>
-                  <TableHead className="text-right">Volume</TableHead>
-                  <TableHead className="text-right">Última importação</TableHead>
-                  <TableHead>Saúde</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {resumos.map(r => {
-                  const taxa = r.total > 0 ? Math.round((r.ok / r.total) * 100) : 100;
-                  const saudavel = taxa >= 95 && r.desbalanceados === 0;
-                  return (
-                    <TableRow key={r.origem}>
-                      <TableCell><Badge variant="outline" className="capitalize">{r.origem}</Badge></TableCell>
-                      <TableCell className="text-right font-mono">{r.total}</TableCell>
-                      <TableCell className="text-right font-mono text-success">{r.ok}</TableCell>
-                      <TableCell className={`text-right font-mono ${r.desbalanceados > 0 ? 'text-destructive font-semibold' : ''}`}>{r.desbalanceados}</TableCell>
-                      <TableCell className={`text-right font-mono ${r.sem_partidas > 0 ? 'text-warning' : ''}`}>{r.sem_partidas}</TableCell>
-                      <TableCell className="text-right font-mono">{formatCurrency(r.valor_total)}</TableCell>
-                      <TableCell className="text-right text-xs text-muted-foreground">
-                        {r.ultima_importacao ? format(new Date(r.ultima_importacao + 'T00:00:00'), 'dd/MM/yyyy') : '—'}
-                      </TableCell>
-                      <TableCell>
-                        {saudavel ? (
-                          <Badge variant="outline" className="border-success/40 bg-success/10 text-success gap-1">
-                            <CheckCircle2 className="h-3 w-3" />{taxa}% OK
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="border-destructive/40 bg-destructive/10 text-destructive gap-1">
-                            <AlertTriangle className="h-3 w-3" />{taxa}% OK
-                          </Badge>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+            <div className="rounded-[1.5rem] border border-white/5 overflow-hidden bg-white/[0.01]">
+              <Table>
+                <TableHeader className="bg-white/5">
+                  <TableRow className="border-white/5 hover:bg-transparent">
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest">Origem</TableHead>
+                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Total</TableHead>
+                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">D=C</TableHead>
+                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Divergentes</TableHead>
+                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Sem partidas</TableHead>
+                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Volume</TableHead>
+                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Última Ref</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest">Saúde</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {resumos.map((r, idx) => {
+                    const taxa = r.total > 0 ? Math.round((r.ok / r.total) * 100) : 100;
+                    const saudavel = taxa >= 95 && r.desbalanceados === 0;
+                    return (
+                      <TableRow key={r.origem} className="border-white/5 hover:bg-white/5 transition-colors">
+                        <TableCell><Badge variant="outline" className="capitalize border-none bg-primary/10 text-primary font-black text-[10px] px-2.5 rounded-lg">{r.origem}</Badge></TableCell>
+                        <TableCell className="text-right font-mono text-xs font-bold">{r.total}</TableCell>
+                        <TableCell className="text-right font-mono text-xs text-success font-bold">{r.ok}</TableCell>
+                        <TableCell className={cn("text-right font-mono text-xs", r.desbalanceados > 0 ? 'text-destructive font-black' : 'opacity-40')}>{r.desbalanceados || '—'}</TableCell>
+                        <TableCell className={cn("text-right font-mono text-xs", r.sem_partidas > 0 ? 'text-warning font-black' : 'opacity-40')}>{r.sem_partidas || '—'}</TableCell>
+                        <TableCell className="text-right font-mono text-xs font-bold text-foreground/80">{formatCurrency(r.valor_total)}</TableCell>
+                        <TableCell className="text-right text-[10px] font-black uppercase tracking-widest opacity-40">
+                          {r.ultima_importacao ? format(new Date(r.ultima_importacao + 'T00:00:00'), 'dd/MM/yyyy') : '—'}
+                        </TableCell>
+                        <TableCell>
+                          {saudavel ? (
+                            <Badge variant="outline" className="border-none bg-success/20 text-success gap-1 font-black text-[10px] px-2 rounded-full">
+                              <CheckCircle2 className="h-3 w-3" />{taxa}%
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="border-none bg-destructive/20 text-destructive gap-1 font-black text-[10px] px-2 rounded-full">
+                              <AlertTriangle className="h-3 w-3" />{taxa}%
+                            </Badge>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>
 
       {/* Lista detalhada com filtros */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Lançamentos Importados</CardTitle>
-          <CardDescription>Auditoria detalhada com débito, crédito e diferença por lançamento</CardDescription>
+      <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        <CardHeader className="p-8 pb-4 relative z-10">
+          <CardTitle className="text-xl font-black tracking-tight flex items-center gap-3">
+            <Activity className="h-6 w-6 text-primary" />
+            Lançamentos Importados
+          </CardTitle>
+          <CardDescription className="text-xs font-medium opacity-60">Auditoria detalhada com débito, crédito e diferença por lançamento</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-wrap gap-2 items-center">
-            <div className="relative flex-1 min-w-[220px] max-w-sm">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Buscar histórico, nº ou ref..." value={busca} onChange={e => setBusca(e.target.value)} className="pl-8" />
+        <CardContent className="p-8 pt-0 relative z-10 space-y-6">
+          <div className="flex flex-wrap gap-4 items-center">
+            <div className="relative flex-1 min-w-[280px] group/search">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within/search:text-primary" />
+              <Input 
+                placeholder="Buscar histórico, nº ou ref..." 
+                value={busca} 
+                onChange={e => setBusca(e.target.value)} 
+                className="h-12 pl-12 bg-white/5 border-white/5 rounded-2xl font-bold transition-all focus:ring-primary/20" 
+              />
             </div>
             <Select value={origemFiltro} onValueChange={setOrigemFiltro}>
-              <SelectTrigger className="w-[180px]"><Filter className="h-3.5 w-3.5 mr-1" /><SelectValue /></SelectTrigger>
-              <SelectContent>
+              <SelectTrigger className="w-[200px] h-12 rounded-2xl border-white/5 bg-white/5 font-bold"><Filter className="h-4 w-4 mr-2 opacity-50" /><SelectValue /></SelectTrigger>
+              <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
                 <SelectItem value="todas">Todas as origens</SelectItem>
                 {origens.map(o => <SelectItem key={o} value={o} className="capitalize">{o}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={statusFiltro} onValueChange={v => setStatusFiltro(v as 'todos' | StatusConsistencia)}>
-              <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
-              <SelectContent>
+              <SelectTrigger className="w-[220px] h-12 rounded-2xl border-white/5 bg-white/5 font-bold"><SelectValue /></SelectTrigger>
+              <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
                 <SelectItem value="todos">Todos os status</SelectItem>
-                <SelectItem value="ok">D=C (consistentes)</SelectItem>
+                <SelectItem value="ok">Consistentes (D=C)</SelectItem>
                 <SelectItem value="desbalanceado">Desbalanceados</SelectItem>
                 <SelectItem value="sem_partidas">Sem partidas</SelectItem>
                 <SelectItem value="orfao">Órfãos</SelectItem>
               </SelectContent>
             </Select>
-            <div className="ml-auto text-xs text-muted-foreground">
-              {filtrados.length} de {lancs.length}
+            <div className="text-[10px] font-black uppercase tracking-widest opacity-40 bg-white/5 px-4 py-3 rounded-2xl border border-white/5">
+              {filtrados.length} / {lancs.length} registros
             </div>
           </div>
 
@@ -240,37 +261,45 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
           ) : filtrados.length === 0 ? (
             <p className="text-sm text-muted-foreground py-6 text-center">Nenhum lançamento encontrado com os filtros aplicados.</p>
           ) : (
-            <div className="rounded-md border overflow-x-auto">
+            <div className="rounded-[1.5rem] border border-white/5 overflow-hidden bg-white/[0.01]">
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nº</TableHead>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Origem</TableHead>
-                    <TableHead>Histórico</TableHead>
-                    <TableHead className="text-right">Débito</TableHead>
-                    <TableHead className="text-right">Crédito</TableHead>
-                    <TableHead className="text-right">Diferença</TableHead>
-                    <TableHead className="text-right">Partidas</TableHead>
-                    <TableHead>Consistência</TableHead>
+                <TableHeader className="bg-white/5">
+                  <TableRow className="border-white/5 hover:bg-transparent">
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest">Nº</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest">Data</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest">Origem</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest">Histórico</TableHead>
+                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Débito</TableHead>
+                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Crédito</TableHead>
+                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Diferença</TableHead>
+                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Partidas</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest">Consistência</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filtrados.slice(0, 200).map(l => (
-                    <TableRow key={l.id} className={l.status_consistencia !== 'ok' ? 'bg-destructive/5' : undefined}>
-                      <TableCell className="font-mono text-xs">{l.numero_lancamento}</TableCell>
-                      <TableCell className="text-xs">{format(new Date(l.data_lancamento + 'T00:00:00'), 'dd/MM/yyyy')}</TableCell>
-                      <TableCell><Badge variant="outline" className="capitalize text-xs">{l.origem}</Badge></TableCell>
-                      <TableCell className="max-w-xs truncate text-xs">{l.historico}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{formatCurrency(l.total_debito)}</TableCell>
-                      <TableCell className="text-right font-mono text-xs">{formatCurrency(l.total_credito)}</TableCell>
-                      <TableCell className={`text-right font-mono text-xs ${l.diferenca > 0.01 ? 'text-destructive font-semibold' : 'text-muted-foreground'}`}>
-                        {l.diferenca > 0.01 ? formatCurrency(l.diferenca) : '—'}
-                      </TableCell>
-                      <TableCell className="text-right font-mono text-xs">{l.qtd_partidas}</TableCell>
-                      <TableCell>{statusBadge(l.status_consistencia)}</TableCell>
-                    </TableRow>
-                  ))}
+                  <AnimatePresence>
+                    {filtrados.slice(0, 200).map((l, idx) => (
+                      <motion.tr 
+                        key={l.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.01 }}
+                        className={cn("border-white/5 hover:bg-white/5 transition-colors", l.status_consistencia !== 'ok' ? 'bg-destructive/5' : undefined)}
+                      >
+                        <TableCell className="font-mono text-xs font-bold opacity-60">{l.numero_lancamento}</TableCell>
+                        <TableCell className="text-[10px] font-black uppercase tracking-widest opacity-60">{format(new Date(l.data_lancamento + 'T00:00:00'), 'dd/MM/yyyy')}</TableCell>
+                        <TableCell><Badge variant="outline" className="capitalize border-none bg-primary/10 text-primary font-black text-[10px] px-2 rounded-lg">{l.origem}</Badge></TableCell>
+                        <TableCell className="max-w-xs truncate text-xs font-medium">{l.historico}</TableCell>
+                        <TableCell className="text-right font-mono text-xs font-bold">{formatCurrency(l.total_debito)}</TableCell>
+                        <TableCell className="text-right font-mono text-xs font-bold">{formatCurrency(l.total_credito)}</TableCell>
+                        <TableCell className={cn("text-right font-mono text-xs font-black", l.diferenca > 0.01 ? 'text-destructive' : 'opacity-20')}>
+                          {l.diferenca > 0.01 ? formatCurrency(l.diferenca) : '—'}
+                        </TableCell>
+                        <TableCell className="text-right font-mono text-xs font-bold opacity-60">{l.qtd_partidas}</TableCell>
+                        <TableCell>{statusBadge(l.status_consistencia)}</TableCell>
+                      </motion.tr>
+                    ))}
+                  </AnimatePresence>
                 </TableBody>
               </Table>
             </div>
