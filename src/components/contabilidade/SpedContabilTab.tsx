@@ -598,7 +598,9 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                   );
                 })}
               </TableBody>
-            </Table>
+                </Table>
+              </div>
+            </div>
           )}
         </CardContent>
       </Card>
