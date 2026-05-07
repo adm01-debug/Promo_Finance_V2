@@ -132,118 +132,150 @@ export const DashboardExecutivo = () => {
   };
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-5 sm:space-y-7" data-tour="dashboard">
-      {/* Hero Header */}
-      <DashboardFiltersHeader
-        empresas={metrics.empresas}
-        centrosCusto={metrics.centrosCusto}
-        empresaFilter={empresaFilter}
-        setEmpresaFilter={setEmpresaFilter}
-        centroCustoFilter={centroCustoFilter}
-        setCentroCustoFilter={setCentroCustoFilter}
-        onOpenConfig={() => setConfigDialogOpen(true)}
-      />
+    <div className="relative min-h-screen">
+      {/* Premium Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-5%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[20%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/5 blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-[30%] right-[10%] w-[35%] h-[35%] rounded-full bg-purple-500/5 blur-[120px] animate-pulse" style={{ animationDelay: '4s' }} />
+      </div>
 
-      {/* Hero KPIs — always visible, not draggable */}
-      <motion.div variants={itemVariants}>
-        <HeroKPIGrid layout="hero-first">
-          <HeroKPICard
-            title="Saldo Total"
-            value={metrics.saldoTotal}
-            icon={Wallet}
-            iconColor="text-primary"
-            iconBg="bg-primary/10"
-            accentColor="hsl(24, 95%, 46%)"
-            href="/contas-bancarias"
-            size="hero"
-            badge={`${metrics.contasBancariasFiltradas.length} conta(s)`}
-            tooltip="Soma de todos os saldos das contas bancárias"
-            insight="Mantenha reserva de 3 meses de despesas"
-          />
-          <HeroKPICard
-            title="A Receber"
-            value={metrics.totalReceber}
-            previousValue={metrics.totalReceber - metrics.receitasMes}
-            icon={ArrowDownCircle}
-            iconColor="text-success"
-            iconBg="bg-success/10"
-            accentColor="hsl(150, 70%, 42%)"
-            href="/contas-receber"
-            size="primary"
-            badge={metrics.receitasMes > 0 ? formatCurrency(metrics.receitasMes) + " este mês" : undefined}
-            emptyStateMessage={metrics.totalReceber === 0 ? "Crie sua primeira conta a receber →" : undefined}
-            emptyStateHref="/contas-receber"
-          />
-          <HeroKPICard
-            title="A Pagar"
-            value={metrics.totalPagar}
-            previousValue={metrics.totalPagar - metrics.despesasMes}
-            icon={ArrowUpCircle}
-            iconColor="text-destructive"
-            iconBg="bg-destructive/10"
-            accentColor="hsl(0, 78%, 55%)"
-            href="/contas-pagar"
-            size="primary"
-            badge={metrics.despesasMes > 0 ? formatCurrency(metrics.despesasMes) + " este mês" : undefined}
-            emptyStateMessage={metrics.totalPagar === 0 ? "Registre seu primeiro pagamento →" : undefined}
-            emptyStateHref="/contas-pagar"
-          />
-          <HeroKPICard
-            title="Inadimplência"
-            value={metrics.inadimplencia}
-            icon={AlertTriangle}
-            iconColor={metrics.inadimplencia > 10 ? "text-destructive" : metrics.inadimplencia > 5 ? "text-warning" : "text-success"}
-            iconBg={metrics.inadimplencia > 10 ? "bg-destructive/10" : metrics.inadimplencia > 5 ? "bg-warning/10" : "bg-success/10"}
-            accentColor={metrics.inadimplencia > 10 ? "hsl(0, 78%, 55%)" : metrics.inadimplencia > 5 ? "hsl(42, 95%, 48%)" : "hsl(150, 70%, 42%)"}
-            href="/cobrancas"
-            size="primary"
-            isPercentage
-            isCurrency={false}
-            badge={inadimplenciaBadge}
-            badgeVariant={inadimplenciaBadgeVariant}
-            emptyStateMessage={metrics.inadimplencia === 0 ? "✓ Nenhuma inadimplência — excelente!" : undefined}
-          />
-        </HeroKPIGrid>
-      </motion.div>
+      <motion.div 
+        variants={containerVariants} 
+        initial="hidden" 
+        animate="visible" 
+        className="relative z-10 space-y-8 sm:space-y-10 pb-20" 
+        data-tour="dashboard"
+      >
+        {/* Header Section */}
+        <DashboardFiltersHeader
+          empresas={metrics.empresas}
+          centrosCusto={metrics.centrosCusto}
+          empresaFilter={empresaFilter}
+          setEmpresaFilter={setEmpresaFilter}
+          centroCustoFilter={centroCustoFilter}
+          setCentroCustoFilter={setCentroCustoFilter}
+          onOpenConfig={() => setConfigDialogOpen(true)}
+        />
 
-      {/* Secondary KPIs */}
-      <motion.div variants={itemVariants}>
-        <SecondaryKPICards
-          empresasCount={metrics.empresas.length}
-          contasBancariasCount={metrics.contasBancarias.length}
-          venceHojeReceberCount={metrics.venceHojeReceber.length}
-          venceHojePagarCount={metrics.venceHojePagar.length}
-          aprovacoesPendentes={metrics.aprovacoesPendentes}
-          vencidasTotal={metrics.vencidasReceber.length + metrics.vencidasPagar.length}
+        {/* Hero KPIs Section */}
+        <motion.div variants={itemVariants} className="px-1">
+          <HeroKPIGrid layout="hero-first">
+            <HeroKPICard
+              title="Saldo Total"
+              value={metrics.saldoTotal}
+              icon={Wallet}
+              iconColor="text-primary"
+              iconBg="bg-primary/10"
+              accentColor="hsl(24, 95%, 46%)"
+              href="/contas-bancarias"
+              size="hero"
+              badge={`${metrics.contasBancariasFiltradas.length} conta(s)`}
+              tooltip="Soma de todos os saldos das contas bancárias"
+              insight="Mantenha reserva de 3 meses de despesas"
+            />
+            <HeroKPICard
+              title="A Receber"
+              value={metrics.totalReceber}
+              previousValue={metrics.totalReceber - metrics.receitasMes}
+              icon={ArrowDownCircle}
+              iconColor="text-success"
+              iconBg="bg-success/10"
+              accentColor="hsl(150, 70%, 42%)"
+              href="/contas-receber"
+              size="primary"
+              badge={metrics.receitasMes > 0 ? formatCurrency(metrics.receitasMes) + " este mês" : undefined}
+              emptyStateMessage={metrics.totalReceber === 0 ? "Crie sua primeira conta a receber →" : undefined}
+              emptyStateHref="/contas-receber"
+            />
+            <HeroKPICard
+              title="A Pagar"
+              value={metrics.totalPagar}
+              previousValue={metrics.totalPagar - metrics.despesasMes}
+              icon={ArrowUpCircle}
+              iconColor="text-destructive"
+              iconBg="bg-destructive/10"
+              accentColor="hsl(0, 78%, 55%)"
+              href="/contas-pagar"
+              size="primary"
+              badge={metrics.despesasMes > 0 ? formatCurrency(metrics.despesasMes) + " este mês" : undefined}
+              emptyStateMessage={metrics.totalPagar === 0 ? "Registre seu primeiro pagamento →" : undefined}
+              emptyStateHref="/contas-pagar"
+            />
+            <HeroKPICard
+              title="Inadimplência"
+              value={metrics.inadimplencia}
+              icon={AlertTriangle}
+              iconColor={metrics.inadimplencia > 10 ? "text-destructive" : metrics.inadimplencia > 5 ? "text-warning" : "text-success"}
+              iconBg={metrics.inadimplencia > 10 ? "bg-destructive/10" : metrics.inadimplencia > 5 ? "bg-warning/10" : "bg-success/10"}
+              accentColor={metrics.inadimplencia > 10 ? "hsl(0, 78%, 55%)" : metrics.inadimplencia > 5 ? "hsl(42, 95%, 48%)" : "hsl(150, 70%, 42%)"}
+              href="/cobrancas"
+              size="primary"
+              isPercentage
+              isCurrency={false}
+              badge={inadimplenciaBadge}
+              badgeVariant={inadimplenciaBadgeVariant}
+              emptyStateMessage={metrics.inadimplencia === 0 ? "✓ Nenhuma inadimplência — excelente!" : undefined}
+            />
+          </HeroKPIGrid>
+        </motion.div>
+
+        {/* Key Metrics Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-8 space-y-10">
+            {/* Secondary KPIs */}
+            <motion.div variants={itemVariants}>
+              <SecondaryKPICards
+                empresasCount={metrics.empresas.length}
+                contasBancariasCount={metrics.contasBancarias.length}
+                venceHojeReceberCount={metrics.venceHojeReceber.length}
+                venceHojePagarCount={metrics.venceHojePagar.length}
+                aprovacoesPendentes={metrics.aprovacoesPendentes}
+                vencidasTotal={metrics.vencidasReceber.length + metrics.vencidasPagar.length}
+              />
+            </motion.div>
+
+            {/* Smart Actions Panel */}
+            <motion.div variants={itemVariants}>
+              <CentroAcoesInteligentes empresaId={empresaFilter !== 'all' ? empresaFilter : undefined} />
+            </motion.div>
+
+            {/* Analytics Section */}
+            <div className="space-y-6">
+              <SectionDivider label="Analytics & Inteligência" icon={BarChart3} />
+              <DraggableDashboard
+                widgets={widgets}
+                isEditing={isEditing}
+                setIsEditing={setIsEditing}
+                onReorder={reorderWidgets}
+                onToggle={toggleWidget}
+                onResize={resizeWidget}
+                renderWidget={renderWidget}
+              />
+            </div>
+          </div>
+
+          <aside className="lg:col-span-4 space-y-8">
+            {/* AI Insights & Previsions */}
+            <SectionDivider label="IA & Insights" icon={Brain} />
+            <div className="space-y-6">
+              {renderWidget({ id: 'previsao-ia', title: 'Previsão IA', type: 'chart' })}
+              {renderWidget({ id: 'alertas-preditivos', title: 'Alertas Preditivos', type: 'list' })}
+              {renderWidget({ id: 'metas', title: 'Metas', type: 'list' })}
+            </div>
+          </aside>
+        </div>
+
+        <DashboardConfigDialog
+          open={configDialogOpen}
+          onOpenChange={setConfigDialogOpen}
+          widgets={widgets}
+          onToggleWidget={toggleWidget}
+          onResizeWidget={resizeWidget}
+          onResetToDefault={resetToDefault}
         />
       </motion.div>
-
-      {/* P13: Centro de Ações Inteligentes */}
-      <motion.div variants={itemVariants}>
-        <CentroAcoesInteligentes empresaId={empresaFilter !== 'all' ? empresaFilter : undefined} />
-      </motion.div>
-
-      {/* Section: Customizable Widgets */}
-      <SectionDivider label="Analytics & Inteligência" icon={BarChart3} />
-
-      <DraggableDashboard
-        widgets={widgets}
-        isEditing={isEditing}
-        setIsEditing={setIsEditing}
-        onReorder={reorderWidgets}
-        onToggle={toggleWidget}
-        onResize={resizeWidget}
-        renderWidget={renderWidget}
-      />
-
-      <DashboardConfigDialog
-        open={configDialogOpen}
-        onOpenChange={setConfigDialogOpen}
-        widgets={widgets}
-        onToggleWidget={toggleWidget}
-        onResizeWidget={resizeWidget}
-        onResetToDefault={resetToDefault}
-      />
-    </motion.div>
+    </div>
   );
+};
 };
