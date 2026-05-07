@@ -126,7 +126,7 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
 
       <div className="grid gap-8 md:grid-cols-3">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 h-full group hover:ring-primary/30 transition-all duration-500">
+          <Card className="border-none bg-white/[0.02] backdrop-blur-3xl shadow-[0_32px_64px_rgba(0,0,0,0.5)] rounded-[3rem] overflow-hidden ring-1 ring-white/10 h-full group hover:ring-primary/40 transition-all duration-700">
             <CardContent className="p-10">
               <div className="flex items-center justify-between mb-8">
                 <div className="p-3 rounded-2xl bg-primary shadow-lg shadow-primary/20 text-primary-foreground">
@@ -158,7 +158,7 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <Card className={cn(
-            "border-none backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 h-full flex items-center justify-center transition-all duration-700",
+            "border-none backdrop-blur-3xl shadow-[0_32px_64px_rgba(0,0,0,0.5)] rounded-[3rem] overflow-hidden ring-1 h-full flex items-center justify-center transition-all duration-1000",
             balanco.equilibrado 
               ? "bg-success/5 ring-success/20 shadow-success/5 hover:ring-success/40" 
               : "bg-destructive/5 ring-destructive/20 shadow-destructive/5 hover:ring-destructive/40"
@@ -201,7 +201,7 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-          <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 h-full group hover:ring-purple-500/30 transition-all duration-500">
+          <Card className="border-none bg-white/[0.02] backdrop-blur-3xl shadow-[0_32px_64px_rgba(0,0,0,0.5)] rounded-[3rem] overflow-hidden ring-1 ring-white/10 h-full group hover:ring-purple-500/40 transition-all duration-700">
             <CardContent className="p-10">
               <div className="flex items-center justify-between mb-8">
                 <div className="p-3 rounded-2xl bg-purple-600 shadow-lg shadow-purple-500/20 text-white">
@@ -234,7 +234,7 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
 
       <div className="grid gap-12 lg:grid-cols-2">
         <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
-          <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative">
+          <Card className="border-none bg-white/[0.02] backdrop-blur-3xl shadow-[0_48px_96px_rgba(0,0,0,0.4)] rounded-[3rem] overflow-hidden ring-1 ring-white/10 relative">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
             <CardHeader className="p-10 pb-4 relative z-10">
               <div className="flex items-center justify-between">
@@ -253,7 +253,7 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
               </div>
             </CardHeader>
             <CardContent className="p-10 pt-4 relative z-10">
-              <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-black/20 shadow-inner">
+              <div className="rounded-[2.5rem] border border-white/10 overflow-hidden bg-black/40 shadow-inner backdrop-blur-2xl">
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse">
                     <thead>
@@ -275,7 +275,7 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
         </motion.div>
 
         <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
-          <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative">
+          <Card className="border-none bg-white/[0.02] backdrop-blur-3xl shadow-[0_48px_96px_rgba(0,0,0,0.4)] rounded-[3rem] overflow-hidden ring-1 ring-white/10 relative">
             <div className="absolute inset-0 bg-gradient-to-bl from-purple-500/5 via-transparent to-transparent pointer-events-none" />
             <CardHeader className="p-10 pb-4 relative z-10">
               <div className="flex items-center justify-between">
@@ -291,7 +291,7 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
               </div>
             </CardHeader>
             <CardContent className="p-10 pt-4 relative z-10">
-              <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-black/20 shadow-inner">
+              <div className="rounded-[2.5rem] border border-white/10 overflow-hidden bg-black/40 shadow-inner backdrop-blur-2xl">
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse">
                     <thead>
