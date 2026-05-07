@@ -51,7 +51,7 @@ describe('ValidacoesPreSpedDialog — bloqueio de download por erros', () => {
 
     // Banner de bloqueio visível
     expect(screen.getByTestId('banner-bloqueio')).toBeInTheDocument();
-    expect(screen.getByText(/Download bloqueado/i)).toBeInTheDocument();
+    expect(screen.getByText(/Arquivo rejeitado pela transmissão/i)).toBeInTheDocument();
 
     // Contadores corretos
     expect(screen.getByTestId('contador-erros')).toHaveTextContent('2');

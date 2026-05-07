@@ -902,6 +902,12 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
                   hash_sha256: resultado.hash_sha256,
                   status: downloadBloqueado ? 'rejeitado' : 'gerado',
                   validacoes: { erros: errosResultado, avisos: avisosResultado },
+                  cnpj: resultado.empresa?.cnpj,
+                  razao_social: resultado.empresa?.razao_social,
+                  periodo_inicio: resultado.periodo?.inicio,
+                  periodo_fim: resultado.periodo?.fim,
+                  total_lancamentos: resultado.total_lancamentos,
+                  total_linhas: resultado.total_linhas,
                 }}
                 onDownloadTxt={() => window.open(resultado.url, '_blank')}
                 onDownloadZip={() => baixarZip()}

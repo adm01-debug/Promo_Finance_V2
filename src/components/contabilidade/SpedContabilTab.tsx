@@ -38,6 +38,10 @@ interface HistoricoRow {
   recibo_transmissao: string | null;
   validacoes: { erros: string[]; avisos: string[] };
   tipo: string;
+  periodo_inicio: string;
+  periodo_fim: string;
+  gerado_por: string | null;
+  empresa_id: string;
 }
 
 const DRAFT_KEY = (tipo: 'ECD' | 'ECF', empresaId?: string) =>
@@ -63,6 +67,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
   const [reciboInput, setReciboInput] = useState('');
   const [expandedAudit, setExpandedAudit] = useState<Set<string>>(new Set());
   const [exportStatus, setExportStatus] = useState<'idle' | 'queued' | 'processing' | 'done' | 'error'>('idle');
+  const [empresaDados, setEmpresaDados] = useState<{ cnpj: string; razao_social: string } | null>(null);
   const transmitir = useRegistrarTransmissaoSped();
   const gerarSped = useGerarSpedContabil();
   const { data: historico = [], isLoading } = useSpedContabilHistorico(empresaId);
@@ -145,6 +150,18 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
   }, [ano, tipo, empresaId]);
 
 
+  useEffect(() => {
+    if (!empresaId) return;
+    supabase
+      .from('empresas')
+      .select('cnpj, razao_social')
+      .eq('id', empresaId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) setEmpresaDados(data);
+      });
+  }, [empresaId]);
+
   const handleDownload = async (storage_path: string) => {
     const { data, error } = await supabase.storage.from('relatorios-tributarios').createSignedUrl(storage_path, 60 * 60);
     if (error || !data) { toast.error('Falha ao gerar link'); return; }
@@ -203,6 +220,14 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
           hash_sha256: validacoesArquivo.hash_sha256,
           status: validacoesArquivo.status,
           validacoes: validacoesArquivo.validacoes ?? { erros: [], avisos: [] },
+          cnpj: empresaDados?.cnpj,
+          razao_social: empresaDados?.razao_social,
+          periodo_inicio: validacoesArquivo.periodo_inicio,
+          periodo_fim: validacoesArquivo.periodo_fim,
+          gerado_por: validacoesArquivo.gerado_por,
+          created_at: validacoesArquivo.created_at,
+          total_lancamentos: validacoesArquivo.total_lancamentos,
+          total_linhas: validacoesArquivo.total_linhas,
         } satisfies ValidacoesPreSpedArquivo : null}
         onDownloadTxt={() => validacoesArquivo && handleDownload(validacoesArquivo.storage_path)}
         onDownloadZip={() => validacoesArquivo && handleDownloadZip(validacoesArquivo)}
