@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { useContasPagar, useContasReceber, useContasBancarias } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
+import { cn } from '@/lib/utils';
 
 interface FluxoCaixaContabilProps {
   periodo: string;
