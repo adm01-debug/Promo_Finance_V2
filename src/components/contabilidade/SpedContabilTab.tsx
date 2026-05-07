@@ -377,20 +377,22 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
           ) : historicoTipo.length === 0 ? (
             <p className="text-sm text-muted-foreground">Nenhum arquivo gerado ainda.</p>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-8"></TableHead>
-                  <TableHead>Período</TableHead>
-                  <TableHead>Gerado em</TableHead>
-                  <TableHead>Lançamentos</TableHead>
-                  <TableHead>Linhas</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Recibo</TableHead>
-                  <TableHead>Hash</TableHead>
-                  <TableHead className="text-right">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
+            <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-black/20 shadow-inner">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <tr className="bg-white/[0.02] border-b border-white/5">
+                      <th className="w-12 p-6"></th>
+                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Período</th>
+                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Timestamp de Geração</th>
+                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Lançamentos</th>
+                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Total Linhas</th>
+                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Status de Validação</th>
+                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Recibo/Protocolo</th>
+                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Integridade (Hash)</th>
+                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-right">Governança</th>
+                    </tr>
+                  </TableHeader>
               <TableBody>
                 {historicoTipo.map((h) => {
                   const isOpen = expandedAudit.has(h.id);
