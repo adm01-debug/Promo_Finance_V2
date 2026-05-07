@@ -10,10 +10,11 @@ import {
   endOfDay,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { BookText, CalendarIcon, Download, FileSpreadsheet, FileText, Search } from 'lucide-react';
+import { BookText, CalendarIcon, Download, FileSpreadsheet, FileText, Search, Wand2, Filter, ChevronDown, CheckCircle2, AlertTriangle, BookOpen, Activity, ArrowRightLeft } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useManagedFilters } from '@/hooks/useManagedFilters';
 import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,7 +22,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { useLancamentosContabeis } from '@/hooks/useLancamentosContabeis';
@@ -237,96 +238,108 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
 
   if (!empresaId) {
     return (
-      <Card>
-        <CardContent className="py-12 text-center text-sm text-muted-foreground">
-          Selecione uma empresa para visualizar o Razão e o Diário.
+      <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group p-12">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
+        <CardContent className="relative z-10 text-center space-y-4">
+          <div className="p-4 bg-primary/10 rounded-3xl w-fit mx-auto animate-pulse">
+            <BookText className="h-12 w-12 text-primary opacity-40" />
+          </div>
+          <div className="space-y-2">
+            <p className="text-xl font-black tracking-tight">Razão & Diário</p>
+            <p className="text-sm font-medium opacity-60 max-w-xs mx-auto">Selecione uma empresa para visualizar os demonstrativos analíticos.</p>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <BookText className="h-5 w-5 text-primary" />
-          Razão & Diário
-        </CardTitle>
+    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+      <CardHeader className="p-8 pb-4 relative z-10">
+        <div className="flex flex-wrap items-center justify-between gap-6">
+          <div className="flex items-center gap-5">
+            <div className={cn("p-4 rounded-2xl bg-primary shadow-xl shadow-primary/20 text-primary-foreground transform group-hover:scale-110 transition-all duration-500")}>
+              <BookText className="h-8 w-8" />
+            </div>
+            <div>
+              <CardTitle className="text-3xl font-black tracking-tighter">Razão & Diário</CardTitle>
+              <CardDescription className="text-sm font-medium opacity-60">Demonstrativos contábeis detalhados por período</CardDescription>
+            </div>
+          </div>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {/*
-          Filtros COMPARTILHADOS entre Diário e Razão.
-          Padrão alinhado ao LancamentosTab: presets, popover de calendário,
-          busca, "Limpar" e contador no canto direito.
-        */}
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="relative flex-1 min-w-[220px] max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por histórico ou conta..."
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
-              className="pl-8"
+      <CardContent className="p-8 pt-2 relative z-10 space-y-8">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="relative flex-1 min-w-[320px] group/search">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within/search:text-primary" />
+            <Input 
+              placeholder="Buscar por histórico ou conta..." 
+              value={busca} 
+              onChange={e => setBusca(e.target.value)} 
+              className="h-14 pl-12 bg-white/5 border-white/5 rounded-2xl font-bold text-lg transition-all focus:ring-primary/20 placeholder:text-muted-foreground/40" 
             />
           </div>
 
-          <Select value={preset} onValueChange={(v) => handlePreset(v as DatePreset)}>
-            <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ano">Ano de {ano}</SelectItem>
-              <SelectItem value="all">Todo o período</SelectItem>
-              <SelectItem value="today">Hoje</SelectItem>
-              <SelectItem value="last7">Últimos 7 dias</SelectItem>
-              <SelectItem value="last30">Últimos 30 dias</SelectItem>
-              <SelectItem value="mes">Este mês</SelectItem>
-              <SelectItem value="custom">Personalizado</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-3">
+            <Select value={preset} onValueChange={(v) => handlePreset(v as DatePreset)}>
+              <SelectTrigger className="h-12 w-[180px] rounded-2xl border-white/5 bg-white/5 font-bold"><SelectValue /></SelectTrigger>
+              <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
+                <SelectItem value="ano">Ano de {ano}</SelectItem>
+                <SelectItem value="all">Todo o período</SelectItem>
+                <SelectItem value="today">Hoje</SelectItem>
+                <SelectItem value="last7">Últimos 7 dias</SelectItem>
+                <SelectItem value="last30">Últimos 30 dias</SelectItem>
+                <SelectItem value="mes">Este mês</SelectItem>
+                <SelectItem value="custom">Personalizado</SelectItem>
+              </SelectContent>
+            </Select>
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className={cn('gap-2', !dataInicio && 'text-muted-foreground')}>
-                <CalendarIcon className="h-4 w-4" />
-                {dataInicio ? format(new Date(`${dataInicio}T00:00:00`), 'dd/MM/yyyy', { locale: ptBR }) : 'Início'}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={dataInicio ? new Date(`${dataInicio}T00:00:00`) : undefined}
-                onSelect={(d) => { if (d) { setDataInicio(toIsoDate(d)); setPreset('custom'); } }}
-                initialFocus
-                className={cn('p-3 pointer-events-auto')}
-              />
-            </PopoverContent>
-          </Popover>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className={cn('h-12 rounded-2xl border-white/5 bg-white/5 gap-2 px-5 font-bold', !dataInicio && 'text-muted-foreground')}>
+                  <CalendarIcon className="h-4 w-4 text-primary" />
+                  {dataInicio ? format(new Date(`${dataInicio}T00:00:00`), 'dd/MM/yyyy', { locale: ptBR }) : 'Início'}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 border-none shadow-3xl rounded-3xl overflow-hidden" align="start">
+                <Calendar
+                  mode="single"
+                  selected={dataInicio ? new Date(`${dataInicio}T00:00:00`) : undefined}
+                  onSelect={(d) => { if (d) { setDataInicio(toIsoDate(d)); setPreset('custom'); } }}
+                  initialFocus
+                  className={cn('p-3 pointer-events-auto')}
+                />
+              </PopoverContent>
+            </Popover>
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className={cn('gap-2', !dataFim && 'text-muted-foreground')}>
-                <CalendarIcon className="h-4 w-4" />
-                {dataFim ? format(new Date(`${dataFim}T00:00:00`), 'dd/MM/yyyy', { locale: ptBR }) : 'Fim'}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={dataFim ? new Date(`${dataFim}T00:00:00`) : undefined}
-                onSelect={(d) => { if (d) { setDataFim(toIsoDate(d)); setPreset('custom'); } }}
-                initialFocus
-                className={cn('p-3 pointer-events-auto')}
-              />
-            </PopoverContent>
-          </Popover>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className={cn('h-12 rounded-2xl border-white/5 bg-white/5 gap-2 px-5 font-bold', !dataFim && 'text-muted-foreground')}>
+                  <CalendarIcon className="h-4 w-4 text-primary" />
+                  {dataFim ? format(new Date(`${dataFim}T00:00:00`), 'dd/MM/yyyy', { locale: ptBR }) : 'Fim'}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 border-none shadow-3xl rounded-3xl overflow-hidden" align="start">
+                <Calendar
+                  mode="single"
+                  selected={dataFim ? new Date(`${dataFim}T00:00:00`) : undefined}
+                  onSelect={(d) => { if (d) { setDataFim(toIsoDate(d)); setPreset('custom'); } }}
+                  initialFocus
+                  className={cn('p-3 pointer-events-auto')}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
 
           <Select value={contaId} onValueChange={setContaId}>
-            <SelectTrigger className="w-[220px]">
+            <SelectTrigger className="h-12 w-[220px] rounded-2xl border-white/5 bg-white/5 font-bold">
               <SelectValue placeholder="Todas as contas" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
               <SelectItem value="todas">Todas as contas</SelectItem>
               {plano.filter((c) => c.tipo === 'analitica').map((c) => (
-                <SelectItem key={c.id} value={c.id}>{c.codigo} — {c.nome || c.descricao}</SelectItem>
+                <SelectItem key={c.id} value={c.id} className="font-mono text-xs">{c.codigo} — {c.nome || c.descricao}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -341,75 +354,122 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
             ]}
           />
 
-          <div className="ml-auto text-xs text-muted-foreground">
+          <div className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 bg-white/5 px-5 py-4 rounded-2xl border border-white/5 ml-auto">
             {modo === 'diario'
               ? `${diario.length.toLocaleString('pt-BR')} partidas`
-              : `${razao.length} conta(s) com movimento`}
+              : `${razao.length} contas`}
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-3">
-            <ToggleGroup type="single" value={modo} onValueChange={(v) => v && setModo(v as 'diario' | 'razao')}>
-              <ToggleGroupItem value="diario">Diário</ToggleGroupItem>
-              <ToggleGroupItem value="razao">Razão</ToggleGroupItem>
+        <div className="flex flex-wrap items-center justify-between gap-6 bg-white/[0.03] p-4 rounded-3xl border border-white/5">
+          <div className="flex items-center gap-4">
+            <ToggleGroup type="single" value={modo} onValueChange={(v) => v && setModo(v as 'diario' | 'razao')} className="bg-background/40 p-1 rounded-2xl border border-white/5">
+              <ToggleGroupItem value="diario" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all px-6 font-black uppercase text-[10px] tracking-widest">Diário</ToggleGroupItem>
+              <ToggleGroupItem value="razao" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all px-6 font-black uppercase text-[10px] tracking-widest">Razão</ToggleGroupItem>
             </ToggleGroup>
-            <span className="text-xs text-muted-foreground hidden sm:inline">
-              Filtros aplicados a ambas as visões
-            </span>
+            <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-2xl border border-primary/20">
+              <ArrowRightLeft className="h-3 w-3 text-primary" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-primary">
+                Filtros Cruzados Ativos
+              </span>
+            </div>
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="sm" variant="outline">
-                <Download className="h-3 w-3 mr-1" /> Exportar
+              <Button size="sm" variant="outline" className="h-10 rounded-2xl font-black gap-2 border-white/10 bg-white/5 hover:bg-white/10 px-6 transition-all hover:translate-y-[-2px]">
+                <Download className="h-4 w-4 text-primary" /> Exportar Livros
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => exportar('csv')} className="gap-2">
-                <FileSpreadsheet className="h-4 w-4" /> CSV
+            <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
+              <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest opacity-40 px-3 py-2">Selecionar Formato</DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-white/5" />
+              <DropdownMenuItem onClick={() => exportar('csv')} className="rounded-xl gap-3 py-3 cursor-pointer">
+                <div className="p-2 bg-success/20 rounded-lg">
+                  <FileSpreadsheet className="h-4 w-4 text-success" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-bold text-sm">Excel (.csv)</span>
+                  <span className="text-[10px] opacity-50">Auditoria & Planilhas</span>
+                </div>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => exportar('pdf')} className="gap-2">
-                <FileText className="h-4 w-4" /> PDF
+              <DropdownMenuItem onClick={() => exportar('pdf')} className="rounded-xl gap-3 py-3 cursor-pointer">
+                <div className="p-2 bg-destructive/20 rounded-lg">
+                  <FileText className="h-4 w-4 text-destructive" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-bold text-sm">Documento (.pdf)</span>
+                  <span className="text-[10px] opacity-50">Relatório de Governança</span>
+                </div>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
 
         {isLoading ? (
-          <div className="space-y-2">
-            {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+          <div className="space-y-4 py-12">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex gap-4 items-center">
+                <Skeleton className="h-12 w-24 rounded-xl" />
+                <Skeleton className="h-12 flex-1 rounded-xl" />
+                <Skeleton className="h-12 w-32 rounded-xl" />
+              </div>
+            ))}
           </div>
         ) : modo === 'diario' ? (
           diario.length === 0 ? (
-            <p className="py-12 text-center text-sm text-muted-foreground">Nenhuma partida no período.</p>
+            <div className="flex flex-col items-center justify-center py-20 text-muted-foreground border border-dashed border-white/10 rounded-[2.5rem] bg-white/[0.02]">
+              <Activity className="h-10 w-10 opacity-20 mb-4" />
+              <p className="text-sm font-bold uppercase tracking-widest">Nenhuma partida no período</p>
+            </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Nº</TableHead>
-                  <TableHead>Histórico</TableHead>
-                  <TableHead>Conta</TableHead>
-                  <TableHead className="text-right">Débito</TableHead>
-                  <TableHead className="text-right">Crédito</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {diario.map((p, i) => (
-                  <TableRow key={i}>
-                    <TableCell className="whitespace-nowrap">{format(new Date(`${p.data}T00:00:00`), 'dd/MM/yyyy')}</TableCell>
-                    <TableCell className="font-mono text-xs">{p.numero ?? '—'}</TableCell>
-                    <TableCell className="max-w-[260px] truncate" title={p.historico}>{p.historico}</TableCell>
-                    <TableCell>
-                      <span className="font-mono text-xs">{p.conta_codigo}</span>
-                      <span className="text-muted-foreground"> — {p.conta_nome}</span>
-                    </TableCell>
-                    <TableCell className="text-right font-mono">{p.debito ? formatCurrency(p.debito) : '—'}</TableCell>
-                    <TableCell className="text-right font-mono">{p.credito ? formatCurrency(p.credito) : '—'}</TableCell>
+            <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-white/[0.01] shadow-inner">
+              <Table>
+                <TableHeader className="bg-white/5">
+                  <TableRow className="border-white/5 hover:bg-transparent">
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest p-6">Data</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest">Nº</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest">Histórico</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest">Conta Contábil</TableHead>
+                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Débito</TableHead>
+                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Crédito</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
+                </TableHeader>
+                <TableBody>
+                  <AnimatePresence>
+                    {diario.slice(0, 500).map((p, i) => (
+                      <motion.tr 
+                        key={i}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: (i % 20) * 0.005 }}
+                        className="border-white/5 hover:bg-white/5 transition-colors group/row"
+                      >
+                        <TableCell className="p-6 text-[10px] font-black uppercase tracking-widest opacity-60">
+                          {format(new Date(`${p.data}T00:00:00`), 'dd/MM/yyyy')}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="font-mono font-black text-[10px] border-none bg-primary/10 text-primary px-2 rounded-lg">
+                            {p.numero ?? '—'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="max-w-[300px] truncate font-bold text-foreground/80" title={p.historico}>{p.historico}</TableCell>
+                        <TableCell>
+                          <div className="flex flex-col">
+                            <span className="font-mono text-[11px] font-black text-primary">{p.conta_codigo}</span>
+                            <span className="text-[10px] font-bold opacity-40 uppercase tracking-widest truncate max-w-[200px]">{p.conta_nome}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right font-mono font-black text-xs tabular-nums text-success">
+                          {p.debito ? formatCurrency(p.debito) : '—'}
+                        </TableCell>
+                        <TableCell className="text-right font-mono font-black text-xs tabular-nums text-destructive">
+                          {p.credito ? formatCurrency(p.credito) : '—'}
+                        </TableCell>
+                      </motion.tr>
+                    ))}
+                  </AnimatePresence>
+                </TableBody>
               <TableFooter>
                 <TableRow>
                   <TableCell colSpan={4} className="font-semibold">Totais</TableCell>
@@ -448,18 +508,20 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
                 </TableRow>
               </TableFooter>
             </Table>
-          )
-        ) : razao.length === 0 ? (
-          <p className="py-12 text-center text-sm text-muted-foreground">Nenhuma conta com movimento no período.</p>
+          </div>
+        )) : razao.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground border border-dashed border-white/10 rounded-[2.5rem] bg-white/[0.02]">
+            <Activity className="h-10 w-10 opacity-20 mb-4" />
+            <p className="text-sm font-bold uppercase tracking-widest">Nenhuma conta com movimento</p>
+          </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-10">
             {(() => {
-              // Acumuladores globais para o sumário do Razão
               let gSaldoInicial = 0;
               let gDebitos = 0;
               let gCreditos = 0;
               let gSaldoFinal = 0;
-              const cards = razao.map((g) => {
+              const cards = razao.map((g, idx) => {
                 let saldo = g.saldo_inicial;
                 let dTotal = 0;
                 let cTotal = 0;
@@ -480,26 +542,38 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
                 gSaldoFinal += saldoFinal;
 
                 return (
-                  <div key={g.conta_id} className="border rounded-md overflow-hidden">
-                    <div className="bg-muted/40 px-3 py-2 flex flex-wrap items-center justify-between gap-2">
-                      <div>
-                        <span className="font-mono text-xs">{g.codigo}</span>
-                        <span className="font-medium ml-2">{g.nome}</span>
+                  <motion.div 
+                    key={g.conta_id} 
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: (idx % 10) * 0.05 }}
+                    className="border-none bg-white/[0.02] shadow-2xl rounded-[2rem] overflow-hidden ring-1 ring-white/5 group/card"
+                  >
+                    <div className="bg-white/5 p-6 flex flex-wrap items-center justify-between gap-4 border-b border-white/5">
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 bg-primary/20 rounded-2xl group-hover/card:scale-110 transition-transform">
+                          <BookOpen className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-mono text-xs font-black text-primary tracking-tighter">{g.codigo}</p>
+                          <p className="text-sm font-black uppercase tracking-widest opacity-80">{g.nome}</p>
+                        </div>
                       </div>
-                      <Badge variant="outline" className="font-mono">
-                        Saldo inicial: {formatCurrency(g.saldo_inicial)}
+                      <Badge variant="outline" className="h-10 rounded-xl font-mono font-black border-none bg-white/5 px-4 text-xs">
+                        Saldo Inicial: {formatCurrency(g.saldo_inicial)}
                       </Badge>
                     </div>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Data</TableHead>
-                          <TableHead>Histórico</TableHead>
-                          <TableHead className="text-right">Débito</TableHead>
-                          <TableHead className="text-right">Crédito</TableHead>
-                          <TableHead className="text-right">Saldo</TableHead>
-                        </TableRow>
-                      </TableHeader>
+                    <div className="overflow-hidden">
+                      <Table>
+                        <TableHeader className="bg-white/[0.01]">
+                          <TableRow className="border-white/5 hover:bg-transparent">
+                            <TableHead className="text-[9px] font-black uppercase tracking-widest p-4 pl-6">Data</TableHead>
+                            <TableHead className="text-[9px] font-black uppercase tracking-widest">Histórico</TableHead>
+                            <TableHead className="text-right text-[9px] font-black uppercase tracking-widest">Débito</TableHead>
+                            <TableHead className="text-right text-[9px] font-black uppercase tracking-widest">Crédito</TableHead>
+                            <TableHead className="text-right text-[9px] font-black uppercase tracking-widest pr-6">Saldo</TableHead>
+                          </TableRow>
+                        </TableHeader>
                       <TableBody>
                         {linhas.map((m, i) => (
                           <TableRow key={i}>
