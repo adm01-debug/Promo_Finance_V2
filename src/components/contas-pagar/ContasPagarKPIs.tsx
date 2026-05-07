@@ -127,4 +127,3 @@ export function ContasPagarKPIs({
     </motion.div>
   );
 }
-}
