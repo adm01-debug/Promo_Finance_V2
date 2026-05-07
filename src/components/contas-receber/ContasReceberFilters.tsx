@@ -1,4 +1,4 @@
-import { Search } from 'lucide-react';
+import { Search, SlidersHorizontal, Building2, Target, CreditCard, Tag } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
