@@ -18,6 +18,8 @@ import {
   QrCode,
   Tag,
   Trash2,
+  Sparkles,
+  Repeat,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -136,131 +138,152 @@ export function ContasPagarTableRow({
       data-highlight-id={conta.id}
       {...(getRowAnimation(index).transition ? getRowAnimation(index) : {})}
       className={cn(
-        "group hover:bg-muted/50 transition-colors",
-        isSelected && "bg-primary/5"
+        "group transition-all duration-300 border-white/5 relative", 
+        isSelected ? "bg-primary/5" : "hover:bg-white/[0.03]"
       )}
     >
-      <TableCell>
+      <TableCell className="p-6 text-center">
         <Checkbox
           checked={isSelected}
           onChange={onToggleSelect}
           aria-label={`Selecionar ${conta.descricao}`}
         />
       </TableCell>
-      <TableCell>
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-secondary/10 flex items-center justify-center">
-            <Building2 className="h-5 w-5 text-secondary" />
+      
+      <TableCell className="p-6">
+        <div className="flex items-center gap-4">
+          <div className="h-12 w-12 rounded-[1rem] bg-white/5 border border-white/10 flex items-center justify-center relative shadow-sm transition-transform group-hover:scale-110 duration-500">
+            <Building2 className="h-6 w-6 text-secondary/60" />
           </div>
-          <div>
-            <p className="font-medium">{conta.fornecedor_nome}</p>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <TipoIcon className="h-3 w-3" />
-              <span className="capitalize">{conta.tipo_cobranca}</span>
+          <div className="min-w-0">
+            <p className="font-black text-base tracking-tight text-foreground truncate">{conta.fornecedor_nome}</p>
+            <div className="flex items-center gap-2 mt-0.5">
+              <TipoIcon className="h-3 w-3 text-muted-foreground/40" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 capitalize">{conta.tipo_cobranca}</span>
             </div>
           </div>
         </div>
       </TableCell>
-      <TableCell>
-        <div className="flex items-center gap-2">
-          <FileText className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm truncate max-w-[200px]">{conta.descricao}</span>
-          <CategorizacaoIABadge
-            despesa={{
-              id: conta.id,
-              descricao: conta.descricao,
-              valor: conta.valor,
-              fornecedor_nome: conta.fornecedor_nome,
-              data_vencimento: conta.data_vencimento,
-            }}
-            categoriaAtual={conta.categoria || undefined}
-            onAplicar={async (cat: CategoriaDetectada) => {
-              const { error } = await supabase
-                .from('contas_pagar')
-                .update({ categoria: cat.categoria, tags: cat.tags || [] })
-                .eq('id', conta.id);
-              if (error) {
-                toast.error('Erro ao aplicar categoria');
-              } else {
-                toast.success(`Categoria "${cat.categoria}" aplicada`);
-              }
-            }}
-          />
-        </div>
-        {conta.categoria && (
-          <Badge variant="secondary" className="text-xs mt-1 gap-1">
-            <Tag className="h-3 w-3" />
-            {conta.categoria}
-          </Badge>
-        )}
-        {conta.numero_documento && (
-          <p className="text-xs text-muted-foreground mt-0.5">{conta.numero_documento}</p>
-        )}
-      </TableCell>
-      <TableCell>
-        <div>
-          <p className="font-semibold">{formatCurrency(conta.valor)}</p>
-          {conta.recorrente && (
-            <Badge variant="outline" className="text-xs mt-1">Recorrente</Badge>
-          )}
-        </div>
-      </TableCell>
-      <TableCell>
-        <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-muted-foreground" />
-          <div>
-            <p className="text-sm">{formatDate(new Date(conta.data_vencimento))}</p>
-            {overdueDays > 0 && conta.status !== 'pago' && (
-              <p className="text-xs text-destructive font-medium">
-                {overdueDays} dias em atraso
-              </p>
+
+      <TableCell className="p-6">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2">
+            <div className="h-1.5 w-1.5 rounded-full bg-secondary/40 shrink-0" />
+            <span className="text-sm font-semibold tracking-tight text-foreground truncate max-w-[200px] leading-none">{conta.descricao}</span>
+            <CategorizacaoIABadge
+              despesa={{
+                id: conta.id,
+                descricao: conta.descricao,
+                valor: conta.valor,
+                fornecedor_nome: conta.fornecedor_nome,
+                data_vencimento: conta.data_vencimento,
+              }}
+              categoriaAtual={conta.categoria || undefined}
+              onAplicar={async (cat: CategoriaDetectada) => {
+                const { error } = await supabase
+                  .from('contas_pagar')
+                  .update({ categoria: cat.categoria, tags: cat.tags || [] })
+                  .eq('id', conta.id);
+                if (error) {
+                  toast.error('Erro ao aplicar categoria');
+                } else {
+                  toast.success(`Categoria "${cat.categoria}" aplicada`);
+                }
+              }}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            {conta.categoria && (
+              <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-secondary/20 bg-secondary/5 text-secondary tracking-wider">
+                <Tag className="h-2 w-2 mr-1" />
+                {conta.categoria}
+              </Badge>
             )}
-            {overdueDays < 0 && conta.status !== 'pago' && (
-              <p className="text-xs text-muted-foreground">
-                Vence {getRelativeTime(new Date(conta.data_vencimento))}
-              </p>
+            {conta.numero_documento && (
+              <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-white/5 bg-white/5 text-muted-foreground/60 tracking-wider">REF: {conta.numero_documento}</Badge>
             )}
           </div>
         </div>
       </TableCell>
-      <TableCell>
+
+      <TableCell className="p-6">
+        <div className="space-y-1">
+          <p className="text-lg font-black tabular-nums tracking-tighter text-foreground">{formatCurrency(conta.valor)}</p>
+          {conta.recorrente && (
+            <div className="flex items-center gap-1">
+              <Repeat className="h-2.5 w-2.5 text-primary" />
+              <span className="text-[8px] font-black text-primary uppercase tracking-widest leading-none">Subscription Flux</span>
+            </div>
+          )}
+        </div>
+      </TableCell>
+
+      <TableCell className="p-6">
+        <div className="flex items-center gap-3">
+          <div className={cn(
+            "h-10 w-10 rounded-xl flex items-center justify-center border transition-all duration-500 shadow-sm",
+            overdueDays > 0 && conta.status !== 'pago' ? "bg-destructive/10 border-destructive/20 text-destructive" : "bg-white/5 border-white/10 text-muted-foreground/40"
+          )}>
+            <Calendar className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-sm font-black tabular-nums tracking-tight">{formatDate(new Date(conta.data_vencimento))}</p>
+            {overdueDays > 0 && conta.status !== 'pago' ? (
+              <p className="text-[10px] font-black text-destructive uppercase tracking-widest mt-0.5">Payment Critical</p>
+            ) : overdueDays < 0 && conta.status !== 'pago' ? (
+              <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest mt-0.5">{getRelativeTime(new Date(conta.data_vencimento))}</p>
+            ) : null}
+          </div>
+        </div>
+      </TableCell>
+
+      <TableCell className="p-6">
         {conta.centros_custo?.nome ? (
-          <Badge variant="secondary" className="font-normal">
+          <Badge variant="outline" className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground/60 border-white/5 bg-white/5 px-2 py-0.5">
             {conta.centros_custo.nome}
           </Badge>
         ) : (
-          <span className="text-xs text-muted-foreground">-</span>
+          <span className="text-[10px] font-black text-muted-foreground/20 tracking-widest uppercase">—</span>
         )}
       </TableCell>
-      <TableCell>
-        <ContaPagarRowAprovacaoBadge
-          estaAprovado={estaAprovado}
-          temSolicitacaoPendente={temSolicitacaoPendente}
-          foiRejeitado={foiRejeitado}
-          aguardandoSolicitacao={aguardandoSolicitacao}
-          historico={historico}
-          profilesMap={profilesMap}
-          valorMinimoAprovacao={valorMinimoAprovacao}
-          aprovado_por={conta.aprovado_por}
-          aprovado_em={conta.aprovado_em}
-        />
+
+      <TableCell className="p-6">
+        <div className="flex justify-center">
+          <ContaPagarRowAprovacaoBadge
+            estaAprovado={estaAprovado}
+            temSolicitacaoPendente={temSolicitacaoPendente}
+            foiRejeitado={foiRejeitado}
+            aguardandoSolicitacao={aguardandoSolicitacao}
+            historico={historico}
+            profilesMap={profilesMap}
+            valorMinimoAprovacao={valorMinimoAprovacao}
+            aprovado_por={conta.aprovado_por}
+            aprovado_em={conta.aprovado_em}
+          />
+        </div>
       </TableCell>
-      <TableCell>
-        <Badge variant="outline" className={cn("gap-1", status?.color)}>
-          <StatusIcon className="h-3 w-3" />
-          {status?.label || conta.status}
-        </Badge>
+
+      <TableCell className="p-6">
+        <div className="flex justify-center">
+          <Badge variant="outline" className={cn("gap-1.5 px-3 py-1 rounded-lg border-none font-black text-[10px] uppercase tracking-widest shadow-sm", status?.color)}>
+            <StatusIcon className="h-3.5 w-3.5" />
+            {status?.label || conta.status}
+          </Badge>
+        </div>
       </TableCell>
-      <TableCell>
-        <ContaPagarRowActions
-          status={conta.status}
-          aguardandoSolicitacao={aguardandoSolicitacao}
-          temSolicitacaoPendente={temSolicitacaoPendente}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          onRegistrarPagamento={onRegistrarPagamento}
-          onSolicitarAprovacao={onSolicitarAprovacao}
-        />
+
+      <TableCell className="p-6">
+        <div className="flex justify-end">
+          <ContaPagarRowActions
+            status={conta.status}
+            aguardandoSolicitacao={aguardandoSolicitacao}
+            temSolicitacaoPendente={temSolicitacaoPendente}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onRegistrarPagamento={onRegistrarPagamento}
+            onSolicitarAprovacao={onSolicitarAprovacao}
+          />
+        </div>
       </TableCell>
     </RowComponent>
   );

@@ -42,7 +42,7 @@ export function ContasPagarKPIs({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4"
+      className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6"
     >
       {kpiConfig.map((kpi, index) => {
         const Icon = kpi.icon;
@@ -50,31 +50,35 @@ export function ContasPagarKPIs({
         return (
           <motion.div
             key={kpi.key}
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05, type: 'spring', stiffness: 300, damping: 24 }}
           >
-            <Card className="stat-card group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
-              <CardContent className="p-3 sm:p-5">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">{kpi.label}</p>
-                    <p className={cn(
-                      "text-lg sm:text-2xl font-bold font-display mt-1 truncate tabular-nums",
-                      'valueColor' in kpi && kpi.valueColor
+            <Card className="border-none bg-background/20 backdrop-blur-2xl shadow-[0_8px_32px_-8px_rgba(0,0,0,0.1)] rounded-[1.5rem] overflow-hidden ring-1 ring-white/10 group transition-all duration-500 hover:ring-primary/40">
+              <CardContent className="p-6 relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                
+                <div className="relative z-10 flex flex-col justify-between h-full gap-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-1 min-w-0">
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">{kpi.label}</p>
+                      <p className={cn(
+                        "text-2xl sm:text-3xl font-black font-display tracking-tighter tabular-nums truncate",
+                        'valueColor' in kpi && kpi.valueColor
+                      )}>
+                        {kpi.isCurrency ? formatCurrency(value) : value}
+                      </p>
+                    </div>
+                    <div className={cn(
+                      "h-12 w-12 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-lg group-hover:scale-110 group-hover:rotate-6 shrink-0",
+                      kpi.iconBg, kpi.iconColor
                     )}>
-                      {kpi.isCurrency ? formatCurrency(value) : value}
-                    </p>
-                    {'suffix' in kpi && kpi.suffix && (
-                      <p className="text-[10px] sm:text-xs text-muted-foreground">{kpi.suffix}</p>
-                    )}
+                      <Icon className="h-6 w-6" />
+                    </div>
                   </div>
-                  <div className={cn(
-                    "h-10 w-10 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 shrink-0",
-                    kpi.iconBg, kpi.iconColor
-                  )}>
-                    <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
-                  </div>
+                  {'suffix' in kpi && kpi.suffix && (
+                    <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest">{kpi.suffix} Volume</p>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -82,37 +86,40 @@ export function ContasPagarKPIs({
         );
       })}
 
-      {/* Aprovações Urgentes */}
+      {/* Aprovações Urgentes Premium */}
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, type: 'spring', stiffness: 300, damping: 24 }}
       >
         <Card 
           className={cn(
-            "stat-card group cursor-pointer transition-all duration-200 col-span-2 sm:col-span-1 hover:shadow-md hover:-translate-y-0.5",
-            countAprovacoesUrgentes > 0 && "ring-2 ring-warning/40 shadow-[0_0_12px_hsl(var(--warning)/0.15)]"
+            "border-none bg-background/20 backdrop-blur-3xl shadow-[0_8px_32px_-8px_rgba(0,0,0,0.1)] rounded-[1.5rem] overflow-hidden transition-all duration-500 cursor-pointer group",
+            countAprovacoesUrgentes > 0 ? "ring-2 ring-warning/40 shadow-warning/10" : "ring-1 ring-white/10"
           )} 
           onClick={onAprovacaoClick}
         >
-          <CardContent className="p-3 sm:p-5">
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0 flex-1">
-                <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">Aprovações Urgentes</p>
-                <p className={cn(
-                  "text-lg sm:text-2xl font-bold font-display mt-1",
-                  countAprovacoesUrgentes > 0 ? "text-warning" : ""
-                )}>{countAprovacoesUrgentes}</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
-                  {countAprovacoesUrgentes > 0 ? formatCurrency(valorAprovacoesUrgentes) : 'Nenhuma pendente'}
-                </p>
+          <CardContent className="p-6 relative">
+            <div className="absolute inset-0 bg-warning/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative z-10 flex flex-col justify-between h-full gap-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-1 min-w-0">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-warning/70">Governance Priority</p>
+                  <p className={cn(
+                    "text-3xl font-black font-display tracking-tighter",
+                    countAprovacoesUrgentes > 0 ? "text-warning animate-pulse" : ""
+                  )}>{countAprovacoesUrgentes}</p>
+                </div>
+                <div className={cn(
+                  "h-12 w-12 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-lg group-hover:scale-110 group-hover:rotate-12 shrink-0",
+                  countAprovacoesUrgentes > 0 ? "bg-warning/20 text-warning" : "bg-white/5 text-muted-foreground/40"
+                )}>
+                  <ShieldAlert className="h-6 w-6" />
+                </div>
               </div>
-              <div className={cn(
-                "h-10 w-10 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 shrink-0",
-                countAprovacoesUrgentes > 0 ? "bg-warning/10 text-warning" : "bg-muted text-muted-foreground"
-              )}>
-                <ShieldAlert className="h-5 w-5 sm:h-6 sm:w-6" />
-              </div>
+              <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest truncate">
+                {countAprovacoesUrgentes > 0 ? `Risk: ${formatCurrency(valorAprovacoesUrgentes)}` : 'Stable State'}
+              </p>
             </div>
           </CardContent>
         </Card>

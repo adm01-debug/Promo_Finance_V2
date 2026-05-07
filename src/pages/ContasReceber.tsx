@@ -68,134 +68,159 @@ export default function ContasReceber() {
 
   return (
     <MainLayout>
-      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
-        {/* Header */}
-        <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-display-md text-foreground">Contas a Receber</h1>
-            <p className="text-muted-foreground mt-1">Gerencie todos os títulos a receber e acompanhe a inadimplência</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-              <Button variant={viewMode === 'table' ? 'default' : 'ghost'} size="icon-sm" onClick={() => setViewMode('table')} className="h-8 w-8">
-                <TableIcon className="h-4 w-4" />
-              </Button>
-              <Button variant={viewMode === 'kanban' ? 'default' : 'ghost'} size="icon-sm" onClick={() => setViewMode('kanban')} className="h-8 w-8">
-                <LayoutGrid className="h-4 w-4" />
-              </Button>
+      <div className="relative min-h-screen">
+        {/* Premium Background Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-[-10%] left-[-5%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-[120px] animate-pulse" />
+          <div className="absolute bottom-[20%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/5 blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
+          <div className="absolute top-[30%] right-[10%] w-[35%] h-[35%] rounded-full bg-purple-500/5 blur-[120px] animate-pulse" style={{ animationDelay: '4s' }} />
+        </div>
+
+        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="relative z-10 space-y-10 pb-20">
+          {/* Hero Header Section */}
+          <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pt-4">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.2em] animate-fade-in">
+                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                Receivables Governance
+              </div>
+              <h1 className="text-5xl font-black tracking-tighter md:text-6xl lg:text-7xl">
+                Contas a <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600">Receber</span>
+              </h1>
+              <p className="text-xl text-muted-foreground/70 max-w-2xl leading-relaxed font-medium italic">
+                Monitore ativos financeiros e maximize a eficiência do capital de giro.
+              </p>
             </div>
-            <ExportMenu data={sortedContas} columns={contasReceberColumns} filename="contas_receber" title="Relatório de Contas a Receber" />
-            <Button size="sm" className="gap-2 bg-gradient-to-r from-primary to-primary/80" onClick={() => setFormOpen(true)}>
-              <Plus className="h-4 w-4" /> Nova Conta
-            </Button>
+
+            <div className="flex items-center gap-4 bg-background/40 p-2.5 rounded-[2rem] border border-white/10 backdrop-blur-2xl shadow-2xl ring-1 ring-white/10">
+              <div className="flex items-center gap-1 bg-black/20 rounded-xl p-1 shadow-inner">
+                <Button variant={viewMode === 'table' ? 'default' : 'ghost'} size="icon" onClick={() => setViewMode('table')} className={cn("h-10 w-10 rounded-lg transition-all", viewMode === 'table' ? "bg-white text-primary shadow-lg" : "text-muted-foreground")}>
+                  <TableIcon className="h-5 w-5" />
+                </Button>
+                <Button variant={viewMode === 'kanban' ? 'default' : 'ghost'} size="icon" onClick={() => setViewMode('kanban')} className={cn("h-10 w-10 rounded-lg transition-all", viewMode === 'kanban' ? "bg-white text-primary shadow-lg" : "text-muted-foreground")}>
+                  <LayoutGrid className="h-5 w-5" />
+                </Button>
+              </div>
+              
+              <div className="w-px h-8 bg-white/10 mx-2" />
+
+              <div className="flex items-center gap-3">
+                <ExportMenu data={sortedContas} columns={contasReceberColumns} filename="contas_receber" title="Relatório de Contas a Receber" />
+                <Button size="lg" className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]" onClick={() => setFormOpen(true)}>
+                  <Plus className="h-5 w-5" /> Novo Comando
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* KPIs Section */}
+          <motion.div variants={itemVariants}>
+            <ContasReceberKPIs {...kpis} onKpiClick={handleKpiClick} />
+          </motion.div>
+
+          {/* Filter Intelligence Section */}
+          <div className="space-y-6">
+            <motion.div variants={itemVariants}>
+              <QuickDateFilters value={filterType} onChange={handleFilterChange} showOverdue />
+            </motion.div>
+
+            <motion.div variants={itemVariants}>
+              <ContasReceberFilters
+                searchTerm={searchTerm} onSearchChange={handleSearchChange}
+                statusFilter={statusFilter} onStatusChange={handleStatusChange}
+                centroCustoFilter={centroCustoFilter} onCentroCustoChange={handleCentroCustoChange}
+                centrosCusto={centrosCusto}
+                empresaFilter={empresaFilter} onEmpresaChange={handleEmpresaChange} empresas={empresas}
+                formaFilter={formaFilter} onFormaChange={handleFormaChange}
+                advancedFilters={advancedFilters} onAdvancedFiltersChange={setAdvancedFilters}
+              />
+            </motion.div>
           </div>
-        </motion.div>
 
-        {/* KPIs */}
-        <motion.div variants={itemVariants}>
-          <ContasReceberKPIs {...kpis} onKpiClick={handleKpiClick} />
-        </motion.div>
-
-        {/* Quick Date Filters */}
-        <motion.div variants={itemVariants}>
-          <QuickDateFilters value={filterType} onChange={handleFilterChange} showOverdue />
-        </motion.div>
-
-        {/* Filters */}
-        <motion.div variants={itemVariants}>
-          <ContasReceberFilters
-            searchTerm={searchTerm} onSearchChange={handleSearchChange}
-            statusFilter={statusFilter} onStatusChange={handleStatusChange}
-            centroCustoFilter={centroCustoFilter} onCentroCustoChange={handleCentroCustoChange}
-            centrosCusto={centrosCusto}
-            empresaFilter={empresaFilter} onEmpresaChange={handleEmpresaChange} empresas={empresas}
-            formaFilter={formaFilter} onFormaChange={handleFormaChange}
-            advancedFilters={advancedFilters} onAdvancedFiltersChange={setAdvancedFilters}
-          />
-        </motion.div>
-
-        {/* Content */}
-        <motion.div variants={itemVariants}>
-          {viewMode === 'kanban' ? (
-            <ContasReceberKanban contas={sortedContas} onSelectConta={handleViewConta} />
-          ) : (
-            <Card className="card-elevated overflow-hidden">
-              {isLoading ? (
-                <TableShimmerSkeleton rows={pageSize} columns={8} showCheckbox showAvatar />
-              ) : (
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="hover:bg-transparent">
-                        <TableHead className="w-[40px]"><Checkbox checked={isAllSelected} onChange={selectAll} /></TableHead>
-                        <TableHead className="w-[250px]"><SortableHeader label="Cliente" sortKey="cliente_nome" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></TableHead>
-                        <TableHead>Descrição</TableHead>
-                        <TableHead><SortableHeader label="Valor" sortKey="valor" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></TableHead>
-                        <TableHead><SortableHeader label="Vencimento" sortKey="data_vencimento" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></TableHead>
-                        {/* Dias em Atraso sortável (#15) */}
-                        <TableHead className="w-[80px]"><SortableHeader label="Dias" sortKey="data_vencimento" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></TableHead>
-                        <TableHead>Status</TableHead>
-                        {empresas.length > 1 && <TableHead>Empresa</TableHead>}
-                        <TableHead>Score</TableHead>
-                        <TableHead className="w-[120px]"></TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {sortedContas.length === 0 ? (
-                        <TableRow><TableCell colSpan={colCount} className="p-0">
-                          <EmptyState
-                            icon={<Inbox className="h-8 w-8 text-muted-foreground" />}
-                            title={contas.length === 0 ? 'Nenhuma conta cadastrada' : 'Nenhuma conta encontrada'}
-                            description={contas.length === 0 ? 'Comece adicionando sua primeira conta a receber clicando em "Nova Conta"' : 'Tente ajustar os filtros para encontrar o que procura'}
-                            action={contas.length === 0 ? (
-                              <Button size="sm" className="gap-2 mt-3" onClick={() => setFormOpen(true)}>
-                                <Plus className="h-4 w-4" /> Criar primeira conta
-                              </Button>
-                            ) : undefined}
+          {/* Core Content: Table or Kanban */}
+          <motion.div variants={itemVariants} className="min-h-[600px]">
+            {viewMode === 'kanban' ? (
+              <ContasReceberKanban contas={sortedContas} onSelectConta={handleViewConta} />
+            ) : (
+              <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] rounded-[2.5rem] overflow-hidden ring-1 ring-white/10">
+                {isLoading ? (
+                  <TableShimmerSkeleton rows={pageSize} columns={8} showCheckbox showAvatar />
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <tr className="bg-white/[0.02] border-b border-white/5">
+                          <th className="w-16 p-6 text-center"><Checkbox checked={isAllSelected} onChange={selectAll} /></th>
+                          <th className="w-[300px] p-6"><SortableHeader label="Entity / Client" sortKey="cliente_nome" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></th>
+                          <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Reference Description</th>
+                          <th className="p-6"><SortableHeader label="Nominal Value" sortKey="valor" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></th>
+                          <th className="p-6"><SortableHeader label="Maturity Date" sortKey="data_vencimento" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></th>
+                          <th className="w-24 p-6 text-center"><SortableHeader label="Delay" sortKey="data_vencimento" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></th>
+                          <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-center">Status</th>
+                          {empresas.length > 1 && <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Corporate</th>}
+                          <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-center">Credit Score</th>
+                          <th className="w-20 p-6"></th>
+                        </tr>
+                      </TableHeader>
+                      <TableBody className="divide-y divide-white/5">
+                        {sortedContas.length === 0 ? (
+                          <TableRow><TableCell colSpan={colCount} className="p-0 h-[400px]">
+                            <EmptyState
+                              icon={<Inbox className="h-12 w-12 text-muted-foreground/30" />}
+                              title={contas.length === 0 ? 'Repositório Vazio' : 'Nenhuma Correspondência'}
+                              description={contas.length === 0 ? 'Inicie a governança de ativos adicionando seu primeiro título.' : 'Ajuste os algoritmos de busca para encontrar o registro.'}
+                              action={contas.length === 0 ? (
+                                <Button size="lg" className="h-12 rounded-xl bg-primary text-primary-foreground font-black mt-6" onClick={() => setFormOpen(true)}>
+                                  <Plus className="h-5 w-5" /> Adicionar Título Alpha
+                                </Button>
+                              ) : undefined}
+                            />
+                          </TableCell></TableRow>
+                        ) : sortedContas.map((conta, index) => (
+                          <ContasReceberTableRow
+                            key={conta.id}
+                            conta={conta}
+                            index={index}
+                            isSelected={isSelected(conta.id)}
+                            onToggleSelect={toggleSelect}
+                            onEdit={(c) => { setEditingConta(c); setFormOpen(true); }}
+                            onDelete={handleOpenDeleteDialog}
+                            onRegistrarRecebimento={(c) => { setSelectedConta(c); setRecebimentoDialogOpen(true); }}
+                            onView={handleViewConta}
+                            onEnviarCobranca={handleEnviarCobranca}
+                            onAplicarDesconto={handleAplicarDesconto}
+                            showEmpresa={empresas.length > 1}
+                            showDiasAtraso
                           />
-                        </TableCell></TableRow>
-                      ) : sortedContas.map((conta, index) => (
-                        <ContasReceberTableRow
-                          key={conta.id}
-                          conta={conta}
-                          index={index}
-                          isSelected={isSelected(conta.id)}
-                          onToggleSelect={toggleSelect}
-                          onEdit={(c) => { setEditingConta(c); setFormOpen(true); }}
-                          onDelete={handleOpenDeleteDialog}
-                          onRegistrarRecebimento={(c) => { setSelectedConta(c); setRecebimentoDialogOpen(true); }}
-                          onView={handleViewConta}
-                          onEnviarCobranca={handleEnviarCobranca}
-                          onAplicarDesconto={handleAplicarDesconto}
-                          showEmpresa={empresas.length > 1}
-                          showDiasAtraso
-                        />
-                      ))}
-                    </TableBody>
-                  </Table>
-                  <TablePagination currentPage={currentPage} totalPages={totalPages} pageSize={pageSize} totalItems={totalCount} onPageChange={setCurrentPage} onPageSizeChange={handlePageSizeChange} />
-                </div>
-              )}
-            </Card>
-          )}
-        </motion.div>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    <div className="p-6 border-t border-white/5 bg-black/20">
+                      <TablePagination currentPage={currentPage} totalPages={totalPages} pageSize={pageSize} totalItems={totalCount} onPageChange={setCurrentPage} onPageSizeChange={handlePageSizeChange} />
+                    </div>
+                  </div>
+                )}
+              </Card>
+            )}
+          </motion.div>
 
-        {/* Dialogs & Drawers */}
-        <ContaReceberForm open={formOpen} onOpenChange={(open) => { setFormOpen(open); if (!open) setEditingConta(null); }} conta={editingConta} />
-        <RegistrarRecebimentoDialog conta={selectedConta} open={recebimentoDialogOpen} onOpenChange={setRecebimentoDialogOpen} />
-        <ContaReceberDetailDrawer
-          conta={detailConta} open={detailDrawerOpen} onOpenChange={setDetailDrawerOpen}
-          onEdit={(c) => { setEditingConta(c); setFormOpen(true); }}
-          onRegistrarRecebimento={(c) => { setSelectedConta(c); setRecebimentoDialogOpen(true); }}
-          onEnviarCobranca={handleEnviarCobranca}
-        />
-        <EnviarCobrancaDialog conta={cobrancaConta} open={cobrancaDialogOpen} onOpenChange={setCobrancaDialogOpen} />
-        <AplicarDescontoDialog conta={descontoConta} open={descontoDialogOpen} onOpenChange={setDescontoDialogOpen} />
-        <ConfirmDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} title="Confirmar exclusão"
-          description={`Tem certeza que deseja excluir "${deletingConta?.descricao}" (${deletingConta?.valor ? formatCurrency(deletingConta.valor) : ''})?`}
-          confirmLabel="Excluir" variant="danger" isLoading={isDeleting} onConfirm={handleDeleteConta} />
-        <BulkActionsBar selectedCount={selectedCount} isProcessing={isProcessing} progress={progress} actions={bulkActions} onClear={clearSelection} />
-      </motion.div>
+          {/* Dialogs & Drawers */}
+          <ContaReceberForm open={formOpen} onOpenChange={(open) => { setFormOpen(open); if (!open) setEditingConta(null); }} conta={editingConta} />
+          <RegistrarRecebimentoDialog conta={selectedConta} open={recebimentoDialogOpen} onOpenChange={setRecebimentoDialogOpen} />
+          <ContaReceberDetailDrawer
+            conta={detailConta} open={detailDrawerOpen} onOpenChange={setDetailDrawerOpen}
+            onEdit={(c) => { setEditingConta(c); setFormOpen(true); }}
+            onRegistrarRecebimento={(c) => { setSelectedConta(c); setRecebimentoDialogOpen(true); }}
+            onEnviarCobranca={handleEnviarCobranca}
+          />
+          <EnviarCobrancaDialog conta={cobrancaConta} open={cobrancaDialogOpen} onOpenChange={setCobrancaDialogOpen} />
+          <AplicarDescontoDialog conta={descontoConta} open={descontoDialogOpen} onOpenChange={setDescontoDialogOpen} />
+          <ConfirmDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} title="Exclusão Irreversível"
+            description={`Confirmar a remoção definitiva do título "${deletingConta?.descricao}" (${deletingConta?.valor ? formatCurrency(deletingConta.valor) : ''}) do repositório?`}
+            confirmLabel="Confirmar Exclusão" variant="danger" isLoading={isDeleting} onConfirm={handleDeleteConta} />
+          <BulkActionsBar selectedCount={selectedCount} isProcessing={isProcessing} progress={progress} actions={bulkActions} onClear={clearSelection} />
+        </motion.div>
+      </div>
     </MainLayout>
   );
 }
