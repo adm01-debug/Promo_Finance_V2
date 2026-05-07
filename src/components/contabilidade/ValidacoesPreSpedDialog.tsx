@@ -439,45 +439,60 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Fechar
           </Button>
+          <div className="h-6 w-px bg-border mx-2 hidden sm:block" />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
+                size="sm"
                 data-testid="btn-exportar-validacoes"
                 disabled={erros.length === 0 && avisos.length === 0}
-                className="gap-2"
+                className="gap-2 font-bold shadow-sm"
               >
                 <FileDown className="h-4 w-4" />
-                Exportar validações
+                Exportar
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64">
-              <DropdownMenuLabel className="text-xs">Relatório completo</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => exportarPdf(false)} className="gap-2">
-                <FileText className="h-4 w-4 text-destructive" />
-                PDF (.pdf)
-                <span className="ml-auto text-[10px] text-muted-foreground">
-                  {erros.length + avisos.length} item(ns)
-                </span>
+            <DropdownMenuContent align="end" className="w-64 p-2 rounded-xl">
+              <DropdownMenuLabel className="text-[10px] uppercase tracking-widest opacity-50 px-2 py-1">Relatório Completo</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => exportarPdf(false)} className="gap-3 py-2 rounded-lg cursor-pointer">
+                <div className="p-1.5 bg-destructive/10 rounded-md">
+                  <FileText className="h-4 w-4 text-destructive" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold">PDF (.pdf)</span>
+                  <span className="text-[10px] text-muted-foreground">{erros.length + avisos.length} item(ns)</span>
+                </div>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => exportarJson(false)} className="gap-2">
-                <FileJson className="h-4 w-4 text-primary" />
-                JSON (.json)
-                <span className="ml-auto text-[10px] text-muted-foreground">
-                  {erros.length + avisos.length} item(ns)
-                </span>
+              <DropdownMenuItem onClick={() => exportarJson(false)} className="gap-3 py-2 rounded-lg cursor-pointer">
+                <div className="p-1.5 bg-primary/10 rounded-md">
+                  <FileJson className="h-4 w-4 text-primary" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold">JSON (.json)</span>
+                  <span className="text-[10px] text-muted-foreground">{erros.length + avisos.length} item(ns)</span>
+                </div>
               </DropdownMenuItem>
               {temFiltro && (
                 <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuLabel className="text-xs">
-                    Apenas filtrados ("{busca.trim()}")
+                  <DropdownMenuSeparator className="my-2" />
+                  <DropdownMenuLabel className="text-[10px] uppercase tracking-widest opacity-50 px-2 py-1">
+                    Apenas Filtrados
                   </DropdownMenuLabel>
                   <DropdownMenuItem
                     onClick={() => exportarPdf(true)}
                     disabled={!podeExportarFiltrado}
                     data-testid="btn-exportar-pdf-filtrado"
-                    className="gap-2"
+                    className="gap-3 py-2 rounded-lg cursor-pointer"
+                  >
+                    <div className="p-1.5 bg-destructive/10 rounded-md">
+                      <FileText className="h-4 w-4 text-destructive" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold">PDF Filtrado</span>
+                      <span className="text-[10px] text-muted-foreground">{errosFiltrados.length + avisosFiltrados.length} item(ns)</span>
+                    </div>
+                  </DropdownMenuItem>
                   >
                     <FileText className="h-4 w-4 text-destructive" />
                     PDF filtrado
