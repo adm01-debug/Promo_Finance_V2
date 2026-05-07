@@ -199,9 +199,11 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
       </DialogTrigger>
       <DialogContent className="max-w-4xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Upload className="h-5 w-5 text-primary" />
-            Importar lançamentos contábeis em lote
+          <DialogTitle className="flex items-center gap-4 text-3xl font-black tracking-tighter">
+            <div className="p-3.5 bg-primary/20 rounded-2xl shadow-[0_0_30px_rgba(var(--primary),0.3)] ring-1 ring-primary/30">
+              <Upload className="h-8 w-8 text-primary" />
+            </div>
+            <span>Importação <span className="text-primary">Lote Alpha</span></span>
           </DialogTitle>
           <DialogDescription>
             Cada linha do CSV representa uma partida. Lançamentos são agrupados pelo campo <code className="bg-muted px-1 rounded">lancamento_ref</code>.
@@ -231,8 +233,8 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
 
             <div
               className={cn(
-                'border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer',
-                'hover:border-primary hover:bg-muted/30',
+                'border-2 border-dashed rounded-[2.5rem] p-12 text-center transition-all duration-700 cursor-pointer group/dropzone relative overflow-hidden',
+                'border-white/10 bg-white/[0.02] hover:border-primary/40 hover:bg-primary/5 hover:shadow-2xl',
               )}
               onClick={() => inputRef.current?.click()}
               onDragOver={(e) => e.preventDefault()}
@@ -272,25 +274,25 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-              <Card><CardContent className="p-3 text-center">
+              <Card className="bg-white/[0.03] border-white/10 rounded-2xl shadow-xl hover:bg-white/[0.05] transition-colors"><CardContent className="p-4 text-center">
                 <div className="text-xs text-muted-foreground">Lançamentos</div>
                 <div className="text-xl font-bold">{parseResult.lancamentos.length}</div>
               </CardContent></Card>
-              <Card><CardContent className="p-3 text-center">
+              <Card className="bg-white/[0.03] border-white/10 rounded-2xl shadow-xl hover:bg-white/[0.05] transition-colors"><CardContent className="p-4 text-center">
                 <div className="text-xs text-muted-foreground">Partidas</div>
                 <div className="text-xl font-bold">{parseResult.totalPartidas}</div>
               </CardContent></Card>
-              <Card><CardContent className="p-3 text-center">
+              <Card className="bg-white/[0.03] border-white/10 rounded-2xl shadow-xl hover:bg-white/[0.05] transition-colors"><CardContent className="p-4 text-center">
                 <div className="text-xs text-muted-foreground">Total D = C</div>
                 <div className="text-sm font-mono font-bold">{formatCurrency(totalDebito)}</div>
               </CardContent></Card>
-              <Card><CardContent className="p-3 text-center">
+              <Card className="bg-white/[0.03] border-white/10 rounded-2xl shadow-xl hover:bg-white/[0.05] transition-colors"><CardContent className="p-4 text-center">
                 <div className="text-xs text-muted-foreground">Erros</div>
                 <div className={cn('text-xl font-bold', parseResult.errors.length > 0 ? 'text-destructive' : 'text-success')}>
                   {parseResult.errors.length}
                 </div>
               </CardContent></Card>
-              <Card><CardContent className="p-3 text-center">
+              <Card className="bg-white/[0.03] border-white/10 rounded-2xl shadow-xl hover:bg-white/[0.05] transition-colors"><CardContent className="p-4 text-center">
                 <div className="text-xs text-muted-foreground">Avisos</div>
                 <div className={cn('text-xl font-bold', parseResult.warnings.length > 0 ? 'text-warning' : 'text-muted-foreground')}>
                   {parseResult.warnings.length}
