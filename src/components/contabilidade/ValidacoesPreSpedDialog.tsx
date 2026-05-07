@@ -492,6 +492,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
                       <span className="text-xs font-bold">PDF Filtrado</span>
                       <span className="text-[10px] text-muted-foreground">{errosFiltrados.length + avisosFiltrados.length} item(ns)</span>
                     </div>
+                  </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => exportarJson(true)}
                     disabled={!podeExportarFiltrado}
