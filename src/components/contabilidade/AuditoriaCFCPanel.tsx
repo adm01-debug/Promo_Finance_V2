@@ -108,7 +108,7 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
           )}
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="p-8 pt-2 space-y-8">
         {/* KPI de score + totais */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
           <motion.div 
