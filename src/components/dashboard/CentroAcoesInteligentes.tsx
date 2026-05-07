@@ -4,12 +4,14 @@
 // ============================================
 import { Sparkles, ArrowRight, RefreshCw, Loader2, AlertOctagon, AlertTriangle, Info, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAcoesRecomendadas, type AcaoRecomendada } from "@/hooks/useAcoesRecomendadas";
 import { formatCurrency } from "@/lib/formatters";
+import { cn } from "@/lib/utils";
 
 const URGENCIA_CONFIG: Record<AcaoRecomendada["urgencia"], { label: string; icon: React.ElementType; variant: "default" | "secondary" | "destructive" | "outline"; color: string }> = {
   critica: { label: "Crítica", icon: AlertOctagon, variant: "destructive", color: "text-destructive" },
