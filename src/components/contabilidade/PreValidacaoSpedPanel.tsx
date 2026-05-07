@@ -197,16 +197,19 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
   );
 }
 
-function ResumoBox({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+function ResumoBox({ label, value, highlight, icon: Icon }: { label: string; value: string; highlight?: boolean; icon?: any }) {
   return (
     <div
       className={cn(
-        'rounded-2xl border bg-black/20 p-4 transition-all duration-500 hover:bg-black/30 shadow-inner group/box',
-        highlight && 'border-warning/40 bg-warning/5 ring-1 ring-warning/20',
+        'rounded-2xl border bg-white/[0.03] p-5 transition-all duration-500 hover:bg-white/[0.06] shadow-xl group/box relative overflow-hidden',
+        highlight ? 'border-destructive/40 bg-destructive/5 ring-1 ring-destructive/20' : 'border-white/5',
       )}
     >
-      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-1 group-hover/box:text-primary transition-colors">{label}</p>
-      <p className={cn('font-black text-lg tracking-tight tabular-nums', highlight ? 'text-warning' : 'text-white')}>{value}</p>
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-40 group-hover/box:text-primary transition-colors">{label}</p>
+        {Icon && <Icon className="h-3 w-3 opacity-20 group-hover/box:scale-110 transition-transform" />}
+      </div>
+      <p className={cn('font-black text-lg tracking-tighter tabular-nums', highlight ? 'text-destructive' : 'text-foreground/90')}>{value}</p>
     </div>
   );
 }
