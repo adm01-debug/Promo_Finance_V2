@@ -205,31 +205,45 @@ export function LancamentosTab({ empresaId, ano }: Props) {
                   Novo Lançamento
                 </Button>
               </DialogTrigger>
-            <DialogContent className="max-w-3xl border-none bg-background/95 backdrop-blur-2xl shadow-3xl rounded-[2.5rem] p-8 overflow-hidden">
-              <DialogHeader className="mb-6">
-                <DialogTitle className="text-2xl font-black tracking-tight flex items-center gap-3">
-                  <Plus className="h-6 w-6 text-primary" />
-                  Novo Lançamento Contábil
-                </DialogTitle>
-              </DialogHeader>
-              <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Data do Lançamento</Label>
-                    <Input type="date" value={data} onChange={e => setData(e.target.value)} className="h-12 bg-white/5 border-white/10 rounded-xl font-bold transition-all focus:ring-primary/20" />
+              <DialogContent className="max-w-4xl border-none bg-background/95 backdrop-blur-2xl shadow-3xl rounded-[3rem] p-0 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
+                <DialogHeader className="p-8 pb-0 relative z-10">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-primary/20 rounded-2xl">
+                      <Plus className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <DialogTitle className="text-2xl font-black tracking-tight">Escrituração Contábil</DialogTitle>
+                      <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">Registro de Partida Dobrada (Débito/Crédito)</p>
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Histórico / Descrição</Label>
-                  <Input value={historico} onChange={e => setHistorico(e.target.value)} placeholder="Ex: Pagamento de fornecedor NF 12345" className="h-12 bg-white/5 border-white/10 rounded-xl font-bold transition-all focus:ring-primary/20" />
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Composição de Partidas</Label>
-                    <Button size="sm" variant="outline" onClick={() => setPartidas([...partidas, { conta_id: '', tipo: 'D', valor: 0 }])} className="rounded-xl border-white/10 bg-white/5 hover:bg-white/10 gap-2 font-bold h-9">
-                      <Plus className="h-4 w-4 text-primary" />Adicionar Linha
-                    </Button>
+                </DialogHeader>
+
+                <div className="p-8 space-y-8 relative z-10">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Data do Fato Contábil</Label>
+                      <div className="relative">
+                        <CalendarIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-primary opacity-40" />
+                        <Input type="date" value={data} onChange={e => setData(e.target.value)} className="h-14 pl-12 bg-white/5 border-white/5 rounded-2xl font-bold transition-all focus:ring-primary/20" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Histórico Narrativo</Label>
+                      <Input value={historico} onChange={e => setHistorico(e.target.value)} placeholder="Ex: Recebimento duplicata nº 552..." className="h-14 bg-white/5 border-white/5 rounded-2xl font-bold transition-all focus:ring-primary/20" />
+                    </div>
                   </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <LayoutGrid className="h-4 w-4 text-primary opacity-40" />
+                        <Label className="text-[10px] font-black uppercase tracking-widest opacity-40">Itens do Lançamento</Label>
+                      </div>
+                      <Button size="sm" variant="ghost" onClick={() => setPartidas([...partidas, { conta_id: '', tipo: 'D', valor: 0 }])} className="rounded-xl hover:bg-primary/10 text-primary gap-2 font-black h-9 text-[10px] uppercase tracking-widest">
+                        <Plus className="h-4 w-4" />Adicionar Partida
+                      </Button>
+                    </div>
                   <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                     {partidas.map((p, i) => (
                       <motion.div 
