@@ -323,17 +323,23 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
               <button
                 onClick={() => toggleGroup(group.id)}
                 className={cn(
-                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 group',
+                  'w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-500 group mt-4 first:mt-0',
                   hasActive
                     ? 'text-foreground'
-                    : 'text-muted-foreground/70 hover:bg-muted/40 hover:text-foreground'
+                    : 'text-muted-foreground/40 hover:bg-white/5 hover:text-foreground'
                 )}
               >
-                <GroupIcon className="h-4 w-4 flex-shrink-0" />
-                <span className="font-semibold text-sm flex-1 text-left">{group.label}</span>
+                <div className={cn(
+                  "p-2 rounded-xl transition-all duration-500",
+                  hasActive ? "bg-primary/10 text-primary" : "bg-transparent"
+                )}>
+                  <GroupIcon className="h-4.5 w-4.5 shrink-0" />
+                </div>
+                <span className="font-black text-[10px] uppercase tracking-[0.25em] flex-1 text-left">{group.label}</span>
                 <motion.div
                   animate={{ rotate: isOpen ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
+                  transition={{ duration: 0.4, ease: "backOut" }}
+                  className="opacity-40 group-hover:opacity-100 transition-opacity"
                 >
                   <ChevronDown className="h-4 w-4" />
                 </motion.div>
