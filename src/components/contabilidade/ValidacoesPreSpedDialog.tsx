@@ -206,8 +206,8 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
           0: { fontStyle: 'bold', cellWidth: 42, textColor: [PDF_BRAND.muted[0], PDF_BRAND.muted[1], PDF_BRAND.muted[2]] },
         },
       });
-      // @ts-expect-error - jspdf-autotable lastAutoTable
-      cursorY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 6;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cursorY = (doc as any).lastAutoTable?.finalY + 6 || cursorY + 6;
 
       if (apenasFiltrados) {
         doc.setFont('helvetica', 'italic');
