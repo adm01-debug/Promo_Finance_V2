@@ -66,79 +66,87 @@ const Demonstrativos = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="space-y-6"
+        className="space-y-10"
       >
         {/* Header */}
-        <motion.div variants={itemVariants} className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <motion.div variants={itemVariants} className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Demonstrativos Contábeis</h1>
-            <p className="text-muted-foreground">
-              DRE, Balanço Patrimonial e Fluxo de Caixa
+            <h1 className="text-4xl font-extrabold tracking-tight md:text-5xl lg:text-6xl text-display-xl">
+              Demonstrativos <span className="text-primary">Contábeis</span>
+            </h1>
+            <p className="text-lg text-muted-foreground mt-2 max-w-2xl">
+              Visão analítica completa da sua saúde financeira: DRE, Balanço Patrimonial e Fluxo de Caixa integrados.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <Select value={empresaId} onValueChange={setEmpresaId}>
-              <SelectTrigger className="w-[180px]">
-                <Building2 className="mr-2 h-4 w-4" />
-                <SelectValue placeholder="Empresa" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todas">Todas as empresas</SelectItem>
-                {empresas?.map((empresa) => (
-                  <SelectItem key={empresa.id} value={empresa.id}>
-                    {empresa.nome_fantasia || empresa.razao_social}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select value={periodo} onValueChange={setPeriodo}>
-              <SelectTrigger className="w-[140px]">
-                <Calendar className="mr-2 h-4 w-4" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="mensal">Mensal</SelectItem>
-                <SelectItem value="trimestral">Trimestral</SelectItem>
-                <SelectItem value="anual">Anual</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {periodo === 'mensal' && (
-              <Select value={mes} onValueChange={setMes}>
-                <SelectTrigger className="w-[140px]">
-                  <SelectValue />
+          <div className="flex flex-wrap items-center gap-4 bg-card/40 p-2 rounded-2xl border border-border/50 backdrop-blur-sm">
+            <div className="flex items-center gap-2 px-2 border-r border-border/50 pr-4">
+              <Building2 className="h-4 w-4 text-muted-foreground" />
+              <Select value={empresaId} onValueChange={setEmpresaId}>
+                <SelectTrigger className="w-[180px] border-none bg-transparent hover:bg-accent/50 transition-colors h-9">
+                  <SelectValue placeholder="Empresa" />
                 </SelectTrigger>
                 <SelectContent>
-                  {meses.map((m, i) => (
-                    <SelectItem key={i} value={i.toString()}>{m}</SelectItem>
+                  <SelectItem value="todas">Todas as empresas</SelectItem>
+                  {empresas?.map((empresa) => (
+                    <SelectItem key={empresa.id} value={empresa.id}>
+                      {empresa.nome_fantasia || empresa.razao_social}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-            )}
+            </div>
 
-            <Select value={ano} onValueChange={setAno}>
-              <SelectTrigger className="w-[100px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {anos.map((a) => (
-                  <SelectItem key={a} value={a}>{a}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-muted-foreground ml-2" />
+              <Select value={periodo} onValueChange={setPeriodo}>
+                <SelectTrigger className="w-[130px] border-none bg-transparent hover:bg-accent/50 transition-colors h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="mensal">Mensal</SelectItem>
+                  <SelectItem value="trimestral">Trimestral</SelectItem>
+                  <SelectItem value="anual">Anual</SelectItem>
+                </SelectContent>
+              </Select>
 
-            <ExportDemonstrativoPDF
-              tipo="dre"
-              periodo={periodo}
-              mes={parseInt(mes)}
-              ano={parseInt(ano)}
-              empresa="Promo Finance"
-              linhas={exportData.dre.linhas}
-              resumoDRE={{ lucroLiquido: exportData.dre.lucroLiquido }}
-              fonte={fonteEfetiva}
-            />
+              {periodo === 'mensal' && (
+                <Select value={mes} onValueChange={setMes}>
+                  <SelectTrigger className="w-[130px] border-none bg-transparent hover:bg-accent/50 transition-colors h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {meses.map((m, i) => (
+                      <SelectItem key={i} value={i.toString()}>{m}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+
+              <Select value={ano} onValueChange={setAno}>
+                <SelectTrigger className="w-[90px] border-none bg-transparent hover:bg-accent/50 transition-colors h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {anos.map((a) => (
+                    <SelectItem key={a} value={a}>{a}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="ml-auto pl-4 border-l border-border/50">
+              <ExportDemonstrativoPDF
+                tipo="dre"
+                periodo={periodo}
+                mes={parseInt(mes)}
+                ano={parseInt(ano)}
+                empresa="Promo Finance"
+                linhas={exportData.dre.linhas}
+                resumoDRE={{ lucroLiquido: exportData.dre.lucroLiquido }}
+                fonte={fonteEfetiva}
+              />
+            </div>
           </div>
         </motion.div>
 
@@ -154,21 +162,23 @@ const Demonstrativos = () => {
 
         {/* Main Content */}
         <motion.div variants={itemVariants}>
-          <Tabs defaultValue="dre" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3 lg:w-[500px]">
-              <TabsTrigger value="dre" className="gap-2">
-                <TrendingUp className="h-4 w-4" />
-                <span className="hidden sm:inline">DRE</span>
-              </TabsTrigger>
-              <TabsTrigger value="balanco" className="gap-2">
-                <Scale className="h-4 w-4" />
-                <span className="hidden sm:inline">Balanço</span>
-              </TabsTrigger>
-              <TabsTrigger value="fluxo" className="gap-2">
-                <Wallet className="h-4 w-4" />
-                <span className="hidden sm:inline">Fluxo de Caixa</span>
-              </TabsTrigger>
-            </TabsList>
+          <Tabs defaultValue="dre" className="space-y-10">
+            <div className="flex justify-center">
+              <TabsList className="inline-flex h-12 items-center justify-center rounded-xl bg-muted/50 p-1 text-muted-foreground w-full max-w-[600px] border border-border/50 backdrop-blur-sm">
+                <TabsTrigger value="dre" className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-8 py-2 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  <span>DRE</span>
+                </TabsTrigger>
+                <TabsTrigger value="balanco" className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-8 py-2 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2">
+                  <Scale className="h-4 w-4" />
+                  <span>Balanço</span>
+                </TabsTrigger>
+                <TabsTrigger value="fluxo" className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-8 py-2 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2">
+                  <Wallet className="h-4 w-4" />
+                  <span>Fluxo de Caixa</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             <TabsContent value="dre">
               <DREStatement

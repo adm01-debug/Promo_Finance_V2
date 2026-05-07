@@ -14,16 +14,29 @@ interface Props {
 
 export const FonteDadosToggle = ({ value, onChange, totalPartidas, hasContabilidade }: Props) => {
   return (
-    <div className="rounded-lg border border-border/50 bg-card p-3 flex flex-col gap-2">
-      <div className="flex flex-wrap items-center gap-3">
-        <span className="text-sm font-medium">Fonte de dados:</span>
-        <Tabs value={value} onValueChange={(v) => onChange(v as FonteDemonstrativo)}>
-          <TabsList>
-            <TabsTrigger value="competencia" disabled={!hasContabilidade} className="gap-2">
+    <div className="rounded-2xl border border-border/40 bg-background/40 backdrop-blur-xl p-4 flex flex-col gap-3 shadow-sm ring-1 ring-white/10">
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="flex items-center gap-2">
+          <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
+            <Database className="h-4 w-4" />
+          </div>
+          <span className="text-sm font-bold tracking-tight uppercase opacity-70">Origem dos Dados</span>
+        </div>
+
+        <Tabs value={value} onValueChange={(v) => onChange(v as FonteDemonstrativo)} className="ml-2">
+          <TabsList className="bg-muted/50 p-1 h-10 rounded-xl border border-border/50">
+            <TabsTrigger 
+              value="competencia" 
+              disabled={!hasContabilidade} 
+              className="gap-2 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm px-4"
+            >
               <Database className="h-3.5 w-3.5" />
               Competência
             </TabsTrigger>
-            <TabsTrigger value="caixa" className="gap-2">
+            <TabsTrigger 
+              value="caixa" 
+              className="gap-2 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm px-4"
+            >
               <Wallet className="h-3.5 w-3.5" />
               Caixa
             </TabsTrigger>
@@ -32,29 +45,34 @@ export const FonteDadosToggle = ({ value, onChange, totalPartidas, hasContabilid
 
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger className="hover:scale-110 transition-transform">
               <Info className="h-4 w-4 text-muted-foreground" />
             </TooltipTrigger>
-            <TooltipContent className="max-w-xs">
-              <p className="text-xs">
-                <strong>Competência:</strong> reconhece receitas e despesas quando o fato ocorre (partidas contábeis).<br />
-                <strong>Caixa:</strong> reconhece quando o dinheiro entra ou sai (contas pagas/recebidas).
-              </p>
+            <TooltipContent className="max-w-xs p-4 rounded-xl border-border/50 shadow-xl">
+              <div className="space-y-2">
+                <p className="text-xs">
+                  <strong className="text-primary">Competência:</strong> Foco no fato gerador. Utiliza as partidas dobradas da escrituração contábil.
+                </p>
+                <p className="text-xs">
+                  <strong className="text-primary">Caixa:</strong> Foco no fluxo financeiro. Utiliza liquidações de contas a pagar e receber.
+                </p>
+              </div>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
 
         {value === 'competencia' && (
-          <Badge variant="secondary" className="ml-auto">
-            {totalPartidas} {totalPartidas === 1 ? 'partida' : 'partidas'} no período
+          <Badge variant="outline" className="ml-auto bg-primary/5 border-primary/20 text-primary font-bold px-3 py-1 rounded-lg">
+            {totalPartidas.toLocaleString()} partidas processadas
           </Badge>
         )}
       </div>
 
-      {!hasContabilidade && value === 'caixa' && (
-        <Alert className="border-warning/30 bg-warning/5">
-          <AlertDescription className="text-xs">
-            Sem lançamentos contábeis para este período. Importe lançamentos no módulo <strong>Contabilidade</strong> para usar o regime de Competência.
+      {!hasContabilidade && (
+        <Alert className="border-warning/20 bg-warning/5 rounded-xl border-dashed py-2 px-3">
+          <AlertDescription className="text-[11px] text-muted-foreground flex items-center gap-2">
+            <div className="h-1.5 w-1.5 rounded-full bg-warning animate-pulse" />
+            <span>Ausência de lançamentos contábeis no período. O sistema está operando em <strong>Modo de Contingência (Regime de Caixa)</strong>.</span>
           </AlertDescription>
         </Alert>
       )}

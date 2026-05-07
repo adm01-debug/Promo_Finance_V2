@@ -84,22 +84,24 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         animate={{
           marginLeft: isMobile ? 0 : (sidebarCollapsed ? 72 : 280),
         }}
-        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+        transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
         className={cn(
-          'min-h-screen w-full transition-all duration-300',
-          isMobile ? 'pt-4 pb-24' : 'pt-16'
+          'min-h-screen w-full transition-all duration-500',
+          isMobile ? 'pt-4 pb-24' : 'pt-20'
         )}
         style={{
           width: isMobile ? '100%' : `calc(100% - ${sidebarCollapsed ? 72 : 280}px)`,
         }}
       >
-        <div className="w-full max-w-full p-4 md:p-6 lg:p-8">
+        <div className="w-full max-w-[1600px] mx-auto p-6 md:p-8 lg:p-10">
           {/* Contextual Breadcrumbs with Back Button */}
-          <ContextualBreadcrumbs />
+          <div className="mb-8">
+            <ContextualBreadcrumbs />
+          </div>
           
           {/* Onboarding Checklist - show on dashboard */}
           {showOnboarding && (
-            <div className="mb-6 max-w-md">
+            <div className="mb-10 max-w-md">
               <OnboardingChecklist />
             </div>
           )}

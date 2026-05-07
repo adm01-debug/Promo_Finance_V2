@@ -247,7 +247,7 @@ export function ExportDemonstrativoPDF(props: ExportDemonstrativoPDFProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" disabled={exporting} className="gap-2">
+        <Button variant="outline" size="sm" disabled={exporting} className="gap-2 h-9 rounded-xl border-border/50 bg-background/50 hover:bg-accent/50 hover:text-primary transition-all duration-300 shadow-sm active:scale-95">
           {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
           Exportar
         </Button>
