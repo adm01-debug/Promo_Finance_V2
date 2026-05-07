@@ -5,17 +5,17 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center rounded-lg border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 active:scale-95",
   {
     variants: {
       variant: {
-        default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
-        secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        outline: "text-foreground",
-        success: "border-transparent bg-success/15 text-success",
-        warning: "border-transparent bg-warning/15 text-warning",
-        info: "border-transparent bg-secondary/15 text-secondary",
+        default: "border-transparent bg-primary text-primary-foreground shadow-sm shadow-primary/20",
+        secondary: "border-transparent bg-secondary text-secondary-foreground shadow-sm",
+        destructive: "border-transparent bg-destructive text-destructive-foreground shadow-sm shadow-destructive/20",
+        outline: "border-border/50 text-foreground bg-background/50",
+        success: "border-transparent bg-success/10 text-success ring-1 ring-success/20",
+        warning: "border-transparent bg-warning/10 text-warning ring-1 ring-warning/20",
+        info: "border-transparent bg-info/10 text-info ring-1 ring-info/20",
       },
     },
     defaultVariants: {
