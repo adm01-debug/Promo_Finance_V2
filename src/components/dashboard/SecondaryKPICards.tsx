@@ -54,19 +54,19 @@ function MiniKPICard({ icon: Icon, label, value, iconBg, iconColor, href, alertL
         <div className="flex items-center gap-2.5 sm:gap-3 relative">
           <motion.div
             className={cn(
-              'p-2 rounded-xl transition-all duration-300 border border-transparent',
+              'p-3 rounded-2xl transition-all duration-500 border border-white/5',
               iconBg,
-              'group-hover:shadow-sm group-hover:border-border/20'
+              'group-hover:shadow-lg group-hover:border-white/10'
             )}
-            whileHover={{ scale: 1.12, rotate: 8 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+            whileHover={{ scale: 1.15, rotate: 12 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 12 }}
           >
-            <Icon className={cn('h-4 w-4 transition-all duration-300', iconColor)} />
+            <Icon className={cn('h-5 w-5 transition-all duration-300', iconColor)} />
           </motion.div>
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] sm:text-xs text-muted-foreground truncate font-medium">{label}</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground/60 truncate mb-1">{label}</p>
             <p className={cn(
-              'text-lg sm:text-xl font-bold font-display tabular-nums tracking-tight',
+              'text-2xl font-black font-display tabular-nums tracking-tighter',
               alertLevel === 'warning' && value > 0 && 'text-warning',
               alertLevel === 'danger' && value > 0 && 'text-destructive',
             )}>
