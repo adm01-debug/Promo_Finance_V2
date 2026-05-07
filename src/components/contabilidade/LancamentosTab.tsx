@@ -235,52 +235,55 @@ export function LancamentosTab({ empresaId, ano }: Props) {
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Filtros */}
-        <div className="flex flex-wrap gap-2 items-center">
-          <div className="relative flex-1 min-w-[220px] max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por histórico ou nº..."
-              value={busca}
-              onChange={e => setBusca(e.target.value)}
-              className="pl-8"
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="relative flex-1 min-w-[320px] group/search">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within/search:text-primary" />
+            <Input 
+              placeholder="Buscar por histórico ou nº do lançamento..." 
+              value={busca} 
+              onChange={e => setBusca(e.target.value)} 
+              className="h-14 pl-12 bg-white/5 border-white/5 rounded-2xl font-bold text-lg transition-all focus:ring-primary/20 placeholder:text-muted-foreground/40" 
             />
           </div>
-          <Select value={preset} onValueChange={v => handlePreset(v as DatePreset)}>
-            <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todo o período</SelectItem>
-              <SelectItem value="today">Hoje</SelectItem>
-              <SelectItem value="last7">Últimos 7 dias</SelectItem>
-              <SelectItem value="last30">Últimos 30 dias</SelectItem>
-              <SelectItem value="mes">Este mês</SelectItem>
-              <SelectItem value="ano">Ano de {ano}</SelectItem>
-              <SelectItem value="custom">Personalizado</SelectItem>
-            </SelectContent>
-          </Select>
+          
+          <div className="flex items-center gap-3">
+            <Select value={preset} onValueChange={v => handlePreset(v as DatePreset)}>
+              <SelectTrigger className="h-12 w-[180px] rounded-2xl border-white/5 bg-white/5 font-bold"><SelectValue /></SelectTrigger>
+              <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
+                <SelectItem value="all">Todo o período</SelectItem>
+                <SelectItem value="today">Hoje</SelectItem>
+                <SelectItem value="last7">Últimos 7 dias</SelectItem>
+                <SelectItem value="last30">Últimos 30 dias</SelectItem>
+                <SelectItem value="mes">Este mês</SelectItem>
+                <SelectItem value="ano">Ano de {ano}</SelectItem>
+                <SelectItem value="custom">Personalizado</SelectItem>
+              </SelectContent>
+            </Select>
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className={cn('gap-2', !dataInicio && 'text-muted-foreground')}>
-                <CalendarIcon className="h-4 w-4" />
-                {dataInicio ? format(dataInicio, 'dd/MM/yyyy', { locale: ptBR }) : 'Início'}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" selected={dataInicio} onSelect={d => { setDataInicio(d); filtersController.setField('preset', 'custom'); }} initialFocus className={cn('p-3 pointer-events-auto')} />
-            </PopoverContent>
-          </Popover>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className={cn('h-12 rounded-2xl border-white/5 bg-white/5 gap-2 px-5 font-bold', !dataInicio && 'text-muted-foreground')}>
+                  <CalendarIcon className="h-4 w-4 text-primary" />
+                  {dataInicio ? format(dataInicio, 'dd/MM/yyyy', { locale: ptBR }) : 'Início'}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 border-none shadow-3xl rounded-3xl overflow-hidden" align="start">
+                <Calendar mode="single" selected={dataInicio} onSelect={d => { setDataInicio(d); filtersController.setField('preset', 'custom'); }} initialFocus className={cn('p-3 pointer-events-auto')} />
+              </PopoverContent>
+            </Popover>
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className={cn('gap-2', !dataFim && 'text-muted-foreground')}>
-                <CalendarIcon className="h-4 w-4" />
-                {dataFim ? format(dataFim, 'dd/MM/yyyy', { locale: ptBR }) : 'Fim'}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" selected={dataFim} onSelect={d => { setDataFim(d); filtersController.setField('preset', 'custom'); }} initialFocus className={cn('p-3 pointer-events-auto')} />
-            </PopoverContent>
-          </Popover>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className={cn('h-12 rounded-2xl border-white/5 bg-white/5 gap-2 px-5 font-bold', !dataFim && 'text-muted-foreground')}>
+                  <CalendarIcon className="h-4 w-4 text-primary" />
+                  {dataFim ? format(dataFim, 'dd/MM/yyyy', { locale: ptBR }) : 'Fim'}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 border-none shadow-3xl rounded-3xl overflow-hidden" align="start">
+                <Calendar mode="single" selected={dataFim} onSelect={d => { setDataFim(d); filtersController.setField('preset', 'custom'); }} initialFocus className={cn('p-3 pointer-events-auto')} />
+              </PopoverContent>
+            </Popover>
+          </div>
 
           <ClearFiltersButton
             controller={filtersController}
