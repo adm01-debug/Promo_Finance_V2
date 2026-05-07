@@ -254,7 +254,79 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
   };
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-700">
+    <div className="space-y-10">
+      {/* Cards de KPI de Governança */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
+        >
+          <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover/kpi:scale-110 transition-transform">
+            <History className="h-20 w-20 text-primary" />
+          </div>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Total Gerado</p>
+          <div className="flex items-baseline gap-2 mt-2">
+            <p className="text-4xl font-black tracking-tighter tabular-nums">{historicoFiltrado.length}</p>
+            <span className="text-[10px] font-bold text-primary/60">Arquivos em {ano}</span>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
+        >
+          <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover/kpi:scale-110 transition-transform">
+            <ShieldCheck className="h-20 w-20 text-success" />
+          </div>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Taxa de Sucesso</p>
+          <div className="flex items-baseline gap-2 mt-2">
+            <p className="text-4xl font-black tracking-tighter tabular-nums text-success">
+              {historicoFiltrado.length > 0 
+                ? Math.round((historicoFiltrado.filter(h => h.status === 'transmitido' || h.status === 'gerado').length / historicoFiltrado.length) * 100)
+                : 100}%
+            </p>
+            <CheckCircle2 className="h-4 w-4 text-success opacity-40" />
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-white/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
+        >
+          <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover/kpi:scale-110 transition-transform">
+            <Layers className="h-20 w-20 text-purple-400" />
+          </div>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Volume Analítico</p>
+          <div className="flex items-baseline gap-2 mt-2">
+            <p className="text-3xl font-black tracking-tighter tabular-nums">
+              {historicoFiltrado.reduce((acc, h) => acc + h.total_lancamentos, 0).toLocaleString('pt-BR')}
+            </p>
+            <span className="text-[10px] font-bold opacity-40">Lanç.</span>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-white/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
+        >
+          <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover/kpi:scale-110 transition-transform">
+            <Cpu className="h-20 w-20 text-orange-400" />
+          </div>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Processamento</p>
+          <div className="flex items-baseline gap-2 mt-2">
+            <p className="text-3xl font-black tracking-tighter tabular-nums">High-Speed</p>
+            <Zap className="h-4 w-4 text-orange-400 opacity-40" />
+          </div>
+        </motion.div>
+      </div>
+
       {tipo === 'ECD' && empresaId && (
         <>
           <SpedEcdWizard open={wizardOpen} onOpenChange={setWizardOpen} empresaId={empresaId} anoCalendario={ano} />
@@ -299,16 +371,16 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
         <CardHeader className="p-10 pb-6 relative z-10">
           <div className="flex items-center gap-6">
             <div className="p-4 rounded-2xl bg-primary shadow-xl shadow-primary/20 text-primary-foreground transform group-hover:scale-110 transition-transform duration-500">
-              <FileText className="h-8 w-8" />
+              <FileArchive className="h-8 w-8" />
             </div>
             <div>
               <CardTitle className="text-4xl font-black tracking-tight">
-                Gerar SPED {tipo}
+                Núcleo de Transmissão {tipo}
               </CardTitle>
               <CardDescription className="text-lg font-medium opacity-70">
                 {tipo === 'ECD'
-                  ? 'Escrituração Contábil Digital • Layout 9'
-                  : 'Escrituração Contábil Fiscal • Layout 10'}
+                  ? 'Escrituração Contábil Digital • Interface Federada'
+                  : 'Escrituração Contábil Fiscal • Módulo Inteligente'}
               </CardDescription>
             </div>
           </div>
