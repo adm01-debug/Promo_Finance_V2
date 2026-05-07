@@ -298,37 +298,39 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <ShieldAlert className="h-5 w-5 text-primary" />
+          <DialogTitle className="flex items-center gap-2 text-xl font-bold">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <ShieldAlert className="h-6 w-6 text-primary" />
+            </div>
             Validações SPED {arquivo.tipo} · {arquivo.ano_calendario}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-xs font-medium">
             Revise erros e avisos antes de baixar e transmitir o arquivo no PVA-{arquivo.tipo}.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-md border p-3 text-center">
-            <div className="text-xs text-muted-foreground">Erros</div>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="rounded-xl border bg-muted/20 p-4 text-center transition-all hover:bg-muted/30">
+            <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Erros</div>
             <div
               data-testid="contador-erros"
-              className={`text-2xl font-bold ${erros.length > 0 ? 'text-destructive' : 'text-success'}`}
+              className={cn("text-3xl font-black tabular-nums", erros.length > 0 ? 'text-destructive' : 'text-success')}
             >
               {erros.length}
             </div>
           </div>
-          <div className="rounded-md border p-3 text-center">
-            <div className="text-xs text-muted-foreground">Avisos</div>
+          <div className="rounded-xl border bg-muted/20 p-4 text-center transition-all hover:bg-muted/30">
+            <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Avisos</div>
             <div
               data-testid="contador-avisos"
-              className={`text-2xl font-bold ${avisos.length > 0 ? 'text-warning' : 'text-muted-foreground'}`}
+              className={cn("text-3xl font-black tabular-nums", avisos.length > 0 ? 'text-warning' : 'text-muted-foreground')}
             >
               {avisos.length}
             </div>
           </div>
-          <div className="rounded-md border p-3 text-center">
-            <div className="text-xs text-muted-foreground">Hash</div>
-            <div className="text-xs font-mono mt-2 truncate" title={arquivo.hash_sha256 ?? ''}>
+          <div className="rounded-xl border bg-muted/20 p-4 text-center transition-all hover:bg-muted/30 flex flex-col justify-center overflow-hidden">
+            <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Hash</div>
+            <div className="text-[10px] font-mono mt-1 truncate bg-background/50 p-1.5 rounded border" title={arquivo.hash_sha256 ?? ''}>
               {hashCurto}
             </div>
           </div>
