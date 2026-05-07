@@ -27,15 +27,17 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
   if (!hasItems || collapsed) return null;
 
   return (
-    <div className="px-3 py-2 space-y-2 border-b border-sidebar-border">
+    <div className="px-3 py-4 space-y-4 border-b border-sidebar-border/30">
       {/* Favoritos */}
       {favoriteItems.length > 0 && (
-        <div className="space-y-1">
+        <div className="space-y-2">
           <button
             onClick={() => setIsFavoritesOpen(!isFavoritesOpen)}
-            className="w-full flex items-center gap-2 px-2 py-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="w-full flex items-center gap-2 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-foreground transition-colors group"
           >
-            <Star className="h-3 w-3 text-warning fill-warning" />
+            <div className="p-1 rounded-md bg-warning/10 text-warning group-hover:bg-warning/20 transition-colors">
+              <Star className="h-3 w-3 fill-warning" />
+            </div>
             <span className="flex-1 text-left">Favoritos</span>
             <motion.div
               animate={{ rotate: isFavoritesOpen ? 180 : 0 }}
@@ -60,10 +62,10 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
                       <NavLink
                         to={item.path}
                         className={cn(
-                          'flex-1 px-2 py-1.5 text-xs rounded-md transition-colors truncate',
+                          'flex-1 px-3 py-2 text-xs rounded-xl transition-all duration-300 truncate font-medium',
                           location.pathname === item.path
-                            ? 'bg-primary text-primary-foreground'
-                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                            ? 'bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20'
+                            : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
                         )}
                       >
                         {item.label}
@@ -87,13 +89,15 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
 
       {/* Recentes */}
       {recentItems.length > 0 && (
-        <div className="space-y-1">
+        <div className="space-y-2">
           <div className="flex items-center gap-2 px-2 py-1">
             <button
               onClick={() => setIsRecentOpen(!isRecentOpen)}
-              className="flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-foreground transition-colors group"
             >
-              <Clock className="h-3 w-3" />
+              <div className="p-1 rounded-md bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
+                <Clock className="h-3 w-3" />
+              </div>
               <span>Recentes</span>
               <motion.div
                 animate={{ rotate: isRecentOpen ? 180 : 0 }}
@@ -128,10 +132,10 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
                       <NavLink
                         to={item.path}
                         className={cn(
-                          'flex-1 px-2 py-1.5 text-xs rounded-md transition-colors truncate',
+                          'flex-1 px-3 py-2 text-xs rounded-xl transition-all duration-300 truncate font-medium',
                           location.pathname === item.path
-                            ? 'bg-primary text-primary-foreground'
-                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                            ? 'bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20'
+                            : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
                         )}
                       >
                         {item.label}
