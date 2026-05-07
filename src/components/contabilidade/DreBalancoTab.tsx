@@ -1,16 +1,26 @@
 import { useMemo, useState } from 'react';
-import { BarChart3, Scale, Download, AlertTriangle, CheckCircle2 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BarChart3, Scale, Download, AlertTriangle, CheckCircle2, FileJson, FileText, Calendar as CalendarIcon } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useLancamentosContabeis } from '@/hooks/useLancamentosContabeis';
 import { usePlanoContas, type PlanoContaRow } from '@/hooks/usePlanoContas';
 import { useEmpresas } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
-import { exportToPDF, type ExportColumn } from '@/lib/export-utils';
+import { applyPdfLayout, getAutoTableMargins, getContentStartY, PDF_BRAND } from '@/lib/pdf-layout';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { toast } from 'sonner';
 
 interface Props { empresaId?: string; ano: number }
@@ -138,61 +148,208 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
 
   const empresaTitulo = empresa ? (empresa.nome_fantasia || empresa.razao_social) : 'Empresa';
 
-  const exportarDRE = () => {
+  const exportarDRE = (format: 'pdf' | 'json') => {
     if (dre.receitas.length === 0 && dre.despesas.length === 0) {
       toast.warning('Sem dados para exportar.');
       return;
     }
-    const linhas: Record<string, string>[] = [
-      { Grupo: 'RECEITAS', Código: '', Conta: '', Valor: '' },
-      ...dre.receitas.map((c) => ({ Grupo: '', Código: c.codigo, Conta: c.nome, Valor: formatCurrency(c.saldo) })),
-      { Grupo: '', Código: '', Conta: 'Total Receitas', Valor: formatCurrency(dre.totalReceitas) },
-      { Grupo: 'DESPESAS', Código: '', Conta: '', Valor: '' },
-      ...dre.despesas.map((c) => ({ Grupo: '', Código: c.codigo, Conta: c.nome, Valor: formatCurrency(c.saldo) })),
-      { Grupo: '', Código: '', Conta: 'Total Despesas', Valor: formatCurrency(dre.totalDespesas) },
-      { Grupo: 'RESULTADO', Código: '', Conta: 'Resultado do Período', Valor: formatCurrency(dre.resultado) },
+
+    const filename = `DRE-${empresaTitulo}-${dataInicio}-a-${dataFim}`;
+
+    if (format === 'json') {
+      const payload = {
+        empresa: {
+          nome: empresaTitulo,
+          cnpj: empresa?.cnpj || '—',
+        },
+        periodo: { inicio: dataInicio, fim: dataFim },
+        totais: {
+          receitas: dre.totalReceitas,
+          despesas: dre.totalDespesas,
+          resultado: dre.resultado,
+        },
+        receitas: dre.receitas.map(r => ({ codigo: r.codigo, nome: r.nome, saldo: r.saldo })),
+        despesas: dre.despesas.map(d => ({ codigo: d.codigo, nome: d.nome, saldo: d.saldo })),
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${filename}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success('DRE exportada em JSON');
+      return;
+    }
+
+    // PDF
+    const doc = new jsPDF();
+    const margins = getAutoTableMargins();
+    let cursorY = getContentStartY();
+
+    // Sumário
+    const totalW = doc.internal.pageSize.getWidth() - margins.left - margins.right;
+    doc.setFillColor(PDF_BRAND.surface[0], PDF_BRAND.surface[1], PDF_BRAND.surface[2]);
+    doc.setDrawColor(PDF_BRAND.border[0], PDF_BRAND.border[1], PDF_BRAND.border[2]);
+    doc.roundedRect(margins.left, cursorY, totalW, 16, 1, 1, 'FD');
+    
+    doc.setFontSize(8);
+    doc.setTextColor(PDF_BRAND.muted[0], PDF_BRAND.muted[1], PDF_BRAND.muted[2]);
+    doc.text('RESULTADO LÍQUIDO DO PERÍODO', margins.left + 4, cursorY + 6);
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(dre.resultado >= 0 ? PDF_BRAND.success[0] : PDF_BRAND.destructive[0], dre.resultado >= 0 ? PDF_BRAND.success[1] : PDF_BRAND.destructive[1], dre.resultado >= 0 ? PDF_BRAND.success[2] : PDF_BRAND.destructive[2]);
+    doc.text(formatCurrency(dre.resultado), margins.left + 4, cursorY + 12);
+    
+    cursorY += 22;
+
+    const rows: any[] = [
+      [{ content: '(+) RECEITAS', styles: { fontStyle: 'bold', fillColor: [240, 248, 240] } }, ''],
+      ...dre.receitas.map(r => [
+        { content: r.nome, styles: { paddingLeft: r.nivel * 2 } },
+        { content: formatCurrency(r.saldo), styles: { halign: 'right' } }
+      ]),
+      [{ content: 'TOTAL RECEITAS', styles: { fontStyle: 'bold' } }, { content: formatCurrency(dre.totalReceitas), styles: { halign: 'right', fontStyle: 'bold' } }],
+      [{ content: ' ', styles: { cellPadding: 1 } }, ''],
+      [{ content: '(−) DESPESAS', styles: { fontStyle: 'bold', fillColor: [252, 245, 245] } }, ''],
+      ...dre.despesas.map(d => [
+        { content: d.nome, styles: { paddingLeft: d.nivel * 2 } },
+        { content: formatCurrency(d.saldo), styles: { halign: 'right' } }
+      ]),
+      [{ content: 'TOTAL DESPESAS', styles: { fontStyle: 'bold' } }, { content: formatCurrency(dre.totalDespesas), styles: { halign: 'right', fontStyle: 'bold' } }],
     ];
-    const cols: ExportColumn<Record<string, string>>[] = [
-      { header: 'Grupo', key: 'Grupo' },
-      { header: 'Código', key: 'Código' },
-      { header: 'Conta', key: 'Conta' },
-      { header: 'Valor', key: 'Valor' },
-    ];
-    exportToPDF(linhas, cols, `DRE — ${empresaTitulo} · ${dataInicio} a ${dataFim}`);
+
+    autoTable(doc, {
+      startY: cursorY,
+      head: [['Descrição', 'Valor (R$)']],
+      body: rows,
+      theme: 'plain',
+      styles: { fontSize: 8.5, cellPadding: 2 },
+      headStyles: { fillColor: PDF_BRAND.foreground, textColor: [255, 255, 255] },
+      columnStyles: { 1: { cellWidth: 40 } },
+      margin: margins,
+    });
+
+    applyPdfLayout(doc, {
+      titulo: 'Demonstração do Resultado do Exercício',
+      subtitulo: `${empresaTitulo} · ${dataInicio} a ${dataFim}`,
+    });
+
+    doc.save(`${filename}.pdf`);
+    toast.success('DRE exportada em PDF');
   };
 
-  const exportarBalanco = () => {
+  const exportarBalanco = (format: 'pdf' | 'json') => {
     if (balanco.ativo.length === 0 && balanco.passivo.length === 0) {
       toast.warning('Sem dados para exportar.');
       return;
     }
+
+    const filename = `Balanco-${empresaTitulo}-${dataInicio}-a-${dataFim}`;
+
+    if (format === 'json') {
+      const payload = {
+        empresa: {
+          nome: empresaTitulo,
+          cnpj: empresa?.cnpj || '—',
+        },
+        periodo: { inicio: dataInicio, fim: dataFim },
+        totais: {
+          ativo: balanco.totalAtivo,
+          passivo: balanco.totalPassivo,
+          patrimonio: balanco.totalPatrimonio,
+          resultado_exercicio: resultadoExercicio,
+          diferenca: balanco.diferenca,
+        },
+        ativo: balanco.ativo.map(a => ({ codigo: a.codigo, nome: a.nome, saldo: a.saldo })),
+        passivo: balanco.passivo.map(p => ({ codigo: p.codigo, nome: p.nome, saldo: p.saldo })),
+        patrimonio: balanco.patrimonio.map(pl => ({ codigo: pl.codigo, nome: pl.nome, saldo: pl.saldo })),
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${filename}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success('Balanço exportado em JSON');
+      return;
+    }
+
+    // PDF
+    const doc = new jsPDF();
+    const margins = getAutoTableMargins();
+    let cursorY = getContentStartY();
+
+    const rowsAtivo: any[] = [
+      [{ content: 'ATIVO', styles: { fontStyle: 'bold', fillColor: PDF_BRAND.surface } }, ''],
+      ...balanco.ativo.map(a => [
+        { content: a.nome, styles: { paddingLeft: a.nivel * 2 } },
+        { content: formatCurrency(a.saldo), styles: { halign: 'right' } }
+      ]),
+      [{ content: 'TOTAL ATIVO', styles: { fontStyle: 'bold' } }, { content: formatCurrency(balanco.totalAtivo), styles: { halign: 'right', fontStyle: 'bold' } }],
+    ];
+
+    const rowsPassivo: any[] = [
+      [{ content: 'PASSIVO + PL', styles: { fontStyle: 'bold', fillColor: PDF_BRAND.surface } }, ''],
+      [{ content: 'PASSIVO', styles: { fontStyle: 'bold', fontSize: 7, textColor: PDF_BRAND.muted } }, ''],
+      ...balanco.passivo.map(p => [
+        { content: p.nome, styles: { paddingLeft: p.nivel * 2 } },
+        { content: formatCurrency(p.saldo), styles: { halign: 'right' } }
+      ]),
+      [{ content: 'PATRIMÔNIO LÍQUIDO', styles: { fontStyle: 'bold', fontSize: 7, textColor: PDF_BRAND.muted } }, ''],
+      ...balanco.patrimonio.map(pl => [
+        { content: pl.nome, styles: { paddingLeft: pl.nivel * 2 } },
+        { content: formatCurrency(pl.saldo), styles: { halign: 'right' } }
+      ]),
+      ['Resultado do Exercício', { content: formatCurrency(resultadoExercicio), styles: { halign: 'right' } }],
+      [{ content: 'TOTAL PASSIVO + PL', styles: { fontStyle: 'bold' } }, { content: formatCurrency(balanco.totalPassivoMaisPL), styles: { halign: 'right', fontStyle: 'bold' } }],
+    ];
+
+    autoTable(doc, {
+      startY: cursorY,
+      head: [['Ativo', 'Valor (R$)']],
+      body: rowsAtivo,
+      theme: 'plain',
+      styles: { fontSize: 8, cellPadding: 1.5 },
+      headStyles: { fillColor: PDF_BRAND.foreground, textColor: [255, 255, 255] },
+      margin: { ...margins, right: doc.internal.pageSize.getWidth() / 2 + 2 },
+    });
+
+    autoTable(doc, {
+      startY: cursorY,
+      head: [['Passivo + PL', 'Valor (R$)']],
+      body: rowsPassivo,
+      theme: 'plain',
+      styles: { fontSize: 8, cellPadding: 1.5 },
+      headStyles: { fillColor: PDF_BRAND.foreground, textColor: [255, 255, 255] },
+      margin: { ...margins, left: doc.internal.pageSize.getWidth() / 2 + 2 },
+    });
+
+    const finalY = Math.max((doc as any).lastAutoTable.finalY || 0);
     const equilibrado = Math.abs(balanco.diferenca) < 0.01;
-    const linhas: Record<string, string>[] = [
-      { Grupo: 'ATIVO', Código: '', Conta: '', Valor: '' },
-      ...balanco.ativo.map((c) => ({ Grupo: '', Código: c.codigo, Conta: c.nome, Valor: formatCurrency(c.saldo) })),
-      { Grupo: '', Código: '', Conta: 'Total Ativo', Valor: formatCurrency(balanco.totalAtivo) },
-      { Grupo: 'PASSIVO', Código: '', Conta: '', Valor: '' },
-      ...balanco.passivo.map((c) => ({ Grupo: '', Código: c.codigo, Conta: c.nome, Valor: formatCurrency(c.saldo) })),
-      { Grupo: 'PATRIMÔNIO LÍQUIDO', Código: '', Conta: '', Valor: '' },
-      ...balanco.patrimonio.map((c) => ({ Grupo: '', Código: c.codigo, Conta: c.nome, Valor: formatCurrency(c.saldo) })),
-      { Grupo: '', Código: '', Conta: 'Resultado do Exercício', Valor: formatCurrency(resultadoExercicio) },
-      { Grupo: '', Código: '', Conta: 'Total Passivo + PL', Valor: formatCurrency(balanco.totalPassivoMaisPL) },
-      {
-        Grupo: equilibrado ? 'EQUILIBRADO' : 'DESEQUILÍBRIO',
-        Código: '',
-        Conta: equilibrado
-          ? 'Diferença (Ativo − Passivo+PL)'
-          : `Diferença (Ativo − Passivo+PL) — ${balanco.diferenca > 0 ? 'Ativo maior' : 'Passivo+PL maior'}`,
-        Valor: `${balanco.diferenca >= 0 ? '+' : ''}${formatCurrency(balanco.diferenca)}`,
-      },
-    ];
-    const cols: ExportColumn<Record<string, string>>[] = [
-      { header: 'Grupo', key: 'Grupo' },
-      { header: 'Código', key: 'Código' },
-      { header: 'Conta', key: 'Conta' },
-      { header: 'Valor', key: 'Valor' },
-    ];
-    exportToPDF(linhas, cols, `Balanço Patrimonial — ${empresaTitulo} · ${dataInicio} a ${dataFim}`);
+
+    doc.setFillColor(equilibrado ? 240 : 255, equilibrado ? 248 : 240, equilibrado ? 240 : 240);
+    doc.setDrawColor(equilibrado ? PDF_BRAND.success[0] : PDF_BRAND.destructive[0], equilibrado ? PDF_BRAND.success[1] : PDF_BRAND.destructive[1], equilibrado ? PDF_BRAND.success[2] : PDF_BRAND.destructive[2]);
+    doc.roundedRect(margins.left, finalY + 6, doc.internal.pageSize.getWidth() - margins.left - margins.right, 10, 1, 1, 'FD');
+    
+    doc.setFontSize(8);
+    doc.setTextColor(equilibrado ? PDF_BRAND.success[0] : PDF_BRAND.destructive[0], equilibrado ? PDF_BRAND.success[1] : PDF_BRAND.destructive[1], equilibrado ? PDF_BRAND.success[2] : PDF_BRAND.destructive[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.text(
+      equilibrado ? 'BALANÇO EQUILIBRADO' : `DIVERGÊNCIA NO BALANÇO: ${formatCurrency(balanco.diferenca)}`,
+      margins.left + 4,
+      finalY + 12.5
+    );
+
+    applyPdfLayout(doc, {
+      titulo: 'Balanço Patrimonial',
+      subtitulo: `${empresaTitulo} · ${dataInicio} a ${dataFim}`,
+    });
+
+    doc.save(`${filename}.pdf`);
+    toast.success('Balanço exportado em PDF');
   };
 
   if (!empresaId) {
@@ -228,28 +385,58 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
           {modo === 'dre' ? <BarChart3 className="h-5 w-5 text-primary" /> : <Scale className="h-5 w-5 text-primary" />}
           DRE & Balanço Patrimonial
         </CardTitle>
+        <CardDescription className="text-xs">Visualize e exporte as demonstrações contábeis do período.</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid gap-3 md:grid-cols-3">
-          <div className="space-y-1">
-            <Label className="text-xs">De</Label>
-            <Input type="date" value={dataInicio} onChange={(e) => setDataInicio(e.target.value)} />
+      <CardContent className="space-y-6">
+        <div className="flex flex-wrap items-center gap-4 bg-muted/30 p-4 rounded-xl border border-border/50">
+          <div className="flex items-center gap-3">
+            <ToggleGroup type="single" value={modo} onValueChange={(v) => v && setModo(v as 'dre' | 'balanco')} className="bg-background border rounded-lg p-1">
+              <ToggleGroupItem value="dre" className="px-4 text-xs font-bold data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">DRE</ToggleGroupItem>
+              <ToggleGroupItem value="balanco" className="px-4 text-xs font-bold data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">Balanço</ToggleGroupItem>
+            </ToggleGroup>
           </div>
-          <div className="space-y-1">
-            <Label className="text-xs">Até</Label>
-            <Input type="date" value={dataFim} onChange={(e) => setDataFim(e.target.value)} />
+
+          <div className="h-8 w-px bg-border hidden md:block" />
+
+          <div className="flex items-center gap-2 flex-1 min-w-[300px]">
+            <div className="relative flex-1">
+              <CalendarIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input type="date" value={dataInicio} onChange={(e) => setDataInicio(e.target.value)} className="h-9 pl-8 text-xs bg-background" />
+            </div>
+            <span className="text-muted-foreground">até</span>
+            <div className="relative flex-1">
+              <CalendarIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input type="date" value={dataFim} onChange={(e) => setDataFim(e.target.value)} className="h-9 pl-8 text-xs bg-background" />
+            </div>
           </div>
-          <div className="flex items-end">
-            <Button variant="outline" size="sm" className="w-full" onClick={modo === 'dre' ? exportarDRE : exportarBalanco}>
-              <Download className="h-4 w-4 mr-2" /> Exportar PDF
-            </Button>
+
+          <div className="ml-auto">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-9 gap-2 font-bold shadow-sm">
+                  <Download className="h-4 w-4" /> Exportar
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="text-[10px] uppercase tracking-widest opacity-50">Formato do Relatório</DropdownMenuLabel>
+                <DropdownMenuItem onClick={() => (modo === 'dre' ? exportarDRE('pdf') : exportarBalanco('pdf'))} className="gap-2 py-2">
+                  <FileText className="h-4 w-4 text-destructive" />
+                  <div className="flex flex-col">
+                    <span className="text-xs font-semibold">Relatório PDF</span>
+                    <span className="text-[10px] text-muted-foreground">Pronto para impressão</span>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => (modo === 'dre' ? exportarDRE('json') : exportarBalanco('json'))} className="gap-2 py-2">
+                  <FileJson className="h-4 w-4 text-primary" />
+                  <div className="flex flex-col">
+                    <span className="text-xs font-semibold">Dados Estruturados</span>
+                    <span className="text-[10px] text-muted-foreground">Para integração (JSON)</span>
+                  </div>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
-
-        <ToggleGroup type="single" value={modo} onValueChange={(v) => v && setModo(v as 'dre' | 'balanco')}>
-          <ToggleGroupItem value="dre">DRE</ToggleGroupItem>
-          <ToggleGroupItem value="balanco">Balanço Patrimonial</ToggleGroupItem>
-        </ToggleGroup>
 
         {isLoading ? (
           <div className="space-y-2">

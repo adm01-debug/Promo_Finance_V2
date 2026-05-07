@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { Download, FileText, AlertTriangle, CheckCircle2, ShieldAlert, FileArchive, Wand2, Send, FileSearch, ChevronDown, ChevronRight, ScrollText, XCircle, Hash, Lock, Unlock, Loader2, Clock, PlayCircle } from 'lucide-react';
+import { Download, FileText, AlertTriangle, CheckCircle2, ShieldAlert, FileArchive, Wand2, Send, FileSearch, ChevronDown, ChevronRight, ScrollText, XCircle, Hash, Lock, Unlock, Loader2, Clock, PlayCircle, Filter, X, Search, Link2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,10 +11,12 @@ import { Badge } from '@/components/ui/badge';
 import { Alert } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useSpedContabilHistorico, useRegistrarTransmissaoSped, useGerarSpedContabil } from '@/hooks/useSpedContabil';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { SpedEcdWizard } from './SpedEcdWizard';
+import { agruparValidacoes } from '@/lib/sped-validacoes-categorias';
 import { SpedEcfWizard } from './SpedEcfWizard';
 import { SpedEcfHistorico } from './SpedEcfHistorico';
 import { SpedEcdPreviewDialog } from './SpedEcdPreviewDialog';
@@ -66,13 +68,53 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
   const [transmissaoArquivo, setTransmissaoArquivo] = useState<HistoricoRow | null>(null);
   const [validacoesArquivo, setValidacoesArquivo] = useState<HistoricoRow | null>(null);
   const [reciboInput, setReciboInput] = useState('');
-  const [expandedAudit, setExpandedAudit] = useState<Set<string>>(new Set());
+  const [expandedAudit, setExpandedAudit] = useState<Set<string>>(() => {
+    try {
+      const saved = window.localStorage.getItem(`sped-audit:expanded:${empresaId || '_'}`);
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
+
+  const [statusFilter, setStatusFilter] = useState<'all' | 'liberada' | 'bloqueada' | 'transmitida'>('all');
+  const [validacaoFilter, setValidacaoFilter] = useState<'all' | 'com_erros' | 'com_avisos' | 'sem_alertas'>('all');
+  const [searchAno, setSearchAno] = useState('');
+
   const [exportStatus, setExportStatus] = useState<'idle' | 'queued' | 'processing' | 'done' | 'error'>('idle');
   const [empresaDados, setEmpresaDados] = useState<{ cnpj: string; razao_social: string } | null>(null);
   const transmitir = useRegistrarTransmissaoSped();
   const gerarSped = useGerarSpedContabil();
   const { data: historico = [], isLoading } = useSpedContabilHistorico(empresaId);
-  const historicoTipo = (historico as unknown as HistoricoRow[]).filter((h) => h.tipo === tipo);
+  
+  const historicoFiltrado = useMemo(() => {
+    return (historico as unknown as HistoricoRow[])
+      .filter((h) => h.tipo === tipo)
+      .filter((h) => {
+        if (searchAno && !String(h.ano_calendario).includes(searchAno)) return false;
+
+        const erros = h.validacoes?.erros ?? [];
+        const avisos = h.validacoes?.avisos ?? [];
+        const bloqueada = h.status === 'rejeitado' || erros.length > 0;
+        const transmitida = h.status === 'transmitido';
+        const liberada = !bloqueada && !transmitida;
+
+        if (statusFilter === 'bloqueada' && !bloqueada) return false;
+        if (statusFilter === 'transmitida' && !transmitida) return false;
+        if (statusFilter === 'liberada' && !liberada) return false;
+
+        if (validacaoFilter === 'com_erros' && erros.length === 0) return false;
+        if (validacaoFilter === 'com_avisos' && avisos.length === 0) return false;
+        if (validacaoFilter === 'sem_alertas' && (erros.length > 0 || avisos.length > 0)) return false;
+
+        return true;
+      });
+  }, [historico, tipo, searchAno, statusFilter, validacaoFilter]);
+
+  const anosDisponiveis = useMemo(
+    () => Array.from(new Set((historico as unknown as HistoricoRow[]).filter(h => h.tipo === tipo).map((h) => h.ano_calendario))).sort((a, b) => b - a),
+    [historico, tipo],
+  );
 
   const handleGerarExportar = async () => {
     if (!empresaId) return;
@@ -113,6 +155,17 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
       return next;
     });
   };
+
+  // Persistir o estado de expandir/recolher a trilha de auditoria
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      window.localStorage.setItem(
+        `sped-audit:expanded:${empresaId || '_'}`,
+        JSON.stringify(Array.from(expandedAudit))
+      );
+    } catch { /* noop */ }
+  }, [expandedAudit, empresaId]);
 
   const copyHash = async (hash: string | null) => {
     if (!hash) return;
@@ -371,11 +424,76 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
             <CardDescription className="text-sm font-medium opacity-60">Repositório de auditoria e compliance regulatório</CardDescription>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 mb-2">
+            <div className="space-y-1.5 flex-1 min-w-[140px]">
+              <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">Buscar Ano</Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input
+                  value={searchAno}
+                  onChange={(e) => setSearchAno(e.target.value)}
+                  placeholder="Ex.: 2024"
+                  className="h-10 pl-9 bg-black/20 border-white/5 rounded-xl text-xs"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5 flex-1 min-w-[160px]">
+              <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">Status</Label>
+              <Select value={statusFilter} onValueChange={(v: any) => setStatusFilter(v)}>
+                <SelectTrigger className="h-10 bg-black/20 border-white/5 rounded-xl text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os status</SelectItem>
+                  <SelectItem value="liberada">Liberada</SelectItem>
+                  <SelectItem value="bloqueada">Bloqueada</SelectItem>
+                  <SelectItem value="transmitida">Transmitida</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5 flex-1 min-w-[180px]">
+              <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">Validações</Label>
+              <Select value={validacaoFilter} onValueChange={(v: any) => setValidacaoFilter(v)}>
+                <SelectTrigger className="h-10 bg-black/20 border-white/5 rounded-xl text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas</SelectItem>
+                  <SelectItem value="com_erros">Com erros</SelectItem>
+                  <SelectItem value="com_avisos">Com avisos</SelectItem>
+                  <SelectItem value="sem_alertas">Sem alertas</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {(searchAno || statusFilter !== 'all' || validacaoFilter !== 'all') && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => { setSearchAno(''); setStatusFilter('all'); setValidacaoFilter('all'); }}
+                className="h-10 rounded-xl px-4 gap-2 text-xs font-bold hover:bg-white/10"
+              >
+                <X className="h-3.5 w-3.5" />
+                Limpar
+              </Button>
+            )}
+          </div>
+
           {isLoading ? (
             <p className="text-sm text-muted-foreground">Carregando...</p>
-          ) : historicoTipo.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhum arquivo gerado ainda.</p>
+          ) : historicoFiltrado.length === 0 ? (
+            <div className="py-20 text-center space-y-4">
+              <div className="inline-flex p-4 rounded-full bg-white/5 text-muted-foreground/30">
+                <Filter className="h-8 w-8" />
+              </div>
+              <p className="text-muted-foreground font-medium">Nenhum registro encontrado para os filtros aplicados.</p>
+              <Button variant="link" onClick={() => { setSearchAno(''); setStatusFilter('all'); setValidacaoFilter('all'); }}>
+                Limpar todos os filtros
+              </Button>
+            </div>
           ) : (
             <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-black/20 shadow-inner">
               <div className="overflow-x-auto">
@@ -394,14 +512,38 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                     </tr>
                   </TableHeader>
               <TableBody>
-                {historicoTipo.map((h) => {
+                {historicoFiltrado.map((h) => {
                   const isOpen = expandedAudit.has(h.id);
                   const erros = h.validacoes?.erros ?? [];
                   const avisos = h.validacoes?.avisos ?? [];
                   const bloqueada = h.status === 'rejeitado' || erros.length > 0;
+                  const ecdDivergente = [...erros, ...avisos].some(m => /\b(ECD|cross[-\s]?check|K355|L100|hash)\b/i.test(m));
+                  
                   return (
                   <React.Fragment key={h.id}>
-                  <TableRow>
+                  {bloqueada && (
+                    <TableRow className="bg-destructive/5 hover:bg-destructive/5 border-none">
+                      <TableCell colSpan={9} className="py-2 px-6">
+                        <div className="flex items-center gap-2 text-destructive text-xs font-bold">
+                          <XCircle className="h-3 w-3" />
+                          Execução bloqueada por erros de validação. Corrija para liberar o download.
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {ecdDivergente && (
+                    <TableRow className="bg-warning/5 hover:bg-warning/5 border-none">
+                      <TableCell colSpan={9} className="py-2 px-6">
+                        <div className="flex items-center gap-2 text-warning text-xs font-bold">
+                          <Link2 className="h-3 w-3" />
+                          Divergências detectadas em relação à ECD do mesmo período. Verifique os saldos.
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  <TableRow className={cn(
+                    (bloqueada || ecdDivergente) && "border-t-0"
+                  )}>
                     <TableCell className="p-1">
                       <Button
                         size="sm"
@@ -547,43 +689,60 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                             </div>
                           </div>
 
-                          {/* Erros que bloquearam */}
-                          {erros.length > 0 && (
-                            <div className="space-y-1.5">
-                              <p className="text-[11px] uppercase tracking-wide text-destructive font-semibold flex items-center gap-1.5">
-                                <XCircle className="h-3.5 w-3.5" /> Erros que impediram a geração ({erros.length})
-                              </p>
-                              <ul className="space-y-1 rounded-md border border-destructive/20 bg-destructive/5 p-2">
-                                {erros.map((e, i) => (
-                                  <li key={i} className="flex items-start gap-2 text-xs">
-                                    <Badge variant="outline" className="border-destructive/40 text-destructive shrink-0 h-5 px-1.5 text-[10px] font-mono">
-                                      {String(i + 1).padStart(2, '0')}
-                                    </Badge>
-                                    <span className="leading-snug">{e}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
+                          {/* Agrupamento por Categoria */}
+                          {(() => {
+                            const grupos = agruparValidacoes(erros, avisos);
+                            if (grupos.length === 0) return null;
 
-                          {/* Avisos tolerados */}
-                          {avisos.length > 0 && (
-                            <div className="space-y-1.5">
-                              <p className="text-[11px] uppercase tracking-wide text-warning font-semibold flex items-center gap-1.5">
-                                <AlertTriangle className="h-3.5 w-3.5" /> Avisos tolerados ({avisos.length})
-                              </p>
-                              <ul className="space-y-1 rounded-md border border-warning/20 bg-warning/5 p-2">
-                                {avisos.map((a, i) => (
-                                  <li key={i} className="flex items-start gap-2 text-xs">
-                                    <Badge variant="outline" className="border-warning/40 text-warning shrink-0 h-5 px-1.5 text-[10px] font-mono">
-                                      {String(i + 1).padStart(2, '0')}
-                                    </Badge>
-                                    <span className="leading-snug">{a}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
+                            return (
+                              <div className="grid gap-4 md:grid-cols-2">
+                                {grupos.map(({ categoria, erros: gErros, avisos: gAvisos }) => {
+                                  const tone = gErros.length > 0 ? 'destructive' : 'warning';
+                                  return (
+                                    <div 
+                                      key={categoria.id} 
+                                      className={cn(
+                                        "rounded-xl border p-4 space-y-3",
+                                        tone === 'destructive' ? "bg-destructive/5 border-destructive/10" : "bg-warning/5 border-warning/10"
+                                      )}
+                                    >
+                                      <div className="flex items-center justify-between gap-2">
+                                        <div className="flex items-center gap-2">
+                                          <div className={cn(
+                                            "p-1.5 rounded-lg",
+                                            tone === 'destructive' ? "bg-destructive/10 text-destructive" : "bg-warning/10 text-warning"
+                                          )}>
+                                            <AlertTriangle className="h-3.5 w-3.5" />
+                                          </div>
+                                          <div>
+                                            <h4 className={cn("text-xs font-black uppercase tracking-wider", tone === 'destructive' ? "text-destructive" : "text-warning")}>
+                                              {categoria.label}
+                                            </h4>
+                                            <p className="text-[10px] text-muted-foreground opacity-70">{categoria.description}</p>
+                                          </div>
+                                        </div>
+                                        <div className="flex gap-1">
+                                          {gErros.length > 0 && <Badge variant="destructive" className="h-5 px-1.5 text-[10px]">{gErros.length}</Badge>}
+                                          {gAvisos.length > 0 && <Badge variant="outline" className="h-5 px-1.5 text-[10px] border-warning/30 text-warning bg-warning/5">{gAvisos.length}</Badge>}
+                                        </div>
+                                      </div>
+                                      
+                                      <ul className="space-y-1.5">
+                                        {[...gErros.map(e => ({ text: e, type: 'error' as const })), ...gAvisos.map(a => ({ text: a, type: 'warn' as const }))].map((item, idx) => (
+                                          <li key={idx} className={cn(
+                                            "text-[11px] leading-relaxed p-2 rounded-lg border",
+                                            item.type === 'error' ? "bg-destructive/10 border-destructive/10 text-destructive" : "bg-warning/10 border-warning/10 text-warning-foreground"
+                                          )}>
+                                            {item.text}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            );
+                          })()}
 
                           {erros.length === 0 && avisos.length === 0 && (
                             <p className="text-xs text-muted-foreground italic">
