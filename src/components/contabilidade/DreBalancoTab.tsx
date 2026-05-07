@@ -265,68 +265,98 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
         </div>
       </CardHeader>
       <CardContent className="p-8 pt-2 relative z-10 space-y-8">
-        <div className="flex flex-wrap items-center gap-4 bg-muted/30 p-4 rounded-xl border border-border/50">
+        <div className="flex flex-wrap items-center gap-4 bg-white/5 p-4 rounded-3xl border border-white/5 backdrop-blur-sm">
           <div className="flex items-center gap-3">
-            <ToggleGroup type="single" value={modo} onValueChange={(v) => v && setModo(v as 'dre' | 'balanco')} className="bg-background border rounded-lg p-1">
-              <ToggleGroupItem value="dre" className="px-4 text-xs font-bold data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">DRE</ToggleGroupItem>
-              <ToggleGroupItem value="balanco" className="px-4 text-xs font-bold data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">Balanço</ToggleGroupItem>
+            <ToggleGroup 
+              type="single" 
+              value={modo} 
+              onValueChange={(v) => v && setModo(v as 'dre' | 'balanco')} 
+              className="bg-background/40 p-1 rounded-2xl border border-white/5"
+            >
+              <ToggleGroupItem 
+                value="dre" 
+                className="rounded-xl data-[state=on]:bg-primary data-[state=on]:text-primary-foreground transition-all px-6 font-black uppercase text-[10px] tracking-widest"
+              >
+                DRE
+              </ToggleGroupItem>
+              <ToggleGroupItem 
+                value="balanco" 
+                className="rounded-xl data-[state=on]:bg-primary data-[state=on]:text-primary-foreground transition-all px-6 font-black uppercase text-[10px] tracking-widest"
+              >
+                Balanço
+              </ToggleGroupItem>
             </ToggleGroup>
             
-            <ToggleGroup type="single" value={fonte} onValueChange={(v) => v && setFonte(v as FonteDemonstrativo)} className="bg-background border rounded-lg p-1">
-              <ToggleGroupItem value="competencia" className="px-3 text-[10px] font-bold data-[state=on]:bg-secondary data-[state=on]:text-secondary-foreground">COMPETÊNCIA</ToggleGroupItem>
-              <ToggleGroupItem value="caixa" className="px-3 text-[10px] font-bold data-[state=on]:bg-secondary data-[state=on]:text-secondary-foreground">CAIXA</ToggleGroupItem>
+            <ToggleGroup 
+              type="single" 
+              value={fonte} 
+              onValueChange={(v) => v && setFonte(v as FonteDemonstrativo)} 
+              className="bg-background/40 p-1 rounded-2xl border border-white/5"
+            >
+              <ToggleGroupItem 
+                value="competencia" 
+                className="rounded-xl data-[state=on]:bg-secondary data-[state=on]:text-secondary-foreground transition-all px-4 font-black uppercase text-[9px] tracking-tight"
+              >
+                Competência
+              </ToggleGroupItem>
+              <ToggleGroupItem 
+                value="caixa" 
+                className="rounded-xl data-[state=on]:bg-secondary data-[state=on]:text-secondary-foreground transition-all px-4 font-black uppercase text-[9px] tracking-tight"
+              >
+                Caixa
+              </ToggleGroupItem>
             </ToggleGroup>
           </div>
 
-          <div className="h-8 w-px bg-border hidden md:block" />
+          <div className="h-8 w-px bg-white/10 hidden md:block" />
 
-          <div className="flex items-center gap-2">
-            <Label className="text-[10px] font-bold uppercase opacity-50">Mês Ref.</Label>
-            <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
-              <SelectTrigger className="h-9 w-[140px] text-xs bg-background">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'].map((m, i) => (
-                  <SelectItem key={i} value={String(i)}>{m}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex items-center gap-2 flex-1 min-w-[300px] opacity-50 pointer-events-none">
-            <div className="relative flex-1">
-              <CalendarIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input type="date" value={dataInicio} readOnly className="h-9 pl-8 text-xs bg-muted" />
-            </div>
-            <span className="text-muted-foreground">até</span>
-            <div className="relative flex-1">
-              <CalendarIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input type="date" value={dataFim} readOnly className="h-9 pl-8 text-xs bg-muted" />
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col gap-1">
+              <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Período de Referência</Label>
+              <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
+                <SelectTrigger className="h-12 w-[160px] rounded-2xl border-white/5 bg-white/5 font-bold">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
+                  {['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'].map((m, i) => (
+                    <SelectItem key={i} value={String(i)}>{m} / {ano}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
-          <div className="ml-auto">
+          <div className="flex items-center gap-3 bg-white/5 p-3 rounded-2xl border border-white/5 ml-auto">
+            <div className="flex flex-col items-end">
+              <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Governança Fiscal</span>
+              <span className="text-[9px] font-bold text-primary">Nível de Auditoria: Máximo</span>
+            </div>
+            <div className="h-8 w-px bg-white/10" />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-9 gap-2 font-bold shadow-sm">
-                  <Download className="h-4 w-4" /> Exportar
+                <Button size="sm" variant="outline" className="h-10 rounded-2xl font-black gap-2 border-white/10 bg-white/5 hover:bg-white/10 px-6 transition-all hover:translate-y-[-2px]">
+                  <Download className="h-4 w-4 text-primary" /> Exportar Livros
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel className="text-[10px] uppercase tracking-widest opacity-50">Formato do Relatório</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => (modo === 'dre' ? exportarDRE('pdf') : exportarBalanco('pdf'))} className="gap-2 py-2">
-                  <FileText className="h-4 w-4 text-destructive" />
+              <DropdownMenuContent align="end" className="w-64 p-2 rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
+                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest opacity-40 px-3 py-2">Selecionar Formato</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-white/5" />
+                <DropdownMenuItem onClick={() => (modo === 'dre' ? exportarDRE('pdf') : exportarBalanco('pdf'))} className="rounded-xl gap-3 py-3 cursor-pointer">
+                  <div className="p-2 bg-destructive/20 rounded-lg">
+                    <FileText className="h-4 w-4 text-destructive" />
+                  </div>
                   <div className="flex flex-col">
-                    <span className="text-xs font-semibold">Relatório PDF</span>
-                    <span className="text-[10px] text-muted-foreground">Pronto para impressão</span>
+                    <span className="font-bold text-sm text-foreground">Relatório Executivo (PDF)</span>
+                    <span className="text-[10px] opacity-50">Pronto para conselho/bancos</span>
                   </div>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => (modo === 'dre' ? exportarDRE('json') : exportarBalanco('json'))} className="gap-2 py-2">
-                  <FileJson className="h-4 w-4 text-primary" />
+                <DropdownMenuItem onClick={() => (modo === 'dre' ? exportarDRE('json') : exportarBalanco('json'))} className="rounded-xl gap-3 py-3 cursor-pointer">
+                  <div className="p-2 bg-primary/20 rounded-lg">
+                    <FileJson className="h-4 w-4 text-primary" />
+                  </div>
                   <div className="flex flex-col">
-                    <span className="text-xs font-semibold">Dados Estruturados</span>
-                    <span className="text-[10px] text-muted-foreground">Para integração (JSON)</span>
+                    <span className="font-bold text-sm text-foreground">Dataset Estruturado (JSON)</span>
+                    <span className="text-[10px] opacity-50">Integração com BI & Auditoria</span>
                   </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
