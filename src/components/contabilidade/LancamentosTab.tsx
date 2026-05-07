@@ -296,38 +296,79 @@ export function LancamentosTab({ empresaId, ano }: Props) {
             ]}
           />
 
-          <div className="ml-auto text-xs text-muted-foreground">
-            {lancsFiltrados.length} de {lancs.length} {lancs.length === 1 ? 'lançamento' : 'lançamentos'}
+          <div className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 bg-white/5 px-5 py-4 rounded-2xl border border-white/5 ml-auto">
+            {lancsFiltrados.length} / {lancs.length} registros
           </div>
         </div>
 
-        {isLoading ? <p className="text-sm text-muted-foreground">Carregando...</p> : lancsFiltrados.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            {lancs.length === 0 ? `Nenhum lançamento contábil em ${ano}.` : 'Nenhum lançamento corresponde aos filtros aplicados.'}
-          </p>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20 text-muted-foreground animate-pulse">
+            <Activity className="h-8 w-8 animate-spin mr-3 opacity-20" /> 
+            <span className="font-black uppercase tracking-widest text-xs">Acessando razão contábil...</span>
+          </div>
+        ) : lancsFiltrados.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground border border-dashed border-white/10 rounded-[2.5rem] bg-white/[0.02]">
+            <Search className="h-10 w-10 opacity-20 mb-4" />
+            <p className="text-sm font-bold uppercase tracking-widest">Nenhum lançamento encontrado</p>
+            <p className="text-[10px] opacity-50 mt-1 uppercase tracking-widest">Ajuste os filtros para ampliar a busca</p>
+          </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nº</TableHead><TableHead>Data</TableHead><TableHead>Histórico</TableHead>
-                <TableHead>Origem</TableHead><TableHead className="text-right">Valor</TableHead><TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {lancsFiltrados.slice(0, 100).map((l: { id: string; numero_lancamento: number; data_lancamento: string; historico: string; origem: string; valor_total: number; status: string }) => (
-                <TableRow key={l.id}>
-                  <TableCell className="font-mono">{l.numero_lancamento}</TableCell>
-                  <TableCell>{format(new Date(l.data_lancamento + 'T00:00:00'), 'dd/MM/yyyy')}</TableCell>
-                  <TableCell className="max-w-md truncate">{l.historico}</TableCell>
-                  <TableCell><Badge variant="outline">{l.origem}</Badge></TableCell>
-                  <TableCell className="text-right font-mono">{formatCurrency(l.valor_total)}</TableCell>
-                  <TableCell><Badge variant={l.status === 'confirmado' ? 'default' : 'secondary'}>{l.status}</Badge></TableCell>
+          <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-white/[0.01] shadow-inner">
+            <Table>
+              <TableHeader className="bg-white/5">
+                <TableRow className="border-white/5 hover:bg-transparent">
+                  <TableHead className="w-32 text-[10px] font-black uppercase tracking-widest p-6 text-center">Nº</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest">Data</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest">Histórico / Descrição</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest">Origem</TableHead>
+                  <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Valor Total</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest text-center">Status</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                <AnimatePresence>
+                  {lancsFiltrados.slice(0, 100).map((l: { id: string; numero_lancamento: number; data_lancamento: string; historico: string; origem: string; valor_total: number; status: string }, idx: number) => (
+                    <motion.tr 
+                      key={l.id}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.005 }}
+                      className="border-white/5 hover:bg-white/5 transition-colors group/row"
+                    >
+                      <TableCell className="p-6 text-center">
+                        <Badge variant="outline" className="font-mono font-black text-xs border-none bg-primary/10 text-primary px-3 py-1 rounded-lg">
+                          #{l.numero_lancamento}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-[10px] font-black uppercase tracking-widest opacity-60">
+                        {format(new Date(l.data_lancamento + 'T00:00:00'), 'dd/MM/yyyy')}
+                      </TableCell>
+                      <TableCell className="max-w-md truncate font-bold text-foreground/80">{l.historico}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="capitalize border-none bg-white/5 text-[10px] font-bold px-2 rounded-lg">
+                          {l.origem}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right font-mono font-black text-xs tabular-nums text-foreground/90">
+                        {formatCurrency(l.valor_total)}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge variant="outline" className={cn(
+                          "uppercase text-[9px] font-black tracking-[0.1em] border-none px-3 rounded-full",
+                          l.status === 'confirmado' ? "bg-success/20 text-success" : "bg-warning/20 text-warning"
+                        )}>
+                          {l.status}
+                        </Badge>
+                      </TableCell>
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
+              </TableBody>
+            </Table>
+          </div>
         )}
-        {lancsFiltrados.length > 100 && <p className="text-xs text-muted-foreground mt-2">Exibindo 100 de {lancsFiltrados.length}</p>}
+        {lancsFiltrados.length > 100 && <p className="text-[10px] font-black uppercase tracking-widest opacity-40 text-center mt-4">Exibindo 100 de {lancsFiltrados.length} lançamentos. Refine a busca para ver mais.</p>}
+      </CardContent>
       </CardContent>
     </Card>
   );
