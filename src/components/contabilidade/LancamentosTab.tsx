@@ -1,7 +1,13 @@
 import { useState, useMemo } from 'react';
 import { format, startOfMonth, endOfMonth, startOfYear, endOfYear, subDays, startOfDay, endOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Plus, Trash2, Search, CalendarIcon, Wand2, Filter, ChevronDown, CheckCircle2, AlertTriangle, Activity, BookOpen, Clock } from 'lucide-react';
+import { 
+  Plus, Trash2, Search, CalendarIcon, Wand2, Filter, 
+  ChevronDown, CheckCircle2, AlertTriangle, Activity, 
+  BookOpen, Clock, ArrowUpRight, ArrowDownRight, 
+  ShieldCheck, Zap, Info, MoreHorizontal, Eye,
+  LayoutGrid
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useManagedFilters } from '@/hooks/useManagedFilters';
 import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
@@ -15,6 +21,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useLancamentosContabeis, useCriarLancamento } from '@/hooks/useLancamentosContabeis';
 import { usePlanoContas } from '@/hooks/usePlanoContas';
 import { formatCurrency } from '@/lib/formatters';
