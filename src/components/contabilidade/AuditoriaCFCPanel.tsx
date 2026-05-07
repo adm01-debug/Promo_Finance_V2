@@ -129,7 +129,7 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
         </div>
 
         {/* Resumo por categoria */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-4">
           <ProblemKPI
             icon={AlertCircle}
             label="Formato inválido"
@@ -176,28 +176,28 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
             )}
 
             <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
-              <TabsList className="grid grid-cols-4 w-full">
-                <TabsTrigger value="formato" className="gap-1 text-xs">
+              <TabsList className="grid grid-cols-4 w-full h-12 bg-white/5 rounded-2xl p-1">
+                <TabsTrigger value="formato" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-2 text-xs font-black uppercase tracking-tighter">
                   Formato
-                  <Badge variant="secondary" className="h-4 px-1 text-[10px]">
+                  <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-black bg-current/20 border-none">
                     {resultado.formatoInvalido.length}
                   </Badge>
                 </TabsTrigger>
-                <TabsTrigger value="prefixo" className="gap-1 text-xs">
+                <TabsTrigger value="prefixo" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-2 text-xs font-black uppercase tracking-tighter">
                   Prefixo
-                  <Badge variant="secondary" className="h-4 px-1 text-[10px]">
+                  <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-black bg-current/20 border-none">
                     {resultado.prefixoIncorreto.length}
                   </Badge>
                 </TabsTrigger>
-                <TabsTrigger value="duplicidade" className="gap-1 text-xs">
+                <TabsTrigger value="duplicidade" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-2 text-xs font-black uppercase tracking-tighter">
                   Duplicidade
-                  <Badge variant="secondary" className="h-4 px-1 text-[10px]">
+                  <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-black bg-current/20 border-none">
                     {resultado.duplicidades.length}
                   </Badge>
                 </TabsTrigger>
-                <TabsTrigger value="sem-ref" className="gap-1 text-xs">
+                <TabsTrigger value="sem-ref" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-2 text-xs font-black uppercase tracking-tighter">
                   Sem ref.
-                  <Badge variant="secondary" className="h-4 px-1 text-[10px]">
+                  <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-black bg-current/20 border-none">
                     {resultado.semReferencial}
                   </Badge>
                 </TabsTrigger>
@@ -290,24 +290,26 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
 
 function KPI({ label, value, tone }: { label: string; value: number; tone?: 'success' | 'warning' }) {
   return (
-    <div
+    <motion.div
+      whileHover={{ y: -2 }}
       className={cn(
-        'rounded-md border bg-muted/30 px-3 py-2',
-        tone === 'success' && 'border-success/40 bg-success/5',
-        tone === 'warning' && 'border-warning/40 bg-warning/5',
+        'rounded-2xl border bg-white/[0.03] px-4 py-3 shadow-sm transition-all',
+        tone === 'success' && 'border-success/20 bg-success/5 shadow-success/10',
+        tone === 'warning' && 'border-warning/20 bg-warning/5 shadow-warning/10',
+        !tone && 'border-white/5'
       )}
     >
-      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="text-[9px] uppercase font-black tracking-[0.2em] text-muted-foreground opacity-60 mb-1">{label}</p>
       <p
         className={cn(
-          'font-mono font-semibold text-lg',
+          'font-mono font-black text-xl tracking-tighter tabular-nums',
           tone === 'success' && 'text-success',
           tone === 'warning' && 'text-warning',
         )}
       >
         {value.toLocaleString('pt-BR')}
       </p>
-    </div>
+    </motion.div>
   );
 }
 
@@ -324,27 +326,28 @@ function ProblemKPI({
 }) {
   const ok = value === 0;
   return (
-    <div
+    <motion.div
+      whileHover={{ scale: 1.02 }}
       className={cn(
-        'rounded-md border px-3 py-2 flex items-center gap-3',
-        ok && 'border-success/40 bg-success/5',
-        !ok && critical && 'border-destructive/40 bg-destructive/5',
-        !ok && !critical && 'border-warning/40 bg-warning/5',
+        'rounded-2xl border px-4 py-3 flex items-center gap-4 transition-all shadow-lg backdrop-blur-md',
+        ok && 'border-success/20 bg-success/5 shadow-success/10',
+        !ok && critical && 'border-destructive/20 bg-destructive/5 shadow-destructive/10',
+        !ok && !critical && 'border-warning/20 bg-warning/5 shadow-warning/10',
       )}
     >
-      <Icon
-        className={cn(
-          'h-5 w-5 shrink-0',
-          ok && 'text-success',
-          !ok && critical && 'text-destructive',
-          !ok && !critical && 'text-warning',
-        )}
-      />
+      <div className={cn(
+        'p-2.5 rounded-xl transition-all',
+        ok && 'bg-success/10 text-success',
+        !ok && critical && 'bg-destructive/10 text-destructive',
+        !ok && !critical && 'bg-warning/10 text-warning',
+      )}>
+        <Icon className="h-5 w-5 shrink-0" />
+      </div>
       <div>
-        <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
+        <p className="text-[9px] uppercase font-black tracking-[0.2em] text-muted-foreground opacity-60 mb-0.5">{label}</p>
         <p
           className={cn(
-            'font-mono font-bold text-base',
+            'font-mono font-black text-xl tracking-tighter tabular-nums',
             ok && 'text-success',
             !ok && critical && 'text-destructive',
             !ok && !critical && 'text-warning',
@@ -353,7 +356,7 @@ function ProblemKPI({
           {value.toLocaleString('pt-BR')}
         </p>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
