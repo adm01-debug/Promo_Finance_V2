@@ -8,7 +8,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Eye, History, Search, User, Clock, RefreshCw, FileSearch } from 'lucide-react';
+import { Eye, History, Search, User, Clock, RefreshCw, FileSearch, Filter, ChevronDown, Download } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ViewExportButton } from '@/components/shared/ViewExportButton';
 import { format } from 'date-fns';
 import { useAuditoriaLancamentos, type AuditoriaLancamentoRow } from '@/hooks/useAuditoriaLancamentos';
 import { AuditDiffView } from '@/components/audit/AuditDiffView';
@@ -63,10 +65,27 @@ export function AuditoriaLancamentosPanel({ empresaId, ano }: Props) {
               Histórico completo de quem criou, editou ou estornou cada lançamento contábil e suas partidas.
             </CardDescription>
           </div>
-          <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
-            Atualizar
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching} className="rounded-xl">
+              <RefreshCw className={`h-4 w-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
+              Atualizar
+            </Button>
+            <ViewExportButton
+              filename="auditoria-lancamentos"
+              title="Auditoria de Lançamentos"
+              rows={logs}
+              columns={[
+                { key: 'data', header: 'Data/Hora', accessor: (r) => formatDate(r.created_at) },
+                { key: 'usuario', header: 'Usuário', accessor: (r) => r.usuario || 'Sistema' },
+                { key: 'operacao', header: 'Operação', accessor: (r) => operacaoConfig[r.operacao]?.label || r.operacao },
+                { key: 'tabela', header: 'Tipo', accessor: (r) => tabelaLabels[r.tabela] || r.tabela },
+                { key: 'lanc', header: 'Lançamento', accessor: (r) => r.numero_lancamento ?? '—' },
+                { key: 'hist', header: 'Histórico', accessor: (r) => r.historico ?? '—' },
+              ]}
+              variant="default"
+              size="sm"
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
@@ -140,9 +159,19 @@ export function AuditoriaLancamentosPanel({ empresaId, ano }: Props) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {logs.map((log) => (
-                  <AuditRow key={log.id} log={log} />
-                ))}
+                <AnimatePresence>
+                  {logs.map((log) => (
+                    <motion.tr
+                      key={log.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      className="border-b hover:bg-muted/50 transition-colors"
+                    >
+                      <AuditRow log={log} />
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
               </TableBody>
             </Table>
           </ScrollArea>
