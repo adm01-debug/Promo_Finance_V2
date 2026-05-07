@@ -100,12 +100,12 @@ export function PlanoContasTab({ empresaId }: Props) {
                   <div><Label>Cód. referencial CFC</Label><Input value={form.codigo_referencial} onChange={e => setForm({ ...form, codigo_referencial: e.target.value })} placeholder="1.01.01.01.01" /></div>
                 </div>
                 <div><Label>Descrição</Label><Input value={form.descricao} onChange={e => setForm({ ...form, descricao: e.target.value })} /></div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>Natureza</Label>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Natureza</Label>
                     <Select value={form.natureza} onValueChange={v => setForm({ ...form, natureza: v })}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
+                      <SelectTrigger className="h-12 rounded-xl border-white/10 bg-white/5 font-bold"><SelectValue /></SelectTrigger>
+                      <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
                         <SelectItem value="ativo">Ativo</SelectItem>
                         <SelectItem value="passivo">Passivo</SelectItem>
                         <SelectItem value="patrimonio">Patrimônio Líquido</SelectItem>
@@ -115,11 +115,11 @@ export function PlanoContasTab({ empresaId }: Props) {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div>
-                    <Label>Tipo</Label>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Tipo</Label>
                     <Select value={form.tipo} onValueChange={v => setForm({ ...form, tipo: v })}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
+                      <SelectTrigger className="h-12 rounded-xl border-white/10 bg-white/5 font-bold"><SelectValue /></SelectTrigger>
+                      <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
                         <SelectItem value="sintetica">Sintética</SelectItem>
                         <SelectItem value="analitica">Analítica</SelectItem>
                       </SelectContent>
