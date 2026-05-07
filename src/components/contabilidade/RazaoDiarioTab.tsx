@@ -542,26 +542,39 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
                 gSaldoFinal += saldoFinal;
 
                 return (
-                  <div key={g.conta_id} className="border rounded-md overflow-hidden">
-                    <div className="bg-muted/40 px-3 py-2 flex flex-wrap items-center justify-between gap-2">
-                      <div>
-                        <span className="font-mono text-xs">{g.codigo}</span>
-                        <span className="font-medium ml-2">{g.nome}</span>
+                return (
+                  <motion.div 
+                    key={g.conta_id} 
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: (idx % 10) * 0.05 }}
+                    className="border-none bg-white/[0.02] shadow-2xl rounded-[2rem] overflow-hidden ring-1 ring-white/5 group/card"
+                  >
+                    <div className="bg-white/5 p-6 flex flex-wrap items-center justify-between gap-4 border-b border-white/5">
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 bg-primary/20 rounded-2xl group-hover/card:scale-110 transition-transform">
+                          <BookOpen className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-mono text-xs font-black text-primary tracking-tighter">{g.codigo}</p>
+                          <p className="text-sm font-black uppercase tracking-widest opacity-80">{g.nome}</p>
+                        </div>
                       </div>
-                      <Badge variant="outline" className="font-mono">
-                        Saldo inicial: {formatCurrency(g.saldo_inicial)}
+                      <Badge variant="outline" className="h-10 rounded-xl font-mono font-black border-none bg-white/5 px-4 text-xs">
+                        Saldo Inicial: {formatCurrency(g.saldo_inicial)}
                       </Badge>
                     </div>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Data</TableHead>
-                          <TableHead>Histórico</TableHead>
-                          <TableHead className="text-right">Débito</TableHead>
-                          <TableHead className="text-right">Crédito</TableHead>
-                          <TableHead className="text-right">Saldo</TableHead>
-                        </TableRow>
-                      </TableHeader>
+                    <div className="overflow-hidden">
+                      <Table>
+                        <TableHeader className="bg-white/[0.01]">
+                          <TableRow className="border-white/5 hover:bg-transparent">
+                            <TableHead className="text-[9px] font-black uppercase tracking-widest p-4 pl-6">Data</TableHead>
+                            <TableHead className="text-[9px] font-black uppercase tracking-widest">Histórico</TableHead>
+                            <TableHead className="text-right text-[9px] font-black uppercase tracking-widest">Débito</TableHead>
+                            <TableHead className="text-right text-[9px] font-black uppercase tracking-widest">Crédito</TableHead>
+                            <TableHead className="text-right text-[9px] font-black uppercase tracking-widest pr-6">Saldo</TableHead>
+                          </TableRow>
+                        </TableHeader>
                       <TableBody>
                         {linhas.map((m, i) => (
                           <TableRow key={i}>
