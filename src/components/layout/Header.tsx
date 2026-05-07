@@ -113,53 +113,60 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
     <header
       ref={ref}
       className={cn(
-        'fixed top-0 right-0 z-30 h-20 bg-background/60 backdrop-blur-2xl border-b border-border/50 transition-all duration-500',
-        sidebarCollapsed ? 'left-[72px]' : 'left-[260px]'
+        'fixed top-0 right-0 z-30 h-20 bg-background/40 backdrop-blur-3xl border-b border-white/10 transition-all duration-500',
+        sidebarCollapsed ? 'left-[72px]' : 'left-[280px]'
       )}
-      style={{ boxShadow: '0 4px 30px rgba(0, 0, 0, 0.03)' }}
+      style={{ boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.1)' }}
     >
-      <div className="h-full flex items-center justify-between px-6">
-        {/* Left: Search */}
-        <div className="flex items-center gap-4 flex-1 max-w-xl" data-tour="search">
-          <div className="relative flex-1 group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-muted-foreground group-focus-within:text-primary transition-all duration-300 group-focus-within:scale-110" />
+      <div className="h-full flex items-center justify-between px-8 gap-8">
+        {/* Left: Search Command */}
+        <div className="flex items-center flex-1 max-w-2xl group" data-tour="search">
+          <div className="relative w-full">
+            <div className="absolute inset-0 bg-white/5 rounded-2xl -m-0.5 opacity-0 group-focus-within:opacity-100 transition-opacity blur-sm pointer-events-none" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/40 group-focus-within:text-primary transition-all duration-500 group-focus-within:scale-110" />
             <Input
-              placeholder="Buscar transações, clientes, fornecedores... (Ctrl+K)"
-              className="pl-11 bg-muted/30 border-transparent focus:bg-background focus:border-primary/20 h-11 rounded-2xl transition-all duration-300 shadow-inner"
+              placeholder="Search Intelligence Command (⌘K)"
+              className="pl-12 bg-white/5 border-white/5 focus:bg-background/80 focus:border-primary/30 h-12 rounded-2xl transition-all duration-500 font-medium text-sm shadow-inner placeholder:text-muted-foreground/30"
             />
           </div>
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-2">
-          {/* Empresa atual (vínculos do usuário) */}
-          <EmpresaSwitcher />
+        <div className="flex items-center gap-3">
+          {/* Empresa switcher with better styling */}
+          <div className="bg-white/5 p-1 rounded-2xl border border-white/5">
+            <EmpresaSwitcher />
+          </div>
 
-          {/* Keyboard Shortcuts */}
-          <KeyboardShortcutsDialog />
+          <div className="w-px h-6 bg-white/10 mx-2 hidden lg:block" />
 
-          {/* Theme Toggle */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild data-tour="theme">
-              <Tooltip delayDuration={300}>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-11 w-11 rounded-xl hover:bg-primary/10 hover:text-primary transition-all duration-300">
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={theme}
-                        initial={{ scale: 0, rotate: -180 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        exit={{ scale: 0, rotate: 180 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <ThemeIcon className="h-5 w-5" />
-                      </motion.div>
-                    </AnimatePresence>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Alterar tema</TooltipContent>
-              </Tooltip>
-            </DropdownMenuTrigger>
+          {/* Action Buttons Grid */}
+          <div className="flex items-center gap-1.5">
+            {/* Keyboard Shortcuts */}
+            <KeyboardShortcutsDialog />
+
+            {/* Theme Toggle */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild data-tour="theme">
+                <Tooltip delayDuration={300}>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-11 w-11 rounded-xl bg-white/5 hover:bg-primary/10 hover:text-primary border border-white/5 transition-all duration-300">
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={theme}
+                          initial={{ scale: 0, rotate: -180 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          exit={{ scale: 0, rotate: 180 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <ThemeIcon className="h-5 w-5" />
+                        </motion.div>
+                      </AnimatePresence>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Alterar tema</TooltipContent>
+                </Tooltip>
+              </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-popover">
               <DropdownMenuLabel>Tema</DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -323,7 +330,9 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
           </DropdownMenu>
         </div>
       </div>
-    </header>
-  );
+    </div>
+  </header>
+);
 });
+Header.displayName = 'Header';
 Header.displayName = 'Header';

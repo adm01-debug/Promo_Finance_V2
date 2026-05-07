@@ -27,23 +27,24 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
   if (!hasItems || collapsed) return null;
 
   return (
-    <div className="px-3 py-4 space-y-4 border-b border-sidebar-border/30">
+    <div className="px-4 py-6 space-y-6 border-b border-white/5 bg-black/10">
       {/* Favoritos */}
       {favoriteItems.length > 0 && (
-        <div className="space-y-2">
+        <div className="space-y-3">
           <button
             onClick={() => setIsFavoritesOpen(!isFavoritesOpen)}
-            className="w-full flex items-center gap-2 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-foreground transition-colors group"
+            className="w-full flex items-center gap-3 px-1 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 hover:text-foreground transition-all group"
           >
-            <div className="p-1 rounded-md bg-warning/10 text-warning group-hover:bg-warning/20 transition-colors">
-              <Star className="h-3 w-3 fill-warning" />
+            <div className="p-1.5 rounded-lg bg-warning/10 text-warning group-hover:bg-warning/20 transition-colors shadow-sm">
+              <Star className="h-3.5 w-3.5 fill-warning" />
             </div>
-            <span className="flex-1 text-left">Favoritos</span>
+            <span className="flex-1 text-left">Priority Access</span>
             <motion.div
               animate={{ rotate: isFavoritesOpen ? 180 : 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.4, ease: "backOut" }}
+              className="opacity-40 group-hover:opacity-100"
             >
-              <ChevronDown className="h-3 w-3" />
+              <ChevronDown className="h-3.5 w-3.5" />
             </motion.div>
           </button>
           
@@ -58,14 +59,14 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
               >
                 <div className="space-y-0.5 pl-2">
                   {favoriteItems.map(item => (
-                    <div key={item.path} className="flex items-center gap-1 group">
+                    <div key={item.path} className="flex items-center gap-1 group/item">
                       <NavLink
                         to={item.path}
                         className={cn(
-                          'flex-1 px-3 py-2 text-xs rounded-xl transition-all duration-300 truncate font-medium',
+                          'flex-1 px-4 py-2.5 text-[11px] rounded-xl transition-all duration-500 truncate font-black tracking-tight uppercase',
                           location.pathname === item.path
-                            ? 'bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20'
-                            : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
+                            ? 'bg-primary/10 text-primary shadow-[0_0_15px_rgba(var(--primary),0.1)] ring-1 ring-primary/30'
+                            : 'text-muted-foreground/60 hover:bg-white/5 hover:text-foreground hover:translate-x-1'
                         )}
                       >
                         {item.label}
@@ -73,10 +74,10 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="h-7 w-7 opacity-0 group-hover/item:opacity-100 transition-all hover:bg-destructive/10 hover:text-destructive rounded-lg"
                         onClick={() => toggleFavorite(item.path, item.label)}
                       >
-                        <StarOff className="h-3 w-3 text-muted-foreground" />
+                        <StarOff className="h-3.5 w-3.5" />
                       </Button>
                     </div>
                   ))}
@@ -89,29 +90,30 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
 
       {/* Recentes */}
       {recentItems.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 px-2 py-1">
+        <div className="space-y-3">
+          <div className="flex items-center justify-between px-1">
             <button
               onClick={() => setIsRecentOpen(!isRecentOpen)}
-              className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-foreground transition-colors group"
+              className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 hover:text-foreground transition-all group"
             >
-              <div className="p-1 rounded-md bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
-                <Clock className="h-3 w-3" />
+              <div className="p-1.5 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors shadow-sm">
+                <Clock className="h-3.5 w-3.5" />
               </div>
-              <span>Recentes</span>
+              <span>Recent Activity</span>
               <motion.div
                 animate={{ rotate: isRecentOpen ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: 0.4, ease: "backOut" }}
+                className="opacity-40 group-hover:opacity-100"
               >
-                <ChevronDown className="h-3 w-3" />
+                <ChevronDown className="h-3.5 w-3.5" />
               </motion.div>
             </button>
-            <div className="flex-1" />
             <Button
               variant="ghost"
               size="icon"
-              className="h-4 w-4 opacity-50 hover:opacity-100"
+              className="h-6 w-6 opacity-30 hover:opacity-100 hover:bg-destructive/10 hover:text-destructive rounded-md transition-all"
               onClick={clearRecent}
+              title="Clear history"
             >
               <X className="h-3 w-3" />
             </Button>
@@ -128,14 +130,14 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
               >
                 <div className="space-y-0.5 pl-2">
                   {recentItems.map(item => (
-                    <div key={item.path} className="flex items-center gap-1 group">
+                    <div key={item.path} className="flex items-center gap-1 group/item">
                       <NavLink
                         to={item.path}
                         className={cn(
-                          'flex-1 px-3 py-2 text-xs rounded-xl transition-all duration-300 truncate font-medium',
+                          'flex-1 px-4 py-2.5 text-[11px] rounded-xl transition-all duration-500 truncate font-black tracking-tight uppercase',
                           location.pathname === item.path
-                            ? 'bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20'
-                            : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
+                            ? 'bg-primary/10 text-primary shadow-[0_0_15px_rgba(var(--primary),0.1)] ring-1 ring-primary/30'
+                            : 'text-muted-foreground/60 hover:bg-white/5 hover:text-foreground hover:translate-x-1'
                         )}
                       >
                         {item.label}
@@ -144,17 +146,17 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
                         variant="ghost"
                         size="icon"
                         className={cn(
-                          'h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity',
+                          'h-7 w-7 opacity-0 group-hover/item:opacity-100 transition-all rounded-lg',
                           isFavorite(item.path) && 'opacity-100'
                         )}
                         onClick={() => toggleFavorite(item.path, item.label)}
                       >
                         <Star
                           className={cn(
-                            'h-3 w-3',
+                            'h-3.5 w-3.5 transition-all',
                             isFavorite(item.path)
                               ? 'text-warning fill-warning'
-                              : 'text-muted-foreground'
+                              : 'text-muted-foreground/30 group-hover/item:text-warning'
                           )}
                         />
                       </Button>
