@@ -259,7 +259,7 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
       <CardHeader className="p-8 pb-4 relative z-10">
         <div className="flex flex-wrap items-center justify-between gap-6">
           <div className="flex items-center gap-5">
-            <div className="p-4 rounded-2xl bg-primary shadow-xl shadow-primary/20 text-primary-foreground transform group-hover:scale-110 transition-all duration-500">
+            <div className={cn("p-4 rounded-2xl bg-primary shadow-xl shadow-primary/20 text-primary-foreground transform group-hover:scale-110 transition-all duration-500")}>
               <BookText className="h-8 w-8" />
             </div>
             <div>
@@ -268,6 +268,7 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
             </div>
           </div>
         </div>
+      </CardHeader>
       <CardContent className="space-y-4">
         {/*
           Filtros COMPARTILHADOS entre Diário e Razão.
