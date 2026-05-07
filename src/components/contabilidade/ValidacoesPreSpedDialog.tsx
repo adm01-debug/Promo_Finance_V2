@@ -349,23 +349,23 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
         )}
 
         <div className="flex items-center justify-between mb-2 gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+          <div className="relative flex-1 group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary pointer-events-none" />
             <Input
               data-testid="input-busca-validacoes"
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              placeholder="Buscar nos erros e avisos..."
-              className="h-9 pl-9 pr-9 text-xs"
+              placeholder="Buscar nas validações (ex: código de conta, descrição)..."
+              className="h-10 pl-10 pr-10 text-xs bg-muted/30 border-none focus-visible:ring-1 focus-visible:ring-primary/50 transition-all rounded-xl"
             />
             {busca && (
               <button
                 type="button"
                 onClick={() => setBusca('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 aria-label="Limpar busca"
               >
-                <X className="h-3.5 w-3.5" />
+                <X className="h-4 w-4" />
               </button>
             )}
           </div>
