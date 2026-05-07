@@ -27,16 +27,17 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
   if (!hasItems || collapsed) return null;
 
   return (
-    <div className="px-4 py-6 space-y-6 border-b border-primary/5 bg-primary/[0.02]">
+    <div className="px-4 py-8 space-y-8 border-b border-white/5 bg-white/[0.02] relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
       {/* Favoritos */}
       {favoriteItems.length > 0 && (
         <div className="space-y-3">
           <button
             onClick={() => setIsFavoritesOpen(!isFavoritesOpen)}
-            className="w-full flex items-center gap-3 px-1 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 hover:text-foreground transition-all group"
+            className="w-full flex items-center gap-4 px-2 text-[10px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-white transition-all group"
           >
-            <div className="p-1.5 rounded-lg bg-warning/10 text-warning group-hover:bg-warning/20 transition-colors shadow-sm">
-              <Star className="h-3.5 w-3.5 fill-warning" />
+            <div className="p-2 rounded-xl bg-warning/10 text-warning group-hover:bg-warning/20 transition-all shadow-sm ring-1 ring-warning/20">
+              <Star className="h-4 w-4 fill-warning" />
             </div>
             <span className="flex-1 text-left">Priority Access</span>
             <motion.div
@@ -94,10 +95,10 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
           <div className="flex items-center justify-between px-1">
             <button
               onClick={() => setIsRecentOpen(!isRecentOpen)}
-              className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 hover:text-foreground transition-all group"
+              className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-white transition-all group"
             >
-              <div className="p-1.5 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors shadow-sm">
-                <Clock className="h-3.5 w-3.5" />
+              <div className="p-2 rounded-xl bg-primary/10 text-primary group-hover:bg-primary/20 transition-all shadow-sm ring-1 ring-primary/20">
+                <Clock className="h-4 w-4" />
               </div>
               <span>Recent Activity</span>
               <motion.div

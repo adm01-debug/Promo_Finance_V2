@@ -60,12 +60,17 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
   }
 
   return (
-    <Card className={className}>
-      <CardHeader className="pb-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <CheckCircle2 className={cn('h-4 w-4', podeGerar ? 'text-success' : 'text-muted-foreground')} />
-            Pré-validação contábil (Razão × DRE)
+    <Card className={cn("border-none bg-white/[0.02] backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] rounded-[2.5rem] overflow-hidden ring-1 ring-white/10", className)}>
+      <CardHeader className="p-8 pb-4">
+        <div className="flex flex-wrap items-center justify-between gap-6">
+          <CardTitle className="text-xl font-black tracking-tight flex items-center gap-4">
+            <div className={cn(
+              "p-2.5 rounded-xl transition-all shadow-lg",
+              podeGerar ? "bg-success/20 text-success" : "bg-white/5 text-white/20"
+            )}>
+              <CheckCircle2 className="h-6 w-6" />
+            </div>
+            Validations Analytics
           </CardTitle>
           <div className="flex flex-wrap gap-2">
             <Badge variant={totais.erros > 0 ? 'destructive' : 'secondary'} className="gap-1">
@@ -80,7 +85,7 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="p-8 pt-2 space-y-8">
         {/* Resumo numérico */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
           <ResumoBox label="Lançamentos" value={resumo.totalLancamentos.toLocaleString('pt-BR')} />
@@ -179,12 +184,12 @@ function ResumoBox({ label, value, highlight }: { label: string; value: string; 
   return (
     <div
       className={cn(
-        'rounded-md border bg-muted/30 px-3 py-2',
-        highlight && 'border-warning/40 bg-warning/5',
+        'rounded-2xl border bg-black/20 p-4 transition-all duration-500 hover:bg-black/30 shadow-inner group/box',
+        highlight && 'border-warning/40 bg-warning/5 ring-1 ring-warning/20',
       )}
     >
-      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className={cn('font-mono font-semibold text-sm', highlight && 'text-warning')}>{value}</p>
+      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-1 group-hover/box:text-primary transition-colors">{label}</p>
+      <p className={cn('font-black text-lg tracking-tight tabular-nums', highlight ? 'text-warning' : 'text-white')}>{value}</p>
     </div>
   );
 }

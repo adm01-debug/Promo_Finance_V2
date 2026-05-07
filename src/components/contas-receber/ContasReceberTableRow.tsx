@@ -115,8 +115,8 @@ export function ContasReceberTableRow({
       data-highlight-id={conta.id} 
       {...animationProps} 
       className={cn(
-        "group transition-all duration-300 border-white/5 relative", 
-        isSelected ? "bg-primary/5" : "hover:bg-white/[0.03]"
+        "group transition-all duration-500 border-white/5 relative overflow-hidden", 
+        isSelected ? "bg-primary/10 shadow-inner" : "hover:bg-white/[0.04]"
       )}
     >
       <TableCell className="p-6 text-center">
@@ -125,8 +125,8 @@ export function ContasReceberTableRow({
       
       <TableCell className="p-6">
         <div className="flex items-center gap-4">
-          <div className="h-12 w-12 rounded-[1rem] bg-white/5 border border-white/10 flex items-center justify-center relative shadow-sm transition-transform group-hover:scale-110 duration-500">
-            <Building2 className="h-6 w-6 text-primary/60" />
+          <div className="h-14 w-14 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center relative shadow-2xl transition-all group-hover:scale-110 duration-700 group-hover:rotate-3 group-hover:border-primary/30">
+            <Building2 className="h-7 w-7 text-primary/40 group-hover:text-primary transition-colors" />
             {conta.has_protesto && (
               <div className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-destructive flex items-center justify-center shadow-lg ring-2 ring-background">
                 <Gavel className="h-3 w-3 text-white" />
@@ -134,8 +134,8 @@ export function ContasReceberTableRow({
             )}
           </div>
           <div>
-            <p className="font-black text-base tracking-tight text-foreground">{conta.cliente_nome}</p>
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 mt-0.5">{clienteData?.nome_fantasia || '-'}</p>
+            <p className="font-black text-lg tracking-tight text-white group-hover:text-primary transition-colors">{conta.cliente_nome}</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mt-1">{clienteData?.nome_fantasia || '-'}</p>
           </div>
         </div>
       </TableCell>
@@ -157,7 +157,7 @@ export function ContasReceberTableRow({
 
       <TableCell className="p-6">
         <div className="space-y-1">
-          <p className="text-lg font-black tabular-nums tracking-tighter text-foreground">{formatCurrency(conta.valor)}</p>
+          <p className="text-xl font-black tabular-nums tracking-tighter text-white group-hover:scale-105 transition-transform origin-left">{formatCurrency(conta.valor)}</p>
           {conta.valor_desconto && conta.valor_desconto > 0 && (
             <p className="text-[10px] font-black text-warning uppercase tracking-widest leading-none">Yield Adj: -{formatCurrency(conta.valor_desconto)}</p>
           )}
@@ -179,8 +179,8 @@ export function ContasReceberTableRow({
       <TableCell className="p-6">
         <div className="flex items-center gap-3">
           <div className={cn(
-            "h-10 w-10 rounded-xl flex items-center justify-center border transition-all duration-500 shadow-sm",
-            overdueDays > 0 && conta.status !== 'pago' ? "bg-destructive/10 border-destructive/20 text-destructive" : "bg-white/5 border-white/10 text-muted-foreground/40"
+            "h-12 w-12 rounded-2xl flex items-center justify-center border transition-all duration-700 shadow-2xl group-hover:scale-105",
+            overdueDays > 0 && conta.status !== 'pago' ? "bg-destructive/10 border-destructive/30 text-destructive" : "bg-white/[0.03] border-white/10 text-white/20"
           )}>
             <Calendar className="h-5 w-5" />
           </div>

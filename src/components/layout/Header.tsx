@@ -113,8 +113,8 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
     <header
       ref={ref}
       className={cn(
-        'fixed top-0 right-0 z-30 h-20 bg-background/20 backdrop-blur-2xl border-b border-primary/5 transition-all duration-700 ease-apple',
-        sidebarCollapsed ? 'left-[72px]' : 'left-[280px]'
+        'fixed top-0 right-0 z-30 h-20 bg-[#0A0D14]/60 backdrop-blur-3xl border-b border-white/5 transition-all duration-700 ease-apple',
+        sidebarCollapsed ? 'left-[80px]' : 'left-[300px]'
       )}
       style={{ boxShadow: '0 4px 24px -1px rgba(0, 0, 0, 0.03)' }}
     >
@@ -123,10 +123,10 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
         <div className="flex items-center flex-1 max-w-2xl group" data-tour="search">
           <div className="relative w-full">
             <div className="absolute inset-0 bg-white/5 rounded-2xl -m-0.5 opacity-0 group-focus-within:opacity-100 transition-opacity blur-sm pointer-events-none" />
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/40 group-focus-within:text-primary transition-all duration-500 group-focus-within:scale-110" />
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-white/20 group-focus-within:text-primary transition-all duration-500 group-focus-within:scale-110" />
             <Input
               placeholder="Search Intelligence Command (⌘K)"
-              className="pl-12 bg-white/5 border-white/5 focus:bg-background/80 focus:border-primary/30 h-12 rounded-2xl transition-all duration-500 font-medium text-sm shadow-inner placeholder:text-muted-foreground/30"
+              className="pl-14 bg-white/5 border-white/5 focus:bg-background/80 focus:border-primary/40 h-14 rounded-2xl transition-all duration-700 font-bold text-sm shadow-inner placeholder:text-white/20 text-white"
             />
           </div>
         </div>
@@ -150,7 +150,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
               <DropdownMenuTrigger asChild data-tour="theme">
                 <Tooltip delayDuration={300}>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-11 w-11 rounded-xl bg-white/5 hover:bg-primary/10 hover:text-primary border border-white/5 transition-all duration-300">
+                    <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl bg-white/5 hover:bg-primary/20 hover:text-primary border border-white/10 transition-all duration-500 shadow-lg ring-1 ring-white/5">
                       <AnimatePresence mode="wait">
                         <motion.div
                           key={theme}
@@ -190,7 +190,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
             <DropdownMenuTrigger asChild data-tour="notifications">
               <Tooltip delayDuration={300}>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-11 w-11 rounded-xl hover:bg-primary/10 hover:text-primary transition-all duration-300 relative">
+                  <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl bg-white/5 hover:bg-primary/20 hover:text-primary border border-white/10 transition-all duration-500 relative shadow-lg ring-1 ring-white/5">
                     <Bell className="h-5 w-5" />
                     {unreadAlerts > 0 && (
                       <motion.span
@@ -248,11 +248,11 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
           {/* User Menu with gradient avatar */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-11 gap-3 pl-2 pr-4 hover:bg-primary/5 rounded-2xl transition-all duration-300 ring-1 ring-transparent hover:ring-primary/10">
+              <Button variant="ghost" className="h-14 gap-4 pl-2 pr-6 hover:bg-white/5 rounded-2xl transition-all duration-500 ring-1 ring-white/5 hover:ring-primary/20 bg-white/[0.02] shadow-xl">
                 {/* Gradient Avatar */}
                 <div className="relative">
                   <div className={cn(
-                    'h-8 w-8 rounded-full flex items-center justify-center bg-gradient-to-br shadow-sm',
+                    'h-10 w-10 rounded-2xl flex items-center justify-center bg-gradient-to-br shadow-2xl ring-2 ring-white/10',
                     avatarGradient,
                   )}>
                     {profile?.avatar_url ? (

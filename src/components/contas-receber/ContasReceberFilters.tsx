@@ -55,22 +55,22 @@ export function ContasReceberFilters({
   onAdvancedFiltersChange,
 }: ContasReceberFiltersProps) {
   return (
-    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-[0_8px_32px_-8px_rgba(0,0,0,0.1)] rounded-[2rem] overflow-hidden ring-1 ring-white/10">
+    <Card className="border-none bg-white/[0.03] backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] rounded-[2.5rem] overflow-hidden ring-1 ring-white/10">
       <CardContent className="p-6 sm:p-8 space-y-6">
         {/* Search Command */}
         <div className="relative group">
           <div className="absolute inset-0 bg-primary/5 rounded-2xl -m-1 opacity-0 group-focus-within:opacity-100 transition-opacity blur-sm pointer-events-none" />
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/40 group-focus-within:text-primary transition-all duration-500 group-focus-within:scale-110" />
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-6 w-6 text-white/20 group-focus-within:text-primary transition-all duration-500 group-focus-within:scale-110" />
           <Input
             placeholder="Search within receivables (Client, description, reference...)"
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-12 bg-white/5 border-white/5 focus:bg-background/80 focus:border-primary/20 h-14 rounded-2xl transition-all duration-500 font-bold text-sm shadow-inner"
+            className="pl-16 bg-white/[0.03] border-white/5 focus:bg-background/80 focus:border-primary/40 h-16 rounded-[1.5rem] transition-all duration-700 font-bold text-sm shadow-inner"
           />
         </div>
         
         {/* Intelligence Filters Grid */}
-        <div className="flex flex-col lg:flex-row items-center gap-4 p-2 rounded-2xl bg-black/10 border border-white/5">
+        <div className="flex flex-col lg:flex-row items-center gap-6 p-4 rounded-[2rem] bg-black/20 border border-white/5 backdrop-blur-md">
           <div className="flex items-center gap-3 pl-4 border-r border-white/10 pr-4 h-8 hidden lg:flex">
             <SlidersHorizontal className="h-4 w-4 text-primary" />
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Governança</span>
@@ -80,7 +80,7 @@ export function ContasReceberFilters({
             <div className="flex items-center gap-2 flex-1 min-w-[140px]">
               <Tag className="h-4 w-4 text-primary/40 shrink-0" />
               <Select value={statusFilter} onValueChange={onStatusChange}>
-                <SelectTrigger className="border-none bg-transparent hover:bg-white/5 h-10 rounded-xl font-bold text-xs focus:ring-0">
+                <SelectTrigger className="border-none bg-transparent hover:bg-white/5 h-12 rounded-xl font-bold text-xs focus:ring-0 transition-all">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl">

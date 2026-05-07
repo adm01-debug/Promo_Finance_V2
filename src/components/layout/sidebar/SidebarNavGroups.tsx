@@ -214,12 +214,12 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
       <NavLink
         to={item.href}
         className={cn(
-          'flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-700 group relative overflow-hidden',
+          'flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all duration-700 group relative overflow-hidden',
           isActive
-            ? 'bg-primary text-primary-foreground font-black shadow-[0_12px_24px_-8px_rgba(var(--primary),0.5)] scale-[1.02]'
+            ? 'bg-primary text-primary-foreground font-black shadow-[0_12px_32px_-8px_rgba(var(--primary),0.6)] scale-[1.02] ring-1 ring-white/10'
             : item.highlight
               ? 'bg-primary/5 text-foreground hover:bg-primary/10 border border-primary/10'
-              : 'text-muted-foreground/60 hover:bg-primary/5 hover:text-primary hover:translate-x-1'
+              : 'text-white/40 hover:bg-white/5 hover:text-white hover:translate-x-1.5'
         )}
       >
         {isActive && (
@@ -323,19 +323,19 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
               <button
                 onClick={() => toggleGroup(group.id)}
                 className={cn(
-                  'w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-700 group mt-4 first:mt-0',
+                  'w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-700 group mt-6 first:mt-0',
                   hasActive
-                    ? 'text-foreground font-bold'
-                    : 'text-muted-foreground/30 hover:bg-primary/5 hover:text-primary'
+                    ? 'text-white font-black'
+                    : 'text-white/20 hover:bg-white/5 hover:text-white'
                 )}
               >
                 <div className={cn(
-                  "p-2 rounded-xl transition-all duration-700 ease-apple",
-                  hasActive ? "bg-primary/10 text-primary" : "bg-transparent"
+                  "p-2.5 rounded-xl transition-all duration-700 ease-apple shadow-inner",
+                  hasActive ? "bg-primary/20 text-primary ring-1 ring-primary/20" : "bg-white/5 text-white/20"
                 )}>
                   <GroupIcon className="h-4.5 w-4.5 shrink-0" />
                 </div>
-                <span className="font-black text-[10px] uppercase tracking-[0.25em] flex-1 text-left">{group.label}</span>
+                <span className="font-black text-[11px] uppercase tracking-[0.3em] flex-1 text-left">{group.label}</span>
                 <motion.div
                   animate={{ rotate: isOpen ? 180 : 0 }}
                   transition={{ duration: 0.4, ease: "backOut" }}

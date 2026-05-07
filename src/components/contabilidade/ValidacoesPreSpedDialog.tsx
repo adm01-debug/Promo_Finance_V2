@@ -298,39 +298,39 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl font-bold">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <ShieldAlert className="h-6 w-6 text-primary" />
+          <DialogTitle className="flex items-center gap-4 text-3xl font-black tracking-tighter">
+            <div className="p-3.5 bg-primary/20 rounded-2xl shadow-[0_0_30px_rgba(var(--primary),0.3)] ring-1 ring-primary/30">
+              <ShieldAlert className="h-8 w-8 text-primary" />
             </div>
-            Validações SPED {arquivo.tipo} · {arquivo.ano_calendario}
+            <span>Validações <span className="text-primary">{arquivo.tipo}</span> <span className="text-white/20">·</span> {arquivo.ano_calendario}</span>
           </DialogTitle>
-          <DialogDescription className="text-xs font-medium">
-            Revise erros e avisos antes de baixar e transmitir o arquivo no PVA-{arquivo.tipo}.
+          <DialogDescription className="text-sm font-bold uppercase tracking-[0.2em] text-white/40 pl-20">
+            Governança & Compliance Fiscal PVA
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid grid-cols-3 gap-4">
-          <div className="rounded-xl border bg-muted/20 p-4 text-center transition-all hover:bg-muted/30">
-            <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Erros</div>
+          <div className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 text-center transition-all hover:bg-white/[0.04] shadow-2xl group/stat">
+            <div className="text-[10px] uppercase font-black text-white/20 tracking-[0.3em] mb-2 group-hover/stat:text-primary transition-colors">Erros</div>
             <div
               data-testid="contador-erros"
-              className={cn("text-3xl font-black tabular-nums", erros.length > 0 ? 'text-destructive' : 'text-success')}
+              className={cn("text-5xl font-black tabular-nums tracking-tighter drop-shadow-2xl", erros.length > 0 ? 'text-destructive' : 'text-success')}
             >
               {erros.length}
             </div>
           </div>
-          <div className="rounded-xl border bg-muted/20 p-4 text-center transition-all hover:bg-muted/30">
-            <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Avisos</div>
+          <div className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 text-center transition-all hover:bg-white/[0.04] shadow-2xl group/stat">
+            <div className="text-[10px] uppercase font-black text-white/20 tracking-[0.3em] mb-2 group-hover/stat:text-primary transition-colors">Avisos</div>
             <div
               data-testid="contador-avisos"
-              className={cn("text-3xl font-black tabular-nums", avisos.length > 0 ? 'text-warning' : 'text-muted-foreground')}
+              className={cn("text-5xl font-black tabular-nums tracking-tighter drop-shadow-2xl", avisos.length > 0 ? 'text-warning' : 'text-white/20')}
             >
               {avisos.length}
             </div>
           </div>
-          <div className="rounded-xl border bg-muted/20 p-4 text-center transition-all hover:bg-muted/30 flex flex-col justify-center overflow-hidden">
-            <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Hash</div>
-            <div className="text-[10px] font-mono mt-1 truncate bg-background/50 p-1.5 rounded border" title={arquivo.hash_sha256 ?? ''}>
+          <div className="rounded-[2rem] border border-white/5 bg-white/[0.02] p-6 text-center transition-all hover:bg-white/[0.04] shadow-2xl flex flex-col justify-center overflow-hidden group/stat">
+            <div className="text-[10px] uppercase font-black text-white/20 tracking-[0.3em] mb-2 group-hover/stat:text-primary transition-colors">Hash Alpha</div>
+            <div className="text-[10px] font-mono mt-1 truncate bg-black/40 p-2.5 rounded-xl border border-white/5 text-white/60" title={arquivo.hash_sha256 ?? ''}>
               {hashCurto}
             </div>
           </div>
@@ -356,7 +356,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Buscar nas validações (ex: código de conta, descrição)..."
-              className="h-10 pl-10 pr-10 text-xs bg-muted/30 border-none focus-visible:ring-1 focus-visible:ring-primary/50 transition-all rounded-xl"
+              className="h-14 pl-12 pr-12 text-sm font-bold bg-white/[0.03] border-white/5 focus-visible:ring-1 focus-visible:ring-primary/40 transition-all rounded-2xl shadow-inner placeholder:text-white/20 text-white"
             />
             {busca && (
               <button
@@ -383,7 +383,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
               {agrupados.map(({ categoria, erros: catErros, avisos: catAvisos, total }) => {
                 const isOpen = expandedCats.has(categoria.id);
                 return (
-                  <div key={categoria.id} className={cn("border rounded-2xl overflow-hidden transition-all duration-300 shadow-sm", isOpen ? "bg-card border-primary/20 ring-1 ring-primary/5" : "bg-card/50 hover:border-primary/20")}>
+                  <div key={categoria.id} className={cn("border rounded-[2.5rem] overflow-hidden transition-all duration-500 shadow-2xl", isOpen ? "bg-white/[0.03] border-primary/30 ring-1 ring-primary/20" : "bg-white/[0.01] border-white/5 hover:border-primary/20")}>
                     <button
                       onClick={() => toggleCategoria(categoria.id)}
                       className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors text-left"

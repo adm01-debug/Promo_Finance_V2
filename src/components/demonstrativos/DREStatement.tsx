@@ -30,7 +30,7 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
     'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
   return (
-    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative">
+    <Card className="border-none bg-white/[0.02] backdrop-blur-3xl shadow-[0_48px_96px_-24px_rgba(0,0,0,0.6)] rounded-[3rem] overflow-hidden ring-1 ring-white/10 relative group/card">
       {/* Decorative gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5 pointer-events-none" />
       
@@ -38,11 +38,11 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
         <div className="flex items-center justify-between flex-wrap gap-8">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-2xl bg-primary shadow-[0_0_20px_rgba(var(--primary),0.3)] text-primary-foreground">
+              <div className="p-4 rounded-2xl bg-primary shadow-[0_0_40px_rgba(var(--primary),0.4)] text-primary-foreground group-hover/card:scale-110 transition-transform duration-700">
                 <TrendingUp className="h-7 w-7" />
               </div>
               <div>
-                <CardTitle className="text-4xl font-black tracking-tight">
+                <CardTitle className="text-5xl font-black tracking-tighter leading-none mb-1">
                   Demonstração do Resultado
                 </CardTitle>
                 <CardDescription className="text-lg font-medium opacity-70">
@@ -52,7 +52,7 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
             </div>
           </div>
           
-          <div className="flex items-center gap-4 flex-wrap bg-white/5 p-2.5 rounded-[2rem] border border-white/10 backdrop-blur-md shadow-inner">
+          <div className="flex items-center gap-6 flex-wrap bg-white/[0.03] p-3.5 rounded-[2.5rem] border border-white/10 backdrop-blur-md shadow-2xl ring-1 ring-white/10">
             <div className="flex items-center gap-3 px-6 py-2 rounded-[1.5rem] bg-white/5 border border-white/10">
               <span className="text-xs font-bold uppercase tracking-widest opacity-50">Regime</span>
               <Badge variant="outline" className="text-[10px] font-black py-0.5 px-2 rounded-md border-primary/40 bg-primary/10 text-primary uppercase">
@@ -61,10 +61,10 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
             </div>
 
             <div className={cn(
-              "flex flex-col px-8 py-2 rounded-[1.5rem] border transition-all duration-500 shadow-lg",
+              "flex flex-col px-10 py-3.5 rounded-[2rem] border transition-all duration-700 shadow-2xl min-w-[240px]",
               dre.lucroLiquido >= 0 
-                ? "bg-success/10 border-success/20 text-success shadow-success/5" 
-                : "bg-destructive/10 border-destructive/20 text-destructive shadow-destructive/5"
+                ? "bg-success/10 border-success/30 text-success shadow-success/10 ring-1 ring-success/20" 
+                : "bg-destructive/10 border-destructive/30 text-destructive shadow-destructive/10 ring-1 ring-destructive/20"
             )}>
               <span className="text-[10px] font-black uppercase tracking-widest opacity-70 mb-0.5">
                 {dre.lucroLiquido >= 0 ? 'Resultado Líquido (Lucro)' : 'Resultado Líquido (Prejuízo)'}
@@ -137,7 +137,7 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
             <Skeleton className="h-96 w-full rounded-2xl bg-white/5" />
           </div>
         ) : (
-          <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-black/20 shadow-2xl">
+          <div className="rounded-[2.5rem] border border-white/10 overflow-hidden bg-black/40 shadow-[0_24px_48px_rgba(0,0,0,0.4)] backdrop-blur-2xl">
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>

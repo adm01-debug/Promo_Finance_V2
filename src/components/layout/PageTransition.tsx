@@ -10,17 +10,20 @@ const pageVariants: Variants = {
   initial: {
     opacity: 0,
     y: 20,
-    scale: 0.98,
+    scale: 0.99,
+    filter: 'blur(4px)',
   },
   in: {
     opacity: 1,
     y: 0,
     scale: 1,
+    filter: 'blur(0px)',
   },
   out: {
     opacity: 0,
     y: -20,
-    scale: 0.98,
+    scale: 0.99,
+    filter: 'blur(4px)',
   },
 };
 
