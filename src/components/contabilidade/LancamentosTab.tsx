@@ -369,7 +369,6 @@ export function LancamentosTab({ empresaId, ano }: Props) {
         )}
         {lancsFiltrados.length > 100 && <p className="text-[10px] font-black uppercase tracking-widest opacity-40 text-center mt-4">Exibindo 100 de {lancsFiltrados.length} lançamentos. Refine a busca para ver mais.</p>}
       </CardContent>
-      </CardContent>
     </Card>
   );
 }
