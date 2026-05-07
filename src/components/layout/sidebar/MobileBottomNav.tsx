@@ -34,8 +34,8 @@ export const MobileBottomNav = ({ onMenuClick }: MobileBottomNavProps) => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-2xl border-t border-border/50 md:hidden pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_40px_rgba(0,0,0,0.08)]">
-      <div className="flex items-center justify-around h-20 px-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/40 backdrop-blur-3xl border-t border-white/10 md:hidden pb-[env(safe-area-inset-bottom)] shadow-[0_-20px_50px_rgba(0,0,0,0.3)] ring-1 ring-white/5">
+      <div className="flex items-center justify-around h-24 px-4">
         {navItems.map(item => {
           const Icon = item.icon;
           const isActive = location.pathname === item.href;
@@ -48,47 +48,59 @@ export const MobileBottomNav = ({ onMenuClick }: MobileBottomNavProps) => {
             >
               <motion.div
                 className={cn(
-                  'flex flex-col items-center gap-1.5 px-4 py-2 rounded-2xl transition-all duration-300',
+                  'flex flex-col items-center gap-2 px-5 py-3 rounded-2xl transition-all duration-500 relative overflow-hidden',
                   isActive
-                    ? 'text-primary bg-primary/5 shadow-inner'
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'text-primary'
+                    : 'text-muted-foreground/60 hover:text-foreground'
                 )}
-                whileTap={{ scale: 0.9, y: -2 }}
+                whileTap={{ scale: 0.85, y: -4 }}
               >
+                {isActive && (
+                  <motion.div 
+                    layoutId="mobileNavActiveBg"
+                    className="absolute inset-0 bg-primary/10 -z-10"
+                    transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
                 <div className="relative">
-                  <Icon className="h-5 w-5" />
+                  <Icon className={cn("h-6 w-6 transition-transform duration-500", isActive && "scale-110")} />
                   {isActive && (
                     <motion.div
                       layoutId="bottomNavIndicator"
-                      className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary"
+                      className="absolute -top-1 -right-1 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_rgba(var(--primary),0.8)]"
                       transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                     />
                   )}
                 </div>
-                <span className="text-[10px] font-medium truncate max-w-[60px]">{item.label}</span>
+                <span className={cn(
+                  "text-[10px] uppercase tracking-widest transition-all duration-500",
+                  isActive ? "font-black" : "font-bold opacity-60"
+                )}>
+                  {item.label}
+                </span>
               </motion.div>
             </NavLink>
           );
         })}
 
-        {/* Menu Button */}
+        {/* Dynamic Menu Button */}
         <button
           onClick={onMenuClick}
           className="flex flex-col items-center justify-center flex-1 py-2 min-w-0"
         >
           <motion.div
-            className="flex flex-col items-center gap-1.5 px-4 py-2 rounded-2xl text-muted-foreground hover:bg-muted/50 transition-all duration-300"
-            whileTap={{ scale: 0.9, y: -2 }}
+            className="flex flex-col items-center gap-2 px-5 py-3 rounded-2xl text-muted-foreground/60 hover:bg-white/5 transition-all duration-500"
+            whileTap={{ scale: 0.85, y: -4 }}
           >
             <div className="relative">
-              <Menu className="h-5 w-5" />
+              <Menu className="h-6 w-6" />
               {aprovacoesPendentes > 0 && (
-                <span className="absolute -top-1 -right-1 h-4 w-4 bg-destructive text-destructive-foreground rounded-full text-[10px] flex items-center justify-center font-bold">
+                <span className="absolute -top-1.5 -right-1.5 h-5 w-5 bg-destructive text-white rounded-full text-[10px] flex items-center justify-center font-black shadow-lg ring-2 ring-background">
                   {aprovacoesPendentes > 9 ? '9+' : aprovacoesPendentes}
                 </span>
               )}
             </div>
-            <span className="text-[10px] font-medium">Menu</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Menu</span>
           </motion.div>
         </button>
       </div>
