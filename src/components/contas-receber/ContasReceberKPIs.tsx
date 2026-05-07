@@ -72,8 +72,8 @@ export function ContasReceberKPIs({
             >
               <Card
                 className={cn(
-                  "border-none bg-background/20 backdrop-blur-2xl shadow-[0_8px_32px_-8px_rgba(0,0,0,0.1)] rounded-[1.5rem] overflow-hidden ring-1 ring-white/10 group transition-all duration-500",
-                  onKpiClick && "cursor-pointer hover:ring-primary/40 hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)]"
+                  "border-none bg-white/[0.03] backdrop-blur-3xl shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] rounded-[2rem] overflow-hidden ring-1 ring-white/10 group transition-all duration-700",
+                  onKpiClick && "cursor-pointer hover:ring-primary/40 hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)]"
                 )}
                 onClick={() => onKpiClick?.(kpi.filter)}
               >
@@ -83,8 +83,8 @@ export function ContasReceberKPIs({
                   <div className="relative z-10 flex flex-col justify-between h-full gap-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="space-y-1">
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">{kpi.label}</p>
-                        <p className={cn("text-2xl sm:text-3xl font-black font-display tracking-tighter tabular-nums", kpi.valueColor)}>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">{kpi.label}</p>
+                        <p className={cn("text-3xl sm:text-4xl font-black font-display tracking-tighter tabular-nums drop-shadow-2xl", kpi.valueColor)}>
                           {kpi.value}
                         </p>
                       </div>
@@ -124,7 +124,7 @@ export function ContasReceberKPIs({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, type: 'spring', stiffness: 300, damping: 24 }}
         >
-          <Card className="border-none bg-background/20 backdrop-blur-2xl shadow-[0_8px_32px_-8px_rgba(0,0,0,0.1)] rounded-[1.5rem] overflow-hidden ring-1 ring-white/10 group transition-all duration-500 hover:ring-primary/40">
+          <Card className="border-none bg-white/[0.03] backdrop-blur-3xl shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] rounded-[2rem] overflow-hidden ring-1 ring-white/10 group transition-all duration-700 hover:ring-primary/40">
             <CardContent className="p-6 relative">
               <div className="relative z-10 flex flex-col justify-between h-full gap-4">
                 <div className="flex items-start justify-between gap-4">
