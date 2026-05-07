@@ -80,6 +80,25 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
     [avisos, termo],
   );
 
+  const toggleCategoria = (id: string) => {
+    setExpandedCats((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const agrupados = useMemo(() => {
+    return agruparValidacoes(errosFiltrados, avisosFiltrados);
+  }, [errosFiltrados, avisosFiltrados]);
+
+  // Expandir automaticamente se houver busca ou se houver poucos grupos
+  useEffect(() => {
+    if (busca.trim() || agrupados.length <= 2) {
+      setExpandedCats(new Set(agrupados.map(a => a.categoria.id)));
+    }
+  }, [busca, agrupados]);
+
   if (!arquivo) return null;
 
   const handleDownloadTxt = () => {
