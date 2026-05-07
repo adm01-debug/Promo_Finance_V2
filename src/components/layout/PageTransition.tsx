@@ -22,7 +22,8 @@ const pageVariants: Variants = {
   out: {
     opacity: 0,
     y: -20,
-    scale: 0.98,
+    scale: 0.99,
+    filter: 'blur(4px)',
   },
 };
 
