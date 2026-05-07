@@ -42,14 +42,14 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
       ref={ref}
       initial={false}
       animate={{ width: collapsed ? 72 : 280 }}
-      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+      transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
       className={cn(
-        'fixed left-0 top-0 z-40 h-screen bg-sidebar border-r border-sidebar-border flex flex-col'
+        'fixed left-0 top-0 z-40 h-screen bg-background border-r border-border/30 flex flex-col shadow-2xl backdrop-blur-3xl'
       )}
       data-tour="sidebar"
     >
       {/* Logo */}
-      <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border">
+      <div className="h-20 flex items-center justify-between px-6 border-b border-border/30">
         <AnimatePresence mode="wait">
           {!collapsed && (
             <motion.div
