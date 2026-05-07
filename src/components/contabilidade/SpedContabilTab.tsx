@@ -150,6 +150,18 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
   }, [ano, tipo, empresaId]);
 
 
+  useEffect(() => {
+    if (!empresaId) return;
+    supabase
+      .from('empresas')
+      .select('cnpj, razao_social')
+      .eq('id', empresaId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) setEmpresaDados(data);
+      });
+  }, [empresaId]);
+
   const handleDownload = async (storage_path: string) => {
     const { data, error } = await supabase.storage.from('relatorios-tributarios').createSignedUrl(storage_path, 60 * 60);
     if (error || !data) { toast.error('Falha ao gerar link'); return; }
