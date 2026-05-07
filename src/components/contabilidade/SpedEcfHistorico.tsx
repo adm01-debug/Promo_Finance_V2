@@ -366,12 +366,15 @@ export function SpedEcfHistorico({ empresaId }: Props) {
                   const bloqueada = h.status === 'rejeitado' || erros.length > 0;
                   return (
                     <React.Fragment key={h.id}>
-                    <TableRow>
+                    <TableRow className={cn(isOpen && "bg-muted/10")}>
                       <TableCell className="p-1">
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="h-7 w-7 p-0"
+                          className={cn(
+                            "h-7 w-7 p-0 transition-transform duration-200",
+                            isOpen && "bg-primary/10 text-primary hover:bg-primary/20"
+                          )}
                           onClick={() => toggleAudit(h.id)}
                           title={isOpen ? 'Ocultar trilha de auditoria' : 'Ver trilha de auditoria'}
                         >
