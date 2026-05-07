@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { format } from 'date-fns';
-import { motion } from 'framer-motion';
-import { Download, FileText, AlertTriangle, CheckCircle2, ShieldAlert, FileArchive, Wand2, Send, FileSearch, ChevronDown, ChevronRight, ScrollText, XCircle, Hash, Lock, Unlock, Loader2, Clock, PlayCircle, Filter, X, Search, Link2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Download, FileText, AlertTriangle, CheckCircle2, ShieldAlert, 
+  FileArchive, Wand2, Send, FileSearch, ChevronDown, ChevronRight, 
+  ScrollText, XCircle, Hash, Lock, Unlock, Loader2, Clock, 
+  PlayCircle, Filter, X, Search, Link2, Zap, ShieldCheck,
+  History, ExternalLink, Activity, Layers, Cpu
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -248,7 +254,79 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
   };
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-700">
+    <div className="space-y-10">
+      {/* Cards de KPI de Governança */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
+        >
+          <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover/kpi:scale-110 transition-transform">
+            <History className="h-20 w-20 text-primary" />
+          </div>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Total Gerado</p>
+          <div className="flex items-baseline gap-2 mt-2">
+            <p className="text-4xl font-black tracking-tighter tabular-nums">{historicoFiltrado.length}</p>
+            <span className="text-[10px] font-bold text-primary/60">Arquivos em {ano}</span>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
+        >
+          <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover/kpi:scale-110 transition-transform">
+            <ShieldCheck className="h-20 w-20 text-success" />
+          </div>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Taxa de Sucesso</p>
+          <div className="flex items-baseline gap-2 mt-2">
+            <p className="text-4xl font-black tracking-tighter tabular-nums text-success">
+              {historicoFiltrado.length > 0 
+                ? Math.round((historicoFiltrado.filter(h => h.status === 'transmitido' || h.status === 'gerado').length / historicoFiltrado.length) * 100)
+                : 100}%
+            </p>
+            <CheckCircle2 className="h-4 w-4 text-success opacity-40" />
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-white/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
+        >
+          <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover/kpi:scale-110 transition-transform">
+            <Layers className="h-20 w-20 text-purple-400" />
+          </div>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Volume Analítico</p>
+          <div className="flex items-baseline gap-2 mt-2">
+            <p className="text-3xl font-black tracking-tighter tabular-nums">
+              {historicoFiltrado.reduce((acc, h) => acc + h.total_lancamentos, 0).toLocaleString('pt-BR')}
+            </p>
+            <span className="text-[10px] font-bold opacity-40">Lanç.</span>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-white/5 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden group/kpi"
+        >
+          <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover/kpi:scale-110 transition-transform">
+            <Cpu className="h-20 w-20 text-orange-400" />
+          </div>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Processamento</p>
+          <div className="flex items-baseline gap-2 mt-2">
+            <p className="text-3xl font-black tracking-tighter tabular-nums">High-Speed</p>
+            <Zap className="h-4 w-4 text-orange-400 opacity-40" />
+          </div>
+        </motion.div>
+      </div>
+
       {tipo === 'ECD' && empresaId && (
         <>
           <SpedEcdWizard open={wizardOpen} onOpenChange={setWizardOpen} empresaId={empresaId} anoCalendario={ano} />
@@ -293,16 +371,16 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
         <CardHeader className="p-10 pb-6 relative z-10">
           <div className="flex items-center gap-6">
             <div className="p-4 rounded-2xl bg-primary shadow-xl shadow-primary/20 text-primary-foreground transform group-hover:scale-110 transition-transform duration-500">
-              <FileText className="h-8 w-8" />
+              <FileArchive className="h-8 w-8" />
             </div>
             <div>
               <CardTitle className="text-4xl font-black tracking-tight">
-                Gerar SPED {tipo}
+                Núcleo de Transmissão {tipo}
               </CardTitle>
               <CardDescription className="text-lg font-medium opacity-70">
                 {tipo === 'ECD'
-                  ? 'Escrituração Contábil Digital • Layout 9'
-                  : 'Escrituração Contábil Fiscal • Layout 10'}
+                  ? 'Escrituração Contábil Digital • Interface Federada'
+                  : 'Escrituração Contábil Fiscal • Módulo Inteligente'}
               </CardDescription>
             </div>
           </div>
@@ -496,20 +574,18 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
             </div>
           ) : (
             <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-black/20 shadow-inner">
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto custom-scrollbar">
                 <Table>
-                  <TableHeader>
-                    <tr className="bg-white/[0.02] border-b border-white/5">
-                      <th className="w-12 p-6"></th>
-                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Período</th>
-                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Timestamp de Geração</th>
-                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Lançamentos</th>
-                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Total Linhas</th>
-                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Status de Validação</th>
-                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Recibo/Protocolo</th>
-                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Integridade (Hash)</th>
-                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-right">Governança</th>
-                    </tr>
+                  <TableHeader className="bg-white/5">
+                    <TableRow className="border-white/5 hover:bg-transparent">
+                      <TableHead className="w-12 p-6"></TableHead>
+                      <TableHead className="p-6 font-black text-[10px] uppercase tracking-[0.2em] opacity-40 text-left">Período Fiscal</TableHead>
+                      <TableHead className="p-6 font-black text-[10px] uppercase tracking-[0.2em] opacity-40 text-left">Geração / Lote</TableHead>
+                      <TableHead className="p-6 font-black text-[10px] uppercase tracking-[0.2em] opacity-40 text-left">Métricas</TableHead>
+                      <TableHead className="p-6 font-black text-[10px] uppercase tracking-[0.2em] opacity-40 text-left">Status Auditoria</TableHead>
+                      <TableHead className="p-6 font-black text-[10px] uppercase tracking-[0.2em] opacity-40 text-left">Protocolo / Hash</TableHead>
+                      <TableHead className="p-6 font-black text-[10px] uppercase tracking-[0.2em] opacity-40 text-right pr-8">Governança</TableHead>
+                    </TableRow>
                   </TableHeader>
               <TableBody>
                 {historicoFiltrado.map((h) => {
@@ -556,28 +632,48 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                         {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                       </Button>
                     </TableCell>
-                    <TableCell className="font-medium">{h.ano_calendario}</TableCell>
-                    <TableCell>{format(new Date(h.created_at), 'dd/MM/yyyy HH:mm')}</TableCell>
-                    <TableCell>{h.total_lancamentos}</TableCell>
-                    <TableCell>{h.total_linhas}</TableCell>
-                    <TableCell>
+                    <TableCell className="p-6">
+                      <Badge variant="outline" className="font-mono text-[11px] font-black border-none bg-primary/10 text-primary px-2.5 py-0.5 rounded-lg">
+                        {h.ano_calendario}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="p-6">
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-foreground/80">{format(new Date(h.created_at), 'dd/MM/yyyy HH:mm')}</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest opacity-30 mt-1">Lote: #{h.id.substring(0, 8)}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="p-6">
+                      <div className="flex items-center gap-3">
+                        <div className="flex flex-col">
+                          <span className="text-[10px] font-black text-foreground/60">{h.total_lancamentos.toLocaleString('pt-BR')} Lanç.</span>
+                          <span className="text-[9px] font-bold opacity-30 uppercase">{h.total_linhas.toLocaleString('pt-BR')} Linhas</span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="p-6">
                       {h.status === 'rejeitado' ? (
-                        <Badge variant="destructive" className="gap-1"><AlertTriangle className="h-3 w-3" />{erros.length} erros</Badge>
+                        <Badge variant="destructive" className="gap-1.5 font-black text-[9px] uppercase tracking-widest border-none px-3 py-1 rounded-full"><AlertTriangle className="h-3 w-3" />{erros.length} erros</Badge>
                       ) : h.status === 'transmitido' ? (
-                        <Badge className="gap-1 bg-success hover:bg-success"><CheckCircle2 className="h-3 w-3" />Transmitido</Badge>
+                        <Badge className="gap-1.5 bg-success/20 text-success font-black text-[9px] uppercase tracking-widest border-none px-3 py-1 rounded-full"><ShieldCheck className="h-3 w-3" />Transmitido</Badge>
                       ) : (
-                        <Badge variant="secondary" className="gap-1"><CheckCircle2 className="h-3 w-3" />Gerado</Badge>
+                        <Badge variant="secondary" className="gap-1.5 font-black text-[9px] uppercase tracking-widest border-none px-3 py-1 rounded-full"><CheckCircle2 className="h-3 w-3" />Gerado</Badge>
                       )}
                     </TableCell>
-                    <TableCell>
-                      {h.recibo_transmissao ? (
-                        <span className="font-mono text-xs">{h.recibo_transmissao.substring(0, 12)}…</span>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">—</span>
-                      )}
+                    <TableCell className="p-6">
+                      <div className="flex flex-col gap-1">
+                        {h.recibo_transmissao ? (
+                          <div className="flex items-center gap-1.5">
+                            <Hash className="h-3 w-3 opacity-30" />
+                            <span className="font-mono text-[10px] font-black text-primary">{h.recibo_transmissao.substring(0, 16)}</span>
+                          </div>
+                        ) : (
+                          <span className="text-[10px] font-bold opacity-20 uppercase tracking-widest">Aguardando Protocolo</span>
+                        )}
+                        <span className="font-mono text-[9px] opacity-30">{h.hash_sha256?.substring(0, 16)}…</span>
+                      </div>
                     </TableCell>
-                    <TableCell className="font-mono text-xs">{h.hash_sha256?.substring(0, 12)}…</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right pr-8">
                       <div className="flex justify-end gap-1">
                         {(() => {
                           const isRejeitado = h.status === 'rejeitado';
@@ -602,9 +698,10 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                                     variant={variant as 'destructive' | 'outline'}
                                     onClick={() => setValidacoesArquivo(h)}
                                     className={cn(
-                                      'gap-1.5',
-                                      isBloqueado && 'border-destructive/40 text-destructive hover:bg-destructive/10',
-                                      !isBloqueado && avisos.length > 0 && 'border-warning/40 text-warning hover:bg-warning/10',
+                                      'gap-2 h-9 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all hover:scale-[1.02]',
+                                      isBloqueado && 'border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/20',
+                                      !isBloqueado && avisos.length > 0 && 'border-warning/40 bg-warning/10 text-warning hover:bg-warning/20',
+                                      !isBloqueado && avisos.length === 0 && 'border-primary/20 bg-primary/10 text-primary hover:bg-primary/20',
                                     )}
                                   >
                                     <Icon className="h-3.5 w-3.5" />
@@ -619,7 +716,13 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                           );
                         })()}
                         {h.status !== 'transmitido' && h.status !== 'rejeitado' && (
-                          <Button size="sm" variant="outline" onClick={() => { setTransmissaoArquivo(h); setReciboInput(''); }} title="Registrar transmissão">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => { setTransmissaoArquivo(h); setReciboInput(''); }} 
+                            className="h-9 w-9 rounded-xl border-white/5 bg-white/5 hover:bg-primary/20 text-primary transition-all"
+                            title="Registrar transmissão"
+                          >
                             <Send className="h-4 w-4" />
                           </Button>
                         )}
