@@ -129,33 +129,60 @@ export function AuthSocialProof() {
 
 export function AuthLeftPanel() {
   return (
-    <div className="hidden lg:flex lg:w-1/2 relative bg-[#02040a]">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/5 opacity-50" />
-      <AuthBackgroundOrbs />
-      <AuthGridPattern />
+    <div className="hidden lg:flex lg:w-1/2 relative bg-[#02040a] overflow-hidden">
+      {/* Dynamic Background */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-accent/5 opacity-40" />
+        <AuthBackgroundOrbs />
+        <AuthGridPattern />
+        
+        {/* Animated Gradient Sweep */}
+        <motion.div
+          animate={{
+            x: ['-100%', '100%'],
+            opacity: [0, 0.1, 0]
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent skew-x-12"
+        />
+      </div>
       
-      <div className="relative z-10 flex flex-col items-center justify-center w-full p-12 text-center">
+      <div className="relative z-10 flex flex-col items-center justify-center w-full p-16 text-center">
         <AuthAnimatedLogo />
         
-        <motion.h1
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="text-4xl font-display font-bold gradient-text mb-4"
+          className="space-y-4 mb-12"
         >
-          Promo Finance
-        </motion.h1>
-        
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="text-xl text-muted-foreground mb-8"
-        >
-          Sistema de Gestão Financeira
-        </motion.p>
+          <h1 className="text-5xl font-black tracking-tight text-white flex flex-col">
+            <span className="text-display-lg opacity-90 font-light">Bem-vindo ao</span>
+            <span className="gradient-text text-display-xl drop-shadow-2xl">Promo Finance</span>
+          </h1>
+          
+          <div className="h-1 w-24 bg-gradient-to-r from-primary to-accent mx-auto rounded-full" />
+          
+          <p className="text-xl text-white/60 font-medium max-w-sm mx-auto leading-relaxed">
+            A inteligência financeira definitiva para empresas que buscam o próximo nível de eficiência.
+          </p>
+        </motion.div>
 
         <AuthSocialProof />
+        
+        {/* Footer info */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.4 }}
+          transition={{ delay: 1.5 }}
+          className="absolute bottom-12 text-[10px] text-white uppercase tracking-[0.2em] font-bold"
+        >
+          Tecnologia Proprietária &copy; 2026 Promo Finance
+        </motion.div>
       </div>
     </div>
   );
