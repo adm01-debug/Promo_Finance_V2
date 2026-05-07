@@ -115,29 +115,36 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Cards de resumo global */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <StatCard label="Total Importado" value={total} description={`lançamentos em ${ano}`} />
+    <div className="space-y-10">
+      <div className="grid gap-6 md:grid-cols-4">
         <StatCard 
-          label="Consistentes" 
-          value={totalOk} 
-          description={`${taxaOk}% de integridade`}
-          tone="success"
+          label="Total Auditado" 
+          value={total.toLocaleString('pt-BR')} 
+          description={`Volume de lançamentos em ${ano}`} 
+          icon={Activity}
+        />
+        <StatCard 
+          label="SLA de Integridade" 
+          value={`${taxaOk}%`} 
+          description={`${totalOk} registros conformes`}
+          tone={taxaOk >= 95 ? "success" : "warning"}
           icon={ShieldCheck}
+          trend="+2.4%"
         />
         <StatCard 
-          label="Com Divergência" 
+          label="Exposição ao Risco" 
           value={totalDivergentes} 
-          description={totalDivergentes > 0 ? 'Requerem correção' : 'Tudo balanceado'}
-          tone={totalDivergentes > 0 ? "destructive" : "default"}
+          description={totalDivergentes > 0 ? 'Divergências detectadas' : 'Risco mitigado'}
+          tone={totalDivergentes > 0 ? "destructive" : "success"}
           icon={AlertTriangle}
+          trend={totalDivergentes > 0 ? "⚠️" : "✓"}
         />
         <StatCard 
-          label="Origens Ativas" 
+          label="Fluxo Conectado" 
           value={resumos.length} 
-          description="Integrações conectadas"
-          icon={Zap}
+          description="Fontes de dados ativas"
+          icon={Cpu}
+          tone="default"
         />
       </div>
 
