@@ -364,10 +364,12 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Histórico de gerações</CardTitle>
-          <CardDescription>Arquivos {tipo} gerados anteriormente</CardDescription>
+      <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative mt-10">
+        <CardHeader className="p-10 pb-6 relative z-10">
+          <div>
+            <CardTitle className="text-3xl font-black tracking-tight">Histórico de Gerações</CardTitle>
+            <CardDescription className="text-sm font-medium opacity-60">Repositório de auditoria e compliance regulatório</CardDescription>
+          </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
