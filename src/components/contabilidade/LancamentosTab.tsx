@@ -148,45 +148,85 @@ export function LancamentosTab({ empresaId, ano }: Props) {
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div><Label>Data</Label><Input type="date" value={data} onChange={e => setData(e.target.value)} /></div>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Data do Lançamento</Label>
+                    <Input type="date" value={data} onChange={e => setData(e.target.value)} className="h-12 bg-white/5 border-white/10 rounded-xl font-bold transition-all focus:ring-primary/20" />
+                  </div>
                 </div>
-                <div><Label>Histórico</Label><Input value={historico} onChange={e => setHistorico(e.target.value)} placeholder="Ex: Pagamento de fornecedor NF 12345" /></div>
                 <div className="space-y-2">
+                  <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Histórico / Descrição</Label>
+                  <Input value={historico} onChange={e => setHistorico(e.target.value)} placeholder="Ex: Pagamento de fornecedor NF 12345" className="h-12 bg-white/5 border-white/10 rounded-xl font-bold transition-all focus:ring-primary/20" />
+                </div>
+                <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <Label>Partidas</Label>
-                    <Button size="sm" variant="outline" onClick={() => setPartidas([...partidas, { conta_id: '', tipo: 'D', valor: 0 }])}>
-                      <Plus className="h-3 w-3 mr-1" />Linha
+                    <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Composição de Partidas</Label>
+                    <Button size="sm" variant="outline" onClick={() => setPartidas([...partidas, { conta_id: '', tipo: 'D', valor: 0 }])} className="rounded-xl border-white/10 bg-white/5 hover:bg-white/10 gap-2 font-bold h-9">
+                      <Plus className="h-4 w-4 text-primary" />Adicionar Linha
                     </Button>
                   </div>
-                  {partidas.map((p, i) => (
-                    <div key={i} className="grid grid-cols-[1fr_100px_140px_40px] gap-2 items-center">
-                      <Select value={p.conta_id} onValueChange={v => setPartidas(partidas.map((x, j) => j === i ? { ...x, conta_id: v } : x))}>
-                        <SelectTrigger><SelectValue placeholder="Conta..." /></SelectTrigger>
-                        <SelectContent>
-                          {contasAnaliticas.map(c => <SelectItem key={c.id} value={c.id}>{c.codigo} — {c.descricao}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                      <Select value={p.tipo} onValueChange={v => setPartidas(partidas.map((x, j) => j === i ? { ...x, tipo: v as 'D' | 'C' } : x))}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="D">Débito</SelectItem>
-                          <SelectItem value="C">Crédito</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Input type="number" step="0.01" value={p.valor} onChange={e => setPartidas(partidas.map((x, j) => j === i ? { ...x, valor: Number(e.target.value) } : x))} />
-                      <Button size="icon" variant="ghost" onClick={() => setPartidas(partidas.filter((_, j) => j !== i))}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                  <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                    {partidas.map((p, i) => (
+                      <motion.div 
+                        key={i} 
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="grid grid-cols-[1fr_120px_160px_40px] gap-3 items-center group"
+                      >
+                        <Select value={p.conta_id} onValueChange={v => setPartidas(partidas.map((x, j) => j === i ? { ...x, conta_id: v } : x))}>
+                          <SelectTrigger className="h-12 rounded-xl border-white/10 bg-white/5 font-bold transition-all focus:ring-primary/20"><SelectValue placeholder="Selecionar Conta..." /></SelectTrigger>
+                          <SelectContent className="rounded-xl border-white/10 bg-background/95 backdrop-blur-xl">
+                            {contasAnaliticas.map(c => <SelectItem key={c.id} value={c.id} className="font-mono text-xs">{c.codigo} — {c.descricao}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                        <Select value={p.tipo} onValueChange={v => setPartidas(partidas.map((x, j) => j === i ? { ...x, tipo: v as 'D' | 'C' } : x))}>
+                          <SelectTrigger className="h-12 rounded-xl border-white/10 bg-white/5 font-bold"><SelectValue /></SelectTrigger>
+                          <SelectContent className="rounded-xl border-white/10 bg-background/95 backdrop-blur-xl">
+                            <SelectItem value="D" className="text-success font-black">Débito</SelectItem>
+                            <SelectItem value="C" className="text-destructive font-black">Crédito</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Input type="number" step="0.01" value={p.valor} onChange={e => setPartidas(partidas.map((x, j) => j === i ? { ...x, valor: Number(e.target.value) } : x))} className="h-12 bg-white/5 border-white/10 rounded-xl font-mono text-right font-black transition-all focus:ring-primary/20" />
+                        <Button size="icon" variant="ghost" onClick={() => setPartidas(partidas.filter((_, j) => j !== i))} className="h-10 w-10 rounded-xl hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </motion.div>
+                    ))}
+                  </div>
+                  <div className={cn(
+                    "flex flex-wrap justify-between items-center gap-4 p-5 rounded-2xl border backdrop-blur-md transition-all shadow-lg",
+                    balanceado ? 'bg-success/5 border-success/20 text-success shadow-success/10' : 'bg-warning/5 border-warning/20 text-warning shadow-warning/10'
+                  )}>
+                    <div className="flex gap-6">
+                      <div className="space-y-1">
+                        <p className="text-[9px] font-black uppercase tracking-widest opacity-60">Total Débito</p>
+                        <p className="font-mono font-black text-xl">{formatCurrency(totalD)}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-[9px] font-black uppercase tracking-widest opacity-60">Total Crédito</p>
+                        <p className="font-mono font-black text-xl">{formatCurrency(totalC)}</p>
+                      </div>
                     </div>
-                  ))}
-                  <div className={`flex justify-between text-sm p-2 rounded ${balanceado ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'}`}>
-                    <span>D: {formatCurrency(totalD)}</span>
-                    <span>C: {formatCurrency(totalC)}</span>
-                    <span>{balanceado ? '✓ Balanceado' : `Diferença: ${formatCurrency(Math.abs(totalD - totalC))}`}</span>
+                    <div className="flex items-center gap-3">
+                      {balanceado ? (
+                        <div className="flex items-center gap-2 font-black uppercase text-[10px] tracking-widest bg-success/20 px-4 py-2 rounded-full">
+                          <CheckCircle2 className="h-4 w-4" /> Consistente
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 font-black uppercase text-[10px] tracking-widest bg-warning/20 px-4 py-2 rounded-full">
+                          <AlertTriangle className="h-4 w-4" /> Dif: {formatCurrency(Math.abs(totalD - totalC))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <Button onClick={handleSalvar} disabled={!balanceado || !historico || criar.isPending} className="w-full">Salvar lançamento</Button>
+                <Button 
+                  onClick={handleSalvar} 
+                  disabled={!balanceado || !historico || criar.isPending} 
+                  className="w-full h-14 rounded-2xl font-black text-lg shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] mt-4"
+                >
+                  {criar.isPending ? <Wand2 className="h-5 w-5 animate-spin mr-2" /> : "Registrar Lançamento"}
+                </Button>
               </div>
             </DialogContent>
             </Dialog>
