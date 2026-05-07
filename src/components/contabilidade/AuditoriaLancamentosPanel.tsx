@@ -192,24 +192,28 @@ function StatCard({
 }) {
   const toneClass =
     tone === 'success'
-      ? 'text-success'
+      ? 'text-success bg-success/10 border-success/20 shadow-[0_0_15px_rgba(var(--success),0.1)]'
       : tone === 'accent'
-        ? 'text-accent'
+        ? 'text-accent bg-accent/10 border-accent/20 shadow-[0_0_15px_rgba(var(--accent),0.1)]'
         : tone === 'destructive'
-          ? 'text-destructive'
-          : 'text-foreground';
+          ? 'text-destructive bg-destructive/10 border-destructive/20 shadow-[0_0_15px_rgba(var(--destructive),0.1)]'
+          : 'text-foreground bg-muted/20 border-border/50 shadow-sm';
+  
   return (
-    <div className="rounded-md border bg-muted/20 p-3">
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className={`text-2xl font-bold ${toneClass}`}>{value}</p>
-    </div>
+    <motion.div 
+      whileHover={{ scale: 1.02, y: -2 }}
+      className={`rounded-2xl border p-4 transition-all duration-300 backdrop-blur-sm ${toneClass}`}
+    >
+      <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">{label}</p>
+      <p className="text-3xl font-black tracking-tighter tabular-nums">{value}</p>
+    </motion.div>
   );
 }
 
 function AuditRow({ log }: { log: AuditoriaLancamentoRow }) {
   const cfg = operacaoConfig[log.operacao];
   return (
-    <TableRow>
+    <>
       <TableCell className="text-xs">
         <div className="flex items-center gap-1.5">
           <Clock className="h-3 w-3 text-muted-foreground" />
@@ -265,7 +269,7 @@ function AuditRow({ log }: { log: AuditoriaLancamentoRow }) {
           </DialogContent>
         </Dialog>
       </TableCell>
-    </TableRow>
+    </>
   );
 }
 
