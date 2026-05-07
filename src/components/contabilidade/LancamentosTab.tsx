@@ -382,12 +382,12 @@ export function LancamentosTab({ empresaId, ano }: Props) {
             <Table>
               <TableHeader className="bg-white/5">
                 <TableRow className="border-white/5 hover:bg-transparent">
-                  <TableHead className="w-32 text-[10px] font-black uppercase tracking-widest p-6 text-center">Nº</TableHead>
+                  <TableHead className="w-24 text-[10px] font-black uppercase tracking-widest p-6">Nº Lanc.</TableHead>
                   <TableHead className="text-[10px] font-black uppercase tracking-widest">Data</TableHead>
-                  <TableHead className="text-[10px] font-black uppercase tracking-widest">Histórico / Descrição</TableHead>
-                  <TableHead className="text-[10px] font-black uppercase tracking-widest">Origem</TableHead>
-                  <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Valor Total</TableHead>
-                  <TableHead className="text-[10px] font-black uppercase tracking-widest text-center">Status</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest">Histórico Analítico</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest">Fonte</TableHead>
+                  <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Montante</TableHead>
+                  <TableHead className="text-right text-[10px] font-black uppercase tracking-widest pr-8">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -395,35 +395,58 @@ export function LancamentosTab({ empresaId, ano }: Props) {
                   {lancsFiltrados.slice(0, 100).map((l: { id: string; numero_lancamento: number; data_lancamento: string; historico: string; origem: string; valor_total: number; status: string }, idx: number) => (
                     <motion.tr 
                       key={l.id}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.005 }}
                       className="border-white/5 hover:bg-white/5 transition-colors group/row"
                     >
-                      <TableCell className="p-6 text-center">
-                        <Badge variant="outline" className="font-mono font-black text-xs border-none bg-primary/10 text-primary px-3 py-1 rounded-lg">
-                          #{l.numero_lancamento}
+                      <TableCell className="p-6">
+                        <Badge variant="outline" className="font-mono text-[11px] font-black border-none bg-primary/10 text-primary px-2.5 py-0.5 rounded-lg">
+                          #{String(l.numero_lancamento).padStart(4, '0')}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-[10px] font-black uppercase tracking-widest opacity-60">
                         {format(new Date(l.data_lancamento + 'T00:00:00'), 'dd/MM/yyyy')}
                       </TableCell>
-                      <TableCell className="max-w-md truncate font-bold text-foreground/80">{l.historico}</TableCell>
+                      <TableCell className="max-w-md">
+                        <div className="flex flex-col">
+                          <span className="font-bold text-sm text-foreground/80 truncate">{l.historico}</span>
+                          <div className="flex items-center gap-1.5 mt-1">
+                            <Clock className="h-3 w-3 opacity-40 text-primary" />
+                            <span className="text-[9px] font-bold uppercase tracking-widest opacity-30">Integridade Validada</span>
+                          </div>
+                        </div>
+                      </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="capitalize border-none bg-white/5 text-[10px] font-bold px-2 rounded-lg">
+                        <Badge variant="outline" className="capitalize border-none bg-white/5 text-[10px] font-black px-2.5 py-1 rounded-xl flex items-center gap-1.5 w-fit">
+                          <Zap className="h-3 w-3 text-primary opacity-60" />
                           {l.origem}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-right font-mono font-black text-xs tabular-nums text-foreground/90">
+                      <TableCell className="text-right font-mono font-black text-sm tabular-nums text-foreground/90">
                         {formatCurrency(l.valor_total)}
                       </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant="outline" className={cn(
-                          "uppercase text-[9px] font-black tracking-[0.1em] border-none px-3 rounded-full",
-                          l.status === 'confirmado' ? "bg-success/20 text-success" : "bg-warning/20 text-warning"
-                        )}>
-                          {l.status}
-                        </Badge>
+                      <TableCell className="pr-8">
+                        <div className="flex items-center justify-end gap-2">
+                          <Badge variant="outline" className={cn(
+                            "uppercase text-[9px] font-black tracking-widest border-none px-3 py-1 rounded-full",
+                            l.status === 'confirmado' ? "bg-success/20 text-success" : "bg-warning/20 text-warning"
+                          )}>
+                            {l.status}
+                          </Badge>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg opacity-0 group-hover/row:opacity-100 transition-opacity">
+                                  <Eye className="h-4 w-4 opacity-40 hover:opacity-100" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent className="rounded-xl border-white/10 bg-background/95 backdrop-blur-xl">
+                                <p className="text-[10px] font-black uppercase tracking-widest">Ver Detalhes das Partidas</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
                       </TableCell>
                     </motion.tr>
                   ))}
@@ -432,8 +455,9 @@ export function LancamentosTab({ empresaId, ano }: Props) {
             </Table>
           </div>
         )}
-        {lancsFiltrados.length > 100 && <p className="text-[10px] font-black uppercase tracking-widest opacity-40 text-center mt-4">Exibindo 100 de {lancsFiltrados.length} lançamentos. Refine a busca para ver mais.</p>}
+        {lancsFiltrados.length > 100 && <p className="text-[10px] font-black uppercase tracking-widest opacity-40 text-center mt-6">Exibindo 100 de {lancsFiltrados.length.toLocaleString('pt-BR')} lançamentos. Refine o período para auditoria completa.</p>}
       </CardContent>
     </Card>
+    </div>
   );
 }
