@@ -374,20 +374,8 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
                 </TableBody>
               </Table>
             </div>
-                        <TableCell className="text-right font-mono text-xs font-bold">{formatCurrency(l.total_credito)}</TableCell>
-                        <TableCell className={cn("text-right font-mono text-xs font-black", l.diferenca > 0.01 ? 'text-destructive' : 'opacity-20')}>
-                          {l.diferenca > 0.01 ? formatCurrency(l.diferenca) : '—'}
-                        </TableCell>
-                        <TableCell className="text-right font-mono text-xs font-bold opacity-60">{l.qtd_partidas}</TableCell>
-                        <TableCell>{statusBadge(l.status_consistencia)}</TableCell>
-                      </motion.tr>
-                    ))}
-                  </AnimatePresence>
-                </TableBody>
-              </Table>
-            </div>
           )}
-          {filtrados.length > 200 && <p className="text-xs text-muted-foreground mt-2">Exibindo 200 de {filtrados.length}</p>}
+          {filtrados.length > 200 && <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mt-4 text-center">Exibindo 200 de {filtrados.length.toLocaleString('pt-BR')} registros filtrados</p>}
         </CardContent>
       </Card>
     </div>
