@@ -71,6 +71,7 @@ export function EmpresaSwitcher() {
                   <CommandItem
                     key={v.empresa_id}
                     className="p-3 rounded-xl m-1 transition-all duration-300 hover:bg-primary/5 cursor-pointer"
+                    onSelect={() => {
                       setCurrentEmpresaId(v.empresa_id);
                       setCurrentId(v.empresa_id);
                       setOpen(false);
