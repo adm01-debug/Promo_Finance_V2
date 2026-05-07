@@ -337,25 +337,25 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
 
         <Tabs defaultValue={erros.length > 0 ? 'erros' : 'avisos'}>
           <div className="flex items-center justify-between mb-2 gap-4">
-            <TabsList className="grid grid-cols-2 w-full">
-            <TabsTrigger value="erros" className="gap-1.5">
-              <XCircle className="h-3.5 w-3.5" />
-              Erros
-              <Badge variant={erros.length > 0 ? 'destructive' : 'outline'} className="ml-1">
-                {erros.length}
-              </Badge>
-            </TabsTrigger>
-            <TabsTrigger value="avisos" className="gap-1.5">
-              <AlertTriangle className="h-3.5 w-3.5" />
-              Avisos
-              <Badge variant="outline" className="ml-1">
-                {avisos.length}
-              </Badge>
-            </TabsTrigger>
-          </TabsList>
+            <TabsList className="grid grid-cols-2 flex-1">
+              <TabsTrigger value="erros" className="gap-1.5">
+                <XCircle className="h-3.5 w-3.5" />
+                Erros
+                <Badge variant={erros.length > 0 ? 'destructive' : 'outline'} className="ml-1">
+                  {erros.length}
+                </Badge>
+              </TabsTrigger>
+              <TabsTrigger value="avisos" className="gap-1.5">
+                <AlertTriangle className="h-3.5 w-3.5" />
+                Avisos
+                <Badge variant="outline" className="ml-1">
+                  {avisos.length}
+                </Badge>
+              </TabsTrigger>
+            </TabsList>
 
           {(erros.length > 0 || avisos.length > 0) && (
-            <div className="relative mt-2">
+            <div className="relative flex-1">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
               <Input
                 data-testid="input-busca-validacoes"
