@@ -171,22 +171,25 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
         </div>
 
         {/* Resumo por categoria */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <ProblemKPI
             icon={AlertCircle}
-            label="Formato inválido"
+            label="Inconsistência de Formato"
             value={resultado.formatoInvalido.length}
+            description="Padrão N.NN.NN.NN[.NNN]"
             critical
           />
           <ProblemKPI
             icon={AlertTriangle}
-            label="Prefixo incorreto"
+            label="Desvio de Prefixo"
             value={resultado.prefixoIncorreto.length}
+            description="Natur. vs Referencial"
           />
           <ProblemKPI
             icon={Copy}
-            label="Duplicidades"
+            label="Conflito de Duplicidade"
             value={resultado.duplicidades.length}
+            description="Múltiplas contas/mesmo ref"
             critical
           />
         </div>
