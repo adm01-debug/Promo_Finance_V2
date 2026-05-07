@@ -510,16 +510,18 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
             </Table>
           </div>
         )) : razao.length === 0 ? (
-          <p className="py-12 text-center text-sm text-muted-foreground">Nenhuma conta com movimento no período.</p>
+          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground border border-dashed border-white/10 rounded-[2.5rem] bg-white/[0.02]">
+            <Activity className="h-10 w-10 opacity-20 mb-4" />
+            <p className="text-sm font-bold uppercase tracking-widest">Nenhuma conta com movimento</p>
+          </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-10">
             {(() => {
-              // Acumuladores globais para o sumário do Razão
               let gSaldoInicial = 0;
               let gDebitos = 0;
               let gCreditos = 0;
               let gSaldoFinal = 0;
-              const cards = razao.map((g) => {
+              const cards = razao.map((g, idx) => {
                 let saldo = g.saldo_inicial;
                 let dTotal = 0;
                 let cTotal = 0;
