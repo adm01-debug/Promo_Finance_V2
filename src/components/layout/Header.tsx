@@ -333,4 +333,6 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
     </div>
   </header>
 );
+});
+Header.displayName = 'Header';
 Header.displayName = 'Header';
