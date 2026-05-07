@@ -28,7 +28,7 @@ export function useLancamentosContabeis(empresaId?: string, ano?: number) {
         .gte('data_lancamento', inicio)
         .lte('data_lancamento', fim)
         .order('data_lancamento', { ascending: true })
-        .limit(5000);
+        .limit(10000);
       if (error) throw error;
       return data || [];
     },
