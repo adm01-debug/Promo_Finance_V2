@@ -227,5 +227,4 @@ export function ContasReceberKPIs({
       )}
     </div>
   );
-  );
 }
