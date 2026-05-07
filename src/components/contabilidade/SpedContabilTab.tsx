@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
+import { motion } from 'framer-motion';
 import { Download, FileText, AlertTriangle, CheckCircle2, ShieldAlert, FileArchive, Wand2, Send, FileSearch, ChevronDown, ChevronRight, ScrollText, XCircle, Hash, Lock, Unlock, Loader2, Clock, PlayCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -194,7 +195,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10 animate-in fade-in duration-700">
       {tipo === 'ECD' && empresaId && (
         <>
           <SpedEcdWizard open={wizardOpen} onOpenChange={setWizardOpen} empresaId={empresaId} anoCalendario={ano} />
@@ -233,53 +234,79 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
         onDownloadZip={() => validacoesArquivo && handleDownloadZip(validacoesArquivo)}
       />
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Gerar SPED {tipo}
-          </CardTitle>
-          <CardDescription>
-            {tipo === 'ECD'
-              ? 'Escrituração Contábil Digital — Layout 9 (livro Diário)'
-              : 'Escrituração Contábil Fiscal — Layout 10 (LALUR/LACS, IRPJ/CSLL)'}
-          </CardDescription>
+      <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        
+        <CardHeader className="p-10 pb-6 relative z-10">
+          <div className="flex items-center gap-6">
+            <div className="p-4 rounded-2xl bg-primary shadow-xl shadow-primary/20 text-primary-foreground transform group-hover:scale-110 transition-transform duration-500">
+              <FileText className="h-8 w-8" />
+            </div>
+            <div>
+              <CardTitle className="text-4xl font-black tracking-tight">
+                Gerar SPED {tipo}
+              </CardTitle>
+              <CardDescription className="text-lg font-medium opacity-70">
+                {tipo === 'ECD'
+                  ? 'Escrituração Contábil Digital • Layout 9'
+                  : 'Escrituração Contábil Fiscal • Layout 10'}
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <Label>Ano-calendário</Label>
+
+        <CardContent className="p-10 pt-2 relative z-10 space-y-8">
+          <div className="grid gap-8 md:grid-cols-12 items-end">
+            <div className="md:col-span-3 space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/60">Ano-Calendário</Label>
                 {rascunhoRestaurado && (
-                  <Badge variant="secondary" className="text-[10px] font-normal animate-fade-in">
-                    Rascunho restaurado
+                  <Badge variant="secondary" className="text-[10px] font-black uppercase bg-primary/10 text-primary border-none animate-pulse">
+                    Restaurado
                   </Badge>
                 )}
               </div>
-              <Input type="number" min={2010} max={new Date().getFullYear()} value={ano}
-                onChange={e => setAno(Number(e.target.value))} />
+              <Input 
+                type="number" 
+                min={2010} 
+                max={new Date().getFullYear()} 
+                value={ano}
+                onChange={e => setAno(Number(e.target.value))} 
+                className="h-14 bg-white/5 border-white/10 rounded-2xl font-black text-xl tracking-tighter focus:ring-primary/40 focus:border-primary transition-all text-center"
+              />
             </div>
-            <div className="md:col-span-2 flex items-end gap-2">
+
+            <div className="md:col-span-9 flex items-center gap-4">
               {tipo === 'ECD' && (
                 <Button
                   disabled={!empresaId}
                   variant="outline"
                   onClick={() => setPreviewOpen(true)}
-                  className="flex-1"
+                  className="flex-1 h-14 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 font-bold gap-3 transition-all hover:translate-y-[-2px] active:translate-y-[0px]"
                 >
-                  <FileSearch className="mr-2 h-4 w-4" />
+                  <FileSearch className="h-5 w-5 text-primary" />
                   Pré-visualizar
                 </Button>
               )}
-              <Button disabled={!empresaId} variant="outline" onClick={() => setWizardOpen(true)} className="flex-1">
-                <Wand2 className="mr-2 h-4 w-4" />
-                Abrir wizard · {ano}
+              
+              <Button 
+                disabled={!empresaId} 
+                variant="outline" 
+                onClick={() => setWizardOpen(true)} 
+                className="flex-1 h-14 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 font-bold gap-3 transition-all hover:translate-y-[-2px] active:translate-y-[0px]"
+              >
+                <Wand2 className="h-5 w-5 text-purple-400" />
+                Inteligência Assistida
               </Button>
+
               <Button
                 disabled={!empresaId || exportButton.disabled}
                 onClick={handleGerarExportar}
                 variant={exportButton.variant}
-                className={exportButton.className}
+                className={cn(
+                  exportButton.className,
+                  "flex-1 h-14 rounded-2xl font-black gap-3 shadow-xl transition-all hover:translate-y-[-2px] active:translate-y-[0px]"
+                )}
               >
                 {exportButton.icon}
                 {exportButton.label}
@@ -288,38 +315,61 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
           </div>
 
           {exportStatus !== 'idle' && (
-            <div
+            <motion.div
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
               className={cn(
-                'flex items-center gap-2 rounded-md border px-3 py-2 text-xs animate-fade-in',
-                exportStatus === 'queued' && 'border-muted-foreground/20 bg-muted/30 text-muted-foreground',
-                exportStatus === 'processing' && 'border-primary/30 bg-primary/5 text-primary',
-                exportStatus === 'done' && 'border-success/30 bg-success/5 text-success',
-                exportStatus === 'error' && 'border-destructive/30 bg-destructive/5 text-destructive',
+                'flex items-center gap-4 rounded-[1.5rem] border p-6 backdrop-blur-md shadow-lg',
+                exportStatus === 'queued' && 'border-white/10 bg-white/5 text-muted-foreground',
+                exportStatus === 'processing' && 'border-primary/20 bg-primary/5 text-primary',
+                exportStatus === 'done' && 'border-success/20 bg-success/5 text-success',
+                exportStatus === 'error' && 'border-destructive/20 bg-destructive/5 text-destructive',
               )}
             >
-              {exportStatus === 'queued' && <><Clock className="h-3.5 w-3.5" /><span>Em fila — preparando geração do SPED {tipo} para o ano {ano}.</span></>}
-              {exportStatus === 'processing' && <><Loader2 className="h-3.5 w-3.5 animate-spin" /><span>Processando — gerando arquivo SPED {tipo} ({ano}). Isso pode levar alguns segundos.</span></>}
-              {exportStatus === 'done' && <><CheckCircle2 className="h-3.5 w-3.5" /><span>Concluído — arquivo disponível no histórico abaixo e aberto em nova aba.</span></>}
-              {exportStatus === 'error' && <><AlertTriangle className="h-3.5 w-3.5" /><span>Falha na geração — verifique o histórico para detalhes ou tente novamente.</span></>}
-            </div>
+              <div className="p-3 rounded-xl bg-current/10">
+                {exportStatus === 'queued' && <Clock className="h-6 w-6" />}
+                {exportStatus === 'processing' && <Loader2 className="h-6 w-6 animate-spin" />}
+                {exportStatus === 'done' && <CheckCircle2 className="h-6 w-6" />}
+                {exportStatus === 'error' && <AlertTriangle className="h-6 w-6" />}
+              </div>
+              <div className="flex-1">
+                <p className="font-bold tracking-tight text-base">
+                  {exportStatus === 'queued' && `Preparando Geração SPED ${tipo}`}
+                  {exportStatus === 'processing' && `Processando Lote de Dados (${ano})`}
+                  {exportStatus === 'done' && `SPED ${tipo} Gerado com Sucesso`}
+                  {exportStatus === 'error' && `Falha na Geração do Arquivo`}
+                </p>
+                <p className="text-sm opacity-70">
+                  {exportStatus === 'queued' && 'Aguardando disponibilidade dos recursos computacionais.'}
+                  {exportStatus === 'processing' && 'Apurando saldos e formatando blocos regulatórios...'}
+                  {exportStatus === 'done' && 'O arquivo foi validado internamente e está pronto para download.'}
+                  {exportStatus === 'error' && 'Ocorreu um erro inesperado. Verifique os logs de auditoria.'}
+                </p>
+              </div>
+            </motion.div>
           )}
 
-          <Alert variant="warning" title="Arquivo preliminar">
-            <div className="flex items-start gap-2">
-              <ShieldAlert className="h-4 w-4 mt-0.5 shrink-0" />
-              <span>
-                Sempre valide no PVA-{tipo} da Receita Federal antes da transmissão oficial.
-                {tipo === 'ECF' && ' A ECF requer ECD do mesmo período já gerada.'}
-              </span>
+          <div className="p-6 rounded-[1.5rem] bg-warning/5 border border-warning/20 flex items-start gap-4">
+            <div className="p-2.5 rounded-xl bg-warning/20 text-warning">
+              <ShieldAlert className="h-5 w-5" />
             </div>
-          </Alert>
+            <div>
+              <p className="text-sm font-bold text-warning mb-1 uppercase tracking-tight">Importante: Validação Obrigatória</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Este arquivo é gerado em conformidade com o Layout 9/10, porém deve ser <strong>obrigatoriamente validado no PVA oficial</strong> da Receita Federal antes de qualquer transmissão definitiva.
+                {tipo === 'ECF' && ' Lembre-se que a ECF exige a recuperação prévia da ECD do mesmo período.'}
+              </p>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Histórico de gerações</CardTitle>
-          <CardDescription>Arquivos {tipo} gerados anteriormente</CardDescription>
+      <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative mt-10">
+        <CardHeader className="p-10 pb-6 relative z-10">
+          <div>
+            <CardTitle className="text-3xl font-black tracking-tight">Histórico de Gerações</CardTitle>
+            <CardDescription className="text-sm font-medium opacity-60">Repositório de auditoria e compliance regulatório</CardDescription>
+          </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -327,20 +377,22 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
           ) : historicoTipo.length === 0 ? (
             <p className="text-sm text-muted-foreground">Nenhum arquivo gerado ainda.</p>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-8"></TableHead>
-                  <TableHead>Período</TableHead>
-                  <TableHead>Gerado em</TableHead>
-                  <TableHead>Lançamentos</TableHead>
-                  <TableHead>Linhas</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Recibo</TableHead>
-                  <TableHead>Hash</TableHead>
-                  <TableHead className="text-right">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
+            <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-black/20 shadow-inner">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <tr className="bg-white/[0.02] border-b border-white/5">
+                      <th className="w-12 p-6"></th>
+                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Período</th>
+                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Timestamp de Geração</th>
+                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Lançamentos</th>
+                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Total Linhas</th>
+                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Status de Validação</th>
+                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Recibo/Protocolo</th>
+                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Integridade (Hash)</th>
+                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-right">Governança</th>
+                    </tr>
+                  </TableHeader>
               <TableBody>
                 {historicoTipo.map((h) => {
                   const isOpen = expandedAudit.has(h.id);
@@ -546,7 +598,9 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                   );
                 })}
               </TableBody>
-            </Table>
+                </Table>
+              </div>
+            </div>
           )}
         </CardContent>
       </Card>

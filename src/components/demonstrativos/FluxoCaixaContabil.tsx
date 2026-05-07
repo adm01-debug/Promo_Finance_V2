@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { useContasPagar, useContasReceber, useContasBancarias } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
+import { cn } from '@/lib/utils';
 
 interface FluxoCaixaContabilProps {
   periodo: string;
@@ -163,25 +164,44 @@ export const FluxoCaixaContabil = ({ periodo, mes, ano, empresaId }: FluxoCaixaC
   const renderLinha = (linha: FluxoLinha, index: number) => (
     <motion.tr
       key={linha.codigo}
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.03 }}
-      className={`
-        border-t border-border/30 transition-colors hover:bg-muted/30
-        ${linha.nivel === 0 ? 'font-bold bg-muted/30' : ''}
-      `}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ 
+        delay: index * 0.01,
+        duration: 0.5,
+        ease: [0.23, 1, 0.32, 1]
+      }}
+      className={cn(
+        "group transition-all duration-300 hover:bg-white/[0.03]",
+        linha.nivel === 0 ? "bg-white/[0.02] font-black" : "font-medium"
+      )}
     >
-      <td className="p-3 text-sm text-muted-foreground">{linha.codigo}</td>
-      <td className={`p-3 text-sm ${linha.nivel === 1 ? 'pl-8' : ''}`}>
-        <div className="flex items-center gap-2">
-          {linha.tipo === 'entrada' && <ArrowUpCircle className="h-4 w-4 text-success" />}
-          {linha.tipo === 'saida' && <ArrowDownCircle className="h-4 w-4 text-destructive" />}
+      <td className="p-6 text-[11px] font-mono text-muted-foreground/40 group-hover:text-primary transition-colors">
+        {linha.codigo}
+      </td>
+      <td className={cn(
+        "p-6 text-sm tracking-tight transition-all",
+        linha.nivel === 1 ? "pl-14 opacity-80" : "text-base",
+        linha.nivel === 0 ? "text-foreground" : "text-muted-foreground"
+      )}>
+        <div className="flex items-center gap-4">
+          {linha.tipo === 'entrada' && (
+            <div className="p-1.5 rounded-lg bg-success/10 text-success">
+              <ArrowUpCircle className="h-4 w-4" />
+            </div>
+          )}
+          {linha.tipo === 'saida' && (
+            <div className="p-1.5 rounded-lg bg-destructive/10 text-destructive">
+              <ArrowDownCircle className="h-4 w-4" />
+            </div>
+          )}
           {linha.descricao}
         </div>
       </td>
-      <td className={`p-3 text-sm text-right tabular-nums ${
-        linha.valor > 0 ? 'text-success' : linha.valor < 0 ? 'text-destructive' : ''
-      }`}>
+      <td className={cn(
+        "p-6 text-right tabular-nums font-bold text-base",
+        linha.valor > 0 ? "text-success" : linha.valor < 0 ? "text-destructive" : "text-muted-foreground"
+      )}>
         {formatCurrency(Math.abs(linha.valor))}
       </td>
     </motion.tr>
@@ -190,116 +210,162 @@ export const FluxoCaixaContabil = ({ periodo, mes, ano, empresaId }: FluxoCaixaC
   return (
     <div className="space-y-6">
       {/* Cards Resumo */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card className="border-border/50">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-              <Wallet className="h-4 w-4" />
-              Saldo Inicial
-            </div>
-            <div className="text-2xl font-bold">{formatCurrency(fluxo.saldoInicial)}</div>
-          </CardContent>
-        </Card>
+      <div className="grid gap-6 md:grid-cols-4">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl rounded-[2rem] overflow-hidden ring-1 ring-white/10 group hover:ring-primary/30 transition-all duration-500">
+            <CardContent className="p-8">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2.5 rounded-xl bg-white/5 text-muted-foreground group-hover:text-primary transition-colors">
+                  <Wallet className="h-5 w-5" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">Initial Balance</span>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Saldo Inicial</p>
+                <div className="text-2xl font-black tracking-tight">{formatCurrency(fluxo.saldoInicial)}</div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        <Card className="border-border/50">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-              <TrendingUp className="h-4 w-4" />
-              Operacional
-            </div>
-            <div className={`text-2xl font-bold ${fluxo.fluxoOperacional >= 0 ? 'text-success' : 'text-destructive'}`}>
-              {formatCurrency(fluxo.fluxoOperacional)}
-            </div>
-          </CardContent>
-        </Card>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl rounded-[2rem] overflow-hidden ring-1 ring-white/10 group hover:ring-success/30 transition-all duration-500">
+            <CardContent className="p-8">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2.5 rounded-xl bg-success/10 text-success">
+                  <TrendingUp className="h-5 w-5" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">Operational</span>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Operacional</p>
+                <div className={cn(
+                  "text-2xl font-black tracking-tight",
+                  fluxo.fluxoOperacional >= 0 ? 'text-success' : 'text-destructive'
+                )}>
+                  {formatCurrency(fluxo.fluxoOperacional)}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        <Card className="border-border/50">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-              <Building className="h-4 w-4" />
-              Investimento
-            </div>
-            <div className={`text-2xl font-bold ${fluxo.fluxoInvestimento >= 0 ? 'text-success' : 'text-destructive'}`}>
-              {formatCurrency(fluxo.fluxoInvestimento)}
-            </div>
-          </CardContent>
-        </Card>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+          <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl rounded-[2rem] overflow-hidden ring-1 ring-white/10 group hover:ring-blue-500/30 transition-all duration-500">
+            <CardContent className="p-8">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-400">
+                  <Building className="h-5 w-5" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">Investment</span>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Investimento</p>
+                <div className={cn(
+                  "text-2xl font-black tracking-tight",
+                  fluxo.fluxoInvestimento >= 0 ? 'text-success' : 'text-destructive'
+                )}>
+                  {formatCurrency(fluxo.fluxoInvestimento)}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        <Card className="border-border/50">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-              <Coins className="h-4 w-4" />
-              Saldo Final
-            </div>
-            <div className="text-2xl font-bold">{formatCurrency(fluxo.saldoFinal)}</div>
-            <Badge variant={fluxo.variacaoTotal >= 0 ? 'default' : 'destructive'} className="mt-2">
-              {fluxo.variacaoTotal >= 0 ? '+' : ''}{formatCurrency(fluxo.variacaoTotal)}
-            </Badge>
-          </CardContent>
-        </Card>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+          <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2rem] overflow-hidden ring-1 ring-primary/40 group transition-all duration-500 bg-gradient-to-br from-primary/10 to-transparent">
+            <CardContent className="p-8">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2.5 rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+                  <Coins className="h-5 w-5" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-primary/60">Net Result</span>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Saldo Final</p>
+                <div className="text-2xl font-black tracking-tight">{formatCurrency(fluxo.saldoFinal)}</div>
+              </div>
+              <Badge variant={fluxo.variacaoTotal >= 0 ? 'default' : 'destructive'} className="mt-3 rounded-md px-3 font-black text-[10px] uppercase tracking-tighter">
+                {fluxo.variacaoTotal >= 0 ? '+' : ''}{formatCurrency(fluxo.variacaoTotal)} Var.
+              </Badge>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
 
-      {/* Demonstrativo Completo */}
-      <Card className="border-border/50">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Wallet className="h-5 w-5 text-primary" />
-            Demonstração do Fluxo de Caixa (Método Direto)
-          </CardTitle>
-          <CardDescription>
-            Período: {meses[mes]} de {ano}
-          </CardDescription>
+      <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
+        <CardHeader className="p-10 pb-4 relative z-10">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <CardTitle className="text-3xl font-black tracking-tight flex items-center gap-4">
+                <div className="p-3 rounded-2xl bg-primary/10 text-primary">
+                  <Wallet className="h-6 w-6" />
+                </div>
+                Fluxo de Caixa
+              </CardTitle>
+              <CardDescription className="text-sm font-medium opacity-60">Demonstração pelo Método Direto (CPC 03)</CardDescription>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
-          <div className="rounded-lg border border-border/50 overflow-hidden">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-muted/50">
-                  <th className="text-left p-3 font-semibold text-sm w-20">Código</th>
-                  <th className="text-left p-3 font-semibold text-sm">Descrição</th>
-                  <th className="text-right p-3 font-semibold text-sm w-40">Valor (R$)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* Saldo Inicial */}
-                <tr className="bg-primary/10 font-bold">
-                  <td className="p-3 text-sm">-</td>
-                  <td className="p-3 text-sm">SALDO INICIAL DE CAIXA</td>
-                  <td className="p-3 text-sm text-right tabular-nums">{formatCurrency(fluxo.saldoInicial)}</td>
-                </tr>
+        <CardContent className="p-10 pt-4 relative z-10">
+          <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-black/20 shadow-inner">
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="bg-white/[0.02] border-b border-white/5">
+                    <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 w-24">Código</th>
+                    <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Discriminação das Atividades</th>
+                    <th className="text-right p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 w-48">Fluxo (R$)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {/* Saldo Inicial */}
+                  <tr className="bg-primary/10 font-black">
+                    <td className="p-6 text-[11px] font-mono opacity-40">-</td>
+                    <td className="p-6 text-base text-primary uppercase tracking-tight">SALDO INICIAL DE DISPONIBILIDADES</td>
+                    <td className="p-6 text-right tabular-nums text-lg">{formatCurrency(fluxo.saldoInicial)}</td>
+                  </tr>
 
-                {/* Operacional */}
-                {fluxo.operacional.map((linha, index) => renderLinha(linha, index))}
+                  {/* Operacional */}
+                  {fluxo.operacional.map((linha, index) => renderLinha(linha, index))}
 
-                {/* Investimento */}
-                {fluxo.investimento.map((linha, index) => renderLinha(linha, index + fluxo.operacional.length))}
+                  {/* Investimento */}
+                  {fluxo.investimento.map((linha, index) => renderLinha(linha, index + fluxo.operacional.length))}
 
-                {/* Financiamento */}
-                {fluxo.financiamento.map((linha, index) => renderLinha(linha, index + fluxo.operacional.length + fluxo.investimento.length))}
+                  {/* Financiamento */}
+                  {fluxo.financiamento.map((linha, index) => renderLinha(linha, index + fluxo.operacional.length + fluxo.investimento.length))}
 
-                {/* Variação */}
-                <tr className="bg-muted/50 font-bold">
-                  <td className="p-3 text-sm">4</td>
-                  <td className="p-3 text-sm">(=) VARIAÇÃO LÍQUIDA DE CAIXA</td>
-                  <td className={`p-3 text-sm text-right tabular-nums ${
-                    fluxo.variacaoTotal >= 0 ? 'text-success' : 'text-destructive'
-                  }`}>
-                    {formatCurrency(fluxo.variacaoTotal)}
-                  </td>
-                </tr>
+                  {/* Variação */}
+                  <tr className="bg-white/[0.03] font-black">
+                    <td className="p-6 text-[11px] font-mono text-muted-foreground/40">4</td>
+                    <td className="p-6 text-base uppercase tracking-tight">(=) VARIAÇÃO LÍQUIDA DE CAIXA NO PERÍODO</td>
+                    <td className={cn(
+                      "p-6 text-right tabular-nums text-lg",
+                      fluxo.variacaoTotal >= 0 ? 'text-success' : 'text-destructive'
+                    )}>
+                      {formatCurrency(fluxo.variacaoTotal)}
+                    </td>
+                  </tr>
 
-                {/* Saldo Final */}
-                <tr className="bg-primary/10 font-bold">
-                  <td className="p-3 text-sm">5</td>
-                  <td className="p-3 text-sm">(=) SALDO FINAL DE CAIXA</td>
-                  <td className="p-3 text-sm text-right tabular-nums">{formatCurrency(fluxo.saldoFinal)}</td>
-                </tr>
-              </tbody>
-            </table>
+                  {/* Saldo Final */}
+                  <tr className="bg-primary shadow-2xl font-black text-primary-foreground relative z-10">
+                    <td className="p-6 text-[11px] font-mono opacity-50">5</td>
+                    <td className="p-6 text-lg uppercase tracking-tight">(=) SALDO FINAL DE CAIXA E EQUIVALENTES</td>
+                    <td className="p-6 text-right tabular-nums text-xl drop-shadow-md">{formatCurrency(fluxo.saldoFinal)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          <div className="mt-4 text-xs text-muted-foreground">
-            <p>Demonstração elaborada pelo método direto conforme CPC 03 (R2)</p>
+          <div className="mt-8 flex items-center gap-3 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+            <div className="p-2 rounded-lg bg-white/5">
+              <Coins className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              <strong className="text-foreground">Conformidade Técnica:</strong> Este relatório segue rigorosamente o método direto de apuração, segregando atividades operacionais, de investimento e financiamento para máxima transparência.
+            </p>
           </div>
         </CardContent>
       </Card>
