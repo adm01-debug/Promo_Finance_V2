@@ -337,10 +337,10 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
         </div>
 
         {bloqueado && (
-          <Alert variant="error" data-testid="banner-bloqueio">
-            <XCircle className="h-4 w-4" />
-            <AlertTitle>{isRejeitado ? 'Arquivo rejeitado pela transmissão' : 'Download bloqueado'}</AlertTitle>
-            <AlertDescription>
+          <Alert variant="error" className="bg-destructive/5 border-destructive/20 shadow-sm" data-testid="banner-bloqueio">
+            <XCircle className="h-4 w-4 text-destructive" />
+            <AlertTitle className="font-bold text-destructive">{isRejeitado ? 'ARQUIVO REJEITADO PELA TRANSMISSÃO' : 'DOWNLOAD BLOQUEADO'}</AlertTitle>
+            <AlertDescription className="text-xs">
               {isRejeitado
                 ? `A transmissão deste SPED foi rejeitada${erros.length > 0 ? ` com ${erros.length} erro(s)` : ''}. Corrija as inconsistências e gere o arquivo novamente antes de retransmitir ao PVA.`
                 : `Este SPED contém ${erros.length} erro(s) bloqueante(s). Corrija as inconsistências e gere o arquivo novamente antes de transmitir ao PVA.`}
