@@ -178,10 +178,14 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
       const pageWidth = doc.internal.pageSize.getWidth();
 
       let cursorY = getContentStartY();
+
+      // Agrupar por categoria para o PDF
+      const agrupadosPdf = agruparValidacoes(errosExp, avisosExp);
+
       const metaItems: Array<[string, string]> = [
         ['Status', String(arquivo.status).toUpperCase()],
-        ['Erros', `${errosExp.length}${apenasFiltrados ? ` / ${erros.length}` : ''}`],
-        ['Avisos', `${avisosExp.length}${apenasFiltrados ? ` / ${avisos.length}` : ''}`],
+        ['Itens', `${errosExp.length + avisosExp.length}${apenasFiltrados ? ` (filtrados)` : ''}`],
+        ['Categorias', String(agrupadosPdf.length)],
         ['Hash', arquivo.hash_sha256 ? `${arquivo.hash_sha256.slice(0, 12)}…` : '—'],
       ];
       const cardW = (pageWidth - margins.left - margins.right - 6) / metaItems.length;
@@ -238,42 +242,7 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
         cursorY += 5;
       }
 
-      if (errosExp.length > 0) {
-        autoTable(doc, {
-          startY: cursorY,
-          head: [[`Erros (${errosExp.length}${apenasFiltrados ? ` de ${erros.length}` : ''})`]],
-          body: errosExp.map((e) => [e]),
-          theme: 'striped',
-          headStyles: {
-            fillColor: [PDF_BRAND.destructive[0], PDF_BRAND.destructive[1], PDF_BRAND.destructive[2]],
-            textColor: [255, 255, 255],
-            fontStyle: 'bold',
-          },
-          alternateRowStyles: { fillColor: [252, 247, 244] },
-          styles: { fontSize: 8, cellPadding: 2.5, textColor: [PDF_BRAND.foreground[0], PDF_BRAND.foreground[1], PDF_BRAND.foreground[2]] },
-          margin: margins,
-        });
-        cursorY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 6;
-      }
-
-      if (avisosExp.length > 0) {
-        autoTable(doc, {
-          startY: cursorY,
-          head: [[`Avisos (${avisosExp.length}${apenasFiltrados ? ` de ${avisos.length}` : ''})`]],
-          body: avisosExp.map((a) => [a]),
-          theme: 'striped',
-          headStyles: {
-            fillColor: [PDF_BRAND.warning[0], PDF_BRAND.warning[1], PDF_BRAND.warning[2]],
-            textColor: [255, 255, 255],
-            fontStyle: 'bold',
-          },
-          alternateRowStyles: { fillColor: [252, 249, 240] },
-          styles: { fontSize: 8, cellPadding: 2.5, textColor: [PDF_BRAND.foreground[0], PDF_BRAND.foreground[1], PDF_BRAND.foreground[2]] },
-          margin: margins,
-        });
-      }
-
-      if (errosExp.length === 0 && avisosExp.length === 0) {
+      if (agrupadosPdf.length === 0) {
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
         doc.setTextColor(PDF_BRAND.muted[0], PDF_BRAND.muted[1], PDF_BRAND.muted[2]);
@@ -284,6 +253,27 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
           margins.left,
           cursorY,
         );
+      } else {
+        agrupadosPdf.forEach((grupo) => {
+          autoTable(doc, {
+            startY: cursorY,
+            head: [[{ content: `${grupo.categoria.label} (${grupo.total})`, styles: { halign: 'left' } }]],
+            body: [
+              ...grupo.erros.map(e => [{ content: `• ERROR: ${e}`, styles: { textColor: PDF_BRAND.destructive } }]),
+              ...grupo.avisos.map(a => [{ content: `• WARN: ${a}`, styles: { textColor: PDF_BRAND.warning } }])
+            ],
+            theme: 'striped',
+            headStyles: {
+              fillColor: [PDF_BRAND.foreground[0], PDF_BRAND.foreground[1], PDF_BRAND.foreground[2]],
+              textColor: [255, 255, 255],
+              fontStyle: 'bold',
+            },
+            styles: { fontSize: 7.5, cellPadding: 2, font: 'courier' },
+            margin: margins,
+          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          cursorY = (doc as any).lastAutoTable.finalY + 6;
+        });
       }
 
       applyPdfLayout(doc, {
