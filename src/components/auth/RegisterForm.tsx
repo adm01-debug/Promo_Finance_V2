@@ -94,7 +94,7 @@ export function RegisterForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="register-password" font-bold uppercase tracking-widest opacity-70 ml-1>Senha de Acesso</Label>
+        <Label htmlFor="register-password" className="text-xs font-bold uppercase tracking-widest opacity-70 ml-1">Senha de Acesso</Label>
         <div className="relative group">
           <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
