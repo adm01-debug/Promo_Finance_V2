@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react';
-import { BarChart3, Scale, Download, AlertTriangle, CheckCircle2, FileJson, FileText, Calendar as CalendarIcon } from 'lucide-react';
+import { BarChart3, Scale, Download, AlertTriangle, CheckCircle2, FileJson, FileText, Calendar as CalendarIcon, Filter } from 'lucide-react';
+import { useDemonstrativosContabeis, type FonteDemonstrativo } from '@/hooks/useDemonstrativosContabeis';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,8 +44,23 @@ function calcularNivel(c: PlanoContaRow): number {
 
 export function DreBalancoTab({ empresaId, ano }: Props) {
   const [modo, setModo] = useState<'dre' | 'balanco'>('dre');
+  const [fonte, setFonte] = useState<FonteDemonstrativo>('competencia');
+  const [mes, setMes] = useState(new Date().getMonth());
   const [dataInicio, setDataInicio] = useState(`${ano}-01-01`);
   const [dataFim, setDataFim] = useState(`${ano}-12-31`);
+
+  const {
+    dre: dreNovo,
+    balanco: balancoNovo,
+    origem,
+    isLoading: isLoadingNovo,
+    error,
+  } = useDemonstrativosContabeis({
+    empresaId: empresaId || 'todas',
+    ano,
+    mes,
+    fonte,
+  });
 
   const { data: lancs = [], isLoading } = useLancamentosContabeis(empresaId, ano);
   const { data: plano = [] } = usePlanoContas(empresaId);
@@ -394,19 +411,38 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
               <ToggleGroupItem value="dre" className="px-4 text-xs font-bold data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">DRE</ToggleGroupItem>
               <ToggleGroupItem value="balanco" className="px-4 text-xs font-bold data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">Balanço</ToggleGroupItem>
             </ToggleGroup>
+            
+            <ToggleGroup type="single" value={fonte} onValueChange={(v) => v && setFonte(v as FonteDemonstrativo)} className="bg-background border rounded-lg p-1">
+              <ToggleGroupItem value="competencia" className="px-3 text-[10px] font-bold data-[state=on]:bg-secondary data-[state=on]:text-secondary-foreground">COMPETÊNCIA</ToggleGroupItem>
+              <ToggleGroupItem value="caixa" className="px-3 text-[10px] font-bold data-[state=on]:bg-secondary data-[state=on]:text-secondary-foreground">CAIXA</ToggleGroupItem>
+            </ToggleGroup>
           </div>
 
           <div className="h-8 w-px bg-border hidden md:block" />
 
-          <div className="flex items-center gap-2 flex-1 min-w-[300px]">
+          <div className="flex items-center gap-2">
+            <Label className="text-[10px] font-bold uppercase opacity-50">Mês Ref.</Label>
+            <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
+              <SelectTrigger className="h-9 w-[140px] text-xs bg-background">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'].map((m, i) => (
+                  <SelectItem key={i} value={String(i)}>{m}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex items-center gap-2 flex-1 min-w-[300px] opacity-50 pointer-events-none">
             <div className="relative flex-1">
               <CalendarIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input type="date" value={dataInicio} onChange={(e) => setDataInicio(e.target.value)} className="h-9 pl-8 text-xs bg-background" />
+              <Input type="date" value={dataInicio} readOnly className="h-9 pl-8 text-xs bg-muted" />
             </div>
             <span className="text-muted-foreground">até</span>
             <div className="relative flex-1">
               <CalendarIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input type="date" value={dataFim} onChange={(e) => setDataFim(e.target.value)} className="h-9 pl-8 text-xs bg-background" />
+              <Input type="date" value={dataFim} readOnly className="h-9 pl-8 text-xs bg-muted" />
             </div>
           </div>
 
