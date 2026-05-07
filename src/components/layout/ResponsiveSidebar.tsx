@@ -98,12 +98,12 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
       {/* Collapse Button */}
       <button
         onClick={() => handleCollapse(!collapsed)}
-        className="absolute -right-3 top-20 h-6 w-6 rounded-full bg-card border border-border flex items-center justify-center shadow-md hover:bg-muted transition-colors"
+        className="absolute -right-4 top-24 h-8 w-8 rounded-xl bg-background/80 backdrop-blur-md border border-white/10 flex items-center justify-center shadow-2xl hover:bg-primary hover:text-white transition-all duration-300 group/btn hover:scale-110 active:scale-90 z-50"
       >
         {collapsed ? (
-          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+          <ChevronRight className="h-4 w-4 group-hover/btn:translate-x-0.5 transition-transform" />
         ) : (
-          <ChevronLeft className="h-3.5 w-3.5 text-muted-foreground" />
+          <ChevronLeft className="h-4 w-4 group-hover/btn:-translate-x-0.5 transition-transform" />
         )}
       </button>
     </motion.aside>
