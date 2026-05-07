@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, TrendingUp, Scale, Wallet, Download, Calendar, Building2 } from 'lucide-react';
+import { FileText, TrendingUp, Scale, Wallet, Calendar, Building2 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DREStatement } from '@/components/demonstrativos/DREStatement';
 import { BalancoPatrimonial } from '@/components/demonstrativos/BalancoPatrimonial';
 import { FluxoCaixaContabil } from '@/components/demonstrativos/FluxoCaixaContabil';
 import { FonteDadosToggle } from '@/components/demonstrativos/FonteDadosToggle';
+import { ExportDemonstrativoPDF } from '@/components/demonstrativos/ExportDemonstrativoPDF';
 import { useEmpresas } from '@/hooks/useFinancialData';
 import { useDemonstrativosContabeis, type FonteDemonstrativo } from '@/hooks/useDemonstrativosContabeis';
 
@@ -35,14 +35,23 @@ const Demonstrativos = () => {
   const { data: empresas } = useEmpresas();
 
   // Detecta cobertura de contabilidade para o período (decide se permite competência)
-  const { cobertura } = useDemonstrativosContabeis({
+  const demoData = useDemonstrativosContabeis({
     empresaId,
     ano: parseInt(ano),
     mes: parseInt(mes),
     fonte: 'competencia',
   });
+  const { cobertura } = demoData;
   const hasContabilidade = cobertura.totalPartidas > 0;
   const fonteEfetiva: FonteDemonstrativo = hasContabilidade ? fonte : 'caixa';
+
+  // Dados com fonte efetiva para exportação na barra de ferramentas
+  const exportData = useDemonstrativosContabeis({
+    empresaId,
+    ano: parseInt(ano),
+    mes: parseInt(mes),
+    fonte: fonteEfetiva,
+  });
 
   const meses = [
     'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
@@ -120,9 +129,16 @@ const Demonstrativos = () => {
               </SelectContent>
             </Select>
 
-            <Button variant="outline" size="icon">
-              <Download className="h-4 w-4" />
-            </Button>
+            <ExportDemonstrativoPDF
+              tipo="dre"
+              periodo={periodo}
+              mes={parseInt(mes)}
+              ano={parseInt(ano)}
+              empresa="Promo Finance"
+              linhas={exportData.dre.linhas}
+              resumoDRE={{ lucroLiquido: exportData.dre.lucroLiquido }}
+              fonte={fonteEfetiva}
+            />
           </div>
         </motion.div>
 

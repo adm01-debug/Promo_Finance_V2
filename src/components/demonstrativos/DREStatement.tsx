@@ -73,6 +73,7 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
               empresa="Promo Finance"
               linhas={dre.linhas}
               resumoDRE={{ lucroLiquido: dre.lucroLiquido }}
+              fonte={origem}
             />
           </div>
         </div>

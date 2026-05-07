@@ -93,6 +93,7 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
             totalPassivo: balanco.totalPassivo,
             equilibrado: balanco.equilibrado,
           }}
+          fonte={origem}
         />
       </div>
       {origem === 'caixa' && (
