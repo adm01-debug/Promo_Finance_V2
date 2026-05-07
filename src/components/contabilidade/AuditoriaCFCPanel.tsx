@@ -376,20 +376,28 @@ function Row({
   onCopy?: () => void;
 }) {
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      whileHover={{ scale: 1.01, x: 5 }}
       className={cn(
-        'flex items-start gap-2 rounded-md border p-2 text-xs',
-        severity === 'error' && 'border-destructive/30 bg-destructive/5',
-        severity === 'warning' && 'border-warning/30 bg-warning/5',
+        'flex items-start gap-4 rounded-2xl border p-4 text-xs transition-all shadow-sm group/row',
+        severity === 'error' && 'border-destructive/20 bg-destructive/5 hover:border-destructive/40 hover:bg-destructive/10',
+        severity === 'warning' && 'border-warning/20 bg-warning/5 hover:border-warning/40 hover:bg-warning/10',
       )}
     >
       <div className="flex-1 min-w-0">
-        <div className="flex items-baseline gap-2 flex-wrap">
-          <code className="font-mono font-semibold">{codigo}</code>
-          <span className="text-muted-foreground truncate">{descricao}</span>
+        <div className="flex items-center gap-3 flex-wrap">
+          <Badge variant="outline" className={cn(
+            "font-mono font-black border-none",
+            severity === 'error' ? "bg-destructive/20 text-destructive" : "bg-warning/20 text-warning"
+          )}>
+            {codigo}
+          </Badge>
+          <span className="font-bold text-foreground opacity-80 truncate">{descricao}</span>
           <code
             className={cn(
-              'font-mono ml-auto px-1.5 py-0.5 rounded',
+              'font-mono ml-auto px-2.5 py-1 rounded-xl text-[10px] font-black tracking-tighter shadow-inner',
               severity === 'error' && 'bg-destructive/10 text-destructive',
               severity === 'warning' && 'bg-warning/10 text-warning',
             )}
@@ -397,14 +405,20 @@ function Row({
             {atual}
           </code>
         </div>
-        <p className="text-muted-foreground mt-1">{msg}</p>
+        <p className="text-muted-foreground mt-2 font-medium leading-relaxed">{msg}</p>
       </div>
       {onCopy && (
-        <Button size="icon" variant="ghost" className="h-7 w-7 shrink-0" onClick={onCopy} aria-label="Copiar">
-          <Copy className="h-3 w-3" />
+        <Button 
+          size="icon" 
+          variant="ghost" 
+          className="h-8 w-8 shrink-0 rounded-xl hover:bg-current/10 transition-colors" 
+          onClick={onCopy} 
+          aria-label="Copiar"
+        >
+          <Copy className="h-4 w-4" />
         </Button>
       )}
-    </div>
+    </motion.div>
   );
 }
 
