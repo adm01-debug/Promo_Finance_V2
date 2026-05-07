@@ -618,6 +618,7 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
                       </TableFooter>
                     </Table>
                   </div>
+                </motion.div>
                 );
               });
 
