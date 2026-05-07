@@ -11,7 +11,12 @@ import {
   FileSpreadsheet,
   Loader2,
   Sparkles,
+  ChevronDown,
+  ChevronRight,
+  ShieldAlert,
+  Zap,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,6 +27,7 @@ import { cn } from '@/lib/utils';
 import type { AuditoriaCFCResult } from '@/hooks/useAuditoriaCFC';
 import type { EmpresaHeader } from '@/lib/export-contabil';
 import { exportAuditoriaCFCCSV, exportAuditoriaCFCPDF } from '@/lib/export-contabil';
+import { toast } from 'sonner';
 
 interface Props {
   resultado: AuditoriaCFCResult;
@@ -32,10 +38,10 @@ interface Props {
 }
 
 function scoreColor(score: number) {
-  if (score >= 95) return { tone: 'text-success', bg: 'bg-success/10', border: 'border-success/40', label: 'Excelente' };
-  if (score >= 80) return { tone: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/40', label: 'Bom' };
-  if (score >= 60) return { tone: 'text-warning', bg: 'bg-warning/10', border: 'border-warning/40', label: 'Atenção' };
-  return { tone: 'text-destructive', bg: 'bg-destructive/10', border: 'border-destructive/40', label: 'Crítico' };
+  if (score >= 95) return { tone: 'text-success', bg: 'bg-success/10', border: 'border-success/20', label: 'Excelente', shadow: 'shadow-success/20' };
+  if (score >= 80) return { tone: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/20', label: 'Bom', shadow: 'shadow-primary/20' };
+  if (score >= 60) return { tone: 'text-warning', bg: 'bg-warning/10', border: 'border-warning/20', label: 'Atenção', shadow: 'shadow-warning/20' };
+  return { tone: 'text-destructive', bg: 'bg-destructive/10', border: 'border-destructive/20', label: 'Crítico', shadow: 'shadow-destructive/20' };
 }
 
 export function AuditoriaCFCPanel({ resultado, empresa, className, compact = false }: Props) {
@@ -56,53 +62,65 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
 
   const copy = (s: string) => {
     navigator.clipboard.writeText(s);
+    toast.success('Código copiado', { description: s });
   };
 
   return (
-    <Card className={className}>
-      <CardHeader className="pb-3">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <ShieldCheck className={cn('h-5 w-5', score.tone)} />
-              Auditoria CFC do Plano de Contas
-            </CardTitle>
-            <CardDescription>
-              Validação de formato, prefixo por natureza e duplicidades dos códigos referenciais usados no SPED.
-            </CardDescription>
+    <Card className={cn("border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2rem] overflow-hidden ring-1 ring-white/10 relative group", className)}>
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+      <CardHeader className="p-8 pb-4">
+        <div className="flex flex-wrap items-start justify-between gap-6">
+          <div className="flex items-center gap-5">
+            <div className={cn("p-4 rounded-2xl shadow-xl transform group-hover:scale-110 transition-all duration-500", score.bg, score.tone)}>
+              <ShieldCheck className="h-8 w-8" />
+            </div>
+            <div>
+              <CardTitle className="text-2xl font-black tracking-tight flex items-center gap-2">
+                Auditoria CFC
+                {tudoOk && <Zap className="h-5 w-5 text-yellow-400 fill-yellow-400 animate-pulse" />}
+              </CardTitle>
+              <CardDescription className="text-sm font-medium opacity-60">
+                Governança de códigos referenciais para conformidade SPED
+              </CardDescription>
+            </div>
           </div>
           {!compact && (
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <Button
                 size="sm"
                 variant="outline"
+                className="rounded-xl font-bold gap-2 border-white/10 bg-white/5 hover:bg-white/10"
                 onClick={() => exportAuditoriaCFCCSV(resultado, empresa)}
                 disabled={tudoOk}
               >
-                <FileSpreadsheet className="h-4 w-4 mr-1" /> CSV
+                <FileSpreadsheet className="h-4 w-4 text-success" /> CSV
               </Button>
               <Button
                 size="sm"
                 variant="outline"
+                className="rounded-xl font-bold gap-2 border-white/10 bg-white/5 hover:bg-white/10"
                 onClick={() => exportAuditoriaCFCPDF(resultado, empresa)}
                 disabled={tudoOk}
               >
-                <FileText className="h-4 w-4 mr-1" /> PDF
+                <FileText className="h-4 w-4 text-destructive" /> PDF
               </Button>
             </div>
           )}
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="p-8 pt-2 space-y-8">
         {/* KPI de score + totais */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          <div className={cn('rounded-lg border p-4 col-span-2 sm:col-span-1', score.bg, score.border)}>
-            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Score</p>
-            <p className={cn('text-3xl font-bold font-mono', score.tone)}>{resultado.scoreConformidade}</p>
-            <Badge variant="outline" className={cn('mt-1 text-[10px]', score.tone, score.border)}>
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+          <motion.div 
+            whileHover={{ scale: 1.05 }}
+            className={cn('rounded-[1.5rem] border p-5 col-span-2 sm:col-span-1 shadow-lg backdrop-blur-md transition-all', score.bg, score.border, score.shadow)}
+          >
+            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground opacity-60 mb-1">Score</p>
+            <p className={cn('text-4xl font-black font-mono tracking-tighter', score.tone)}>{resultado.scoreConformidade}</p>
+            <Badge variant="outline" className={cn('mt-2 text-[10px] font-black uppercase border-none bg-current/10', score.tone)}>
               {score.label}
             </Badge>
-          </div>
+          </motion.div>
           <KPI label="Contas ativas" value={resultado.totalContas} />
           <KPI label="Analíticas" value={resultado.totalAnaliticas} />
           <KPI
@@ -118,7 +136,7 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
         </div>
 
         {/* Resumo por categoria */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-4">
           <ProblemKPI
             icon={AlertCircle}
             label="Formato inválido"
@@ -165,28 +183,28 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
             )}
 
             <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
-              <TabsList className="grid grid-cols-4 w-full">
-                <TabsTrigger value="formato" className="gap-1 text-xs">
+              <TabsList className="grid grid-cols-4 w-full h-12 bg-white/5 rounded-2xl p-1">
+                <TabsTrigger value="formato" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-2 text-xs font-black uppercase tracking-tighter">
                   Formato
-                  <Badge variant="secondary" className="h-4 px-1 text-[10px]">
+                  <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-black bg-current/20 border-none">
                     {resultado.formatoInvalido.length}
                   </Badge>
                 </TabsTrigger>
-                <TabsTrigger value="prefixo" className="gap-1 text-xs">
+                <TabsTrigger value="prefixo" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-2 text-xs font-black uppercase tracking-tighter">
                   Prefixo
-                  <Badge variant="secondary" className="h-4 px-1 text-[10px]">
+                  <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-black bg-current/20 border-none">
                     {resultado.prefixoIncorreto.length}
                   </Badge>
                 </TabsTrigger>
-                <TabsTrigger value="duplicidade" className="gap-1 text-xs">
+                <TabsTrigger value="duplicidade" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-2 text-xs font-black uppercase tracking-tighter">
                   Duplicidade
-                  <Badge variant="secondary" className="h-4 px-1 text-[10px]">
+                  <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-black bg-current/20 border-none">
                     {resultado.duplicidades.length}
                   </Badge>
                 </TabsTrigger>
-                <TabsTrigger value="sem-ref" className="gap-1 text-xs">
+                <TabsTrigger value="sem-ref" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-2 text-xs font-black uppercase tracking-tighter">
                   Sem ref.
-                  <Badge variant="secondary" className="h-4 px-1 text-[10px]">
+                  <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-black bg-current/20 border-none">
                     {resultado.semReferencial}
                   </Badge>
                 </TabsTrigger>
@@ -279,24 +297,26 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
 
 function KPI({ label, value, tone }: { label: string; value: number; tone?: 'success' | 'warning' }) {
   return (
-    <div
+    <motion.div
+      whileHover={{ y: -2 }}
       className={cn(
-        'rounded-md border bg-muted/30 px-3 py-2',
-        tone === 'success' && 'border-success/40 bg-success/5',
-        tone === 'warning' && 'border-warning/40 bg-warning/5',
+        'rounded-2xl border bg-white/[0.03] px-4 py-3 shadow-sm transition-all',
+        tone === 'success' && 'border-success/20 bg-success/5 shadow-success/10',
+        tone === 'warning' && 'border-warning/20 bg-warning/5 shadow-warning/10',
+        !tone && 'border-white/5'
       )}
     >
-      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="text-[9px] uppercase font-black tracking-[0.2em] text-muted-foreground opacity-60 mb-1">{label}</p>
       <p
         className={cn(
-          'font-mono font-semibold text-lg',
+          'font-mono font-black text-xl tracking-tighter tabular-nums',
           tone === 'success' && 'text-success',
           tone === 'warning' && 'text-warning',
         )}
       >
         {value.toLocaleString('pt-BR')}
       </p>
-    </div>
+    </motion.div>
   );
 }
 
@@ -313,27 +333,28 @@ function ProblemKPI({
 }) {
   const ok = value === 0;
   return (
-    <div
+    <motion.div
+      whileHover={{ scale: 1.02 }}
       className={cn(
-        'rounded-md border px-3 py-2 flex items-center gap-3',
-        ok && 'border-success/40 bg-success/5',
-        !ok && critical && 'border-destructive/40 bg-destructive/5',
-        !ok && !critical && 'border-warning/40 bg-warning/5',
+        'rounded-2xl border px-4 py-3 flex items-center gap-4 transition-all shadow-lg backdrop-blur-md',
+        ok && 'border-success/20 bg-success/5 shadow-success/10',
+        !ok && critical && 'border-destructive/20 bg-destructive/5 shadow-destructive/10',
+        !ok && !critical && 'border-warning/20 bg-warning/5 shadow-warning/10',
       )}
     >
-      <Icon
-        className={cn(
-          'h-5 w-5 shrink-0',
-          ok && 'text-success',
-          !ok && critical && 'text-destructive',
-          !ok && !critical && 'text-warning',
-        )}
-      />
+      <div className={cn(
+        'p-2.5 rounded-xl transition-all',
+        ok && 'bg-success/10 text-success',
+        !ok && critical && 'bg-destructive/10 text-destructive',
+        !ok && !critical && 'bg-warning/10 text-warning',
+      )}>
+        <Icon className="h-5 w-5 shrink-0" />
+      </div>
       <div>
-        <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
+        <p className="text-[9px] uppercase font-black tracking-[0.2em] text-muted-foreground opacity-60 mb-0.5">{label}</p>
         <p
           className={cn(
-            'font-mono font-bold text-base',
+            'font-mono font-black text-xl tracking-tighter tabular-nums',
             ok && 'text-success',
             !ok && critical && 'text-destructive',
             !ok && !critical && 'text-warning',
@@ -342,7 +363,7 @@ function ProblemKPI({
           {value.toLocaleString('pt-BR')}
         </p>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -362,20 +383,28 @@ function Row({
   onCopy?: () => void;
 }) {
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      whileHover={{ scale: 1.01, x: 5 }}
       className={cn(
-        'flex items-start gap-2 rounded-md border p-2 text-xs',
-        severity === 'error' && 'border-destructive/30 bg-destructive/5',
-        severity === 'warning' && 'border-warning/30 bg-warning/5',
+        'flex items-start gap-4 rounded-2xl border p-4 text-xs transition-all shadow-sm group/row',
+        severity === 'error' && 'border-destructive/20 bg-destructive/5 hover:border-destructive/40 hover:bg-destructive/10',
+        severity === 'warning' && 'border-warning/20 bg-warning/5 hover:border-warning/40 hover:bg-warning/10',
       )}
     >
       <div className="flex-1 min-w-0">
-        <div className="flex items-baseline gap-2 flex-wrap">
-          <code className="font-mono font-semibold">{codigo}</code>
-          <span className="text-muted-foreground truncate">{descricao}</span>
+        <div className="flex items-center gap-3 flex-wrap">
+          <Badge variant="outline" className={cn(
+            "font-mono font-black border-none",
+            severity === 'error' ? "bg-destructive/20 text-destructive" : "bg-warning/20 text-warning"
+          )}>
+            {codigo}
+          </Badge>
+          <span className="font-bold text-foreground opacity-80 truncate">{descricao}</span>
           <code
             className={cn(
-              'font-mono ml-auto px-1.5 py-0.5 rounded',
+              'font-mono ml-auto px-2.5 py-1 rounded-xl text-[10px] font-black tracking-tighter shadow-inner',
               severity === 'error' && 'bg-destructive/10 text-destructive',
               severity === 'warning' && 'bg-warning/10 text-warning',
             )}
@@ -383,14 +412,20 @@ function Row({
             {atual}
           </code>
         </div>
-        <p className="text-muted-foreground mt-1">{msg}</p>
+        <p className="text-muted-foreground mt-2 font-medium leading-relaxed">{msg}</p>
       </div>
       {onCopy && (
-        <Button size="icon" variant="ghost" className="h-7 w-7 shrink-0" onClick={onCopy} aria-label="Copiar">
-          <Copy className="h-3 w-3" />
+        <Button 
+          size="icon" 
+          variant="ghost" 
+          className="h-8 w-8 shrink-0 rounded-xl hover:bg-current/10 transition-colors" 
+          onClick={onCopy} 
+          aria-label="Copiar"
+        >
+          <Copy className="h-4 w-4" />
         </Button>
       )}
-    </div>
+    </motion.div>
   );
 }
 
