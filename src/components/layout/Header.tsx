@@ -163,15 +163,10 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
                         </motion.div>
                       </AnimatePresence>
                     </Button>
-                      >
-                        <ThemeIcon className="h-5 w-5" />
-                      </motion.div>
-                    </AnimatePresence>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Alterar tema</TooltipContent>
-              </Tooltip>
-            </DropdownMenuTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent>Alterar tema</TooltipContent>
+                </Tooltip>
+              </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-popover">
               <DropdownMenuLabel>Tema</DropdownMenuLabel>
               <DropdownMenuSeparator />
