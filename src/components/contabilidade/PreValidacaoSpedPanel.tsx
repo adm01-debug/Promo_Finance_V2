@@ -96,34 +96,42 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
       </CardHeader>
       <CardContent className="p-8 pt-2 relative z-10 space-y-10">
         {/* Resumo numérico */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-          <ResumoBox label="Lançamentos" value={resumo.totalLancamentos.toLocaleString('pt-BR')} />
-          <ResumoBox label="Partidas" value={resumo.totalPartidas.toLocaleString('pt-BR')} />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <ResumoBox label="Fatos Contábeis" value={resumo.totalLancamentos.toLocaleString('pt-BR')} icon={Activity} />
+          <ResumoBox label="Partidas (D/C)" value={resumo.totalPartidas.toLocaleString('pt-BR')} icon={ArrowRightLeft} />
           <ResumoBox
-            label="Débitos Razão"
-            value={formatCurrency(resumo.debitoRazao)}
+            label="Inconsistência Razão"
+            value={formatCurrency(resumo.diferencaRazao)}
             highlight={Math.abs(resumo.diferencaRazao) > 0.01}
+            icon={Target}
           />
-          <ResumoBox
-            label="Créditos Razão"
-            value={formatCurrency(resumo.creditoRazao)}
-            highlight={Math.abs(resumo.diferencaRazao) > 0.01}
-          />
-          <ResumoBox label="Receita Bruta (DRE)" value={formatCurrency(resumo.receitaBruta)} />
-          <ResumoBox
-            label="Lucro Líquido (DRE)"
-            value={formatCurrency(resumo.lucroLiquido)}
+          <ResumoBox 
+            label="Performance (DRE)" 
+            value={formatCurrency(resumo.lucroLiquido)} 
             highlight={resumo.lucroLiquido < 0}
+            icon={PieChart}
+          />
+          <ResumoBox 
+            label="Débitos Totais" 
+            value={formatCurrency(resumo.debitoRazao)}
+            icon={Layers} 
+          />
+          <ResumoBox 
+            label="Créditos Totais" 
+            value={formatCurrency(resumo.creditoRazao)}
+            icon={Layers} 
           />
           <ResumoBox
-            label="Lanç. desbalanceados"
+            label="Desbalanceados"
             value={resumo.lancamentosNaoBalanceados.toLocaleString('pt-BR')}
             highlight={resumo.lancamentosNaoBalanceados > 0}
+            icon={ShieldAlert}
           />
           <ResumoBox
-            label="Partidas s/ conta"
+            label="Partidas s/ Conta"
             value={resumo.partidasSemConta.toLocaleString('pt-BR')}
             highlight={resumo.partidasSemConta > 0}
+            icon={Search}
           />
         </div>
 
