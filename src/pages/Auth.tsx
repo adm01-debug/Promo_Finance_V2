@@ -406,20 +406,20 @@ export default function Auth() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              <Card className="border-2 border-border/50 bg-card/80 backdrop-blur-xl shadow-2xl shadow-black/5">
-                <CardHeader className="text-center pb-2">
-                  <CardTitle className="flex items-center justify-center gap-2">
+              <Card className="border-none bg-background/60 backdrop-blur-2xl shadow-2xl rounded-3xl ring-1 ring-white/10 overflow-hidden">
+                <CardHeader className="text-center p-8 pb-4">
+                  <CardTitle className="text-2xl font-extrabold tracking-tight flex items-center justify-center gap-3">
                     <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.5, type: 'spring' }}
+                      initial={{ scale: 0, rotate: -20 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ delay: 0.5, type: 'spring', damping: 12 }}
                     >
-                      <Shield className="h-5 w-5 text-primary" />
+                      <Shield className="h-6 w-6 text-primary" />
                     </motion.div>
                     Acesso ao Sistema
                   </CardTitle>
-                  <CardDescription>
-                    Entre com suas credenciais ou crie uma nova conta
+                  <CardDescription className="text-sm font-medium text-muted-foreground opacity-80">
+                    Sua plataforma de inteligência financeira premium.
                   </CardDescription>
                 </CardHeader>
                 

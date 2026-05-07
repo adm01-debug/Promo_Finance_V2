@@ -128,7 +128,8 @@ export function AuthSocialProof() {
 
 export function AuthLeftPanel() {
   return (
-    <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-primary/5 via-primary/10 to-accent/5">
+    <div className="hidden lg:flex lg:w-1/2 relative bg-[#02040a]">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/5 opacity-50" />
       <AuthBackgroundOrbs />
       <AuthGridPattern />
       
