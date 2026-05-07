@@ -385,43 +385,58 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
           {modo === 'dre' ? <BarChart3 className="h-5 w-5 text-primary" /> : <Scale className="h-5 w-5 text-primary" />}
           DRE & Balanço Patrimonial
         </CardTitle>
+        <CardDescription className="text-xs">Visualize e exporte as demonstrações contábeis do período.</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid gap-3 md:grid-cols-3">
-          <div className="space-y-1">
-            <Label className="text-xs">De</Label>
-            <Input type="date" value={dataInicio} onChange={(e) => setDataInicio(e.target.value)} />
+      <CardContent className="space-y-6">
+        <div className="flex flex-wrap items-center gap-4 bg-muted/30 p-4 rounded-xl border border-border/50">
+          <div className="flex items-center gap-3">
+            <ToggleGroup type="single" value={modo} onValueChange={(v) => v && setModo(v as 'dre' | 'balanco')} className="bg-background border rounded-lg p-1">
+              <ToggleGroupItem value="dre" className="px-4 text-xs font-bold data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">DRE</ToggleGroupItem>
+              <ToggleGroupItem value="balanco" className="px-4 text-xs font-bold data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">Balanço</ToggleGroupItem>
+            </ToggleGroup>
           </div>
-          <div className="space-y-1">
-            <Label className="text-xs">Até</Label>
-            <Input type="date" value={dataFim} onChange={(e) => setDataFim(e.target.value)} />
+
+          <div className="h-8 w-px bg-border hidden md:block" />
+
+          <div className="flex items-center gap-2 flex-1 min-w-[300px]">
+            <div className="relative flex-1">
+              <CalendarIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input type="date" value={dataInicio} onChange={(e) => setDataInicio(e.target.value)} className="h-9 pl-8 text-xs bg-background" />
+            </div>
+            <span className="text-muted-foreground">até</span>
+            <div className="relative flex-1">
+              <CalendarIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input type="date" value={dataFim} onChange={(e) => setDataFim(e.target.value)} className="h-9 pl-8 text-xs bg-background" />
+            </div>
           </div>
-          <div className="flex items-end">
+
+          <div className="ml-auto">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="w-full gap-2">
-                  <Download className="h-4 w-4" /> Exportar Demonstração
+                <Button variant="outline" size="sm" className="h-9 gap-2 font-bold shadow-sm">
+                  <Download className="h-4 w-4" /> Exportar
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel className="text-xs">Formato do Relatório</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => (modo === 'dre' ? exportarDRE('pdf') : exportarBalanco('pdf'))} className="gap-2">
+                <DropdownMenuLabel className="text-[10px] uppercase tracking-widest opacity-50">Formato do Relatório</DropdownMenuLabel>
+                <DropdownMenuItem onClick={() => (modo === 'dre' ? exportarDRE('pdf') : exportarBalanco('pdf'))} className="gap-2 py-2">
                   <FileText className="h-4 w-4 text-destructive" />
-                  Relatório PDF (.pdf)
+                  <div className="flex flex-col">
+                    <span className="text-xs font-semibold">Relatório PDF</span>
+                    <span className="text-[10px] text-muted-foreground">Pronto para impressão</span>
+                  </div>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => (modo === 'dre' ? exportarDRE('json') : exportarBalanco('json'))} className="gap-2">
+                <DropdownMenuItem onClick={() => (modo === 'dre' ? exportarDRE('json') : exportarBalanco('json'))} className="gap-2 py-2">
                   <FileJson className="h-4 w-4 text-primary" />
-                  Dados Estruturados (.json)
+                  <div className="flex flex-col">
+                    <span className="text-xs font-semibold">Dados Estruturados</span>
+                    <span className="text-[10px] text-muted-foreground">Para integração (JSON)</span>
+                  </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
-
-        <ToggleGroup type="single" value={modo} onValueChange={(v) => v && setModo(v as 'dre' | 'balanco')}>
-          <ToggleGroupItem value="dre">DRE</ToggleGroupItem>
-          <ToggleGroupItem value="balanco">Balanço Patrimonial</ToggleGroupItem>
-        </ToggleGroup>
 
         {isLoading ? (
           <div className="space-y-2">
