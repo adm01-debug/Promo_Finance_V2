@@ -259,9 +259,9 @@ export const DashboardExecutivo = () => {
             {/* AI Insights & Previsions */}
             <SectionDivider label="IA & Insights" icon={Brain} />
             <div className="space-y-6">
-              {renderWidget({ id: 'previsao-ia', title: 'Previsão IA', type: 'chart' })}
-              {renderWidget({ id: 'alertas-preditivos', title: 'Alertas Preditivos', type: 'list' })}
-              {renderWidget({ id: 'metas', title: 'Metas', type: 'list' })}
+              {renderWidget({ id: 'previsao-ia', title: 'Previsão IA', type: 'previsao-ia', visible: true, order: 0, size: 'lg' })}
+              {renderWidget({ id: 'alertas-preditivos', title: 'Alertas Preditivos', type: 'kpi-vencidas', visible: true, order: 1, size: 'md' })}
+              {renderWidget({ id: 'metas', title: 'Metas', type: 'kpi-saldo', visible: true, order: 2, size: 'md' })}
             </div>
           </aside>
         </div>
