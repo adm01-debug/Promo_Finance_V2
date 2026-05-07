@@ -44,16 +44,16 @@ export function RegisterForm({
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="register-name">Nome Completo</Label>
-        <div className="relative">
-          <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Label htmlFor="register-name" className="text-xs font-bold uppercase tracking-widest opacity-70 ml-1">Nome Completo</Label>
+        <div className="relative group">
+          <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
             id="register-name"
             type="text"
-            placeholder="Seu nome completo"
+            placeholder="Como podemos te chamar?"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            className="pl-10"
+            className="pl-10 rounded-xl border-border/50 bg-background/50 focus:bg-background transition-all duration-300 h-11"
             autoComplete="name"
           />
         </div>
@@ -69,16 +69,16 @@ export function RegisterForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="register-email">Email</Label>
-        <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Label htmlFor="register-email" className="text-xs font-bold uppercase tracking-widest opacity-70 ml-1">Email Profissional</Label>
+        <div className="relative group">
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
             id="register-email"
             type="email"
-            placeholder="seu@email.com"
+            placeholder="exemplo@empresa.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="pl-10"
+            className="pl-10 rounded-xl border-border/50 bg-background/50 focus:bg-background transition-all duration-300 h-11"
             autoComplete="email"
           />
         </div>
@@ -94,22 +94,22 @@ export function RegisterForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="register-password">Senha</Label>
-        <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Label htmlFor="register-password" className="text-xs font-bold uppercase tracking-widest opacity-70 ml-1">Senha de Acesso</Label>
+        <div className="relative group">
+          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
             id="register-password"
             type={showPassword ? "text" : "password"}
-            placeholder="Mínimo 8 caracteres"
+            placeholder="Segurança mínima: 8 caracteres"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="pl-10 pr-10"
+            className="pl-10 pr-10 rounded-xl border-border/50 bg-background/50 focus:bg-background transition-all duration-300 h-11"
             autoComplete="new-password"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
             tabIndex={-1}
             aria-label={showPassword ? "Esconder senha" : "Mostrar senha"}
           >
@@ -133,16 +133,16 @@ export function RegisterForm({
 
       <Button 
         type="submit" 
-        className="w-full gap-2" 
+        className="w-full gap-2 rounded-xl h-12 text-base font-bold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 active:scale-[0.98]" 
         disabled={isLoading}
-        size="lg"
+        variant="premium"
       >
         {isLoading ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Loader2 className="h-5 w-5 animate-spin" />
         ) : (
-          <UserPlus className="h-4 w-4" />
+          <UserPlus className="h-5 w-5" />
         )}
-        Criar Conta
+        Criar Conta Premium
       </Button>
 
       <p className="text-xs text-center text-muted-foreground">

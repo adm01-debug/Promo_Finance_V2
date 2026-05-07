@@ -92,15 +92,16 @@ export const ContasNaoClassificadasDialog = ({ open, onOpenChange, contas, isLoa
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-warning" />
-            Contas sem classificação ({contas.length})
+      <DialogContent className="max-w-3xl border-none bg-background/60 backdrop-blur-3xl shadow-2xl rounded-[2rem] ring-1 ring-white/10 p-0 overflow-hidden">
+        <DialogHeader className="p-8 pb-4">
+          <DialogTitle className="text-2xl font-bold tracking-tight flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-warning/10 text-warning">
+              <AlertTriangle className="h-6 w-6" />
+            </div>
+            Inteligência de Classificação ({contas.length})
           </DialogTitle>
-          <DialogDescription>
-            Estas contas têm partidas no período mas não possuem <code className="text-xs">centro_resultado</code> definido,
-            por isso aparecem fora dos grupos da DRE. Defina a classificação correta — o próximo cálculo usará a nova classificação.
+          <DialogDescription className="text-base mt-2">
+            Contas detectadas sem o atributo <code className="text-xs font-bold text-primary">centro_resultado</code>. Reclassifique para sincronizar com a DRE Premium.
           </DialogDescription>
         </DialogHeader>
 
@@ -112,29 +113,31 @@ export const ContasNaoClassificadasDialog = ({ open, onOpenChange, contas, isLoa
           </Alert>
         ) : (
           <>
-            <div className="flex justify-end">
-              <Button variant="outline" size="sm" onClick={aplicarSugestoes} className="gap-2">
-                <Sparkles className="h-3.5 w-3.5" />
-                Aplicar sugestões automáticas
+            <div className="flex justify-end px-8 mb-4">
+              <Button variant="outline" size="sm" onClick={aplicarSugestoes} className="gap-2 rounded-xl border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 transition-all active:scale-95">
+                <Sparkles className="h-4 w-4" />
+                Sincronizar Sugestões por IA
               </Button>
             </div>
-            <ScrollArea className="max-h-[420px] pr-3">
-              <div className="space-y-2">
+            <ScrollArea className="max-h-[480px] px-8">
+              <div className="space-y-3 pb-8">
                 {contas.map((c) => (
                   <div
                     key={c.codigo}
-                    className="rounded-md border border-border/50 p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3"
+                    className="rounded-2xl border border-border/40 bg-card/40 p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 transition-all hover:bg-card/60"
                   >
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-xs font-mono text-muted-foreground">{c.codigo}</span>
-                        <span className="text-sm font-medium truncate">{c.descricao}</span>
-                        <Badge variant={c.tipo === 'receita' ? 'default' : 'destructive'} className="text-[10px]">
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <span className="px-2 py-0.5 rounded-lg bg-muted text-[10px] font-mono font-bold text-muted-foreground">{c.codigo}</span>
+                        <span className="text-sm font-bold truncate tracking-tight">{c.descricao}</span>
+                        <Badge variant={c.tipo === 'receita' ? 'success' : 'destructive'} className="text-[9px]">
                           {c.tipo}
                         </Badge>
                       </div>
-                      <div className="text-xs text-muted-foreground mt-0.5">
-                        {c.partidas} partida{c.partidas !== 1 ? 's' : ''} • {formatCurrency(Math.abs(c.valor))}
+                      <div className="text-xs text-muted-foreground flex items-center gap-2">
+                        <span className="opacity-70">{c.partidas} ocorrências</span>
+                        <span className="h-1 w-1 rounded-full bg-border" />
+                        <span className="font-bold text-foreground">{formatCurrency(Math.abs(c.valor))}</span>
                       </div>
                     </div>
                     <Select
@@ -142,15 +145,15 @@ export const ContasNaoClassificadasDialog = ({ open, onOpenChange, contas, isLoa
                       onValueChange={(v) => c.conta_id && setSelecoes((s) => ({ ...s, [c.conta_id!]: v }))}
                       disabled={!c.conta_id}
                     >
-                      <SelectTrigger className="w-full sm:w-[260px]">
-                        <SelectValue placeholder="Classificar como..." />
+                      <SelectTrigger className="w-full sm:w-[280px] rounded-xl border-border/40 h-10 bg-background/50">
+                        <SelectValue placeholder="Definir destino..." />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="rounded-xl border-border/40 shadow-2xl">
                         {OPCOES_CENTRO_RESULTADO.map((o) => (
-                          <SelectItem key={o.value} value={o.value}>
-                            {o.label}
+                          <SelectItem key={o.value} value={o.value} className="rounded-lg m-1">
+                            <span className="text-sm font-medium">{o.label}</span>
                             {c.centro_resultado_sugerido === o.value && (
-                              <span className="ml-2 text-[10px] text-primary">(sugerido)</span>
+                              <Badge variant="outline" className="ml-2 bg-primary/10 text-primary border-primary/20 scale-90">Sugerido IA</Badge>
                             )}
                           </SelectItem>
                         ))}
@@ -163,13 +166,13 @@ export const ContasNaoClassificadasDialog = ({ open, onOpenChange, contas, isLoa
           </>
         )}
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={salvando}>
-            Cancelar
+        <DialogFooter className="p-6 bg-muted/20 border-t border-border/30 gap-3">
+          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={salvando} className="rounded-xl px-6 font-bold hover:bg-background/50 transition-all">
+            Agora não
           </Button>
-          <Button onClick={salvar} disabled={salvando || contas.length === 0} className="gap-2">
+          <Button onClick={salvar} disabled={salvando || contas.length === 0} className="gap-2 rounded-xl px-8 font-extrabold shadow-lg shadow-primary/20 active:scale-95" variant="premium">
+            {salvando ? 'Processando...' : 'Confirmar Mudanças'}
             <Save className="h-4 w-4" />
-            {salvando ? 'Salvando...' : 'Salvar classificações'}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -31,11 +31,11 @@ export const MobileSidebarDrawer = ({ isOpen, onClose }: MobileSidebarDrawerProp
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', stiffness: 400, damping: 40 }}
             className={cn(
-              'fixed left-0 top-0 z-50 h-full w-[280px] bg-sidebar border-r border-sidebar-border flex flex-col md:hidden'
+              'fixed left-0 top-0 z-50 h-full w-[300px] bg-background border-r border-border/40 flex flex-col md:hidden shadow-2xl backdrop-blur-3xl'
             )}
           >
             {/* Header */}
-            <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border">
+            <div className="h-20 flex items-center justify-between px-6 border-b border-border/30">
               <div className="flex items-center gap-2">
                 <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-glow-primary">
                   <CreditCard className="h-5 w-5 text-primary-foreground" />

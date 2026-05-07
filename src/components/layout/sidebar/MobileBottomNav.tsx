@@ -34,8 +34,8 @@ export const MobileBottomNav = ({ onMenuClick }: MobileBottomNavProps) => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-t border-border md:hidden pb-[env(safe-area-inset-bottom)]">
-      <div className="flex items-center justify-around h-16 px-1 sm:px-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-2xl border-t border-border/50 md:hidden pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_40px_rgba(0,0,0,0.08)]">
+      <div className="flex items-center justify-around h-20 px-2">
         {navItems.map(item => {
           const Icon = item.icon;
           const isActive = location.pathname === item.href;
@@ -48,12 +48,12 @@ export const MobileBottomNav = ({ onMenuClick }: MobileBottomNavProps) => {
             >
               <motion.div
                 className={cn(
-                  'flex flex-col items-center gap-0.5 px-2 sm:px-3 py-1.5 rounded-xl transition-colors',
+                  'flex flex-col items-center gap-1.5 px-4 py-2 rounded-2xl transition-all duration-300',
                   isActive
-                    ? 'text-primary'
-                    : 'text-muted-foreground'
+                    ? 'text-primary bg-primary/5 shadow-inner'
+                    : 'text-muted-foreground hover:text-foreground'
                 )}
-                whileTap={{ scale: 0.95 }}
+                whileTap={{ scale: 0.9, y: -2 }}
               >
                 <div className="relative">
                   <Icon className="h-5 w-5" />
@@ -77,8 +77,8 @@ export const MobileBottomNav = ({ onMenuClick }: MobileBottomNavProps) => {
           className="flex flex-col items-center justify-center flex-1 py-2 min-w-0"
         >
           <motion.div
-            className="flex flex-col items-center gap-0.5 px-2 sm:px-3 py-1.5 rounded-xl text-muted-foreground"
-            whileTap={{ scale: 0.95 }}
+            className="flex flex-col items-center gap-1.5 px-4 py-2 rounded-2xl text-muted-foreground hover:bg-muted/50 transition-all duration-300"
+            whileTap={{ scale: 0.9, y: -2 }}
           >
             <div className="relative">
               <Menu className="h-5 w-5" />
