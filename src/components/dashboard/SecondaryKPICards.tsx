@@ -35,26 +35,20 @@ function MiniKPICard({ icon: Icon, label, value, iconBg, iconColor, href, alertL
       initial={{ opacity: 0, y: 16, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ delay: index * 0.05, type: 'spring', stiffness: 300, damping: 24 }}
-      whileHover={{ y: -3, scale: 1.02 }}
+      whileHover={{ y: -5, scale: 1.02 }}
       className="h-full"
     >
       <div className={cn(
-        'relative h-full p-3 sm:p-4 rounded-xl border border-border/50 bg-card transition-all duration-300 group cursor-pointer overflow-hidden',
-        'hover:shadow-[var(--shadow-md)] hover:border-primary/20',
-        alertLevel === 'warning' && value > 0 && 'border-warning/40 shadow-[0_0_16px_hsl(var(--warning)/0.1)]',
-        alertLevel === 'danger' && value > 0 && 'border-destructive/30 shadow-[0_0_16px_hsl(var(--destructive)/0.08)]',
+        'relative h-full p-4 rounded-[1.5rem] border border-white/10 bg-background/30 backdrop-blur-xl transition-all duration-500 group cursor-pointer overflow-hidden ring-1 ring-white/5',
+        'hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.25)] hover:ring-white/20',
+        alertLevel === 'warning' && value > 0 && 'border-warning/40 shadow-[0_0_20px_hsl(var(--warning)/0.15)]',
+        alertLevel === 'danger' && value > 0 && 'border-destructive/30 shadow-[0_0_20px_hsl(var(--destructive)/0.12)]',
       )}>
-        {/* Top accent line */}
+        {/* Animated Glow */}
         <div className={cn(
-          'absolute top-0 left-3 right-3 h-[2px] rounded-b-full opacity-0 group-hover:opacity-100 transition-opacity duration-300',
-          accentGradient || 'bg-primary'
-        )} />
-
-        {/* Subtle glow bg */}
-        <div className={cn(
-          'absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl pointer-events-none',
+          'absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 rounded-[1.5rem] pointer-events-none',
           'bg-gradient-to-br',
-          iconBg.replace('/10', '/[0.03]'),
+          iconBg.replace('/10', '/[0.05]'),
         )} />
 
         <div className="flex items-center gap-2.5 sm:gap-3 relative">
