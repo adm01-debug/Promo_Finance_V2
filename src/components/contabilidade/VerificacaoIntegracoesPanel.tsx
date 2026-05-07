@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { format } from 'date-fns';
-import { CheckCircle2, AlertTriangle, XCircle, RefreshCw, Plug, Search, Filter } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, XCircle, RefreshCw, Plug, Search, Filter, Activity, Zap, ShieldCheck } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,19 +11,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useVerificacaoIntegracoes, type StatusConsistencia } from '@/hooks/useVerificacaoIntegracoes';
 import { formatCurrency } from '@/lib/formatters';
 import { useQueryClient } from '@tanstack/react-query';
+import { cn } from '@/lib/utils';
 
 interface Props { empresaId?: string; ano: number }
 
 const statusBadge = (s: StatusConsistencia) => {
   switch (s) {
     case 'ok':
-      return <Badge variant="outline" className="border-success/40 bg-success/10 text-success gap-1"><CheckCircle2 className="h-3 w-3" />D=C</Badge>;
+      return <Badge variant="outline" className="border-none bg-success/20 text-success font-black text-[10px] gap-1 px-2 rounded-full"><CheckCircle2 className="h-3 w-3" />D=C</Badge>;
     case 'desbalanceado':
-      return <Badge variant="outline" className="border-destructive/40 bg-destructive/10 text-destructive gap-1"><AlertTriangle className="h-3 w-3" />Divergência</Badge>;
+      return <Badge variant="outline" className="border-none bg-destructive/20 text-destructive font-black text-[10px] gap-1 px-2 rounded-full"><AlertTriangle className="h-3 w-3" />Divergência</Badge>;
     case 'sem_partidas':
-      return <Badge variant="outline" className="border-warning/40 bg-warning/10 text-warning gap-1"><XCircle className="h-3 w-3" />Sem partidas</Badge>;
+      return <Badge variant="outline" className="border-none bg-warning/20 text-warning font-black text-[10px] gap-1 px-2 rounded-full"><XCircle className="h-3 w-3" />Sem partidas</Badge>;
     case 'orfao':
-      return <Badge variant="outline" className="border-warning/40 bg-warning/10 text-warning gap-1"><XCircle className="h-3 w-3" />Órfão</Badge>;
+      return <Badge variant="outline" className="border-none bg-warning/20 text-warning font-black text-[10px] gap-1 px-2 rounded-full"><XCircle className="h-3 w-3" />Órfão</Badge>;
   }
 };
 
@@ -58,10 +60,16 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
 
   if (!empresaId) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Plug className="h-5 w-5 text-primary" />Verificação de Integrações</CardTitle>
-          <CardDescription>Selecione uma empresa para auditar lançamentos importados.</CardDescription>
+      <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group p-8">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
+        <CardHeader className="relative z-10">
+          <CardTitle className="flex items-center gap-4 text-2xl font-black tracking-tight">
+            <div className="p-3.5 bg-primary/20 rounded-2xl shadow-xl transform group-hover:scale-110 transition-all duration-500">
+              <Plug className="h-8 w-8 text-primary" />
+            </div>
+            Verificação de Integrações
+          </CardTitle>
+          <CardDescription className="text-sm font-medium opacity-60">Selecione uma empresa para auditar lançamentos importados em {ano}.</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -71,27 +79,33 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
     <div className="space-y-6">
       {/* Cards de resumo global */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2"><CardDescription>Total importado</CardDescription><CardTitle className="text-2xl">{total}</CardTitle></CardHeader>
-          <CardContent className="text-xs text-muted-foreground">lançamentos no ano de {ano}</CardContent>
-        </Card>
-        <Card className="border-success/30">
-          <CardHeader className="pb-2"><CardDescription className="text-success">Consistentes (D=C)</CardDescription><CardTitle className="text-2xl text-success">{totalOk}</CardTitle></CardHeader>
-          <CardContent className="text-xs text-muted-foreground">{taxaOk}% do total</CardContent>
-        </Card>
-        <Card className={totalDivergentes > 0 ? 'border-destructive/40' : ''}>
-          <CardHeader className="pb-2"><CardDescription className={totalDivergentes > 0 ? 'text-destructive' : ''}>Com divergência</CardDescription><CardTitle className={`text-2xl ${totalDivergentes > 0 ? 'text-destructive' : ''}`}>{totalDivergentes}</CardTitle></CardHeader>
-          <CardContent className="text-xs text-muted-foreground">{totalDivergentes > 0 ? 'requerem correção' : 'tudo balanceado'}</CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2"><CardDescription>Origens ativas</CardDescription><CardTitle className="text-2xl">{resumos.length}</CardTitle></CardHeader>
-          <CardContent className="text-xs text-muted-foreground">integrações com lançamentos</CardContent>
-        </Card>
+        <StatCard label="Total Importado" value={total} description={`lançamentos em ${ano}`} />
+        <StatCard 
+          label="Consistentes" 
+          value={totalOk} 
+          description={`${taxaOk}% de integridade`}
+          tone="success"
+          icon={ShieldCheck}
+        />
+        <StatCard 
+          label="Com Divergência" 
+          value={totalDivergentes} 
+          description={totalDivergentes > 0 ? 'Requerem correção' : 'Tudo balanceado'}
+          tone={totalDivergentes > 0 ? "destructive" : "default"}
+          icon={AlertTriangle}
+        />
+        <StatCard 
+          label="Origens Ativas" 
+          value={resumos.length} 
+          description="Integrações conectadas"
+          icon={Zap}
+        />
       </div>
 
       {/* Resumo por origem */}
-      <Card>
-        <CardHeader>
+      <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        <CardHeader className="p-8 pb-4 relative z-10">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2"><Plug className="h-5 w-5 text-primary" />Status por Integração</CardTitle>
