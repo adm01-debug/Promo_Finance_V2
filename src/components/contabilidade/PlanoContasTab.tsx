@@ -140,7 +140,13 @@ export function PlanoContasTab({ empresaId }: Props) {
                     </Select>
                   </div>
                 </div>
-                <Button onClick={handleSalvar} disabled={!form.codigo || !form.descricao || upsert.isPending} className="w-full">Salvar</Button>
+                <Button 
+                  onClick={handleSalvar} 
+                  disabled={!form.codigo || !form.descricao || upsert.isPending} 
+                  className="w-full h-14 rounded-2xl font-black text-lg shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  {upsert.isPending ? <Wand2 className="h-5 w-5 animate-spin" /> : "Salvar Conta"}
+                </Button>
               </div>
             </DialogContent>
             </Dialog>
