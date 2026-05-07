@@ -40,7 +40,7 @@ export function EmpresaSwitcher() {
     <Button
       variant="outline"
       role="combobox"
-      className="gap-2 max-w-[280px] h-10"
+      className="gap-3 max-w-[320px] h-11 rounded-2xl border-border/40 bg-background/50 backdrop-blur-sm hover:bg-background hover:border-primary/20 transition-all duration-300 shadow-sm"
       disabled={isSingle}
       aria-label="Trocar empresa"
     >
@@ -59,7 +59,7 @@ export function EmpresaSwitcher() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>{trigger}</PopoverTrigger>
-      <PopoverContent className="w-[320px] p-0" align="end">
+      <PopoverContent className="w-[340px] p-0 rounded-2xl overflow-hidden border-border/40 shadow-2xl" align="end">
         <Command>
           <CommandInput placeholder="Buscar empresa…" />
           <CommandList>
@@ -70,7 +70,7 @@ export function EmpresaSwitcher() {
                 return (
                   <CommandItem
                     key={v.empresa_id}
-                    onSelect={() => {
+                    className="p-3 rounded-xl m-1 transition-all duration-300 hover:bg-primary/5 cursor-pointer"
                       setCurrentEmpresaId(v.empresa_id);
                       setCurrentId(v.empresa_id);
                       setOpen(false);
