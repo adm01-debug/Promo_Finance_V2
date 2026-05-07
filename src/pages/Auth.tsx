@@ -431,14 +431,20 @@ export default function Auth() {
                     />
                   )}
                   <Tabs defaultValue="login" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 mb-6">
-                      <TabsTrigger value="login" className="gap-2">
+                    <TabsList className="grid w-full grid-cols-2 mb-8 bg-muted/40 p-1.5 rounded-2xl border border-border/50 backdrop-blur-sm" variant="bordered">
+                      <TabsTrigger 
+                        value="login" 
+                        className="gap-2 rounded-xl py-2 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-lg"
+                      >
                         <LogIn className="h-4 w-4" />
-                        Entrar
+                        Acessar
                       </TabsTrigger>
-                      <TabsTrigger value="register" className="gap-2">
+                      <TabsTrigger 
+                        value="register" 
+                        className="gap-2 rounded-xl py-2 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-lg"
+                      >
                         <UserPlus className="h-4 w-4" />
-                        Cadastrar
+                        Criar Conta
                       </TabsTrigger>
                     </TabsList>
 
