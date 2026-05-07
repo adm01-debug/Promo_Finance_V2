@@ -149,16 +149,17 @@ export function HeroKPICard({
     >
       <Card
         className={cn(
-          'relative overflow-hidden transition-all duration-300 cursor-pointer group h-full',
-          'border border-border/60',
-          `bg-gradient-to-br ${bgGradient}`,
+          'relative overflow-hidden transition-all duration-500 cursor-pointer group h-full',
+          'border border-white/10 bg-background/20 backdrop-blur-2xl',
+          'shadow-[0_8px_32px_-8px_rgba(0,0,0,0.2)] hover:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.3)]',
+          'ring-1 ring-white/5 hover:ring-white/20',
           config.card,
-          size === 'hero' && 'shadow-md hover:shadow-lg border-primary/10',
-          size === 'primary' && 'shadow-sm hover:shadow-md',
+          size === 'hero' && 'rounded-[2rem]',
+          size !== 'hero' && 'rounded-[1.5rem]',
         )}
         style={accentColor ? {
-          borderColor: isHovered ? `${accentColor}25` : undefined,
-          boxShadow: isHovered ? `0 8px 28px ${accentColor}12` : undefined,
+          borderColor: isHovered ? `${accentColor}40` : undefined,
+          boxShadow: isHovered ? `0 20px 50px ${accentColor}15` : undefined,
         } : undefined}
       >
         {/* Top accent line */}
