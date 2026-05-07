@@ -244,33 +244,53 @@ export function LancamentosTab({ empresaId, ano }: Props) {
                         <Plus className="h-4 w-4" />Adicionar Partida
                       </Button>
                     </div>
-                  <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                    {partidas.map((p, i) => (
-                      <motion.div 
-                        key={i} 
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="grid grid-cols-[1fr_120px_160px_40px] gap-3 items-center group"
-                      >
-                        <Select value={p.conta_id} onValueChange={v => setPartidas(partidas.map((x, j) => j === i ? { ...x, conta_id: v } : x))}>
-                          <SelectTrigger className="h-12 rounded-xl border-white/10 bg-white/5 font-bold transition-all focus:ring-primary/20"><SelectValue placeholder="Selecionar Conta..." /></SelectTrigger>
-                          <SelectContent className="rounded-xl border-white/10 bg-background/95 backdrop-blur-xl">
-                            {contasAnaliticas.map(c => <SelectItem key={c.id} value={c.id} className="font-mono text-xs">{c.codigo} — {c.descricao}</SelectItem>)}
-                          </SelectContent>
-                        </Select>
-                        <Select value={p.tipo} onValueChange={v => setPartidas(partidas.map((x, j) => j === i ? { ...x, tipo: v as 'D' | 'C' } : x))}>
-                          <SelectTrigger className="h-12 rounded-xl border-white/10 bg-white/5 font-bold"><SelectValue /></SelectTrigger>
-                          <SelectContent className="rounded-xl border-white/10 bg-background/95 backdrop-blur-xl">
-                            <SelectItem value="D" className="text-success font-black">Débito</SelectItem>
-                            <SelectItem value="C" className="text-destructive font-black">Crédito</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <Input type="number" step="0.01" value={p.valor} onChange={e => setPartidas(partidas.map((x, j) => j === i ? { ...x, valor: Number(e.target.value) } : x))} className="h-12 bg-white/5 border-white/10 rounded-xl font-mono text-right font-black transition-all focus:ring-primary/20" />
-                        <Button size="icon" variant="ghost" onClick={() => setPartidas(partidas.filter((_, j) => j !== i))} className="h-10 w-10 rounded-xl hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </motion.div>
-                    ))}
+                  <div className="space-y-3 max-h-[360px] overflow-y-auto pr-4 custom-scrollbar">
+                    <AnimatePresence>
+                      {partidas.map((p, i) => (
+                        <motion.div 
+                          key={i} 
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 20 }}
+                          className="grid grid-cols-[1fr_140px_180px_50px] gap-4 items-center group/item p-2 rounded-2xl hover:bg-white/[0.02] transition-colors"
+                        >
+                          <Select value={p.conta_id} onValueChange={v => setPartidas(partidas.map((x, j) => j === i ? { ...x, conta_id: v } : x))}>
+                            <SelectTrigger className="h-14 rounded-2xl border-white/5 bg-white/5 font-bold transition-all focus:ring-primary/20">
+                              <SelectValue placeholder="Conta Analítica" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
+                              {contasAnaliticas.map(c => (
+                                <SelectItem key={c.id} value={c.id} className="font-mono text-[11px]">
+                                  <span className="text-primary font-black">{c.codigo}</span> — {c.descricao}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Select value={p.tipo} onValueChange={v => setPartidas(partidas.map((x, j) => j === i ? { ...x, tipo: v as 'D' | 'C' } : x))}>
+                            <SelectTrigger className="h-14 rounded-2xl border-white/5 bg-white/5 font-bold transition-all focus:ring-primary/20">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
+                              <SelectItem value="D" className="text-success font-black uppercase text-[10px] tracking-widest">Débito</SelectItem>
+                              <SelectItem value="C" className="text-destructive font-black uppercase text-[10px] tracking-widest">Crédito</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black opacity-20">R$</span>
+                            <Input 
+                              type="number" 
+                              step="0.01" 
+                              value={p.valor} 
+                              onChange={e => setPartidas(partidas.map((x, j) => j === i ? { ...x, valor: Number(e.target.value) } : x))} 
+                              className="h-14 pl-10 bg-white/5 border-white/5 rounded-2xl font-mono text-right font-black transition-all focus:ring-primary/20" 
+                            />
+                          </div>
+                          <Button size="icon" variant="ghost" onClick={() => setPartidas(partidas.filter((_, j) => j !== i))} className="h-12 w-12 rounded-2xl hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all">
+                            <Trash2 className="h-5 w-5" />
+                          </Button>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
                   </div>
                   <div className={cn(
                     "flex flex-wrap justify-between items-center gap-4 p-5 rounded-2xl border backdrop-blur-md transition-all shadow-lg",
