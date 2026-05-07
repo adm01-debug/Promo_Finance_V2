@@ -361,29 +361,46 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-3">
-            <ToggleGroup type="single" value={modo} onValueChange={(v) => v && setModo(v as 'diario' | 'razao')}>
-              <ToggleGroupItem value="diario">Diário</ToggleGroupItem>
-              <ToggleGroupItem value="razao">Razão</ToggleGroupItem>
+        <div className="flex flex-wrap items-center justify-between gap-6 bg-white/[0.03] p-4 rounded-3xl border border-white/5">
+          <div className="flex items-center gap-4">
+            <ToggleGroup type="single" value={modo} onValueChange={(v) => v && setModo(v as 'diario' | 'razao')} className="bg-background/40 p-1 rounded-2xl border border-white/5">
+              <ToggleGroupItem value="diario" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all px-6 font-black uppercase text-[10px] tracking-widest">Diário</ToggleGroupItem>
+              <ToggleGroupItem value="razao" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all px-6 font-black uppercase text-[10px] tracking-widest">Razão</ToggleGroupItem>
             </ToggleGroup>
-            <span className="text-xs text-muted-foreground hidden sm:inline">
-              Filtros aplicados a ambas as visões
-            </span>
+            <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-2xl border border-primary/20">
+              <ArrowRightLeft className="h-3 w-3 text-primary" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-primary">
+                Filtros Cruzados Ativos
+              </span>
+            </div>
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="sm" variant="outline">
-                <Download className="h-3 w-3 mr-1" /> Exportar
+              <Button size="sm" variant="outline" className="h-10 rounded-2xl font-black gap-2 border-white/10 bg-white/5 hover:bg-white/10 px-6 transition-all hover:translate-y-[-2px]">
+                <Download className="h-4 w-4 text-primary" /> Exportar Livros
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => exportar('csv')} className="gap-2">
-                <FileSpreadsheet className="h-4 w-4" /> CSV
+            <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
+              <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest opacity-40 px-3 py-2">Selecionar Formato</DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-white/5" />
+              <DropdownMenuItem onClick={() => exportar('csv')} className="rounded-xl gap-3 py-3 cursor-pointer">
+                <div className="p-2 bg-success/20 rounded-lg">
+                  <FileSpreadsheet className="h-4 w-4 text-success" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-bold text-sm">Excel (.csv)</span>
+                  <span className="text-[10px] opacity-50">Auditoria & Planilhas</span>
+                </div>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => exportar('pdf')} className="gap-2">
-                <FileText className="h-4 w-4" /> PDF
+              <DropdownMenuItem onClick={() => exportar('pdf')} className="rounded-xl gap-3 py-3 cursor-pointer">
+                <div className="p-2 bg-destructive/20 rounded-lg">
+                  <FileText className="h-4 w-4 text-destructive" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-bold text-sm">Documento (.pdf)</span>
+                  <span className="text-[10px] opacity-50">Relatório de Governança</span>
+                </div>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
