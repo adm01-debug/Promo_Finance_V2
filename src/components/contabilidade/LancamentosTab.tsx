@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { format, startOfMonth, endOfMonth, startOfYear, endOfYear, subDays, startOfDay, endOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Plus, Trash2, Search, CalendarIcon } from 'lucide-react';
+import { Plus, Trash2, Search, CalendarIcon, Wand2, Filter, ChevronDown, CheckCircle2, AlertTriangle, Activity, BookOpen, Clock } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useManagedFilters } from '@/hooks/useManagedFilters';
 import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
