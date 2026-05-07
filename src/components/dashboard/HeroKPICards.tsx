@@ -149,16 +149,17 @@ export function HeroKPICard({
     >
       <Card
         className={cn(
-          'relative overflow-hidden transition-all duration-300 cursor-pointer group h-full',
-          'border border-border/60',
-          `bg-gradient-to-br ${bgGradient}`,
+          'relative overflow-hidden transition-all duration-500 cursor-pointer group h-full',
+          'border border-white/10 bg-background/20 backdrop-blur-2xl',
+          'shadow-[0_8px_32px_-8px_rgba(0,0,0,0.2)] hover:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.3)]',
+          'ring-1 ring-white/5 hover:ring-white/20',
           config.card,
-          size === 'hero' && 'shadow-md hover:shadow-lg border-primary/10',
-          size === 'primary' && 'shadow-sm hover:shadow-md',
+          size === 'hero' && 'rounded-[2rem]',
+          size !== 'hero' && 'rounded-[1.5rem]',
         )}
         style={accentColor ? {
-          borderColor: isHovered ? `${accentColor}25` : undefined,
-          boxShadow: isHovered ? `0 8px 28px ${accentColor}12` : undefined,
+          borderColor: isHovered ? `${accentColor}40` : undefined,
+          boxShadow: isHovered ? `0 20px 50px ${accentColor}15` : undefined,
         } : undefined}
       >
         {/* Top accent line */}
@@ -171,109 +172,81 @@ export function HeroKPICard({
           }}
         />
 
-        <CardContent className="p-0 h-full">
-          <div className="flex items-start justify-between gap-3 h-full">
-            <div className="flex-1 flex flex-col justify-between min-h-full space-y-2.5">
-              {/* Title */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <p className={cn('text-muted-foreground', config.title)}>{title}</p>
-                {badge && (
-                  <Badge variant={badgeVariant} className="text-[9px] px-1.5 py-0 h-4 font-medium">
-                    {badge}
-                  </Badge>
-                )}
-                {tooltip && (
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Info className="h-3 w-3 text-muted-foreground/40 hover:text-muted-foreground transition-colors" />
-                    </TooltipTrigger>
-                    <TooltipContent>{tooltip}</TooltipContent>
-                  </Tooltip>
+        <CardContent className="p-8 h-full">
+          <div className="flex flex-col justify-between h-full space-y-8">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className={cn('text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60', size === 'hero' ? 'text-xs' : '')}>{title}</p>
+                  {badge && (
+                    <Badge variant={badgeVariant} className="text-[9px] font-black uppercase px-2 py-0.5 h-auto rounded-md border-none bg-current/10">
+                      {badge}
+                    </Badge>
+                  )}
+                </div>
+                
+                {loading ? (
+                  <Skeleton className={cn('h-10', size === 'hero' ? 'w-64' : 'w-40')} />
+                ) : (
+                  <div className="flex items-baseline gap-3">
+                    <p className={cn(
+                      config.value, 
+                      'text-foreground tabular-nums font-black tracking-tighter',
+                      isZero && 'text-muted-foreground/40',
+                      size === 'hero' ? 'text-5xl md:text-6xl' : 'text-3xl'
+                    )}>
+                      {formattedValue}
+                    </p>
+                  </div>
                 )}
               </div>
 
-              {/* Value with count-up */}
-              {loading ? (
-                <Skeleton className={cn('h-8', size === 'hero' ? 'w-48' : 'w-32')} />
-              ) : (
-                <div className="flex items-end gap-3">
-                  <p className={cn(
-                    config.value, 
-                    'text-foreground tabular-nums',
-                    isZero && 'text-muted-foreground/60',
-                  )}>
-                    {formattedValue}
-                  </p>
-                  {/* Sparkline */}
-                  {sparkline && sparkline.length > 1 && (
-                    <MiniSparkline 
-                      data={sparkline} 
-                      color={accentColor || 'hsl(var(--primary))'}
-                    />
-                  )}
-                </div>
-              )}
-
-              {/* Empty state message instead of variation when zero */}
-              {isZero && emptyStateMessage ? (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex items-center gap-1.5"
-                >
-                  {emptyStateHref ? (
-                    <span className={cn(
-                      'flex items-center gap-1 text-primary font-medium',
-                      config.variation,
-                    )}>
-                      <Plus className="h-3 w-3" />
-                      {emptyStateMessage}
-                    </span>
-                  ) : (
-                    <span className={cn(
-                      'text-success font-medium flex items-center gap-1',
-                      config.variation,
-                    )}>
-                      {emptyStateMessage}
-                    </span>
-                  )}
-                </motion.div>
-              ) : (
-                /* Variation */
-                <div className={cn(
-                  'flex items-center gap-1.5 font-medium',
-                  config.variation,
-                  isPositive ? 'text-success' : 'text-destructive',
-                )}>
-                  {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                  <span>{formatPercentage(Math.abs(variationValue))}</span>
-                  <span className="text-muted-foreground font-normal">vs mês anterior</span>
-                </div>
-              )}
-
-              {/* Insight on hover */}
-              {insight && size === 'hero' && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: isHovered ? 1 : 0, height: isHovered ? 'auto' : 0 }}
-                  className="overflow-hidden"
-                >
-                  <div className="flex items-center gap-2 pt-2 text-xs text-muted-foreground border-t border-border/30">
-                    <Sparkles className="h-3 w-3 text-primary shrink-0" />
-                    {insight}
-                  </div>
-                </motion.div>
-              )}
+              <motion.div
+                className={cn(
+                  'flex items-center justify-center transition-all duration-500 rounded-2xl shadow-xl',
+                  iconBg,
+                  size === 'hero' ? 'h-16 w-16' : 'h-12 w-12'
+                )}
+                whileHover={{ scale: 1.1, rotate: 10 }}
+              >
+                <Icon className={cn(iconColor, size === 'hero' ? 'h-8 w-8' : 'h-6 w-6')} />
+              </motion.div>
             </div>
 
-            {/* Icon */}
-            <div className={cn(
-              'flex items-center justify-center transition-all duration-300',
-              'group-hover:scale-110',
-              iconBg,
-              config.iconWrapper,
-            )}>
-              <Icon className={cn(iconColor, config.icon)} />
+            <div className="space-y-4">
+              {sparkline && sparkline.length > 1 && (
+                <div className="w-full h-12 flex items-end">
+                  <MiniSparkline 
+                    data={sparkline} 
+                    color={accentColor || 'hsl(var(--primary))'}
+                    className="w-full h-full opacity-60"
+                  />
+                </div>
+              )}
+
+              <div className="flex items-center justify-between">
+                {isZero && emptyStateMessage ? (
+                  <div className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                    <span className="text-[10px] font-bold text-primary uppercase tracking-widest">{emptyStateMessage}</span>
+                  </div>
+                ) : (
+                  <div className={cn(
+                    'flex items-center gap-2 px-3 py-1 rounded-full bg-current/5 border border-current/10',
+                    isPositive ? 'text-success' : 'text-destructive',
+                  )}>
+                    {isPositive ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
+                    <span className="text-xs font-black tabular-nums">{formatPercentage(Math.abs(variationValue))}</span>
+                  </div>
+                )}
+
+                {insight && size === 'hero' && (
+                  <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest">
+                    <Sparkles className="h-3 w-3 text-primary" />
+                    Intelligence Insight
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
