@@ -162,21 +162,23 @@ const Demonstrativos = () => {
 
         {/* Main Content */}
         <motion.div variants={itemVariants}>
-          <Tabs defaultValue="dre" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3 lg:w-[500px]">
-              <TabsTrigger value="dre" className="gap-2">
-                <TrendingUp className="h-4 w-4" />
-                <span className="hidden sm:inline">DRE</span>
-              </TabsTrigger>
-              <TabsTrigger value="balanco" className="gap-2">
-                <Scale className="h-4 w-4" />
-                <span className="hidden sm:inline">Balanço</span>
-              </TabsTrigger>
-              <TabsTrigger value="fluxo" className="gap-2">
-                <Wallet className="h-4 w-4" />
-                <span className="hidden sm:inline">Fluxo de Caixa</span>
-              </TabsTrigger>
-            </TabsList>
+          <Tabs defaultValue="dre" className="space-y-10">
+            <div className="flex justify-center">
+              <TabsList className="inline-flex h-12 items-center justify-center rounded-xl bg-muted/50 p-1 text-muted-foreground w-full max-w-[600px] border border-border/50 backdrop-blur-sm">
+                <TabsTrigger value="dre" className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-8 py-2 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  <span>DRE</span>
+                </TabsTrigger>
+                <TabsTrigger value="balanco" className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-8 py-2 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2">
+                  <Scale className="h-4 w-4" />
+                  <span>Balanço</span>
+                </TabsTrigger>
+                <TabsTrigger value="fluxo" className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-8 py-2 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2">
+                  <Wallet className="h-4 w-4" />
+                  <span>Fluxo de Caixa</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             <TabsContent value="dre">
               <DREStatement
