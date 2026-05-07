@@ -26,9 +26,9 @@ export function QuickCreateButton({ collapsed }: QuickCreateButtonProps) {
       onClick={() => setOpen(true)}
       className={cn(
         'flex items-center gap-4 w-full rounded-2xl transition-all duration-500 relative overflow-hidden',
-        'bg-gradient-to-br from-primary to-blue-600 text-white',
-        'shadow-[0_20px_40px_-12px_rgba(var(--primary),0.3)] hover:shadow-[0_25px_50px_-12px_rgba(var(--primary),0.4)]',
-        'ring-1 ring-white/20 group/create',
+        'bg-primary text-white',
+        'shadow-[0_16px_32px_-12px_rgba(var(--primary),0.5)] hover:shadow-[0_24px_48px_-12px_rgba(var(--primary),0.6)]',
+        'ring-1 ring-white/10 group/create',
         collapsed ? 'p-4 justify-center' : 'px-6 py-4'
       )}
     >
