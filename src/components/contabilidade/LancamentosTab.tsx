@@ -118,17 +118,28 @@ export function LancamentosTab({ empresaId, ano }: Props) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Lançamentos Contábeis · {ano}</CardTitle>
-            <CardDescription>Partidas dobradas — débitos = créditos</CardDescription>
+    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+      <CardHeader className="p-8 pb-4 relative z-10">
+        <div className="flex flex-wrap items-center justify-between gap-6">
+          <div className="flex items-center gap-5">
+            <div className="p-4 rounded-2xl bg-primary shadow-xl shadow-primary/20 text-primary-foreground transform group-hover:scale-110 transition-all duration-500">
+              <BookOpen className="h-8 w-8" />
+            </div>
+            <div>
+              <CardTitle className="text-3xl font-black tracking-tighter">Lançamentos Contábeis · {ano}</CardTitle>
+              <CardDescription className="text-sm font-medium opacity-60">Partidas dobradas — débitos = créditos</CardDescription>
+            </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-3">
             <ImportLancamentosCSVDialog empresaId={empresaId} planoContas={contasAnaliticas} ano={ano} />
             <Dialog open={open} onOpenChange={setOpen}>
-              <DialogTrigger asChild><Button disabled={!empresaId}><Plus className="h-4 w-4 mr-2" />Novo lançamento</Button></DialogTrigger>
+              <DialogTrigger asChild>
+                <Button disabled={!empresaId} className="h-12 rounded-2xl font-black px-6 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px] active:translate-y-[0px]">
+                  <Plus className="h-5 w-5 mr-2" />
+                  Novo Lançamento
+                </Button>
+              </DialogTrigger>
             <DialogContent className="max-w-3xl">
               <DialogHeader><DialogTitle>Novo lançamento contábil</DialogTitle></DialogHeader>
               <div className="space-y-4">
