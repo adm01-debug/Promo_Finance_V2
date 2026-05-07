@@ -38,6 +38,10 @@ interface HistoricoRow {
   recibo_transmissao: string | null;
   validacoes: { erros: string[]; avisos: string[] };
   tipo: string;
+  periodo_inicio: string;
+  periodo_fim: string;
+  gerado_por: string | null;
+  empresa_id: string;
 }
 
 const DRAFT_KEY = (tipo: 'ECD' | 'ECF', empresaId?: string) =>
