@@ -105,31 +105,52 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
       />
       
       {origem === 'caixa' && (
-        <Alert className="border-warning/20 bg-warning/5 rounded-2xl p-4">
-          <AlertTriangle className="h-5 w-5 text-warning" />
-          <AlertDescription className="text-sm ml-2">
-            <strong className="text-warning">Balanço Estimado</strong> — Valores apurados via movimentações de caixa. Para conformidade legal, utilize o regime de Competência.
-          </AlertDescription>
-        </Alert>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="overflow-hidden rounded-[2rem] border border-warning/20 bg-warning/5 p-6 backdrop-blur-md"
+        >
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-2xl bg-warning/20 text-warning">
+              <AlertTriangle className="h-6 w-6" />
+            </div>
+            <div>
+              <h4 className="font-bold text-warning">Balanço Estimado (Modo Caixa)</h4>
+              <p className="text-sm text-muted-foreground">
+                Valores apurados via movimentações de caixa. Para conformidade legal e contábil, utilize o regime de <strong className="text-foreground">Competência</strong>.
+              </p>
+            </div>
+          </div>
+        </motion.div>
       )}
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-8 md:grid-cols-3">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Card className="border-none bg-background/40 backdrop-blur-xl shadow-xl rounded-3xl overflow-hidden ring-1 ring-white/10 h-full">
-            <CardContent className="p-8">
-              <div className="flex items-center gap-3 text-muted-foreground mb-4">
-                <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                  <Wallet className="h-5 w-5" />
+          <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 h-full group hover:ring-primary/30 transition-all duration-500">
+            <CardContent className="p-10">
+              <div className="flex items-center justify-between mb-8">
+                <div className="p-3 rounded-2xl bg-primary shadow-lg shadow-primary/20 text-primary-foreground">
+                  <Wallet className="h-6 w-6" />
                 </div>
-                <span className="text-sm font-semibold uppercase tracking-wider">Ativo Total</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50">Asset Management</span>
               </div>
-              <div className="text-4xl font-extrabold tracking-tight">{formatCurrency(balanco.totalAtivo)}</div>
-              <div className="mt-8 space-y-3">
-                <div className="flex justify-between text-xs font-bold text-muted-foreground uppercase tracking-widest">
+              <div className="space-y-1">
+                <span className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest">Ativo Total</span>
+                <div className="text-4xl font-black tracking-tight group-hover:text-primary transition-colors">{formatCurrency(balanco.totalAtivo)}</div>
+              </div>
+              <div className="mt-10 space-y-4">
+                <div className="flex justify-between text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">
                   <span>Liquidez Corrente</span>
                   <span className="text-primary">{balanco.totalAtivo > 0 ? ((balanco.ativoCirculante / balanco.totalAtivo) * 100).toFixed(0) : 0}%</span>
                 </div>
-                <Progress value={balanco.totalAtivo > 0 ? (balanco.ativoCirculante / balanco.totalAtivo) * 100 : 0} className="h-2.5 bg-primary/10" />
+                <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${balanco.totalAtivo > 0 ? (balanco.ativoCirculante / balanco.totalAtivo) * 100 : 0}%` }}
+                    transition={{ duration: 1.5, ease: "circOut" }}
+                    className="h-full rounded-full bg-gradient-to-r from-primary to-blue-500 shadow-[0_0_10px_rgba(var(--primary),0.5)]" 
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -137,134 +158,155 @@ export const BalancoPatrimonial = ({ periodo, mes, ano, empresaId, fonte = 'comp
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <Card className={cn(
-            "border-none backdrop-blur-xl shadow-xl rounded-3xl overflow-hidden ring-1 h-full flex items-center justify-center transition-all duration-500",
-            balanco.equilibrado ? "bg-success/5 ring-success/20" : "bg-destructive/5 ring-destructive/20"
+            "border-none backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 h-full flex items-center justify-center transition-all duration-700",
+            balanco.equilibrado 
+              ? "bg-success/5 ring-success/20 shadow-success/5 hover:ring-success/40" 
+              : "bg-destructive/5 ring-destructive/20 shadow-destructive/5 hover:ring-destructive/40"
           )}>
-            <CardContent className="p-8 text-center w-full">
-              {balanco.equilibrado ? (
-                <>
-                  <div className="flex items-center justify-center gap-3 mb-4">
-                    <div className="p-3 rounded-full bg-success/20 text-success">
-                      <ShieldCheck className="h-8 w-8" />
+            <CardContent className="p-10 text-center w-full relative">
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20 pointer-events-none" />
+              <div className="relative z-10">
+                {balanco.equilibrado ? (
+                  <>
+                    <div className="flex items-center justify-center gap-3 mb-6">
+                      <div className="p-5 rounded-full bg-success/20 text-success shadow-[0_0_30px_rgba(var(--success),0.2)] animate-pulse">
+                        <ShieldCheck className="h-10 w-10" />
+                      </div>
                     </div>
-                  </div>
-                  <h3 className="text-xl font-bold text-success mb-2">Equilíbrio Perfeito</h3>
-                  <p className="text-sm text-muted-foreground px-4">
-                    Ativo e Passivo estão em total conformidade técnica.
-                  </p>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center justify-center gap-3 mb-4">
-                    <div className="p-3 rounded-full bg-destructive/20 text-destructive animate-pulse">
-                      <AlertTriangle className="h-8 w-8" />
+                    <h3 className="text-2xl font-black text-success tracking-tight mb-2 uppercase italic">Equilíbrio Pleno</h3>
+                    <p className="text-xs font-medium text-muted-foreground/70 px-4 leading-relaxed">
+                      Conformidade técnica absoluta detectada entre Ativo e Passivo.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-center gap-3 mb-6">
+                      <div className="p-5 rounded-full bg-destructive/20 text-destructive shadow-[0_0_30px_rgba(var(--destructive),0.2)] animate-bounce-subtle">
+                        <AlertTriangle className="h-10 w-10" />
+                      </div>
                     </div>
-                  </div>
-                  <h3 className="text-xl font-bold text-destructive mb-1">Desequilíbrio</h3>
-                  <div className="text-3xl font-mono font-extrabold tracking-tighter text-destructive mt-2">
-                    {balanco.totalAtivo - balanco.totalPassivo >= 0 ? '+' : ''}
-                    {formatCurrency(balanco.totalAtivo - balanco.totalPassivo)}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-4 px-6">
-                    {origem === 'competencia' ? 'Há inconsistências nas partidas dobradas.' : 'Estimativa sujeita a variações.'}
-                  </p>
-                </>
-              )}
+                    <h3 className="text-xl font-black text-destructive tracking-tight mb-1 uppercase">Diferença de Balanço</h3>
+                    <div className="text-4xl font-black font-mono tracking-tighter text-destructive mt-3 tabular-nums drop-shadow-sm">
+                      {balanco.totalAtivo - balanco.totalPassivo >= 0 ? '+' : ''}
+                      {formatCurrency(balanco.totalAtivo - balanco.totalPassivo)}
+                    </div>
+                    <p className="text-[10px] font-bold text-muted-foreground/60 mt-6 px-6 leading-tight uppercase tracking-widest">
+                      {origem === 'competencia' ? 'Inconsistência nas Partidas Dobradas' : 'Variação Sujeita a Estimativa'}
+                    </p>
+                  </>
+                )}
+              </div>
             </CardContent>
           </Card>
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-          <Card className="border-none bg-background/40 backdrop-blur-xl shadow-xl rounded-3xl overflow-hidden ring-1 ring-white/10 h-full">
-            <CardContent className="p-8">
-              <div className="flex items-center gap-3 text-muted-foreground mb-4">
-                <div className="p-2 rounded-lg bg-destructive/10 text-destructive">
-                  <Scale className="h-5 w-5" />
+          <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 h-full group hover:ring-purple-500/30 transition-all duration-500">
+            <CardContent className="p-10">
+              <div className="flex items-center justify-between mb-8">
+                <div className="p-3 rounded-2xl bg-purple-600 shadow-lg shadow-purple-500/20 text-white">
+                  <Scale className="h-6 w-6" />
                 </div>
-                <span className="text-sm font-semibold uppercase tracking-wider">Passivo + PL</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50">Capital & Equity</span>
               </div>
-              <div className="text-4xl font-extrabold tracking-tight">{formatCurrency(balanco.totalPassivo)}</div>
-              <div className="mt-8 space-y-3">
-                <div className="flex justify-between text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                  <span>Solvência (PL)</span>
-                  <span className="text-destructive">{balanco.totalPassivo > 0 ? ((balanco.patrimonioLiquido / balanco.totalPassivo) * 100).toFixed(0) : 0}%</span>
+              <div className="space-y-1">
+                <span className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest">Passivo + PL</span>
+                <div className="text-4xl font-black tracking-tight group-hover:text-purple-400 transition-colors">{formatCurrency(balanco.totalPassivo)}</div>
+              </div>
+              <div className="mt-10 space-y-4">
+                <div className="flex justify-between text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">
+                  <span>Solvência (Equity)</span>
+                  <span className="text-purple-400">{balanco.totalPassivo > 0 ? ((balanco.patrimonioLiquido / balanco.totalPassivo) * 100).toFixed(0) : 0}%</span>
                 </div>
-                <Progress value={balanco.totalPassivo > 0 ? (balanco.patrimonioLiquido / balanco.totalPassivo) * 100 : 0} className="h-2.5 bg-destructive/10" />
+                <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${balanco.totalPassivo > 0 ? (balanco.patrimonioLiquido / balanco.totalPassivo) * 100 : 0}%` }}
+                    transition={{ duration: 1.5, ease: "circOut", delay: 0.2 }}
+                    className="h-full rounded-full bg-gradient-to-r from-purple-600 to-pink-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]" 
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
         </motion.div>
       </div>
 
-      <div className="grid gap-10 lg:grid-cols-2">
-        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
-          <Card className="border-none bg-background/40 backdrop-blur-xl shadow-2xl rounded-3xl overflow-hidden ring-1 ring-white/10">
-            <CardHeader className="p-8 pb-4">
+      <div className="grid gap-12 lg:grid-cols-2">
+        <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
+          <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
+            <CardHeader className="p-10 pb-4 relative z-10">
               <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-2xl font-bold tracking-tight flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-primary/10 text-primary">
-                      <Scale className="h-5 w-5" />
+                <div className="space-y-1">
+                  <CardTitle className="text-3xl font-black tracking-tight flex items-center gap-4">
+                    <div className="p-3 rounded-2xl bg-primary/10 text-primary">
+                      <Scale className="h-6 w-6" />
                     </div>
                     Ativo
                   </CardTitle>
-                  <CardDescription>Bens e direitos da organização</CardDescription>
+                  <CardDescription className="text-sm font-medium opacity-60">Bens e direitos sob custódia</CardDescription>
                 </div>
-                <Badge variant="outline" className="rounded-lg py-1 px-3 bg-primary/5 border-primary/20 text-primary font-bold">
-                  {origem === 'competencia' ? 'CONTÁBIL' : 'ESTIMADO'}
+                <Badge variant="outline" className="rounded-xl py-1.5 px-4 bg-primary/10 border-primary/20 text-primary font-black text-[10px] tracking-widest uppercase">
+                  {origem === 'competencia' ? 'Auditado' : 'Estimado'}
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent className="p-8 pt-0">
-              <div className="rounded-2xl border border-border/50 overflow-hidden bg-muted/10">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-muted/30">
-                      <th className="text-left p-4 font-bold text-xs uppercase tracking-wider text-muted-foreground">Cód.</th>
-                      <th className="text-left p-4 font-bold text-xs uppercase tracking-wider text-muted-foreground">Descrição</th>
-                      <th className="text-right p-4 font-bold text-xs uppercase tracking-wider text-muted-foreground">Valor</th>
-                      <th className="text-right p-4 font-bold text-xs uppercase tracking-wider text-muted-foreground">%</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {balanco.ativo.map((conta, index) => renderConta(conta, index, balanco.totalAtivo))}
-                  </tbody>
-                </table>
+            <CardContent className="p-10 pt-4 relative z-10">
+              <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-black/20 shadow-inner">
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="bg-white/[0.02] border-b border-white/5">
+                        <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Cód.</th>
+                        <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Descrição</th>
+                        <th className="text-right p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Valor</th>
+                        <th className="text-right p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">%</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {balanco.ativo.map((conta, index) => renderConta(conta, index, balanco.totalAtivo))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </CardContent>
           </Card>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
-          <Card className="border-none bg-background/40 backdrop-blur-xl shadow-2xl rounded-3xl overflow-hidden ring-1 ring-white/10">
-            <CardHeader className="p-8 pb-4">
+        <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
+          <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative">
+            <div className="absolute inset-0 bg-gradient-to-bl from-purple-500/5 via-transparent to-transparent pointer-events-none" />
+            <CardHeader className="p-10 pb-4 relative z-10">
               <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-2xl font-bold tracking-tight flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-destructive/10 text-destructive">
-                      <Scale className="h-5 w-5" />
+                <div className="space-y-1">
+                  <CardTitle className="text-3xl font-black tracking-tight flex items-center gap-4">
+                    <div className="p-3 rounded-2xl bg-purple-600/10 text-purple-400">
+                      <Scale className="h-6 w-6" />
                     </div>
                     Passivo + PL
                   </CardTitle>
-                  <CardDescription>Obrigações e capital próprio</CardDescription>
+                  <CardDescription className="text-sm font-medium opacity-60">Origens de capital e obrigações</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-8 pt-0">
-              <div className="rounded-2xl border border-border/50 overflow-hidden bg-muted/10">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-muted/30">
-                      <th className="text-left p-4 font-bold text-xs uppercase tracking-wider text-muted-foreground">Cód.</th>
-                      <th className="text-left p-4 font-bold text-xs uppercase tracking-wider text-muted-foreground">Descrição</th>
-                      <th className="text-right p-4 font-bold text-xs uppercase tracking-wider text-muted-foreground">Valor</th>
-                      <th className="text-right p-4 font-bold text-xs uppercase tracking-wider text-muted-foreground">%</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {balanco.passivo.map((conta, index) => renderConta(conta, index, balanco.totalPassivo))}
-                  </tbody>
-                </table>
+            <CardContent className="p-10 pt-4 relative z-10">
+              <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-black/20 shadow-inner">
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="bg-white/[0.02] border-b border-white/5">
+                        <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Cód.</th>
+                        <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Descrição</th>
+                        <th className="text-right p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Valor</th>
+                        <th className="text-right p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">%</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {balanco.passivo.map((conta, index) => renderConta(conta, index, balanco.totalPassivo))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </CardContent>
           </Card>
