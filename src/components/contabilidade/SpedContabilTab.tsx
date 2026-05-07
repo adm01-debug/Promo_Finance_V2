@@ -698,9 +698,10 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                                     variant={variant as 'destructive' | 'outline'}
                                     onClick={() => setValidacoesArquivo(h)}
                                     className={cn(
-                                      'gap-1.5',
-                                      isBloqueado && 'border-destructive/40 text-destructive hover:bg-destructive/10',
-                                      !isBloqueado && avisos.length > 0 && 'border-warning/40 text-warning hover:bg-warning/10',
+                                      'gap-2 h-9 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all hover:scale-[1.02]',
+                                      isBloqueado && 'border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/20',
+                                      !isBloqueado && avisos.length > 0 && 'border-warning/40 bg-warning/10 text-warning hover:bg-warning/20',
+                                      !isBloqueado && avisos.length === 0 && 'border-primary/20 bg-primary/10 text-primary hover:bg-primary/20',
                                     )}
                                   >
                                     <Icon className="h-3.5 w-3.5" />
