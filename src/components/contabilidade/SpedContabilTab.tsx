@@ -220,6 +220,14 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
           hash_sha256: validacoesArquivo.hash_sha256,
           status: validacoesArquivo.status,
           validacoes: validacoesArquivo.validacoes ?? { erros: [], avisos: [] },
+          cnpj: empresaDados?.cnpj,
+          razao_social: empresaDados?.razao_social,
+          periodo_inicio: validacoesArquivo.periodo_inicio,
+          periodo_fim: validacoesArquivo.periodo_fim,
+          gerado_por: validacoesArquivo.gerado_por,
+          created_at: validacoesArquivo.created_at,
+          total_lancamentos: validacoesArquivo.total_lancamentos,
+          total_linhas: validacoesArquivo.total_linhas,
         } satisfies ValidacoesPreSpedArquivo : null}
         onDownloadTxt={() => validacoesArquivo && handleDownload(validacoesArquivo.storage_path)}
         onDownloadZip={() => validacoesArquivo && handleDownloadZip(validacoesArquivo)}
