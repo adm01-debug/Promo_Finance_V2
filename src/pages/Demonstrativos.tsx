@@ -65,9 +65,9 @@ const Demonstrativos = () => {
       <div className="relative min-h-screen">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px] animate-pulse" />
-          <div className="absolute top-[20%] -right-[10%] w-[30%] h-[30%] rounded-full bg-blue-500/5 blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
-          <div className="absolute -bottom-[10%] left-[20%] w-[35%] h-[35%] rounded-full bg-purple-500/5 blur-[120px] animate-pulse" style={{ animationDelay: '4s' }} />
+          <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[150px] animate-pulse" />
+          <div className="absolute top-[20%] -right-[10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
+          <div className="absolute -bottom-[10%] left-[20%] w-[45%] h-[45%] rounded-full bg-purple-500/10 blur-[150px] animate-pulse" style={{ animationDelay: '4s' }} />
         </div>
 
         <motion.div
@@ -83,15 +83,15 @@ const Demonstrativos = () => {
                 <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
                 Intelligence & Analysis
               </div>
-              <h1 className="text-5xl font-black tracking-tight md:text-6xl lg:text-7xl">
-                Demonstrativos <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600">Contábeis</span>
+              <h1 className="text-6xl font-black tracking-tighter md:text-7xl lg:text-8xl leading-none">
+                Demonstrativos <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600 drop-shadow-2xl">Contábeis</span>
               </h1>
               <p className="text-xl text-muted-foreground/80 max-w-2xl leading-relaxed">
                 Visão analítica de alta precisão para governança financeira corporativa.
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-4 bg-background/40 p-3 rounded-3xl border border-white/10 backdrop-blur-2xl shadow-2xl ring-1 ring-white/10">
+            <div className="flex flex-wrap items-center gap-6 bg-white/[0.03] p-5 rounded-[2.5rem] border border-white/10 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] ring-1 ring-white/10">
               <div className="flex items-center gap-3 px-4 border-r border-white/10 pr-6">
                 <Building2 className="h-5 w-5 text-primary" />
                 <Select value={empresaId} onValueChange={setEmpresaId}>
@@ -178,7 +178,7 @@ const Demonstrativos = () => {
           <motion.div variants={itemVariants}>
             <Tabs defaultValue="dre" className="space-y-12">
               <div className="flex justify-center">
-                <TabsList className="inline-flex h-14 items-center justify-center rounded-2xl bg-white/5 p-1.5 text-muted-foreground w-full max-w-[640px] border border-white/10 backdrop-blur-2xl shadow-xl ring-1 ring-white/10">
+                <TabsList className="inline-flex h-16 items-center justify-center rounded-[2rem] bg-white/[0.03] p-2 text-muted-foreground w-full max-w-[700px] border border-white/10 backdrop-blur-3xl shadow-2xl ring-1 ring-white/10">
                   <TabsTrigger value="dre" className="relative inline-flex items-center justify-center whitespace-nowrap rounded-xl px-10 py-3 text-sm font-bold tracking-tight transition-all data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg gap-3">
                     <TrendingUp className="h-4.5 w-4.5" />
                     <span>DRE Analytical</span>
