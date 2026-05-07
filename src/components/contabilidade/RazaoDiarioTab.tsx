@@ -542,7 +542,6 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
                 gSaldoFinal += saldoFinal;
 
                 return (
-                return (
                   <motion.div 
                     key={g.conta_id} 
                     initial={{ opacity: 0, x: -10 }}
