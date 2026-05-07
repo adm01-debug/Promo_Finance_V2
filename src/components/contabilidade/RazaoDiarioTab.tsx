@@ -238,22 +238,36 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
 
   if (!empresaId) {
     return (
-      <Card>
-        <CardContent className="py-12 text-center text-sm text-muted-foreground">
-          Selecione uma empresa para visualizar o Razão e o Diário.
+      <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group p-12">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
+        <CardContent className="relative z-10 text-center space-y-4">
+          <div className="p-4 bg-primary/10 rounded-3xl w-fit mx-auto animate-pulse">
+            <BookText className="h-12 w-12 text-primary opacity-40" />
+          </div>
+          <div className="space-y-2">
+            <p className="text-xl font-black tracking-tight">Razão & Diário</p>
+            <p className="text-sm font-medium opacity-60 max-w-xs mx-auto">Selecione uma empresa para visualizar os demonstrativos analíticos.</p>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <BookText className="h-5 w-5 text-primary" />
-          Razão & Diário
-        </CardTitle>
-      </CardHeader>
+    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+      <CardHeader className="p-8 pb-4 relative z-10">
+        <div className="flex flex-wrap items-center justify-between gap-6">
+          <div className="flex items-center gap-5">
+            <div className="p-4 rounded-2xl bg-primary shadow-xl shadow-primary/20 text-primary-foreground transform group-hover:scale-110 transition-all duration-500">
+              <BookText className="h-8 w-8" />
+            </div>
+            <div>
+              <CardTitle className="text-3xl font-black tracking-tighter">Razão & Diário</CardTitle>
+              <CardDescription className="text-sm font-medium opacity-60">Demonstrativos contábeis detalhados por período</CardDescription>
+            </div>
+          </div>
+        </div>
       <CardContent className="space-y-4">
         {/*
           Filtros COMPARTILHADOS entre Diário e Razão.
