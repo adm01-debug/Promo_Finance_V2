@@ -357,7 +357,7 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
           <div className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 bg-white/5 px-5 py-4 rounded-2xl border border-white/5 ml-auto">
             {modo === 'diario'
               ? `${diario.length.toLocaleString('pt-BR')} partidas`
-              : `${razao.length} contas`}
+              : `${razao.length.toLocaleString('pt-BR')} contas`}
           </div>
         </div>
 
