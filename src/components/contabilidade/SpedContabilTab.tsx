@@ -67,6 +67,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
   const [reciboInput, setReciboInput] = useState('');
   const [expandedAudit, setExpandedAudit] = useState<Set<string>>(new Set());
   const [exportStatus, setExportStatus] = useState<'idle' | 'queued' | 'processing' | 'done' | 'error'>('idle');
+  const [empresaDados, setEmpresaDados] = useState<{ cnpj: string; razao_social: string } | null>(null);
   const transmitir = useRegistrarTransmissaoSped();
   const gerarSped = useGerarSpedContabil();
   const { data: historico = [], isLoading } = useSpedContabilHistorico(empresaId);
