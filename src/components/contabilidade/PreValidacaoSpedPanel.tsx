@@ -146,40 +146,47 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
             </AlertDescription>
           </Alert>
         ) : (
-          <ul className="space-y-2" role="list" aria-label="Lista de alertas de pré-validação">
-            {alertas.map((a) => {
-              const meta = SEV_META[a.severidade];
-              const Icon = meta.icon;
-              return (
-                <li
-                  key={a.id}
-                  className={cn('flex gap-3 rounded-md border p-3 text-xs', meta.tone)}
-                >
-                  <Icon className={cn('h-4 w-4 mt-0.5 shrink-0', meta.iconClass)} aria-hidden />
-                  <div className="flex-1 space-y-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-semibold">{a.titulo}</span>
-                      <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                        {CATEGORIA_LABEL[a.categoria] ?? a.categoria}
-                      </Badge>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          'text-[10px] px-1.5 py-0',
-                          a.severidade === 'error' && 'border-destructive/50 text-destructive',
-                          a.severidade === 'warning' && 'border-warning/50 text-warning',
-                          a.severidade === 'info' && 'border-primary/40 text-primary',
-                        )}
-                      >
-                        {meta.label}
-                      </Badge>
+          <div className="space-y-3" role="list" aria-label="Lista de alertas de pré-validação">
+            <AnimatePresence>
+              {alertas.map((a, idx) => {
+                const meta = SEV_META[a.severidade];
+                const Icon = meta.icon;
+                return (
+                  <motion.div
+                    key={a.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className={cn('flex gap-4 rounded-[1.5rem] border p-5 text-xs shadow-lg backdrop-blur-md group/row', meta.tone)}
+                  >
+                    <div className={cn('p-2.5 rounded-xl h-fit shadow-inner', meta.bg, meta.iconClass)}>
+                      <Icon className="h-5 w-5" aria-hidden />
                     </div>
-                    <p className="text-muted-foreground leading-relaxed">{a.detalhe}</p>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+                    <div className="flex-1 space-y-2">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <span className="font-black uppercase tracking-tight text-sm text-foreground/80">{a.titulo}</span>
+                        <Badge variant="outline" className="text-[9px] font-black uppercase border-white/10 bg-white/5 opacity-60">
+                          {CATEGORIA_LABEL[a.categoria] ?? a.categoria}
+                        </Badge>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            'text-[9px] font-black uppercase border-none px-3 py-1 rounded-full',
+                            a.severidade === 'error' && 'bg-destructive/20 text-destructive',
+                            a.severidade === 'warning' && 'bg-warning/20 text-warning',
+                            a.severidade === 'info' && 'bg-primary/20 text-primary',
+                          )}
+                        >
+                          {meta.label}
+                        </Badge>
+                      </div>
+                      <p className="text-muted-foreground font-medium leading-relaxed">{a.detalhe}</p>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
         )}
 
         {totais.erros > 0 && (
