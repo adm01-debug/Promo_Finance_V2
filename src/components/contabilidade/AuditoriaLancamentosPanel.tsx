@@ -8,7 +8,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Eye, History, Search, User, Clock, RefreshCw, FileSearch } from 'lucide-react';
+import { Eye, History, Search, User, Clock, RefreshCw, FileSearch, Filter, ChevronDown, Download } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ViewExportButton } from '@/components/shared/ViewExportButton';
 import { format } from 'date-fns';
 import { useAuditoriaLancamentos, type AuditoriaLancamentoRow } from '@/hooks/useAuditoriaLancamentos';
 import { AuditDiffView } from '@/components/audit/AuditDiffView';
@@ -51,7 +53,8 @@ export function AuditoriaLancamentosPanel({ empresaId, ano }: Props) {
   };
 
   return (
-    <Card>
+    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
       <CardHeader>
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
@@ -63,10 +66,27 @@ export function AuditoriaLancamentosPanel({ empresaId, ano }: Props) {
               Histórico completo de quem criou, editou ou estornou cada lançamento contábil e suas partidas.
             </CardDescription>
           </div>
-          <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
-            Atualizar
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching} className="rounded-xl">
+              <RefreshCw className={`h-4 w-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
+              Atualizar
+            </Button>
+            <ViewExportButton
+              filename="auditoria-lancamentos"
+              title="Auditoria de Lançamentos"
+              rows={logs}
+              columns={[
+                { key: 'data', header: 'Data/Hora', accessor: (r) => formatDate(r.created_at) },
+                { key: 'usuario', header: 'Usuário', accessor: (r) => r.usuario || 'Sistema' },
+                { key: 'operacao', header: 'Operação', accessor: (r) => operacaoConfig[r.operacao]?.label || r.operacao },
+                { key: 'tabela', header: 'Tipo', accessor: (r) => tabelaLabels[r.tabela] || r.tabela },
+                { key: 'lanc', header: 'Lançamento', accessor: (r) => r.numero_lancamento ?? '—' },
+                { key: 'hist', header: 'Histórico', accessor: (r) => r.historico ?? '—' },
+              ]}
+              variant="default"
+              size="sm"
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
@@ -140,9 +160,19 @@ export function AuditoriaLancamentosPanel({ empresaId, ano }: Props) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {logs.map((log) => (
-                  <AuditRow key={log.id} log={log} />
-                ))}
+                <AnimatePresence>
+                  {logs.map((log) => (
+                    <motion.tr
+                      key={log.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      className="border-b hover:bg-muted/50 transition-colors"
+                    >
+                      <AuditRow log={log} />
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
               </TableBody>
             </Table>
           </ScrollArea>
@@ -163,24 +193,28 @@ function StatCard({
 }) {
   const toneClass =
     tone === 'success'
-      ? 'text-success'
+      ? 'text-success bg-success/10 border-success/20 shadow-[0_0_15px_rgba(var(--success),0.1)]'
       : tone === 'accent'
-        ? 'text-accent'
+        ? 'text-accent bg-accent/10 border-accent/20 shadow-[0_0_15px_rgba(var(--accent),0.1)]'
         : tone === 'destructive'
-          ? 'text-destructive'
-          : 'text-foreground';
+          ? 'text-destructive bg-destructive/10 border-destructive/20 shadow-[0_0_15px_rgba(var(--destructive),0.1)]'
+          : 'text-foreground bg-muted/20 border-border/50 shadow-sm';
+  
   return (
-    <div className="rounded-md border bg-muted/20 p-3">
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className={`text-2xl font-bold ${toneClass}`}>{value}</p>
-    </div>
+    <motion.div 
+      whileHover={{ scale: 1.02, y: -2 }}
+      className={`rounded-2xl border p-4 transition-all duration-300 backdrop-blur-sm ${toneClass}`}
+    >
+      <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">{label}</p>
+      <p className="text-3xl font-black tracking-tighter tabular-nums">{value}</p>
+    </motion.div>
   );
 }
 
 function AuditRow({ log }: { log: AuditoriaLancamentoRow }) {
   const cfg = operacaoConfig[log.operacao];
   return (
-    <TableRow>
+    <>
       <TableCell className="text-xs">
         <div className="flex items-center gap-1.5">
           <Clock className="h-3 w-3 text-muted-foreground" />
@@ -236,7 +270,7 @@ function AuditRow({ log }: { log: AuditoriaLancamentoRow }) {
           </DialogContent>
         </Dialog>
       </TableCell>
-    </TableRow>
+    </>
   );
 }
 
