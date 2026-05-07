@@ -27,7 +27,7 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
   if (!hasItems || collapsed) return null;
 
   return (
-    <div className="px-4 py-6 space-y-6 border-b border-white/5 bg-black/10">
+    <div className="px-4 py-6 space-y-6 border-b border-primary/5 bg-primary/[0.02]">
       {/* Favoritos */}
       {favoriteItems.length > 0 && (
         <div className="space-y-3">
@@ -63,10 +63,10 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
                       <NavLink
                         to={item.path}
                         className={cn(
-                          'flex-1 px-4 py-2.5 text-[11px] rounded-xl transition-all duration-500 truncate font-black tracking-tight uppercase',
+                          'flex-1 px-4 py-2.5 text-[11px] rounded-xl transition-all duration-700 truncate font-black tracking-tight uppercase',
                           location.pathname === item.path
-                            ? 'bg-primary/10 text-primary shadow-[0_0_15px_rgba(var(--primary),0.1)] ring-1 ring-primary/30'
-                            : 'text-muted-foreground/60 hover:bg-white/5 hover:text-foreground hover:translate-x-1'
+                            ? 'bg-primary/10 text-primary shadow-[0_0_20px_rgba(var(--primary),0.1)] ring-1 ring-primary/20'
+                            : 'text-muted-foreground/50 hover:bg-primary/5 hover:text-primary hover:translate-x-1'
                         )}
                       >
                         {item.label}
@@ -134,10 +134,10 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
                       <NavLink
                         to={item.path}
                         className={cn(
-                          'flex-1 px-4 py-2.5 text-[11px] rounded-xl transition-all duration-500 truncate font-black tracking-tight uppercase',
+                          'flex-1 px-4 py-2.5 text-[11px] rounded-xl transition-all duration-700 truncate font-black tracking-tight uppercase',
                           location.pathname === item.path
-                            ? 'bg-primary/10 text-primary shadow-[0_0_15px_rgba(var(--primary),0.1)] ring-1 ring-primary/30'
-                            : 'text-muted-foreground/60 hover:bg-white/5 hover:text-foreground hover:translate-x-1'
+                            ? 'bg-primary/10 text-primary shadow-[0_0_20px_rgba(var(--primary),0.1)] ring-1 ring-primary/20'
+                            : 'text-muted-foreground/50 hover:bg-primary/5 hover:text-primary hover:translate-x-1'
                         )}
                       >
                         {item.label}

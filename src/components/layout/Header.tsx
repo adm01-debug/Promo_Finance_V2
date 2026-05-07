@@ -113,10 +113,10 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
     <header
       ref={ref}
       className={cn(
-        'fixed top-0 right-0 z-30 h-20 bg-background/40 backdrop-blur-3xl border-b border-white/10 transition-all duration-500',
+        'fixed top-0 right-0 z-30 h-20 bg-background/20 backdrop-blur-2xl border-b border-primary/5 transition-all duration-700 ease-apple',
         sidebarCollapsed ? 'left-[72px]' : 'left-[280px]'
       )}
-      style={{ boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.1)' }}
+      style={{ boxShadow: '0 4px 24px -1px rgba(0, 0, 0, 0.03)' }}
     >
       <div className="h-full flex items-center justify-between px-8 gap-8">
         {/* Left: Search Command */}

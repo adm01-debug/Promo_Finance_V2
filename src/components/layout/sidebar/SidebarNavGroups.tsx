@@ -214,25 +214,25 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
       <NavLink
         to={item.href}
         className={cn(
-          'flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-500 group relative overflow-hidden',
+          'flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-700 group relative overflow-hidden',
           isActive
-            ? 'bg-primary text-primary-foreground font-black shadow-[0_8px_20px_-4px_rgba(var(--primary),0.4)] scale-[1.02]'
+            ? 'bg-primary text-primary-foreground font-black shadow-[0_12px_24px_-8px_rgba(var(--primary),0.5)] scale-[1.02]'
             : item.highlight
-              ? 'bg-gradient-to-r from-primary/10 to-accent/10 text-foreground hover:from-primary/20 hover:to-accent/20 border border-primary/10'
-              : 'text-muted-foreground/70 hover:bg-white/5 hover:text-foreground hover:translate-x-1.5'
+              ? 'bg-primary/5 text-foreground hover:bg-primary/10 border border-primary/10'
+              : 'text-muted-foreground/60 hover:bg-primary/5 hover:text-primary hover:translate-x-1'
         )}
       >
         {isActive && (
           <motion.div
             layoutId="active-pill"
-            className="absolute inset-0 bg-gradient-to-r from-primary to-blue-600 -z-10"
+            className="absolute inset-0 bg-gradient-to-r from-primary via-primary to-blue-600 -z-10"
             transition={{ type: 'spring', bounce: 0.15, duration: 0.6 }}
           />
         )}
         <Icon
           className={cn(
-            'h-5 w-5 flex-shrink-0 transition-all duration-500',
-            !isActive && 'group-hover:scale-120 group-hover:rotate-12',
+            'h-5 w-5 flex-shrink-0 transition-all duration-700 ease-apple',
+            !isActive && 'group-hover:scale-110 group-hover:rotate-3',
             isActive && 'drop-shadow-lg',
             item.highlight && !isActive && 'text-primary'
           )}
@@ -323,14 +323,14 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
               <button
                 onClick={() => toggleGroup(group.id)}
                 className={cn(
-                  'w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-500 group mt-4 first:mt-0',
+                  'w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-700 group mt-4 first:mt-0',
                   hasActive
-                    ? 'text-foreground'
-                    : 'text-muted-foreground/40 hover:bg-white/5 hover:text-foreground'
+                    ? 'text-foreground font-bold'
+                    : 'text-muted-foreground/30 hover:bg-primary/5 hover:text-primary'
                 )}
               >
                 <div className={cn(
-                  "p-2 rounded-xl transition-all duration-500",
+                  "p-2 rounded-xl transition-all duration-700 ease-apple",
                   hasActive ? "bg-primary/10 text-primary" : "bg-transparent"
                 )}>
                   <GroupIcon className="h-4.5 w-4.5 shrink-0" />
@@ -357,7 +357,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
                     transition={{ duration: 0.2, ease: 'easeInOut' }}
                     className="overflow-hidden"
                   >
-                    <div className="pl-4 space-y-1 border-l border-border/30 ml-4 mt-2">
+                    <div className="pl-4 space-y-1 border-l border-primary/10 ml-5 mt-2 transition-all">
                       {group.items.map(item => (
                         <NavItemComponent key={item.href} item={item} />
                       ))}
