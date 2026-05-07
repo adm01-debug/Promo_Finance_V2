@@ -400,6 +400,21 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
               </button>
             )}
           </div>
+          {bloqueado && (
+            <Button
+              onClick={handleAiCorrection}
+              disabled={isAiCorrecting}
+              variant="premium"
+              className="h-14 px-6 rounded-2xl font-black gap-2 transition-all hover:scale-105 active:scale-95 shadow-xl shadow-primary/20"
+            >
+              {isAiCorrecting ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Wand2 className="h-5 w-5" />
+              )}
+              <span className="hidden sm:inline">Corrigir com IA</span>
+            </Button>
+          )}
         </div>
 
         <ScrollArea className="max-h-[50vh] pr-4">
