@@ -53,7 +53,8 @@ export function AuditoriaLancamentosPanel({ empresaId, ano }: Props) {
   };
 
   return (
-    <Card>
+    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
       <CardHeader>
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
