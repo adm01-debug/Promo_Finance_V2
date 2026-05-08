@@ -9,6 +9,7 @@ import {
   Landmark,
   FileText,
   PieChart,
+  Palette,
   Bell,
   Settings,
   ChevronDown,
@@ -147,6 +148,7 @@ const navGroups: NavGroup[] = [
       { label: 'Bling ERP', icon: Package, href: '/bling', highlight: true },
       { label: 'Configurações', icon: Settings, href: '/configuracoes' },
       { label: 'Meu Perfil', icon: User, href: '/meu-perfil' },
+      { label: 'Guia de Estilo', icon: Palette, href: '/style-guide', highlight: true },
     ],
   },
 ];

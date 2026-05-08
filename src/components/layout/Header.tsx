@@ -113,7 +113,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
     <header
       ref={ref}
       className={cn(
-        'fixed top-0 right-0 z-30 h-20 bg-background/60 backdrop-blur-3xl border-b border-white/5 transition-all duration-700 ease-apple',
+        'fixed top-0 right-0 z-30 h-20 bg-background/60 backdrop-blur-3xl border-b border-border transition-all duration-700 ease-apple',
         sidebarCollapsed ? 'left-[80px]' : 'left-[300px]'
       )}
       style={{ boxShadow: '0 4px 24px -1px rgba(0, 0, 0, 0.03)' }}
@@ -138,7 +138,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
             <EmpresaSwitcher />
           </div>
 
-          <div className="w-px h-6 bg-white/10 mx-2 hidden lg:block" />
+          <div className="w-px h-6 bg-border mx-2 hidden lg:block" />
 
           {/* Action Buttons Grid */}
           <div className="flex items-center gap-1.5">
@@ -150,7 +150,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
               <DropdownMenuTrigger asChild data-tour="theme">
                 <Tooltip delayDuration={300}>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl bg-white/5 hover:bg-primary/20 hover:text-primary border border-white/10 transition-all duration-500 shadow-lg ring-1 ring-white/5">
+                    <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl bg-muted/20 hover:bg-primary/20 hover:text-primary border border-border transition-all duration-500 shadow-lg ring-1 ring-white/5">
                       <AnimatePresence mode="wait">
                         <motion.div
                           key={theme}
@@ -248,7 +248,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
           {/* User Menu with gradient avatar */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-14 gap-4 pl-2 pr-6 hover:bg-white/5 rounded-2xl transition-all duration-500 ring-1 ring-white/5 hover:ring-primary/20 bg-white/[0.02] shadow-xl">
+              <Button variant="ghost" className="h-14 gap-4 pl-2 pr-6 hover:bg-muted/20 rounded-2xl transition-all duration-500 ring-1 ring-border hover:ring-primary/20 bg-muted/10 shadow-xl">
                 {/* Gradient Avatar */}
                 <div className="relative">
                   <div className={cn(

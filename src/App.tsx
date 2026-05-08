@@ -89,6 +89,7 @@ const ComplianceAuditoria = lazy(() => import('./pages/admin/ComplianceAuditoria
 const AuditoriaIA = lazy(() => import('./pages/admin/AuditoriaIA'));
 const SharedFiltersAdmin = lazy(() => import('./pages/admin/SharedFiltersAdmin'));
 const Contabilidade = lazy(() => import('./pages/Contabilidade'));
+const StyleGuide = lazy(() => import('./pages/StyleGuide'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Inner app component that can use routing hooks
@@ -179,6 +180,8 @@ function AppRoutes() {
             <Route path="/configuracoes/notificacoes/historico" element={<ProtectedRoute><HistoricoNotificacoes /></ProtectedRoute>} />
             <Route path="/configuracoes/notificacoes/sino" element={<ProtectedRoute><SinoNotificacoesFiltros /></ProtectedRoute>} />
             <Route path="/admin/filtros-compartilhados" element={<ProtectedRoute requiredRoles={['admin']}><SharedFiltersAdmin /></ProtectedRoute>} />
+            
+            <Route path="/style-guide" element={<ProtectedRoute><StyleGuide /></ProtectedRoute>} />
             
             {/* 404 */}
             <Route path="*" element={<NotFound />} />

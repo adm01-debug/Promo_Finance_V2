@@ -44,7 +44,7 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
       animate={{ width: collapsed ? 80 : 300 }}
       transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
       className={cn(
-        'fixed left-0 top-0 z-40 h-screen bg-[#0A0D14]/80 backdrop-blur-3xl border-r border-white/5 flex flex-col shadow-[20px_0_60px_-20px_rgba(0,0,0,0.5)] transition-all duration-700'
+        'fixed left-0 top-0 z-40 h-screen bg-sidebar/80 backdrop-blur-3xl border-r border-sidebar-border flex flex-col shadow-[20px_0_60px_-20px_rgba(0,0,0,0.5)] transition-all duration-700'
       )}
       data-tour="sidebar"
     >
@@ -52,8 +52,8 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
       <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
       
       {/* Logo Section */}
-      <div className="h-24 flex items-center justify-between px-7 border-b border-white/5 relative overflow-hidden group/logo">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-blue-600/10 opacity-0 group-hover/logo:opacity-100 transition-opacity duration-1000" />
+      <div className="h-24 flex items-center justify-between px-7 border-b border-sidebar-border relative overflow-hidden group/logo">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 opacity-0 group-hover/logo:opacity-100 transition-opacity duration-1000" />
         
         <AnimatePresence mode="wait">
           {!collapsed ? (
