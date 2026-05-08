@@ -48,7 +48,7 @@ export function useConciliacao() {
       }
 
       const regraAplicada = ajusteCentavos && ajusteCentavos !== 0 
-        ? (ajusteCentavos > 0 ? 'Compensação automática: Juros' : 'Compensação automática: Desconto')
+        ? (classificacao || (ajusteCentavos > 0 ? 'Compensação automática: Juros' : 'Compensação automática: Desconto'))
         : null;
 
       // Adiciona metadados de conciliação para rastreabilidade
