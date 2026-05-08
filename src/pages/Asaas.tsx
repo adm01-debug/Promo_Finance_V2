@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -36,7 +37,6 @@ import {
 import { useAsaas } from '@/hooks/useAsaas';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { supabase } from '@/integrations/supabase/client';
-import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { NovaCobrancaDialog } from '@/components/asaas/NovaCobrancaDialog';
 import { TransferenciaPixDialog } from '@/components/asaas/TransferenciaPixDialog';
 import { PixQrCodeDialog } from '@/components/asaas/PixQrCodeDialog';
