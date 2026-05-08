@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Building2, Calendar, CalendarIcon, BarChart3, PieChart as PieChartIcon, LineChart as LineChartIcon, AlertTriangle } from "lucide-react";
+import { Building2, Calendar, CalendarIcon, BarChart3, PieChart as PieChartIcon, LineChart as LineChartIcon, AlertTriangle, Zap } from "lucide-react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,12 +9,15 @@ import { Button } from "@/components/ui/button";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { useEmpresas, useContasPagar, useContasReceber, useContasBancarias, useClientes, useCentrosCusto } from "@/hooks/useFinancialData";
 import { format, subMonths, startOfMonth, endOfMonth, differenceInDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { BIMainKpis, BISecondaryKpis } from "@/components/bi/BIKpis";
 import { BIEvolucaoChart, BIAgingChart, BICentrosChart } from "@/components/bi/BICharts";
 import { BIEmpresasTab } from "@/components/bi/BIEmpresasTab";
+import { FuturisticDashboard } from "@/components/bi/FuturisticDashboard";
 import { InadimplenciaSegmentada } from "@/components/analytics/InadimplenciaSegmentada";
 import { BenchmarkingSetorial } from "@/components/analytics/BenchmarkingSetorial";
 import { HistoricoAnalisesPreditivasPanel } from "@/components/analytics/HistoricoAnalisesPreditivasPanel";
@@ -28,6 +31,7 @@ export default function BI() {
   const [dataInicio, setDataInicio] = useState<Date | undefined>(undefined);
   const [dataFim, setDataFim] = useState<Date | undefined>(undefined);
   const [usarPeriodoCustom, setUsarPeriodoCustom] = useState(false);
+  const [futuristicMode, setFuturisticMode] = useState(true);
 
   const { data: empresas = [] } = useEmpresas();
   const { data: contasPagar = [] } = useContasPagar();
