@@ -37,5 +37,37 @@ export function useConciliacaoRetroativa() {
     }
   });
 
-  return { agendar };
+  const reprocessar = useMutation({
+    mutationFn: async (logId: string) => {
+      const { data: log } = await supabase
+        .from('logs_conciliacao_retroativa')
+        .select('*')
+        .eq('id', logId)
+        .single();
+      
+      if (!log) throw new Error('Log não encontrado');
+
+      const { data, error } = await supabase
+        .from('logs_conciliacao_retroativa')
+        .update({
+          status: 'processando',
+          progresso: 0,
+          erro_detalhe: null,
+          created_at: new Date().toISOString()
+        })
+        .eq('id', logId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      toast.info('Reprocessamento iniciado');
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['logs-conciliacao-retroativa'] });
+    }
+  });
+
+  return { agendar, reprocessar };
 }
+
