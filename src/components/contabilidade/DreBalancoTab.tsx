@@ -163,10 +163,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
 
     if (format === 'json') {
       const payload = {
-        empresa: {
-          nome: empresaTitulo,
-          cnpj: empresa?.cnpj || '—',
-        },
+        empresa: { nome: empresaTitulo, cnpj: empresa?.cnpj || '—' },
         periodo: { ano, mes: mes + 1 },
         fonte,
         balanco: balancoNovo,
@@ -174,18 +171,34 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = `${filename}.json`;
-      a.click();
+      a.href = url; a.download = `${filename}.json`; a.click();
       URL.revokeObjectURL(url);
       toast.success('Balanço exportado em JSON');
       return;
     }
 
-    // PDF
+    // PDF Premium
     const doc = new jsPDF();
     const margins = getAutoTableMargins();
+    const pageWidth = doc.internal.pageSize.getWidth();
     let cursorY = getContentStartY();
+
+    // Cabeçalho de Status
+    const totalW = pageWidth - margins.left - margins.right;
+    const equilibrado = balancoNovo.equilibrado;
+    doc.setFillColor(equilibrado ? 240 : 255, equilibrado ? 248 : 240, equilibrado ? 240 : 240);
+    doc.setDrawColor(equilibrado ? PDF_BRAND.success[0] : PDF_BRAND.destructive[0], equilibrado ? PDF_BRAND.success[1] : PDF_BRAND.destructive[1], equilibrado ? PDF_BRAND.success[2] : PDF_BRAND.destructive[2]);
+    doc.roundedRect(margins.left, cursorY, totalW, 12, 1.5, 1.5, 'FD');
+    
+    doc.setFontSize(8);
+    doc.setTextColor(equilibrado ? PDF_BRAND.success[0] : PDF_BRAND.destructive[0], equilibrado ? PDF_BRAND.success[1] : PDF_BRAND.destructive[1], equilibrado ? PDF_BRAND.success[2] : PDF_BRAND.destructive[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.text(
+      equilibrado ? 'SITUAÇÃO PATRIMONIAL: BALANÇO CONSOLIDADO' : `DIVERGÊNCIA IDENTIFICADA: ${formatCurrency(balancoNovo.totalAtivo - balancoNovo.totalPassivo)}`,
+      margins.left + 5,
+      cursorY + 7.5
+    );
+    cursorY += 18;
 
     const rowsAtivo: any[] = balancoNovo.ativo.map(a => [
       { content: a.descricao, styles: { paddingLeft: a.nivel * 3, fontStyle: a.nivel === 0 ? 'bold' : 'normal' } },
@@ -202,9 +215,9 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
       head: [['Ativo', 'Valor (R$)']],
       body: rowsAtivo,
       theme: 'plain',
-      styles: { fontSize: 8, cellPadding: 1.5 },
+      styles: { fontSize: 7.5, cellPadding: 1.5 },
       headStyles: { fillColor: PDF_BRAND.foreground, textColor: [255, 255, 255] },
-      margin: { ...margins, right: doc.internal.pageSize.getWidth() / 2 + 2 },
+      margin: { ...margins, right: pageWidth / 2 + 2 },
     });
 
     autoTable(doc, {
@@ -212,26 +225,10 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
       head: [['Passivo + PL', 'Valor (R$)']],
       body: rowsPassivo,
       theme: 'plain',
-      styles: { fontSize: 8, cellPadding: 1.5 },
+      styles: { fontSize: 7.5, cellPadding: 1.5 },
       headStyles: { fillColor: PDF_BRAND.foreground, textColor: [255, 255, 255] },
-      margin: { ...margins, left: doc.internal.pageSize.getWidth() / 2 + 2 },
+      margin: { ...margins, left: pageWidth / 2 + 2 },
     });
-
-    const finalY = (doc as any).lastAutoTable.finalY || cursorY;
-    const equilibrado = balancoNovo.equilibrado;
-
-    doc.setFillColor(equilibrado ? 240 : 255, equilibrado ? 248 : 240, equilibrado ? 240 : 240);
-    doc.setDrawColor(equilibrado ? PDF_BRAND.success[0] : PDF_BRAND.destructive[0], equilibrado ? PDF_BRAND.success[1] : PDF_BRAND.destructive[1], equilibrado ? PDF_BRAND.success[2] : PDF_BRAND.destructive[2]);
-    doc.roundedRect(margins.left, finalY + 6, doc.internal.pageSize.getWidth() - margins.left - margins.right, 10, 1, 1, 'FD');
-    
-    doc.setFontSize(8);
-    doc.setTextColor(equilibrado ? PDF_BRAND.success[0] : PDF_BRAND.destructive[0], equilibrado ? PDF_BRAND.success[1] : PDF_BRAND.destructive[1], equilibrado ? PDF_BRAND.success[2] : PDF_BRAND.destructive[2]);
-    doc.setFont('helvetica', 'bold');
-    doc.text(
-      equilibrado ? 'BALANÇO EQUILIBRADO' : `DIVERGÊNCIA NO BALANÇO: ${formatCurrency(balancoNovo.totalAtivo - balancoNovo.totalPassivo)}`,
-      margins.left + 4,
-      finalY + 12.5
-    );
 
     applyPdfLayout(doc, {
       titulo: 'Balanço Patrimonial',
