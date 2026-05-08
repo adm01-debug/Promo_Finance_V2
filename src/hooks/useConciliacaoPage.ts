@@ -35,7 +35,14 @@ export function useConciliacaoPage() {
   const [transacoes, setTransacoes] = useState<TransacaoExtrato[]>([]);
   const [extratoImportado, setExtratoImportado] = useState<ExtratoOFX | null>(null);
   const [transacoesImportadas, setTransacoesImportadas] = useState<TransacaoOFX[]>([]);
-  const [filters, setFilters] = useState<ConciliacaoFilterState>(INITIAL_FILTERS);
+  const [filters, setFilters] = useState<ConciliacaoFilterState>(() => {
+    const saved = localStorage.getItem('conciliacao_filters');
+    return saved ? JSON.parse(saved) : INITIAL_FILTERS;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('conciliacao_filters', JSON.stringify(filters));
+  }, [filters]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [importReport, setImportReport] = useState<ImportReport | null>(null);
@@ -68,6 +75,17 @@ export function useConciliacaoPage() {
 
   const handleImportSuccess = useCallback(async (extrato: ExtratoOFX) => {
     setIsProcessingImport(true);
+
+    // Validação de Saldo (Adicionado)
+    if (extrato.saldoFinal !== undefined) {
+      const saldoCalculado = (extrato.saldoInicial || 0) + extrato.transacoes.reduce((acc, t) => acc + t.valor, 0);
+      if (Math.abs(saldoCalculado - extrato.saldoFinal) > 0.01) {
+        toast.warning('Divergência de Saldo Detectada', {
+          description: `O saldo final do arquivo (R$ ${extrato.saldoFinal.toFixed(2)}) não bate com o calculado (R$ ${saldoCalculado.toFixed(2)}).`
+        });
+      }
+    }
+
     const novasTransacoes = extrato.transacoes.map((t: TransacaoOFX) => ({
       id: t.id, data: t.data, descricao: t.descricao, valor: t.valor, tipo: t.tipo, conciliada: false,
     }));
