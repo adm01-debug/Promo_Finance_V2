@@ -149,6 +149,13 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
         <Button variant="outline" onClick={() => window.print()} className="gap-2"><Printer className="h-4 w-4" />Imprimir</Button>
         <Button variant="outline" onClick={() => { onUpdateStatus({ id: boleto.id, status: 'enviado' }); toast.success('Boleto enviado!'); }} className="gap-2"><Mail className="h-4 w-4" />Enviar</Button>
         
+        {boleto.asaas_id && (
+          <Badge variant="secondary" className="gap-1 flex items-center px-3 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20">
+            <Barcode className="h-3 w-3" />
+            ASAAS: {boleto.asaas_id}
+          </Badge>
+        )}
+
         {boleto.bitrix_id ? (
           <Badge variant="secondary" className="gap-1 flex items-center px-3">
             <Share2 className="h-3 w-3" />
@@ -158,9 +165,8 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
           <Button 
             variant="outline" 
             onClick={() => {
-              // @ts-ignore - Adding dynamically to keep it simple for now
+              // @ts-ignore
               if (window.syncBitrixBoleto) window.syncBitrixBoleto(boleto.id);
-              else toast.info('Funcionalidade de sincronização Bitrix24 sendo ativada...');
             }} 
             className="gap-2"
           >
