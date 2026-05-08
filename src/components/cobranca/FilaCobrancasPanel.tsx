@@ -25,6 +25,7 @@ export function FilaCobrancasPanel() {
   const { data: execucoes, isLoading: loadingExec } = useExecucoesCobranca();
   const { data: metricas } = useMetricasCobranca();
   const processarRegua = useProcessarRegua();
+  const processarFila = useProcessarFila();
 
   return (
     <div className="space-y-6">
