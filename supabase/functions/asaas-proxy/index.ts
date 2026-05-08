@@ -413,16 +413,70 @@ Deno.serve(async (req) => {
 
       // ===== TRANSFERÊNCIAS PIX =====
       case 'transferir_pix': {
-        if (!data?.valor || !data?.chave_pix) return err('valor e chave_pix são obrigatórios')
+        if (!data?.valor || !data?.chave_pix || !data?.idempotency_key) 
+          return err('valor, chave_pix e idempotency_key são obrigatórios')
+        
+        // Verificar se já existe uma transferência com esta chave de idempotência
+        const { data: existing } = await supabase
+          .from('asaas_transfers')
+          .select('*')
+          .eq('idempotency_key', data.idempotency_key)
+          .maybeSingle()
+        
+        if (existing) {
+          return ok(existing)
+        }
+
+        const transferPayload: any = {
+          value: data.valor,
+          pixAddressKey: data.chave_pix,
+          pixAddressKeyType: data.tipo_chave || 'CPF',
+          description: data.descricao,
+        }
+
         result = await asaasFetch('/transfers', ASAAS_API_KEY, {
           method: 'POST',
-          body: JSON.stringify({
-            value: data.valor,
-            pixAddressKey: data.chave_pix,
-            pixAddressKeyType: data.tipo_chave || 'CPF',
-            description: data.descricao,
-          }),
+          body: JSON.stringify(transferPayload),
         })
+
+        const errTransf = checkErrors(result)
+        if (errTransf) return errTransf
+
+        if (result.id) {
+          const { error: dbError } = await supabase.from('asaas_transfers').insert({
+            asaas_id: result.id,
+            empresa_id: data.empresa_id,
+            valor: data.valor,
+            chave_pix: data.chave_pix,
+            tipo_chave: data.tipo_chave || 'CPF',
+            descricao: data.descricao || null,
+            status: result.status || 'PENDING',
+            idempotency_key: data.idempotency_key,
+            user_id: user.id
+          })
+          if (dbError) console.error('Erro DB asaas_transfers:', dbError)
+          
+          // Registrar na auditoria
+          await supabase.from('asaas_audit_trail').insert({
+            action: 'PIX_CASHOUT_CREATED',
+            details: { asaas_id: result.id, valor: data.valor, chave: data.chave_pix },
+            user_id: user.id
+          })
+        }
+        break
+      }
+
+      case 'sincronizar_transferencia': {
+        if (!data?.asaas_id) return err('asaas_id é obrigatório')
+        result = await asaasFetch(`/transfers/${data.asaas_id}`, ASAAS_API_KEY)
+        const errS = checkErrors(result)
+        if (errS) return errS
+
+        await supabase.from('asaas_transfers').update({
+          status: result.status,
+          transaction_receipt_url: result.transactionReceiptUrl || null
+        }).eq('asaas_id', data.asaas_id)
+
         break
       }
 

@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { TransferenciaPixHistoryPanel } from '@/components/asaas/TransferenciaPixHistoryPanel';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
@@ -280,10 +281,15 @@ export default function Asaas() {
             <TabsTrigger value="assinaturas">Assinaturas</TabsTrigger>
             <TabsTrigger value="links">Links</TabsTrigger>
             <TabsTrigger value="extrato">Extrato</TabsTrigger>
+            <TabsTrigger value="transfers">Histórico Pix</TabsTrigger>
             <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
             <TabsTrigger value="fila">Retentativas</TabsTrigger>
             <TabsTrigger value="config">Configurações</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="transfers">
+            <TransferenciaPixHistoryPanel empresaId={empresaId} />
+          </TabsContent>
 
           {/* NOVO: Dashboard de Retentativas */}
           <TabsContent value="fila">

@@ -39,13 +39,22 @@ export function TransferenciaPixDialog({ open, onOpenChange, empresaId }: Props)
   };
 
   const handleTransferir = async () => {
+    if (!empresaId) {
+      toast.error('Empresa não identificada');
+      return;
+    }
     setConfirmOpen(false);
     try {
+      // Gerar chave de idempotência (ex: timestamp + chave + valor)
+      const idempotencyKey = `pix_${Date.now()}_${chavePix}_${valor}`;
+      
       await transferirPix.mutateAsync({
         valor: parseFloat(valor),
         chave_pix: chavePix,
         tipo_chave: tipoChave,
         descricao: descricao || undefined,
+        empresa_id: empresaId,
+        idempotency_key: idempotencyKey,
       });
       setValor(''); setChavePix(''); setDescricao('');
       onOpenChange(false);
