@@ -57,7 +57,7 @@ export function TransferenciaPixHistoryPanel({ empresaId }: Props) {
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full md:w-[180px]">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -68,6 +68,20 @@ export function TransferenciaPixHistoryPanel({ empresaId }: Props) {
             <SelectItem value="FAILED">Falhados</SelectItem>
           </SelectContent>
         </Select>
+        <div className="flex gap-2 w-full md:w-auto">
+          <Input 
+            type="date" 
+            className="flex-1 md:w-[150px]" 
+            value={dateStart}
+            onChange={e => setDateStart(e.target.value)}
+          />
+          <Input 
+            type="date" 
+            className="flex-1 md:w-[150px]" 
+            value={dateEnd}
+            onChange={e => setDateEnd(e.target.value)}
+          />
+        </div>
       </div>
 
       <Card>
