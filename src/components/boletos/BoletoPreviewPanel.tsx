@@ -12,6 +12,7 @@ interface Boleto {
   valor: number; vencimento: string; cedente_nome: string; cedente_cnpj: string | null;
   sacado_nome: string; sacado_cpf_cnpj: string | null; banco: string; agencia: string;
   conta: string; descricao: string | null; status: string;
+  asaas_id?: string | null; external_provider?: string | null;
   bitrix_id?: string | null; bitrix_status?: string | null; eventos_pagamento?: any[] | null;
   rastreio_status?: Array<{ status: string; data: string; detalhe: string }>;
 }
