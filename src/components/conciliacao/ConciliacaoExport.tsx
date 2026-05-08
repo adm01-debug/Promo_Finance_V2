@@ -80,7 +80,7 @@ export function ConciliacaoExport({ transacoes, stats }: ConciliacaoExportProps)
 
     const { data: txs } = await supabase
       .from('transacoes_bancarias')
-      .select('id,descricao,valor,data,tipo,conciliada')
+      .select('id,descricao,valor,data,tipo,conciliada,compensacao_valor,compensacao_motivo,compensacao_classificacao,compensacao_regra')
       .in('id', txIds);
     const txMap = new Map((txs ?? []).map((t) => [t.id, t]));
 
