@@ -136,7 +136,20 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
           successCount++;
           totalValue += m.valor;
           
-          // Registra evidência no log (através do trigger ou manual se necessário)
+          // Registra transação bancária confirmada para conciliação
+          await supabase.from('transacoes_bancarias').insert({
+            conta_bancaria_id: m.transacao.conta_bancaria_id || '', // idealmente passar o ID da conta
+            data: m.transacao.data.toISOString().split('T')[0],
+            descricao: `BAIXA AUT LOTE: ${m.cliente} - ${m.transacao.descricao}`,
+            valor: m.valor,
+            tipo: 'receita',
+            conciliada: true,
+            status: 'confirmado',
+            data_confirmacao: new Date().toISOString(),
+            conta_receber_id: m.contaId,
+          } as any);
+
+          // Registra evidência no log
           await supabase.rpc('registrar_evento_receber', {
             p_conta_id: m.contaId,
             p_tipo: 'baixa_automatica',
