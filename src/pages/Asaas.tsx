@@ -570,6 +570,58 @@ export default function Asaas() {
                     </div>
                   </div>
                 </div>
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <h3 className="text-sm font-bold flex items-center gap-2">
+                    <FileText className="h-4 w-4" /> Relatórios e Operações
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="p-4 border rounded-lg bg-muted/20">
+                      <h4 className="text-xs font-bold mb-2">Relatório Diário</h4>
+                      <p className="text-[10px] text-muted-foreground mb-4">
+                        O sistema gera um resumo automático das últimas 24h e envia para o e-mail de alerta configurado.
+                      </p>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="w-full h-8"
+                        onClick={async () => {
+                          try {
+                            const { data, error } = await supabase.functions.invoke('gerar-resumo-financeiro-diario');
+                            if (error) throw error;
+                            toast.success('Relatório gerado e enviado com sucesso');
+                          } catch (e: any) {
+                            toast.error('Erro ao gerar relatório: ' + e.message);
+                          }
+                        }}
+                      >
+                        <Send className="h-3 w-3 mr-2" /> Disparar Agora
+                      </Button>
+                    </div>
+
+                    <div className="p-4 border rounded-lg bg-muted/20">
+                      <h4 className="text-xs font-bold mb-2 text-success flex items-center gap-2">
+                        <CheckCircle2 className="h-3 w-3" /> Saúde da Integração
+                      </h4>
+                      <div className="space-y-2 mt-3">
+                        <div className="flex justify-between text-[10px]">
+                          <span>Asaas API:</span>
+                          <span className="font-bold text-success">ONLINE</span>
+                        </div>
+                        <div className="flex justify-between text-[10px]">
+                          <span>Webhooks:</span>
+                          <span className="font-bold text-success">ATIVO</span>
+                        </div>
+                        <div className="flex justify-between text-[10px]">
+                          <span>Fila de Sincronização:</span>
+                          <span className="font-bold text-warning">{queueStats.falhas > 0 ? 'ATENÇÃO' : 'NORMAL'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
