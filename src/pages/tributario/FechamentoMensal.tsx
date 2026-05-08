@@ -1,4 +1,4 @@
-import { AssistenteFechamentoMensal } from '@/components/tributario/AssistenteFechamentoMensal';
+import { AssistenteFechamentoMensal } from '@/components/tributario/dashboard/AssistenteFechamentoMensal';
 import { MainLayout } from '@/components/layout/MainLayout';
 
 export default function FechamentoMensalPage() {
