@@ -1,4 +1,4 @@
-import { Search, SlidersHorizontal, Building2, Target, CreditCard, Tag } from 'lucide-react';
+import { Search, SlidersHorizontal, Building2, Target, CreditCard, Tag, Banknote } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
@@ -34,6 +34,9 @@ interface ContasReceberFiltersProps {
   empresas?: Empresa[];
   formaFilter?: string;
   onFormaChange?: (value: string) => void;
+  contaBancariaFilter?: string;
+  onContaBancariaChange?: (value: string) => void;
+  contasBancarias?: any[];
   advancedFilters: AdvancedFilters;
   onAdvancedFiltersChange: (filters: AdvancedFilters) => void;
 }
@@ -51,6 +54,9 @@ export function ContasReceberFilters({
   empresas,
   formaFilter,
   onFormaChange,
+  contaBancariaFilter,
+  onContaBancariaChange,
+  contasBancarias,
   advancedFilters,
   onAdvancedFiltersChange,
 }: ContasReceberFiltersProps) {
@@ -129,6 +135,23 @@ export function ContasReceberFilters({
                 </Select>
               </div>
             )}
+
+            {onContaBancariaChange && contasBancarias && (
+              <div className="flex items-center gap-2 flex-1 min-w-[160px]">
+                <Banknote className="h-4 w-4 text-primary/40 shrink-0" />
+                <Select value={contaBancariaFilter || 'all'} onValueChange={onContaBancariaChange}>
+                  <SelectTrigger className="border-none bg-transparent hover:bg-white/5 h-10 rounded-xl font-bold text-xs focus:ring-0">
+                    <SelectValue placeholder="Conta Bancária" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl">
+                    <SelectItem value="all">Todas as Contas</SelectItem>
+                    {contasBancarias.map(cb => (
+                      <SelectItem key={cb.id} value={cb.id}>{cb.banco} - {cb.conta}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             
             <div className="flex items-center gap-2 flex-1 min-w-[140px]">
               <Target className="h-4 w-4 text-primary/40 shrink-0" />
@@ -157,3 +180,4 @@ export function ContasReceberFilters({
     </Card>
   );
 }
+

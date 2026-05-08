@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
-import { useContasReceber, useContasReceberPaginated, useCentrosCusto, useEmpresas } from '@/hooks/useFinancialData';
+import { useContasReceber, useContasReceberPaginated, useCentrosCusto, useEmpresas, useContasBancarias } from '@/hooks/useFinancialData';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
 import { useSorting } from '@/components/ui/sortable-header';
 import { useTableOptimization } from '@/hooks/useTableOptimization';
@@ -13,6 +13,7 @@ import { AdvancedFilters } from '@/components/ui/advanced-filters';
 import type { Database } from '@/integrations/supabase/types';
 import type { ContaReceberWithRelations } from '@/components/contas-receber/ContasReceberTableRow';
 
+
 export function useContasReceberLogic() {
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm, 300);
@@ -20,6 +21,7 @@ export function useContasReceberLogic() {
   const [centroCustoFilter, setCentroCustoFilter] = useState<string>('all');
   const [empresaFilter, setEmpresaFilter] = useState<string>('all');
   const [formaFilter, setFormaFilter] = useState<string>('all');
+  const [contaBancariaFilter, setContaBancariaFilter] = useState<string>('all');
   const [formOpen, setFormOpen] = useState(false);
   const [recebimentoDialogOpen, setRecebimentoDialogOpen] = useState(false);
   const [selectedConta, setSelectedConta] = useState<ContaReceberWithRelations | null>(null);
@@ -39,6 +41,7 @@ export function useContasReceberLogic() {
   const [descontoConta, setDescontoConta] = useState<ContaReceberWithRelations | null>(null);
   const queryClient = useQueryClient();
 
+
   const { filterType, handleFilterChange, filterByDate } = useQuickDateFilter();
 
   const { data: paginatedResult, isLoading } = useContasReceberPaginated({
@@ -47,11 +50,16 @@ export function useContasReceberLogic() {
     search: debouncedSearch,
     status: statusFilter,
     centroCustoId: centroCustoFilter,
+    empresaId: empresaFilter,
+    contaBancariaId: contaBancariaFilter,
   });
+
 
   const { data: allContas = [] } = useContasReceber();
   const { data: centrosCusto = [] } = useCentrosCusto();
   const { data: empresas = [] } = useEmpresas();
+  const { data: contasBancarias = [] } = useContasBancarias();
+
 
   const contas = paginatedResult?.data || [];
   const totalCount = paginatedResult?.totalCount || 0;
@@ -63,7 +71,9 @@ export function useContasReceberLogic() {
   const handleCentroCustoChange = useCallback((value: string) => { setCentroCustoFilter(value); setCurrentPage(1); }, []);
   const handleEmpresaChange = useCallback((value: string) => { setEmpresaFilter(value); setCurrentPage(1); }, []);
   const handleFormaChange = useCallback((value: string) => { setFormaFilter(value); setCurrentPage(1); }, []);
+  const handleContaBancariaChange = useCallback((value: string) => { setContaBancariaFilter(value); setCurrentPage(1); }, []);
   const handlePageSizeChange = useCallback((size: number) => { setPageSize(size); setCurrentPage(1); }, []);
+
 
   const handleOpenDeleteDialog = useCallback((conta: ContaReceberWithRelations) => {
     setDeletingConta(conta);
@@ -178,10 +188,15 @@ export function useContasReceberLogic() {
       if (empresaFilter !== 'all') {
         match = match && c.empresa_id === empresaFilter;
       }
+      // Conta Bancária filter
+      if (contaBancariaFilter !== 'all') {
+        match = match && c.conta_bancaria_id === contaBancariaFilter;
+      }
       // Forma de pagamento filter (#32)
       if (formaFilter !== 'all') {
         match = match && c.tipo_cobranca === formaFilter;
       }
+
       return match;
     });
   }, [contas, advancedFilters, filterByDate, empresaFilter, formaFilter]);
@@ -216,11 +231,12 @@ export function useContasReceberLogic() {
 
   return {
     searchTerm, statusFilter, centroCustoFilter, empresaFilter, formaFilter,
+    contaBancariaFilter, handleContaBancariaChange,
     formOpen, recebimentoDialogOpen, selectedConta, editingConta, advancedFilters,
     currentPage, pageSize, deleteDialogOpen, deletingConta, isDeleting, isLoading, filterType,
     viewMode, detailDrawerOpen, detailConta, cobrancaDialogOpen, cobrancaConta,
     descontoDialogOpen, descontoConta,
-    contas, sortedContas, centrosCusto, empresas, totalCount, totalPages, kpis, sortKey, sortDirection,
+    contas, sortedContas, centrosCusto, empresas, contasBancarias, totalCount, totalPages, kpis, sortKey, sortDirection,
     handleSearchChange, handleStatusChange, handleCentroCustoChange, handleEmpresaChange,
     handleFormaChange, handlePageSizeChange, handleSort, handleOpenDeleteDialog, handleDeleteConta,
     handleFilterChange, handleBulkMarkAsReceived, handleBulkCancel, handleViewConta,
@@ -231,3 +247,4 @@ export function useContasReceberLogic() {
     ...bulkActionsHook, getRowAnimation,
   };
 }
+

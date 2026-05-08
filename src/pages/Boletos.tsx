@@ -28,8 +28,10 @@ import {
   XCircle,
   AlertCircle,
   RefreshCw,
-  Ban
+  Ban,
+  History as HistoryIcon
 } from 'lucide-react';
+
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { useBoletos, Boleto, NovoBoletoData } from '@/hooks/useBoletos';
@@ -87,6 +89,7 @@ export default function Boletos() {
   const [statusFilter, setStatusFilter] = useState<string>('todos');
   const [selectedBoleto, setSelectedBoleto] = useState<Boleto | null>(null);
   const [showNovoBoleto, setShowNovoBoleto] = useState(false);
+  const [activeTab, setActiveTab] = useState('lista');
 
   const {
     boletos,
@@ -109,11 +112,12 @@ export default function Boletos() {
   }) || [];
 
   const kpis = [
-    { label: 'Total Gerado', value: stats.totalGerado, icon: FileText, color: 'text-primary', bg: 'bg-primary/10' },
-    { label: 'Total Pago', value: stats.totalPago, icon: CheckCircle2, color: 'text-success', bg: 'bg-success/10' },
-    { label: 'Total Vencido', value: stats.totalVencido, icon: XCircle, color: 'text-destructive', bg: 'bg-destructive/10' },
-    { label: 'Pendente', value: stats.totalPendente, icon: Clock, color: 'text-warning', bg: 'bg-warning/10' }
+    { label: 'Total Gerado', value: stats.totalGerado, icon: FileText, color: 'text-primary', bg: 'bg-primary/10', filter: 'todos' },
+    { label: 'Total Pago', value: stats.totalPago, icon: CheckCircle2, color: 'text-success', bg: 'bg-success/10', filter: 'pago' },
+    { label: 'Total Vencido', value: stats.totalVencido, icon: XCircle, color: 'text-destructive', bg: 'bg-destructive/10', filter: 'vencido' },
+    { label: 'Pendente', value: stats.totalPendente, icon: Clock, color: 'text-warning', bg: 'bg-warning/10', filter: 'gerado' }
   ];
+
 
   return (
     <MainLayout>
@@ -125,35 +129,49 @@ export default function Boletos() {
       >
         {/* Header */}
         <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-display-md text-foreground">Emissão de Boletos</h1>
-            <p className="text-muted-foreground mt-1">
-              Gere e gerencie boletos bancários com código de barras
-            </p>
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <Barcode className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-display-md text-foreground">Gestão de Boletos</h1>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Emissão, controle de registros e histórico de remessas
+              </p>
+            </div>
           </div>
-          <Dialog open={showNovoBoleto} onOpenChange={setShowNovoBoleto}>
-            <DialogTrigger asChild>
-              <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25" size="sm">
-                <Plus className="h-4 w-4" />
-                Novo Boleto
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <Barcode className="h-5 w-5" />
-                  Gerar Novo Boleto
-                </DialogTitle>
-              </DialogHeader>
-              <NovoBoletoForm 
-                onClose={() => setShowNovoBoleto(false)}
-                empresas={empresas}
-                contasBancarias={contasBancarias}
-                onSubmit={createBoleto}
-                isCreating={isCreating}
-              />
-            </DialogContent>
-          </Dialog>
+          <div className="flex items-center gap-3">
+             <Tabs value={activeTab} onValueChange={setActiveTab} className="bg-muted/50 p-1 rounded-xl">
+              <TabsList className="bg-transparent border-none">
+                <TabsTrigger value="lista" className="rounded-lg gap-2"><FileText className="h-4 w-4" /> Lista</TabsTrigger>
+                <TabsTrigger value="historico" className="rounded-lg gap-2"><HistoryIcon className="h-4 w-4" /> Histórico</TabsTrigger>
+              </TabsList>
+            </Tabs>
+
+            <Dialog open={showNovoBoleto} onOpenChange={setShowNovoBoleto}>
+              <DialogTrigger asChild>
+                <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25 h-10" size="sm">
+                  <Plus className="h-4 w-4" />
+                  Novo Boleto
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Barcode className="h-5 w-5" />
+                    Gerar Novo Boleto
+                  </DialogTitle>
+                </DialogHeader>
+                <NovoBoletoForm 
+                  onClose={() => setShowNovoBoleto(false)}
+                  empresas={empresas}
+                  contasBancarias={contasBancarias}
+                  onSubmit={createBoleto}
+                  isCreating={isCreating}
+                />
+              </DialogContent>
+            </Dialog>
+          </div>
         </motion.div>
 
         {/* KPIs */}
@@ -166,13 +184,18 @@ export default function Boletos() {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05, type: 'spring', stiffness: 300, damping: 24 }}
+                onClick={() => setStatusFilter(kpi.filter)}
+                className="cursor-pointer"
               >
-                <Card className="stat-card group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 h-full">
+                <Card className={cn(
+                  "stat-card group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 h-full border-white/5 bg-white/[0.02]",
+                  statusFilter === kpi.filter && "ring-2 ring-primary/50 bg-primary/5"
+                )}>
                   <CardContent className="p-3 sm:p-5">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs sm:text-sm font-medium text-muted-foreground">{kpi.label}</p>
-                        <p className="text-lg sm:text-2xl font-bold font-display mt-1 tabular-nums">{formatCurrency(kpi.value)}</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{kpi.label}</p>
+                        <p className="text-lg sm:text-2xl font-black font-display mt-1 tabular-nums tracking-tighter">{formatCurrency(kpi.value)}</p>
                       </div>
                       <div className={cn("h-10 w-10 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 shrink-0", kpi.bg, kpi.color)}>
                         <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -184,6 +207,7 @@ export default function Boletos() {
             );
           })}
         </motion.div>
+
 
         {/* Filters */}
         <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4">

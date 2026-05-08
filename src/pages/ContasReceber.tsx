@@ -41,11 +41,12 @@ const itemVariants = {
 export default function ContasReceber() {
   const {
     searchTerm, statusFilter, centroCustoFilter, empresaFilter, formaFilter,
+    contaBancariaFilter, handleContaBancariaChange,
     formOpen, recebimentoDialogOpen, selectedConta, editingConta, advancedFilters,
     currentPage, pageSize, deleteDialogOpen, deletingConta, isDeleting, isLoading, filterType,
     viewMode, detailDrawerOpen, detailConta, cobrancaDialogOpen, cobrancaConta,
     descontoDialogOpen, descontoConta,
-    contas, sortedContas, centrosCusto, empresas, totalCount, totalPages, kpis, sortKey, sortDirection,
+    contas, sortedContas, centrosCusto, empresas, contasBancarias, totalCount, totalPages, kpis, sortKey, sortDirection,
     handleSearchChange, handleStatusChange, handleCentroCustoChange, handleEmpresaChange,
     handleFormaChange, handlePageSizeChange, handleSort, handleOpenDeleteDialog, handleDeleteConta,
     handleFilterChange, handleBulkMarkAsReceived, handleBulkCancel, handleViewConta,
@@ -56,6 +57,7 @@ export default function ContasReceber() {
     selectedIds, selectedCount, isProcessing, progress, isSelected, isAllSelected,
     selectAll, toggleSelect, clearSelection,
   } = useContasReceberLogic();
+
 
   useHighlightFromUrl('highlight', (sortedContas?.length ?? 0) > 0);
 
@@ -132,9 +134,11 @@ export default function ContasReceber() {
                 centrosCusto={centrosCusto}
                 empresaFilter={empresaFilter} onEmpresaChange={handleEmpresaChange} empresas={empresas}
                 formaFilter={formaFilter} onFormaChange={handleFormaChange}
+                contaBancariaFilter={contaBancariaFilter} onContaBancariaChange={handleContaBancariaChange} contasBancarias={contasBancarias}
                 advancedFilters={advancedFilters} onAdvancedFiltersChange={setAdvancedFilters}
               />
             </motion.div>
+
           </div>
 
           {/* Core Content: Table or Kanban */}
@@ -157,6 +161,8 @@ export default function ContasReceber() {
                           <th className="p-6"><SortableHeader label="Maturity Date" sortKey="data_vencimento" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></th>
                           <th className="w-24 p-6 text-center"><SortableHeader label="Delay" sortKey="data_vencimento" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></th>
                           <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-center">Status</th>
+                          <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Conta Bancária</th>
+
                           {empresas.length > 1 && <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Corporate</th>}
                           <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-center">Credit Score</th>
                           <th className="w-20 p-6"></th>
