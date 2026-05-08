@@ -514,6 +514,7 @@ export function useAsaas(empresaId?: string) {
     consultarSaldo, transferirPix, consultarExtrato,
     transfers, loadingTransfers, sincronizarTransferencia,
     suggestions, loadingSuggestions, gerarSugestoes, aceitarSugestao,
+    detailStats,
     criarLinkPagamento, listarLinksPagamento, excluirLinkPagamento,
     simularAntecipacao, solicitarAntecipacao,
     stats,
