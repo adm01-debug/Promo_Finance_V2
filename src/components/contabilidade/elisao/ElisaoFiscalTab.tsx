@@ -250,50 +250,106 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
         {/* Tab content: Créditos */}
         <TabsContent value="creditos" className="pt-4 space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Zap className="h-5 w-5 text-amber-500" />
-                Inteligência de Produtos (Baseado em Notas Fiscais Reais)
-              </CardTitle>
-              <CardDescription>
-                Cruzamento automático de NCMs de entrada com regras de PIS/COFINS Monofásico e créditos presumidos.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>NCM</TableHead>
-                      <TableHead>Oportunidade</TableHead>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead>Crédito Estimado (12m)</TableHead>
-                      <TableHead className="text-right">Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {oportunidades.length === 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Card className="lg:col-span-2">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <ShieldCheck className="h-5 w-5 text-emerald-500" />
+                    Auditoria de Elegibilidade de Créditos
+                  </CardTitle>
+                  <CardDescription>
+                    Rastreabilidade completa: Por que cada crédito foi sugerido e quais as evidências.
+                  </CardDescription>
+                </div>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <FileDown className="h-4 w-4" /> Exportar Laudo (PDF)
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
                       <TableRow>
-                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                          Nenhuma nota fiscal com NCM mapeado para crédito identificada nos últimos 12 meses.
-                        </TableCell>
+                        <TableHead>Documento</TableHead>
+                        <TableHead>NCM/Regra</TableHead>
+                        <TableHead>Metodologia</TableHead>
+                        <TableHead>Valor</TableHead>
+                        <TableHead>Elegibilidade</TableHead>
                       </TableRow>
-                    ) : (
-                      oportunidades.map((op: any, i: number) => (
-                        <TableRow key={i}>
-                          <TableCell className="font-mono text-xs">{op.ncm_relacionado}</TableCell>
-                          <TableCell className="text-xs">{op.descricao}</TableCell>
-                          <TableCell><Badge variant="secondary" className="text-[10px]">{op.tipo_oportunidade}</Badge></TableCell>
-                          <TableCell className="text-xs font-bold text-emerald-600">R$ {op.valor_estimado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
-                          <TableCell className="text-right"><CheckCircle2 className="h-4 w-4 text-emerald-500 ml-auto" /></TableCell>
+                    </TableHeader>
+                    <TableBody>
+                      {auditoriaLogs.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
+                            <FileSearch className="h-8 w-8 mx-auto mb-2 opacity-20" />
+                            Aguardando processamento das notas fiscais para auditoria.
+                          </TableCell>
                         </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
+                      ) : (
+                        auditoriaLogs.map((log: any) => (
+                          <TableRow key={log.id} className="group">
+                            <TableCell>
+                              <div className="flex flex-col">
+                                <span className="text-xs font-bold">NF #{log.nota_fiscal_id.slice(0, 8)}</span>
+                                <span className="text-[10px] text-muted-foreground">{new Date(log.created_at).toLocaleDateString()}</span>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex flex-col">
+                                <span className="text-xs font-mono">{log.ncm}</span>
+                                <Badge variant="outline" className="text-[9px] w-fit h-4 px-1">{log.elisao_regras_creditos?.tipo_credito}</Badge>
+                              </div>
+                            </TableCell>
+                            <TableCell className="max-w-[200px]">
+                              <p className="text-[10px] line-clamp-2 italic text-muted-foreground">
+                                {log.metodologia_applied || "Baseado na Lei 10.147/00 para produtos monofásicos."}
+                              </p>
+                            </TableCell>
+                            <TableCell className="text-xs font-bold text-emerald-600">
+                              R$ {log.valor_credito_calculado.toLocaleString('pt-BR')}
+                            </TableCell>
+                            <TableCell>
+                              <Badge className={log.status_validacao === 'elegivel' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}>
+                                {log.status_validacao}
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Zap className="h-5 w-5 text-amber-500" />
+                  Potencial Identificado
+                </CardTitle>
+                <CardDescription>Consolidado por Categoria</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {oportunidades.map((op: any, i: number) => (
+                  <div key={i} className="flex flex-col p-3 rounded-lg border bg-muted/20">
+                    <div className="flex justify-between items-start mb-1">
+                      <span className="text-xs font-bold">{op.tipo_oportunidade}</span>
+                      <span className="text-xs font-bold text-emerald-600">R$ {op.valor_estimado.toLocaleString('pt-BR')}</span>
+                    </div>
+                    <div className="text-[10px] text-muted-foreground mb-2">{op.descricao}</div>
+                    <div className="flex items-center justify-between">
+                      <Badge variant="outline" className="text-[9px] font-mono">NCM {op.ncm_relacionado}</Badge>
+                      <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1">
+                        Validar Notas <ChevronRight className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         {/* Tab content: Dashboard */}
