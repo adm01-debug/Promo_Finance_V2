@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
-import { useContasPagar, useContasPagarPaginated, useCentrosCusto, ContaPagar } from '@/hooks/useFinancialData';
+import { useContasPagar, useContasPagarPaginated, useCentrosCusto, useEmpresas, useContasBancarias, ContaPagar } from '@/hooks/useFinancialData';
 import { useConfiguracaoAprovacao, useCriarSolicitacaoAprovacao } from '@/hooks/useAprovacoes';
 import { useAuth } from '@/hooks/useAuth';
 import { useTableOptimization } from '@/hooks/useTableOptimization';
@@ -50,6 +50,8 @@ export function useContasPagarLogic() {
 
   const { data: allContas = [] } = useContasPagar();
   const { data: centrosCusto = [] } = useCentrosCusto();
+  const { data: empresas = [] } = useEmpresas();
+  const { data: contasBancarias = [] } = useContasBancarias();
   const { data: configuracao } = useConfiguracaoAprovacao();
   const criarSolicitacaoMutation = useCriarSolicitacaoAprovacao();
 
@@ -166,6 +168,12 @@ export function useContasPagarLogic() {
     }
     if (advancedFilters.tipoCobranca) {
       matchesAdvanced = matchesAdvanced && c.tipo_cobranca === advancedFilters.tipoCobranca;
+    }
+    if (advancedFilters.empresaId && advancedFilters.empresaId !== 'all') {
+      matchesAdvanced = matchesAdvanced && c.empresa_id === advancedFilters.empresaId;
+    }
+    if (advancedFilters.contaBancariaId && advancedFilters.contaBancariaId !== 'all') {
+      matchesAdvanced = matchesAdvanced && c.conta_bancaria_id === advancedFilters.contaBancariaId;
     }
 
     return matchesAprovacao && matchesAdvanced;
@@ -363,6 +371,8 @@ export function useContasPagarLogic() {
     isLoading,
     profilesMap,
     historicoAprovacaoPorConta,
+    empresas,
+    contasBancarias,
 
     // KPIs
     totalPagar,

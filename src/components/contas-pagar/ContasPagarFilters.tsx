@@ -33,6 +33,8 @@ interface ContasPagarFiltersProps {
   onAdvancedFiltersChange: (filters: AdvancedFilters) => void;
   centrosCusto: CentroCusto[];
   countPendentesAprovacao: number;
+  empresas?: Array<{ id: string; razao_social: string; nome_fantasia: string | null }>;
+  contasBancarias?: Array<{ id: string; banco: string; agencia: string; conta: string }>;
 }
 
 const itemVariants = {
@@ -55,6 +57,8 @@ export const ContasPagarFilters = forwardRef<HTMLDivElement, ContasPagarFiltersP
   onAdvancedFiltersChange,
   centrosCusto,
   countPendentesAprovacao,
+  empresas = [],
+  contasBancarias = [],
 }, ref) {
   return (
     <motion.div ref={ref} variants={itemVariants}>
@@ -158,6 +162,8 @@ export const ContasPagarFilters = forwardRef<HTMLDivElement, ContasPagarFiltersP
                 <AdvancedFiltersPopover
                   filters={advancedFilters}
                   onFiltersChange={onAdvancedFiltersChange}
+                  empresas={empresas.map(e => ({ value: e.id, label: e.nome_fantasia || e.razao_social }))}
+                  contasBancarias={contasBancarias.map(cb => ({ value: cb.id, label: `${cb.banco} - ${cb.conta}` }))}
                 />
               </div>
             </div>

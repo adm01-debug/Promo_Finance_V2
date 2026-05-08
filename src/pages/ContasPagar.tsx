@@ -148,6 +148,8 @@ export default function ContasPagar() {
                 onAdvancedFiltersChange={logic.setAdvancedFilters}
                 centrosCusto={logic.centrosCusto}
                 countPendentesAprovacao={logic.countPendentesAprovacao}
+                empresas={logic.empresas}
+                contasBancarias={logic.contasBancarias}
               />
             </motion.div>
           </div>

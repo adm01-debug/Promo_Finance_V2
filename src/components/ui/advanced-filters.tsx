@@ -30,12 +30,21 @@ export interface AdvancedFilters {
   valorMinimo?: number;
   valorMaximo?: number;
   tipoCobranca?: string;
+  empresaId?: string;
+  contaBancariaId?: string;
+}
+
+interface FilterOption {
+  value: string;
+  label: string;
 }
 
 interface AdvancedFiltersProps {
   filters: AdvancedFilters;
   onFiltersChange: (filters: AdvancedFilters) => void;
-  tiposCobranca?: { value: string; label: string }[];
+  tiposCobranca?: FilterOption[];
+  empresas?: FilterOption[];
+  contasBancarias?: FilterOption[];
   className?: string;
   controller?: ManagedFiltersController<AdvancedFilters & Record<string, unknown>>;
 }
@@ -52,6 +61,8 @@ export function AdvancedFiltersPopover({
   ],
   className,
   controller,
+  empresas = [],
+  contasBancarias = [],
 }: AdvancedFiltersProps) {
   const [open, setOpen] = useState(false);
 
@@ -61,7 +72,9 @@ export function AdvancedFiltersPopover({
     filters.valorMinimo,
     filters.valorMaximo,
     filters.tipoCobranca,
-  ].filter(Boolean).length;
+    filters.empresaId,
+    filters.contaBancariaId,
+  ].filter(f => !!f && f !== 'all').length;
 
   const handleClearFilters = () => {
     onFiltersChange({});
@@ -106,7 +119,9 @@ export function AdvancedFiltersPopover({
                     { label: 'Até', value: v.dataVencimentoFim as unknown as string, isActive: !!v.dataVencimentoFim },
                     { label: 'Mínimo', value: v.valorMinimo as unknown as number, isActive: v.valorMinimo != null },
                     { label: 'Máximo', value: v.valorMaximo as unknown as number, isActive: v.valorMaximo != null },
-                    { label: 'Tipo', value: v.tipoCobranca as unknown as string, isActive: !!v.tipoCobranca },
+                    { label: 'Tipo', value: v.tipoCobranca as unknown as string, isActive: !!v.tipoCobranca && v.tipoCobranca !== 'all' },
+                    { label: 'Empresa', value: v.empresaId as unknown as string, isActive: !!v.empresaId && v.empresaId !== 'all' },
+                    { label: 'Conta', value: v.contaBancariaId as unknown as string, isActive: !!v.contaBancariaId && v.contaBancariaId !== 'all' },
                   ]}
                 />
               ) : (
@@ -226,6 +241,52 @@ export function AdvancedFiltersPopover({
             </Select>
           </div>
 
+          {/* Empresa */}
+          {empresas.length > 0 && (
+            <div className="space-y-2">
+              <Label className="text-xs font-medium text-muted-foreground">Empresa</Label>
+              <Select
+                value={filters.empresaId || 'all'}
+                onValueChange={(value) => updateFilter('empresaId', value)}
+              >
+                <SelectTrigger className="h-9 text-xs">
+                  <SelectValue placeholder="Todas as empresas" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border border-border z-[60]">
+                  <SelectItem value="all">Todas as empresas</SelectItem>
+                  {empresas.map((e) => (
+                    <SelectItem key={e.value} value={e.value}>
+                      {e.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* Conta Bancária */}
+          {contasBancarias.length > 0 && (
+            <div className="space-y-2">
+              <Label className="text-xs font-medium text-muted-foreground">Conta Bancária</Label>
+              <Select
+                value={filters.contaBancariaId || 'all'}
+                onValueChange={(value) => updateFilter('contaBancariaId', value)}
+              >
+                <SelectTrigger className="h-9 text-xs">
+                  <SelectValue placeholder="Todas as contas" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border border-border z-[60]">
+                  <SelectItem value="all">Todas as contas</SelectItem>
+                  {contasBancarias.map((cb) => (
+                    <SelectItem key={cb.value} value={cb.value}>
+                      {cb.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           {/* Active Filters Summary */}
           {activeFiltersCount > 0 && (
             <>
@@ -267,12 +328,30 @@ export function AdvancedFiltersPopover({
                     />
                   </Badge>
                 )}
-                {filters.tipoCobranca && (
+                {filters.tipoCobranca && filters.tipoCobranca !== 'all' && (
                   <Badge variant="secondary" className="text-[10px] gap-1 h-5">
                     {tiposCobranca.find(t => t.value === filters.tipoCobranca)?.label}
                     <X
                       className="h-2.5 w-2.5 cursor-pointer"
                       onClick={() => updateFilter('tipoCobranca', undefined)}
+                    />
+                  </Badge>
+                )}
+                {filters.empresaId && filters.empresaId !== 'all' && (
+                  <Badge variant="secondary" className="text-[10px] gap-1 h-5">
+                    {empresas.find(e => e.value === filters.empresaId)?.label || 'Empresa'}
+                    <X
+                      className="h-2.5 w-2.5 cursor-pointer"
+                      onClick={() => updateFilter('empresaId', undefined)}
+                    />
+                  </Badge>
+                )}
+                {filters.contaBancariaId && filters.contaBancariaId !== 'all' && (
+                  <Badge variant="secondary" className="text-[10px] gap-1 h-5">
+                    {contasBancarias.find(cb => cb.value === filters.contaBancariaId)?.label || 'Conta'}
+                    <X
+                      className="h-2.5 w-2.5 cursor-pointer"
+                      onClick={() => updateFilter('contaBancariaId', undefined)}
                     />
                   </Badge>
                 )}

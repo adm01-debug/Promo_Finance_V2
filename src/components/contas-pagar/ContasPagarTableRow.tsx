@@ -85,6 +85,8 @@ interface ContaPagarRow {
   aprovado_por?: string | null;
   aprovado_em?: string | null;
   centros_custo?: CentroCustoInfo | null;
+  empresa_id: string;
+  conta_bancaria_id: string | null;
 }
 
 interface ContasPagarTableRowProps {
