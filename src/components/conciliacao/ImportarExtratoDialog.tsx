@@ -13,6 +13,7 @@ interface ImportarExtratoDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onImportSuccess: (extrato: ExtratoOFX) => void;
+  contaBancariaId?: string;
 }
 
 type Step = 'upload' | 'processing' | 'preview' | 'error';
