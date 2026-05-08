@@ -303,6 +303,23 @@ export default function BI() {
             <HistoricoAnalisesPreditivasPanel />
           </div>
         </motion.div>
+        <BIDrillDown
+          isOpen={!!drillDownItem}
+          onClose={() => setDrillDownItem(null)}
+          title={
+            drillDownItem === 'receber' ? 'Detalhamento: Contas a Receber' :
+            drillDownItem === 'pagar' ? 'Detalhamento: Contas a Pagar' :
+            drillDownItem === 'atraso' ? 'Detalhamento: Pagamentos em Atraso' :
+            'Detalhamento de Lançamentos'
+          }
+          type={drillDownItem === 'receber' || drillDownItem === 'atraso' ? 'receber' : 'pagar'}
+          data={
+            drillDownItem === 'receber' ? filteredReceber :
+            drillDownItem === 'pagar' ? filteredPagar :
+            drillDownItem === 'atraso' ? filteredReceber.filter(c => c.status === 'vencido') :
+            []
+          }
+        />
       </motion.div>
     </MainLayout>
   );
