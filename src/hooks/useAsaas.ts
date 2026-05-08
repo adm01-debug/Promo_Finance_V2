@@ -127,7 +127,7 @@ export function useAsaas(empresaId?: string) {
         .from('asaas_payments')
         .select(`
           *,
-          clientes:asaas_customer_id(razao_social, cpf_cnpj)
+          clientes:asaas_customers!asaas_payments_asaas_customer_id_fkey(razao_social, cpf_cnpj)
         `)
         .eq('empresa_id', empresaId)
         .order('created_at', { ascending: false })
