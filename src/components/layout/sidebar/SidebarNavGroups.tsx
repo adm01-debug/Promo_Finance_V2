@@ -132,6 +132,7 @@ const navGroups: NavGroup[] = [
       { label: 'Gestão de Contas', icon: Landmark, href: '/contas-bancarias' },
       { label: 'Centro de Custos', icon: PieChart, href: '/centro-custos' },
       { label: 'Orçamento x Realizado', icon: Scale, href: '/orcamento-evento', highlight: true },
+      { label: 'Gestão de Boletos', icon: FileText, href: '/boletos', highlight: true },
     ],
   },
   {
