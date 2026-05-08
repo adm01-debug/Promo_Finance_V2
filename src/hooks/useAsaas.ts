@@ -328,6 +328,18 @@ export function useAsaas(empresaId?: string) {
     valorRecebido: payments.filter(p => ['RECEIVED', 'CONFIRMED'].includes(p.status)).reduce((s, p) => s + (p.valor_liquido || p.valor), 0),
   };
 
+  // ===== ESTATÍSTICAS DETALHADAS =====
+  const { data: detailStats } = useQuery({
+    queryKey: ['asaas-stats', empresaId],
+    queryFn: async () => {
+      if (!empresaId) return null;
+      const { data, error } = await supabase.rpc('get_asaas_payment_stats', { p_empresa_id: empresaId });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!empresaId,
+  });
+
   // ===== CONFIGURAÇÕES =====
   const { data: config, isLoading: loadingConfig } = useQuery({
     queryKey: ['asaas-config', empresaId],
