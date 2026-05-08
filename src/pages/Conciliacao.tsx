@@ -72,6 +72,7 @@ function ConciliacaoToolbarHost({
 }
 
 export default function Conciliacao() {
+  const { currentEmpresaId } = useAuth();
   const {
     mainTab, setMainTab, statusTab, setStatusTab,
     selectedBanco, setSelectedBanco, searchTerm, setSearchTerm,
@@ -92,6 +93,14 @@ export default function Conciliacao() {
     handleBulkConciliar, handleBulkIgnorar,
     toggleSelect, toggleSelectAll,
   } = useConciliacaoPage();
+
+  // Sincroniza conta bancária padrão da empresa se nenhuma selecionada
+  useEffect(() => {
+    if (currentEmpresaId && !selectedBanco && contasBancarias?.length) {
+      const contaEmpresa = contasBancarias.find(c => c.empresa_id === currentEmpresaId);
+      if (contaEmpresa) setSelectedBanco(contaEmpresa.id);
+    }
+  }, [currentEmpresaId, selectedBanco, contasBancarias, setSelectedBanco]);
 
   // Saved filter presets / sort / column visibility
   const { defaultFilter } = useSavedFilters<ConciliacaoFilterState>('conciliacao_transacoes');
