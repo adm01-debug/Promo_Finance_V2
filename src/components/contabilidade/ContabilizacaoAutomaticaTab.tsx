@@ -75,6 +75,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
   const [form, setForm] = useState({
     nome: '',
     tipo_evento: 'conta_pagar' as Regra['tipo_evento'],
+    categoria_id: null as string | null,
     conta_debito_id: '',
     conta_credito_id: '',
     historico_template: '{descricao}',
