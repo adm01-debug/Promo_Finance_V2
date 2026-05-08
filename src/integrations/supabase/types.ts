@@ -9246,6 +9246,11 @@ export type Database = {
       }
       transacoes_bancarias: {
         Row: {
+          compensacao_classificacao: string | null
+          compensacao_evidencia_url: string | null
+          compensacao_motivo: string | null
+          compensacao_regra: string | null
+          compensacao_valor: number | null
           conciliacao_parcial: boolean | null
           conciliada: boolean
           conciliada_em: string | null
@@ -9263,6 +9268,11 @@ export type Database = {
           valor_conciliado: number | null
         }
         Insert: {
+          compensacao_classificacao?: string | null
+          compensacao_evidencia_url?: string | null
+          compensacao_motivo?: string | null
+          compensacao_regra?: string | null
+          compensacao_valor?: number | null
           conciliacao_parcial?: boolean | null
           conciliada?: boolean
           conciliada_em?: string | null
@@ -9280,6 +9290,11 @@ export type Database = {
           valor_conciliado?: number | null
         }
         Update: {
+          compensacao_classificacao?: string | null
+          compensacao_evidencia_url?: string | null
+          compensacao_motivo?: string | null
+          compensacao_regra?: string | null
+          compensacao_valor?: number | null
           conciliacao_parcial?: boolean | null
           conciliada?: boolean
           conciliada_em?: string | null
