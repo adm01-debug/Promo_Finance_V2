@@ -20,6 +20,7 @@ export function useContasReceberLogic() {
   const [centroCustoFilter, setCentroCustoFilter] = useState<string>('all');
   const [empresaFilter, setEmpresaFilter] = useState<string>('all');
   const [formaFilter, setFormaFilter] = useState<string>('all');
+  const [contaBancariaFilter, setContaBancariaFilter] = useState<string>('all');
   const [formOpen, setFormOpen] = useState(false);
   const [recebimentoDialogOpen, setRecebimentoDialogOpen] = useState(false);
   const [selectedConta, setSelectedConta] = useState<ContaReceberWithRelations | null>(null);
@@ -38,6 +39,7 @@ export function useContasReceberLogic() {
   const [descontoDialogOpen, setDescontoDialogOpen] = useState(false);
   const [descontoConta, setDescontoConta] = useState<ContaReceberWithRelations | null>(null);
   const queryClient = useQueryClient();
+
 
   const { filterType, handleFilterChange, filterByDate } = useQuickDateFilter();
 
