@@ -61,9 +61,32 @@ const STORAGE_KEY = 'pf:current-empresa-id';
 export function getCurrentEmpresaId(): string | null {
   return localStorage.getItem(STORAGE_KEY);
 }
-export function setCurrentEmpresaId(id: string) {
+export async function setCurrentEmpresaId(id: string) {
+  const previousId = localStorage.getItem(STORAGE_KEY);
+  if (previousId === id) return;
+
   localStorage.setItem(STORAGE_KEY, id);
+  
+  // Registrar auditoria de troca de empresa
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.rpc('registrar_auditoria_config', {
+        _tipo_acao: 'troca_empresa',
+        _empresa_id: id,
+        _detalhes: {
+          previous_empresa_id: previousId,
+          timestamp: new Date().toISOString(),
+          context: 'EmpresaSwitcher QuickSwitch'
+        }
+      });
+    }
+  } catch (err) {
+    console.error('Erro ao auditar troca de empresa:', err);
+  }
+
   window.dispatchEvent(new CustomEvent('current-empresa-changed', { detail: id }));
+  toast.success('Empresa alterada com sucesso');
 }
 
 export function useDefinirEmpresaPadrao() {
