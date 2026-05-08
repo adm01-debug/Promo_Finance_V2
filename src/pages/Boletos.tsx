@@ -88,7 +88,7 @@ export default function Boletos() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('todos');
   const [selectedBoleto, setSelectedBoleto] = useState<Boleto | null>(null);
-  const [showNovoBoleto, setShowNovoBoleto] = useState(false);
+  const [showNovoBoleto, setShowNovoBoleto] = useState(new URLSearchParams(window.location.search).get('novo') === 'true');
   const [activeTab, setActiveTab] = useState('lista');
 
   const {

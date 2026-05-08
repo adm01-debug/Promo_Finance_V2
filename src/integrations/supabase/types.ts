@@ -1634,6 +1634,7 @@ export type Database = {
           codigo_barras: string
           conta: string
           conta_bancaria_id: string | null
+          conta_pagar_id: string | null
           conta_receber_id: string | null
           created_at: string
           created_by: string
@@ -1643,6 +1644,7 @@ export type Database = {
           linha_digitavel: string
           numero: string
           observacoes: string | null
+          rastreio_status: Json | null
           sacado_cpf_cnpj: string | null
           sacado_nome: string
           status: string
@@ -1659,6 +1661,7 @@ export type Database = {
           codigo_barras: string
           conta: string
           conta_bancaria_id?: string | null
+          conta_pagar_id?: string | null
           conta_receber_id?: string | null
           created_at?: string
           created_by: string
@@ -1668,6 +1671,7 @@ export type Database = {
           linha_digitavel: string
           numero: string
           observacoes?: string | null
+          rastreio_status?: Json | null
           sacado_cpf_cnpj?: string | null
           sacado_nome: string
           status?: string
@@ -1684,6 +1688,7 @@ export type Database = {
           codigo_barras?: string
           conta?: string
           conta_bancaria_id?: string | null
+          conta_pagar_id?: string | null
           conta_receber_id?: string | null
           created_at?: string
           created_by?: string
@@ -1693,6 +1698,7 @@ export type Database = {
           linha_digitavel?: string
           numero?: string
           observacoes?: string | null
+          rastreio_status?: Json | null
           sacado_cpf_cnpj?: string | null
           sacado_nome?: string
           status?: string
@@ -1714,6 +1720,20 @@ export type Database = {
             columns: ["conta_bancaria_id"]
             isOneToOne: false
             referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "boletos_conta_pagar_id_fkey"
+            columns: ["conta_pagar_id"]
+            isOneToOne: false
+            referencedRelation: "contas_pagar"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "boletos_conta_pagar_id_fkey"
+            columns: ["conta_pagar_id"]
+            isOneToOne: false
+            referencedRelation: "vw_contas_pagar_painel"
             referencedColumns: ["id"]
           },
           {
@@ -8336,6 +8356,7 @@ export type Database = {
           canais: string[] | null
           canal: string
           condicoes: Json | null
+          configuracoes_ia: Json | null
           created_at: string
           created_by: string | null
           descricao: string | null
@@ -8357,6 +8378,7 @@ export type Database = {
           canais?: string[] | null
           canal?: string
           condicoes?: Json | null
+          configuracoes_ia?: Json | null
           created_at?: string
           created_by?: string | null
           descricao?: string | null
@@ -8378,6 +8400,7 @@ export type Database = {
           canais?: string[] | null
           canal?: string
           condicoes?: Json | null
+          configuracoes_ia?: Json | null
           created_at?: string
           created_by?: string | null
           descricao?: string | null
@@ -9805,14 +9828,18 @@ export type Database = {
           conciliada: boolean
           conciliada_em: string | null
           conciliada_por: string | null
+          confirmado_por: string | null
           conta_bancaria_id: string
           conta_pagar_id: string | null
           conta_receber_id: string | null
           created_at: string
           data: string
+          data_confirmacao: string | null
           descricao: string
           id: string
+          regra_id: string | null
           saldo: number
+          status: string | null
           tipo: Database["public"]["Enums"]["tipo_transacao"]
           valor: number
           valor_conciliado: number | null
@@ -9829,14 +9856,18 @@ export type Database = {
           conciliada?: boolean
           conciliada_em?: string | null
           conciliada_por?: string | null
+          confirmado_por?: string | null
           conta_bancaria_id: string
           conta_pagar_id?: string | null
           conta_receber_id?: string | null
           created_at?: string
           data: string
+          data_confirmacao?: string | null
           descricao: string
           id?: string
+          regra_id?: string | null
           saldo: number
+          status?: string | null
           tipo: Database["public"]["Enums"]["tipo_transacao"]
           valor: number
           valor_conciliado?: number | null
@@ -9853,14 +9884,18 @@ export type Database = {
           conciliada?: boolean
           conciliada_em?: string | null
           conciliada_por?: string | null
+          confirmado_por?: string | null
           conta_bancaria_id?: string
           conta_pagar_id?: string | null
           conta_receber_id?: string | null
           created_at?: string
           data?: string
+          data_confirmacao?: string | null
           descricao?: string
           id?: string
+          regra_id?: string | null
           saldo?: number
+          status?: string | null
           tipo?: Database["public"]["Enums"]["tipo_transacao"]
           valor?: number
           valor_conciliado?: number | null
@@ -9906,6 +9941,13 @@ export type Database = {
             columns: ["conta_receber_id"]
             isOneToOne: false
             referencedRelation: "vw_contas_receber_painel"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transacoes_bancarias_regra_id_fkey"
+            columns: ["regra_id"]
+            isOneToOne: false
+            referencedRelation: "regras_conciliacao"
             referencedColumns: ["id"]
           },
         ]
@@ -11524,6 +11566,10 @@ export type Database = {
         Returns: undefined
       }
       delete_cron_job: { Args: { job_id: number }; Returns: undefined }
+      desfazer_conciliacao: {
+        Args: { p_transacao_id: string; p_user_id: string }
+        Returns: undefined
+      }
       duplicate_saved_filter: {
         Args: { _new_name: string; _source_id: string }
         Returns: string

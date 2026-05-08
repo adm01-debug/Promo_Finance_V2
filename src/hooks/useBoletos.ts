@@ -17,7 +17,7 @@ export interface Boleto {
   conta: string;
   linha_digitavel: string;
   codigo_barras: string;
-  status: 'gerado' | 'enviado' | 'pago' | 'vencido' | 'cancelado';
+  status: 'gerado' | 'enviado' | 'pago' | 'vencido' | 'cancelado' | 'rastreio';
   descricao: string | null;
   observacoes: string | null;
   conta_receber_id: string | null;
@@ -37,6 +37,7 @@ export interface NovoBoletoData {
   conta_bancaria_id: string;
   descricao?: string;
   conta_receber_id?: string;
+  conta_pagar_id?: string;
 }
 
 function generateLinhaDigitavel(valor: number, vencimento: string): string {
@@ -158,9 +159,11 @@ export function useBoletos() {
         status: 'gerado',
         descricao: data.descricao || null,
         conta_receber_id: data.conta_receber_id || null,
+        conta_pagar_id: data.conta_pagar_id || null,
         conta_bancaria_id: data.conta_bancaria_id,
         empresa_id: data.empresa_id,
         created_by: user.id,
+        rastreio_status: [{ status: 'gerado', data: new Date().toISOString(), detalhe: 'Boleto gerado pelo sistema' }]
       };
 
       const { data: newBoleto, error } = await supabase
@@ -182,6 +185,16 @@ export function useBoletos() {
           p_metadata: { boleto_id: (data as any).id, numero: (data as any).numero }
         });
       }
+
+      if (data && (data as any).conta_pagar_id) {
+        await supabase.rpc('registrar_evento_pagar', {
+          p_conta_id: (data as any).conta_pagar_id,
+          p_tipo: 'envio_boleto',
+          p_mensagem: `Boleto #${(data as any).numero} gerado para pagamento de fornecedor.`,
+          p_metadata: { boleto_id: (data as any).id, numero: (data as any).numero }
+        });
+      }
+
       queryClient.invalidateQueries({ queryKey: ['boletos'] });
       toast({
         title: 'Boleto gerado',
@@ -203,9 +216,17 @@ export function useBoletos() {
   // Update boleto status mutation
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: Boleto['status'] }) => {
+      const { data: currentBoleto } = await supabase.from('boletos').select('rastreio_status').eq('id', id).single();
+      const currentRastreio = Array.isArray(currentBoleto?.rastreio_status) ? currentBoleto.rastreio_status : [];
+      
+      const newRastreio = [
+        ...currentRastreio,
+        { status, data: new Date().toISOString(), detalhe: `Status alterado para ${status}` }
+      ];
+
       const { error } = await supabase
         .from('boletos')
-        .update({ status })
+        .update({ status, rastreio_status: newRastreio })
         .eq('id', id);
 
       if (error) throw error;
@@ -214,7 +235,7 @@ export function useBoletos() {
       queryClient.invalidateQueries({ queryKey: ['boletos'] });
       toast({
         title: 'Status atualizado',
-        description: 'O status do boleto foi atualizado.',
+        description: 'O status e rastreio do boleto foram atualizados.',
       });
     },
     onError: (error: Error) => {

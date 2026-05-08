@@ -57,7 +57,7 @@ export function useConciliacaoPage() {
   const { data: contasBancarias } = useContasBancarias();
   const { data: contasPagar } = useContasPagar();
   const { data: contasReceber } = useContasReceber();
-  const { confirmarConciliacao, salvarExtratoBanco } = useConciliacao();
+  const { confirmarConciliacao, salvarExtratoBanco, desfazerConciliacao } = useConciliacao();
 
   // Carregar transações do banco ao selecionar conta
   useEffect(() => {
@@ -297,6 +297,13 @@ export function useConciliacaoPage() {
     setTransacoes(prev => prev.filter(t => t.id !== id));
   };
 
+  const handleDesfazerConciliacao = useCallback(async (transacaoId: string) => {
+    try {
+      await desfazerConciliacao.mutateAsync(transacaoId);
+      setTransacoes(prev => prev.map(t => t.id === transacaoId ? { ...t, conciliada: false } : t));
+    } catch { /* toast already handled */ }
+  }, [desfazerConciliacao]);
+
   const handleBulkConciliar = useCallback(() => {
     setTransacoes(prev => prev.map(t => selectedIds.has(t.id) ? { ...t, conciliada: true } : t));
     toast.success(`${selectedIds.size} transações conciliadas`);
@@ -407,6 +414,7 @@ export function useConciliacaoPage() {
     handleConciliar, handleIgnorar,
     handleBulkConciliar, handleBulkIgnorar,
     toggleSelect, toggleSelectAll,
+    handleDesfazerConciliacao,
   };
 }
 

@@ -284,6 +284,7 @@ export function ContasPagarTableRow({
             onDelete={onDelete}
             onRegistrarPagamento={onRegistrarPagamento}
             onSolicitarAprovacao={onSolicitarAprovacao}
+            id={conta.id}
           />
         </div>
       </TableCell>
