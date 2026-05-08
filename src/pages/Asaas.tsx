@@ -8,7 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { AntecipacaoDialog } from '@/components/asaas/AntecipacaoDialog';
 import { TransferenciaPixHistoryPanel } from '@/components/asaas/TransferenciaPixHistoryPanel';
 import { BoletoPreviewPanel } from '@/components/boletos/BoletoPreviewPanel';
 import { useToast } from '@/hooks/use-toast';
@@ -28,7 +29,7 @@ import {
   DollarSign, Clock, CheckCircle2, AlertTriangle, Copy, ExternalLink,
   Send, Users, Undo2, FileText, MoreHorizontal, Link2, Download, History,
   Settings as SettingsIcon, LayoutDashboard, FileSpreadsheet, PlayCircle,
-  Search, Filter, Calendar, Bell, Mail, Phone, Loader2, Eye,
+  Search, Filter, Calendar, Bell, Mail, Phone, Loader2, Eye, TrendingUp, Target, Zap,
 } from 'lucide-react';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -121,6 +122,8 @@ export default function Asaas() {
   const [segundaViaDialog, setSegundaViaDialog] = useState<string | null>(null);
   const [selectedPaymentAudit, setSelectedPaymentAudit] = useState<string | null>(null);
   const [selectedBoletoPreview, setSelectedBoletoPreview] = useState<any | null>(null);
+  const [selectedAnticipationId, setSelectedAnticipationId] = useState<string | null>(null);
+  const [selectedQueueHistory, setSelectedQueueHistory] = useState<any[] | null>(null);
 
   const { toast: toastToast } = useToast();
   const [saldo, setSaldo] = useState<{ balance: number; totalPending: number } | null>(null);
@@ -291,6 +294,96 @@ export default function Asaas() {
           </Card>
         </div>
 
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card className="lg:col-span-2">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-display flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                Performance de Cobrança
+              </CardTitle>
+              <CardDescription>Volume financeiro por status de pagamento</CardDescription>
+            </CardHeader>
+            <CardContent className="h-[300px] pt-4">
+              {loadingPayments ? (
+                <div className="flex items-center justify-center h-full"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={detailStats || []}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} />
+                    <XAxis 
+                      dataKey="status" 
+                      fontSize={11} 
+                      tickLine={false} 
+                      axisLine={false} 
+                      tickFormatter={(v) => statusConfig[v]?.label || v}
+                    />
+                    <YAxis 
+                      fontSize={11} 
+                      tickLine={false} 
+                      axisLine={false} 
+                      tickFormatter={(v) => `R$ ${v >= 1000 ? (v/1000).toFixed(1) + 'k' : v}`}
+                    />
+                    <Tooltip 
+                      cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                      contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px', color: '#fff' }}
+                      formatter={(v: number) => [formatCurrency(v), 'Volume']}
+                      labelFormatter={(label) => `Status: ${statusConfig[label]?.label || label}`}
+                    />
+                    <Bar dataKey="total_value" radius={[4, 4, 0, 0]} barSize={40}>
+                      {(detailStats || []).map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={
+                          entry.status === 'RECEIVED' || entry.status === 'CONFIRMED' ? '#10b981' : 
+                          entry.status === 'OVERDUE' ? '#ef4444' : 
+                          entry.status === 'PENDING' ? '#f59e0b' : '#6b7280'
+                        } />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="lg:col-span-1">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-display flex items-center gap-2">
+                <Target className="h-5 w-5 text-success" />
+                Metas de Recebimento
+              </CardTitle>
+              <CardDescription>Conversão de títulos pendentes</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6 pt-4">
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Taxa de Liquidez</span>
+                  <span className="font-bold">
+                    {stats.total > 0 ? ((stats.recebidos / stats.total) * 100).toFixed(1) : 0}%
+                  </span>
+                </div>
+                <Progress value={stats.total > 0 ? (stats.recebidos / stats.total) * 100 : 0} className="h-2 bg-muted" />
+              </div>
+              
+              <div className="space-y-4">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Resumo Rápido</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-3 rounded-lg bg-success/5 border border-success/10">
+                    <p className="text-[10px] text-success font-bold uppercase">Liquidados</p>
+                    <p className="text-lg font-bold">{stats.recebidos}</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-warning/5 border border-warning/10">
+                    <p className="text-[10px] text-warning font-bold uppercase">Aguardando</p>
+                    <p className="text-lg font-bold">{stats.pendentes}</p>
+                  </div>
+                </div>
+              </div>
+
+              <Button variant="outline" className="w-full text-xs h-8 border-dashed" onClick={() => setDialogOpen(true)}>
+                <Plus className="h-3 w-3 mr-2" /> Gerar Nova Cobrança
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Main Tabs */}
         <Tabs defaultValue="cobrancas" className="space-y-4">
           <TabsList>
@@ -431,9 +524,14 @@ export default function Asaas() {
                               <Badge variant={item.status === 'failed' ? 'destructive' : 'secondary'} className="text-[10px]">{item.status}</Badge>
                             </TableCell>
                             <TableCell className="text-right">
-                              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setReprocessDialog({ paymentId: item.payment_id, asaasId: item.id })} disabled={reprocessarManual.isPending}>
+                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setReprocessDialog({ paymentId: item.payment_id, asaasId: item.id })} disabled={reprocessarManual.isPending}>
                                 <PlayCircle className="h-3.5 w-3.5" />
                               </Button>
+                              {item.error_history && item.error_history.length > 0 && (
+                                <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground" onClick={() => setSelectedQueueHistory(item.error_history)}>
+                                  <History className="h-3.5 w-3.5" />
+                                </Button>
+                              )}
                             </TableCell>
                           </TableRow>
                         ))}
@@ -869,6 +967,11 @@ export default function Asaas() {
                                     <DropdownMenuItem onClick={() => setSelectedBoletoPreview(payment)}>
                                       <Eye className="h-4 w-4 mr-2" /> Visualizar Boleto
                                     </DropdownMenuItem>
+                                    {payment.status === 'CONFIRMED' && (
+                                      <DropdownMenuItem onClick={() => setSelectedAnticipationId(payment.asaas_id)} className="text-yellow-600 font-medium">
+                                        <Zap className="h-4 w-4 mr-2" /> Antecipar Valor
+                                      </DropdownMenuItem>
+                                    )}
                                     <DropdownMenuItem onClick={() => setReprocessDialog({ paymentId: payment.id, asaasId: payment.asaas_id })}>
                                       <RefreshCw className={`h-4 w-4 mr-2 ${reprocessarManual.isPending ? 'animate-spin' : ''}`} /> Sincronizar Agora
                                     </DropdownMenuItem>
@@ -1054,6 +1157,35 @@ export default function Asaas() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* NOVO: Dialog de Antecipação */}
+      <AntecipacaoDialog 
+        paymentId={selectedAnticipationId} 
+        onClose={() => setSelectedAnticipationId(null)} 
+        empresaId={empresaId}
+      />
+
+      {/* NOVO: Dialog de Logs da Fila */}
+      <ConfirmationDialog
+        isOpen={!!selectedQueueHistory}
+        onClose={() => setSelectedQueueHistory(null)}
+        title="Histórico de Falhas (Fila)"
+        message={
+          <div className="space-y-4 max-h-[350px] overflow-y-auto">
+            {selectedQueueHistory?.map((log: any, i: number) => (
+              <div key={i} className="p-3 bg-muted/20 rounded-md border text-xs">
+                <div className="flex justify-between font-bold mb-1">
+                  <span>Tentativa #{log.attempt}</span>
+                  <span className="text-muted-foreground">{format(parseISO(log.timestamp), 'dd/MM HH:mm', { locale: ptBR })}</span>
+                </div>
+                <p className="text-destructive font-mono">{log.message}</p>
+              </div>
+            ))}
+          </div>
+        }
+        confirmText="Entendido"
+        onConfirm={() => setSelectedQueueHistory(null)}
+      />
     </MainLayout>
   );
 }

@@ -1389,6 +1389,7 @@ export type Database = {
         Row: {
           attempts: number
           created_at: string | null
+          error_history: Json | null
           id: string
           last_error: string | null
           max_attempts: number
@@ -1401,6 +1402,7 @@ export type Database = {
         Insert: {
           attempts?: number
           created_at?: string | null
+          error_history?: Json | null
           id?: string
           last_error?: string | null
           max_attempts?: number
@@ -1413,6 +1415,7 @@ export type Database = {
         Update: {
           attempts?: number
           created_at?: string | null
+          error_history?: Json | null
           id?: string
           last_error?: string | null
           max_attempts?: number
@@ -12244,14 +12247,23 @@ export type Database = {
           mensagem: string
         }[]
       }
-      processar_regua_cobranca: {
-        Args: { p_empresa_id?: string }
-        Returns: {
-          total_enfileirados: number
-          total_ja_cobrados: number
-          total_sem_contato: number
-        }[]
-      }
+      processar_regua_cobranca:
+        | {
+            Args: { p_empresa_id?: string }
+            Returns: {
+              total_enfileirados: number
+              total_ja_cobrados: number
+              total_sem_contato: number
+            }[]
+          }
+        | {
+            Args: { p_empresa_id: string; p_simulate?: boolean }
+            Returns: {
+              total_enfileirados: number
+              total_erros: number
+              total_sem_contato: number
+            }[]
+          }
       refresh_mv_benchmark_setorial: { Args: never; Returns: undefined }
       registrar_auditoria_config: {
         Args: { _detalhes: Json; _empresa_id: string; _tipo_acao: string }

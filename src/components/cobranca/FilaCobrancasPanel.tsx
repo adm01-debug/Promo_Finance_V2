@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Clock, Send, CheckCircle2, XCircle, AlertTriangle, RefreshCcw, Eye, Loader2 } from 'lucide-react';
+import { Clock, Send, CheckCircle2, XCircle, AlertTriangle, RefreshCw, Eye, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -51,22 +51,34 @@ export function FilaCobrancasPanel() {
         </div>
       )}
 
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
         <h3 className="text-lg font-semibold">Engine de Cobrança</h3>
         <div className="flex gap-2">
           <Button
-            onClick={() => processarRegua.mutate(undefined)}
+            onClick={() => processarRegua.mutate({ simulate: true })}
+            disabled={processarRegua.isPending}
+            variant="ghost"
+            size="sm"
+            className="gap-2 text-muted-foreground"
+          >
+            <Eye className="h-4 w-4" />
+            Simular 24h
+          </Button>
+          <Button
+            onClick={() => processarRegua.mutate({ simulate: false })}
             disabled={processarRegua.isPending}
             variant="outline"
+            size="sm"
             className="gap-2"
           >
-            {processarRegua.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCcw className="h-4 w-4" />}
-            Enfileirar Régua
+            {processarRegua.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+            Rodar Régua
           </Button>
           <Button
             onClick={() => processarFila.mutate()}
             disabled={processarFila.isPending}
-            className="gap-2"
+            size="sm"
+            className="gap-2 bg-gradient-to-r from-primary to-primary/80"
           >
             {processarFila.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             Disparar Fila
@@ -114,13 +126,13 @@ export function FilaCobrancasPanel() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="capitalize">{config.label}</Badge>
+                      <Badge variant="outline" className="capitalize text-[10px]">{config.label}</Badge>
                       {item.tentativas != null && item.tentativas > 0 && (
-                        <Badge variant="secondary" className="text-xs">
+                        <Badge variant="secondary" className="text-[10px]">
                           {item.tentativas}/{item.max_tentativas || 3}
                         </Badge>
                       )}
-                      <span className="text-xs text-muted-foreground">{formatDate(item.created_at)}</span>
+                      <span className="text-[10px] text-muted-foreground">{formatDate(item.created_at)}</span>
                     </div>
                   </div>
                 );
@@ -148,11 +160,11 @@ export function FilaCobrancasPanel() {
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant={exec.status === 'enviado' ? 'default' : 'destructive'} className="capitalize">
+                    <Badge variant={exec.status === 'enviado' ? 'default' : 'destructive'} className="capitalize text-[10px]">
                       {exec.status}
                     </Badge>
-                    {exec.provider && <Badge variant="outline" className="text-xs">{exec.provider}</Badge>}
-                    <span className="text-xs text-muted-foreground">{formatDate(exec.created_at)}</span>
+                    {exec.provider && <Badge variant="outline" className="text-[10px]">{exec.provider}</Badge>}
+                    <span className="text-[10px] text-muted-foreground">{formatDate(exec.created_at)}</span>
                   </div>
                 </div>
               ))}
