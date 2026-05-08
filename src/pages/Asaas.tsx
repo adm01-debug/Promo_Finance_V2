@@ -26,7 +26,7 @@ import {
   DollarSign, Clock, CheckCircle2, AlertTriangle, Copy, ExternalLink,
   Send, Users, Undo2, FileText, MoreHorizontal, Link2, Download, History,
   Settings as SettingsIcon, LayoutDashboard, FileSpreadsheet, PlayCircle,
-  Search, Filter, Calendar, Bell, Mail, Phone, Loader2,
+  Search, Filter, Calendar, Bell, Mail, Phone, Loader2, Eye,
 } from 'lucide-react';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
