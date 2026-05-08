@@ -65,6 +65,9 @@ export default function ContasBancarias() {
   const [deletingConta, setDeletingConta] = useState<ContaBancaria | null>(null);
   const [isDeleting] = useState(false);
   const [transferenciaOpen, setTransferenciaOpen] = useState(false);
+  const [regrasOpen, setRegrasOpen] = useState(false);
+  const [importarOpen, setImportarOpen] = useState(false);
+
 
   const queryClient = useQueryClient();
 
