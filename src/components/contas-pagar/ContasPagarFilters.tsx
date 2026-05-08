@@ -33,6 +33,8 @@ interface ContasPagarFiltersProps {
   onAdvancedFiltersChange: (filters: AdvancedFilters) => void;
   centrosCusto: CentroCusto[];
   countPendentesAprovacao: number;
+  empresas?: Array<{ id: string; razao_social: string; nome_fantasia: string | null }>;
+  contasBancarias?: Array<{ id: string; banco: string; agencia: string; conta: string }>;
 }
 
 const itemVariants = {
