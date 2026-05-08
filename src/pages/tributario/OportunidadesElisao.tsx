@@ -379,7 +379,7 @@ export default function OportunidadesElisao() {
                       {c.regra && (
                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
                           <CheckCheck className="h-3 w-3 text-success" />
-                          <span>Regra: {c.regra.nome}</span>
+                          <span>Regra: {c.regra.descricao}</span>
                         </div>
                       )}
                     </div>
