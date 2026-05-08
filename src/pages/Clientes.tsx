@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion } from 'framer-motion';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { ClientesTableBody } from '@/pages/clientes/ClientesTableBody';
@@ -74,6 +75,7 @@ import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ClienteForm } from '@/components/clientes/ClienteForm';
 import { ClienteDetailDialog } from '@/components/clientes/ClienteDetailDialog';
+import { ScoringClientesPanel } from '@/components/clientes/ScoringClientesPanel';
 import { TablePagination } from '@/components/ui/table-pagination';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
@@ -260,36 +262,44 @@ export default function Clientes() {
   };
   return (
     <MainLayout>
-      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
-        {/* Page Header */}
-        <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-display-md text-foreground">Clientes</h1>
-            <p className="text-muted-foreground mt-1">Gerencie sua base de clientes</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <ExportMenu
-              data={filteredClientes}
-              columns={clientesColumns}
-              filename="clientes"
-              title="Relatório de Clientes"
-            />
-            <Button 
-              size="sm" 
-              className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
-              onClick={() => {
-                setEditingCliente(null);
-                setFormOpen(true);
-              }}
-            >
-              <Plus className="h-4 w-4" />
-              Novo Cliente
-            </Button>
-          </div>
-        </motion.div>
+      <Tabs defaultValue="lista" className="w-full">
+        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+          {/* Page Header */}
+          <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-display-md text-foreground">Clientes</h1>
+              <p className="text-muted-foreground mt-1">Gerencie sua base de clientes</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <TabsList className="bg-primary/10 border-primary/20">
+                <TabsTrigger value="lista">Lista Geral</TabsTrigger>
+                <TabsTrigger value="scoring">Scoring & Risco</TabsTrigger>
+              </TabsList>
+              <div className="flex items-center gap-3">
+                <ExportMenu
+                  data={filteredClientes}
+                  columns={clientesColumns}
+                  filename="clientes"
+                  title="Relatório de Clientes"
+                />
+                <Button 
+                  size="sm" 
+                  className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
+                  onClick={() => {
+                    setEditingCliente(null);
+                    setFormOpen(true);
+                  }}
+                >
+                  <Plus className="h-4 w-4" />
+                  Novo Cliente
+                </Button>
+              </div>
+            </div>
+          </motion.div>
 
-        {/* KPI Cards */}
-        <ClientesKPIs totalClientes={totalClientes} clientesAtivos={clientesAtivos} limiteTotal={limiteTotal} />
+          <TabsContent value="lista" className="space-y-6 m-0 border-none p-0">
+            {/* KPI Cards */}
+            <ClientesKPIs totalClientes={totalClientes} clientesAtivos={clientesAtivos} limiteTotal={limiteTotal} />
 
         {/* Filters */}
         <ClientesFiltersPanel
@@ -380,36 +390,44 @@ export default function Clientes() {
             )}
           </Card>
         </motion.div>
+      </TabsContent>
 
-        <ClienteForm 
-          open={formOpen} 
-          onOpenChange={(open) => {
-            setFormOpen(open);
-            if (!open) setEditingCliente(null);
-          }}
-          cliente={editingCliente as any}
-        />
+          <TabsContent value="scoring" className="m-0 border-none p-0">
+            <motion.div variants={itemVariants}>
+              <ScoringClientesPanel />
+            </motion.div>
+          </TabsContent>
 
-        <ClienteDetailDialog
-          cliente={viewingCliente as any}
-          open={detailOpen}
-          onOpenChange={(open) => {
-            setDetailOpen(open);
-            if (!open) setViewingCliente(null);
-          }}
-        />
+          <ClienteForm 
+            open={formOpen} 
+            onOpenChange={(open) => {
+              setFormOpen(open);
+              if (!open) setEditingCliente(null);
+            }}
+            cliente={editingCliente as any}
+          />
 
-        <ConfirmDialog
-          open={deleteDialogOpen}
-          onOpenChange={setDeleteDialogOpen}
-          title="Confirmar exclusão"
-          description={`Tem certeza que deseja excluir o cliente "${deletingCliente?.razao_social}"? Esta ação não pode ser desfeita.`}
-          confirmLabel="Excluir"
-          variant="danger"
-          isLoading={isDeleting}
-          onConfirm={handleDelete}
-        />
-      </motion.div>
+          <ClienteDetailDialog
+            cliente={viewingCliente as any}
+            open={detailOpen}
+            onOpenChange={(open) => {
+              setDetailOpen(open);
+              if (!open) setViewingCliente(null);
+            }}
+          />
+
+          <ConfirmDialog
+            open={deleteDialogOpen}
+            onOpenChange={setDeleteDialogOpen}
+            title="Confirmar exclusão"
+            description={`Tem certeza que deseja excluir o cliente "${deletingCliente?.razao_social}"? Esta ação não pode ser desfeita.`}
+            confirmLabel="Excluir"
+            variant="danger"
+            isLoading={isDeleting}
+            onConfirm={handleDelete}
+          />
+        </motion.div>
+      </Tabs>
     </MainLayout>
   );
 }

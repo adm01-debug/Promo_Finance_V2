@@ -13,6 +13,7 @@ import {
   Bell,
   Settings,
   ChevronDown,
+  Key,
   Building2,
   CreditCard,
   BarChart3,
@@ -42,6 +43,7 @@ import {
   CheckCircle,
   EyeOff,
   History,
+  Target,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -51,6 +53,7 @@ import { useAlertasNaoLidos } from '@/hooks/useAlertas';
 import { useAlertasTributariosCount } from '@/hooks/useAlertasTributariosCount';
 import { useRealtimeAlertas } from '@/hooks/useRealtimeAlertas';
 import { useRealtimeAnomalias } from '@/hooks/useRealtimeAnomalias';
+import { useWhatsAppUnreadCount } from '@/hooks/useWhatsAppUnreadCount';
 
 interface NavItem {
   label: string;
@@ -79,6 +82,7 @@ const navGroups: NavGroup[] = [
     items: [
       { label: 'Dashboard', icon: LayoutDashboard, href: '/' },
       { label: 'BI Gestão', icon: BarChart3, href: '/bi', highlight: true },
+      { label: 'Inteligência IA', icon: Sparkles, href: '/inteligencia', highlight: true },
       { label: 'Dashboard Empresa', icon: Building2, href: '/dashboard-empresa' },
       { label: 'Benchmarking', icon: Scale, href: '/benchmarking', highlight: true },
       { label: 'EXPERT (IA)', icon: Bot, href: '/expert', highlight: true },
@@ -101,6 +105,7 @@ const navGroups: NavGroup[] = [
       { label: 'Simulador Antecipação', icon: Calculator, href: '/simulador-antecipacao' },
       { label: 'Asaas Pagamentos', icon: CreditCard, href: '/asaas', highlight: true },
       { label: 'Bloqueios Duplicidade', icon: EyeOff, href: '/contas-pagar/bloqueios', highlight: true },
+      { label: 'Metas Financeiras', icon: Target, href: '/metas' },
     ],
   },
   {
@@ -114,6 +119,12 @@ const navGroups: NavGroup[] = [
       { label: 'Oportunidades de Elisão', icon: Sparkles, href: '/tributario/oportunidades-elisao', highlight: true },
       { label: 'Projeção 2026-2033', icon: BarChart3, href: '/tributario/projecao-reforma', highlight: true },
       { label: 'Histórico Tributário', icon: FileSpreadsheet, href: '/tributario/historico-financeiro' },
+      { label: 'Split Payment', icon: ArrowLeftRight, href: '/tributario/split-payment' },
+      { label: 'Conciliação Tributária', icon: RefreshCcw, href: '/tributario/conciliacao' },
+      { label: 'Incentivos Fiscais', icon: Zap, href: '/tributario/incentivos' },
+      { label: 'Compliance & Auditoria', icon: ShieldCheck, href: '/tributario/auditoria' },
+      { label: 'Comparativo Regimes', icon: Scale, href: '/tributario/comparativo' },
+      { label: 'Fechamento Mensal', icon: FileCheck, href: '/tributario/fechamento-mensal', highlight: true },
       { label: 'Notas Fiscais', icon: FileText, href: '/notas-fiscais' },
       { label: 'Demonstrativos', icon: FileSpreadsheet, href: '/demonstrativos' },
       { label: 'Contabilidade & SPED', icon: BookOpen, href: '/contabilidade' },
@@ -129,7 +140,9 @@ const navGroups: NavGroup[] = [
     label: 'Cadastros',
     icon: Users,
     items: [
-      { label: 'Clientes', icon: User, href: '/clientes' },
+      { label: 'Clientes', icon: User, href: '/clientes', badgeKey: 'whatsapp' },
+      { label: 'Scoring & Risco', icon: Target, href: '/clientes/scoring', highlight: true },
+      { label: 'Portal de Tokens', icon: Key, href: '/clientes/portal-tokens' },
       { label: 'Fornecedores', icon: Truck, href: '/fornecedores' },
       { label: 'Vendedores', icon: UserCog, href: '/vendedores' },
       { label: 'Empresas (CNPJs)', icon: Building2, href: '/empresas' },
@@ -168,6 +181,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
   const { count: aprovacoesPendentes } = useAprovacoesPendentesCount();
   const { data: alertasNaoLidos = 0 } = useAlertasNaoLidos();
   const { data: alertasTributarios = 0 } = useAlertasTributariosCount();
+  const { data: whatsappUnread = 0 } = useWhatsAppUnreadCount();
   const [syncStatus, setSyncStatus] = useState<Record<string, boolean>>({});
   
   useRealtimeAlertas();
@@ -223,6 +237,9 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
     }
     if (badgeKey === 'tributario' && alertasTributarios > 0) {
       return alertasTributarios;
+    }
+    if (badgeKey === 'whatsapp' && whatsappUnread > 0) {
+      return whatsappUnread;
     }
     return undefined;
   };
