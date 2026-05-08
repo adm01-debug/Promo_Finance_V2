@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { useEmpresas, useCentrosCusto, useContasBancarias, useContasPagar, useContasReceber, useClientes } from '@/hooks/useFinancialData';
 import { useAprovacoesPendentesCount } from '@/hooks/useAprovacoesPendentesCount';
+import { useAuth } from '@/hooks/useAuth';
+
 
 export interface DashboardFilters {
   empresaFilter: string;
