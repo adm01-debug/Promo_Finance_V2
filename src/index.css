@@ -102,16 +102,17 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-    transition: background-color 0.3s var(--easing-apple), color 0.3s var(--easing-apple);
-    background-image: radial-gradient(at 0% 0%, hsl(var(--primary) / 0.03) 0px, transparent 50%),
-                      radial-gradient(at 100% 0%, hsl(var(--info) / 0.03) 0px, transparent 50%);
+    font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+    transition: background-color 0.4s var(--easing-apple), color 0.4s var(--easing-apple);
+    background-image: radial-gradient(at 0% 0%, hsl(var(--primary) / 0.08) 0px, transparent 60%),
+                      radial-gradient(at 100% 100%, hsl(var(--info) / 0.05) 0px, transparent 60%);
     background-attachment: fixed;
+    letter-spacing: -0.01em;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
-    @apply tracking-tight;
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+    @apply tracking-tight font-bold;
   }
 
   :focus-visible {
