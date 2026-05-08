@@ -457,6 +457,7 @@ export function useAsaas(empresaId?: string) {
     segundaViaBoleto, buscarPixQrCode,
     criarAssinatura, cancelarAssinatura,
     consultarSaldo, transferirPix, consultarExtrato,
+    transfers, loadingTransfers, sincronizarTransferencia,
     criarLinkPagamento, listarLinksPagamento, excluirLinkPagamento,
     simularAntecipacao, solicitarAntecipacao,
     stats,
