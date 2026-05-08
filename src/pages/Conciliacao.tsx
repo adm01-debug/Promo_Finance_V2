@@ -87,6 +87,7 @@ export default function Conciliacao() {
     contasBancarias, lancamentosSistema,
     filteredTransacoes, exportData,
     totalTransacoes, conciliadas, pendentes, percentualConciliado,
+    showSugestoesFila, setShowSugestoesFila,
     handleImportSuccess, handleConfirmarMatch, handleRejeitarMatch,
     handleConciliarManual, handleConciliarSplit, handleManualSuccess,
     handleConciliar, handleIgnorar,
@@ -164,6 +165,15 @@ export default function Conciliacao() {
             <p className="text-muted-foreground mt-1">Reconcilie transações bancárias com lançamentos do sistema</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowSugestoesFila(!showSugestoesFila)} 
+              className={cn("gap-2 border-accent/50", showSugestoesFila && "bg-accent/10")}
+            >
+              <Zap className="h-4 w-4 text-accent" />
+              Fila de Sugestões {transacoesImportadas.length > 0 && `(${transacoesImportadas.length})`}
+            </Button>
             <Select value={selectedBanco} onValueChange={setSelectedBanco}>
               <SelectTrigger className="w-[200px]"><SelectValue placeholder="Selecione o banco" /></SelectTrigger>
               <SelectContent>
@@ -260,7 +270,7 @@ export default function Conciliacao() {
                 </CardContent>
               </Card>
 
-              {transacoesImportadas.length > 0 && lancamentosSistema.length > 0 && (
+              {showSugestoesFila && transacoesImportadas.length > 0 && lancamentosSistema.length > 0 && (
                 <SugestoesMatchIA transacoes={transacoesImportadas} lancamentos={lancamentosSistema} onConfirmarMatch={handleConfirmarMatch} onRejeitarMatch={handleRejeitarMatch} onConciliarManual={handleConciliarManual} />
               )}
 

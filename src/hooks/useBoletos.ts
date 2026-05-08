@@ -18,6 +18,9 @@ export interface Boleto {
   linha_digitavel: string;
   codigo_barras: string;
   status: 'gerado' | 'enviado' | 'pago' | 'vencido' | 'cancelado' | 'rastreio';
+  bitrix_id?: string | null;
+  bitrix_status?: string | null;
+  eventos_pagamento?: any[] | null;
   descricao: string | null;
   observacoes: string | null;
   conta_receber_id: string | null;
@@ -215,18 +218,23 @@ export function useBoletos() {
 
   // Update boleto status mutation
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: Boleto['status'] }) => {
-      const { data: currentBoleto } = await supabase.from('boletos').select('rastreio_status').eq('id', id).single();
+    mutationFn: async ({ id, status, bitrix_status, eventos_pagamento }: { id: string; status: Boleto['status']; bitrix_status?: string; eventos_pagamento?: any[] }) => {
+      const { data: currentBoleto } = await supabase.from('boletos').select('rastreio_status, eventos_pagamento').eq('id', id).single();
       const currentRastreio = Array.isArray(currentBoleto?.rastreio_status) ? currentBoleto.rastreio_status : [];
+      const currentEventos = Array.isArray(currentBoleto?.eventos_pagamento) ? currentBoleto.eventos_pagamento : [];
       
       const newRastreio = [
         ...currentRastreio,
-        { status, data: new Date().toISOString(), detalhe: `Status alterado para ${status}` }
+        { status, data: new Date().toISOString(), detalhe: `Status alterado para ${status}${bitrix_status ? ` (Bitrix: ${bitrix_status})` : ''}` }
       ];
+
+      const updateData: any = { status, rastreio_status: newRastreio };
+      if (bitrix_status) updateData.bitrix_status = bitrix_status;
+      if (eventos_pagamento) updateData.eventos_pagamento = [...currentEventos, ...eventos_pagamento];
 
       const { error } = await supabase
         .from('boletos')
-        .update({ status, rastreio_status: newRastreio })
+        .update(updateData)
         .eq('id', id);
 
       if (error) throw error;
@@ -245,6 +253,34 @@ export function useBoletos() {
         variant: 'destructive',
       });
     },
+  });
+
+  // Bitrix24 Integration
+  const syncBitrixBoleto = useMutation({
+    mutationFn: async (id: string) => {
+      const { data: boleto, error: fetchError } = await supabase
+        .from('boletos')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      if (fetchError) throw fetchError;
+
+      // Invoke Bitrix24 sync edge function
+      const { data: result, error: invokeError } = await supabase.functions.invoke('bitrix24-sync', {
+        body: { action: 'sync_boleto', boleto }
+      });
+
+      if (invokeError) throw invokeError;
+      return result;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['boletos'] });
+      toast({
+        title: 'Sincronizado com Bitrix24',
+        description: `Boleto vinculado ao Bitrix24 (ID: ${data.bitrix_id})`,
+      });
+    }
   });
 
   // Cancel boleto mutation
@@ -296,6 +332,8 @@ export function useBoletos() {
     createBoleto: createBoletoMutation.mutate,
     updateStatus: updateStatusMutation.mutate,
     cancelBoleto: cancelBoletoMutation.mutate,
+    syncBitrixBoleto: syncBitrixBoleto.mutate,
+    isSyncingBitrix: syncBitrixBoleto.isPending,
     refetch,
   };
 }

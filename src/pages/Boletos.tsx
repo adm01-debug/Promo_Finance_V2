@@ -101,7 +101,12 @@ export default function Boletos() {
     updateStatus,
     cancelBoleto,
     isCreating,
+    syncBitrixBoleto,
   } = useBoletos();
+
+  // Make syncBitrixBoleto available for the preview panel
+  // @ts-ignore
+  window.syncBitrixBoleto = syncBitrixBoleto;
 
   const filteredBoletos = boletos?.filter(boleto => {
     const matchesSearch = boleto.sacado_nome.toLowerCase().includes(searchTerm.toLowerCase()) ||

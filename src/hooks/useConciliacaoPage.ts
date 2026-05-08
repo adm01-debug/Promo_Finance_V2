@@ -32,6 +32,7 @@ export function useConciliacaoPage() {
   const [statusTab, setStatusTab] = useState('pendentes');
   const [selectedBanco, setSelectedBanco] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [showSugestoesFila, setShowSugestoesFila] = useState(false);
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [showManualDialog, setShowManualDialog] = useState(false);
@@ -403,6 +404,7 @@ export function useConciliacaoPage() {
     filters, setFilters, selectedIds,
     showReportDialog, setShowReportDialog,
     importReport, isProcessingImport,
+    showSugestoesFila, setShowSugestoesFila,
     // Data
     contasBancarias, lancamentosSistema,
     filteredTransacoes, exportData,
