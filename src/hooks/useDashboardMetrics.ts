@@ -29,7 +29,8 @@ export function useDashboardMetrics(filters: DashboardFilters) {
   // Filtrar dados por empresa e centro de custo
   const contasPagarFiltradas = useMemo(() => {
     return (contasPagar || []).filter(c => {
-      const matchEmpresa = (empresaFilter === 'all' ? (c.empresa_id === currentEmpresaId || currentEmpresaId === null) : c.empresa_id === empresaFilter);
+      const matchEmpresa = (empresaFilter === 'all' ? (c.empresa_id === currentEmpresaId || !currentEmpresaId) : c.empresa_id === empresaFilter);
+
       const matchCC = centroCustoFilter === 'all' || c.centro_custo_id === centroCustoFilter;
       return matchEmpresa && matchCC;
     });
@@ -37,7 +38,7 @@ export function useDashboardMetrics(filters: DashboardFilters) {
 
   const contasReceberFiltradas = useMemo(() => {
     return (contasReceber || []).filter(c => {
-      const matchEmpresa = (empresaFilter === 'all' ? (c.empresa_id === currentEmpresaId || currentEmpresaId === null) : c.empresa_id === empresaFilter);
+      const matchEmpresa = (empresaFilter === 'all' ? (c.empresa_id === currentEmpresaId || !currentEmpresaId) : c.empresa_id === empresaFilter);
       const matchCC = centroCustoFilter === 'all' || c.centro_custo_id === centroCustoFilter;
       return matchEmpresa && matchCC;
     });
@@ -45,7 +46,7 @@ export function useDashboardMetrics(filters: DashboardFilters) {
 
   const contasBancariasFiltradas = useMemo(() => {
     return (contasBancarias || []).filter(c => {
-      return (empresaFilter === 'all' ? (c.empresa_id === currentEmpresaId || currentEmpresaId === null) : c.empresa_id === empresaFilter);
+      return (empresaFilter === 'all' ? (c.empresa_id === currentEmpresaId || !currentEmpresaId) : c.empresa_id === empresaFilter);
     });
   }, [contasBancarias, empresaFilter, currentEmpresaId]);
 
