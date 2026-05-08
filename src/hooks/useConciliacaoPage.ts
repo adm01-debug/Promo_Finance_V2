@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
 import { useContasBancarias, useContasPagar, useContasReceber } from '@/hooks/useFinancialData';
 import { useConciliacao } from '@/hooks/useConciliacao';
+import { supabase } from '@/integrations/supabase/client';
 import { ConciliacaoFilterState, INITIAL_FILTERS } from '@/components/conciliacao/ConciliacaoFilters';
 import { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
 import { 

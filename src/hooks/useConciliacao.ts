@@ -213,7 +213,7 @@ export function useTransacoesBancarias(contaBancariaId?: string) {
       query = query.eq('conta_bancaria_id', contaBancariaId);
     }
 
-    const { data, error } = query;
+    const { data, error } = await query;
     if (error) throw error;
     return data;
   };
