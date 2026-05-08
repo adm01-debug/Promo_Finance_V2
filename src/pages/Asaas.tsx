@@ -466,6 +466,34 @@ export default function Asaas() {
 
                 <div className="space-y-4">
                   <h3 className="text-sm font-bold flex items-center gap-2">
+                    <DollarSign className="h-4 w-4" /> Multas e Juros Padrão
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label>Multa Padrão (%)</Label>
+                      <Input 
+                        type="number" 
+                        step="0.1"
+                        value={config?.default_fine_percent || 2.0} 
+                        onChange={(e) => salvarConfig.mutate({ default_fine_percent: parseFloat(e.target.value) })} 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Juros Mensais (%)</Label>
+                      <Input 
+                        type="number" 
+                        step="0.1"
+                        value={config?.default_interest_percent || 1.0} 
+                        onChange={(e) => salvarConfig.mutate({ default_interest_percent: parseFloat(e.target.value) })} 
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <h3 className="text-sm font-bold flex items-center gap-2">
                     <Bell className="h-4 w-4" /> Alertas de Falha Crítica
                   </h3>
                   
