@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Plus, Zap, CheckCircle2, AlertTriangle, Trash2, Power, Activity } from 'lucide-react';
+import { Plus, Zap, CheckCircle2, AlertTriangle, Trash2, Power, Activity, Edit2, Copy, Play, Save, X, Info } from 'lucide-react';
 import { supabase as supabaseTyped } from '@/integrations/supabase/client';
 // Tabelas novas ainda não refletidas em types.ts — cast controlado.
 const supabase = supabaseTyped as unknown as {
@@ -61,6 +61,17 @@ const EVENTOS = [
 export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }) {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [editingRegra, setEditingRegra] = useState<Regra | null>(null);
+  const [simulating, setSimulating] = useState(false);
+  const [simForm, setSimForm] = useState({
+    tipo_evento: 'conta_pagar' as Regra['tipo_evento'],
+    valor: 100,
+    data: new Date().toISOString().split('T')[0],
+    descricao: 'Simulação de teste',
+    categoria_id: '',
+  });
+  const [simResult, setSimResult] = useState<any>(null);
+
   const [form, setForm] = useState({
     nome: '',
     tipo_evento: 'conta_pagar' as Regra['tipo_evento'],
@@ -141,6 +152,61 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
       qc.invalidateQueries({ queryKey: ['regras_contab', empresaId] });
     },
     onError: (e: Error) => toast.error(e.message),
+  });
+
+  const updateRegra = useMutation({
+    mutationFn: async (regra: Partial<Regra> & { id: string }) => {
+      const { error } = await supabase
+        .from('regras_contabilizacao_automatica')
+        .update(regra)
+        .eq('id', regra.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Regra atualizada');
+      setEditingRegra(null);
+      qc.invalidateQueries({ queryKey: ['regras_contab', empresaId] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const duplicateRegra = useMutation({
+    mutationFn: async (regra: Regra) => {
+      const { id, ...data } = regra;
+      const { error } = await supabase
+        .from('regras_contabilizacao_automatica')
+        .insert({
+          ...data,
+          nome: `${data.nome} (Cópia)`,
+          prioridade: (data.prioridade ?? 0) + 1,
+        });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Regra duplicada');
+      qc.invalidateQueries({ queryKey: ['regras_contab', empresaId] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const dryRunSimulation = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabaseTyped.functions.invoke('contabilizar-evento', {
+        body: {
+          ...simForm,
+          empresa_id: empresaId,
+          evento_id: 'sim-preview-' + Date.now(),
+          dry_run: true,
+        },
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      setSimResult(data);
+      toast.info('Simulação concluída');
+    },
+    onError: (e: Error) => toast.error('Falha na simulação: ' + e.message),
   });
 
   const toggleAtivo = useMutation({
