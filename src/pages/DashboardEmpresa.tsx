@@ -21,7 +21,15 @@ const COLORS = ['hsl(24, 95%, 46%)', 'hsl(215, 90%, 42%)', 'hsl(150, 70%, 32%)',
 
 export default function DashboardEmpresa() {
   const [selectedEmpresa, setSelectedEmpresa] = useState<string>('');
+  const { currentEmpresaId } = useAuth();
   const [periodoAnalise, setPeriodoAnalise] = useState('30');
+
+  // Sincroniza com empresa ativa do sistema
+  useEffect(() => {
+    if (currentEmpresaId && !selectedEmpresa) {
+      setSelectedEmpresa(currentEmpresaId);
+    }
+  }, [currentEmpresaId, selectedEmpresa]);
 
   const { data: empresas = [], isLoading: loadingEmpresas } = useEmpresas();
   const { data: contasBancarias = [] } = useContasBancarias();
