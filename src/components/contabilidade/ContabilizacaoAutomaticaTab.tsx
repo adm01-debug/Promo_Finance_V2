@@ -800,33 +800,50 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                       </TableCell>
                       <TableCell className="text-xs font-mono">
                         {isEditing ? (
-                          <div className="flex flex-col gap-1">
-                            <Select
-                              value={editingRegra.conta_debito_id}
-                              onValueChange={(v) => setEditingRegra({ ...editingRegra, conta_debito_id: v })}
+                          <div className="flex flex-col gap-1 relative group">
+                            <div className="flex items-center gap-1">
+                              <Select
+                                value={editingRegra.conta_debito_id}
+                                onValueChange={(v) => setEditingRegra({ ...editingRegra, conta_debito_id: v })}
+                              >
+                                <SelectTrigger className="h-7 text-[10px] flex-1"><SelectValue placeholder="Débito" /></SelectTrigger>
+                                <SelectContent className="max-h-60">
+                                  {contas.map((c) => (
+                                    <SelectItem key={c.id} value={c.id} className="text-xs">
+                                      {c.codigo} - {c.nome}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Select
+                                value={editingRegra.conta_credito_id}
+                                onValueChange={(v) => setEditingRegra({ ...editingRegra, conta_credito_id: v })}
+                              >
+                                <SelectTrigger className="h-7 text-[10px] flex-1"><SelectValue placeholder="Crédito" /></SelectTrigger>
+                                <SelectContent className="max-h-60">
+                                  {contas.map((c) => (
+                                    <SelectItem key={c.id} value={c.id} className="text-xs">
+                                      {c.codigo} - {c.nome}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-6 w-6 absolute -right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
+                              title="Restaurar contas"
+                              onClick={() => setEditingRegra({ 
+                                ...editingRegra, 
+                                conta_debito_id: originalRegra?.conta_debito_id || '',
+                                conta_credito_id: originalRegra?.conta_credito_id || ''
+                              })}
                             >
-                              <SelectTrigger className="h-7 text-[10px]"><SelectValue placeholder="Débito" /></SelectTrigger>
-                              <SelectContent className="max-h-60">
-                                {contas.map((c) => (
-                                  <SelectItem key={c.id} value={c.id} className="text-xs">
-                                    {c.codigo} - {c.nome}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <Select
-                              value={editingRegra.conta_credito_id}
-                              onValueChange={(v) => setEditingRegra({ ...editingRegra, conta_credito_id: v })}
-                            >
-                              <SelectTrigger className="h-7 text-[10px]"><SelectValue placeholder="Crédito" /></SelectTrigger>
-                              <SelectContent className="max-h-60">
-                                {contas.map((c) => (
-                                  <SelectItem key={c.id} value={c.id} className="text-xs">
-                                    {c.codigo} - {c.nome}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                              <RefreshCcw className="h-3 w-3" />
+                            </Button>
                           </div>
                         ) : (
                           <>D {dCta?.codigo ?? '?'} / C {cCta?.codigo ?? '?'}</>
