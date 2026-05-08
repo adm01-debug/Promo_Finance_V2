@@ -328,12 +328,30 @@ export function AdvancedFiltersPopover({
                     />
                   </Badge>
                 )}
-                {filters.tipoCobranca && (
+                {filters.tipoCobranca && filters.tipoCobranca !== 'all' && (
                   <Badge variant="secondary" className="text-[10px] gap-1 h-5">
                     {tiposCobranca.find(t => t.value === filters.tipoCobranca)?.label}
                     <X
                       className="h-2.5 w-2.5 cursor-pointer"
                       onClick={() => updateFilter('tipoCobranca', undefined)}
+                    />
+                  </Badge>
+                )}
+                {filters.empresaId && filters.empresaId !== 'all' && (
+                  <Badge variant="secondary" className="text-[10px] gap-1 h-5">
+                    {empresas.find(e => e.value === filters.empresaId)?.label || 'Empresa'}
+                    <X
+                      className="h-2.5 w-2.5 cursor-pointer"
+                      onClick={() => updateFilter('empresaId', undefined)}
+                    />
+                  </Badge>
+                )}
+                {filters.contaBancariaId && filters.contaBancariaId !== 'all' && (
+                  <Badge variant="secondary" className="text-[10px] gap-1 h-5">
+                    {contasBancarias.find(cb => cb.value === filters.contaBancariaId)?.label || 'Conta'}
+                    <X
+                      className="h-2.5 w-2.5 cursor-pointer"
+                      onClick={() => updateFilter('contaBancariaId', undefined)}
                     />
                   </Badge>
                 )}
