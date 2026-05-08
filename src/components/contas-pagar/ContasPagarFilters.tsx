@@ -162,6 +162,8 @@ export const ContasPagarFilters = forwardRef<HTMLDivElement, ContasPagarFiltersP
                 <AdvancedFiltersPopover
                   filters={advancedFilters}
                   onFiltersChange={onAdvancedFiltersChange}
+                  empresas={empresas.map(e => ({ value: e.id, label: e.nome_fantasia || e.razao_social }))}
+                  contasBancarias={contasBancarias.map(cb => ({ value: cb.id, label: `${cb.banco} - ${cb.conta}` }))}
                 />
               </div>
             </div>
