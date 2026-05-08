@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { differenceInDays, parseISO, subDays } from 'date-fns';
 import { useAuth } from '@/hooks/useAuth';
@@ -307,14 +307,43 @@ export function useEtapasCobranca() {
 }
 
 export function useUpdateEtapaCobranca() {
-  const updateEtapa = async (contaId: string, novaEtapa: 'preventiva' | 'lembrete' | 'cobranca' | 'negociacao' | 'juridico') => {
-    const { error } = await supabase
-      .from('contas_receber')
-      .update({ etapa_cobranca: novaEtapa })
-      .eq('id', contaId);
+  const queryClient = useQueryClient();
+  const updateEtapaMutation = useMutation({
+    mutationFn: async ({ id, etapa }: { id: string; etapa: ContaVencida['etapa_cobranca'] }) => {
+      const { error } = await supabase
+        .from('contas_receber')
+        .update({ etapa_cobranca: etapa })
+        .eq('id', id);
 
-    if (error) throw error;
-  };
+      if (error) throw error;
+      
+      // Registrar no status da régua se existir
+      await supabase.from('regua_cobranca_status').upsert({
+        titulo_id: id,
+        etapa_atual: etapa || 'preventiva',
+        status: 'pendente',
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'titulo_id' });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contas-vencidas'] });
+      queryClient.invalidateQueries({ queryKey: ['etapas-cobranca'] });
+    }
+  });
 
-  return { updateEtapa };
+  return { updateEtapa: updateEtapaMutation.mutate };
+}
+
+export function useReguaCobrancaStatus() {
+  const { currentEmpresaId } = useAuth();
+  return useQuery({
+    queryKey: ['regua-cobranca-status', currentEmpresaId],
+    queryFn: async () => {
+      let query = supabase.from('regua_cobranca_status').select('*');
+      if (currentEmpresaId) query = query.eq('empresa_id', currentEmpresaId);
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    }
+  });
 }
