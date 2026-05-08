@@ -704,6 +704,15 @@ export default function Asaas() {
                           return (
                             <TableRow key={payment.id}>
                               <TableCell>
+                                <Checkbox 
+                                  checked={selectedPayments.includes(payment.id)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) setSelectedSelectedPayments(prev => [...prev, payment.id]);
+                                    else setSelectedSelectedPayments(prev => prev.filter(id => id !== payment.id));
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
                                 <div className="flex items-center gap-2">
                                   <TipoIcon className="h-4 w-4 text-muted-foreground" />
                                   <span className="text-sm">{tipoLabels[payment.tipo] || payment.tipo}</span>
