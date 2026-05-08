@@ -227,30 +227,45 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
   const dryRunSimulation = useMutation({
     mutationFn: async () => {
       setSimResult(null);
-      setDryRunNoRuleResult(null);
+      setDryRunBefore(null);
 
-      // 1. Simulação com regras normais
-      const { data: withRules, error: errWith } = await supabaseTyped.functions.invoke('contabilizar-evento', {
-        body: {
-          ...simForm,
-          categoria_id: simForm.categoria_id === 'none' ? null : (simForm.categoria_id || null),
-          empresa_id: empresaId,
-          evento_id: 'sim-with-' + Date.now(),
-          dry_run: true,
-        },
+      const payload = {
+        ...simForm,
+        categoria_id: simForm.categoria_id === 'none' ? null : (simForm.categoria_id || null),
+        empresa_id: empresaId,
+        dry_run: true,
+      };
+
+      if (isLote) {
+        const results = [];
+        for (let i = 0; i < simForm.lote_quantidade; i++) {
+          const { data, error } = await supabaseTyped.functions.invoke('contabilizar-evento', {
+            body: { ...payload, evento_id: `sim-lote-${i}-${Date.now()}` },
+          });
+          if (error) throw error;
+          results.push(data);
+        }
+        return { type: 'lote', results };
+      }
+
+      // 1. Antes (Sem regras)
+      const { data: before, error: errBefore } = await supabaseTyped.functions.invoke('contabilizar-evento', {
+        body: { ...payload, evento_id: 'sim-before-' + Date.now(), ignore_rules: true },
       });
-      if (errWith) throw errWith;
+      if (errBefore) throw errBefore;
+      setDryRunBefore(before);
 
-      // 2. Simulação forçando "sem regra" (poderíamos ter um flag no edge function, mas para "dry-run" rápido
-      // se o status for 'sem_regra' já temos o 'antes', senão comparamos com o que seria o comportamento padrão se não houvesse regra compatível)
-      // Como o edge function não tem "ignore_rules", vamos apenas mostrar o "Antes" como vazio se não houver regra
-      // ou se houver regra, mostrar o que a regra faria.
-      
-      return withRules;
+      // 2. Depois (Com regras)
+      const { data: after, error: errAfter } = await supabaseTyped.functions.invoke('contabilizar-evento', {
+        body: { ...payload, evento_id: 'sim-after-' + Date.now() },
+      });
+      if (errAfter) throw errAfter;
+
+      return { type: 'single', after };
     },
     onSuccess: (data) => {
       setSimResult(data);
-      toast.info('Simulação concluída');
+      toast.info(isLote ? 'Simulação em lote concluída' : 'Simulação concluída');
     },
     onError: (e: Error) => toast.error('Falha na simulação: ' + e.message),
   });
