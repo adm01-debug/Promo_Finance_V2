@@ -124,7 +124,7 @@ export function parseOFC(content: string, fileName: string): ResultadoImportacao
 }
 
 // Parse CSV bank statement
-export function parseCSV(content: string, fileName: string): ResultadoImportacao {
+export function parseCSV(content: string, fileName: string, mapeamento?: Record<string, string>): ResultadoImportacao {
   const avisos: string[] = [];
   
   try {
@@ -145,19 +145,19 @@ export function parseCSV(content: string, fileName: string): ResultadoImportacao
     // Parse header
     const headers = firstLine.split(delimiter).map(h => h.trim().toLowerCase().replace(/"/g, ''));
     
-    // Find column indexes
-    const dataIdx = headers.findIndex(h => 
-      h.includes('data') || h.includes('date') || h.includes('dt')
-    );
-    const descricaoIdx = headers.findIndex(h => 
-      h.includes('descri') || h.includes('historic') || h.includes('memo') || h.includes('description')
-    );
-    const valorIdx = headers.findIndex(h => 
-      h.includes('valor') || h.includes('value') || h.includes('amount')
-    );
-    const tipoIdx = headers.findIndex(h => 
-      h.includes('tipo') || h.includes('type') || h.includes('dc') || h.includes('d/c')
-    );
+    // Find column indexes using mapping or common names
+    const getIndex = (key: string, defaults: string[]) => {
+      if (mapeamento?.[key]) {
+        const idx = headers.indexOf(mapeamento[key].toLowerCase());
+        if (idx !== -1) return idx;
+      }
+      return headers.findIndex(h => defaults.some(d => h.includes(d)));
+    };
+
+    const dataIdx = getIndex('data', ['data', 'date', 'dt']);
+    const descricaoIdx = getIndex('descricao', ['descri', 'historic', 'memo', 'description']);
+    const valorIdx = getIndex('valor', ['valor', 'value', 'amount']);
+    const tipoIdx = getIndex('tipo', ['tipo', 'type', 'dc', 'd/c']);
 
     if (dataIdx === -1 || valorIdx === -1) {
       avisos.push('Colunas de data ou valor não identificadas claramente');
