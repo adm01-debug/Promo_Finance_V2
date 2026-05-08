@@ -18,12 +18,15 @@ export interface Boleto {
   linha_digitavel: string;
   codigo_barras: string;
   status: 'gerado' | 'enviado' | 'pago' | 'vencido' | 'cancelado' | 'rastreio';
+  asaas_id?: string | null;
+  external_provider?: string | null;
   bitrix_id?: string | null;
   bitrix_status?: string | null;
   eventos_pagamento?: any[] | null;
   descricao: string | null;
   observacoes: string | null;
   conta_receber_id: string | null;
+  conta_pagar_id: string | null;
   conta_bancaria_id: string | null;
   empresa_id: string;
   created_by: string;
@@ -41,6 +44,7 @@ export interface NovoBoletoData {
   descricao?: string;
   conta_receber_id?: string;
   conta_pagar_id?: string;
+  provider?: 'system' | 'asaas';
 }
 
 function generateLinhaDigitavel(valor: number, vencimento: string): string {
