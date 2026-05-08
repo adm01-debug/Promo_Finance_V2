@@ -204,6 +204,7 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
           cep: cardCep.replace(/\D/g, ''),
           telefone: cardPhone,
         } : {}),
+        conta_receber_id: contaReceberId || undefined,
       });
       resetForm();
       onOpenChange(false);
