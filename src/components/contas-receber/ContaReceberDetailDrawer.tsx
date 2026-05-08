@@ -11,14 +11,16 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Card } from '@/components/ui/card';
 import { DrawerDetailsTab } from './DrawerDetailsTab';
 import { DrawerTimelineTab } from './DrawerTimelineTab';
 import { DrawerCobrancasTab } from './DrawerCobrancasTab';
 import { DrawerAnexosTab } from './DrawerAnexosTab';
 import { supabase } from '@/integrations/supabase/client';
-import { formatCurrency, calculateOverdueDays } from '@/lib/formatters';
+import { formatCurrency, calculateOverdueDays, formatDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import type { ContaReceberWithRelations } from './ContasReceberTableRow';
+
 
 interface ContaReceberDetailDrawerProps {
   conta: ContaReceberWithRelations | null;
