@@ -15,7 +15,7 @@ import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import {
   CreditCard, QrCode, Banknote, Plus, RefreshCw, X,
   DollarSign, Clock, CheckCircle2, AlertTriangle, Copy, ExternalLink,
-  Send, Users, Undo2, FileText, MoreHorizontal, Link2,
+  Send, Users, Undo2, FileText, MoreHorizontal, Link2, Download, History,
 } from 'lucide-react';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
