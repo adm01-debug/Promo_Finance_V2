@@ -212,10 +212,10 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <Zap className="h-5 w-5 text-amber-500" />
-                Inteligência de Produtos (NCM)
+                Inteligência de Produtos (Baseado em Notas Fiscais Reais)
               </CardTitle>
               <CardDescription>
-                Identificação automática de tributação monofásica e créditos de PIS/COFINS por item.
+                Cruzamento automático de NCMs de entrada com regras de PIS/COFINS Monofásico e créditos presumidos.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -224,27 +224,30 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
                   <TableHeader>
                     <TableRow>
                       <TableHead>NCM</TableHead>
-                      <TableHead>Descrição</TableHead>
-                      <TableHead>Tipo de Crédito</TableHead>
-                      <TableHead>Redução Projetada</TableHead>
+                      <TableHead>Oportunidade</TableHead>
+                      <TableHead>Tipo</TableHead>
+                      <TableHead>Crédito Estimado (12m)</TableHead>
                       <TableHead className="text-right">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    <TableRow>
-                      <TableCell className="font-mono text-xs">8507.10.10</TableCell>
-                      <TableCell className="text-xs">Acumuladores elétricos de chumbo</TableCell>
-                      <TableCell><Badge variant="secondary" className="text-[10px]">Monofásico</Badge></TableCell>
-                      <TableCell className="text-xs font-bold text-emerald-600">9.25% (PIS/COF)</TableCell>
-                      <TableCell className="text-right"><CheckCircle2 className="h-4 w-4 text-emerald-500 ml-auto" /></TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-mono text-xs">4011.10.00</TableCell>
-                      <TableCell className="text-xs">Pneus novos de borracha</TableCell>
-                      <TableCell><Badge variant="secondary" className="text-[10px]">Monofásico</Badge></TableCell>
-                      <TableCell className="text-xs font-bold text-emerald-600">9.25% (PIS/COF)</TableCell>
-                      <TableCell className="text-right"><CheckCircle2 className="h-4 w-4 text-emerald-500 ml-auto" /></TableCell>
-                    </TableRow>
+                    {oportunidades.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                          Nenhuma nota fiscal com NCM mapeado para crédito identificada nos últimos 12 meses.
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      oportunidades.map((op: any, i: number) => (
+                        <TableRow key={i}>
+                          <TableCell className="font-mono text-xs">{op.ncm_relacionado}</TableCell>
+                          <TableCell className="text-xs">{op.descricao}</TableCell>
+                          <TableCell><Badge variant="secondary" className="text-[10px]">{op.tipo_oportunidade}</Badge></TableCell>
+                          <TableCell className="text-xs font-bold text-emerald-600">R$ {op.valor_estimado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
+                          <TableCell className="text-right"><CheckCircle2 className="h-4 w-4 text-emerald-500 ml-auto" /></TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </div>
