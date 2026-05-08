@@ -421,7 +421,7 @@ function parseCSVLine(line: string, delimiter: string): string[] {
 }
 
 // Auto-detect file format and parse
-export function parseExtratoBancario(content: string, fileName: string): ResultadoImportacao {
+export function parseExtratoBancario(content: string, fileName: string, mapeamento?: Record<string, string>): ResultadoImportacao {
   const extension = fileName.toLowerCase().split('.').pop();
   const contentUpper = content.toUpperCase();
   
