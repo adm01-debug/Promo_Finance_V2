@@ -42,6 +42,7 @@ import {
   CheckCircle,
   EyeOff,
   History,
+  Target,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -51,6 +52,7 @@ import { useAlertasNaoLidos } from '@/hooks/useAlertas';
 import { useAlertasTributariosCount } from '@/hooks/useAlertasTributariosCount';
 import { useRealtimeAlertas } from '@/hooks/useRealtimeAlertas';
 import { useRealtimeAnomalias } from '@/hooks/useRealtimeAnomalias';
+import { useWhatsAppUnreadCount } from '@/hooks/useWhatsAppUnreadCount';
 import { useWhatsAppUnreadCount } from '@/hooks/useWhatsAppUnreadCount';
 
 interface NavItem {
@@ -177,6 +179,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
   const { count: aprovacoesPendentes } = useAprovacoesPendentesCount();
   const { data: alertasNaoLidos = 0 } = useAlertasNaoLidos();
   const { data: alertasTributarios = 0 } = useAlertasTributariosCount();
+  const { data: whatsappUnread = 0 } = useWhatsAppUnreadCount();
   const [syncStatus, setSyncStatus] = useState<Record<string, boolean>>({});
   
   useRealtimeAlertas();
