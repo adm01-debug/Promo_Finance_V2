@@ -213,12 +213,13 @@ export function ContaReceberDetailDrawer({
         </SheetHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="mx-6 mt-3 grid grid-cols-4">
-            <TabsTrigger value="detalhes" className="text-xs">Detalhes</TabsTrigger>
-            <TabsTrigger value="timeline" className="text-xs">Timeline</TabsTrigger>
-            <TabsTrigger value="cobrancas" className="text-xs">Cobranças</TabsTrigger>
-            <TabsTrigger value="anexos" className="text-xs">
-              Anexos {anexos.length > 0 && <span className="ml-1 text-[10px] bg-primary/10 text-primary rounded-full px-1.5">{anexos.length}</span>}
+          <TabsList className="mx-6 mt-3 grid grid-cols-5">
+            <TabsTrigger value="detalhes" className="text-[10px] sm:text-xs">Detalhes</TabsTrigger>
+            <TabsTrigger value="timeline" className="text-[10px] sm:text-xs">Timeline</TabsTrigger>
+            <TabsTrigger value="boletos" className="text-[10px] sm:text-xs">Boletos</TabsTrigger>
+            <TabsTrigger value="cobrancas" className="text-[10px] sm:text-xs">Mensagens</TabsTrigger>
+            <TabsTrigger value="anexos" className="text-[10px] sm:text-xs">
+              Anexos {anexos.length > 0 && <span className="ml-0.5 sm:ml-1 text-[9px] bg-primary/10 text-primary rounded-full px-1.5">{anexos.length}</span>}
             </TabsTrigger>
           </TabsList>
 
@@ -229,6 +230,44 @@ export function ContaReceberDetailDrawer({
 
             <TabsContent value="timeline" className="mt-0 space-y-1">
               <DrawerTimelineTab auditHistory={auditHistory as any} />
+            </TabsContent>
+
+            <TabsContent value="boletos" className="mt-0">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-semibold flex items-center gap-2">
+                    <Banknote className="h-4 w-4 text-primary" /> Boletos do Título
+                  </h4>
+                </div>
+                {boletos.length > 0 ? (
+                  <div className="space-y-3">
+                    {boletos.map((b: any) => (
+                      <Card key={b.id} className="p-4 border-white/5 bg-white/[0.02]">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <p className="text-sm font-black tabular-nums tracking-tight">#{b.numero}</p>
+                            <p className="text-[10px] text-muted-foreground uppercase font-black">{formatDate(b.vencimento)}</p>
+                          </div>
+                          <Badge variant="outline" className={cn("text-[10px] font-black uppercase", b.status === 'pago' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning')}>
+                            {b.status}
+                          </Badge>
+                        </div>
+                        <div className="flex justify-between items-end">
+                          <p className="text-lg font-black tracking-tighter tabular-nums">{formatCurrency(b.valor)}</p>
+                          <Button variant="ghost" size="sm" className="h-8 text-xs gap-1.5" onClick={() => window.open(b.link_pdf || '#', '_blank')}>
+                            <FileText className="h-3.5 w-3.5" /> PDF
+                          </Button>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-10 px-4 rounded-2xl border border-dashed border-white/5 bg-black/10">
+                    <Banknote className="h-8 w-8 text-white/5 mx-auto mb-3" />
+                    <p className="text-xs font-black uppercase tracking-widest text-muted-foreground/30">Nenhum boleto gerado</p>
+                  </div>
+                )}
+              </div>
             </TabsContent>
 
             <TabsContent value="cobrancas" className="mt-0 space-y-3">
@@ -244,6 +283,7 @@ export function ContaReceberDetailDrawer({
             </TabsContent>
           </ScrollArea>
         </Tabs>
+
       </SheetContent>
     </Sheet>
   );
