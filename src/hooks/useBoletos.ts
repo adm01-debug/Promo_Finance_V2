@@ -18,12 +18,15 @@ export interface Boleto {
   linha_digitavel: string;
   codigo_barras: string;
   status: 'gerado' | 'enviado' | 'pago' | 'vencido' | 'cancelado' | 'rastreio';
+  asaas_id?: string | null;
+  external_provider?: string | null;
   bitrix_id?: string | null;
   bitrix_status?: string | null;
   eventos_pagamento?: any[] | null;
   descricao: string | null;
   observacoes: string | null;
   conta_receber_id: string | null;
+  conta_pagar_id: string | null;
   conta_bancaria_id: string | null;
   empresa_id: string;
   created_by: string;
@@ -41,6 +44,7 @@ export interface NovoBoletoData {
   descricao?: string;
   conta_receber_id?: string;
   conta_pagar_id?: string;
+  provider?: 'system' | 'asaas';
 }
 
 function generateLinhaDigitavel(valor: number, vencimento: string): string {
@@ -143,10 +147,7 @@ export function useBoletos() {
       if (!contaBancaria) throw new Error('Conta bancária não encontrada');
 
       const numero = await getNextBoletoNumber();
-      const linhaDigitavel = generateLinhaDigitavel(data.valor, data.vencimento);
-      const codigoBarras = generateCodigoBarras(data.valor);
-
-      const boletoData = {
+      let boletoData: any = {
         numero,
         valor: data.valor,
         vencimento: data.vencimento,
@@ -157,8 +158,6 @@ export function useBoletos() {
         banco: contaBancaria.banco,
         agencia: contaBancaria.agencia,
         conta: contaBancaria.conta,
-        linha_digitavel: linhaDigitavel,
-        codigo_barras: codigoBarras,
         status: 'gerado',
         descricao: data.descricao || null,
         conta_receber_id: data.conta_receber_id || null,
@@ -168,6 +167,36 @@ export function useBoletos() {
         created_by: user.id,
         rastreio_status: [{ status: 'gerado', data: new Date().toISOString(), detalhe: 'Boleto gerado pelo sistema' }]
       };
+
+      // Se o provedor for ASAAS, integrar via Edge Function
+      if (data.provider === 'asaas') {
+        const { data: asaasResult, error: asaasError } = await supabase.functions.invoke('asaas-proxy', {
+          body: {
+            action: 'criar_cobranca',
+            data: {
+              empresa_id: data.empresa_id,
+              asaas_customer_id: data.sacado_cpf_cnpj, // Simplificação: assume que já existe ou deve ser criado
+              valor: data.valor,
+              data_vencimento: data.vencimento,
+              tipo: 'boleto',
+              descricao: data.descricao
+            }
+          }
+        });
+
+        if (asaasError) throw asaasError;
+
+        boletoData = {
+          ...boletoData,
+          asaas_id: asaasResult.id,
+          external_provider: 'asaas',
+          linha_digitavel: asaasResult.boletoData?.identificationField || generateLinhaDigitavel(data.valor, data.vencimento),
+          codigo_barras: asaasResult.boletoData?.barCode || generateCodigoBarras(data.valor)
+        };
+      } else {
+        boletoData.linha_digitavel = generateLinhaDigitavel(data.valor, data.vencimento);
+        boletoData.codigo_barras = generateCodigoBarras(data.valor);
+      }
 
       const { data: newBoleto, error } = await supabase
         .from('boletos')

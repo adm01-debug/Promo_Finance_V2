@@ -1625,9 +1625,51 @@ export type Database = {
         }
         Relationships: []
       }
+      boleto_events: {
+        Row: {
+          boleto_id: string | null
+          created_at: string | null
+          description: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          status_after: string | null
+          status_before: string | null
+        }
+        Insert: {
+          boleto_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          status_after?: string | null
+          status_before?: string | null
+        }
+        Update: {
+          boleto_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          status_after?: string | null
+          status_before?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "boleto_events_boleto_id_fkey"
+            columns: ["boleto_id"]
+            isOneToOne: false
+            referencedRelation: "boletos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       boletos: {
         Row: {
           agencia: string
+          asaas_id: string | null
           banco: string
           bitrix_id: string | null
           bitrix_status: string | null
@@ -1643,6 +1685,7 @@ export type Database = {
           descricao: string | null
           empresa_id: string
           eventos_pagamento: Json | null
+          external_provider: string | null
           id: string
           linha_digitavel: string
           numero: string
@@ -1658,6 +1701,7 @@ export type Database = {
         }
         Insert: {
           agencia: string
+          asaas_id?: string | null
           banco: string
           bitrix_id?: string | null
           bitrix_status?: string | null
@@ -1673,6 +1717,7 @@ export type Database = {
           descricao?: string | null
           empresa_id: string
           eventos_pagamento?: Json | null
+          external_provider?: string | null
           id?: string
           linha_digitavel: string
           numero: string
@@ -1688,6 +1733,7 @@ export type Database = {
         }
         Update: {
           agencia?: string
+          asaas_id?: string | null
           banco?: string
           bitrix_id?: string | null
           bitrix_status?: string | null
@@ -1703,6 +1749,7 @@ export type Database = {
           descricao?: string | null
           empresa_id?: string
           eventos_pagamento?: Json | null
+          external_provider?: string | null
           id?: string
           linha_digitavel?: string
           numero?: string

@@ -27,7 +27,8 @@ export function NovoBoletoForm({ onClose, empresas, contasBancarias, onSubmit, i
     empresa_id: '', 
     descricao: '',
     conta_receber_id: '',
-    conta_pagar_id: ''
+    conta_pagar_id: '',
+    provider: 'system' as 'system' | 'asaas'
   });
 
   const searchParams = new URLSearchParams(window.location.search);
@@ -81,7 +82,8 @@ export function NovoBoletoForm({ onClose, empresas, contasBancarias, onSubmit, i
       conta_bancaria_id: formData.conta_bancaria_id, 
       descricao: formData.descricao || undefined,
       conta_receber_id: formData.conta_receber_id || undefined,
-      conta_pagar_id: formData.conta_pagar_id || undefined
+      conta_pagar_id: formData.conta_pagar_id || undefined,
+      provider: formData.provider
     });
     onClose();
   };
@@ -96,6 +98,18 @@ export function NovoBoletoForm({ onClose, empresas, contasBancarias, onSubmit, i
         <div><Label>Empresa (Cedente/Sacador)</Label><Select value={formData.empresa_id} onValueChange={(v) => setFormData({ ...formData, empresa_id: v, conta_bancaria_id: '' })}><SelectTrigger><SelectValue placeholder="Selecione a empresa" /></SelectTrigger><SelectContent>{empresas?.map((e) => <SelectItem key={e.id} value={e.id}>{e.razao_social}</SelectItem>)}</SelectContent></Select></div>
         <div><Label>Conta Bancária</Label><Select value={formData.conta_bancaria_id} onValueChange={(v) => setFormData({ ...formData, conta_bancaria_id: v })} disabled={!formData.empresa_id}><SelectTrigger><SelectValue placeholder="Selecione a conta" /></SelectTrigger><SelectContent>{filteredContas?.map((c) => <SelectItem key={c.id} value={c.id}>{c.banco} - {c.agencia}/{c.conta}</SelectItem>)}</SelectContent></Select></div>
         <div className="col-span-2"><Label>Descrição (opcional)</Label><Input value={formData.descricao} onChange={(e) => setFormData({ ...formData, descricao: e.target.value })} placeholder="Descrição ou referência do boleto" /></div>
+        <div className="col-span-2">
+          <Label>Provedor de Emissão</Label>
+          <Select value={formData.provider} onValueChange={(v: any) => setFormData({ ...formData, provider: v })}>
+            <SelectTrigger>
+              <SelectValue placeholder="Selecione o provedor" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="system">Sistema Interno (Simulado)</SelectItem>
+              <SelectItem value="asaas">ASAAS (API Direta)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="flex gap-2 pt-4">
         <Button type="submit" className="flex-1 gap-2" disabled={isCreating}>{isCreating ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Barcode className="h-4 w-4" />}{isCreating ? 'Gerando...' : 'Gerar Boleto'}</Button>
