@@ -13,7 +13,8 @@ import {
   Calculator,
   Zap,
   FileSearch,
-  CheckCircle2
+  CheckCircle2,
+  RefreshCcw
 } from 'lucide-react';
 import { supabase as supabaseTyped } from '@/integrations/supabase/client';
 const supabase = supabaseTyped as any;
