@@ -98,6 +98,8 @@ export default function Asaas() {
   // Reprocess Dialog state
   const [reprocessDialog, setReprocessDialog] = useState<{ paymentId: string; asaasId: string } | null>(null);
   const [reprocessReason, setReprocessReason] = useState('');
+  const [selectedPayments, setSelectedSelectedPayments] = useState<string[]>([]);
+  const [isBulkReprocessing, setIsBulkReprocessing] = useState(false);
 
   // Dialog states
   const [dialogOpen, setDialogOpen] = useState(false);
