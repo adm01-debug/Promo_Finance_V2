@@ -233,6 +233,12 @@ export function ContasReceberTableRow({
         </div>
       </TableCell>
 
+      <TableCell className="p-6">
+        <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground/60 leading-tight">
+          {conta.contas_bancarias?.banco || '-'}
+        </p>
+      </TableCell>
+
       {showEmpresa && (
         <TableCell className="p-6">
           <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground/60 leading-tight">
@@ -249,6 +255,7 @@ export function ContasReceberTableRow({
           </div>
         )}
       </TableCell>
+
 
       <TableCell className="p-6">
         <div className="flex items-center justify-end gap-2">
