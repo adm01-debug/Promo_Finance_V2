@@ -156,7 +156,7 @@ export function ConciliacaoExport({ transacoes, stats }: ConciliacaoExportProps)
       if (fmt === 'csv') {
         const headers = isFeedback
           ? ['Descrição', 'Data', 'Valor', 'Tipo', 'Status', 'Ação IA', 'Motivo Rejeição']
-          : ['Descrição', 'Data', 'Valor', 'Tipo', 'Status'];
+          : ['Descrição', 'Data', 'Valor', 'Tipo', 'Status', 'Ajuste (R$)', 'Classificação', 'Regra Aplicada'];
 
         const dataRows = rows.map((r) => {
           const base = [
@@ -166,10 +166,16 @@ export function ConciliacaoExport({ transacoes, stats }: ConciliacaoExportProps)
             r.tipo === 'credito' ? 'Crédito' : 'Débito',
             r.status === 'conciliada' ? 'Conciliada' : 'Pendente',
           ];
+          
           if (isFeedback) {
             const fb = r as FeedbackRow;
             base.push(fb.acao_ia === 'aprovado' ? 'Aprovado' : 'Rejeitado');
             base.push(fb.motivo_rejeicao || '');
+          } else {
+            const tx = r as TransacaoExport;
+            base.push(String(tx.compensacao_valor || 0).replace('.', ','));
+            base.push(tx.compensacao_classificacao || '');
+            base.push(tx.compensacao_regra || '');
           }
           return base;
         });
