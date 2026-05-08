@@ -688,9 +688,18 @@ Deno.serve(async (req) => {
             const newAttempts = item.attempts + 1;
             const maxAttempts = item.max_attempts || config?.retry_limit || 5;
 
+            // Histórico de erro serializado
+            const newError = {
+              timestamp: new Date().toISOString(),
+              message: e.message,
+              attempt: newAttempts
+            };
+            const updatedHistory = Array.isArray(item.error_history) ? [...item.error_history, newError] : [newError];
+
             await supabase.from('asaas_sync_queue').update({ 
               status: newAttempts >= maxAttempts ? 'FAILED' : 'PENDING',
               last_error: e.message,
+              error_history: updatedHistory,
               attempts: newAttempts,
               next_retry_at: nextRetry.toISOString()
             }).eq('id', item.id)
