@@ -10,7 +10,12 @@ import {
   PiggyBank,
   Landmark,
   ArrowLeftRight,
+  Upload,
+  Settings,
 } from 'lucide-react';
+import { RegrasConciliacaoDialog } from '@/components/contas-bancarias/RegrasConciliacaoDialog';
+import { ImportExtratoDialog } from '@/components/conciliacao/ImportExtratoDialog';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
