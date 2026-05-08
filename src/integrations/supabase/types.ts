@@ -3388,6 +3388,57 @@ export type Database = {
         }
         Relationships: []
       }
+      elisao_alertas: {
+        Row: {
+          competencia: string
+          created_at: string | null
+          descricao: string
+          empresa_id: string
+          id: string
+          metadata: Json | null
+          severidade: string
+          status: string
+          tipo_divergencia: string
+        }
+        Insert: {
+          competencia: string
+          created_at?: string | null
+          descricao: string
+          empresa_id: string
+          id?: string
+          metadata?: Json | null
+          severidade?: string
+          status?: string
+          tipo_divergencia: string
+        }
+        Update: {
+          competencia?: string
+          created_at?: string | null
+          descricao?: string
+          empresa_id?: string
+          id?: string
+          metadata?: Json | null
+          severidade?: string
+          status?: string
+          tipo_divergencia?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "elisao_alertas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "elisao_alertas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       elisao_analise_gap: {
         Row: {
           created_at: string
@@ -3441,46 +3492,58 @@ export type Database = {
       }
       elisao_creditos_auditoria: {
         Row: {
+          aprovador_id: string | null
           created_at: string
           cst_csosn: string | null
+          data_aprovacao: string | null
           empresa_id: string
           evidencias: Json | null
+          historico_decisoes: Json | null
           id: string
           metodologia_aplicada: string | null
           motivo_rejeicao: string | null
           ncm: string
           nota_fiscal_id: string
           regra_id: string | null
+          status_aprovacao: string
           status_validacao: string | null
           valor_base: number
           valor_credito_calculado: number
         }
         Insert: {
+          aprovador_id?: string | null
           created_at?: string
           cst_csosn?: string | null
+          data_aprovacao?: string | null
           empresa_id: string
           evidencias?: Json | null
+          historico_decisoes?: Json | null
           id?: string
           metodologia_aplicada?: string | null
           motivo_rejeicao?: string | null
           ncm: string
           nota_fiscal_id: string
           regra_id?: string | null
+          status_aprovacao?: string
           status_validacao?: string | null
           valor_base: number
           valor_credito_calculado: number
         }
         Update: {
+          aprovador_id?: string | null
           created_at?: string
           cst_csosn?: string | null
+          data_aprovacao?: string | null
           empresa_id?: string
           evidencias?: Json | null
+          historico_decisoes?: Json | null
           id?: string
           metodologia_aplicada?: string | null
           motivo_rejeicao?: string | null
           ncm?: string
           nota_fiscal_id?: string
           regra_id?: string | null
+          status_aprovacao?: string
           status_validacao?: string | null
           valor_base?: number
           valor_credito_calculado?: number
@@ -3499,6 +3562,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "elisao_creditos_auditoria_nota_fiscal_id_fkey"
+            columns: ["nota_fiscal_id"]
+            isOneToOne: false
+            referencedRelation: "notas_fiscais_ocr"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "elisao_creditos_auditoria_regra_id_fkey"
@@ -3616,6 +3686,9 @@ export type Database = {
       }
       elisao_tarefas_acionaveis: {
         Row: {
+          bitrix_error_message: string | null
+          bitrix_sync_status: string | null
+          bitrix_task_id: string | null
           checklist: Json | null
           created_at: string
           descricao: string | null
@@ -3630,6 +3703,9 @@ export type Database = {
           valor_envolvido: number | null
         }
         Insert: {
+          bitrix_error_message?: string | null
+          bitrix_sync_status?: string | null
+          bitrix_task_id?: string | null
           checklist?: Json | null
           created_at?: string
           descricao?: string | null
@@ -3644,6 +3720,9 @@ export type Database = {
           valor_envolvido?: number | null
         }
         Update: {
+          bitrix_error_message?: string | null
+          bitrix_sync_status?: string | null
+          bitrix_task_id?: string | null
           checklist?: Json | null
           created_at?: string
           descricao?: string | null

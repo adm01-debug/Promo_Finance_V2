@@ -15,7 +15,7 @@ interface BitrixResponse {
 }
 
 interface SyncRequest {
-  action: "sync_deals" | "sync_contacts" | "sync_companies" | "export_payment_status" | "test_connection" | "refresh_token";
+  action: "sync_deals" | "sync_contacts" | "sync_companies" | "export_payment_status" | "test_connection" | "refresh_token" | "sync_elisao_task";
   params?: Record<string, any>;
 }
 
@@ -559,6 +559,67 @@ async function exportPaymentStatus(
     };
   }
 }
+async function syncElisaoTask(
+  supabase: any,
+  accessToken: string,
+  tarefaId: string,
+  userId: string
+): Promise<{ success: boolean; message: string }> {
+  console.log(`[bitrix24-sync] Syncing elisao task ${tarefaId}...`);
+  
+  try {
+    const { data: tarefa, error: tError } = await supabase
+      .from("elisao_tarefas_acionaveis")
+      .select("*")
+      .eq("id", tarefaId)
+      .single();
+
+    if (tError || !tarefa) throw new Error("Tarefa não encontrada");
+
+    const taskParams = {
+      fields: {
+        TITLE: `[RECUPERAÇÃO FISCAL] ${tarefa.titulo}`,
+        DESCRIPTION: `${tarefa.descricao}\n\nValor estimado: R$ ${tarefa.valor_envolvido}\nPrazo: ${tarefa.prazo || 'N/D'}`,
+        RESPONSIBLE_ID: 1, 
+        DEADLINE: tarefa.prazo ? `${tarefa.prazo}T18:00:00` : undefined,
+      }
+    };
+
+    let result;
+    if (tarefa.bitrix_task_id) {
+      result = await callBitrixAPI(`tasks.task.update?taskId=${tarefa.bitrix_task_id}`, accessToken, taskParams);
+    } else {
+      result = await callBitrixAPI("tasks.task.add", accessToken, taskParams);
+    }
+
+    if (result.error) throw new Error(result.error_description || result.error);
+
+    const bitrixTaskId = result.result?.task?.id || tarefa.bitrix_task_id;
+
+    await supabase
+      .from("elisao_tarefas_acionaveis")
+      .update({
+        bitrix_task_id: String(bitrixTaskId),
+        bitrix_sync_status: "sincronizado",
+        bitrix_error_message: null
+      })
+      .eq("id", tarefaId);
+
+    return { success: true, message: "Tarefa sincronizada com Bitrix24" };
+  } catch (error: any) {
+    console.error("[bitrix24-sync] Elisao task sync failed:", error);
+    
+    await supabase
+      .from("elisao_tarefas_acionaveis")
+      .update({
+        bitrix_sync_status: "erro",
+        bitrix_error_message: error?.message || "Erro desconhecido"
+      })
+      .eq("id", tarefaId);
+
+    return { success: false, message: error?.message || "Erro na sincronização" };
+  }
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -605,6 +666,9 @@ serve(async (req) => {
         break;
       case "export_payment_status":
         result = await exportPaymentStatus(supabase, accessToken, user.id);
+        break;
+      case "sync_elisao_task":
+        result = await syncElisaoTask(supabase, accessToken, params?.id, user.id);
         break;
       default:
         throw new Error(`Unknown action: ${action}`);

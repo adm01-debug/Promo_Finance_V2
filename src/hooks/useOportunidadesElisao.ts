@@ -184,5 +184,110 @@ export function useOportunidadesElisao({ empresaId, contexto }: UseElisaoOptions
     persistirOportunidades,
     atualizarStatus,
     temHistoricoSuficiente: historicoFat.length >= 12,
+    
+    // Alertas automáticos
+    alertas: useQuery({
+      queryKey: ['elisao-alertas', empresaId],
+      queryFn: async () => {
+        if (!empresaId) return [];
+        const { data, error } = await supabase
+          .from('elisao_alertas')
+          .select('*')
+          .eq('empresa_id', empresaId)
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data || [];
+      },
+      enabled: !!empresaId,
+    }).data || [],
+
+    // Créditos para Auditoria
+    creditosAuditoria: useQuery({
+      queryKey: ['elisao-creditos-auditoria', empresaId],
+      queryFn: async () => {
+        if (!empresaId) return [];
+        const { data, error } = await supabase
+          .from('elisao_creditos_auditoria')
+          .select('*, nota:notas_fiscais_ocr(*)')
+          .eq('empresa_id', empresaId)
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data || [];
+      },
+      enabled: !!empresaId,
+    }).data || [],
+
+    // Tarefas Acionáveis (Bitrix Sync)
+    tarefasAcionaveis: useQuery({
+      queryKey: ['elisao-tarefas-acionaveis', empresaId],
+      queryFn: async () => {
+        if (!empresaId) return [];
+        const { data, error } = await supabase
+          .from('elisao_tarefas_acionaveis')
+          .select('*')
+          .eq('empresa_id', empresaId)
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data || [];
+      },
+      enabled: !!empresaId,
+    }).data || [],
+
+    // Mutações para Aprovação e Sincronização
+    decidirCredito: useMutation({
+      mutationFn: async ({ id, status, motivo }: { id: string; status: 'aprovado' | 'rejeitado'; motivo?: string }) => {
+        const { error } = await supabase
+          .from('elisao_creditos_auditoria')
+          .update({ 
+            status_aprovacao: status, 
+            motivo_rejeicao: motivo,
+            aprovador_id: user?.id,
+            data_aprovacao: new Date().toISOString()
+          })
+          .eq('id', id);
+        if (error) throw error;
+
+        if (status === 'aprovado') {
+          // Busca dados do crédito para criar a tarefa
+          const { data: credito } = await supabase
+            .from('elisao_creditos_auditoria')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+          if (credito) {
+            await supabase.from('elisao_tarefas_acionaveis').insert({
+              empresa_id: credito.empresa_id,
+              titulo: `Recuperação de Crédito - NCM ${credito.ncm}`,
+              descricao: `Recuperação de crédito aprovada na auditoria.\nMetodologia: ${credito.metodologia_aplicada}\nNCM: ${credito.ncm}`,
+              valor_envolvido: credito.valor_credito_calculado,
+              tipo_oportunidade: 'credito_tributario',
+              status: 'pendente'
+            });
+          }
+        }
+      },
+      onSuccess: () => {
+        toast.success('Decisão registrada e tarefa criada se aprovado');
+        queryClient.invalidateQueries({ queryKey: ['elisao-creditos-auditoria', empresaId] });
+        queryClient.invalidateQueries({ queryKey: ['elisao-tarefas-acionaveis', empresaId] });
+      },
+      onError: (e: Error) => toast.error(e.message),
+    }),
+
+    sincronizarBitrix: useMutation({
+      mutationFn: async (tarefaId: string) => {
+        const { data, error } = await supabase.functions.invoke('bitrix24-sync', {
+          body: { action: 'sync_elisao_task', params: { id: tarefaId } }
+        });
+        if (error) throw error;
+        return data;
+      },
+      onSuccess: () => {
+        toast.success('Tarefa sincronizada com Bitrix24');
+        queryClient.invalidateQueries({ queryKey: ['elisao-tarefas-acionaveis', empresaId] });
+      },
+      onError: (e: Error) => toast.error(e.message),
+    }),
   };
 }
