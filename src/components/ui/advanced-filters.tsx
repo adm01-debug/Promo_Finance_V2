@@ -61,6 +61,8 @@ export function AdvancedFiltersPopover({
   ],
   className,
   controller,
+  empresas = [],
+  contasBancarias = [],
 }: AdvancedFiltersProps) {
   const [open, setOpen] = useState(false);
 
