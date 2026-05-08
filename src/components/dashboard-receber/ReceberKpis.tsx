@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { DollarSign, AlertTriangle, CalendarDays, Clock, Calendar, TrendingUp, CheckCircle } from "lucide-react"; from "lucide-react";
+import { DollarSign, AlertTriangle, CalendarDays, Clock, Calendar, TrendingUp, CheckCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
