@@ -77,4 +77,46 @@ describe('detectarJCP', () => {
     expect(result.aplicavel).toBe(false);
     expect(result.economia_estimada).toBe(0);
   });
+
+  describe('testes de fronteira (boundary values)', () => {
+    it('deve ser aplicável exatamente no limite de PL (R$ 100.000,01)', () => {
+      const ctx = { ...baseCtx, patrimonio_liquido: 100000.01, lucro_liquido: 50000 };
+      const result = detectarJCP(ctx);
+      expect(result.aplicavel).toBe(true);
+    });
+
+    it('não deve ser aplicável exatamente em R$ 100.000,00 de PL', () => {
+      const ctx = { ...baseCtx, patrimonio_liquido: 100000, lucro_liquido: 50000 };
+      const result = detectarJCP(ctx);
+      expect(result.aplicavel).toBe(false);
+    });
+
+    it('deve ser aplicável com lucro mínimo (R$ 0,01)', () => {
+      const ctx = { ...baseCtx, patrimonio_liquido: 500000, lucro_liquido: 0.01 };
+      const result = detectarJCP(ctx);
+      expect(result.aplicavel).toBe(true);
+    });
+
+    it('não deve ser aplicável com lucro zero', () => {
+      const ctx = { ...baseCtx, patrimonio_liquido: 500000, lucro_liquido: 0 };
+      const result = detectarJCP(ctx);
+      expect(result.aplicavel).toBe(false);
+    });
+
+    it('deve usar limite de 50% do lucro quando for exatamente igual ao limite de PL', () => {
+      // limitePL = PL * TJLP_ANUAL
+      // Queremos: limitePL = 50% do lucro
+      // lucro = (PL * TJLP_ANUAL) / 0.5
+      const pl = 1000000;
+      const limitePL = pl * TJLP_ANUAL; // 71.200
+      const lucro = limitePL / 0.5; // 142.400
+      
+      const ctx = { ...baseCtx, patrimonio_liquido: pl, lucro_liquido: lucro };
+      const result = detectarJCP(ctx);
+      
+      // jcpDedutivel = min(71200, 71200) = 71200
+      expect(result.economia_estimada).toBeCloseTo(limitePL * 0.19, 0);
+    });
+  });
 });
+
