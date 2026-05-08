@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Target, Plus, TrendingUp, Lightbulb, Loader2, Sparkles, Trash2, LayoutGrid, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,7 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useMetasFinanceiras, useCreateMeta, useDeleteMeta, useHistoricoScoreSaude, useRecomendacoesIA } from '@/hooks/useMetasFinanceiras';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion as m, AnimatePresence } from 'framer-motion';
 
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
@@ -62,7 +61,7 @@ export function MetasFinanceirasPanel() {
               </div>
               <div className="flex-1 max-w-sm w-full space-y-4">
                 <div className="h-3 rounded-full bg-white/5 overflow-hidden ring-1 ring-white/10">
-                  <motion.div 
+                  <m.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${latestScore.score}%` }}
                     transition={{ duration: 1.5, ease: "circOut" }}
@@ -155,15 +154,15 @@ export function MetasFinanceirasPanel() {
                 {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-24 w-full rounded-2xl bg-white/5" />)}
               </div>
             ) : !metas || metas.length === 0 ? (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-20 text-center opacity-40">
+              <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-20 text-center opacity-40">
                 <Target className="h-20 w-20 mb-4 stroke-[1px]" />
                 <p className="text-lg font-bold">Horizonte Vazio</p>
                 <p className="text-sm font-medium">Defina novas diretrizes para sincronizar o sistema.</p>
-              </motion.div>
+              </m.div>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">
                 {metas.map((meta, index) => (
-                  <motion.div 
+                  <m.div 
                     key={meta.id} 
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -184,7 +183,7 @@ export function MetasFinanceirasPanel() {
                     </div>
                     <div className="space-y-3">
                       <div className="h-2 rounded-full bg-white/5 overflow-hidden">
-                        <motion.div 
+                        <m.div 
                           initial={{ width: 0 }}
                           animate={{ width: "35%" }} // Exemplo estático para visual, o correto seria (realizado/meta)*100
                           className="h-full bg-gradient-to-r from-primary to-blue-500 rounded-full"
@@ -205,7 +204,7 @@ export function MetasFinanceirasPanel() {
                         </Button>
                       </div>
                     </div>
-                  </motion.div>
+                  </m.div>
                 ))}
               </div>
             )}
@@ -229,7 +228,7 @@ export function MetasFinanceirasPanel() {
           </CardHeader>
           <CardContent className="p-8 pt-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
             {recomendacoes.map((rec, i) => (
-              <motion.div 
+              <m.div 
                 key={rec.id} 
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -251,7 +250,7 @@ export function MetasFinanceirasPanel() {
                     <span className="text-[9px] font-black uppercase tracking-widest text-success/80">Estimated ROI: {formatCurrency(rec.impacto_estimado)}</span>
                   </div>
                 )}
-              </motion.div>
+              </m.div>
             ))}
           </CardContent>
         </Card>
