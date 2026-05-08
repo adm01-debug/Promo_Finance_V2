@@ -71,14 +71,34 @@ export async function setCurrentEmpresaId(id: string) {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
+      const { data: empresa } = await supabase
+        .from('empresas')
+        .select('nome_fantasia, razao_social')
+        .eq('id', id)
+        .maybeSingle();
+      
+      const nomeEmpresa = empresa?.nome_fantasia || empresa?.razao_social || 'Desconhecida';
+
       await supabase.rpc('registrar_auditoria_config', {
         _tipo_acao: 'troca_empresa',
         _empresa_id: id,
         _detalhes: {
           previous_empresa_id: previousId,
+          new_empresa_id: id,
+          new_empresa_nome: nomeEmpresa,
           timestamp: new Date().toISOString(),
           context: 'EmpresaSwitcher QuickSwitch'
         }
+      });
+
+      // Notificar o usuário sobre a mudança crítica
+      toast.info(`Ambiente alterado para: ${nomeEmpresa}`, {
+        description: 'Todos os filtros e dashboards foram sincronizados.',
+        action: {
+          label: 'Ver Log',
+          onClick: () => window.location.href = '/audit-logs'
+        },
+        duration: 5000
       });
     }
   } catch (err) {
@@ -91,8 +111,6 @@ export async function setCurrentEmpresaId(id: string) {
     bubbles: true,
     composed: true
   }));
-  
-  toast.success('Empresa alterada com sucesso. Os dados foram atualizados.');
 }
 
 export function useDefinirEmpresaPadrao() {
