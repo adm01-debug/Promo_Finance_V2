@@ -108,11 +108,11 @@ export default function BloqueiosDuplicidade() {
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                           <FileText className="h-3 w-3" />
-                          <span>Doc: {b.dados_tentativa?.numero_documento || 'N/D'}</span>
+                          <span>Doc: {(b.dados_tentativa as any)?.numero_documento || 'N/D'}</span>
                         </div>
                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                           <Info className="h-3 w-3" />
-                          <span className="truncate max-w-[150px]">{b.dados_tentativa?.descricao || 'Sem descrição'}</span>
+                          <span className="truncate max-w-[150px]">{(b.dados_tentativa as any)?.descricao || 'Sem descrição'}</span>
                         </div>
                       </div>
                     </TableCell>
