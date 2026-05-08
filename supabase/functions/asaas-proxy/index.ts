@@ -572,6 +572,10 @@ Deno.serve(async (req) => {
       }
 
       case 'processar_fila_sincronizacao': {
+        const { data: config } = await supabase.from('asaas_config').select('*').limit(1).maybeSingle();
+        const baseInterval = config?.retry_interval_minutes || 30;
+        const multiplier = config?.backoff_multiplier || 2.0;
+
         const { data: queueItems, error: queueError } = await supabase
           .from('asaas_sync_queue')
           .select('*, asaas_payments(asaas_id, id)')
@@ -604,18 +608,52 @@ Deno.serve(async (req) => {
             results.push({ id: item.id, status: 'COMPLETED' })
           } catch (e) {
             const nextRetry = new Date()
-            nextRetry.setMinutes(nextRetry.getMinutes() + Math.pow(2, item.attempts + 1) * 30)
+            // Cálculo com Backoff configurado: intervalo_base * (multiplicador ^ tentativas)
+            const minutesToAdd = baseInterval * Math.pow(multiplier, item.attempts);
+            nextRetry.setMinutes(nextRetry.getMinutes() + minutesToAdd)
             
+            const newAttempts = item.attempts + 1;
+            const maxAttempts = item.max_attempts || config?.retry_limit || 5;
+
             await supabase.from('asaas_sync_queue').update({ 
-              status: item.attempts + 1 >= item.max_attempts ? 'FAILED' : 'PENDING',
+              status: newAttempts >= maxAttempts ? 'FAILED' : 'PENDING',
               last_error: e.message,
-              attempts: item.attempts + 1,
+              attempts: newAttempts,
               next_retry_at: nextRetry.toISOString()
             }).eq('id', item.id)
             results.push({ id: item.id, status: 'FAILED' })
           }
         }
         result = { processed: results.length }
+        break
+      }
+
+      case 'simular_backoff': {
+        // Rotina de simulação para testar política de backoff
+        const { data: config } = await supabase.from('asaas_config').select('*').limit(1).maybeSingle();
+        const baseInterval = config?.retry_interval_minutes || 30;
+        const multiplier = config?.backoff_multiplier || 2.0;
+        
+        const simulationResults = [];
+        for (let i = 1; i <= 5; i++) {
+          const minutes = baseInterval * Math.pow(multiplier, i - 1);
+          simulationResults.push({
+            tentativa: i,
+            proximo_intervalo_minutos: minutes,
+            exemplo_horario: new Date(Date.now() + minutes * 60000).toISOString()
+          });
+        }
+
+        // Criar um registro na auditoria sobre a simulação
+        await supabase.from('asaas_audit_trail').insert({
+          action: 'BACKOFF_SIMULATION',
+          details: { 
+            config: { baseInterval, multiplier },
+            results: simulationResults
+          }
+        });
+
+        result = { success: true, simulation: simulationResults };
         break
       }
 
