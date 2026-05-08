@@ -983,6 +983,8 @@ export type Database = {
           backoff_multiplier: number | null
           bitrix_trigger_stage: string | null
           created_at: string | null
+          default_fine_percent: number | null
+          default_interest_percent: number | null
           empresa_id: string
           failure_threshold: number | null
           id: string
@@ -999,6 +1001,8 @@ export type Database = {
           backoff_multiplier?: number | null
           bitrix_trigger_stage?: string | null
           created_at?: string | null
+          default_fine_percent?: number | null
+          default_interest_percent?: number | null
           empresa_id: string
           failure_threshold?: number | null
           id?: string
@@ -1015,6 +1019,8 @@ export type Database = {
           backoff_multiplier?: number | null
           bitrix_trigger_stage?: string | null
           created_at?: string | null
+          default_fine_percent?: number | null
+          default_interest_percent?: number | null
           empresa_id?: string
           failure_threshold?: number | null
           id?: string
@@ -1036,6 +1042,44 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
+      asaas_credit_risk_analysis: {
+        Row: {
+          cliente_id: string | null
+          created_at: string
+          faixa_risco: string | null
+          id: string
+          metadata: Json | null
+          recomendacao: string | null
+          score_risco: number | null
+        }
+        Insert: {
+          cliente_id?: string | null
+          created_at?: string
+          faixa_risco?: string | null
+          id?: string
+          metadata?: Json | null
+          recomendacao?: string | null
+          score_risco?: number | null
+        }
+        Update: {
+          cliente_id?: string | null
+          created_at?: string
+          faixa_risco?: string | null
+          id?: string
+          metadata?: Json | null
+          recomendacao?: string | null
+          score_risco?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asaas_credit_risk_analysis_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1280,6 +1324,60 @@ export type Database = {
           },
           {
             foreignKeyName: "asaas_reconciliation_suggestions_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
+      asaas_scheduled_transfers: {
+        Row: {
+          agendado_para: string
+          chave_pix: string
+          created_at: string
+          descricao: string | null
+          empresa_id: string | null
+          id: string
+          processed_at: string | null
+          status: string
+          tipo_chave: string
+          valor: number
+        }
+        Insert: {
+          agendado_para: string
+          chave_pix: string
+          created_at?: string
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          processed_at?: string | null
+          status?: string
+          tipo_chave: string
+          valor: number
+        }
+        Update: {
+          agendado_para?: string
+          chave_pix?: string
+          created_at?: string
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          processed_at?: string | null
+          status?: string
+          tipo_chave?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asaas_scheduled_transfers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asaas_scheduled_transfers_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_tributario_dashboard"

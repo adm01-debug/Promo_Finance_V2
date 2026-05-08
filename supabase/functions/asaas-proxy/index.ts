@@ -241,8 +241,15 @@ Deno.serve(async (req) => {
           }
         }
 
-        if (data.juros) payload.interest = { value: data.juros }
-        if (data.multa) payload.fine = { value: data.multa }
+        // Multas e Juros Padrão do Config
+        const { data: config } = await supabase.from('asaas_config').select('*').eq('empresa_id', data.empresa_id).maybeSingle();
+        
+        if (data.juros || config?.default_interest_percent) 
+          payload.interest = { value: data.juros || config?.default_interest_percent }
+        
+        if (data.multa || config?.default_fine_percent) 
+          payload.fine = { value: data.multa || config?.default_fine_percent }
+
         if (data.desconto_valor) {
           payload.discount = {
             value: data.desconto_valor,
@@ -753,6 +760,35 @@ Deno.serve(async (req) => {
         });
 
         result = { success: true, simulation: simulationResults };
+        break
+      }
+
+      case 'analisar_risco_cliente': {
+        if (!data?.cliente_id) return err('cliente_id é obrigatório')
+        
+        const { data: cliente } = await supabase.from('clientes').select('*').eq('id', data.cliente_id).single();
+        const { data: pagamentos } = await supabase.from('asaas_payments').select('*').eq('asaas_customer_id', cliente?.asaas_id).limit(20);
+        
+        // Simulação de análise via IA (Copilot Global)
+        const prompt = `Analise o histórico de pagamentos deste cliente e sugira um score de risco (0-1000).
+        Cliente: ${cliente?.razao_social}. Pagamentos: ${JSON.stringify(pagamentos)}.`
+        
+        const { data: iaResult } = await supabase.functions.invoke('copilot-global', {
+          body: { prompt, context: 'analise_risco_credito' }
+        })
+
+        const score = parseInt(iaResult?.text?.match(/\d+/)?.[0] || '500');
+        const faixa = score > 800 ? 'BAIXO' : score > 400 ? 'MEDIO' : 'ALTO';
+
+        await supabase.from('asaas_credit_risk_analysis').insert({
+          cliente_id: data.cliente_id,
+          score_risco: score,
+          faixa_risco: faixa,
+          recomendacao: iaResult?.text || 'Sem recomendação disponível.',
+          metadata: { analysis_at: new Date().toISOString() }
+        });
+
+        result = { score, faixa, recommendation: iaResult?.text };
         break
       }
 
