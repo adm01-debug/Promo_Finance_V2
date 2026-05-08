@@ -87,10 +87,10 @@ export function PrevisaoIAVisaoGeral({ indicadores, inadimplencia, getTendenciaI
       <motion.div variants={itemVariants}>
         <Card className="border-white/5 bg-black/20 backdrop-blur-xl overflow-hidden group">
           <CardHeader className="pb-4 border-b border-white/5">
-            <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-muted-foreground/60">
-              <Users className="h-4 w-4 text-primary" />
-              Inadimplência: Risk Analysis
-            </CardTitle>
+              <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+                <Users className="h-4 w-4 text-primary" />
+                Delinquency Matrix: Risk Analysis
+              </CardTitle>
           </CardHeader>
           <CardContent className="p-6 space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">

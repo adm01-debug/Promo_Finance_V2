@@ -122,7 +122,7 @@ export function PrevisaoIATendencias({ tendencias, getTendenciaIcon, getTendenci
       <div className="grid gap-6 md:grid-cols-2">
         <TendenciaCard title="Receita Strategy" icon={<TrendingUp className="h-4 w-4 text-success" />} data={tendencias.receitas} colorFn={getTendenciaColor} iconFn={getTendenciaIcon} />
         <TendenciaCard title="Exposição Strategy" icon={<TrendingDown className="h-4 w-4 text-streak" />} data={tendencias.despesas} colorFn={getTendenciaColor} iconFn={getTendenciaIcon} inverted />
-        <TendenciaCard title="Risk Tendency" icon={<AlertTriangle className="h-4 w-4 text-destructive" />} data={tendencias.inadimplencia} colorFn={getTendenciaColor} iconFn={getTendenciaIcon} inverted />
+        <TendenciaCard title="Delinquency Tendency" icon={<AlertTriangle className="h-4 w-4 text-destructive" />} data={tendencias.inadimplencia} colorFn={getTendenciaColor} iconFn={getTendenciaIcon} inverted />
         <motion.div variants={itemVariants}>
           <Card className="border-white/5 bg-black/20 backdrop-blur-xl overflow-hidden group">
             <CardHeader className="pb-3 border-b border-white/5">

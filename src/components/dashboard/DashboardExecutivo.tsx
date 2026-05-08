@@ -104,7 +104,7 @@ export const DashboardExecutivo = () => {
       case 'vencimentos':
         return <StatusContasPieChart statusContasPagar={metrics.statusContasPagar} />;
       case 'previsao-ia':
-        return <PrevisaoIA />;
+        return <PrevisaoIA className="h-full" />;
       case 'aprovacoes':
         return <TopCentrosCustoChart dadosPorCentroCusto={metrics.dadosPorCentroCusto} />;
       case 'alertas-preditivos':
