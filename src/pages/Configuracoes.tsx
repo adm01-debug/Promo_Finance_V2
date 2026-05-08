@@ -40,6 +40,8 @@ import { GestaoContratos } from '@/components/contratos/GestaoContratos';
 import { AssinaturaDigital } from '@/components/documentos/AssinaturaDigital';
 import { ComprovanteOCR } from '@/components/comprovantes/ComprovanteOCR';
 import { BiometricSettings } from '@/components/configuracoes/BiometricSettings';
+import { ConfiguracaoConciliacaoPanel } from '@/components/conciliacao/ConfiguracaoConciliacaoPanel';
+import { RegrasConciliacaoPanel } from '@/components/conciliacao/RegrasConciliacaoPanel';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
