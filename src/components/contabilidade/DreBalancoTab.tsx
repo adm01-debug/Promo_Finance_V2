@@ -643,7 +643,14 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
                               initial={{ opacity: 0, x: -10 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: i * 0.02 }}
-                              className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/5 transition-colors group/row" 
+                              onClick={() => setDrillDown({ 
+                                open: true, 
+                                titulo: `Analítico: ${l.descricao}`, 
+                                subtitulo: `${empresaTitulo} · Acumulado até ${mes + 1}/${ano}`,
+                                tipo_bp: l.codigo === '1.1' ? 'circulante_ativo' : 
+                                        l.codigo === '1.2' ? 'nao_circ_ativo' : undefined
+                              })}
+                              className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/5 transition-colors group/row cursor-pointer" 
                               style={{ marginLeft: `${l.nivel * 1.5}rem` }}
                             >
                               <div className="flex items-center gap-3">
