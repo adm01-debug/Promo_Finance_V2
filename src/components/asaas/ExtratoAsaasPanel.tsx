@@ -22,7 +22,7 @@ interface Props {
 }
 
 export function ExtratoAsaasPanel({ empresaId }: Props) {
-  const { consultarExtrato } = useAsaas(empresaId);
+  const { consultarExtrato, suggestions, aceitarSugestao, gerarSugestoes } = useAsaas(empresaId);
   const [startDate, setStartDate] = useState(format(subDays(new Date(), 30), 'yyyy-MM-dd'));
   const [finishDate, setFinishDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [extrato, setExtrato] = useState<any>(null);
