@@ -299,12 +299,108 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
               Cada evento financeiro dispara uma regra que gera lançamento em partidas dobradas.
             </CardDescription>
           </div>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="gap-1.5">
-                <Plus className="h-4 w-4" />Nova regra
-              </Button>
-            </DialogTrigger>
+          <div className="flex gap-2">
+            <Dialog open={simulating} onOpenChange={setSimulating}>
+              <DialogTrigger asChild>
+                <Button size="sm" variant="outline" className="gap-1.5">
+                  <Play className="h-4 w-4" />Simular dry-run
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-xl">
+                <DialogHeader>
+                  <DialogTitle>Simulação de Contabilização (Dry-run)</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Tipo de evento</Label>
+                      <Select
+                        value={simForm.tipo_evento}
+                        onValueChange={(v) => setSimForm({ ...simForm, tipo_evento: v as any })}
+                      >
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {EVENTOS.map((e) => (
+                            <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Valor</Label>
+                      <Input
+                        type="number"
+                        value={simForm.valor}
+                        onChange={(e) => setSimForm({ ...simForm, valor: Number(e.target.value) })}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Descrição</Label>
+                    <Input
+                      value={simForm.descricao}
+                      onChange={(e) => setSimForm({ ...simForm, descricao: e.target.value })}
+                    />
+                  </div>
+
+                  {simResult && (
+                    <Alert className={simResult.status === 'simulado' ? 'bg-blue-500/10 border-blue-500/20' : 'bg-amber-500/10 border-amber-500/20'}>
+                      <Info className="h-4 w-4" />
+                      <AlertTitle>Resultado da Simulação</AlertTitle>
+                      <AlertDescription className="mt-2 space-y-2">
+                        <div className="flex justify-between text-xs">
+                          <span>Status:</span>
+                          <Badge variant="outline">{simResult.status}</Badge>
+                        </div>
+                        {simResult.regra && (
+                          <div className="flex justify-between text-xs">
+                            <span>Regra aplicada:</span>
+                            <span className="font-medium">{simResult.regra.nome}</span>
+                          </div>
+                        )}
+                        {simResult.debito && (
+                          <div className="flex flex-col gap-1 text-[11px] bg-background/50 p-2 rounded border border-border/50">
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Débito:</span>
+                              <span className="font-mono">{contas.find(c => c.id === simResult.debito)?.codigo || simResult.debito}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Crédito:</span>
+                              <span className="font-mono">{contas.find(c => c.id === simResult.credito)?.codigo || simResult.credito}</span>
+                            </div>
+                            <div className="flex justify-between pt-1 border-t border-border/30">
+                              <span className="text-muted-foreground">Valor:</span>
+                              <span className="font-bold">R$ {simResult.valor?.toFixed(2)}</span>
+                            </div>
+                          </div>
+                        )}
+                        {simResult.status === 'sem_regra' && (
+                          <p className="text-xs text-amber-600">Nenhuma regra ativa foi encontrada para este tipo de evento.</p>
+                        )}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+                <DialogFooter>
+                  <Button variant="ghost" onClick={() => { setSimulating(false); setSimResult(null); }}>Fechar</Button>
+                  <Button
+                    onClick={() => dryRunSimulation.mutate()}
+                    disabled={dryRunSimulation.isPending}
+                    className="gap-2"
+                  >
+                    <Play className="h-4 w-4" />
+                    Executar teste
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="gap-1.5">
+                  <Plus className="h-4 w-4" />Nova regra
+                </Button>
+              </DialogTrigger>
             <DialogContent className="max-w-lg">
               <DialogHeader>
                 <DialogTitle>Nova regra de contabilização</DialogTitle>
