@@ -726,6 +726,9 @@ async function syncBoleto(
       case "sync_elisao_task":
         result = await syncElisaoTask(supabase, accessToken, params?.id, user.id);
         break;
+      case "sync_boleto":
+        result = await syncBoleto(supabase, accessToken, params?.boleto, user.id);
+        break;
       default:
         throw new Error(`Unknown action: ${action}`);
     }
