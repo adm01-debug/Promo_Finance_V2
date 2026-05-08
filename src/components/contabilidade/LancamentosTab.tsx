@@ -22,6 +22,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { FilterPresetsManager } from './FilterPresetsManager';
+import { logUserAction } from '@/lib/audit-logger';
+import { useAuth } from '@/hooks/useAuth';
 import { useLancamentosContabeis, useCriarLancamento } from '@/hooks/useLancamentosContabeis';
 import { usePlanoContas } from '@/hooks/usePlanoContas';
 import { formatCurrency } from '@/lib/formatters';
@@ -49,6 +52,7 @@ const LANCAMENTOS_DEFAULTS: LancamentosFilters = {
 };
 
 export function LancamentosTab({ empresaId, ano }: Props) {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [data, setData] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [historico, setHistorico] = useState('');
@@ -91,12 +95,26 @@ export function LancamentosTab({ empresaId, ano }: Props) {
       case 'ano': ini = startOfYear(new Date(ano, 0, 1)); fim = endOfYear(new Date(ano, 0, 1)); break;
       case 'custom': return filtersController.setField('preset', p);
     }
-    filtersController.setValues({
+    
+    const oldValues = { ...filtersController.values };
+    const nextValues = {
       ...filtersController.values,
       preset: p,
       dataInicio: ini ? format(ini, 'yyyy-MM-dd') : null,
       dataFim: fim ? format(fim, 'yyyy-MM-dd') : null,
-    });
+    };
+    
+    filtersController.setValues(nextValues);
+
+    if (user) {
+      logUserAction({
+        userId: user.id,
+        actionType: 'filter_change',
+        entityType: 'lancamentos-contabeis',
+        oldValue: oldValues,
+        newValue: nextValues
+      });
+    }
   };
 
   const lancsFiltrados = useMemo(() => {
@@ -335,6 +353,12 @@ export function LancamentosTab({ empresaId, ano }: Props) {
       <CardContent className="space-y-4">
         {/* Filtros */}
         <div className="flex flex-wrap items-center gap-4">
+          <FilterPresetsManager 
+            entityType="lancamentos-contabeis"
+            empresaId={empresaId}
+            currentFilters={filtersController.values}
+            onLoadPreset={(f) => filtersController.setValues(f)}
+          />
           <div className="relative flex-1 min-w-[320px] group/search">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within/search:text-primary" />
             <Input 
