@@ -2242,6 +2242,7 @@ export type Database = {
           ativo: boolean
           banco: string
           codigo_banco: string
+          configuracoes_conciliacao: Json | null
           conta: string
           cor: string | null
           created_at: string
@@ -2263,6 +2264,7 @@ export type Database = {
           ativo?: boolean
           banco: string
           codigo_banco: string
+          configuracoes_conciliacao?: Json | null
           conta: string
           cor?: string | null
           created_at?: string
@@ -2284,6 +2286,7 @@ export type Database = {
           ativo?: boolean
           banco?: string
           codigo_banco?: string
+          configuracoes_conciliacao?: Json | null
           conta?: string
           cor?: string | null
           created_at?: string
@@ -3279,6 +3282,67 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
+      divergencias_conciliacao: {
+        Row: {
+          conta_bancaria_id: string | null
+          created_at: string | null
+          descricao: string | null
+          extrato_id: string | null
+          id: string
+          recomendacao: string | null
+          status: string | null
+          tipo_divergencia: string
+          transacao_id: string | null
+          valor_divergencia: number | null
+        }
+        Insert: {
+          conta_bancaria_id?: string | null
+          created_at?: string | null
+          descricao?: string | null
+          extrato_id?: string | null
+          id?: string
+          recomendacao?: string | null
+          status?: string | null
+          tipo_divergencia: string
+          transacao_id?: string | null
+          valor_divergencia?: number | null
+        }
+        Update: {
+          conta_bancaria_id?: string | null
+          created_at?: string | null
+          descricao?: string | null
+          extrato_id?: string | null
+          id?: string
+          recomendacao?: string | null
+          status?: string | null
+          tipo_divergencia?: string
+          transacao_id?: string | null
+          valor_divergencia?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "divergencias_conciliacao_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "divergencias_conciliacao_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "divergencias_conciliacao_transacao_id_fkey"
+            columns: ["transacao_id"]
+            isOneToOne: false
+            referencedRelation: "transacoes_bancarias"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -5150,6 +5214,63 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
+      logs_conciliacao_retroativa: {
+        Row: {
+          conta_bancaria_id: string | null
+          created_at: string | null
+          created_by: string | null
+          data_fim: string
+          data_inicio: string
+          divergencias_encontradas: number | null
+          id: string
+          logs: Json | null
+          status: string | null
+          total_conciliado: number | null
+          total_processado: number | null
+        }
+        Insert: {
+          conta_bancaria_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          data_fim: string
+          data_inicio: string
+          divergencias_encontradas?: number | null
+          id?: string
+          logs?: Json | null
+          status?: string | null
+          total_conciliado?: number | null
+          total_processado?: number | null
+        }
+        Update: {
+          conta_bancaria_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          data_fim?: string
+          data_inicio?: string
+          divergencias_encontradas?: number | null
+          id?: string
+          logs?: Json | null
+          status?: string | null
+          total_conciliado?: number | null
+          total_processado?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "logs_conciliacao_retroativa_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "logs_conciliacao_retroativa_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -10964,6 +11085,15 @@ export type Database = {
         }[]
       }
       refresh_mv_benchmark_setorial: { Args: never; Returns: undefined }
+      registrar_evento_pagar: {
+        Args: {
+          p_conta_id: string
+          p_mensagem: string
+          p_metadata?: Json
+          p_tipo: string
+        }
+        Returns: undefined
+      }
       registrar_evento_receber: {
         Args: {
           p_conta_id: string
