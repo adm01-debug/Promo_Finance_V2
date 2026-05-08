@@ -147,7 +147,7 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
       }
 
       // Registra log global da importação
-      await supabase.from('logs_baixa_automatica').insert({
+      await (supabase.from('logs_baixa_automatica') as any).insert({
         empresa_id: empresaId,
         arquivo_nome: resultado?.extrato?.nomeArquivo || 'unknown',
         total_registros: resultado?.extrato?.transacoes.length || 0,
