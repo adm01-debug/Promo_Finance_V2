@@ -13,17 +13,29 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import {
   CreditCard, QrCode, Banknote, Plus, RefreshCw, X,
   DollarSign, Clock, CheckCircle2, AlertTriangle, Copy, ExternalLink,
   Send, Users, Undo2, FileText, MoreHorizontal, Link2, Download, History,
   Settings as SettingsIcon, LayoutDashboard, FileSpreadsheet, PlayCircle,
+  Search, Filter, Calendar, Bell, Mail, Phone,
 } from 'lucide-react';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuTrigger, DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useAsaas } from '@/hooks/useAsaas';
+import { useAllEmpresas } from '@/hooks/useEmpresas';
+import { supabase } from '@/integrations/supabase/client';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { NovaCobrancaDialog } from '@/components/asaas/NovaCobrancaDialog';
 import { TransferenciaPixDialog } from '@/components/asaas/TransferenciaPixDialog';
@@ -69,8 +81,18 @@ export default function Asaas() {
     // Novos do hook
     config, loadingConfig, salvarConfig,
     syncQueue, loadingQueue, reprocessarManual,
-    exportarAuditoria, queueStats,
+    exportarAuditoria, queueStats, simularBackoff,
   } = useAsaas(empresaId);
+
+  // States for Advanced Filters
+  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterSearch, setFilterSearch] = useState('');
+  const [filterDateStart, setFilterDateStart] = useState('');
+  const [filterDateEnd, setFilterDateEnd] = useState('');
+
+  // Reprocess Dialog state
+  const [reprocessDialog, setReprocessDialog] = useState<{ paymentId: string; asaasId: string } | null>(null);
+  const [reprocessReason, setReprocessReason] = useState('');
 
   // Dialog states
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -148,6 +170,40 @@ export default function Asaas() {
       </MainLayout>
     );
   }
+
+  const filteredPayments = payments.filter(p => {
+    const matchesStatus = filterStatus === 'all' || p.status === filterStatus;
+    const matchesSearch = !filterSearch || 
+      (p.descricao?.toLowerCase().includes(filterSearch.toLowerCase())) ||
+      (p.asaas_id?.toLowerCase().includes(filterSearch.toLowerCase()));
+    
+    let matchesDate = true;
+    if (filterDateStart && p.data_vencimento < filterDateStart) matchesDate = false;
+    if (filterDateEnd && p.data_vencimento > filterDateEnd) matchesDate = false;
+
+    return matchesStatus && matchesSearch && matchesDate;
+  });
+
+  const handleReprocessar = async () => {
+    if (!reprocessDialog) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error('Usuário não autenticado');
+      return;
+    }
+
+    try {
+      await reprocessarManual.mutateAsync({
+        paymentId: reprocessDialog.paymentId,
+        reason: reprocessReason,
+        userId: user.id
+      });
+      setReprocessDialog(null);
+      setReprocessReason('');
+    } catch (e) {
+      // toast handled in hook
+    }
+  };
 
   return (
     <MainLayout>
@@ -277,9 +333,14 @@ export default function Asaas() {
                     <CardTitle>Fila de Sincronização</CardTitle>
                     <CardDescription>Monitoramento de retentativas automáticas</CardDescription>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => exportarAuditoria()}>
-                    <FileSpreadsheet className="h-4 w-4 mr-2" /> Exportar Auditoria
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => simularBackoff.mutate()} disabled={simularBackoff.isPending}>
+                      <PlayCircle className="h-4 w-4 mr-2" /> Simular Rotina
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => exportarAuditoria()}>
+                      <FileSpreadsheet className="h-4 w-4 mr-2" /> Exportar Auditoria
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <Table>
@@ -308,7 +369,7 @@ export default function Asaas() {
                             <Badge variant={item.status === 'failed' ? 'destructive' : 'secondary'}>{item.status.toUpperCase()}</Badge>
                           </TableCell>
                           <TableCell className="text-right">
-                            <Button size="icon" variant="ghost" onClick={() => reprocessarManual.mutate(item.payment_id)} disabled={reprocessarManual.isPending} title="Reprocessar Manual">
+                            <Button size="icon" variant="ghost" onClick={() => setReprocessDialog({ paymentId: item.payment_id, asaasId: item.id })} disabled={reprocessarManual.isPending} title="Reprocessar Manual">
                               <PlayCircle className={`h-4 w-4 ${reprocessarManual.isPending ? 'animate-spin' : ''}`} />
                             </Button>
                           </TableCell>
@@ -330,25 +391,84 @@ export default function Asaas() {
                 </CardTitle>
                 <CardDescription>Configure como o sistema deve lidar com falhas de comunicação com o Asaas</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Limite de Tentativas</label>
+                    <Label>Limite de Tentativas</Label>
                     <Input type="number" value={config?.retry_limit || 5} 
                       onChange={(e) => salvarConfig.mutate({ retry_limit: parseInt(e.target.value) })} />
                     <p className="text-xs text-muted-foreground">Número máximo de vezes que o sistema tentará sincronizar.</p>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Intervalo Inicial (minutos)</label>
+                    <Label>Intervalo Inicial (minutos)</Label>
                     <Input type="number" value={config?.retry_interval_minutes || 30} 
                       onChange={(e) => salvarConfig.mutate({ retry_interval_minutes: parseInt(e.target.value) })} />
                     <p className="text-xs text-muted-foreground">Tempo de espera antes da primeira retentativa.</p>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Multiplicador Backoff</label>
+                    <Label>Multiplicador Backoff</Label>
                     <Input type="number" step="0.5" value={config?.backoff_multiplier || 2.0} 
                       onChange={(e) => salvarConfig.mutate({ backoff_multiplier: parseFloat(e.target.value) })} />
-                    <p className="text-xs text-muted-foreground">Fator de aumento do intervalo entre tentativas (ex: 2.0 = dobra o tempo).</p>
+                    <p className="text-xs text-muted-foreground">Fator de aumento do intervalo entre tentativas.</p>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <h3 className="text-sm font-bold flex items-center gap-2">
+                    <Bell className="h-4 w-4" /> Alertas de Falha Crítica
+                  </h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="space-y-0.5">
+                        <Label className="flex items-center gap-2"><Mail className="h-4 w-4" /> Alertas por E-mail</Label>
+                        <p className="text-xs text-muted-foreground">Receba avisos quando a fila atingir o limite</p>
+                      </div>
+                      <Switch 
+                        checked={config?.alert_email_enabled} 
+                        onCheckedChange={(v) => salvarConfig.mutate({ alert_email_enabled: v })} 
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="space-y-0.5">
+                        <Label className="flex items-center gap-2"><Phone className="h-4 w-4" /> Alertas por WhatsApp</Label>
+                        <p className="text-xs text-muted-foreground">Avisos via mensagens proativas</p>
+                      </div>
+                      <Switch 
+                        checked={config?.alert_whatsapp_enabled} 
+                        onCheckedChange={(v) => salvarConfig.mutate({ alert_whatsapp_enabled: v })} 
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="space-y-2">
+                      <Label>E-mail para Alerta</Label>
+                      <Input 
+                        placeholder="email@exemplo.com" 
+                        value={config?.alert_email_address || ''} 
+                        onChange={(e) => salvarConfig.mutate({ alert_email_address: e.target.value })} 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>WhatsApp para Alerta</Label>
+                      <Input 
+                        placeholder="5511999999999" 
+                        value={config?.alert_whatsapp_number || ''} 
+                        onChange={(e) => salvarConfig.mutate({ alert_whatsapp_number: e.target.value })} 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Limite para Alerta (Falhas/Hora)</Label>
+                      <Input 
+                        type="number" 
+                        value={config?.failure_threshold || 5} 
+                        onChange={(e) => salvarConfig.mutate({ failure_threshold: parseInt(e.target.value) })} 
+                      />
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -361,7 +481,44 @@ export default function Asaas() {
                 <CardTitle>Cobranças</CardTitle>
                 <CardDescription>Todas as cobranças emitidas via ASAAS</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                <div className="flex flex-col md:flex-row gap-4 mb-4">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input 
+                      placeholder="Buscar por descrição ou ID..." 
+                      className="pl-8" 
+                      value={filterSearch}
+                      onChange={(e) => setFilterSearch(e.target.value)}
+                    />
+                  </div>
+                  <Select value={filterStatus} onValueChange={setFilterStatus}>
+                    <SelectTrigger className="w-full md:w-[200px]">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos os Status</SelectItem>
+                      {Object.entries(statusConfig).map(([key, val]) => (
+                        <SelectItem key={key} value={key}>{val.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <div className="flex gap-2">
+                    <Input 
+                      type="date" 
+                      className="w-full md:w-[150px]" 
+                      value={filterDateStart}
+                      onChange={(e) => setFilterDateStart(e.target.value)}
+                    />
+                    <Input 
+                      type="date" 
+                      className="w-full md:w-[150px]" 
+                      value={filterDateEnd}
+                      onChange={(e) => setFilterDateEnd(e.target.value)}
+                    />
+                  </div>
+                </div>
+
                 {loadingPayments ? (
                   <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
                 ) : payments.length === 0 ? (
@@ -381,7 +538,7 @@ export default function Asaas() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {payments.map(payment => {
+                        {filteredPayments.map(payment => {
                           const TipoIcon = tipoIcons[payment.tipo] || CreditCard;
                           const statusInfo = statusConfig[payment.status] || { label: payment.status, variant: 'outline' as const };
                           const isPaid = ['RECEIVED', 'CONFIRMED'].includes(payment.status);
@@ -463,7 +620,7 @@ export default function Asaas() {
                                     <DropdownMenuItem onClick={() => setSelectedPaymentAudit(payment.id)}>
                                       <History className="h-4 w-4 mr-2" /> Auditoria
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => reprocessarManual.mutate(payment.id)}>
+                                    <DropdownMenuItem onClick={() => setReprocessDialog({ paymentId: payment.id, asaasId: payment.asaas_id })}>
                                       <RefreshCw className={`h-4 w-4 mr-2 ${reprocessarManual.isPending ? 'animate-spin' : ''}`} /> Sincronizar Agora
                                     </DropdownMenuItem>
                                     {isPaid && (
@@ -597,6 +754,29 @@ export default function Asaas() {
         confirmText="Sim, Cancelar"
         onConfirm={handleCancelar}
         isLoading={cancelarCobranca.isPending}
+      />
+      <ConfirmationDialog
+        isOpen={!!reprocessDialog}
+        onClose={() => setReprocessDialog(null)}
+        title="Reprocessar Sincronização"
+        message={
+          <div className="space-y-4">
+            <p>Você está forçando a sincronização manual do pagamento <strong>#{reprocessDialog?.asaasId}</strong>.</p>
+            <div className="space-y-2">
+              <Label>Motivo do Reprocessamento</Label>
+              <Input 
+                placeholder="Ex: Falha na conciliação, atualização pendente..." 
+                value={reprocessReason}
+                onChange={(e) => setReprocessReason(e.target.value)}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">Esta ação e o motivo serão registrados na trilha de auditoria.</p>
+          </div>
+        }
+        confirmText="Confirmar e Sincronizar"
+        onConfirm={handleReprocessar}
+        isLoading={reprocessarManual.isPending}
+        disabled={!reprocessReason.trim()}
       />
     </MainLayout>
   );
