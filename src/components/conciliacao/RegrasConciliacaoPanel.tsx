@@ -18,6 +18,7 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatCurrency } from '@/lib/formatters';
+import { cn } from '@/lib/utils';
 
 export function RegrasConciliacaoPanel() {
   const [showAddDialog, setShowAddDialog] = useState(false);
