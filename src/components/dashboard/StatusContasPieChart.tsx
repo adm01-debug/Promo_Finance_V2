@@ -54,15 +54,15 @@ export function StatusContasPieChart({ statusContasPagar }: StatusContasPieChart
 
   return (
     <motion.div variants={itemVariants}>
-      <Card className="h-[450px] overflow-hidden">
+      <Card className="h-[450px] overflow-hidden border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2rem]">
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg flex items-center gap-2">
+          <CardTitle className="text-lg font-black tracking-tight flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-warning/10 flex items-center justify-center">
               <PieChartIcon className="h-4 w-4 text-warning" />
             </div>
-            Status Contas a Pagar
+            Payable Liquidity Matrix
           </CardTitle>
-          <CardDescription>Distribuição por status</CardDescription>
+          <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">Distribuição Neural de Status</CardDescription>
         </CardHeader>
         <CardContent className="h-[360px]">
           <ResponsiveContainer width="100%" height="100%">
