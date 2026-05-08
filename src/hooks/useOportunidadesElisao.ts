@@ -257,7 +257,7 @@ export function useOportunidadesElisao({ empresaId, contexto }: UseElisaoOptions
     sincronizarBitrix: useMutation({
       mutationFn: async (tarefaId: string) => {
         const { data, error } = await supabase.functions.invoke('bitrix24-sync', {
-          body: { type: 'elisao_tarefa', id: tarefaId }
+          body: { action: 'sync_elisao_task', params: { id: tarefaId } }
         });
         if (error) throw error;
         return data;
