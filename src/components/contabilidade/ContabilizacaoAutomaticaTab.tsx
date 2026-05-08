@@ -178,6 +178,16 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
 
   const updateRegra = useMutation({
     mutationFn: async (regra: Partial<Regra> & { id: string }) => {
+      if (!regra.nome || !regra.conta_debito_id || !regra.conta_credito_id) {
+        throw new Error('Mapeamento incompleto: preencha nome e contas de D/C');
+      }
+      if (regra.prioridade === undefined || isNaN(regra.prioridade) || regra.prioridade < 0) {
+        throw new Error('Prioridade inválida: deve ser um número positivo');
+      }
+      if (regra.conta_debito_id === regra.conta_credito_id) {
+        throw new Error('Contas de débito e crédito devem ser diferentes');
+      }
+
       const { error } = await supabase
         .from('regras_contabilizacao_automatica')
         .update(regra)
@@ -187,6 +197,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
     onSuccess: () => {
       toast.success('Regra atualizada');
       setEditingRegra(null);
+      setOriginalRegra(null);
       qc.invalidateQueries({ queryKey: ['regras_contab', empresaId] });
     },
     onError: (e: Error) => toast.error(e.message),
