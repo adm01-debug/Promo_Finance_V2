@@ -607,7 +607,12 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                   <TableHead>Nome</TableHead>
                   <TableHead>Evento</TableHead>
                   <TableHead>D / C</TableHead>
-                  <TableHead className="text-right">Prio</TableHead>
+                  <TableHead className="text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      Prio
+                      {sortOrder === 'asc' ? <ArrowDownAZ className="h-3 w-3" /> : <ArrowUpAZ className="h-3 w-3" />}
+                    </div>
+                  </TableHead>
                   <TableHead className="text-center">Ativo</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
