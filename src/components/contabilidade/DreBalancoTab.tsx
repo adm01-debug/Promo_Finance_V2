@@ -256,7 +256,36 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
   }
 
   return (
-    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group">
+    <>
+      {/* Modal de Drill Down Analítico */}
+      <Dialog open={drillDown.open} onOpenChange={(open) => setDrillDown({ ...drillDown, open })}>
+        <DialogContent className="max-w-5xl border-none bg-background/95 backdrop-blur-3xl shadow-3xl rounded-[2.5rem] p-0 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
+          <DialogHeader className="p-8 pb-4 relative z-10">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-primary/10 rounded-2xl">
+                <Search className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <DialogTitle className="text-2xl font-black tracking-tight">{drillDown.titulo}</DialogTitle>
+                <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">{drillDown.subtitulo}</p>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <div className="p-8 pt-0 relative z-10">
+            <LancamentosDrillDown 
+              empresaId={selectedEmpresaId} 
+              ano={ano} 
+              mes={mes} 
+              centroResultado={drillDown.centro_resultado}
+              tipoBp={drillDown.tipo_bp}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
       <CardHeader className="p-8 pb-4 relative z-10">
         <div className="flex flex-wrap items-center justify-between gap-6">
