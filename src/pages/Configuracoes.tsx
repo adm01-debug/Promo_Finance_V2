@@ -329,11 +329,36 @@ export default function Configuracoes() {
             <Database className="h-4 w-4" />
             <span className="hidden sm:inline">OCR</span>
           </TabsTrigger>
+          <TabsTrigger value="asaas" className="gap-2">
+            <CreditCard className="h-4 w-4" />
+            <span className="hidden sm:inline">Asaas</span>
+          </TabsTrigger>
           <TabsTrigger value="sistema" className="gap-2">
             <Settings className="h-4 w-4" />
             <span className="hidden sm:inline">Sistema</span>
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="asaas">
+          <Card className="premium-card">
+            <CardHeader>
+              <CardTitle className="text-xl flex items-center gap-2">
+                <CreditCard className="h-6 w-6 text-primary" /> Integração Asaas
+              </CardTitle>
+              <CardDescription>Configurações globais de pagamentos, cobranças e automatização.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="bg-muted/30 p-4 rounded-xl border border-dashed text-center">
+                <p className="text-sm text-muted-foreground">
+                  As configurações do Asaas foram movidas para um painel dedicado com gestão de saúde e monitoramento de fila.
+                </p>
+                <Button variant="link" asChild className="mt-2 text-primary font-bold">
+                  <a href="/asaas">Acessar Painel de Gestão Asaas →</a>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         {/* Configurações de Conciliação Multi-CNPJ */}
         <TabsContent value="conciliacao" className="space-y-6">
