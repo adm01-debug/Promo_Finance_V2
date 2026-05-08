@@ -136,14 +136,22 @@ export default function ContasBancarias() {
             <h1 className="text-3xl font-bold tracking-tight">Gestão de Contas Bancárias</h1>
             <p className="text-muted-foreground">Configure multi-contas, regras de conciliação e mapeamentos por CNPJ</p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => setTransferenciaOpen(true)}>
-              <ArrowLeftRight className="h-4 w-4 mr-2" />Transferência
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" onClick={() => setImportarOpen(true)} className="gap-2 h-10 rounded-xl border-white/10 hover:bg-white/5 transition-all">
+              <Upload className="h-4 w-4 text-primary" />Importar Extrato
             </Button>
-            <Button variant="outline" size="sm" onClick={() => setShowSaldos(!showSaldos)}>
-              {showSaldos ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
+            <Button variant="outline" size="sm" onClick={() => setRegrasOpen(true)} className="gap-2 h-10 rounded-xl border-white/10 hover:bg-white/5 transition-all">
+              <Settings className="h-4 w-4 text-warning" />Regras Conciliação
+            </Button>
+            <div className="w-px h-10 bg-white/10 mx-1 hidden sm:block" />
+            <Button variant="outline" size="sm" onClick={() => setTransferenciaOpen(true)} className="gap-2 h-10 rounded-xl border-white/10 hover:bg-white/5 transition-all">
+              <ArrowLeftRight className="h-4 w-4 text-streak" />Transferência
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setShowSaldos(!showSaldos)} className="gap-2 h-10 rounded-xl border-white/10 hover:bg-white/5 transition-all">
+              {showSaldos ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
               {showSaldos ? 'Ocultar Saldos' : 'Mostrar Saldos'}
             </Button>
+
             <NovaContaDialog
               open={dialogOpen}
               onOpenChange={setDialogOpen}
