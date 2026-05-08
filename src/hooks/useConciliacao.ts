@@ -17,6 +17,8 @@ export function useConciliacao() {
 
   const confirmarConciliacao = useMutation({
     mutationFn: async ({ transacaoId, contaPagarId, contaReceberId }: ConfirmarConciliacaoParams) => {
+      const { data: transacao } = await supabase.from('transacoes_bancarias').select('*').eq('id', transacaoId).single();
+      
       const { error } = await supabase.rpc('confirmar_conciliacao', {
         p_transacao_id: transacaoId,
         p_conta_pagar_id: contaPagarId || null,
@@ -24,6 +26,20 @@ export function useConciliacao() {
       });
 
       if (error) throw error;
+
+      // Adiciona metadados de conciliação para rastreabilidade
+      if (contaReceberId && transacao) {
+        await supabase.rpc('registrar_evento_receber', {
+          p_conta_id: contaReceberId,
+          p_tipo: 'conciliacao',
+          p_mensagem: `Conciliado manualmente com transação bancária em ${new Date(transacao.data).toLocaleDateString('pt-BR')}`,
+          p_metadata: { transacao_banco: transacao }
+        });
+        
+        await supabase.from('contas_receber').update({ 
+          transacao_conciliada_id: transacaoId 
+        }).eq('id', contaReceberId);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transacoes-bancarias'] });
