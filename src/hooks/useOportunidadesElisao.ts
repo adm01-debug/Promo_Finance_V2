@@ -246,10 +246,31 @@ export function useOportunidadesElisao({ empresaId, contexto }: UseElisaoOptions
           })
           .eq('id', id);
         if (error) throw error;
+
+        if (status === 'aprovado') {
+          // Busca dados do crédito para criar a tarefa
+          const { data: credito } = await supabase
+            .from('elisao_creditos_auditoria')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+          if (credito) {
+            await supabase.from('elisao_tarefas_acionaveis').insert({
+              empresa_id: credito.empresa_id,
+              titulo: `Recuperação de Crédito - NCM ${credito.ncm}`,
+              descricao: `Recuperação de crédito aprovada na auditoria.\nMetodologia: ${credito.metodologia_aplicada}\nNCM: ${credito.ncm}`,
+              valor_envolvido: credito.valor_credito_calculado,
+              tipo_oportunidade: 'credito_tributario',
+              status: 'pendente'
+            });
+          }
+        }
       },
       onSuccess: () => {
-        toast.success('Decisão registrada com sucesso');
+        toast.success('Decisão registrada e tarefa criada se aprovado');
         queryClient.invalidateQueries({ queryKey: ['elisao-creditos-auditoria', empresaId] });
+        queryClient.invalidateQueries({ queryKey: ['elisao-tarefas-acionaveis', empresaId] });
       },
       onError: (e: Error) => toast.error(e.message),
     }),
