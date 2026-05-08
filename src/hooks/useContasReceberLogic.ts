@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
-import { useContasReceber, useContasReceberPaginated, useCentrosCusto, useEmpresas } from '@/hooks/useFinancialData';
+import { useContasReceber, useContasReceberPaginated, useCentrosCusto, useEmpresas, useContasBancarias } from '@/hooks/useFinancialData';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
 import { useSorting } from '@/components/ui/sortable-header';
 import { useTableOptimization } from '@/hooks/useTableOptimization';
@@ -12,6 +12,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { AdvancedFilters } from '@/components/ui/advanced-filters';
 import type { Database } from '@/integrations/supabase/types';
 import type { ContaReceberWithRelations } from '@/components/contas-receber/ContasReceberTableRow';
+
 
 export function useContasReceberLogic() {
   const [searchTerm, setSearchTerm] = useState('');
