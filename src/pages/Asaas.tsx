@@ -8,7 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { TransferenciaPixHistoryPanel } from '@/components/asaas/TransferenciaPixHistoryPanel';
+import { BoletoPreviewPanel } from '@/components/boletos/BoletoPreviewPanel';
+import { useToast } from '@/hooks/use-toast';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell } from 'recharts';
 import { Separator } from '@/components/ui/separator';
@@ -19,12 +22,13 @@ import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Progress } from '@/components/ui/progress';
 import {
   CreditCard, QrCode, Banknote, Plus, RefreshCw, X,
   DollarSign, Clock, CheckCircle2, AlertTriangle, Copy, ExternalLink,
   Send, Users, Undo2, FileText, MoreHorizontal, Link2, Download, History,
   Settings as SettingsIcon, LayoutDashboard, FileSpreadsheet, PlayCircle,
-  Search, Filter, Calendar, Bell, Mail, Phone, Loader2,
+  Search, Filter, Calendar, Bell, Mail, Phone, Loader2, Eye,
 } from 'lucide-react';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -87,6 +91,7 @@ export default function Asaas() {
     config, loadingConfig, salvarConfig,
     syncQueue, loadingQueue, reprocessarManual,
     exportarAuditoria, exportarAuditoriaPDF, queueStats, simularBackoff,
+    sincronizarTransferencia,
   } = useAsaas(empresaId);
 
   // States for Advanced Filters
@@ -100,6 +105,7 @@ export default function Asaas() {
   const [reprocessReason, setReprocessReason] = useState('');
   const [selectedPayments, setSelectedSelectedPayments] = useState<string[]>([]);
   const [isBulkReprocessing, setIsBulkReprocessing] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState(0);
 
   // Dialog states
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -114,7 +120,9 @@ export default function Asaas() {
   const [estornoDialog, setEstornoDialog] = useState<{ asaasId: string; valor: number } | null>(null);
   const [segundaViaDialog, setSegundaViaDialog] = useState<string | null>(null);
   const [selectedPaymentAudit, setSelectedPaymentAudit] = useState<string | null>(null);
+  const [selectedBoletoPreview, setSelectedBoletoPreview] = useState<any | null>(null);
 
+  const { toast: toastToast } = useToast();
   const [saldo, setSaldo] = useState<{ balance: number; totalPending: number } | null>(null);
   const [loadingSaldo, setLoadingSaldo] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -674,43 +682,57 @@ export default function Asaas() {
                 </div>
 
                 {selectedPayments.length > 0 && (
-                  <div className="flex items-center gap-4 p-2 bg-primary/5 border border-primary/20 rounded-lg mb-4 animate-in fade-in slide-in-from-top-2">
-                    <span className="text-sm font-medium text-primary ml-2">
-                      {selectedPayments.length} item(s) selecionado(s)
-                    </span>
-                    <div className="flex gap-2">
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="h-8"
-                        onClick={async () => {
-                          const { data: { user } } = await supabase.auth.getUser();
-                          if (!user) return;
-                          setIsBulkReprocessing(true);
-                          try {
-                            for (const id of selectedPayments) {
-                              await reprocessarManual.mutateAsync({ paymentId: id, reason: 'Reprocessamento em massa', userId: user.id });
+                  <div className="flex flex-col gap-3 p-3 bg-primary/5 border border-primary/20 rounded-lg mb-4 animate-in fade-in slide-in-from-top-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-primary">
+                        {selectedPayments.length} item(s) selecionado(s)
+                      </span>
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="h-8"
+                          onClick={async () => {
+                            const { data: { user } } = await supabase.auth.getUser();
+                            if (!user) return;
+                            setIsBulkReprocessing(true);
+                            setBulkProgress(0);
+                            try {
+                              for (let i = 0; i < selectedPayments.length; i++) {
+                                await reprocessarManual.mutateAsync({ 
+                                  paymentId: selectedPayments[i], 
+                                  reason: 'Reprocessamento em massa', 
+                                  userId: user.id 
+                                });
+                                setBulkProgress(((i + 1) / selectedPayments.length) * 100);
+                              }
+                              setSelectedSelectedPayments([]);
+                              toast.success('Sincronização em massa concluída');
+                            } finally {
+                              setIsBulkReprocessing(false);
                             }
-                            setSelectedSelectedPayments([]);
-                            toast.success('Sincronização em massa iniciada');
-                          } finally {
-                            setIsBulkReprocessing(false);
-                          }
-                        }}
-                        disabled={isBulkReprocessing}
-                      >
-                        {isBulkReprocessing ? <Loader2 className="h-3 w-3 animate-spin mr-2" /> : <RefreshCw className="h-3 w-3 mr-2" />}
-                        Sincronizar Selecionados
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        className="h-8"
-                        onClick={() => setSelectedSelectedPayments([])}
-                      >
-                        Limpar Seleção
-                      </Button>
+                          }}
+                          disabled={isBulkReprocessing}
+                        >
+                          {isBulkReprocessing ? <Loader2 className="h-3 w-3 animate-spin mr-2" /> : <RefreshCw className="h-3 w-3 mr-2" />}
+                          Sincronizar Selecionados
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          className="h-8"
+                          onClick={() => setSelectedSelectedPayments([])}
+                        >
+                          Limpar Seleção
+                        </Button>
+                      </div>
                     </div>
+                    {isBulkReprocessing && (
+                      <div className="space-y-1">
+                        <Progress value={bulkProgress} className="h-1" />
+                        <p className="text-[10px] text-muted-foreground text-center">Processando... {Math.round(bulkProgress)}%</p>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -843,6 +865,9 @@ export default function Asaas() {
                                     )}
                                     <DropdownMenuItem onClick={() => setSelectedPaymentAudit(payment.id)}>
                                       <History className="h-4 w-4 mr-2" /> Auditoria
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setSelectedBoletoPreview(payment)}>
+                                      <Eye className="h-4 w-4 mr-2" /> Visualizar Boleto
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => setReprocessDialog({ paymentId: payment.id, asaasId: payment.asaas_id })}>
                                       <RefreshCw className={`h-4 w-4 mr-2 ${reprocessarManual.isPending ? 'animate-spin' : ''}`} /> Sincronizar Agora
@@ -1001,6 +1026,34 @@ export default function Asaas() {
         onConfirm={handleReprocessar}
         isLoading={reprocessarManual.isPending}
       />
+
+      {/* NOVO: Dialog de Visualização de Boleto */}
+      <Dialog open={!!selectedBoletoPreview} onOpenChange={(v) => !v && setSelectedBoletoPreview(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Visualização da Cobrança</DialogTitle>
+          </DialogHeader>
+          {selectedBoletoPreview && (
+            <BoletoPreviewPanel 
+              boleto={{
+                ...selectedBoletoPreview,
+                numero: selectedBoletoPreview.nosso_numero || selectedBoletoPreview.asaas_id,
+                banco: 'Asaas',
+                agencia: '0001',
+                conta: '123456-7', // Placeholder Asaas
+                cedente_nome: empresas?.[0]?.razao_social || 'Sua Empresa',
+                cedente_cnpj: empresas?.[0]?.cnpj || null,
+                vencimento: selectedBoletoPreview.data_vencimento,
+              }} 
+              onUpdateStatus={({ status }) => {
+                // Sincronizar localmente se necessário
+                setSelectedBoletoPreview(null);
+                toast.success(`Status atualizado para ${status}`);
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </MainLayout>
   );
 }
