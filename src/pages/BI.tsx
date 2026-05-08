@@ -24,6 +24,8 @@ import { FuturisticDashboard } from "@/components/bi/FuturisticDashboard";
 import { InadimplenciaSegmentada } from "@/components/analytics/InadimplenciaSegmentada";
 import { BenchmarkingSetorial } from "@/components/analytics/BenchmarkingSetorial";
 import { HistoricoAnalisesPreditivasPanel } from "@/components/analytics/HistoricoAnalisesPreditivasPanel";
+import { BIDrillDown } from "@/components/bi/BIDrillDown";
+
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } };
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
