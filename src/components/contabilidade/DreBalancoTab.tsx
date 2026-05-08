@@ -755,3 +755,120 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
     </>
   );
 }
+
+function LancamentosDrillDown({ empresaId, ano, mes, centroResultado, tipoBp }: { 
+  empresaId: string; ano: number; mes: number; centroResultado?: string; tipoBp?: string 
+}) {
+  const { data: lancs = [], isLoading } = useLancamentosContabeis(empresaId === 'todas' ? undefined : empresaId, ano);
+  
+  const partidasFiltradas = useMemo(() => {
+    const dataRefInicio = new Date(ano, mes, 1);
+    const dataRefFim = new Date(ano, mes + 1, 0);
+    
+    const todasPartidas: any[] = [];
+    lancs.forEach((l: any) => {
+      const dataL = new Date(l.data_lancamento + 'T00:00:00');
+      // Filtro de data: se for BP (saldo acumulado), pega tudo até o fim do mês. Se for DRE, pega só o mês.
+      const dataOk = tipoBp ? dataL <= dataRefFim : (dataL >= dataRefInicio && dataL <= dataRefFim);
+      
+      if (dataOk && l.partidas) {
+        l.partidas.forEach((p: any) => {
+          todasPartidas.push({
+            ...p,
+            data_lancamento: l.data_lancamento,
+            historico: l.historico,
+            numero_lancamento: l.numero_lancamento
+          });
+        });
+      }
+    });
+
+    return todasPartidas.filter(p => {
+      if (centroResultado) {
+        return p.conta?.centro_resultado === centroResultado;
+      }
+      if (tipoBp) {
+        // Lógica simplificada de classificação BP
+        const codigo = p.conta?.codigo || '';
+        const tipo = p.conta?.tipo?.toLowerCase() || '';
+        if (tipoBp === 'circulante_ativo') return (tipo === 'ativo' || codigo.startsWith('1')) && !codigo.startsWith('1.2');
+        if (tipoBp === 'nao_circ_ativo') return (tipo === 'ativo' || codigo.startsWith('1')) && codigo.startsWith('1.2');
+        if (tipoBp === 'circulante_pas') return (tipo === 'passivo' || codigo.startsWith('2')) && !codigo.startsWith('2.2') && !codigo.startsWith('2.3') && !codigo.startsWith('3');
+        if (tipoBp === 'nao_circ_pas') return (tipo === 'passivo' || codigo.startsWith('2')) && codigo.startsWith('2.2');
+        if (tipoBp === 'pl') return (tipo === 'passivo' || codigo.startsWith('2')) && (codigo.startsWith('2.3') || codigo.startsWith('3'));
+      }
+      return true;
+    });
+  }, [lancs, mes, centroResultado, tipoBp, ano]);
+
+  if (isLoading) return (
+    <div className="space-y-4">
+      <Skeleton className="h-10 w-full" />
+      <Skeleton className="h-32 w-full" />
+    </div>
+  );
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <Badge variant="outline" className="bg-primary/5 text-primary border-primary/10 font-black">
+          {partidasFiltradas.length} Partidas Encontradas
+        </Badge>
+        <span className="text-xs font-black uppercase opacity-40">Total: {formatCurrency(partidasFiltradas.reduce((a, b) => a + Number(b.valor), 0))}</span>
+      </div>
+      
+      <div className="rounded-2xl border border-white/5 overflow-hidden">
+        <ScrollArea className="h-[400px]">
+          <Table>
+            <TableHeader className="bg-white/5 sticky top-0 z-20">
+              <TableRow className="border-white/5">
+                <TableHead className="text-[9px] font-black uppercase tracking-widest">Data</TableHead>
+                <TableHead className="text-[9px] font-black uppercase tracking-widest">Lanç.</TableHead>
+                <TableHead className="text-[9px] font-black uppercase tracking-widest">Conta</TableHead>
+                <TableHead className="text-[9px] font-black uppercase tracking-widest">D/C</TableHead>
+                <TableHead className="text-right text-[9px] font-black uppercase tracking-widest">Valor</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {partidasFiltradas.map((p, i) => (
+                <TableRow key={i} className="border-white/5 hover:bg-white/5 transition-colors">
+                  <TableCell className="text-[10px] font-bold py-3">{format(new Date(p.data_lancamento + 'T00:00:00'), 'dd/MM/yy')}</TableCell>
+                  <TableCell className="text-[10px] font-mono py-3">#{p.numero_lancamento}</TableCell>
+                  <TableCell className="py-3">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-black">{p.conta?.descricao || p.conta?.nome}</span>
+                      <span className="text-[9px] opacity-40 font-mono">{p.conta?.codigo}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-3">
+                    <Badge variant="outline" className={cn(
+                      "text-[8px] font-black px-1.5 py-0 border-none",
+                      p.tipo === 'D' ? "bg-success/20 text-success" : "bg-destructive/20 text-destructive"
+                    )}>
+                      {p.tipo}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right font-mono text-[11px] font-black py-3">{formatCurrency(p.valor)}</TableCell>
+                </TableRow>
+              ))}
+              {partidasFiltradas.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-10 opacity-40 text-xs font-bold uppercase">Nenhum lançamento analítico encontrado</TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </ScrollArea>
+      </div>
+    </div>
+  );
+}
+
+function Info({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+  return (
+    <div>
+      <p className="text-[11px] text-muted-foreground">{label}</p>
+      <p className={`text-sm ${mono ? 'font-mono' : ''}`}>{value}</p>
+    </div>
+  );
+}
