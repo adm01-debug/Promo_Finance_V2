@@ -94,7 +94,7 @@ export async function setCurrentEmpresaId(id: string) {
 
       // Notificar o usuário sobre a mudança crítica
       toast.info(`Ambiente alterado para: ${nomeEmpresa}`, {
-        description: 'Os dados foram atualizados com sucesso.',
+        description: 'Os dados foram sincronizados para a nova empresa.',
         action: {
           label: 'Ver Log',
           onClick: () => window.location.href = '/audit-logs'
@@ -112,8 +112,6 @@ export async function setCurrentEmpresaId(id: string) {
     bubbles: true,
     composed: true
   }));
-  
-  toast.success('Empresa alterada com sucesso. Os dados foram atualizados.');
 }
 
 export function useDefinirEmpresaPadrao() {
