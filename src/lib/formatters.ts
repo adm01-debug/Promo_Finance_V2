@@ -131,8 +131,19 @@ export const getEtapaCobrancaLabel = (etapa: string): string => {
 };
 
 // ============================================
-// FORMATTERS ADICIONAIS (Melhoria 15)
+// FORMATTERS ADICIONAIS
 // ============================================
+
+/**
+ * Formata CNPJ ou CPF dependendo do tamanho
+ */
+export const formatCpfCnpj = (value: string | null | undefined): string => {
+  if (!value) return '-';
+  const clean = value.replace(/\D/g, '');
+  if (clean.length === 11) return formatCPF(clean);
+  if (clean.length === 14) return getCNPJFormatted(clean);
+  return value;
+};
 
 /**
  * Formata número de telefone brasileiro
