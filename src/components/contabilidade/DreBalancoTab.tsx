@@ -745,5 +745,6 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
         )}
       </CardContent>
     </Card>
+    </>
   );
 }
