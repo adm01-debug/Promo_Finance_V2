@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { BookOpen, FileText, Calculator, Building2, BookText, BarChart3, AlertTriangle, Plug, History, ArrowRight, LayoutGrid, Pin } from 'lucide-react';
+import { BookOpen, FileText, Calculator, Building2, BookText, BarChart3, AlertTriangle, Plug, History, ArrowRight, LayoutGrid, Pin, Zap } from 'lucide-react';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { formatCNPJ } from '@/lib/brazilian-validators';
 import { motion } from 'framer-motion';
@@ -22,8 +22,9 @@ import { RazaoDiarioTab } from '@/components/contabilidade/RazaoDiarioTab';
 import { DreBalancoTab } from '@/components/contabilidade/DreBalancoTab';
 import { VerificacaoIntegracoesPanel } from '@/components/contabilidade/VerificacaoIntegracoesPanel';
 import { AuditoriaLancamentosPanel } from '@/components/contabilidade/AuditoriaLancamentosPanel';
+import { ContabilizacaoAutomaticaTab } from '@/components/contabilidade/ContabilizacaoAutomaticaTab';
 
-const VALID_TABS = ['inicio', 'plano', 'lancamentos', 'razao', 'dre', 'integracoes', 'auditoria', 'ecd', 'ecf'] as const;
+const VALID_TABS = ['inicio', 'plano', 'lancamentos', 'razao', 'dre', 'auto', 'integracoes', 'auditoria', 'ecd', 'ecf'] as const;
 type TabId = typeof VALID_TABS[number];
 
 const ANO_DEFAULT = new Date().getFullYear() - 1;
@@ -168,12 +169,13 @@ export default function Contabilidade() {
         </div>
 
         <Tabs value={tab} onValueChange={setTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-9">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-10">
             <TabsTrigger value="inicio" className="gap-1.5"><LayoutGrid className="h-4 w-4" />Início</TabsTrigger>
             <TabsTrigger value="plano" className="gap-1.5"><BookOpen className="h-4 w-4" />Plano</TabsTrigger>
             <TabsTrigger value="lancamentos" className="gap-1.5"><Calculator className="h-4 w-4" />Lançamentos</TabsTrigger>
             <TabsTrigger value="razao" className="gap-1.5"><BookText className="h-4 w-4" />Razão & Diário</TabsTrigger>
             <TabsTrigger value="dre" className="gap-1.5"><BarChart3 className="h-4 w-4" />DRE & Balanço</TabsTrigger>
+            <TabsTrigger value="auto" className="gap-1.5"><Zap className="h-4 w-4" />Automático</TabsTrigger>
             <TabsTrigger value="integracoes" className="gap-1.5"><Plug className="h-4 w-4" />Integrações</TabsTrigger>
             <TabsTrigger value="auditoria" className="gap-1.5"><History className="h-4 w-4" />Auditoria</TabsTrigger>
             <TabsTrigger value="ecd" className="gap-1.5"><FileText className="h-4 w-4" />SPED ECD</TabsTrigger>
@@ -212,6 +214,7 @@ export default function Contabilidade() {
           <TabsContent value="lancamentos"><LancamentosTab empresaId={empresaId} ano={ano} /></TabsContent>
           <TabsContent value="razao"><RazaoDiarioTab empresaId={empresaId} ano={ano} /></TabsContent>
           <TabsContent value="dre"><DreBalancoTab empresaId={empresaId} ano={ano} /></TabsContent>
+          <TabsContent value="auto"><ContabilizacaoAutomaticaTab empresaId={empresaId} /></TabsContent>
           <TabsContent value="integracoes"><VerificacaoIntegracoesPanel empresaId={empresaId} ano={ano} /></TabsContent>
           <TabsContent value="auditoria"><AuditoriaLancamentosPanel empresaId={empresaId} ano={ano} /></TabsContent>
           <TabsContent value="ecd"><SpedContabilTab tipo="ECD" empresaId={empresaId} /></TabsContent>

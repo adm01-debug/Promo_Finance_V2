@@ -3508,6 +3508,57 @@ export type Database = {
         }
         Relationships: []
       }
+      eventos_contabilizacao_log: {
+        Row: {
+          created_at: string
+          detalhe: string | null
+          empresa_id: string
+          evento_id: string
+          id: string
+          lancamento_id: string | null
+          regra_id: string | null
+          status: string
+          tipo_evento: string
+        }
+        Insert: {
+          created_at?: string
+          detalhe?: string | null
+          empresa_id: string
+          evento_id: string
+          id?: string
+          lancamento_id?: string | null
+          regra_id?: string | null
+          status: string
+          tipo_evento: string
+        }
+        Update: {
+          created_at?: string
+          detalhe?: string | null
+          empresa_id?: string
+          evento_id?: string
+          id?: string
+          lancamento_id?: string | null
+          regra_id?: string | null
+          status?: string
+          tipo_evento?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "eventos_contabilizacao_log_lancamento_id_fkey"
+            columns: ["lancamento_id"]
+            isOneToOne: false
+            referencedRelation: "lancamentos_contabeis"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "eventos_contabilizacao_log_regra_id_fkey"
+            columns: ["regra_id"]
+            isOneToOne: false
+            referencedRelation: "regras_contabilizacao_automatica"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       evidencias_pacotes: {
         Row: {
           created_at: string
@@ -7792,6 +7843,72 @@ export type Database = {
           vezes_aplicada?: number | null
         }
         Relationships: []
+      }
+      regras_contabilizacao_automatica: {
+        Row: {
+          ativo: boolean
+          categoria_id: string | null
+          condicoes: Json
+          conta_credito_id: string
+          conta_debito_id: string
+          created_at: string
+          created_by: string | null
+          empresa_id: string
+          historico_template: string
+          id: string
+          nome: string
+          prioridade: number
+          tipo_evento: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          categoria_id?: string | null
+          condicoes?: Json
+          conta_credito_id: string
+          conta_debito_id: string
+          created_at?: string
+          created_by?: string | null
+          empresa_id: string
+          historico_template?: string
+          id?: string
+          nome: string
+          prioridade?: number
+          tipo_evento: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          categoria_id?: string | null
+          condicoes?: Json
+          conta_credito_id?: string
+          conta_debito_id?: string
+          created_at?: string
+          created_by?: string | null
+          empresa_id?: string
+          historico_template?: string
+          id?: string
+          nome?: string
+          prioridade?: number
+          tipo_evento?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regras_contabilizacao_automatica_conta_credito_id_fkey"
+            columns: ["conta_credito_id"]
+            isOneToOne: false
+            referencedRelation: "plano_contas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "regras_contabilizacao_automatica_conta_debito_id_fkey"
+            columns: ["conta_debito_id"]
+            isOneToOne: false
+            referencedRelation: "plano_contas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       regua_cobranca: {
         Row: {
