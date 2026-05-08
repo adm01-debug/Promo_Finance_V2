@@ -1,6 +1,7 @@
 // ============================================
-// OFX/OFC BANK STATEMENT PARSER
+// OFX/OFC/CSV BANK STATEMENT PARSER
 // ============================================
+import * as XLSX from 'xlsx';
 
 export interface TransacaoOFX {
   id: string;
