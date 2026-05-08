@@ -25,9 +25,11 @@ import { BlingFinanceiroPanel } from '@/components/bling/BlingFinanceiroPanel';
 import { InadimplenciaSegmentada } from '@/components/analytics/InadimplenciaSegmentada';
 import { BenchmarkingSetorial } from '@/components/analytics/BenchmarkingSetorial';
 import { RelatoriosModelos } from '@/components/relatorios/RelatoriosModelos';
-import { ShieldAlert, FileText, Download } from 'lucide-react';
+import { ShieldAlert, FileText, Download, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 
 const containerVariants = {
@@ -77,6 +79,22 @@ export const DashboardExecutivo = () => {
     empresaFilter,
     centroCustoFilter,
     periodoFluxo,
+  });
+  
+  const { data: duplicateStats } = useQuery({
+    queryKey: ['bloqueios-duplicidade-stats'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('bloqueios_duplicidade')
+        .select('valor_bloqueado')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return {
+        count: data?.length || 0,
+        totalValue: data?.reduce((acc, curr) => acc + (Number(curr.valor_bloqueado) || 0), 0) || 0
+      };
+    }
   });
 
   if (metrics.isLoading) {
@@ -277,7 +295,18 @@ export const DashboardExecutivo = () => {
                       <ShieldAlert className="h-3 w-3" /> Anti-Duplicity Engine
                     </div>
                     <h3 className="text-xl font-black tracking-tight">Inteligência de Compras 360°</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">Proteção multicamadas com detecção em tempo real e bloqueio automático de pagamentos duplicados.</p>
+                    <div className="flex items-center gap-2 py-1">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">Proteção Ativa</span>
+                        <span className="text-sm font-bold text-primary">{formatCurrency(duplicateStats?.totalValue || 0)} economizados</span>
+                      </div>
+                      <div className="h-8 w-px bg-white/10 mx-2" />
+                      <div className="flex flex-col">
+                        <span className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">Bloqueios</span>
+                        <span className="text-sm font-bold">{duplicateStats?.count || 0} tentativas</span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Bloqueio automático de pagamentos duplicados e auditoria cyber-neural em tempo real.</p>
                     <div className="flex items-center gap-3 pt-2">
                       <Button asChild size="sm" className="rounded-xl font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/20">
                         <Link to="/contas-pagar/bloqueios">Ver Auditoria</Link>
