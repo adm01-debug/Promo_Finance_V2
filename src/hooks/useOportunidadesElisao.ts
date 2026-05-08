@@ -13,6 +13,8 @@ import {
   type RegimeAplicavel,
 } from '@/lib/tributario/elisao';
 import { toast } from 'sonner';
+import { validarConsistenciaNcmCst } from '@/lib/tributario/validador-ncm-cst';
+
 
 interface UseElisaoOptions {
   empresaId?: string;
