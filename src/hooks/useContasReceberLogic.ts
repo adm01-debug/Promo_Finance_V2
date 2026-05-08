@@ -67,7 +67,9 @@ export function useContasReceberLogic() {
   const handleCentroCustoChange = useCallback((value: string) => { setCentroCustoFilter(value); setCurrentPage(1); }, []);
   const handleEmpresaChange = useCallback((value: string) => { setEmpresaFilter(value); setCurrentPage(1); }, []);
   const handleFormaChange = useCallback((value: string) => { setFormaFilter(value); setCurrentPage(1); }, []);
+  const handleContaBancariaChange = useCallback((value: string) => { setContaBancariaFilter(value); setCurrentPage(1); }, []);
   const handlePageSizeChange = useCallback((size: number) => { setPageSize(size); setCurrentPage(1); }, []);
+
 
   const handleOpenDeleteDialog = useCallback((conta: ContaReceberWithRelations) => {
     setDeletingConta(conta);
