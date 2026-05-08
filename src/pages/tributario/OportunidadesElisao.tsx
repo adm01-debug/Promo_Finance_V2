@@ -415,13 +415,13 @@ export default function OportunidadesElisao() {
                     </div>
                   )}
                   
-                  {c.historico_decisoes?.length > 0 && (
+                  {Array.isArray(c.historico_decisoes) && (c.historico_decisoes as any[]).length > 0 && (
                     <div className="text-[10px] text-muted-foreground border-t pt-2 mt-2">
                       <div className="flex items-center gap-1 mb-1">
                         <History className="h-3 w-3" />
                         <span>Histórico de decisões</span>
                       </div>
-                      {c.historico_decisoes.map((h: any, i: number) => (
+                      {(c.historico_decisoes as any[]).map((h: any, i: number) => (
                         <div key={i}>
                           • {new Date(h.data).toLocaleString()} - Alterado para {h.status}
                         </div>
