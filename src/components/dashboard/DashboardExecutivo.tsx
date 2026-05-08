@@ -258,7 +258,7 @@ export const DashboardExecutivo = () => {
 
             {/* Analytics Section */}
             <div className="space-y-6">
-              <SectionDivider label="Analytics & Inteligência" icon={BarChart3} />
+              <SectionDivider label="Cyber-Neural Matrix: Strategic Analytics" icon={BarChart3} />
               <DraggableDashboard
                 widgets={widgets}
                 isEditing={isEditing}
@@ -273,7 +273,7 @@ export const DashboardExecutivo = () => {
 
           <aside className="lg:col-span-4 space-y-8">
             {/* AI Insights & Previsions */}
-            <SectionDivider label="IA & Insights" icon={Brain} />
+            <SectionDivider label="Quantum Forecasting & Neural Node Matrix" icon={Brain} />
             <div className="space-y-6">
               {renderWidget({ id: 'previsao-ia', title: 'Previsão IA', type: 'previsao-ia', visible: true, order: 0, size: 'lg' })}
               {renderWidget({ id: 'alertas-preditivos', title: 'Alertas Preditivos', type: 'kpi-vencidas', visible: true, order: 1, size: 'md' })}
