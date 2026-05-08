@@ -66,7 +66,7 @@ export function ConciliacaoRetroativaPanel({ contaBancariaId }: Props) {
                     defaultMonth={dateRange.from}
                     selected={{ from: dateRange.from, to: dateRange.to }}
                     onSelect={(range: any) => range?.from && range?.to && setDateRange({ from: range.from, to: range.to })}
-                    locale={ptBR}
+                    locale={ptBR as any}
                   />
                 </PopoverContent>
               </Popover>
