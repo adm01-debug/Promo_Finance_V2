@@ -389,7 +389,8 @@ export default function Clientes() {
               />
             )}
           </Card>
-          </TabsContent>
+        </motion.div>
+      </TabsContent>
 
           <TabsContent value="scoring" className="m-0 border-none p-0">
             <motion.div variants={itemVariants}>
