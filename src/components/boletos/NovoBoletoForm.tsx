@@ -82,7 +82,8 @@ export function NovoBoletoForm({ onClose, empresas, contasBancarias, onSubmit, i
       conta_bancaria_id: formData.conta_bancaria_id, 
       descricao: formData.descricao || undefined,
       conta_receber_id: formData.conta_receber_id || undefined,
-      conta_pagar_id: formData.conta_pagar_id || undefined
+      conta_pagar_id: formData.conta_pagar_id || undefined,
+      provider: formData.provider
     });
     onClose();
   };
