@@ -739,7 +739,10 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                                 size="icon"
                                 variant="ghost"
                                 className="h-8 w-8"
-                                onClick={() => setEditingRegra(r)}
+                                onClick={() => {
+                                  setEditingRegra(r);
+                                  setOriginalRegra(r);
+                                }}
                               >
                                 <Edit2 className="h-4 w-4" />
                               </Button>
