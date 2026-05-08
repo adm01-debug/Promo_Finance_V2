@@ -515,7 +515,11 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
             </Button>
 
             <div className="h-8 w-px bg-white/10" />
-            <div className="flex flex-col items-end">
+            <div className="flex flex-col items-end mr-3">
+              <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Governança Fiscal</span>
+              <span className="text-[9px] font-bold text-primary">Nível de Auditoria: Máximo</span>
+            </div>
+            <div className="h-8 w-px bg-white/10" />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button size="sm" variant="outline" className="h-10 rounded-2xl font-black gap-2 border-white/10 bg-white/5 hover:bg-white/10 px-6 transition-all hover:translate-y-[-2px]">
