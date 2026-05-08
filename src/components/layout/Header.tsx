@@ -150,7 +150,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
               <DropdownMenuTrigger asChild data-tour="theme">
                 <Tooltip delayDuration={300}>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl bg-white/5 hover:bg-primary/20 hover:text-primary border border-white/10 transition-all duration-500 shadow-lg ring-1 ring-white/5">
+                    <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl bg-muted/20 hover:bg-primary/20 hover:text-primary border border-border transition-all duration-500 shadow-lg ring-1 ring-white/5">
                       <AnimatePresence mode="wait">
                         <motion.div
                           key={theme}
