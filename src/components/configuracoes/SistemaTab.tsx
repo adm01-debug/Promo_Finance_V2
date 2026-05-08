@@ -53,7 +53,7 @@ export function SistemaTab({ preferencias, onPreferenciasChange, onSave }: Siste
         <Card>
           <CardHeader><CardTitle className="flex items-center gap-2"><Zap className="h-5 w-5" />Integrações</CardTitle></CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50"><div className="flex items-center gap-3"><div className="p-2 rounded-lg bg-secondary/10"><Zap className="h-4 w-4 text-secondary" /></div><div><p className="font-medium text-sm">Bitrix24</p><p className="text-xs text-muted-foreground">Sincronização de deals</p></div></div><Badge variant="default" className="bg-success">Conectado</Badge></div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50"><div className="flex items-center gap-3"><div className="p-2 rounded-lg bg-secondary/10"><Zap className="h-4 w-4 text-secondary" /></div><div><p className="font-medium text-sm">Bitrix24 CRM</p><p className="text-xs text-muted-foreground">Sincronização bidirecional</p></div></div><Badge variant="default" className="bg-success">Conectado</Badge></div>
             <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50"><div className="flex items-center gap-3"><div className="p-2 rounded-lg bg-accent/10"><CreditCard className="h-4 w-4 text-accent" /></div><div><p className="font-medium text-sm">Open Banking</p><p className="text-xs text-muted-foreground">Dados bancários</p></div></div><Badge variant="secondary">Pendente</Badge></div>
           </CardContent>
         </Card>
