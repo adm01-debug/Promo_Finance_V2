@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { BookOpen, FileText, Calculator, Building2, BookText, BarChart3, AlertTriangle, Plug, History, ArrowRight, LayoutGrid, Pin, Zap } from 'lucide-react';
+import { BookOpen, FileText, Calculator, Building2, BookText, BarChart3, AlertTriangle, Plug, History, ArrowRight, LayoutGrid, Pin, Zap, ShieldCheck } from 'lucide-react';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { formatCNPJ } from '@/lib/brazilian-validators';
 import { motion } from 'framer-motion';
