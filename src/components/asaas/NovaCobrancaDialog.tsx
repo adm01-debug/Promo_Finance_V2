@@ -35,6 +35,7 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
   const [valor, setValor] = useState('');
   const [vencimento, setVencimento] = useState('');
   const [descricao, setDescricao] = useState('');
+  const [contaReceberId, setContaReceberId] = useState('');
   
   // Parcelamento
   const [parcelas, setParcelas] = useState('');
