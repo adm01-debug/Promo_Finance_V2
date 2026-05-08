@@ -219,7 +219,7 @@ export function useOportunidadesElisao({ empresaId, contexto }: UseElisaoOptions
         return (data || []).map(c => {
           if (c.score_confianca === null || c.score_confianca === 100) {
             const v = validarConsistenciaNcmCst(c.ncm, c.cst_csosn);
-            return { ...c, score_confianca: v.score, divergencias_detectadas: [...(c.divergencias_detectadas || []), ...v.divergencias] };
+            return { ...c, score_confianca: v.score, divergencias_detectadas: [...(Array.isArray(c.divergencias_detectadas) ? c.divergencias_detectadas : []), ...v.divergencias] };
           }
           return c;
         });
