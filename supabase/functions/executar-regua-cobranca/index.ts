@@ -65,6 +65,25 @@ Deno.serve(async (req) => {
           let success = false
           let errorMsg = null
 
+          let template = regra.template_mensagem || 'Seu título está próximo do vencimento.'
+          
+          // INTEGRAÇÃO IA: Personalizar mensagem se configurado
+          if (regra.configuracoes_ia?.personalizar_mensagens) {
+            try {
+              const prompt = `Gere uma mensagem amigável de cobrança para o cliente ${conta.clientes?.nome || 'Cliente'}. 
+              Valor: R$ ${conta.valor}. Vencimento: ${conta.data_vencimento}.
+              Contexto da regra: ${regra.nome}. Tom: ${regra.configuracoes_ia?.tom || 'profissional'}.`
+              
+              const { data: iaResult } = await supabase.functions.invoke('copilot-global', {
+                body: { prompt, context: 'financeiro_cobranca' }
+              })
+              
+              if (iaResult?.text) template = iaResult.text
+            } catch (iaErr) {
+              console.warn("Falha ao personalizar com IA, usando template padrão:", iaErr)
+            }
+          }
+
           if (canal === 'email' && conta.clientes?.email) {
             await supabase.functions.invoke('enviar-alerta-email', {
               body: {
@@ -72,7 +91,7 @@ Deno.serve(async (req) => {
                 destinatario: conta.clientes.email,
                 dados: {
                   titulo: `Lembrete de Pagamento: ${regra.nome}`,
-                  mensagem: regra.template_mensagem?.replace('{{valor}}', conta.valor) || 'Seu título está próximo do vencimento.',
+                  mensagem: template.replace('{{valor}}', conta.valor),
                   valor: conta.valor,
                   dataVencimento: conta.data_vencimento
                 }
@@ -83,7 +102,7 @@ Deno.serve(async (req) => {
             await supabase.functions.invoke('whatsapp-ia-proativo', {
               body: {
                 phone: conta.clientes.telefone,
-                message: regra.template_mensagem?.replace('{{valor}}', conta.valor) || `Olá, lembramos que seu boleto de R$ ${conta.valor} vence em ${conta.data_vencimento}.`
+                message: template.replace('{{valor}}', conta.valor)
               }
             })
             success = true
