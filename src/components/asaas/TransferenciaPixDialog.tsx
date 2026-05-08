@@ -29,11 +29,31 @@ export function TransferenciaPixDialog({ open, onOpenChange, empresaId }: Props)
   const [tipoChave, setTipoChave] = useState('CPF');
   const [descricao, setDescricao] = useState('');
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [isValidKey, setIsValidKey] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!chavePix) {
+      setIsValidKey(null);
+      return;
+    }
+    
+    let valid = true;
+    if (tipoChave === 'CPF') valid = validateCPF(chavePix);
+    else if (tipoChave === 'CNPJ') valid = validateCNPJ(chavePix);
+    else if (tipoChave === 'EMAIL') valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(chavePix);
+    else if (tipoChave === 'PHONE') valid = chavePix.replace(/\D/g, '').length >= 10;
+    
+    setIsValidKey(valid);
+  }, [chavePix, tipoChave]);
 
   const handleConfirmar = () => {
     const valorNum = parseFloat(valor);
     if (!chavePix || isNaN(valorNum) || valorNum <= 0) {
-      toast.error('Preencha valor e chave Pix');
+      toast.error('Preencha valor e chave Pix corretamente');
+      return;
+    }
+    if (isValidKey === false) {
+      toast.error(`A chave Pix informada não é um ${tipoChave} válido`);
       return;
     }
     setConfirmOpen(true);
