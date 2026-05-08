@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
-import { Plus, Zap, CheckCircle2, AlertTriangle, Trash2, Power, Activity, Edit2, Copy, Play, Save, X, Info, ArrowDownAZ, ArrowUpAZ, History as HistoryIcon, ArrowRightLeft } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Zap, CheckCircle2, AlertTriangle, Trash2, Power, Activity, Edit2, Copy, Play, Save, X, Info, ArrowDownAZ, ArrowUpAZ, History as HistoryIcon, ArrowRightLeft, Layers, RefreshCcw } from 'lucide-react';
 import { supabase as supabaseTyped } from '@/integrations/supabase/client';
 // Tabelas novas ainda não refletidas em types.ts — cast controlado.
 const supabase = supabaseTyped as unknown as {
