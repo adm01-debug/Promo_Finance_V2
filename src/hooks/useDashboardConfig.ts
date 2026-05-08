@@ -20,8 +20,10 @@ const DEFAULT_WIDGETS: DashboardWidget[] = [
   { id: 'previsao-ia', type: 'previsao-ia', title: 'Previsão IA', visible: true, order: 5, size: 'lg' },
   { id: 'alertas-preditivos', type: 'kpi-vencidas', title: 'Alertas Preditivos', visible: true, order: 6, size: 'md' },
   { id: 'metas', type: 'kpi-saldo', title: 'Metas Financeiras', visible: true, order: 7, size: 'md' },
-  { id: 'bling-nfe', type: 'bling-nfe', title: 'Notas Fiscais (Bling)', visible: false, order: 8, size: 'md' },
-  { id: 'bling-financeiro', type: 'bling-financeiro', title: 'Financeiro (Bling)', visible: false, order: 9, size: 'md' },
+  { id: 'inadimplencia-segmentada', type: 'bling-financeiro', title: 'Inadimplência por Ramo/Vendedor', visible: false, order: 8, size: 'lg' },
+  { id: 'benchmarking', type: 'bling-nfe', title: 'Benchmarking Setorial', visible: false, order: 9, size: 'md' },
+  { id: 'bling-nfe', type: 'bling-nfe', title: 'Notas Fiscais (Bling)', visible: false, order: 10, size: 'md' },
+  { id: 'bling-financeiro', type: 'bling-financeiro', title: 'Financeiro (Bling)', visible: false, order: 11, size: 'md' },
 ];
 
 

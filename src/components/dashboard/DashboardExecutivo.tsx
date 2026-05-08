@@ -133,6 +133,10 @@ export const DashboardExecutivo = () => {
         return <BlingNFeTab />;
       case 'bling-financeiro':
         return <BlingFinanceiroPanel />;
+      case 'inadimplencia-segmentada':
+        return <InadimplenciaSegmentada />;
+      case 'benchmarking':
+        return <BenchmarkingSetorial />;
 
       default:
         return <div className="p-4 text-sm text-muted-foreground">Widget: {widget.title}</div>;
