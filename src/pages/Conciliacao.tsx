@@ -206,6 +206,7 @@ export default function Conciliacao() {
               <TabsTrigger value="sessoes" className="gap-2"><History className="h-4 w-4" />Sessões</TabsTrigger>
               <TabsTrigger value="divergencias" className="gap-2"><AlertTriangle className="h-4 w-4" />Divergências</TabsTrigger>
               <TabsTrigger value="retroativo" className="gap-2"><Clock className="h-4 w-4" />Retroativo</TabsTrigger>
+              <TabsTrigger value="configuracoes" className="gap-2"><Keyboard className="h-4 w-4" />Ajustes</TabsTrigger>
             </TabsList>
 
             <TabsContent value="conciliacao" className="space-y-4 mt-4">
