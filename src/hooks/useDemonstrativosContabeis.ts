@@ -32,6 +32,7 @@ export interface ContaNaoClassificada {
 }
 
 export interface DemonstrativosResult {
+  params: { empresaId: string; ano: number; mes: number; fonte: FonteDemonstrativo };
   dre: {
     linhas: DRELinha[];
     receitaBruta: number;
