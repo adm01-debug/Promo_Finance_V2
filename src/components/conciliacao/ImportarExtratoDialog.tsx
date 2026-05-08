@@ -34,8 +34,16 @@ export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess, con
     try {
       const ext = file.name.toLowerCase().split('.').pop();
       if (ext === 'xlsx' || ext === 'xls') {
-        setResultado({ sucesso: false, erro: 'Arquivos Excel (.xlsx/.xls) ainda não são suportados. Por favor, exporte o extrato do seu banco em formato OFX ou CSV.', avisos: ['Dica: A maioria dos bancos oferece a opção de exportar extratos em OFX no internet banking.'] });
-        setStep('error'); return;
+        const buffer = await file.arrayBuffer();
+        const { parseExcel } = await import('@/lib/ofx-parser');
+        const result = parseExcel(buffer, file.name);
+        setProgress(100);
+        setResultado(result);
+        if (result.sucesso && result.extrato) {
+          setSelectedTransacoes(new Set(result.extrato.transacoes.map(t => t.id)));
+          setStep('preview');
+        } else { setStep('error'); }
+        return;
       }
       const progressInterval = setInterval(() => { setProgress(prev => Math.min(prev + 15, 70)); }, 100);
       const content = await file.text();
