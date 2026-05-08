@@ -5,12 +5,13 @@
 
 import { NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, Star, StarOff, X, ChevronDown } from 'lucide-react';
+import { Clock, Star, StarOff, X, ChevronDown, Building2, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useRecentItems } from '@/hooks/useRecentItems';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useUserEmpresas, getCurrentEmpresaId, setCurrentEmpresaId } from '@/hooks/useUserEmpresas';
 
 interface RecentAndFavoritesProps {
   collapsed: boolean;
