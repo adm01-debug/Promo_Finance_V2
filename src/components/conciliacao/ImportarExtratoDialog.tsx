@@ -39,7 +39,20 @@ export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess, con
       const progressInterval = setInterval(() => { setProgress(prev => Math.min(prev + 15, 70)); }, 100);
       const content = await file.text();
       clearInterval(progressInterval); setProgress(80);
-      const result = parseExtratoBancario(content, file.name);
+      
+      let mapeamento = undefined;
+      if (contaBancariaId) {
+        const { data: conta } = await supabase
+          .from('contas_bancarias')
+          .select('mapeamento_extrato')
+          .eq('id', contaBancariaId)
+          .maybeSingle();
+        if (conta?.mapeamento_extrato) {
+          mapeamento = conta.mapeamento_extrato as Record<string, string>;
+        }
+      }
+
+      const result = parseExtratoBancario(content, file.name, mapeamento);
       setProgress(100);
       await new Promise(resolve => setTimeout(resolve, 300));
       setResultado(result);
