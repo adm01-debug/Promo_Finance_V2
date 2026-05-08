@@ -170,13 +170,14 @@ export default function Contabilidade() {
         </div>
 
         <Tabs value={tab} onValueChange={setTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-10">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-11">
             <TabsTrigger value="inicio" className="gap-1.5"><LayoutGrid className="h-4 w-4" />Início</TabsTrigger>
             <TabsTrigger value="plano" className="gap-1.5"><BookOpen className="h-4 w-4" />Plano</TabsTrigger>
             <TabsTrigger value="lancamentos" className="gap-1.5"><Calculator className="h-4 w-4" />Lançamentos</TabsTrigger>
             <TabsTrigger value="razao" className="gap-1.5"><BookText className="h-4 w-4" />Razão & Diário</TabsTrigger>
             <TabsTrigger value="dre" className="gap-1.5"><BarChart3 className="h-4 w-4" />DRE & Balanço</TabsTrigger>
             <TabsTrigger value="auto" className="gap-1.5"><Zap className="h-4 w-4" />Automático</TabsTrigger>
+            <TabsTrigger value="elisao" className="gap-1.5"><ShieldCheck className="h-4 w-4 text-emerald-500" />Elisão Fiscal</TabsTrigger>
             <TabsTrigger value="integracoes" className="gap-1.5"><Plug className="h-4 w-4" />Integrações</TabsTrigger>
             <TabsTrigger value="auditoria" className="gap-1.5"><History className="h-4 w-4" />Auditoria</TabsTrigger>
             <TabsTrigger value="ecd" className="gap-1.5"><FileText className="h-4 w-4" />SPED ECD</TabsTrigger>
