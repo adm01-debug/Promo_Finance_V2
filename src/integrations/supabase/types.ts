@@ -3439,6 +3439,76 @@ export type Database = {
           },
         ]
       }
+      elisao_creditos_auditoria: {
+        Row: {
+          created_at: string
+          cst_csosn: string | null
+          empresa_id: string
+          evidencias: Json | null
+          id: string
+          metodologia_aplicada: string | null
+          motivo_rejeicao: string | null
+          ncm: string
+          nota_fiscal_id: string
+          regra_id: string | null
+          status_validacao: string | null
+          valor_base: number
+          valor_credito_calculado: number
+        }
+        Insert: {
+          created_at?: string
+          cst_csosn?: string | null
+          empresa_id: string
+          evidencias?: Json | null
+          id?: string
+          metodologia_aplicada?: string | null
+          motivo_rejeicao?: string | null
+          ncm: string
+          nota_fiscal_id: string
+          regra_id?: string | null
+          status_validacao?: string | null
+          valor_base: number
+          valor_credito_calculado: number
+        }
+        Update: {
+          created_at?: string
+          cst_csosn?: string | null
+          empresa_id?: string
+          evidencias?: Json | null
+          id?: string
+          metodologia_aplicada?: string | null
+          motivo_rejeicao?: string | null
+          ncm?: string
+          nota_fiscal_id?: string
+          regra_id?: string | null
+          status_validacao?: string | null
+          valor_base?: number
+          valor_credito_calculado?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "elisao_creditos_auditoria_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "elisao_creditos_auditoria_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "elisao_creditos_auditoria_regra_id_fkey"
+            columns: ["regra_id"]
+            isOneToOne: false
+            referencedRelation: "elisao_regras_creditos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       elisao_regras_creditos: {
         Row: {
           aliquota_cofins_reducao: number | null
@@ -3537,6 +3607,66 @@ export type Database = {
           },
           {
             foreignKeyName: "elisao_simulacoes_regime_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
+      elisao_tarefas_acionaveis: {
+        Row: {
+          checklist: Json | null
+          created_at: string
+          descricao: string | null
+          empresa_id: string
+          id: string
+          prazo: string | null
+          responsavel_id: string | null
+          status: string | null
+          tipo_oportunidade: string | null
+          titulo: string
+          updated_at: string
+          valor_envolvido: number | null
+        }
+        Insert: {
+          checklist?: Json | null
+          created_at?: string
+          descricao?: string | null
+          empresa_id: string
+          id?: string
+          prazo?: string | null
+          responsavel_id?: string | null
+          status?: string | null
+          tipo_oportunidade?: string | null
+          titulo: string
+          updated_at?: string
+          valor_envolvido?: number | null
+        }
+        Update: {
+          checklist?: Json | null
+          created_at?: string
+          descricao?: string | null
+          empresa_id?: string
+          id?: string
+          prazo?: string | null
+          responsavel_id?: string | null
+          status?: string | null
+          tipo_oportunidade?: string | null
+          titulo?: string
+          updated_at?: string
+          valor_envolvido?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "elisao_tarefas_acionaveis_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "elisao_tarefas_acionaveis_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "vw_tributario_dashboard"
