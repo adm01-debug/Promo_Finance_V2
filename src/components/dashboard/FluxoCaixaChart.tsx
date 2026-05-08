@@ -47,7 +47,7 @@ export function FluxoCaixaChart({ data, periodoFluxo, setPeriodoFluxo }: FluxoCa
                 <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                   <Activity className="h-4 w-4 text-primary" />
                 </div>
-                <span className="truncate">Quantum Cash Horizon</span>
+                <span className="truncate">Quantum Cash Horizon 10/10</span>
               </CardTitle>
               <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 hidden sm:block mt-1">Projeção Neural de Liquidez</CardDescription>
             </div>

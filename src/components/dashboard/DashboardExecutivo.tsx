@@ -259,7 +259,7 @@ export const DashboardExecutivo = () => {
 
             {/* Analytics Section */}
             <div className="space-y-6">
-              <SectionDivider label="Cyber-Neural Matrix: Strategic Analytics" icon={BarChart3} />
+              <SectionDivider label="Cyber-Neural Matrix: Strategic Analytics 10/10" icon={BarChart3} />
               <DraggableDashboard
                 widgets={widgets}
                 isEditing={isEditing}
