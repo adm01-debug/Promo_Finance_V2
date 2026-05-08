@@ -2794,6 +2794,57 @@ export type Database = {
         }
         Relationships: []
       }
+      configuracoes_duplicidade: {
+        Row: {
+          ativo: boolean | null
+          campos_validacao: string[]
+          created_at: string | null
+          criado_por: string | null
+          empresa_id: string | null
+          id: string
+          tolerancia_dias: number | null
+          updated_at: string | null
+          versao: number | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          campos_validacao?: string[]
+          created_at?: string | null
+          criado_por?: string | null
+          empresa_id?: string | null
+          id?: string
+          tolerancia_dias?: number | null
+          updated_at?: string | null
+          versao?: number | null
+        }
+        Update: {
+          ativo?: boolean | null
+          campos_validacao?: string[]
+          created_at?: string | null
+          criado_por?: string | null
+          empresa_id?: string | null
+          id?: string
+          tolerancia_dias?: number | null
+          updated_at?: string | null
+          versao?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "configuracoes_duplicidade_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "configuracoes_duplicidade_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       configuracoes_receber: {
         Row: {
           baixa_automatica_ativa: boolean | null
