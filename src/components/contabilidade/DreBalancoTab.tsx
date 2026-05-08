@@ -48,12 +48,12 @@ interface DrillDownState {
   };
 }
 
-export function DreBalancoTab({ empresaId, ano }: Props) {
+export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
   const [modo, setModo] = useState<'dre' | 'balanco'>('dre');
   const [fonte, setFonte] = useState<FonteDemonstrativo>('competencia');
   const [mes, setMes] = useState(new Date().getMonth());
-  const [dataInicio, setDataInicio] = useState(`${ano}-01-01`);
-  const [dataFim, setDataFim] = useState(`${ano}-12-31`);
+  const [selectedEmpresaId, setSelectedEmpresaId] = useState<string>(empresaId || 'todas');
+  const [drillDown, setDrillDown] = useState<DrillDownState>({ open: false });
 
   const {
     dre: dreNovo,
