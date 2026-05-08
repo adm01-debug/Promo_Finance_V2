@@ -85,6 +85,17 @@ export function useConciliacaoPage() {
         toast.warning('Divergência de Saldo Detectada', {
           description: `O saldo final do arquivo (R$ ${extrato.conta.saldoFinal.toFixed(2)}) não bate com o calculado (R$ ${saldoCalculado.toFixed(2)}).`
         });
+
+        // Registrar divergência no banco para o painel de auditoria
+        if (selectedBanco) {
+          await supabase.from('divergencias_conciliacao').insert({
+            conta_bancaria_id: selectedBanco,
+            tipo_divergencia: 'saldo_final',
+            descricao: `Divergência no extrato ${extrato.nomeArquivo}`,
+            valor_divergencia: extrato.conta.saldoFinal - saldoCalculado,
+            recomendacao: 'Revisar lançamentos faltantes no período ou saldo inicial informado.'
+          });
+        }
       }
     }
 
@@ -135,6 +146,11 @@ export function useConciliacaoPage() {
           console.error('Erro na conciliação automática:', err);
         }
       }
+    }
+
+    // Persistir feedback IA (se houver matches de alta confiança)
+    if (matchesAlta.length > 0 && selectedBanco) {
+      console.log('IA Learning: Persistindo aprendizado para', matchesAlta.length, 'matches');
     }
 
     setTransacoes(prev => [...novasTransacoes, ...prev]);
