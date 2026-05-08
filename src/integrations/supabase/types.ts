@@ -1219,6 +1219,71 @@ export type Database = {
           },
         ]
       }
+      asaas_reconciliation_suggestions: {
+        Row: {
+          conta_receber_id: string | null
+          created_at: string
+          empresa_id: string | null
+          id: string
+          match_type: string
+          metadata: Json | null
+          score: number
+          status: string
+          transaction_id: string
+        }
+        Insert: {
+          conta_receber_id?: string | null
+          created_at?: string
+          empresa_id?: string | null
+          id?: string
+          match_type: string
+          metadata?: Json | null
+          score: number
+          status?: string
+          transaction_id: string
+        }
+        Update: {
+          conta_receber_id?: string | null
+          created_at?: string
+          empresa_id?: string | null
+          id?: string
+          match_type?: string
+          metadata?: Json | null
+          score?: number
+          status?: string
+          transaction_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asaas_reconciliation_suggestions_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asaas_reconciliation_suggestions_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "vw_contas_receber_painel"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asaas_reconciliation_suggestions_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asaas_reconciliation_suggestions_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       asaas_sync_queue: {
         Row: {
           attempts: number
@@ -11936,6 +12001,15 @@ export type Database = {
         Returns: string
       }
       fn_verificar_vencidos: { Args: never; Returns: undefined }
+      generate_reconciliation_suggestions: {
+        Args: {
+          p_empresa_id: string
+          p_transaction_date: string
+          p_transaction_id: string
+          p_transaction_value: number
+        }
+        Returns: undefined
+      }
       gerar_alertas_pendencias_conciliacao: { Args: never; Returns: undefined }
       gerar_alertas_vencimento: { Args: never; Returns: undefined }
       gerar_contas_recorrentes: { Args: never; Returns: number }
