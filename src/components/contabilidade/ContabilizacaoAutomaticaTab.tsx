@@ -74,7 +74,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
     queryKey: ['regras_contab', empresaId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('regras_contabilizacao_automatica' as never)
+        .from('regras_contabilizacao_automatica')
         .select('*')
         .eq('empresa_id', empresaId)
         .order('tipo_evento')
@@ -102,7 +102,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
     queryKey: ['eventos_contab_log', empresaId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('eventos_contabilizacao_log' as never)
+        .from('eventos_contabilizacao_log')
         .select('id, tipo_evento, evento_id, status, detalhe, created_at, lancamento_id')
         .eq('empresa_id', empresaId)
         .order('created_at', { ascending: false })
@@ -123,7 +123,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
         throw new Error('Conta de débito e crédito devem ser diferentes');
       }
       const { error } = await supabase
-        .from('regras_contabilizacao_automatica' as never)
+        .from('regras_contabilizacao_automatica')
         .insert({ empresa_id: empresaId, ...form });
       if (error) throw error;
     },
@@ -146,7 +146,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
   const toggleAtivo = useMutation({
     mutationFn: async ({ id, ativo }: { id: string; ativo: boolean }) => {
       const { error } = await supabase
-        .from('regras_contabilizacao_automatica' as never)
+        .from('regras_contabilizacao_automatica')
         .update({ ativo })
         .eq('id', id);
       if (error) throw error;
@@ -157,7 +157,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
   const deleteRegra = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from('regras_contabilizacao_automatica' as never)
+        .from('regras_contabilizacao_automatica')
         .delete()
         .eq('id', id);
       if (error) throw error;
