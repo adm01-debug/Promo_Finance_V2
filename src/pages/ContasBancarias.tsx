@@ -257,7 +257,10 @@ export default function ContasBancarias() {
         />
 
         <TransferenciaDialog open={transferenciaOpen} onOpenChange={setTransferenciaOpen} />
+        <RegrasConciliacaoDialog open={regrasOpen} onOpenChange={setRegrasOpen} />
+        <ImportarExtratoDialog open={importarOpen} onOpenChange={setImportarOpen} />
       </div>
     </MainLayout>
   );
 }
+
