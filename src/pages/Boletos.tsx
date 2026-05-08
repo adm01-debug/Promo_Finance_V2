@@ -28,8 +28,10 @@ import {
   XCircle,
   AlertCircle,
   RefreshCw,
-  Ban
+  Ban,
+  History as HistoryIcon
 } from 'lucide-react';
+
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { useBoletos, Boleto, NovoBoletoData } from '@/hooks/useBoletos';
