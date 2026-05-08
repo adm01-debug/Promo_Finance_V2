@@ -262,36 +262,44 @@ export default function Clientes() {
   };
   return (
     <MainLayout>
-      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
-        {/* Page Header */}
-        <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-display-md text-foreground">Clientes</h1>
-            <p className="text-muted-foreground mt-1">Gerencie sua base de clientes</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <ExportMenu
-              data={filteredClientes}
-              columns={clientesColumns}
-              filename="clientes"
-              title="Relatório de Clientes"
-            />
-            <Button 
-              size="sm" 
-              className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
-              onClick={() => {
-                setEditingCliente(null);
-                setFormOpen(true);
-              }}
-            >
-              <Plus className="h-4 w-4" />
-              Novo Cliente
-            </Button>
-          </div>
-        </motion.div>
+      <Tabs defaultValue="lista" className="w-full">
+        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+          {/* Page Header */}
+          <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-display-md text-foreground">Clientes</h1>
+              <p className="text-muted-foreground mt-1">Gerencie sua base de clientes</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <TabsList className="bg-primary/10 border-primary/20">
+                <TabsTrigger value="lista">Lista Geral</TabsTrigger>
+                <TabsTrigger value="scoring">Scoring & Risco</TabsTrigger>
+              </TabsList>
+              <div className="flex items-center gap-3">
+                <ExportMenu
+                  data={filteredClientes}
+                  columns={clientesColumns}
+                  filename="clientes"
+                  title="Relatório de Clientes"
+                />
+                <Button 
+                  size="sm" 
+                  className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
+                  onClick={() => {
+                    setEditingCliente(null);
+                    setFormOpen(true);
+                  }}
+                >
+                  <Plus className="h-4 w-4" />
+                  Novo Cliente
+                </Button>
+              </div>
+            </div>
+          </motion.div>
 
-        {/* KPI Cards */}
-        <ClientesKPIs totalClientes={totalClientes} clientesAtivos={clientesAtivos} limiteTotal={limiteTotal} />
+          <TabsContent value="lista" className="space-y-6 m-0 border-none p-0">
+            {/* KPI Cards */}
+            <ClientesKPIs totalClientes={totalClientes} clientesAtivos={clientesAtivos} limiteTotal={limiteTotal} />
 
         {/* Filters */}
         <ClientesFiltersPanel
@@ -381,7 +389,15 @@ export default function Clientes() {
               />
             )}
           </Card>
+          </TabsContent>
+
+          <TabsContent value="scoring" className="m-0 border-none p-0">
+            <motion.div variants={itemVariants}>
+              <ScoringClientesPanel />
+            </motion.div>
+          </TabsContent>
         </motion.div>
+      </Tabs>
 
         <ClienteForm 
           open={formOpen} 
