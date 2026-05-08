@@ -72,9 +72,11 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
     data: new Date().toISOString().split('T')[0],
     descricao: 'Simulação de teste',
     categoria_id: '',
+    lote_quantidade: 1,
   });
   const [simResult, setSimResult] = useState<any>(null);
-  const [dryRunNoRuleResult, setDryRunNoRuleResult] = useState<any>(null);
+  const [dryRunBefore, setDryRunBefore] = useState<any>(null);
+  const [isLote, setIsLote] = useState(false);
 
   const [form, setForm] = useState({
     nome: '',
