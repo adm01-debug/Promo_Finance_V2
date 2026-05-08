@@ -64,6 +64,35 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
   const [emailCliente, setEmailCliente] = useState('');
   const [telefoneCliente, setTelefoneCliente] = useState('');
 
+  // Fetch pending receivables to link
+  const { data: pendencias } = useQuery({
+    queryKey: ['contas-receber-pendentes', empresaId],
+    queryFn: async () => {
+      if (!empresaId) return [];
+      const { data, error } = await supabase
+        .from('contas_receber')
+        .select('id, descricao, valor, data_vencimento')
+        .eq('empresa_id', empresaId)
+        .eq('status', 'pendente')
+        .order('data_vencimento', { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!empresaId && open
+  });
+
+  const handleSelectPendencia = (id: string) => {
+    const pendencia = pendencias?.find(p => p.id === id);
+    if (pendencia) {
+      setContaReceberId(id);
+      setValor(String(pendencia.valor));
+      setVencimento(pendencia.data_vencimento);
+      setDescricao(pendencia.descricao || '');
+    } else {
+      setContaReceberId('');
+    }
+  };
+
   const resetForm = () => {
     setTipo('boleto');
     setCustomerId('');
