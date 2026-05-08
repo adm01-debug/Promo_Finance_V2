@@ -414,6 +414,7 @@ export function useConciliacaoPage() {
     handleConciliar, handleIgnorar,
     handleBulkConciliar, handleBulkIgnorar,
     toggleSelect, toggleSelectAll,
+    handleDesfazerConciliacao,
   };
 }
 
