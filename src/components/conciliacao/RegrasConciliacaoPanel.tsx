@@ -162,6 +162,62 @@ export function RegrasConciliacaoPanel() {
       </CardContent>
 
       <AddRegraDialog open={showAddDialog} onOpenChange={setShowAddDialog} />
+
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="max-w-2xl rounded-[2rem] border-primary/10 bg-background/95 backdrop-blur-xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black flex items-center gap-2">
+              <Eye className="h-5 w-5 text-primary" />
+              Prévia de Conciliação
+            </DialogTitle>
+            <CardDescription>
+              Demonstração de como as regras atuais seriam aplicadas a um extrato simulado.
+            </CardDescription>
+          </DialogHeader>
+          
+          <ScrollArea className="h-[400px] mt-4 rounded-2xl border border-primary/5 bg-primary/[0.01]">
+            <div className="p-4 space-y-3">
+              {previewExtrato.map(item => (
+                <div key={item.id} className="flex flex-col p-4 rounded-2xl border bg-card/50 transition-all hover:border-primary/20">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-black opacity-40 uppercase tracking-tighter">{item.data}</span>
+                    <span className={cn("text-sm font-black", item.valor < 0 ? "text-destructive" : "text-success")}>
+                      {formatCurrency(item.valor)}
+                    </span>
+                  </div>
+                  <p className="text-sm font-bold truncate mb-3">{item.descricao}</p>
+                  
+                  {item.match ? (
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-success/5 border border-success/10 animate-in fade-in slide-in-from-bottom-2">
+                      <div className="h-8 w-8 rounded-full bg-success/10 flex items-center justify-center">
+                        <CheckCircle className="h-4 w-4 text-success" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-success/60">Match Encontrado</p>
+                        <p className="text-sm font-black truncate">{item.match.entidade_nome}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-primary/5 border border-primary/10 border-dashed">
+                      <div className="h-8 w-8 rounded-full bg-primary/5 flex items-center justify-center">
+                        <Search className="h-4 w-4 text-primary/40" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">Sem Match Automático</p>
+                        <p className="text-sm font-bold text-muted-foreground/60 italic">Requer conciliação manual</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+          
+          <DialogFooter className="mt-6">
+            <Button onClick={() => setShowPreview(false)} className="rounded-xl px-8 font-black">Fechar Preview</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
