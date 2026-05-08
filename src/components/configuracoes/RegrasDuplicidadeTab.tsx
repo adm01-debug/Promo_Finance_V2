@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldAlert, Save, History, CheckCircle2, XCircle, Info } from 'lucide-react';
+import { ShieldAlert, Save, History, CheckCircle2, XCircle, Info, Zap, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -92,7 +92,7 @@ export function RegrasDuplicidadeTab() {
   return (
     <motion.div className="space-y-6" variants={containerVariants} initial="hidden" animate="visible">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 border-none bg-background/50 backdrop-blur-xl ring-1 ring-white/10 rounded-[2rem] overflow-hidden">
+        <Card className="lg:col-span-2 border border-white/10 bg-white/[0.02] backdrop-blur-xl rounded-[2rem] overflow-hidden">
           <CardHeader className="bg-white/[0.02] border-b border-white/5 p-8">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
@@ -109,7 +109,7 @@ export function RegrasDuplicidadeTab() {
           <CardContent className="p-8 space-y-8">
             <div className="grid gap-6">
               {fields.map((field) => (
-                <div key={field.id} className="flex items-start justify-between p-4 rounded-2xl bg-white/[0.03] hover:bg-white/[0.05] transition-colors border border-white/5">
+                <div key={field.id} className="flex items-start justify-between p-5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] transition-all border border-white/5 group">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <Checkbox 
@@ -124,7 +124,7 @@ export function RegrasDuplicidadeTab() {
                     <p className="text-sm text-muted-foreground ml-6">{field.description}</p>
                   </div>
                   {selectedFields.includes(field.id) ? (
-                    <CheckCircle2 className="h-5 w-5 text-primary" />
+                    <CheckCircle2 className="h-5 w-5 text-primary drop-shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
                   ) : (
                     <XCircle className="h-5 w-5 text-muted-foreground/20" />
                   )}
@@ -145,7 +145,10 @@ export function RegrasDuplicidadeTab() {
         </Card>
 
         <div className="space-y-6">
-          <Card className="border-none bg-primary shadow-2xl shadow-primary/20 rounded-[2rem] text-primary-foreground overflow-hidden">
+          <Card className="border-none bg-primary shadow-[0_20px_50px_rgba(var(--primary),0.3)] rounded-[2rem] text-primary-foreground overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:rotate-12 transition-transform">
+              <Sparkles className="h-16 w-16 text-white" />
+            </div>
             <CardHeader className="p-8 pb-4">
               <CardTitle className="text-xl font-black uppercase tracking-tighter italic">Segurança Ativa</CardTitle>
             </CardHeader>
@@ -163,7 +166,7 @@ export function RegrasDuplicidadeTab() {
             </CardContent>
           </Card>
 
-          <Card className="border-none bg-background/50 backdrop-blur-xl ring-1 ring-white/10 rounded-[2rem]">
+          <Card className="border border-white/10 bg-white/[0.02] backdrop-blur-xl rounded-[2rem]">
             <CardHeader className="p-6 pb-2">
               <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                 <History className="h-4 w-4" /> Histórico de Regras

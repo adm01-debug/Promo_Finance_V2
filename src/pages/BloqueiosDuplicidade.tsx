@@ -16,13 +16,27 @@ import {
   Search, 
   Filter,
   ArrowRight,
-  Bell
+  Bell,
+  CheckCircle2,
+  AlertTriangle,
+  History
 } from "lucide-react";
 import { formatCurrency } from "@/lib/formatters";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import { saveAs } from 'file-saver';
+import { motion } from "framer-motion";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 }
+};
 
 export default function BloqueiosDuplicidade() {
   const [filters, setFilters] = useState({
@@ -88,80 +102,87 @@ export default function BloqueiosDuplicidade() {
 
   return (
     <MainLayout>
-      <div className="space-y-8 pb-20">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="space-y-8 pb-20"
+      >
+        <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-destructive/10 border border-destructive/20 text-destructive text-[10px] font-black uppercase tracking-[0.2em]">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.2em]">
               <ShieldAlert className="h-3 w-3" />
-              Security Audit
+              Cyber-Neural Security
             </div>
             <h1 className="text-5xl font-black tracking-tighter">
-              Trilha de <span className="text-primary">Auditoria</span>
+              Trilha de <span className="text-primary italic">Auditoria</span>
             </h1>
-            <p className="text-muted-foreground max-w-2xl leading-relaxed">
-              Monitoramento rigoroso de integridade financeira e bloqueios de duplicidade em tempo real.
+            <p className="text-muted-foreground max-w-2xl leading-relaxed font-medium">
+              Monitoramento rigoroso de integridade financeira e bloqueios de duplicidade em tempo real 10/10.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <Button 
               variant="outline" 
-              className="rounded-xl font-bold h-12 px-6 gap-2"
+              className="rounded-xl font-bold h-12 px-6 gap-2 border-white/10 hover:border-primary/50 transition-all"
               onClick={exportCSV}
               disabled={!bloqueios?.length}
             >
-              <Download className="h-5 w-5" /> Exportar Relatório
+              <Download className="h-5 w-5" /> Exportar Auditoria
             </Button>
             <Button 
-              className="rounded-xl font-black h-12 px-6 gap-2 shadow-xl shadow-primary/20"
+              className="rounded-xl font-black h-12 px-6 gap-2 shadow-2xl shadow-primary/30 hover:shadow-primary/50 transition-all"
               onClick={() => toast.info("Configurações de regras disponíveis no painel principal.")}
             >
-              <Filter className="h-5 w-5" /> Regras Ativas
+              <History className="h-5 w-5" /> Regras Ativas
             </Button>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Filtros Inteligentes */}
-        <Card className="p-6 border-none bg-background/50 backdrop-blur-xl ring-1 ring-white/10 rounded-[2rem]">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Fornecedor ou CNPJ..." 
-                className="pl-10 h-12 bg-white/5 border-none rounded-xl"
-                value={filters.fornecedor}
-                onChange={(e) => setFilters(prev => ({ ...prev, fornecedor: e.target.value }))}
-              />
+        <motion.div variants={itemVariants}>
+          <Card className="p-6 border border-white/10 bg-white/[0.02] backdrop-blur-xl rounded-[2rem]">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="relative group">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
+                <Input 
+                  placeholder="Fornecedor ou CNPJ..." 
+                  className="pl-10 h-12 bg-white/5 border-white/5 rounded-xl focus:ring-1 focus:ring-primary/50 transition-all"
+                  value={filters.fornecedor}
+                  onChange={(e) => setFilters(prev => ({ ...prev, fornecedor: e.target.value }))}
+                />
+              </div>
+              <div className="relative group">
+                <FileText className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
+                <Input 
+                  placeholder="Nº Documento..." 
+                  className="pl-10 h-12 bg-white/5 border-white/5 rounded-xl focus:ring-1 focus:ring-primary/50 transition-all"
+                  value={filters.documento}
+                  onChange={(e) => setFilters(prev => ({ ...prev, documento: e.target.value }))}
+                />
+              </div>
+              <div className="relative group">
+                <Badge className="absolute left-3 top-1/2 -translate-y-1/2 text-[8px] bg-primary/20 text-primary border-none">R$</Badge>
+                <Input 
+                  placeholder="Valor Exato..." 
+                  className="pl-10 h-12 bg-white/5 border-white/5 rounded-xl focus:ring-1 focus:ring-primary/50 transition-all"
+                  value={filters.valor}
+                  onChange={(e) => setFilters(prev => ({ ...prev, valor: e.target.value }))}
+                />
+              </div>
+              <Button 
+                variant="secondary" 
+                className="h-12 rounded-xl font-bold bg-white/5 hover:bg-white/10 border border-white/5 transition-all"
+                onClick={() => setFilters({ fornecedor: "", documento: "", valor: "" })}
+              >
+                Limpar Filtros
+              </Button>
             </div>
-            <div className="relative">
-              <FileText className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Nº Documento..." 
-                className="pl-10 h-12 bg-white/5 border-none rounded-xl"
-                value={filters.documento}
-                onChange={(e) => setFilters(prev => ({ ...prev, documento: e.target.value }))}
-              />
-            </div>
-            <div className="relative">
-              <Badge className="absolute left-3 top-1/2 -translate-y-1/2 text-[8px] bg-primary/20 text-primary">R$</Badge>
-              <Input 
-                placeholder="Valor Exato..." 
-                className="pl-10 h-12 bg-white/5 border-none rounded-xl"
-                value={filters.valor}
-                onChange={(e) => setFilters(prev => ({ ...prev, valor: e.target.value }))}
-              />
-            </div>
-            <Button 
-              variant="secondary" 
-              className="h-12 rounded-xl font-bold"
-              onClick={() => setFilters({ fornecedor: "", documento: "", valor: "" })}
-            >
-              Limpar Filtros
-            </Button>
-          </div>
-        </Card>
+          </Card>
+        </motion.div>
 
-        <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10">
+        <motion.div variants={itemVariants}>
+          <Card className="border border-white/10 bg-white/[0.01] backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent border-b border-white/5 bg-white/[0.02]">
@@ -263,36 +284,36 @@ export default function BloqueiosDuplicidade() {
             </TableBody>
           </Table>
         </Card>
+        </motion.div>
 
-        {/* Notificações Inteligentes */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="p-8 border-none bg-gradient-to-br from-primary/10 to-transparent backdrop-blur-xl ring-1 ring-white/10 rounded-[2rem] flex items-center gap-6">
-            <div className="h-16 w-16 rounded-2xl bg-primary/20 flex items-center justify-center shrink-0">
+        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="p-8 border border-white/10 bg-gradient-to-br from-primary/5 to-transparent backdrop-blur-xl rounded-[2rem] flex items-center gap-6 group hover:border-primary/30 transition-all">
+            <div className="h-16 w-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
               <Bell className="h-8 w-8 text-primary" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-xl font-black">Alertas Inteligentes</h3>
-              <p className="text-sm text-muted-foreground">Notificações automáticas em tempo real para cada tentativa de duplicidade bloqueada.</p>
-              <Button variant="link" className="p-0 h-auto text-primary font-bold gap-1 text-sm">
+              <h3 className="text-xl font-black">Notificações Inteligentes</h3>
+              <p className="text-sm text-muted-foreground font-medium">Alertas automáticos em tempo real para cada tentativa de duplicidade bloqueada.</p>
+              <Button variant="link" className="p-0 h-auto text-primary font-bold gap-1 text-sm hover:gap-2 transition-all">
                 Configurar Canais <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
           </Card>
 
-          <Card className="p-8 border-none bg-gradient-to-br from-destructive/10 to-transparent backdrop-blur-xl ring-1 ring-white/10 rounded-[2rem] flex items-center gap-6">
-            <div className="h-16 w-16 rounded-2xl bg-destructive/20 flex items-center justify-center shrink-0">
-              <ShieldAlert className="h-8 w-8 text-destructive" />
+          <Card className="p-8 border border-white/10 bg-gradient-to-br from-blue-500/5 to-transparent backdrop-blur-xl rounded-[2rem] flex items-center gap-6 group hover:border-blue-500/30 transition-all">
+            <div className="h-16 w-16 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+              <CheckCircle2 className="h-8 w-8 text-blue-400" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-xl font-black">Score de Risco</h3>
-              <p className="text-sm text-muted-foreground">Análise de comportamento de fornecedores reincidentes em tentativas de duplicidade.</p>
-              <Button variant="link" className="p-0 h-auto text-destructive font-bold gap-1 text-sm">
-                Ver Ranking de Risco <ArrowRight className="h-4 w-4" />
+              <h3 className="text-xl font-black">Conciliação Garantida</h3>
+              <p className="text-sm text-muted-foreground font-medium">Motor de integridade que assegura que nenhum pagamento duplicado chegue ao extrato.</p>
+              <Button variant="link" className="p-0 h-auto text-blue-400 font-bold gap-1 text-sm hover:gap-2 transition-all">
+                Ver Status do Motor <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
           </Card>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </MainLayout>
   );
 }
