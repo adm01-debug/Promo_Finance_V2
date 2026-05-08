@@ -6,16 +6,25 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Settings2, Save, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Settings2, Save, CheckCircle2, AlertCircle, Bell, Mail, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 
+interface AlertaConfig {
+  threshold: number;
+  interval: 'daily' | 'weekly' | 'monthly';
+  channel: 'email' | 'push' | 'whatsapp';
+  active: boolean;
+}
+
 interface ConciliacaoConfig {
   tolerancia_centavos: number;
   aceite_automatico: boolean;
   periodo_tolerancia_dias: number;
+  alertas_inadimplencia?: AlertaConfig;
+  alertas_conciliacao?: AlertaConfig;
 }
 
 export function ConfiguracaoConciliacaoPanel({ contaId }: { contaId?: string }) {
@@ -23,6 +32,8 @@ export function ConfiguracaoConciliacaoPanel({ contaId }: { contaId?: string }) 
     tolerancia_centavos: 0.50,
     aceite_automatico: false,
     periodo_tolerancia_dias: 5,
+    alertas_inadimplencia: { threshold: 10, interval: 'weekly', channel: 'email', active: false },
+    alertas_conciliacao: { threshold: 5, interval: 'daily', channel: 'email', active: false }
   });
   const [selectedContaId, setSelectedContaId] = useState<string | undefined>(contaId);
   const queryClient = useQueryClient();
@@ -46,6 +57,8 @@ export function ConfiguracaoConciliacaoPanel({ contaId }: { contaId?: string }) 
           tolerancia_centavos: 0.50,
           aceite_automatico: false,
           periodo_tolerancia_dias: 5,
+          alertas_inadimplencia: { threshold: 10, interval: 'weekly', channel: 'email', active: false },
+          alertas_conciliacao: { threshold: 5, interval: 'daily', channel: 'email', active: false }
         });
       }
     }
@@ -123,6 +136,90 @@ export function ConfiguracaoConciliacaoPanel({ contaId }: { contaId?: string }) 
                 checked={config.aceite_automatico} 
                 onCheckedChange={checked => setConfig({...config, aceite_automatico: checked})} 
               />
+            </div>
+
+            <div className="space-y-4 pt-4 border-t">
+              <h4 className="text-sm font-semibold flex items-center gap-2">
+                <Bell className="h-4 w-4 text-primary" /> Configuração de Alertas
+              </h4>
+              
+              <div className="space-y-4">
+                {/* Alerta Inadimplência */}
+                <Card className="bg-muted/30 border-dashed">
+                  <CardContent className="p-3 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs font-bold uppercase tracking-wider">Inadimplência Crítica</Label>
+                      <Switch 
+                        checked={config.alertas_inadimplencia?.active} 
+                        onCheckedChange={v => setConfig({...config, alertas_inadimplencia: {...config.alertas_inadimplencia!, active: v}})} 
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <Label className="text-[10px]">Threshold (%)</Label>
+                        <Input 
+                          type="number" 
+                          className="h-8 text-xs"
+                          value={config.alertas_inadimplencia?.threshold} 
+                          onChange={e => setConfig({...config, alertas_inadimplencia: {...config.alertas_inadimplencia!, threshold: parseFloat(e.target.value)}})} 
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-[10px]">Intervalo</Label>
+                        <Select 
+                          value={config.alertas_inadimplencia?.interval} 
+                          onValueChange={v => setConfig({...config, alertas_inadimplencia: {...config.alertas_inadimplencia!, interval: v as any}})}
+                        >
+                          <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="daily">Diário</SelectItem>
+                            <SelectItem value="weekly">Semanal</SelectItem>
+                            <SelectItem value="monthly">Mensal</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Alerta Conciliação */}
+                <Card className="bg-muted/30 border-dashed">
+                  <CardContent className="p-3 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs font-bold uppercase tracking-wider">Conciliação Pendente</Label>
+                      <Switch 
+                        checked={config.alertas_conciliacao?.active} 
+                        onCheckedChange={v => setConfig({...config, alertas_conciliacao: {...config.alertas_conciliacao!, active: v}})} 
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <Label className="text-[10px]">Acima de (qtd)</Label>
+                        <Input 
+                          type="number" 
+                          className="h-8 text-xs"
+                          value={config.alertas_conciliacao?.threshold} 
+                          onChange={e => setConfig({...config, alertas_conciliacao: {...config.alertas_conciliacao!, threshold: parseInt(e.target.value)}})} 
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-[10px]">Canal</Label>
+                        <Select 
+                          value={config.alertas_conciliacao?.channel} 
+                          onValueChange={v => setConfig({...config, alertas_conciliacao: {...config.alertas_conciliacao!, channel: v as any}})}
+                        >
+                          <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="email"><div className="flex items-center gap-1"><Mail className="h-3 w-3"/> Email</div></SelectItem>
+                            <SelectItem value="push"><div className="flex items-center gap-1"><Bell className="h-3 w-3"/> Push</div></SelectItem>
+                            <SelectItem value="whatsapp"><div className="flex items-center gap-1"><MessageSquare className="h-3 w-3"/> WhatsApp</div></SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
 
             <Button className="w-full gap-2" onClick={() => updateConfig.mutate()} disabled={updateConfig.isPending}>
