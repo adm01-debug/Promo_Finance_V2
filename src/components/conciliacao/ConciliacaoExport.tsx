@@ -25,6 +25,10 @@ interface TransacaoExport {
   valor: number;
   tipo: string;
   status: string;
+  compensacao_valor?: number;
+  compensacao_motivo?: string;
+  compensacao_classificacao?: string;
+  compensacao_regra?: string;
 }
 
 interface ConciliacaoExportProps {
