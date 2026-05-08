@@ -97,7 +97,7 @@ const navGroups: NavGroup[] = [
       { label: 'Fluxo de Caixa', icon: BarChart3, href: '/fluxo-caixa' },
       { label: 'Tesouraria Multi-CNPJ', icon: Landmark, href: '/tesouraria' },
       { label: 'Simulador Antecipação', icon: Calculator, href: '/simulador-antecipacao' },
-      { label: 'PIX & ASAAS', icon: Zap, href: '/pix-hub' },
+      { label: 'Asaas Pagamentos', icon: CreditCard, href: '/asaas', highlight: true },
     ],
   },
   {
