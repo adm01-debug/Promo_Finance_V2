@@ -80,7 +80,7 @@ export const DashboardExecutivo = () => {
   }
 
   const inadimplenciaBadge = metrics.totalVencidasReceber > 0
-    ? formatCurrency(metrics.totalVencidasReceber) + " vencido"
+    ? formatCurrency(metrics.totalVencidasReceber) + " overdue"
     : undefined;
 
   const inadimplenciaBadgeVariant = metrics.totalVencidasReceber > 0
@@ -178,7 +178,7 @@ export const DashboardExecutivo = () => {
         <motion.div variants={itemVariants} className="px-1">
           <HeroKPIGrid layout="hero-first">
             <HeroKPICard
-              title="Disponibilidade Total"
+              title="Total Liquidity Index"
               value={metrics.saldoTotal}
               icon={Wallet}
               iconColor="text-primary"
@@ -186,12 +186,12 @@ export const DashboardExecutivo = () => {
               accentColor="hsl(24, 95%, 46%)"
               href="/contas-bancarias"
               size="hero"
-              badge={`${metrics.contasBancariasFiltradas.length} contas`}
-              tooltip="Consolidado bancário em tempo real"
+              badge={`${metrics.contasBancariasFiltradas.length} active nodes`}
+              tooltip="Consolidado bancário neural em tempo real"
               insight="Otimize aplicações para CDI superior"
             />
             <HeroKPICard
-              title="Receita Provisionada"
+              title="Projected Inbound"
               value={metrics.totalReceber}
               previousValue={metrics.totalReceber - metrics.receitasMes}
               icon={ArrowDownCircle}
@@ -200,12 +200,12 @@ export const DashboardExecutivo = () => {
               accentColor="hsl(150, 70%, 42%)"
               href="/contas-receber"
               size="primary"
-              badge={metrics.receitasMes > 0 ? formatCurrency(metrics.receitasMes) + " realizados" : undefined}
+              badge={metrics.receitasMes > 0 ? formatCurrency(metrics.receitasMes) + " realized" : undefined}
               emptyStateMessage={metrics.totalReceber === 0 ? "Aguardando faturamento..." : undefined}
               emptyStateHref="/contas-receber"
             />
             <HeroKPICard
-              title="Exposição de Caixa"
+              title="Cash Exposure Index"
               value={metrics.totalPagar}
               previousValue={metrics.totalPagar - metrics.despesasMes}
               icon={ArrowUpCircle}
@@ -214,12 +214,12 @@ export const DashboardExecutivo = () => {
               accentColor="hsl(0, 78%, 55%)"
               href="/contas-pagar"
               size="primary"
-              badge={metrics.despesasMes > 0 ? formatCurrency(metrics.despesasMes) + " pagos" : undefined}
+              badge={metrics.despesasMes > 0 ? formatCurrency(metrics.despesasMes) + " settled" : undefined}
               emptyStateMessage={metrics.totalPagar === 0 ? "Nenhum compromisso pendente" : undefined}
               emptyStateHref="/contas-pagar"
             />
             <HeroKPICard
-              title="Indice de Inadimplência"
+              title="Delinquency Matrix"
               value={metrics.inadimplencia}
               icon={AlertTriangle}
               iconColor={metrics.inadimplencia > 10 ? "text-destructive" : metrics.inadimplencia > 5 ? "text-warning" : "text-success"}
@@ -231,7 +231,7 @@ export const DashboardExecutivo = () => {
               isCurrency={false}
               badge={inadimplenciaBadge}
               badgeVariant={inadimplenciaBadgeVariant}
-              emptyStateMessage={metrics.inadimplencia === 0 ? "Performance 100% — Zero Atrasos" : undefined}
+              emptyStateMessage={metrics.inadimplencia === 0 ? "Performance 10/10 — Zero Atrasos" : undefined}
             />
           </HeroKPIGrid>
         </motion.div>
