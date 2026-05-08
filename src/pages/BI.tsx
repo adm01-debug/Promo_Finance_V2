@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Building2, Calendar, CalendarIcon, BarChart3, PieChart as PieChartIcon, LineChart as LineChartIcon, AlertTriangle } from "lucide-react";
+import { Building2, Calendar, CalendarIcon, BarChart3, PieChart as PieChartIcon, LineChart as LineChartIcon, AlertTriangle, Zap } from "lucide-react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,12 +9,15 @@ import { Button } from "@/components/ui/button";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { useEmpresas, useContasPagar, useContasReceber, useContasBancarias, useClientes, useCentrosCusto } from "@/hooks/useFinancialData";
 import { format, subMonths, startOfMonth, endOfMonth, differenceInDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { BIMainKpis, BISecondaryKpis } from "@/components/bi/BIKpis";
 import { BIEvolucaoChart, BIAgingChart, BICentrosChart } from "@/components/bi/BICharts";
 import { BIEmpresasTab } from "@/components/bi/BIEmpresasTab";
+import { FuturisticDashboard } from "@/components/bi/FuturisticDashboard";
 import { InadimplenciaSegmentada } from "@/components/analytics/InadimplenciaSegmentada";
 import { BenchmarkingSetorial } from "@/components/analytics/BenchmarkingSetorial";
 import { HistoricoAnalisesPreditivasPanel } from "@/components/analytics/HistoricoAnalisesPreditivasPanel";
@@ -28,6 +31,7 @@ export default function BI() {
   const [dataInicio, setDataInicio] = useState<Date | undefined>(undefined);
   const [dataFim, setDataFim] = useState<Date | undefined>(undefined);
   const [usarPeriodoCustom, setUsarPeriodoCustom] = useState(false);
+  const [futuristicMode, setFuturisticMode] = useState(true);
 
   const { data: empresas = [] } = useEmpresas();
   const { data: contasPagar = [] } = useContasPagar();
@@ -142,22 +146,44 @@ export default function BI() {
 
   return (
     <MainLayout>
-      <motion.div className="space-y-6 p-6" variants={containerVariants} initial="hidden" animate="visible">
-        <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <motion.div className={cn("space-y-6 p-6 min-h-screen transition-all duration-1000 relative", futuristicMode ? "bg-[#020617] text-white" : "bg-background")} variants={containerVariants} initial="hidden" animate="visible">
+        {futuristicMode && (
+          <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px]" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-success/5 blur-[120px]" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:40px_40px]" />
+          </div>
+        )}
+        
+        <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Business Intelligence</h1>
+            <h1 className={cn("text-3xl font-bold tracking-tight", futuristicMode ? "text-white drop-shadow-[0_0_10px_rgba(var(--primary),0.5)]" : "bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent")}>
+              Business Intelligence
+            </h1>
             <p className="text-muted-foreground">Visão executiva consolidada para gestão estratégica</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center space-x-2 bg-muted/30 p-2 rounded-lg border border-white/5 mr-2">
+              <Label htmlFor="futuristic-mode" className="text-xs font-semibold flex items-center gap-1 cursor-pointer">
+                <Zap className={cn("w-3 h-3 transition-colors", futuristicMode ? "text-primary fill-primary" : "text-muted-foreground")} />
+                BI FUTURISTA
+              </Label>
+              <Switch 
+                id="futuristic-mode" 
+                checked={futuristicMode} 
+                onCheckedChange={setFuturisticMode}
+                className="scale-90"
+              />
+            </div>
             <Select value={empresaId} onValueChange={setEmpresaId}>
-              <SelectTrigger className="w-[200px]"><Building2 className="w-4 h-4 mr-2" /><SelectValue placeholder="Empresa" /></SelectTrigger>
+              <SelectTrigger className="w-[200px] bg-background/50 backdrop-blur-sm border-white/10"><Building2 className="w-4 h-4 mr-2" /><SelectValue placeholder="Empresa" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="todas">Todas as Empresas</SelectItem>
                 {empresas.filter(e => e.ativo).map(empresa => <SelectItem key={empresa.id} value={empresa.id}>{empresa.nome_fantasia || empresa.razao_social}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={usarPeriodoCustom ? "custom" : periodo} onValueChange={(val) => { if (val === "custom") { setUsarPeriodoCustom(true); } else { setUsarPeriodoCustom(false); setPeriodo(val); setDataInicio(undefined); setDataFim(undefined); } }}>
-              <SelectTrigger className="w-[160px]"><Calendar className="w-4 h-4 mr-2" /><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-[160px] bg-background/50 backdrop-blur-sm border-white/10"><Calendar className="w-4 h-4 mr-2" /><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="3">3 meses</SelectItem>
                 <SelectItem value="6">6 meses</SelectItem>
@@ -170,7 +196,7 @@ export default function BI() {
                 {[{ state: dataInicio, setter: setDataInicio, label: "Início" }, { state: dataFim, setter: setDataFim, label: "Fim" }].map((item) => (
                   <Popover key={item.label}>
                     <PopoverTrigger asChild>
-                      <Button variant="outline" className={cn("w-[130px] justify-start text-left font-normal", !item.state && "text-muted-foreground")}>
+                      <Button variant="outline" className={cn("w-[130px] justify-start text-left font-normal bg-background/50 backdrop-blur-sm border-white/10", !item.state && "text-muted-foreground")}>
                         <CalendarIcon className="mr-2 h-4 w-4" />{item.state ? format(item.state, "dd/MM/yyyy") : item.label}
                       </Button>
                     </PopoverTrigger>
@@ -184,24 +210,30 @@ export default function BI() {
           </div>
         </motion.div>
 
-        <BIMainKpis kpis={kpis} />
-        <BISecondaryKpis kpis={kpis} />
+        {futuristicMode ? (
+          <FuturisticDashboard kpis={kpis} evolucaoMensal={evolucaoMensal} />
+        ) : (
+          <>
+            <BIMainKpis kpis={kpis} />
+            <BISecondaryKpis kpis={kpis} />
 
-        <Tabs defaultValue="evolucao" className="space-y-4">
-          <TabsList className="grid grid-cols-4 w-full max-w-lg">
-            <TabsTrigger value="evolucao" className="flex items-center gap-2"><LineChartIcon className="w-4 h-4" />Evolução</TabsTrigger>
-            <TabsTrigger value="aging" className="flex items-center gap-2"><BarChart3 className="w-4 h-4" />Aging</TabsTrigger>
-            <TabsTrigger value="centros" className="flex items-center gap-2"><PieChartIcon className="w-4 h-4" />Custos</TabsTrigger>
-            <TabsTrigger value="empresas" className="flex items-center gap-2"><Building2 className="w-4 h-4" />Empresas</TabsTrigger>
-          </TabsList>
-          <TabsContent value="evolucao"><BIEvolucaoChart evolucaoMensal={evolucaoMensal} statusReceber={statusReceber} /></TabsContent>
-          <TabsContent value="aging"><BIAgingChart agingReceber={agingReceber} topClientes={topClientes} /></TabsContent>
-          <TabsContent value="centros"><BICentrosChart distribuicaoCentros={distribuicaoCentros} /></TabsContent>
-          <TabsContent value="empresas"><BIEmpresasTab comparativoEmpresas={comparativoEmpresas} /></TabsContent>
-        </Tabs>
+            <Tabs defaultValue="evolucao" className="space-y-4">
+              <TabsList className="grid grid-cols-4 w-full max-w-lg">
+                <TabsTrigger value="evolucao" className="flex items-center gap-2"><LineChartIcon className="w-4 h-4" />Evolução</TabsTrigger>
+                <TabsTrigger value="aging" className="flex items-center gap-2"><BarChart3 className="w-4 h-4" />Aging</TabsTrigger>
+                <TabsTrigger value="centros" className="flex items-center gap-2"><PieChartIcon className="w-4 h-4" />Custos</TabsTrigger>
+                <TabsTrigger value="empresas" className="flex items-center gap-2"><Building2 className="w-4 h-4" />Empresas</TabsTrigger>
+              </TabsList>
+              <TabsContent value="evolucao"><BIEvolucaoChart evolucaoMensal={evolucaoMensal} statusReceber={statusReceber} /></TabsContent>
+              <TabsContent value="aging"><BIAgingChart agingReceber={agingReceber} topClientes={topClientes} /></TabsContent>
+              <TabsContent value="centros"><BICentrosChart distribuicaoCentros={distribuicaoCentros} /></TabsContent>
+              <TabsContent value="empresas"><BIEmpresasTab comparativoEmpresas={comparativoEmpresas} /></TabsContent>
+            </Tabs>
+          </>
+        )}
 
-        <motion.div variants={itemVariants} className="mt-6">
-          <Card>
+        <motion.div variants={itemVariants} className="mt-6 relative z-10">
+          <Card className={cn("transition-all duration-500", futuristicMode ? "premium-card border-white/10 bg-card/40 backdrop-blur-xl" : "")}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-destructive" />Inadimplência Segmentada</CardTitle>
               <CardDescription>Análise de inadimplência por ramo de atividade e vendedor</CardDescription>
@@ -209,8 +241,18 @@ export default function BI() {
             <CardContent><InadimplenciaSegmentada /></CardContent>
           </Card>
         </motion.div>
-        <motion.div variants={itemVariants} className="mt-6"><BenchmarkingSetorial /></motion.div>
-        <motion.div variants={itemVariants} className="mt-6"><HistoricoAnalisesPreditivasPanel /></motion.div>
+        
+        <motion.div variants={itemVariants} className="mt-6 relative z-10">
+          <div className={cn("transition-all duration-500", futuristicMode ? "premium-card p-0 border-white/10 overflow-hidden bg-card/40 backdrop-blur-xl" : "")}>
+            <BenchmarkingSetorial />
+          </div>
+        </motion.div>
+        
+        <motion.div variants={itemVariants} className="mt-6 relative z-10">
+          <div className={cn("transition-all duration-500", futuristicMode ? "premium-card p-0 border-white/10 overflow-hidden bg-card/40 backdrop-blur-xl" : "")}>
+            <HistoricoAnalisesPreditivasPanel />
+          </div>
+        </motion.div>
       </motion.div>
     </MainLayout>
   );
