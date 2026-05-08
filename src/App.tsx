@@ -91,6 +91,23 @@ const AuditoriaIA = lazy(() => import('./pages/admin/AuditoriaIA'));
 const SharedFiltersAdmin = lazy(() => import('./pages/admin/SharedFiltersAdmin'));
 const Contabilidade = lazy(() => import('./pages/Contabilidade'));
 const StyleGuide = lazy(() => import('./pages/StyleGuide'));
+const SplitPaymentPage = lazy(() => import('./pages/tributario/SplitPayment'));
+const ConciliacaoTributariaPage = lazy(() => import('./pages/tributario/ConciliacaoTributaria'));
+const IncentivosFiscaisPage = lazy(() => import('./pages/tributario/IncentivosFiscais'));
+const AuditoriaCompliancePage = lazy(() => import('./pages/tributario/AuditoriaCompliance'));
+const ComparativoRegimesPage = lazy(() => import('./pages/tributario/ComparativoRegimes'));
+const CashbackSimuladorPage = lazy(() => import('./pages/tributario/CashbackSimulador'));
+const ImportacaoXMLPage = lazy(() => import('./pages/tributario/ImportacaoXML'));
+const SpedExportPage = lazy(() => import('./pages/tributario/SpedExport'));
+const RelatoriosContabeisPage = lazy(() => import('./pages/tributario/RelatoriosContabeis'));
+const PerDcompPage = lazy(() => import('./pages/tributario/PerDcomp'));
+const RetencoesFontePage = lazy(() => import('./pages/tributario/RetencoesFonte'));
+const FechamentoMensalPage = lazy(() => import('./pages/tributario/FechamentoMensal'));
+const InteligenciaOperacionalPage = lazy(() => import('./pages/InteligenciaOperacional'));
+const MetasFinanceirasPage = lazy(() => import('./pages/MetasFinanceiras'));
+const PortalTokensPage = lazy(() => import('./pages/clientes/PortalTokens'));
+const ScoringClientesPage = lazy(() => import('./pages/clientes/ScoringClientes'));
+
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Inner app component that can use routing hooks
@@ -182,6 +199,23 @@ function AppRoutes() {
             <Route path="/configuracoes/notificacoes/historico" element={<ProtectedRoute><HistoricoNotificacoes /></ProtectedRoute>} />
             <Route path="/configuracoes/notificacoes/sino" element={<ProtectedRoute><SinoNotificacoesFiltros /></ProtectedRoute>} />
             <Route path="/admin/filtros-compartilhados" element={<ProtectedRoute requiredRoles={['admin']}><SharedFiltersAdmin /></ProtectedRoute>} />
+            
+            <Route path="/tributario/split-payment" element={<ProtectedRoute><SplitPaymentPage /></ProtectedRoute>} />
+            <Route path="/tributario/conciliacao" element={<ProtectedRoute><ConciliacaoTributariaPage /></ProtectedRoute>} />
+            <Route path="/tributario/incentivos" element={<ProtectedRoute><IncentivosFiscaisPage /></ProtectedRoute>} />
+            <Route path="/tributario/auditoria" element={<ProtectedRoute><AuditoriaCompliancePage /></ProtectedRoute>} />
+            <Route path="/tributario/comparativo" element={<ProtectedRoute><ComparativoRegimesPage /></ProtectedRoute>} />
+            <Route path="/tributario/cashback" element={<ProtectedRoute><CashbackSimuladorPage /></ProtectedRoute>} />
+            <Route path="/tributario/importacao-xml" element={<ProtectedRoute><ImportacaoXMLPage /></ProtectedRoute>} />
+            <Route path="/tributario/sped" element={<ProtectedRoute><SpedExportPage /></ProtectedRoute>} />
+            <Route path="/tributario/relatorios-contabeis" element={<ProtectedRoute><RelatoriosContabeisPage /></ProtectedRoute>} />
+            <Route path="/tributario/per-dcomp" element={<ProtectedRoute><PerDcompPage /></ProtectedRoute>} />
+            <Route path="/tributario/retencoes" element={<ProtectedRoute><RetencoesFontePage /></ProtectedRoute>} />
+            <Route path="/tributario/fechamento-mensal" element={<ProtectedRoute><FechamentoMensalPage /></ProtectedRoute>} />
+            <Route path="/inteligencia" element={<ProtectedRoute><InteligenciaOperacionalPage /></ProtectedRoute>} />
+            <Route path="/metas" element={<ProtectedRoute><MetasFinanceirasPage /></ProtectedRoute>} />
+            <Route path="/clientes/portal-tokens" element={<ProtectedRoute><PortalTokensPage /></ProtectedRoute>} />
+            <Route path="/clientes/scoring" element={<ProtectedRoute><ScoringClientesPage /></ProtectedRoute>} />
             
             <Route path="/style-guide" element={<ProtectedRoute><StyleGuide /></ProtectedRoute>} />
             
