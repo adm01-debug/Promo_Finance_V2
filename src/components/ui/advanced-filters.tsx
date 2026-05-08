@@ -34,10 +34,17 @@ export interface AdvancedFilters {
   contaBancariaId?: string;
 }
 
+interface FilterOption {
+  value: string;
+  label: string;
+}
+
 interface AdvancedFiltersProps {
   filters: AdvancedFilters;
   onFiltersChange: (filters: AdvancedFilters) => void;
-  tiposCobranca?: { value: string; label: string }[];
+  tiposCobranca?: FilterOption[];
+  empresas?: FilterOption[];
+  contasBancarias?: FilterOption[];
   className?: string;
   controller?: ManagedFiltersController<AdvancedFilters & Record<string, unknown>>;
 }
