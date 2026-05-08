@@ -458,6 +458,8 @@ export default function OportunidadesElisao() {
                       Auditoria (CSV)
                     </Button>
                   
+                  </div>
+                  
                   {c.status_aprovacao === 'pendente' && (
                     <div className="flex gap-2 justify-end pt-2">
                       {c.nota?.arquivo_url && (
