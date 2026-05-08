@@ -57,19 +57,19 @@
 
   .dark {
     --background: 224 71% 4%;
-    --foreground: 210 20% 98%;
+    --foreground: 210 40% 98%;
     --card: 224 71% 4%;
-    --card-foreground: 210 20% 98%;
-    --card-elevated: 224 71% 7%;
+    --card-foreground: 210 40% 98%;
+    --card-elevated: 224 71% 8%;
     --popover: 224 71% 4%;
-    --popover-foreground: 210 20% 98%;
+    --popover-foreground: 210 40% 98%;
     --primary: 217 91% 60%;
     --primary-foreground: 224 71% 4%;
     --primary-glow: 217 91% 70%;
     --secondary: 215 27% 12%;
-    --secondary-foreground: 210 20% 98%;
+    --secondary-foreground: 210 40% 98%;
     --info: 199 89% 48%;
-    --info-foreground: 210 20% 98%;
+    --info-foreground: 210 40% 98%;
     --success: 142 70% 45%;
     --success-foreground: 224 71% 4%;
     --warning: 38 92% 50%;
@@ -77,13 +77,13 @@
     --muted: 215 27% 16%;
     --muted-foreground: 215 20% 65%;
     --accent: 215 27% 12%;
-    --accent-foreground: 210 20% 98%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 62% 30%;
-    --destructive-foreground: 210 20% 98%;
+    --destructive-foreground: 210 40% 98%;
     --border: 215 27% 18%;
     --input: 215 27% 18%;
     --ring: 217 91% 60%;
-    --glass-bg: 224 71% 4% / 0.6;
+    --glass-bg: 224 71% 4% / 0.8;
     --glass-border: 215 27% 18% / 0.5;
     --sidebar-background: 224 71% 3%;
     --sidebar-foreground: 210 20% 90%;
@@ -93,7 +93,7 @@
     --sidebar-accent-foreground: 210 20% 95%;
     --sidebar-border: 215 27% 12%;
     --sidebar-ring: 217 91% 60%;
-    --header-shadow: 0 2px 12px hsl(0 0% 0% / 0.3);
+    --header-shadow: 0 4px 24px hsl(0 0% 0% / 0.5);
   }
 
   * {
