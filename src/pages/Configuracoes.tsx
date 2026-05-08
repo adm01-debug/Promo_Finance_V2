@@ -350,10 +350,10 @@ export default function Configuracoes() {
             <CardContent className="space-y-6">
               <div className="bg-muted/30 p-4 rounded-xl border border-dashed text-center">
                 <p className="text-sm text-muted-foreground">
-                  As configurações do Asaas foram movidas para um painel dedicado com gestão de saúde e monitoramento de fila.
+                  As configurações do Asaas foram integradas ao ecossistema central de pagamentos.
                 </p>
                 <Button variant="link" asChild className="mt-2 text-primary font-bold">
-                  <a href="/asaas">Acessar Painel de Gestão Asaas →</a>
+                  <a href="/asaas">Abrir Hub Asaas Pagamentos →</a>
                 </Button>
               </div>
             </CardContent>
