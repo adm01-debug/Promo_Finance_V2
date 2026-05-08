@@ -126,17 +126,18 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
       // 2. Automated Matching: Register in bank transaction if bank account is selected
       if (data.conta_bancaria_id) {
         const { error: matchError } = await supabase
-          .from('extrato_bancario')
+          .from('transacoes_bancarias')
           .insert({
             conta_bancaria_id: data.conta_bancaria_id,
             data: data.data_recebimento,
             descricao: `BAIXA AUT: ${conta.cliente_nome} - ${conta.descricao}`,
             valor: data.valor_recebido,
-            tipo: 'credito',
-            conciliado: true,
-            origem: 'baixa_automatica',
+            tipo: 'receita',
+            conciliada: true,
+            status: 'confirmado',
+            data_confirmacao: new Date().toISOString(),
             conta_receber_id: conta.id,
-          });
+          } as any);
         
         if (matchError) logger.warn('Erro ao criar evidência de conciliação:', matchError);
       }
