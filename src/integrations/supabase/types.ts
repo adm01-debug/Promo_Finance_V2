@@ -1389,6 +1389,7 @@ export type Database = {
         Row: {
           attempts: number
           created_at: string | null
+          error_history: Json | null
           id: string
           last_error: string | null
           max_attempts: number
@@ -1401,6 +1402,7 @@ export type Database = {
         Insert: {
           attempts?: number
           created_at?: string | null
+          error_history?: Json | null
           id?: string
           last_error?: string | null
           max_attempts?: number
@@ -1413,6 +1415,7 @@ export type Database = {
         Update: {
           attempts?: number
           created_at?: string | null
+          error_history?: Json | null
           id?: string
           last_error?: string | null
           max_attempts?: number
