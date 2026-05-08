@@ -7,6 +7,7 @@ import { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
 import { 
   LancamentoSistema, converterContasPagarParaLancamentos, 
   converterContasReceberParaLancamentos, encontrarTodosMatches, calcularEstatisticasMatch,
+  TOLERANCIA_CENTAVOS,
 } from '@/lib/transaction-matcher';
 import { type ImportReport } from '@/components/conciliacao/RelatorioImportacaoDialog';
 import { toast } from 'sonner';
