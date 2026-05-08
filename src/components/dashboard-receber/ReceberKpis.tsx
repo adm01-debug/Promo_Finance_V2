@@ -2,8 +2,11 @@ import { motion } from "framer-motion";
 import { DollarSign, AlertTriangle, CalendarDays, Clock, Calendar, TrendingUp, CheckCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/formatters";
+import { useAuth } from "@/hooks/useAuth";
+import { useUserEmpresas } from "@/hooks/useUserEmpresas";
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
