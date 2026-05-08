@@ -285,6 +285,11 @@ export function ContasReceberTableRow({
               <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => onEdit(conta)}><Edit className="h-4 w-4" /> Configuration</DropdownMenuItem>
               <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => onEnviarCobranca?.(conta)}><Send className="h-4 w-4 text-blue-400" /> Command Comms</DropdownMenuItem>
               {conta.status !== 'pago' && conta.status !== 'cancelado' && (
+                <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => window.location.href = `/boletos?novo=true&receber_id=${conta.id}`}>
+                  <Banknote className="h-4 w-4 text-primary" /> Gerar Boleto
+                </DropdownMenuItem>
+              )}
+              {conta.status !== 'pago' && conta.status !== 'cancelado' && (
                 <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => onAplicarDesconto?.(conta)}>
                   <Tag className="h-4 w-4 text-warning" /> Adjust Yield
                 </DropdownMenuItem>
