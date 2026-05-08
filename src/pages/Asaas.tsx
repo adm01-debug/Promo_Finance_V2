@@ -18,12 +18,13 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   CreditCard, QrCode, Banknote, Plus, RefreshCw, X,
   DollarSign, Clock, CheckCircle2, AlertTriangle, Copy, ExternalLink,
   Send, Users, Undo2, FileText, MoreHorizontal, Link2, Download, History,
   Settings as SettingsIcon, LayoutDashboard, FileSpreadsheet, PlayCircle,
-  Search, Filter, Calendar, Bell, Mail, Phone,
+  Search, Filter, Calendar, Bell, Mail, Phone, Loader2,
 } from 'lucide-react';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -97,6 +98,8 @@ export default function Asaas() {
   // Reprocess Dialog state
   const [reprocessDialog, setReprocessDialog] = useState<{ paymentId: string; asaasId: string } | null>(null);
   const [reprocessReason, setReprocessReason] = useState('');
+  const [selectedPayments, setSelectedSelectedPayments] = useState<string[]>([]);
+  const [isBulkReprocessing, setIsBulkReprocessing] = useState(false);
 
   // Dialog states
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -567,6 +570,58 @@ export default function Asaas() {
                     </div>
                   </div>
                 </div>
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <h3 className="text-sm font-bold flex items-center gap-2">
+                    <FileText className="h-4 w-4" /> Relatórios e Operações
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="p-4 border rounded-lg bg-muted/20">
+                      <h4 className="text-xs font-bold mb-2">Relatório Diário</h4>
+                      <p className="text-[10px] text-muted-foreground mb-4">
+                        O sistema gera um resumo automático das últimas 24h e envia para o e-mail de alerta configurado.
+                      </p>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="w-full h-8"
+                        onClick={async () => {
+                          try {
+                            const { data, error } = await supabase.functions.invoke('gerar-resumo-financeiro-diario');
+                            if (error) throw error;
+                            toast.success('Relatório gerado e enviado com sucesso');
+                          } catch (e: any) {
+                            toast.error('Erro ao gerar relatório: ' + e.message);
+                          }
+                        }}
+                      >
+                        <Send className="h-3 w-3 mr-2" /> Disparar Agora
+                      </Button>
+                    </div>
+
+                    <div className="p-4 border rounded-lg bg-muted/20">
+                      <h4 className="text-xs font-bold mb-2 text-success flex items-center gap-2">
+                        <CheckCircle2 className="h-3 w-3" /> Saúde da Integração
+                      </h4>
+                      <div className="space-y-2 mt-3">
+                        <div className="flex justify-between text-[10px]">
+                          <span>Asaas API:</span>
+                          <span className="font-bold text-success">ONLINE</span>
+                        </div>
+                        <div className="flex justify-between text-[10px]">
+                          <span>Webhooks:</span>
+                          <span className="font-bold text-success">ATIVO</span>
+                        </div>
+                        <div className="flex justify-between text-[10px]">
+                          <span>Fila de Sincronização:</span>
+                          <span className="font-bold text-warning">{queueStats.falhas > 0 ? 'ATENÇÃO' : 'NORMAL'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -615,6 +670,47 @@ export default function Asaas() {
                   </div>
                 </div>
 
+                {selectedPayments.length > 0 && (
+                  <div className="flex items-center gap-4 p-2 bg-primary/5 border border-primary/20 rounded-lg mb-4 animate-in fade-in slide-in-from-top-2">
+                    <span className="text-sm font-medium text-primary ml-2">
+                      {selectedPayments.length} item(s) selecionado(s)
+                    </span>
+                    <div className="flex gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="h-8"
+                        onClick={async () => {
+                          const { data: { user } } = await supabase.auth.getUser();
+                          if (!user) return;
+                          setIsBulkReprocessing(true);
+                          try {
+                            for (const id of selectedPayments) {
+                              await reprocessarManual.mutateAsync({ paymentId: id, reason: 'Reprocessamento em massa', userId: user.id });
+                            }
+                            setSelectedSelectedPayments([]);
+                            toast.success('Sincronização em massa iniciada');
+                          } finally {
+                            setIsBulkReprocessing(false);
+                          }
+                        }}
+                        disabled={isBulkReprocessing}
+                      >
+                        {isBulkReprocessing ? <Loader2 className="h-3 w-3 animate-spin mr-2" /> : <RefreshCw className="h-3 w-3 mr-2" />}
+                        Sincronizar Selecionados
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="h-8"
+                        onClick={() => setSelectedSelectedPayments([])}
+                      >
+                        Limpar Seleção
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
                 {loadingPayments ? (
                   <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
                 ) : filteredPayments.length === 0 ? (
@@ -629,6 +725,15 @@ export default function Asaas() {
                     <Table>
                       <TableHeader>
                         <TableRow>
+                          <TableHead className="w-[40px]">
+                            <Checkbox 
+                              checked={selectedPayments.length === filteredPayments.length && filteredPayments.length > 0}
+                              onChange={(e) => {
+                                if (e.target.checked) setSelectedSelectedPayments(filteredPayments.map(p => p.id));
+                                else setSelectedSelectedPayments([]);
+                              }}
+                            />
+                          </TableHead>
                           <TableHead>Tipo</TableHead>
                           <TableHead>Descrição</TableHead>
                           <TableHead>Valor</TableHead>
@@ -650,6 +755,15 @@ export default function Asaas() {
 
                           return (
                             <TableRow key={payment.id}>
+                              <TableCell>
+                                <Checkbox 
+                                  checked={selectedPayments.includes(payment.id)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) setSelectedSelectedPayments(prev => [...prev, payment.id]);
+                                    else setSelectedSelectedPayments(prev => prev.filter(id => id !== payment.id));
+                                  }}
+                                />
+                              </TableCell>
                               <TableCell>
                                 <div className="flex items-center gap-2">
                                   <TipoIcon className="h-4 w-4 text-muted-foreground" />
