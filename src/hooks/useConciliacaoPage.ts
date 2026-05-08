@@ -83,7 +83,7 @@ export function useConciliacaoPage() {
         data: new Date(t.data),
         descricao: t.descricao || '',
         valor: Number(t.valor),
-        tipo: t.tipo === 'credito' ? 'credito' : 'debito',
+        tipo: t.tipo === 'receita' ? 'credito' : 'debito',
         conciliada: !!t.conciliada,
         compensacao_valor: t.compensacao_valor ? Number(t.compensacao_valor) : undefined,
         compensacao_motivo: t.compensacao_motivo || undefined,
