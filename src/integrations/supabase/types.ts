@@ -3564,6 +3564,13 @@ export type Database = {
             referencedColumns: ["empresa_id"]
           },
           {
+            foreignKeyName: "elisao_creditos_auditoria_nota_fiscal_id_fkey"
+            columns: ["nota_fiscal_id"]
+            isOneToOne: false
+            referencedRelation: "notas_fiscais_ocr"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "elisao_creditos_auditoria_regra_id_fkey"
             columns: ["regra_id"]
             isOneToOne: false
