@@ -27,7 +27,8 @@ export function NovoBoletoForm({ onClose, empresas, contasBancarias, onSubmit, i
     empresa_id: '', 
     descricao: '',
     conta_receber_id: '',
-    conta_pagar_id: ''
+    conta_pagar_id: '',
+    provider: 'system' as 'system' | 'asaas'
   });
 
   const searchParams = new URLSearchParams(window.location.search);
