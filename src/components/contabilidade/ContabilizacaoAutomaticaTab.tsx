@@ -208,7 +208,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
       const { data, error } = await supabaseTyped.functions.invoke('contabilizar-evento', {
         body: {
           ...simForm,
-          categoria_id: simForm.categoria_id || null,
+          categoria_id: simForm.categoria_id === 'none' ? null : (simForm.categoria_id || null),
           empresa_id: empresaId,
           evento_id: 'sim-preview-' + Date.now(),
           dry_run: true,
