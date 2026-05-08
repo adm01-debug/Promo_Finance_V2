@@ -676,8 +676,8 @@ export default function Asaas() {
                           <TableHead className="w-[40px]">
                             <Checkbox 
                               checked={selectedPayments.length === filteredPayments.length && filteredPayments.length > 0}
-                              onCheckedChange={(checked) => {
-                                if (checked) setSelectedSelectedPayments(filteredPayments.map(p => p.id));
+                              onChange={(e) => {
+                                if (e.target.checked) setSelectedSelectedPayments(filteredPayments.map(p => p.id));
                                 else setSelectedSelectedPayments([]);
                               }}
                             />
