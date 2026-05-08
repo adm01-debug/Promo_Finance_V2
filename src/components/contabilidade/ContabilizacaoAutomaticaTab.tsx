@@ -109,6 +109,20 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
     },
   });
 
+  const { data: categorias = [] } = useQuery<{ id: string; nome: string }[]>({
+    queryKey: ['categorias', empresaId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('categorias')
+        .select('id, nome')
+        .eq('empresa_id', empresaId)
+        .order('nome');
+      if (error) throw error;
+      return (data as any[]) ?? [];
+    },
+    enabled: !!empresaId,
+  });
+
   const { data: logs = [], isLoading: loadingLogs } = useQuery<EventoLog[]>({
     queryKey: ['eventos_contab_log', empresaId],
     queryFn: async () => {
