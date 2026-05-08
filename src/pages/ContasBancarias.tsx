@@ -258,7 +258,17 @@ export default function ContasBancarias() {
 
         <TransferenciaDialog open={transferenciaOpen} onOpenChange={setTransferenciaOpen} />
         <RegrasConciliacaoDialog open={regrasOpen} onOpenChange={setRegrasOpen} />
-        <ImportarExtratoDialog open={importarOpen} onOpenChange={setImportarOpen} />
+        <ImportarExtratoDialog 
+          open={importarOpen} 
+          onOpenChange={setImportarOpen} 
+          onImportSuccess={(extrato) => {
+            console.log('Extrato importado:', extrato);
+            toast.success(`${extrato.transacoes.length} transações importadas com sucesso para processamento.`);
+            setImportarOpen(false);
+            queryClient.invalidateQueries({ queryKey: ['extratos-bancarios'] });
+          }}
+        />
+
       </div>
     </MainLayout>
   );
