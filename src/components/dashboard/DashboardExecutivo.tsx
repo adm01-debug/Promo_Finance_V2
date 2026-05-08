@@ -151,9 +151,10 @@ export const DashboardExecutivo = () => {
     <div className="relative min-h-screen">
       {/* Premium Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-5%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[20%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/5 blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
-        <div className="absolute top-[30%] right-[10%] w-[35%] h-[35%] rounded-full bg-purple-500/5 blur-[120px] animate-pulse" style={{ animationDelay: '4s' }} />
+        <div className="absolute top-[-10%] left-[-5%] w-[60%] h-[60%] rounded-full bg-primary/10 blur-[140px] animate-pulse" />
+        <div className="absolute bottom-[10%] right-[-15%] w-[50%] h-[50%] rounded-full bg-blue-600/10 blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-[20%] right-[5%] w-[45%] h-[45%] rounded-full bg-purple-600/10 blur-[150px] animate-pulse" style={{ animationDelay: '4s' }} />
+        <div className="absolute middle-0 left-[20%] w-[40%] h-[40%] rounded-full bg-emerald-500/5 blur-[130px] animate-pulse" style={{ animationDelay: '1s' }} />
       </div>
 
       <motion.div 
