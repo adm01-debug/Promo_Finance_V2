@@ -115,7 +115,7 @@ export function RegrasDuplicidadeTab() {
                       <Checkbox 
                         id={field.id}
                         checked={selectedFields.includes(field.id)}
-                        onChange={() => toggleField(field.id)}
+                        onCheckedChange={() => toggleField(field.id)}
                       />
                       <Label htmlFor={field.id} className="text-base font-bold cursor-pointer">
                         {field.label}
