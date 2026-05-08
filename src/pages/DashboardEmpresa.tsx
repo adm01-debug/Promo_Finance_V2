@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Building2, CreditCard, FileText, Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -13,6 +13,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { EmpresaKpiCards } from '@/components/dashboard-empresa/EmpresaKpis';
 import { EmpresaChartsSection } from '@/components/dashboard-empresa/EmpresaCharts';
 import { EmpresaDrillDownSection } from '@/components/dashboard-empresa/EmpresaDrillDown';
+import { useAuth } from '@/hooks/useAuth';
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } } as const;
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } } } as const;
@@ -20,7 +21,15 @@ const COLORS = ['hsl(24, 95%, 46%)', 'hsl(215, 90%, 42%)', 'hsl(150, 70%, 32%)',
 
 export default function DashboardEmpresa() {
   const [selectedEmpresa, setSelectedEmpresa] = useState<string>('');
+  const { currentEmpresaId } = useAuth();
   const [periodoAnalise, setPeriodoAnalise] = useState('30');
+
+  // Sincroniza com empresa ativa do sistema
+  useEffect(() => {
+    if (currentEmpresaId && !selectedEmpresa) {
+      setSelectedEmpresa(currentEmpresaId);
+    }
+  }, [currentEmpresaId, selectedEmpresa]);
 
   const { data: empresas = [], isLoading: loadingEmpresas } = useEmpresas();
   const { data: contasBancarias = [] } = useContasBancarias();

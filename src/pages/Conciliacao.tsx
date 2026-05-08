@@ -43,6 +43,7 @@ import { SessoesConciliacaoPanel } from '@/components/conciliacao/SessoesConcili
 import { BulkActionsBar } from '@/components/ui/bulk-actions-bar';
 import { useConciliacaoPage } from '@/hooks/useConciliacaoPage';
 import { useHighlightFromUrl } from '@/hooks/useHighlightFromUrl';
+import { useAuth } from '@/hooks/useAuth';
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.06 } } } as const;
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } } } as const;
@@ -71,6 +72,7 @@ function ConciliacaoToolbarHost({
 }
 
 export default function Conciliacao() {
+  const { currentEmpresaId } = useAuth();
   const {
     mainTab, setMainTab, statusTab, setStatusTab,
     selectedBanco, setSelectedBanco, searchTerm, setSearchTerm,
@@ -91,6 +93,14 @@ export default function Conciliacao() {
     handleBulkConciliar, handleBulkIgnorar,
     toggleSelect, toggleSelectAll,
   } = useConciliacaoPage();
+
+  // Sincroniza conta bancária padrão da empresa se nenhuma selecionada
+  useEffect(() => {
+    if (currentEmpresaId && !selectedBanco && contasBancarias?.length) {
+      const contaEmpresa = contasBancarias.find(c => c.empresa_id === currentEmpresaId);
+      if (contaEmpresa) setSelectedBanco(contaEmpresa.id);
+    }
+  }, [currentEmpresaId, selectedBanco, contasBancarias, setSelectedBanco]);
 
   // Saved filter presets / sort / column visibility
   const { defaultFilter } = useSavedFilters<ConciliacaoFilterState>('conciliacao_transacoes');

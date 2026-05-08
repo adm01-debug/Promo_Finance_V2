@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { useContasReceber, useContasReceberPaginated, useCentrosCusto, useEmpresas, useContasBancarias } from '@/hooks/useFinancialData';
@@ -10,11 +10,13 @@ import { useQuickDateFilter } from '@/components/ui/quick-date-filters';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { AdvancedFilters } from '@/components/ui/advanced-filters';
+import { useAuth } from '@/hooks/useAuth';
 import type { Database } from '@/integrations/supabase/types';
 import type { ContaReceberWithRelations } from '@/components/contas-receber/ContasReceberTableRow';
 
 
 export function useContasReceberLogic() {
+  const { currentEmpresaId } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -40,6 +42,13 @@ export function useContasReceberLogic() {
   const [descontoDialogOpen, setDescontoDialogOpen] = useState(false);
   const [descontoConta, setDescontoConta] = useState<ContaReceberWithRelations | null>(null);
   const [baixaDialogOpen, setBaixaDialogOpen] = useState(false);
+
+  // Sincroniza com empresa ativa do sistema
+  useEffect(() => {
+    if (currentEmpresaId && empresaFilter !== currentEmpresaId && empresaFilter === 'all') {
+      setEmpresaFilter(currentEmpresaId);
+    }
+  }, [currentEmpresaId, empresaFilter]);
   const queryClient = useQueryClient();
 
 

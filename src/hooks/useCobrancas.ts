@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { differenceInDays, parseISO, subDays } from 'date-fns';
+import { useAuth } from '@/hooks/useAuth';
 
 export interface ContaVencida {
   id: string;
@@ -45,12 +46,13 @@ export interface EtapaCount {
 }
 
 export function useContasVencidas() {
+  const { currentEmpresaId } = useAuth();
   return useQuery({
-    queryKey: ['contas-vencidas'],
+    queryKey: ['contas-vencidas', currentEmpresaId],
     queryFn: async (): Promise<ContaVencida[]> => {
       const hoje = new Date().toISOString().split('T')[0];
       
-      const { data, error } = await supabase
+      let query = supabase
         .from('contas_receber')
         .select(`
           id,
@@ -63,8 +65,13 @@ export function useContasVencidas() {
           status,
           clientes:cliente_id (score)
         `)
-        .or(`status.eq.vencido,and(status.eq.pendente,data_vencimento.lt.${hoje})`)
-        .order('data_vencimento', { ascending: true });
+        .or(`status.eq.vencido,and(status.eq.pendente,data_vencimento.lt.${hoje})`);
+
+      if (currentEmpresaId) {
+        query = query.eq('empresa_id', currentEmpresaId);
+      }
+
+      const { data, error } = await query.order('data_vencimento', { ascending: true });
 
       if (error) throw error;
 
@@ -97,27 +104,40 @@ export function useContasVencidas() {
 }
 
 export function useCobrancaKPIs() {
+  const { currentEmpresaId } = useAuth();
   return useQuery({
-    queryKey: ['cobranca-kpis'],
+    queryKey: ['cobranca-kpis', currentEmpresaId],
     queryFn: async (): Promise<CobrancaKPIs> => {
       const hoje = new Date().toISOString().split('T')[0];
       const trintaDiasAtras = subDays(new Date(), 30).toISOString().split('T')[0];
 
       // Buscar contas vencidas (não pagas)
-      const { data: vencidas, error: errorVencidas } = await supabase
+      let vencidasQuery = supabase
         .from('contas_receber')
         .select('id, valor, valor_recebido')
         .or(`status.eq.vencido,and(status.eq.pendente,data_vencimento.lt.${hoje})`);
 
+      if (currentEmpresaId) {
+        vencidasQuery = vencidasQuery.eq('empresa_id', currentEmpresaId);
+      }
+
+      const { data: vencidas, error: errorVencidas } = await vencidasQuery;
+
       if (errorVencidas) throw errorVencidas;
 
       // Buscar contas recuperadas (pagas nos últimos 30 dias que estavam vencidas)
-      const { data: recuperadas, error: errorRecuperadas } = await supabase
+      let recuperadasQuery = supabase
         .from('contas_receber')
         .select('id, valor, valor_recebido, data_recebimento')
         .eq('status', 'pago')
         .gte('data_recebimento', trintaDiasAtras)
         .lt('data_vencimento', 'data_recebimento');
+
+      if (currentEmpresaId) {
+        recuperadasQuery = recuperadasQuery.eq('empresa_id', currentEmpresaId);
+      }
+
+      const { data: recuperadas, error: errorRecuperadas } = await recuperadasQuery;
 
       if (errorRecuperadas) throw errorRecuperadas;
 
@@ -143,15 +163,22 @@ export function useCobrancaKPIs() {
 }
 
 export function useAgingData() {
+  const { currentEmpresaId } = useAuth();
   return useQuery({
-    queryKey: ['aging-inadimplencia'],
+    queryKey: ['aging-inadimplencia', currentEmpresaId],
     queryFn: async (): Promise<AgingData[]> => {
       const hoje = new Date().toISOString().split('T')[0];
       
-      const { data, error } = await supabase
+      let query = supabase
         .from('contas_receber')
         .select('id, valor, valor_recebido, data_vencimento')
         .or(`status.eq.vencido,and(status.eq.pendente,data_vencimento.lt.${hoje})`);
+
+      if (currentEmpresaId) {
+        query = query.eq('empresa_id', currentEmpresaId);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -180,12 +207,13 @@ export function useAgingData() {
 }
 
 export function useTopDevedores(limit: number = 10) {
+  const { currentEmpresaId } = useAuth();
   return useQuery({
-    queryKey: ['top-devedores', limit],
+    queryKey: ['top-devedores', limit, currentEmpresaId],
     queryFn: async (): Promise<TopDevedor[]> => {
       const hoje = new Date().toISOString().split('T')[0];
       
-      const { data, error } = await supabase
+      let query = supabase
         .from('contas_receber')
         .select(`
           id,
@@ -197,6 +225,12 @@ export function useTopDevedores(limit: number = 10) {
           clientes:cliente_id (score)
         `)
         .or(`status.eq.vencido,and(status.eq.pendente,data_vencimento.lt.${hoje})`);
+
+      if (currentEmpresaId) {
+        query = query.eq('empresa_id', currentEmpresaId);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -239,15 +273,22 @@ export function useTopDevedores(limit: number = 10) {
 }
 
 export function useEtapasCobranca() {
+  const { currentEmpresaId } = useAuth();
   return useQuery({
-    queryKey: ['etapas-cobranca'],
+    queryKey: ['etapas-cobranca', currentEmpresaId],
     queryFn: async (): Promise<EtapaCount[]> => {
       const hoje = new Date().toISOString().split('T')[0];
       
-      const { data, error } = await supabase
+      let query = supabase
         .from('contas_receber')
         .select('id, valor, valor_recebido, etapa_cobranca')
         .or(`status.eq.vencido,and(status.eq.pendente,data_vencimento.lt.${hoje})`);
+
+      if (currentEmpresaId) {
+        query = query.eq('empresa_id', currentEmpresaId);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
 

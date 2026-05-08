@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Filter, Calendar, Users, Building2, Clock, Eye, PieChart as PieChartIcon } from "lucide-react";
 import { MainLayout } from "@/components/layout/MainLayout";
@@ -15,6 +15,7 @@ import { ReceberKpisCards, ReceberInadimplenciaBar } from "@/components/dashboar
 import { ReceberChartsSection } from "@/components/dashboard-receber/ReceberCharts";
 import { useManagedFilters } from "@/hooks/useManagedFilters";
 import { ClearFiltersButton } from "@/components/filters/ClearFiltersButton";
+import { useAuth } from "@/hooks/useAuth";
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } };
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
@@ -47,7 +48,15 @@ export default function DashboardReceber() {
     defaults: RECEBER_DEFAULTS,
     localStorageKey: "app-dashboard-receber-filters",
   });
+  const { user, currentEmpresaId } = useAuth();
   const { empresaId, vendedorId, ramoAtividade, statusFilter, clienteId, periodo, dataInicioIso, dataFimIso } = filtersController.values;
+
+  // Sincroniza com empresa ativa do sistema
+  useEffect(() => {
+    if (currentEmpresaId && empresaId !== currentEmpresaId && empresaId === 'todas') {
+      filtersController.setField('empresaId', currentEmpresaId);
+    }
+  }, [currentEmpresaId, empresaId]);
   const dataInicio = dataInicioIso ? new Date(dataInicioIso) : undefined;
   const dataFim = dataFimIso ? new Date(dataFimIso) : undefined;
   const setEmpresaId = (v: string) => filtersController.setField('empresaId', v);
