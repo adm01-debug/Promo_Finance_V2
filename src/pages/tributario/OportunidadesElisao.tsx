@@ -68,7 +68,11 @@ export default function OportunidadesElisao() {
     persistirOportunidades,
     atualizarStatus,
     temHistoricoSuficiente,
-    contextoCalculado,
+    alertas,
+    creditosAuditoria,
+    tarefasAcionaveis,
+    decidirCredito,
+    sincronizarBitrix,
   } = useOportunidadesElisao({
     empresaId,
     contexto: {
