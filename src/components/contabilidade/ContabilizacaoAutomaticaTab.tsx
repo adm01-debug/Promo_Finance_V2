@@ -601,7 +601,14 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                             </SelectContent>
                           </Select>
                         ) : (
-                          <Badge variant="outline">{r.tipo_evento}</Badge>
+                          <div className="flex flex-col gap-1">
+                            <Badge variant="outline">{r.tipo_evento}</Badge>
+                            {r.categoria_id && (
+                              <Badge variant="secondary" className="text-[9px] h-4">
+                                {categorias.find(c => c.id === r.categoria_id)?.nome || 'Cat. externa'}
+                              </Badge>
+                            )}
+                          </div>
                         )}
                       </TableCell>
                       <TableCell className="text-xs font-mono">
