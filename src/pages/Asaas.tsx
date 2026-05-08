@@ -463,6 +463,9 @@ export default function Asaas() {
                                     <DropdownMenuItem onClick={() => setSelectedPaymentAudit(payment.id)}>
                                       <History className="h-4 w-4 mr-2" /> Auditoria
                                     </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => reprocessarManual.mutate(payment.id)}>
+                                      <RefreshCw className={`h-4 w-4 mr-2 ${reprocessarManual.isPending ? 'animate-spin' : ''}`} /> Sincronizar Agora
+                                    </DropdownMenuItem>
                                     {isPaid && (
                                       <DropdownMenuItem onClick={() => handleDownloadComprovante(payment.asaas_id)}>
                                         <Download className="h-4 w-4 mr-2" /> Comprovante
