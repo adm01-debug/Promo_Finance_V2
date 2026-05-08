@@ -494,6 +494,15 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.05 }}
+                        onClick={() => setDrillDown({ 
+                          open: true, 
+                          titulo: `Partidas: ${l.descricao}`, 
+                          subtitulo: `${empresaTitulo} · Mês ${mes + 1}/${ano}`,
+                          centro_resultado: l.codigo === '1' ? 'receita_operacional' : 
+                                          l.codigo === '4' ? 'cmv' : 
+                                          l.codigo === '6.1' ? 'despesa_administrativa' : 
+                                          l.codigo === '6.2' ? 'despesa_comercial' : undefined
+                        })}
                         className="flex items-center justify-between py-4 px-5 rounded-2xl hover:bg-white/10 transition-all group/row cursor-pointer border border-transparent hover:border-white/5" 
                         style={{ marginLeft: `${(l.nivel - 1) * 1.5}rem` }}
                       >
