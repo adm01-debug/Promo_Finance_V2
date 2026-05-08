@@ -26,13 +26,21 @@ import { maskIp } from '@/lib/ip-mask';
 import { useManagedFilters } from '@/hooks/useManagedFilters';
 import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 
-type AuditAction = 'INSERT' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'LOGOUT' | 'EXPORT' | 'APPROVE' | 'REJECT' | 'troca_empresa' | 'filtro_alterado';
+type AuditAction = string;
 
 interface AuditLog {
-  id: string; user_id: string | null; user_email: string | null; action: AuditAction;
-  table_name: string | null; record_id: string | null; old_data: Record<string, unknown> | null;
-  new_data: Record<string, unknown> | null; details: string | null; ip_address: string | null;
-  user_agent: string | null; created_at: string;
+  id: string; 
+  user_id: string | null; 
+  user_email: string | null; 
+  action: string;
+  table_name: string | null; 
+  record_id: string | null; 
+  old_data: Record<string, unknown> | null;
+  new_data: Record<string, unknown> | null; 
+  details: string | null; 
+  ip_address: string | null;
+  user_agent: string | null; 
+  created_at: string;
 }
 
 const actionConfig: Record<string, { label: string; color: string }> = {
