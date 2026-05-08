@@ -10,6 +10,7 @@ import {
   ExternalLink, Search, LayoutGrid, ListTodo
 } from 'lucide-react';
 import { generateBenchmarkingPDF } from '@/lib/pdf-generator';
+import { cn } from '@/lib/utils';
 
 const gapsData = [
   { feature: 'Régua de Cobrança c/ IA', status: 'ok', prioridade: 'P1', impacto: 'Alto', esforço: 'Alto', evidencia: 'Nossa engine já suporta IA Generativa para mensagens.' },
