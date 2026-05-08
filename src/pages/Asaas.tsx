@@ -1151,6 +1151,13 @@ export default function Asaas() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* NOVO: Dialog de Antecipação */}
+      <AntecipacaoDialog 
+        paymentId={selectedAnticipationId} 
+        onClose={() => setSelectedAnticipationId(null)} 
+        empresaId={empresaId}
+      />
     </MainLayout>
   );
 }
