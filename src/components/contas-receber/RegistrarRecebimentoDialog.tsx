@@ -107,7 +107,8 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
       const novoValorRecebido = valorRecebidoAtual + data.valor_recebido;
       const isRecebidoTotal = novoValorRecebido >= conta.valor;
 
-      const { error } = await supabase
+      // 1. Update the account receivable
+      const { error: updateError } = await supabase
         .from('contas_receber')
         .update({
           valor_recebido: novoValorRecebido,
@@ -120,8 +121,27 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
         })
         .eq('id', conta.id);
 
-      if (error) throw error;
+      if (updateError) throw updateError;
+
+      // 2. Automated Matching: Register in bank transaction if bank account is selected
+      if (data.conta_bancaria_id) {
+        const { error: matchError } = await supabase
+          .from('extrato_bancario')
+          .insert({
+            conta_bancaria_id: data.conta_bancaria_id,
+            data: data.data_recebimento,
+            descricao: `BAIXA AUT: ${conta.cliente_nome} - ${conta.descricao}`,
+            valor: data.valor_recebido,
+            tipo: 'credito',
+            conciliado: true,
+            origem: 'baixa_automatica',
+            conta_receber_id: conta.id,
+          });
+        
+        if (matchError) logger.warn('Erro ao criar evidência de conciliação:', matchError);
+      }
     },
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
       sounds.success();
