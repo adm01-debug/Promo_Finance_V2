@@ -152,7 +152,19 @@ export default function BI() {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Business Intelligence</h1>
             <p className="text-muted-foreground">Visão executiva consolidada para gestão estratégica</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center space-x-2 bg-muted/30 p-2 rounded-lg border border-white/5 mr-2">
+              <Label htmlFor="futuristic-mode" className="text-xs font-semibold flex items-center gap-1 cursor-pointer">
+                <Zap className={cn("w-3 h-3 transition-colors", futuristicMode ? "text-primary fill-primary" : "text-muted-foreground")} />
+                BI FUTURISTA
+              </Label>
+              <Switch 
+                id="futuristic-mode" 
+                checked={futuristicMode} 
+                onCheckedChange={setFuturisticMode}
+                className="scale-90"
+              />
+            </div>
             <Select value={empresaId} onValueChange={setEmpresaId}>
               <SelectTrigger className="w-[200px]"><Building2 className="w-4 h-4 mr-2" /><SelectValue placeholder="Empresa" /></SelectTrigger>
               <SelectContent>
@@ -188,24 +200,30 @@ export default function BI() {
           </div>
         </motion.div>
 
-        <BIMainKpis kpis={kpis} />
-        <BISecondaryKpis kpis={kpis} />
+        {futuristicMode ? (
+          <FuturisticDashboard kpis={kpis} evolucaoMensal={evolucaoMensal} />
+        ) : (
+          <>
+            <BIMainKpis kpis={kpis} />
+            <BISecondaryKpis kpis={kpis} />
 
-        <Tabs defaultValue="evolucao" className="space-y-4">
-          <TabsList className="grid grid-cols-4 w-full max-w-lg">
-            <TabsTrigger value="evolucao" className="flex items-center gap-2"><LineChartIcon className="w-4 h-4" />Evolução</TabsTrigger>
-            <TabsTrigger value="aging" className="flex items-center gap-2"><BarChart3 className="w-4 h-4" />Aging</TabsTrigger>
-            <TabsTrigger value="centros" className="flex items-center gap-2"><PieChartIcon className="w-4 h-4" />Custos</TabsTrigger>
-            <TabsTrigger value="empresas" className="flex items-center gap-2"><Building2 className="w-4 h-4" />Empresas</TabsTrigger>
-          </TabsList>
-          <TabsContent value="evolucao"><BIEvolucaoChart evolucaoMensal={evolucaoMensal} statusReceber={statusReceber} /></TabsContent>
-          <TabsContent value="aging"><BIAgingChart agingReceber={agingReceber} topClientes={topClientes} /></TabsContent>
-          <TabsContent value="centros"><BICentrosChart distribuicaoCentros={distribuicaoCentros} /></TabsContent>
-          <TabsContent value="empresas"><BIEmpresasTab comparativoEmpresas={comparativoEmpresas} /></TabsContent>
-        </Tabs>
+            <Tabs defaultValue="evolucao" className="space-y-4">
+              <TabsList className="grid grid-cols-4 w-full max-w-lg">
+                <TabsTrigger value="evolucao" className="flex items-center gap-2"><LineChartIcon className="w-4 h-4" />Evolução</TabsTrigger>
+                <TabsTrigger value="aging" className="flex items-center gap-2"><BarChart3 className="w-4 h-4" />Aging</TabsTrigger>
+                <TabsTrigger value="centros" className="flex items-center gap-2"><PieChartIcon className="w-4 h-4" />Custos</TabsTrigger>
+                <TabsTrigger value="empresas" className="flex items-center gap-2"><Building2 className="w-4 h-4" />Empresas</TabsTrigger>
+              </TabsList>
+              <TabsContent value="evolucao"><BIEvolucaoChart evolucaoMensal={evolucaoMensal} statusReceber={statusReceber} /></TabsContent>
+              <TabsContent value="aging"><BIAgingChart agingReceber={agingReceber} topClientes={topClientes} /></TabsContent>
+              <TabsContent value="centros"><BICentrosChart distribuicaoCentros={distribuicaoCentros} /></TabsContent>
+              <TabsContent value="empresas"><BIEmpresasTab comparativoEmpresas={comparativoEmpresas} /></TabsContent>
+            </Tabs>
+          </>
+        )}
 
         <motion.div variants={itemVariants} className="mt-6">
-          <Card>
+          <Card className={cn(futuristicMode && "premium-card border-white/10")}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-destructive" />Inadimplência Segmentada</CardTitle>
               <CardDescription>Análise de inadimplência por ramo de atividade e vendedor</CardDescription>
@@ -213,9 +231,18 @@ export default function BI() {
             <CardContent><InadimplenciaSegmentada /></CardContent>
           </Card>
         </motion.div>
-        <motion.div variants={itemVariants} className="mt-6"><BenchmarkingSetorial /></motion.div>
-        <motion.div variants={itemVariants} className="mt-6"><HistoricoAnalisesPreditivasPanel /></motion.div>
+        <motion.div variants={itemVariants} className="mt-6">
+          <div className={cn(futuristicMode && "premium-card p-0 border-white/10 overflow-hidden")}>
+            <BenchmarkingSetorial />
+          </div>
+        </motion.div>
+        <motion.div variants={itemVariants} className="mt-6">
+          <div className={cn(futuristicMode && "premium-card p-0 border-white/10 overflow-hidden")}>
+            <HistoricoAnalisesPreditivasPanel />
+          </div>
+        </motion.div>
       </motion.div>
+
     </MainLayout>
   );
 }
