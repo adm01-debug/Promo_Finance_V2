@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +20,11 @@ import {
   Bell,
   CheckCircle2,
   AlertTriangle,
-  History
+  History,
+  TrendingUp,
+  Coins,
+  ShieldCheck,
+  Calendar
 } from "lucide-react";
 import { formatCurrency } from "@/lib/formatters";
 import { format } from "date-fns";
@@ -43,6 +48,7 @@ export default function BloqueiosDuplicidade() {
     fornecedor: "",
     documento: "",
     valor: "",
+    periodo: "all",
   });
 
   const { data: bloqueios, isLoading } = useQuery({
@@ -66,7 +72,16 @@ export default function BloqueiosDuplicidade() {
         query = query.ilike('dados_tentativa->>numero_documento', `%${filters.documento}%`);
       }
       if (filters.valor) {
-        query = query.eq('dados_tentativa->>valor', filters.valor);
+        query = query.eq('valor_bloqueado', parseFloat(filters.valor.replace(',', '.')));
+      }
+      
+      if (filters.periodo !== 'all') {
+        const now = new Date();
+        let startDate = new Date();
+        if (filters.periodo === 'today') startDate.setHours(0, 0, 0, 0);
+        if (filters.periodo === 'week') startDate.setDate(now.getDate() - 7);
+        if (filters.periodo === 'month') startDate.setMonth(now.getMonth() - 1);
+        query = query.gte('created_at', startDate.toISOString());
       }
 
       const { data, error } = await query;
@@ -76,28 +91,41 @@ export default function BloqueiosDuplicidade() {
     },
   });
 
+  const stats = {
+    totalValue: bloqueios?.reduce((acc, b) => acc + (Number(b.valor_bloqueado) || 0), 0) || 0,
+    totalCount: bloqueios?.length || 0,
+    mostTargeted: bloqueios?.reduce((acc: Record<string, number>, b) => {
+      const name = (b.dados_tentativa as any)?.fornecedor_nome || "N/D";
+      acc[name] = (acc[name] || 0) + 1;
+      return acc;
+    }, {}) || {},
+  };
+
+  const topSupplier = Object.entries(stats.mostTargeted).sort((a, b) => b[1] - a[1])[0];
+
   const exportCSV = () => {
     if (!bloqueios || bloqueios.length === 0) return;
     
-    const headers = ["Data", "Usuário", "Tabela", "Motivo", "Valor Tentativa", "Documento", "Campos Conflitantes"];
+    const headers = ["Data", "Usuário", "Tabela", "Motivo", "Valor Bloqueado", "Documento", "Tipo Match", "Campos Conflitantes"];
     const rows = bloqueios.map(b => [
       format(new Date(b.created_at), "dd/MM/yyyy HH:mm"),
       (b as any).perfil?.display_name || "Sistema",
       b.tabela,
       b.motivo_bloqueio,
-      (b.dados_tentativa as any)?.valor || 0,
+      b.valor_bloqueado || 0,
       (b.dados_tentativa as any)?.numero_documento || "N/D",
+      b.match_type || "exact",
       JSON.stringify(b.campos_conflitantes)
     ]);
 
     const csvContent = [
-      headers.join(","),
+      "\ufeff" + headers.join(","), // UTF-8 BOM for Excel
       ...rows.map(r => r.join(","))
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    saveAs(blob, `bloqueios_duplicidade_${format(new Date(), 'yyyy-MM-dd')}.csv`);
-    toast.success("Relatório exportado com sucesso!");
+    saveAs(blob, `auditoria_duplicidade_${format(new Date(), 'yyyy-MM-dd')}.csv`);
+    toast.success("Relatório de auditoria exportado com sucesso!");
   };
 
   return (
@@ -108,46 +136,89 @@ export default function BloqueiosDuplicidade() {
         animate="visible"
         className="space-y-8 pb-20"
       >
-        <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div className="space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.2em]">
-              <ShieldAlert className="h-3 w-3" />
-              Cyber-Neural Security
+              <ShieldCheck className="h-3 w-3" />
+              Inteligência Anti-Fraude 10/10
             </div>
             <h1 className="text-5xl font-black tracking-tighter">
-              Trilha de <span className="text-primary italic">Auditoria</span>
+              Cofre de <span className="text-primary italic">Integridade</span>
             </h1>
             <p className="text-muted-foreground max-w-2xl leading-relaxed font-medium">
-              Monitoramento rigoroso de integridade financeira e bloqueios de duplicidade em tempo real 10/10.
+              Monitoramento cyber-neural de duplicidades e tentativas de pagamento redundantes bloqueadas pelo sistema.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <Button 
               variant="outline" 
-              className="rounded-xl font-bold h-12 px-6 gap-2 border-white/10 hover:border-primary/50 transition-all"
+              className="rounded-xl font-bold h-12 px-6 gap-2 border-white/10 hover:border-primary/50 bg-white/[0.02] transition-all"
               onClick={exportCSV}
               disabled={!bloqueios?.length}
             >
-              <Download className="h-5 w-5" /> Exportar Auditoria
+              <Download className="h-5 w-5" /> Exportar CSV
             </Button>
             <Button 
-              className="rounded-xl font-black h-12 px-6 gap-2 shadow-2xl shadow-primary/30 hover:shadow-primary/50 transition-all"
-              onClick={() => toast.info("Configurações de regras disponíveis no painel principal.")}
+              className="rounded-xl font-black h-12 px-6 gap-2 shadow-2xl shadow-primary/30 hover:shadow-primary/50 transition-all bg-primary hover:bg-primary/90"
+              asChild
             >
-              <History className="h-5 w-5" /> Regras Ativas
+              <Link to="/configuracoes">
+                <History className="h-5 w-5" /> Ajustar Regras
+              </Link>
             </Button>
           </div>
         </motion.div>
 
+        {/* Real-time Insights Matrix */}
+        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="p-8 border border-white/10 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent backdrop-blur-xl rounded-[2.5rem] relative overflow-hidden group">
+             <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform">
+               <Coins className="h-16 w-16 text-primary" />
+             </div>
+             <div className="space-y-2 relative z-10">
+               <p className="text-[10px] uppercase font-black tracking-widest text-primary/70">Total Economizado</p>
+               <h3 className="text-4xl font-black tracking-tighter">{formatCurrency(stats.totalValue)}</h3>
+               <div className="flex items-center gap-2 text-[10px] font-bold text-success">
+                 <TrendingUp className="h-3 w-3" />
+                 <span>Proteção de caixa 100% ativa</span>
+               </div>
+             </div>
+          </Card>
+
+          <Card className="p-8 border border-white/10 bg-white/[0.02] backdrop-blur-xl rounded-[2.5rem] relative overflow-hidden group">
+             <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform">
+               <ShieldAlert className="h-16 w-16 text-white" />
+             </div>
+             <div className="space-y-2 relative z-10">
+               <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Bloqueios Realizados</p>
+               <h3 className="text-4xl font-black tracking-tighter">{stats.totalCount} <span className="text-sm font-medium text-muted-foreground tracking-normal">tentativas</span></h3>
+               <p className="text-[10px] font-medium text-muted-foreground/60 italic">Últimas {filters.periodo === 'all' ? 'total' : filters.periodo}</p>
+             </div>
+          </Card>
+
+          <Card className="p-8 border border-white/10 bg-white/[0.02] backdrop-blur-xl rounded-[2.5rem] relative overflow-hidden group">
+             <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform">
+               <User className="h-16 w-16 text-white" />
+             </div>
+             <div className="space-y-2 relative z-10">
+               <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Fornecedor Crítico</p>
+               <h3 className="text-2xl font-black tracking-tighter truncate">{topSupplier ? topSupplier[0] : "Nenhum"}</h3>
+               <p className="text-[10px] font-bold text-muted-foreground/60">
+                 {topSupplier ? `${topSupplier[1]} bloqueios detectados` : "Sem recorrências"}
+               </p>
+             </div>
+          </Card>
+        </motion.div>
+
         <motion.div variants={itemVariants}>
-          <Card className="p-6 border border-white/10 bg-white/[0.02] backdrop-blur-xl rounded-[2rem]">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="relative group">
+          <Card className="p-6 border border-white/10 bg-white/[0.02] backdrop-blur-xl rounded-[2.5rem]">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              <div className="relative group md:col-span-1.5">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
                 <Input 
                   placeholder="Fornecedor ou CNPJ..." 
-                  className="pl-10 h-12 bg-white/5 border-white/5 rounded-xl focus:ring-1 focus:ring-primary/50 transition-all"
+                  className="pl-10 h-14 bg-white/5 border-white/5 rounded-2xl focus:ring-1 focus:ring-primary/50 transition-all font-medium"
                   value={filters.fornecedor}
                   onChange={(e) => setFilters(prev => ({ ...prev, fornecedor: e.target.value }))}
                 />
@@ -156,26 +227,39 @@ export default function BloqueiosDuplicidade() {
                 <FileText className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
                 <Input 
                   placeholder="Nº Documento..." 
-                  className="pl-10 h-12 bg-white/5 border-white/5 rounded-xl focus:ring-1 focus:ring-primary/50 transition-all"
+                  className="pl-10 h-14 bg-white/5 border-white/5 rounded-2xl focus:ring-1 focus:ring-primary/50 transition-all font-medium"
                   value={filters.documento}
                   onChange={(e) => setFilters(prev => ({ ...prev, documento: e.target.value }))}
                 />
               </div>
               <div className="relative group">
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
+                <select 
+                  className="w-full pl-10 h-14 bg-white/5 border-white/5 rounded-2xl focus:ring-1 focus:ring-primary/50 transition-all font-medium appearance-none text-sm"
+                  value={filters.periodo}
+                  onChange={(e) => setFilters(prev => ({ ...prev, periodo: e.target.value }))}
+                >
+                  <option value="all">Todo o Período</option>
+                  <option value="today">Hoje</option>
+                  <option value="week">Últimos 7 dias</option>
+                  <option value="month">Último Mês</option>
+                </select>
+              </div>
+              <div className="relative group">
                 <Badge className="absolute left-3 top-1/2 -translate-y-1/2 text-[8px] bg-primary/20 text-primary border-none">R$</Badge>
                 <Input 
-                  placeholder="Valor Exato..." 
-                  className="pl-10 h-12 bg-white/5 border-white/5 rounded-xl focus:ring-1 focus:ring-primary/50 transition-all"
+                  placeholder="Valor..." 
+                  className="pl-10 h-14 bg-white/5 border-white/5 rounded-2xl focus:ring-1 focus:ring-primary/50 transition-all font-medium"
                   value={filters.valor}
                   onChange={(e) => setFilters(prev => ({ ...prev, valor: e.target.value }))}
                 />
               </div>
               <Button 
                 variant="secondary" 
-                className="h-12 rounded-xl font-bold bg-white/5 hover:bg-white/10 border border-white/5 transition-all"
-                onClick={() => setFilters({ fornecedor: "", documento: "", valor: "" })}
+                className="h-14 rounded-2xl font-bold bg-white/5 hover:bg-white/10 border border-white/5 transition-all"
+                onClick={() => setFilters({ fornecedor: "", documento: "", valor: "", periodo: "all" })}
               >
-                Limpar Filtros
+                Limpar
               </Button>
             </div>
           </Card>
@@ -189,6 +273,7 @@ export default function BloqueiosDuplicidade() {
                 <TableHead className="p-6 text-[10px] uppercase tracking-widest font-black text-muted-foreground/60">Evento / Timestamp</TableHead>
                 <TableHead className="p-6 text-[10px] uppercase tracking-widest font-black text-muted-foreground/60">Agente Responsável</TableHead>
                 <TableHead className="p-6 text-[10px] uppercase tracking-widest font-black text-muted-foreground/60">Análise de Bloqueio</TableHead>
+                <TableHead className="p-6 text-[10px] uppercase tracking-widest font-black text-muted-foreground/60">Match</TableHead>
                 <TableHead className="p-6 text-[10px] uppercase tracking-widest font-black text-muted-foreground/60">Contexto do Conflito</TableHead>
                 <TableHead className="p-6 text-[10px] uppercase tracking-widest font-black text-muted-foreground/60 text-center">Idempotency</TableHead>
                 <TableHead className="p-6 text-[10px] uppercase tracking-widest font-black text-muted-foreground/60 text-right">Ações</TableHead>
@@ -248,14 +333,20 @@ export default function BloqueiosDuplicidade() {
                         <div className="space-y-1">
                           <p className="text-sm font-bold text-white/80 leading-snug">{b.motivo_bloqueio}</p>
                           <div className="flex items-center gap-2">
-                             {(b.dados_tentativa as any)?.idempotency_key && (
-                               <Badge className="bg-streak/20 text-streak text-[8px] border-none uppercase">
-                                 Idempotency Triggered
+                             <span className="text-[11px] font-black text-primary">{formatCurrency(b.valor_bloqueado)}</span>
+                             {b.match_type === 'fuzzy' && (
+                               <Badge className="bg-amber-500/20 text-amber-500 text-[8px] border-none uppercase">
+                                 Fuzzy Match
                                </Badge>
                              )}
                           </div>
                         </div>
                       </div>
+                    </TableCell>
+                    <TableCell className="p-6">
+                       <Badge variant="outline" className={`text-[9px] uppercase tracking-tighter border-none ${b.match_type === 'fuzzy' ? 'bg-amber-500/10 text-amber-500' : 'bg-primary/10 text-primary'}`}>
+                         {b.match_type || 'exact'}
+                       </Badge>
                     </TableCell>
                     <TableCell className="p-6">
                       <div className="flex flex-wrap gap-2 max-w-[300px]">

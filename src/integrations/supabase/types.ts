@@ -2033,9 +2033,11 @@ export type Database = {
           dados_tentativa: Json
           empresa_id: string | null
           id: string
+          match_type: string | null
           motivo_bloqueio: string
           tabela: string
           usuario_id: string | null
+          valor_bloqueado: number | null
         }
         Insert: {
           campos_conflitantes: Json
@@ -2043,9 +2045,11 @@ export type Database = {
           dados_tentativa: Json
           empresa_id?: string | null
           id?: string
+          match_type?: string | null
           motivo_bloqueio: string
           tabela: string
           usuario_id?: string | null
+          valor_bloqueado?: number | null
         }
         Update: {
           campos_conflitantes?: Json
@@ -2053,9 +2057,11 @@ export type Database = {
           dados_tentativa?: Json
           empresa_id?: string | null
           id?: string
+          match_type?: string | null
           motivo_bloqueio?: string
           tabela?: string
           usuario_id?: string | null
+          valor_bloqueado?: number | null
         }
         Relationships: [
           {
@@ -2801,6 +2807,7 @@ export type Database = {
           created_at: string | null
           criado_por: string | null
           empresa_id: string | null
+          fuzzy_matching: boolean | null
           id: string
           tolerancia_dias: number | null
           updated_at: string | null
@@ -2812,6 +2819,7 @@ export type Database = {
           created_at?: string | null
           criado_por?: string | null
           empresa_id?: string | null
+          fuzzy_matching?: boolean | null
           id?: string
           tolerancia_dias?: number | null
           updated_at?: string | null
@@ -2823,6 +2831,7 @@ export type Database = {
           created_at?: string | null
           criado_por?: string | null
           empresa_id?: string | null
+          fuzzy_matching?: boolean | null
           id?: string
           tolerancia_dias?: number | null
           updated_at?: string | null
