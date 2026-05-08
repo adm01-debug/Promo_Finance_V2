@@ -294,15 +294,28 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="ano">Ano Base</Label>
-                <Input id="ano" type="number" defaultValue={2025} />
+                <Label>Alíquota CBS (%)</Label>
+                <Input type="number" value={premissas.aliquota_cbs * 100} onChange={(e) => setPremissas({...premissas, aliquota_cbs: Number(e.target.value)/100})} />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="import">Importar Dados</Label>
-                <Button variant="outline" className="text-xs h-10 gap-2">
-                  <Calculator className="h-4 w-4" /> Histórico Contábil
-                </Button>
+                <Label>Alíquota IBS (%)</Label>
+                <Input type="number" value={premissas.aliquota_ibs * 100} onChange={(e) => setPremissas({...premissas, aliquota_ibs: Number(e.target.value)/100})} />
               </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>Crescimento Projetado (%)</Label>
+                <Input type="number" value={premissas.crescimento} onChange={(e) => setPremissas({...premissas, crescimento: Number(e.target.value)})} />
+              </div>
+              <div className="grid gap-2">
+                <Label>Peso Folha/Prolabore (%)</Label>
+                <Input type="number" value={premissas.folha_prolabore} onChange={(e) => setPremissas({...premissas, folha_prolabore: Number(e.target.value)})} />
+              </div>
+            </div>
+            <div className="pt-2">
+              <Button variant="outline" className="w-full gap-2 text-xs border-dashed" onClick={() => toast.info("Importando dados do diário e centros de custo...")}>
+                <RefreshCcw className="h-4 w-4" /> Sincronizar com Contabilidade (Automático)
+              </Button>
             </div>
           </div>
           <DialogFooter>
