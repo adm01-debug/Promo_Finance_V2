@@ -320,10 +320,12 @@ export function useUpdateEtapaCobranca() {
       // Registrar no status da régua se existir
       await supabase.from('regua_cobranca_status').upsert({
         titulo_id: id,
+        cliente_id: '00000000-0000-0000-0000-000000000000', // Placeholder
+        empresa_id: '00000000-0000-0000-0000-000000000000', // Placeholder
         etapa_atual: etapa || 'preventiva',
         status: 'pendente',
         updated_at: new Date().toISOString()
-      }, { onConflict: 'titulo_id' });
+      } as any, { onConflict: 'titulo_id' });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contas-vencidas'] });
