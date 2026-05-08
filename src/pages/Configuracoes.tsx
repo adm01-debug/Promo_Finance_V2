@@ -292,7 +292,7 @@ export default function Configuracoes() {
       </div>
 
       <Tabs defaultValue="regua" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-10 lg:w-[1300px]">
+        <TabsList className="grid w-full grid-cols-11 lg:w-[1400px]">
           <TabsTrigger value="regua" className="gap-2">
             <Clock className="h-4 w-4" />
             <span className="hidden sm:inline">Régua</span>
@@ -300,6 +300,10 @@ export default function Configuracoes() {
           <TabsTrigger value="templates" className="gap-2">
             <Mail className="h-4 w-4" />
             <span className="hidden sm:inline">Templates</span>
+          </TabsTrigger>
+          <TabsTrigger value="duplicidade" className="gap-2 text-destructive font-bold">
+            <ShieldAlert className="h-4 w-4" />
+            <span className="hidden sm:inline">Anti-Duplicidade</span>
           </TabsTrigger>
           <TabsTrigger value="conciliacao" className="gap-2 text-primary font-bold">
             <CheckCircle2 className="h-4 w-4" />
@@ -332,10 +336,6 @@ export default function Configuracoes() {
           <TabsTrigger value="asaas" className="gap-2">
             <CreditCard className="h-4 w-4" />
             <span className="hidden sm:inline">Asaas</span>
-          </TabsTrigger>
-          <TabsTrigger value="sistema" className="gap-2">
-            <Settings className="h-4 w-4" />
-            <span className="hidden sm:inline">Sistema</span>
           </TabsTrigger>
         </TabsList>
 
