@@ -38,8 +38,8 @@ serve(async (req) => {
 
     for (const emp of empresas ?? []) {
       try {
-        // Coleta sinais das 5 fontes
-        const [anomalias, healthScore, alertasNaoLidos, apuracoesAtrasadas, lgpdPendentes] = await Promise.all([
+        // Coleta sinais das fontes, incluindo detecção de duplicidade
+        const [anomalias, healthScore, alertasNaoLidos, apuracoesAtrasadas, lgpdPendentes, duplicidades] = await Promise.all([
           supabase.from("anomalias_detectadas")
             .select("id, descricao, severidade, tipo_anomalia")
             .eq("empresa_id", emp.id).eq("status", "nova")
@@ -62,6 +62,11 @@ serve(async (req) => {
             .eq("status", "aberta")
             .lt("created_at", new Date(Date.now() - 7 * 86400_000).toISOString())
             .limit(5),
+          // Detectar duplicidades em contas_pagar (mesmo valor, data e documento)
+          supabase.rpc('detectar_duplicidades_financeiras', { 
+            p_empresa_id: emp.id, 
+            p_tabela: 'contas_pagar' 
+          }),
         ]);
 
         const sinais = {
@@ -71,6 +76,7 @@ serve(async (req) => {
           alertas_nao_lidos: (alertasNaoLidos.data ?? []).length,
           apuracoes_atrasadas: (apuracoesAtrasadas.data ?? []).length,
           lgpd_pendentes: (lgpdPendentes.data ?? []).length,
+          duplicidades_pagar: (duplicidades.data ?? []).length,
         };
 
         const prompt = `Você é um copilot operacional de gestão tributária/financeira. Com base nos sinais abaixo da empresa "${emp.razao_social}", gere as TOP 5 ações mais prioritárias.
@@ -81,6 +87,7 @@ Sinais:
 - Alertas tributários não lidos (alta/crítica): ${sinais.alertas_nao_lidos}
 - Apurações tributárias atrasadas (rascunho >5d): ${sinais.apuracoes_atrasadas}
 - Solicitações LGPD pendentes >7d: ${sinais.lgpd_pendentes}
+- Possíveis pagamentos duplicados detectados: ${sinais.duplicidades_pagar} (Prioridade Máxima)
 
 Retorne JSON puro (sem markdown):
 {"acoes":[{"titulo":string,"descricao":string,"urgencia":"baixa|media|alta|critica","impacto_estimado":number?,"impacto_tipo":"reais|percentual|score"?,"link_resolucao":"/anomalias|/alertas-tributarios|/apuracoes-tributarias|/configuracoes/privacidade|/dashboard-empresa"?,"fonte":string}]}

@@ -2903,6 +2903,7 @@ export type Database = {
           fornecedor_nome: string
           frequencia_recorrencia: string | null
           id: string
+          is_frete: boolean | null
           numero_documento: string | null
           numero_parcela_atual: number | null
           observacoes: string | null
@@ -2953,6 +2954,7 @@ export type Database = {
           fornecedor_nome: string
           frequencia_recorrencia?: string | null
           id?: string
+          is_frete?: boolean | null
           numero_documento?: string | null
           numero_parcela_atual?: number | null
           observacoes?: string | null
@@ -3003,6 +3005,7 @@ export type Database = {
           fornecedor_nome?: string
           frequencia_recorrencia?: string | null
           id?: string
+          is_frete?: boolean | null
           numero_documento?: string | null
           numero_parcela_atual?: number | null
           observacoes?: string | null
@@ -12122,6 +12125,15 @@ export type Database = {
       desfazer_conciliacao: {
         Args: { p_transacao_id: string; p_user_id: string }
         Returns: undefined
+      }
+      detectar_duplicidades_financeiras: {
+        Args: { p_empresa_id: string; p_tabela: string }
+        Returns: {
+          data_vencimento: string
+          numero_documento: string
+          total_ocorrencias: number
+          valor: number
+        }[]
       }
       duplicate_saved_filter: {
         Args: { _new_name: string; _source_id: string }
