@@ -70,6 +70,8 @@ export default function OportunidadesElisao() {
   const [pd, setPd] = useState<number>(0);
   const [beneficioIcms, setBeneficioIcms] = useState<number>(0);
   const [dividendos, setDividendos] = useState<number>(0);
+  const empresaSelecionada = empresas.find(e => e.id === empresaId);
+
 
   const {
     relatorio,
