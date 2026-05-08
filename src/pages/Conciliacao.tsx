@@ -218,7 +218,11 @@ export default function Conciliacao() {
             <TabsList className="w-full justify-start">
               <TabsTrigger value="conciliacao" className="gap-2"><Link2 className="h-4 w-4" />Conciliação</TabsTrigger>
               <TabsTrigger value="dashboard" className="gap-2"><BarChart3 className="h-4 w-4" />Dashboard</TabsTrigger>
-              <TabsTrigger value="regras" className="gap-2"><Zap className="h-4 w-4" />Regras</TabsTrigger>
+              <TabsTrigger value="regras" className="gap-2 relative">
+                <Zap className="h-4 w-4" />
+                Regras
+                <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 bg-primary text-[8px]">New</Badge>
+              </TabsTrigger>
               <TabsTrigger value="extrato" className="gap-2"><Database className="h-4 w-4" />Extrato</TabsTrigger>
               <TabsTrigger value="sessoes" className="gap-2"><History className="h-4 w-4" />Sessões</TabsTrigger>
               <TabsTrigger value="divergencias" className="gap-2"><AlertTriangle className="h-4 w-4" />Divergências</TabsTrigger>
