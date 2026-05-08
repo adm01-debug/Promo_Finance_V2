@@ -351,6 +351,59 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
           </div>
         </TabsContent>
 
+        {/* Tab content: Acionáveis */}
+        <TabsContent value="acionaveis" className="pt-4 space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-lg font-semibold">Régua de Acionáveis (Recovery)</h3>
+              <p className="text-sm text-muted-foreground">Transforme oportunidades em tarefas reais com prazos e responsáveis.</p>
+            </div>
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" /> Nova Tarefa
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {tarefas.length === 0 ? (
+              <div className="col-span-3 py-12 text-center border-2 border-dashed rounded-xl">
+                <CheckSquare className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
+                <h4 className="font-medium text-muted-foreground">Nenhuma tarefa de recuperação ativa</h4>
+                <p className="text-xs text-muted-foreground/60 max-w-xs mx-auto mt-1">Gere acionáveis a partir das oportunidades identificadas na auditoria.</p>
+              </div>
+            ) : (
+              tarefas.map((task: any) => (
+                <Card key={task.id} className="relative overflow-hidden group">
+                  <div className={`absolute left-0 top-0 bottom-0 w-1 ${task.status === 'done' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-start">
+                      <Badge variant="outline" className="text-[9px]">{task.tipo_oportunidade}</Badge>
+                      <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                        <Clock className="h-3 w-3" />
+                        {new Date(task.prazo).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <CardTitle className="text-sm mt-2">{task.titulo}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-[11px] text-muted-foreground line-clamp-2">{task.descricao}</p>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-[10px] font-medium">
+                        <span>Checklist de Recuperação</span>
+                        <span>{Array.isArray(task.checklist) ? task.checklist.filter((i: any) => i.done).length : 0}/{Array.isArray(task.checklist) ? task.checklist.length : 0}</span>
+                      </div>
+                      <Progress value={Array.isArray(task.checklist) ? (task.checklist.filter((i: any) => i.done).length / task.checklist.length) * 100 : 0} className="h-1" />
+                    </div>
+                    <div className="flex justify-between items-center pt-2">
+                      <div className="text-[11px] font-bold text-emerald-600">R$ {task.valor_envolvido?.toLocaleString('pt-BR')}</div>
+                      <Button variant="ghost" size="sm" className="h-7 text-xs px-2 group-hover:bg-primary/10">Gerenciar</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </TabsContent>
+
         {/* Tab content: Dashboard */}
         <TabsContent value="dashboard" className="pt-4 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
