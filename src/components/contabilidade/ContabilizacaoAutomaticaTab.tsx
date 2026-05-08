@@ -413,23 +413,93 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                   <TableHead>D / C</TableHead>
                   <TableHead className="text-right">Prio</TableHead>
                   <TableHead className="text-center">Ativo</TableHead>
-                  <TableHead></TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {regras.map((r) => {
                   const dCta = contas.find((c) => c.id === r.conta_debito_id);
                   const cCta = contas.find((c) => c.id === r.conta_credito_id);
+                  const isEditing = editingRegra?.id === r.id;
+
                   return (
                     <TableRow key={r.id}>
-                      <TableCell className="font-medium">{r.nome}</TableCell>
+                      <TableCell className="font-medium">
+                        {isEditing ? (
+                          <Input
+                            value={editingRegra.nome}
+                            onChange={(e) => setEditingRegra({ ...editingRegra, nome: e.target.value })}
+                            className="h-8"
+                          />
+                        ) : (
+                          r.nome
+                        )}
+                      </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{r.tipo_evento}</Badge>
+                        {isEditing ? (
+                          <Select
+                            value={editingRegra.tipo_evento}
+                            onValueChange={(v) =>
+                              setEditingRegra({ ...editingRegra, tipo_evento: v as Regra['tipo_evento'] })
+                            }
+                          >
+                            <SelectTrigger className="h-8"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              {EVENTOS.map((e) => (
+                                <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <Badge variant="outline">{r.tipo_evento}</Badge>
+                        )}
                       </TableCell>
                       <TableCell className="text-xs font-mono">
-                        D {dCta?.codigo ?? '?'} / C {cCta?.codigo ?? '?'}
+                        {isEditing ? (
+                          <div className="flex flex-col gap-1">
+                            <Select
+                              value={editingRegra.conta_debito_id}
+                              onValueChange={(v) => setEditingRegra({ ...editingRegra, conta_debito_id: v })}
+                            >
+                              <SelectTrigger className="h-7 text-[10px]"><SelectValue placeholder="Débito" /></SelectTrigger>
+                              <SelectContent className="max-h-60">
+                                {contas.map((c) => (
+                                  <SelectItem key={c.id} value={c.id} className="text-xs">
+                                    {c.codigo} - {c.nome}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Select
+                              value={editingRegra.conta_credito_id}
+                              onValueChange={(v) => setEditingRegra({ ...editingRegra, conta_credito_id: v })}
+                            >
+                              <SelectTrigger className="h-7 text-[10px]"><SelectValue placeholder="Crédito" /></SelectTrigger>
+                              <SelectContent className="max-h-60">
+                                {contas.map((c) => (
+                                  <SelectItem key={c.id} value={c.id} className="text-xs">
+                                    {c.codigo} - {c.nome}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        ) : (
+                          <>D {dCta?.codigo ?? '?'} / C {cCta?.codigo ?? '?'}</>
+                        )}
                       </TableCell>
-                      <TableCell className="text-right">{r.prioridade}</TableCell>
+                      <TableCell className="text-right">
+                        {isEditing ? (
+                          <Input
+                            type="number"
+                            value={editingRegra.prioridade}
+                            onChange={(e) => setEditingRegra({ ...editingRegra, prioridade: Number(e.target.value) })}
+                            className="h-8 w-16 ml-auto"
+                          />
+                        ) : (
+                          r.prioridade
+                        )}
+                      </TableCell>
                       <TableCell className="text-center">
                         <Switch
                           checked={r.ativo}
@@ -439,13 +509,61 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                         />
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => deleteRegra.mutate(r.id)}
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
+                        <div className="flex justify-end gap-1">
+                          {isEditing ? (
+                            <>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-emerald-500"
+                                onClick={() => updateRegra.mutate(editingRegra)}
+                                disabled={updateRegra.isPending}
+                              >
+                                <Save className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-muted-foreground"
+                                onClick={() => setEditingRegra(null)}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8"
+                                onClick={() => setEditingRegra(r)}
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8"
+                                onClick={() => duplicateRegra.mutate(r)}
+                                disabled={duplicateRegra.isPending}
+                              >
+                                <Copy className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-destructive"
+                                onClick={() => {
+                                  if (confirm('Deseja remover esta regra?')) {
+                                    deleteRegra.mutate(r.id);
+                                  }
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
