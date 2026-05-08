@@ -48,6 +48,8 @@ export interface AsaasPayment {
   pix_copia_cola: string | null;
   link_boleto: string | null;
   link_fatura: string | null;
+  sacado_nome?: string;
+  sacado_cpf_cnpj?: string;
   created_at: string;
 }
 
@@ -123,12 +125,20 @@ export function useAsaas(empresaId?: string) {
       if (!empresaId) return [];
       const { data, error } = await supabase
         .from('asaas_payments')
-        .select('*')
+        .select(`
+          *,
+          clientes:asaas_customers!asaas_payments_asaas_customer_id_fkey(razao_social, cpf_cnpj)
+        `)
         .eq('empresa_id', empresaId)
         .order('created_at', { ascending: false })
         .limit(500);
       if (error) throw error;
-      return (data || []) as AsaasPayment[];
+      
+      return (data || []).map((p: any) => ({
+        ...p,
+        sacado_nome: p.clientes?.razao_social,
+        sacado_cpf_cnpj: p.clientes?.cpf_cnpj
+      })) as AsaasPayment[];
     },
     enabled: !!empresaId,
   });
@@ -450,19 +460,8 @@ export function useAsaas(empresaId?: string) {
         .eq('payment_id', paymentId);
       if (queueError) throw queueError;
       
-      // 2. Registramos na trilha de auditoria com o motivo e usuário
-      const { error: auditError } = await supabase
-        .from('asaas_audit_trail')
-        .insert({
-          payment_id: paymentId,
-          action: 'MANUAL_REPROCESS',
-          details: { reason, manual: true },
-          user_id: userId
-        });
-      if (auditError) throw auditError;
-
-      // 3. Invocamos o proxy para sincronizar imediatamente
-      return invokeAsaas('sincronizar_pagamento', { payment_id: paymentId });
+      // 3. Invocamos o proxy para sincronizar imediatamente (o proxy agora registra a auditoria com o motivo)
+      return invokeAsaas('sincronizar_pagamento', { payment_id: paymentId, reason });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['asaas-sync-queue'] });
