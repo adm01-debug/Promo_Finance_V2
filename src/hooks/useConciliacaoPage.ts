@@ -20,6 +20,11 @@ interface TransacaoExtrato {
   valor: number;
   tipo: 'credito' | 'debito';
   conciliada: boolean;
+  compensacao_valor?: number;
+  compensacao_motivo?: string;
+  compensacao_classificacao?: string;
+  compensacao_regra?: string;
+  compensacao_evidencia_url?: string;
 }
 
 export function useConciliacaoPage() {
@@ -53,6 +58,43 @@ export function useConciliacaoPage() {
   const { data: contasPagar } = useContasPagar();
   const { data: contasReceber } = useContasReceber();
   const { confirmarConciliacao, salvarExtratoBanco } = useConciliacao();
+
+  // Carregar transações do banco ao selecionar conta
+  useEffect(() => {
+    if (!selectedBanco) {
+      setTransacoes([]);
+      return;
+    }
+
+    const loadTransacoes = async () => {
+      const { data, error } = await supabase
+        .from('transacoes_bancarias')
+        .select('*')
+        .eq('conta_bancaria_id', selectedBanco)
+        .order('data', { ascending: false });
+
+      if (error) {
+        toast.error('Erro ao carregar transações');
+        return;
+      }
+
+      setTransacoes((data || []).map(t => ({
+        id: t.id,
+        data: new Date(t.data),
+        descricao: t.descricao || '',
+        valor: Number(t.valor),
+        tipo: t.tipo === 'receita' ? 'credito' : 'debito',
+        conciliada: !!t.conciliada,
+        compensacao_valor: t.compensacao_valor ? Number(t.compensacao_valor) : undefined,
+        compensacao_motivo: t.compensacao_motivo || undefined,
+        compensacao_classificacao: t.compensacao_classificacao || undefined,
+        compensacao_regra: t.compensacao_regra || undefined,
+        compensacao_evidencia_url: t.compensacao_evidencia_url || undefined,
+      })));
+    };
+
+    loadTransacoes();
+  }, [selectedBanco]);
 
   const lancamentosSistema = useMemo((): LancamentoSistema[] => {
     const lancamentosPagar = contasPagar 
@@ -100,7 +142,7 @@ export function useConciliacaoPage() {
       }
     }
 
-    const novasTransacoes = extrato.transacoes.map((t: TransacaoOFX) => ({
+    const novasTransacoes = extrato.transacoes.map((t: TransacaoOFX): TransacaoExtrato => ({
       id: t.id, data: t.data, descricao: t.descricao, valor: t.valor, tipo: t.tipo, conciliada: false,
     }));
 
@@ -122,29 +164,52 @@ export function useConciliacaoPage() {
     let autoConciliadas = 0;
     let valorAutoConciliado = 0;
 
+    // Buscar configurações da conta
+    const { data: contaInfo } = await supabase
+      .from('contas_bancarias')
+      .select('configuracoes_conciliacao')
+      .eq('id', selectedBanco)
+      .single();
+    
+    const config = (contaInfo?.configuracoes_conciliacao as any) || { 
+      tolerancia_centavos: TOLERANCIA_CENTAVOS, 
+      aceite_automatico: true 
+    };
+
     for (const transacao of extrato.transacoes) {
       const sugestoes = matches.get(transacao.id);
-      if (sugestoes && sugestoes.length > 0 && sugestoes[0].confianca === 'alta') {
+      if (sugestoes && sugestoes.length > 0 && sugestoes[0].confianca === 'alta' && config.aceite_automatico) {
         const melhorMatch = sugestoes[0];
         const valorDiff = Math.abs(transacao.valor) - melhorMatch.lancamento.valor;
-        const isWithinPennyTolerance = Math.abs(valorDiff) <= TOLERANCIA_CENTAVOS;
+        const isWithinPennyTolerance = Math.abs(valorDiff) <= (config.tolerancia_centavos || TOLERANCIA_CENTAVOS);
 
-        matchesAlta.push({ transacao, match: melhorMatch });
-        autoConciliadas++;
-        valorAutoConciliado += Math.abs(transacao.valor);
-        const idx = novasTransacoes.findIndex(t => t.id === transacao.id);
-        if (idx >= 0) novasTransacoes[idx].conciliada = true;
+        if (isWithinPennyTolerance) {
+          matchesAlta.push({ transacao, match: melhorMatch });
+          autoConciliadas++;
+          valorAutoConciliado += Math.abs(transacao.valor);
+          const idx = novasTransacoes.findIndex(t => t.id === transacao.id);
+          if (idx >= 0) {
+            novasTransacoes[idx].conciliada = true;
+            novasTransacoes[idx].compensacao_valor = valorDiff;
+            novasTransacoes[idx].compensacao_motivo = 'Tolerância configurada';
+            novasTransacoes[idx].compensacao_classificacao = valorDiff > 0 ? 'Juros' : 'Desconto';
+            novasTransacoes[idx].compensacao_regra = `Match automático IA (Tolerância R$ ${config.tolerancia_centavos})`;
+          }
 
-        // Efetivar conciliação automática no banco
-        try {
-          await confirmarConciliacao.mutateAsync({
-            transacaoId: transacao.id,
-            contaPagarId: melhorMatch.lancamentoTipo === 'pagar' ? melhorMatch.lancamentoId : undefined,
-            contaReceberId: melhorMatch.lancamentoTipo === 'receber' ? melhorMatch.lancamentoId : undefined,
-            ajusteCentavos: isWithinPennyTolerance ? valorDiff : 0,
-          });
-        } catch (err) {
-          console.error('Erro na conciliação automática:', err);
+          // Efetivar conciliação automática no banco
+          try {
+            await confirmarConciliacao.mutateAsync({
+              transacaoId: transacao.id,
+              contaPagarId: melhorMatch.lancamentoTipo === 'pagar' ? melhorMatch.lancamentoId : undefined,
+              contaReceberId: melhorMatch.lancamentoTipo === 'receber' ? melhorMatch.lancamentoId : undefined,
+              ajusteCentavos: valorDiff,
+              motivo: 'Tolerância configurada',
+              classificacao: valorDiff > 0 ? 'Juros' : 'Desconto',
+              regra: `Aceite automático dentro da tolerância de R$ ${config.tolerancia_centavos}`,
+            });
+          } catch (err) {
+            console.error('Erro na conciliação automática:', err);
+          }
         }
       }
     }

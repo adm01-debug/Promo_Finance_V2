@@ -25,6 +25,10 @@ interface TransacaoExport {
   valor: number;
   tipo: string;
   status: string;
+  compensacao_valor?: number;
+  compensacao_motivo?: string;
+  compensacao_classificacao?: string;
+  compensacao_regra?: string;
 }
 
 interface ConciliacaoExportProps {
@@ -76,7 +80,7 @@ export function ConciliacaoExport({ transacoes, stats }: ConciliacaoExportProps)
 
     const { data: txs } = await supabase
       .from('transacoes_bancarias')
-      .select('id,descricao,valor,data,tipo,conciliada')
+      .select('id,descricao,valor,data,tipo,conciliada,compensacao_valor,compensacao_motivo,compensacao_classificacao,compensacao_regra')
       .in('id', txIds);
     const txMap = new Map((txs ?? []).map((t) => [t.id, t]));
 
@@ -152,7 +156,7 @@ export function ConciliacaoExport({ transacoes, stats }: ConciliacaoExportProps)
       if (fmt === 'csv') {
         const headers = isFeedback
           ? ['Descrição', 'Data', 'Valor', 'Tipo', 'Status', 'Ação IA', 'Motivo Rejeição']
-          : ['Descrição', 'Data', 'Valor', 'Tipo', 'Status'];
+          : ['Descrição', 'Data', 'Valor', 'Tipo', 'Status', 'Ajuste (R$)', 'Classificação', 'Regra Aplicada'];
 
         const dataRows = rows.map((r) => {
           const base = [
@@ -162,10 +166,16 @@ export function ConciliacaoExport({ transacoes, stats }: ConciliacaoExportProps)
             r.tipo === 'credito' ? 'Crédito' : 'Débito',
             r.status === 'conciliada' ? 'Conciliada' : 'Pendente',
           ];
+          
           if (isFeedback) {
             const fb = r as FeedbackRow;
             base.push(fb.acao_ia === 'aprovado' ? 'Aprovado' : 'Rejeitado');
             base.push(fb.motivo_rejeicao || '');
+          } else {
+            const tx = r as TransacaoExport;
+            base.push(String(tx.compensacao_valor || 0).replace('.', ','));
+            base.push(tx.compensacao_classificacao || '');
+            base.push(tx.compensacao_regra || '');
           }
           return base;
         });
@@ -232,7 +242,7 @@ export function ConciliacaoExport({ transacoes, stats }: ConciliacaoExportProps)
 
         const head = isFeedback
           ? [['Descrição', 'Data', 'Valor', 'Tipo', 'Status', 'Ação IA', 'Motivo']]
-          : [['Descrição', 'Data', 'Valor', 'Tipo', 'Status']];
+          : [['Descrição', 'Data', 'Valor', 'Tipo', 'Status', 'Ajuste', 'Regra']];
 
         const body = rows.slice(0, 100).map((r) => {
           const base = [
@@ -242,10 +252,15 @@ export function ConciliacaoExport({ transacoes, stats }: ConciliacaoExportProps)
             r.tipo === 'credito' ? 'Crédito' : 'Débito',
             r.status === 'conciliada' ? 'Conciliada' : 'Pendente',
           ];
+          
           if (isFeedback) {
             const fb = r as FeedbackRow;
             base.push(fb.acao_ia === 'aprovado' ? 'Aprovado' : 'Rejeitado');
             base.push((fb.motivo_rejeicao || '').slice(0, 50));
+          } else {
+            const tx = r as TransacaoExport;
+            base.push(formatCurrency(tx.compensacao_valor || 0));
+            base.push((tx.compensacao_regra || '').slice(0, 30));
           }
           return base;
         });

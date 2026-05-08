@@ -13,6 +13,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DivergenciasConciliacaoPanel } from '@/components/conciliacao/DivergenciasConciliacaoPanel';
 import { ConciliacaoRetroativaPanel } from '@/components/conciliacao/ConciliacaoRetroativaPanel';
+import { ConfiguracaoConciliacaoPanel } from '@/components/conciliacao/ConfiguracaoConciliacaoPanel';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
@@ -205,6 +206,7 @@ export default function Conciliacao() {
               <TabsTrigger value="sessoes" className="gap-2"><History className="h-4 w-4" />Sessões</TabsTrigger>
               <TabsTrigger value="divergencias" className="gap-2"><AlertTriangle className="h-4 w-4" />Divergências</TabsTrigger>
               <TabsTrigger value="retroativo" className="gap-2"><Clock className="h-4 w-4" />Retroativo</TabsTrigger>
+              <TabsTrigger value="configuracoes" className="gap-2"><Keyboard className="h-4 w-4" />Ajustes</TabsTrigger>
             </TabsList>
 
             <TabsContent value="conciliacao" className="space-y-4 mt-4">
@@ -265,7 +267,33 @@ export default function Conciliacao() {
                               <div className="flex-1 min-w-0">
                                 <p className="font-medium text-sm truncate">{transacao.descricao}</p>
                                 {showCol('data') && (
-                                  <div className="flex items-center gap-2 mt-0.5"><Calendar className="h-3 w-3 text-muted-foreground" /><span className="text-xs text-muted-foreground">{formatDate(transacao.data)}</span></div>
+                                  <div className="flex flex-col gap-1 mt-1">
+                                    <div className="flex items-center gap-2">
+                                      <Calendar className="h-3 w-3 text-muted-foreground" />
+                                      <span className="text-xs text-muted-foreground">{formatDate(transacao.data)}</span>
+                                    </div>
+                                    {transacao.compensacao_valor !== undefined && transacao.compensacao_valor !== 0 && (
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <div className="flex items-center gap-1 text-[10px] bg-primary/5 text-primary border border-primary/10 rounded px-1.5 py-0.5 w-fit cursor-help">
+                                            <Zap className="h-3 w-3" />
+                                            <span>Compensação: {formatCurrency(transacao.compensacao_valor)} ({transacao.compensacao_classificacao})</span>
+                                          </div>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <div className="text-xs space-y-1">
+                                            <p><strong>Regra:</strong> {transacao.compensacao_regra}</p>
+                                            <p><strong>Motivo:</strong> {transacao.compensacao_motivo}</p>
+                                            {transacao.compensacao_evidencia_url && (
+                                              <a href={transacao.compensacao_evidencia_url} target="_blank" rel="noopener noreferrer" className="text-primary underline flex items-center gap-1 mt-1">
+                                                Ver evidência <Link2 className="h-3 w-3" />
+                                              </a>
+                                            )}
+                                          </div>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    )}
+                                  </div>
                                 )}
                               </div>
                               <p className={cn("font-bold text-base whitespace-nowrap", isCredito ? "text-success" : "text-destructive")}>{isCredito ? '+' : ''}{formatCurrency(transacao.valor)}</p>
@@ -329,6 +357,7 @@ export default function Conciliacao() {
             <TabsContent value="sessoes" className="mt-4"><SessoesConciliacaoPanel /></TabsContent>
             <TabsContent value="divergencias" className="mt-4"><DivergenciasConciliacaoPanel /></TabsContent>
             <TabsContent value="retroativo" className="mt-4"><ConciliacaoRetroativaPanel contaBancariaId={selectedBanco || undefined} /></TabsContent>
+            <TabsContent value="configuracoes" className="mt-4"><ConfiguracaoConciliacaoPanel contaId={selectedBanco || undefined} /></TabsContent>
           </Tabs>
         </motion.div>
 
