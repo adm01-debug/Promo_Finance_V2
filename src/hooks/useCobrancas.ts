@@ -207,12 +207,13 @@ export function useAgingData() {
 }
 
 export function useTopDevedores(limit: number = 10) {
+  const { currentEmpresaId } = useAuth();
   return useQuery({
-    queryKey: ['top-devedores', limit],
+    queryKey: ['top-devedores', limit, currentEmpresaId],
     queryFn: async (): Promise<TopDevedor[]> => {
       const hoje = new Date().toISOString().split('T')[0];
       
-      const { data, error } = await supabase
+      let query = supabase
         .from('contas_receber')
         .select(`
           id,
@@ -224,6 +225,12 @@ export function useTopDevedores(limit: number = 10) {
           clientes:cliente_id (score)
         `)
         .or(`status.eq.vencido,and(status.eq.pendente,data_vencimento.lt.${hoje})`);
+
+      if (currentEmpresaId) {
+        query = query.eq('empresa_id', currentEmpresaId);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
