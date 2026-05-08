@@ -85,8 +85,14 @@ export async function setCurrentEmpresaId(id: string) {
     console.error('Erro ao auditar troca de empresa:', err);
   }
 
-  window.dispatchEvent(new CustomEvent('current-empresa-changed', { detail: id }));
-  toast.success('Empresa alterada com sucesso');
+  // Notificar outras partes do sistema para manter filtros sincronizados
+  window.dispatchEvent(new CustomEvent('current-empresa-changed', { 
+    detail: id,
+    bubbles: true,
+    composed: true
+  }));
+  
+  toast.success('Empresa alterada com sucesso. Os dados foram atualizados.');
 }
 
 export function useDefinirEmpresaPadrao() {
