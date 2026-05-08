@@ -29,10 +29,16 @@ export function useConciliacao() {
 
       if (error) throw error;
 
+      const regraAplicada = ajusteCentavos && ajusteCentavos !== 0 
+        ? (ajusteCentavos > 0 ? 'Compensação automática: Juros' : 'Compensação automática: Desconto')
+        : null;
+
       // Adiciona metadados de conciliação para rastreabilidade
       if (contaReceberId && transacao) {
         let mensagem = `Conciliado manualmente com transação bancária em ${new Date(transacao.data).toLocaleDateString('pt-BR')}`;
-        if (ajusteCentavos && ajusteCentavos !== 0) {
+        if (regraAplicada) {
+          mensagem += ` (${regraAplicada}: R$ ${Math.abs(ajusteCentavos).toFixed(2)})`;
+        } else if (ajusteCentavos && ajusteCentavos !== 0) {
           mensagem += ` (Ajuste de centavos: R$ ${ajusteCentavos.toFixed(2)})`;
         }
 
@@ -40,12 +46,34 @@ export function useConciliacao() {
           p_conta_id: contaReceberId,
           p_tipo: 'conciliacao',
           p_mensagem: mensagem,
-          p_metadata: { transacao_banco: transacao, ajuste_centavos: ajusteCentavos }
+          p_metadata: { 
+            transacao_banco: transacao, 
+            ajuste_centavos: ajusteCentavos,
+            regra_aplicada: regraAplicada 
+          }
         });
         
         await supabase.from('contas_receber').update({ 
           transacao_conciliada_id: transacaoId 
         }).eq('id', contaReceberId);
+      }
+
+      if (contaPagarId && transacao) {
+        let mensagem = `Conciliado manualmente com transação bancária em ${new Date(transacao.data).toLocaleDateString('pt-BR')}`;
+        if (regraAplicada) {
+          mensagem += ` (${regraAplicada}: R$ ${Math.abs(ajusteCentavos).toFixed(2)})`;
+        }
+
+        await supabase.rpc('registrar_evento_pagar', {
+          p_conta_id: contaPagarId,
+          p_tipo: 'conciliacao',
+          p_mensagem: mensagem,
+          p_metadata: { 
+            transacao_banco: transacao, 
+            ajuste_centavos: ajusteCentavos,
+            regra_aplicada: regraAplicada 
+          }
+        });
       }
     },
     onSuccess: () => {
@@ -114,10 +142,8 @@ export function useConciliacao() {
     },
   });
 
-  // Save extrato to extrato_bancario table for persistence
   const salvarExtratoBanco = useMutation({
     mutationFn: async ({ extrato, contaBancariaId }: { extrato: ExtratoOFX; contaBancariaId: string }) => {
-      // Build rows for extrato_bancario
       const rows: TablesInsert<'extrato_bancario'>[] = extrato.transacoes.map((t, i) => ({
         conta_bancaria_id: contaBancariaId,
         data: t.data.toISOString().split('T')[0],
@@ -135,7 +161,6 @@ export function useConciliacao() {
         saldo: extrato.conta.saldoFinal || null,
       }));
 
-      // Check for duplicates using hash
       const hashes = rows.map(r => r.hash_transacao).filter(Boolean) as string[];
       const { data: existing } = await supabase
         .from('extrato_bancario')
@@ -188,7 +213,7 @@ export function useTransacoesBancarias(contaBancariaId?: string) {
       query = query.eq('conta_bancaria_id', contaBancariaId);
     }
 
-    const { data, error } = await query;
+    const { data, error } = query;
     if (error) throw error;
     return data;
   };
