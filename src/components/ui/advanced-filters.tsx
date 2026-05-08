@@ -72,7 +72,9 @@ export function AdvancedFiltersPopover({
     filters.valorMinimo,
     filters.valorMaximo,
     filters.tipoCobranca,
-  ].filter(Boolean).length;
+    filters.empresaId,
+    filters.contaBancariaId,
+  ].filter(f => !!f && f !== 'all').length;
 
   const handleClearFilters = () => {
     onFiltersChange({});
