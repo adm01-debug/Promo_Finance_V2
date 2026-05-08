@@ -119,7 +119,9 @@ export function AdvancedFiltersPopover({
                     { label: 'Até', value: v.dataVencimentoFim as unknown as string, isActive: !!v.dataVencimentoFim },
                     { label: 'Mínimo', value: v.valorMinimo as unknown as number, isActive: v.valorMinimo != null },
                     { label: 'Máximo', value: v.valorMaximo as unknown as number, isActive: v.valorMaximo != null },
-                    { label: 'Tipo', value: v.tipoCobranca as unknown as string, isActive: !!v.tipoCobranca },
+                    { label: 'Tipo', value: v.tipoCobranca as unknown as string, isActive: !!v.tipoCobranca && v.tipoCobranca !== 'all' },
+                    { label: 'Empresa', value: v.empresaId as unknown as string, isActive: !!v.empresaId && v.empresaId !== 'all' },
+                    { label: 'Conta', value: v.contaBancariaId as unknown as string, isActive: !!v.contaBancariaId && v.contaBancariaId !== 'all' },
                   ]}
                 />
               ) : (
