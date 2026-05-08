@@ -413,7 +413,7 @@ export default function OportunidadesElisao() {
                     </div>
                     <div>
                       <span className="text-muted-foreground block text-[10px] uppercase font-semibold">CST Origem (XML)</span>
-                      <span className="font-semibold">{c.nota?.dados_extraidos?.cst || 'N/D'}</span>
+                      <span className="font-semibold">{((c.nota?.dados_extraidos as any)?.cst) || 'N/D'}</span>
                     </div>
                     <div>
                       <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Identificado em</span>
