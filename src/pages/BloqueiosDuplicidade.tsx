@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -71,7 +72,7 @@ export default function BloqueiosDuplicidade() {
         query = query.ilike('dados_tentativa->>numero_documento', `%${filters.documento}%`);
       }
       if (filters.valor) {
-        query = query.eq('valor_bloqueado', filters.valor);
+        query = query.eq('valor_bloqueado', parseFloat(filters.valor.replace(',', '.')));
       }
       
       if (filters.periodo !== 'all') {
