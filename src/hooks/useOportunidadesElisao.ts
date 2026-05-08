@@ -184,5 +184,89 @@ export function useOportunidadesElisao({ empresaId, contexto }: UseElisaoOptions
     persistirOportunidades,
     atualizarStatus,
     temHistoricoSuficiente: historicoFat.length >= 12,
+    
+    // Alertas automáticos
+    alertas: useQuery({
+      queryKey: ['elisao-alertas', empresaId],
+      queryFn: async () => {
+        if (!empresaId) return [];
+        const { data, error } = await supabase
+          .from('elisao_alertas')
+          .select('*')
+          .eq('empresa_id', empresaId)
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data || [];
+      },
+      enabled: !!empresaId,
+    }).data || [],
+
+    // Créditos para Auditoria
+    creditosAuditoria: useQuery({
+      queryKey: ['elisao-creditos-auditoria', empresaId],
+      queryFn: async () => {
+        if (!empresaId) return [];
+        const { data, error } = await supabase
+          .from('elisao_creditos_auditoria')
+          .select('*, nota:notas_fiscais_ocr(*)')
+          .eq('empresa_id', empresaId)
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data || [];
+      },
+      enabled: !!empresaId,
+    }).data || [],
+
+    // Tarefas Acionáveis (Bitrix Sync)
+    tarefasAcionaveis: useQuery({
+      queryKey: ['elisao-tarefas-acionaveis', empresaId],
+      queryFn: async () => {
+        if (!empresaId) return [];
+        const { data, error } = await supabase
+          .from('elisao_tarefas_acionaveis')
+          .select('*')
+          .eq('empresa_id', empresaId)
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data || [];
+      },
+      enabled: !!empresaId,
+    }).data || [],
+
+    // Mutações para Aprovação e Sincronização
+    decidirCredito: useMutation({
+      mutationFn: async ({ id, status, motivo }: { id: string; status: 'aprovado' | 'rejeitado'; motivo?: string }) => {
+        const { error } = await supabase
+          .from('elisao_creditos_auditoria')
+          .update({ 
+            status_aprovacao: status, 
+            motivo_rejeicao: motivo,
+            aprovador_id: user?.id,
+            data_aprovacao: new Date().toISOString()
+          })
+          .eq('id', id);
+        if (error) throw error;
+      },
+      onSuccess: () => {
+        toast.success('Decisão registrada com sucesso');
+        queryClient.invalidateQueries({ queryKey: ['elisao-creditos-auditoria', empresaId] });
+      },
+      onError: (e: Error) => toast.error(e.message),
+    }),
+
+    sincronizarBitrix: useMutation({
+      mutationFn: async (tarefaId: string) => {
+        const { data, error } = await supabase.functions.invoke('bitrix24-sync', {
+          body: { type: 'elisao_tarefa', id: tarefaId }
+        });
+        if (error) throw error;
+        return data;
+      },
+      onSuccess: () => {
+        toast.success('Tarefa sincronizada com Bitrix24');
+        queryClient.invalidateQueries({ queryKey: ['elisao-tarefas-acionaveis', empresaId] });
+      },
+      onError: (e: Error) => toast.error(e.message),
+    }),
   };
 }
