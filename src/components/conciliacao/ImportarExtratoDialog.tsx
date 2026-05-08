@@ -43,7 +43,7 @@ export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess, con
       
       let mapeamento = undefined;
       if (contaBancariaId) {
-        const { data: conta } = await supabase
+        const { data: conta } = await (supabase as any)
           .from('contas_bancarias')
           .select('mapeamento_extrato')
           .eq('id', contaBancariaId)
