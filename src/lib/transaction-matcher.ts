@@ -58,6 +58,8 @@ export const DEFAULT_CONFIG: ConfiguracaoMatch = {
   scoreMinimo: 50,
 };
 
+export const TOLERANCIA_CENTAVOS = 0.50; // Tolerância para ajuste automático de centavos
+
 // Text normalization for comparison
 function normalizarTexto(texto: string): string {
   return texto
