@@ -18,7 +18,7 @@ interface ImportarExtratoDialogProps {
 
 type Step = 'upload' | 'processing' | 'preview' | 'error';
 
-export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess }: ImportarExtratoDialogProps) {
+export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess, contaBancariaId }: ImportarExtratoDialogProps) {
   const [step, setStep] = useState<Step>('upload');
   const [dragActive, setDragActive] = useState(false);
   const [progress, setProgress] = useState(0);
