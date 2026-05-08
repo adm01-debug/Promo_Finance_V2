@@ -42,7 +42,7 @@ const FuturisticMetricCard = ({ title, value, icon: Icon, trend, glowColor, onCl
   </div>
 );
 
-export function FuturisticDashboard({ kpis, evolucaoMensal }: any) {
+export function FuturisticDashboard({ kpis, evolucaoMensal, onMetricClick }: any) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
