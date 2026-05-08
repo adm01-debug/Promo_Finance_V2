@@ -442,7 +442,7 @@ export function parseExtratoBancario(content: string, fileName: string, mapeamen
       return parseOFC(content, fileName);
     case 'csv':
     case 'txt':
-      return parseCSV(content, fileName);
+      return parseCSV(content, fileName, mapeamento);
     default:
       // Try to guess - if has commas or semicolons, try CSV
       if (content.includes(',') || content.includes(';')) {
