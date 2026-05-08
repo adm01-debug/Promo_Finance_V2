@@ -285,6 +285,14 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
             </motion.span>
           )}
         </AnimatePresence>
+        {isSynced && !collapsed && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <CheckCircle className="h-3 w-3 text-success ml-auto shrink-0" />
+            </TooltipTrigger>
+            <TooltipContent side="right">Filtros sincronizados</TooltipContent>
+          </Tooltip>
+        )}
         {badge && !collapsed && (
           <Badge
             variant="secondary"
