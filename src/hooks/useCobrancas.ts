@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { differenceInDays, parseISO, subDays } from 'date-fns';
+import { useAuth } from '@/hooks/useAuth';
 
 export interface ContaVencida {
   id: string;
