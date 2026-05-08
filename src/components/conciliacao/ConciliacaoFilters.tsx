@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Filter, X, Calendar, DollarSign, Brain } from 'lucide-react';
+import { Filter, X, Calendar, DollarSign, Brain, LayoutGrid } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +19,7 @@ export interface ConciliacaoFilterState {
   valorMax: string;
   tipo: 'todos' | 'credito' | 'debito';
   confiancaIA: 'todos' | 'alta' | 'media' | 'baixa';
+  centroCustoId: string;
 }
 
 const INITIAL_FILTERS: ConciliacaoFilterState = {
@@ -28,6 +29,7 @@ const INITIAL_FILTERS: ConciliacaoFilterState = {
   valorMax: '',
   tipo: 'todos',
   confiancaIA: 'todos',
+  centroCustoId: 'todos',
 };
 
 interface ConciliacaoFiltersProps {
@@ -35,9 +37,12 @@ interface ConciliacaoFiltersProps {
   onFiltersChange: (filters: ConciliacaoFilterState) => void;
 }
 
+import { useCentrosCusto } from '@/hooks/useFinancialData';
+
 export function ConciliacaoFilters({ filters, onFiltersChange }: ConciliacaoFiltersProps) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<ConciliacaoFilterState>(filters);
+  const { data: centrosCusto } = useCentrosCusto();
 
   const activeCount = Object.entries(filters).filter(([key, value]) => {
     if (key === 'tipo' || key === 'confiancaIA') return value !== 'todos';
@@ -158,7 +163,26 @@ export function ConciliacaoFilters({ filters, onFiltersChange }: ConciliacaoFilt
                 <SelectItem value="baixa">Baixa (&lt;60%)</SelectItem>
               </SelectContent>
             </Select>
+          {/* Centro de Custo */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2 text-sm font-medium">
+              <LayoutGrid className="h-4 w-4 text-muted-foreground" />
+              Centro de Custo
+            </Label>
+            <Select
+              value={draft.centroCustoId}
+              onValueChange={(v) => setDraft(d => ({ ...d, centroCustoId: v }))}
+            >
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos os centros</SelectItem>
+                {centrosCusto?.map(c => (
+                  <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
+        </div>
         </div>
 
         <SheetFooter className="mt-8 flex gap-2">
