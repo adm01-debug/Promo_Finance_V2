@@ -396,38 +396,37 @@ export default function Clientes() {
               <ScoringClientesPanel />
             </motion.div>
           </TabsContent>
+
+          <ClienteForm 
+            open={formOpen} 
+            onOpenChange={(open) => {
+              setFormOpen(open);
+              if (!open) setEditingCliente(null);
+            }}
+            cliente={editingCliente as any}
+          />
+
+          <ClienteDetailDialog
+            cliente={viewingCliente as any}
+            open={detailOpen}
+            onOpenChange={(open) => {
+              setDetailOpen(open);
+              if (!open) setViewingCliente(null);
+            }}
+          />
+
+          <ConfirmDialog
+            open={deleteDialogOpen}
+            onOpenChange={setDeleteDialogOpen}
+            title="Confirmar exclusão"
+            description={`Tem certeza que deseja excluir o cliente "${deletingCliente?.razao_social}"? Esta ação não pode ser desfeita.`}
+            confirmLabel="Excluir"
+            variant="danger"
+            isLoading={isDeleting}
+            onConfirm={handleDelete}
+          />
         </motion.div>
       </Tabs>
-
-        <ClienteForm 
-          open={formOpen} 
-          onOpenChange={(open) => {
-            setFormOpen(open);
-            if (!open) setEditingCliente(null);
-          }}
-          cliente={editingCliente as any}
-        />
-
-        <ClienteDetailDialog
-          cliente={viewingCliente as any}
-          open={detailOpen}
-          onOpenChange={(open) => {
-            setDetailOpen(open);
-            if (!open) setViewingCliente(null);
-          }}
-        />
-
-        <ConfirmDialog
-          open={deleteDialogOpen}
-          onOpenChange={setDeleteDialogOpen}
-          title="Confirmar exclusão"
-          description={`Tem certeza que deseja excluir o cliente "${deletingCliente?.razao_social}"? Esta ação não pode ser desfeita.`}
-          confirmLabel="Excluir"
-          variant="danger"
-          isLoading={isDeleting}
-          onConfirm={handleDelete}
-        />
-      </motion.div>
     </MainLayout>
   );
 }
