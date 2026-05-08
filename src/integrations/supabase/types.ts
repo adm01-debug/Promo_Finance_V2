@@ -3485,6 +3485,8 @@ export type Database = {
           empresa_id: string
           id: string
           nome: string
+          premissas_operacionais: Json | null
+          premissas_reforma: Json | null
           resultado_presumido: Json | null
           resultado_real: Json | null
           resultado_reforma_transicao: Json | null
@@ -3500,6 +3502,8 @@ export type Database = {
           empresa_id: string
           id?: string
           nome: string
+          premissas_operacionais?: Json | null
+          premissas_reforma?: Json | null
           resultado_presumido?: Json | null
           resultado_real?: Json | null
           resultado_reforma_transicao?: Json | null
@@ -3515,6 +3519,8 @@ export type Database = {
           empresa_id?: string
           id?: string
           nome?: string
+          premissas_operacionais?: Json | null
+          premissas_reforma?: Json | null
           resultado_presumido?: Json | null
           resultado_real?: Json | null
           resultado_reforma_transicao?: Json | null
@@ -11200,6 +11206,15 @@ export type Database = {
       }
     }
     Functions: {
+      calcular_potencial_elisao: {
+        Args: { p_empresa_id: string }
+        Returns: {
+          descricao: string
+          ncm_relacionado: string
+          tipo_oportunidade: string
+          valor_estimado: number
+        }[]
+      }
       calcular_proxima_geracao: {
         Args: {
           p_dia_vencimento: number

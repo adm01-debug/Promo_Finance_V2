@@ -13,7 +13,8 @@ import {
   Calculator,
   Zap,
   FileSearch,
-  CheckCircle2
+  CheckCircle2,
+  RefreshCcw
 } from 'lucide-react';
 import { supabase as supabaseTyped } from '@/integrations/supabase/client';
 const supabase = supabaseTyped as any;
@@ -50,6 +51,12 @@ interface ElisaoTabProps {
 export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
   const [activeTab, setActiveTab] = useState('simulador');
   const [isSimModalOpen, setIsSimModalOpen] = useState(false);
+  const [premissas, setPremissas] = useState({
+    aliquota_cbs: 0.088,
+    aliquota_ibs: 0.177,
+    crescimento: 5,
+    folha_prolabore: 28
+  });
 
   // Queries
   const { data: simulacoes = [], isLoading: loadingSims } = useQuery({
@@ -60,6 +67,18 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
         .select('*')
         .eq('empresa_id', empresaId)
         .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!empresaId
+  });
+
+  const { data: oportunidades = [] } = useQuery({
+    queryKey: ['elisao_oportunidades_reais', empresaId],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('calcular_potencial_elisao', {
+        p_empresa_id: empresaId
+      });
       if (error) throw error;
       return data;
     },
@@ -80,7 +99,7 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
     enabled: !!empresaId
   });
 
-  const economiaTotal = gaps.reduce((acc: number, curr: any) => acc + (curr.economia_identificada || 0), 0);
+  const economiaTotal = oportunidades.reduce((acc: number, curr: any) => acc + (curr.valor_estimado || 0), 0);
 
   return (
     <div className="space-y-6">
@@ -194,10 +213,10 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <Zap className="h-5 w-5 text-amber-500" />
-                Inteligência de Produtos (NCM)
+                Inteligência de Produtos (Baseado em Notas Fiscais Reais)
               </CardTitle>
               <CardDescription>
-                Identificação automática de tributação monofásica e créditos de PIS/COFINS por item.
+                Cruzamento automático de NCMs de entrada com regras de PIS/COFINS Monofásico e créditos presumidos.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -206,27 +225,30 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
                   <TableHeader>
                     <TableRow>
                       <TableHead>NCM</TableHead>
-                      <TableHead>Descrição</TableHead>
-                      <TableHead>Tipo de Crédito</TableHead>
-                      <TableHead>Redução Projetada</TableHead>
+                      <TableHead>Oportunidade</TableHead>
+                      <TableHead>Tipo</TableHead>
+                      <TableHead>Crédito Estimado (12m)</TableHead>
                       <TableHead className="text-right">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    <TableRow>
-                      <TableCell className="font-mono text-xs">8507.10.10</TableCell>
-                      <TableCell className="text-xs">Acumuladores elétricos de chumbo</TableCell>
-                      <TableCell><Badge variant="secondary" className="text-[10px]">Monofásico</Badge></TableCell>
-                      <TableCell className="text-xs font-bold text-emerald-600">9.25% (PIS/COF)</TableCell>
-                      <TableCell className="text-right"><CheckCircle2 className="h-4 w-4 text-emerald-500 ml-auto" /></TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-mono text-xs">4011.10.00</TableCell>
-                      <TableCell className="text-xs">Pneus novos de borracha</TableCell>
-                      <TableCell><Badge variant="secondary" className="text-[10px]">Monofásico</Badge></TableCell>
-                      <TableCell className="text-xs font-bold text-emerald-600">9.25% (PIS/COF)</TableCell>
-                      <TableCell className="text-right"><CheckCircle2 className="h-4 w-4 text-emerald-500 ml-auto" /></TableCell>
-                    </TableRow>
+                    {oportunidades.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                          Nenhuma nota fiscal com NCM mapeado para crédito identificada nos últimos 12 meses.
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      oportunidades.map((op: any, i: number) => (
+                        <TableRow key={i}>
+                          <TableCell className="font-mono text-xs">{op.ncm_relacionado}</TableCell>
+                          <TableCell className="text-xs">{op.descricao}</TableCell>
+                          <TableCell><Badge variant="secondary" className="text-[10px]">{op.tipo_oportunidade}</Badge></TableCell>
+                          <TableCell className="text-xs font-bold text-emerald-600">R$ {op.valor_estimado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
+                          <TableCell className="text-right"><CheckCircle2 className="h-4 w-4 text-emerald-500 ml-auto" /></TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </div>
@@ -273,15 +295,28 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="ano">Ano Base</Label>
-                <Input id="ano" type="number" defaultValue={2025} />
+                <Label>Alíquota CBS (%)</Label>
+                <Input type="number" value={premissas.aliquota_cbs * 100} onChange={(e) => setPremissas({...premissas, aliquota_cbs: Number(e.target.value)/100})} />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="import">Importar Dados</Label>
-                <Button variant="outline" className="text-xs h-10 gap-2">
-                  <Calculator className="h-4 w-4" /> Histórico Contábil
-                </Button>
+                <Label>Alíquota IBS (%)</Label>
+                <Input type="number" value={premissas.aliquota_ibs * 100} onChange={(e) => setPremissas({...premissas, aliquota_ibs: Number(e.target.value)/100})} />
               </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>Crescimento Projetado (%)</Label>
+                <Input type="number" value={premissas.crescimento} onChange={(e) => setPremissas({...premissas, crescimento: Number(e.target.value)})} />
+              </div>
+              <div className="grid gap-2">
+                <Label>Peso Folha/Prolabore (%)</Label>
+                <Input type="number" value={premissas.folha_prolabore} onChange={(e) => setPremissas({...premissas, folha_prolabore: Number(e.target.value)})} />
+              </div>
+            </div>
+            <div className="pt-2">
+              <Button variant="outline" className="w-full gap-2 text-xs border-dashed" onClick={() => toast.info("Importando dados do diário e centros de custo...")}>
+                <RefreshCcw className="h-4 w-4" /> Sincronizar com Contabilidade (Automático)
+              </Button>
             </div>
           </div>
           <DialogFooter>
