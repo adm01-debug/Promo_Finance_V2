@@ -100,10 +100,11 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
     // PDF Premium
     const doc = new jsPDF();
     const margins = getAutoTableMargins();
+    const pageWidth = doc.internal.pageSize.getWidth();
     let cursorY = getContentStartY();
 
     // Sumário Executivo
-    const totalW = doc.internal.pageSize.getWidth() - margins.left - margins.right;
+    const totalW = pageWidth - margins.left - margins.right;
     doc.setFillColor(PDF_BRAND.surface[0], PDF_BRAND.surface[1], PDF_BRAND.surface[2]);
     doc.setDrawColor(PDF_BRAND.border[0], PDF_BRAND.border[1], PDF_BRAND.border[2]);
     doc.roundedRect(margins.left, cursorY, totalW, 20, 2, 2, 'FD');
