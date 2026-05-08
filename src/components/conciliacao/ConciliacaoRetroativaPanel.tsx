@@ -105,9 +105,55 @@ export function ConciliacaoRetroativaPanel({ contaBancariaId }: Props) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="p-8 text-center text-muted-foreground border-2 border-dashed rounded-lg">
-            Nenhum agendamento recente para esta conta.
-          </div>
+          {isLoading ? (
+            <div className="flex justify-center py-8"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-50" /></div>
+          ) : !logs || logs.length === 0 ? (
+            <div className="p-8 text-center text-muted-foreground border-2 border-dashed rounded-lg">
+              Nenhum agendamento recente para esta conta.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {logs.map((log) => (
+                <div key={log.id} className="p-4 rounded-lg border bg-card hover:bg-muted/30 transition-colors">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Badge variant={log.status === 'concluido' ? 'default' : log.status === 'erro' ? 'destructive' : 'secondary'}>
+                        {log.status === 'concluido' ? 'Concluído' : log.status === 'erro' ? 'Erro' : 'Processando'}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">{format(new Date(log.created_at), "dd/MM/yyyy HH:mm")}</span>
+                    </div>
+                    {log.divergencias_encontradas > 0 && (
+                      <Badge variant="outline" className="text-destructive border-destructive/20 bg-destructive/5 gap-1">
+                        <AlertCircle className="h-3 w-3" /> {log.divergencias_encontradas} Inconsistências
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mt-3">
+                    <div className="text-xs">
+                      <p className="text-muted-foreground uppercase font-semibold text-[10px]">Período</p>
+                      <p className="font-medium mt-0.5">{format(new Date(log.data_inicio), "dd/MM/yy")} - {format(new Date(log.data_fim), "dd/MM/yy")}</p>
+                    </div>
+                    <div className="text-xs text-right">
+                      <p className="text-muted-foreground uppercase font-semibold text-[10px]">Processado</p>
+                      <p className="font-medium mt-0.5">{log.total_conciliado} / {log.total_processado} conciliados</p>
+                    </div>
+                  </div>
+                  {log.divergencias_encontradas > 0 && (
+                    <div className="mt-3 p-2 rounded bg-destructive/5 border border-destructive/10 text-[11px] text-destructive flex items-center gap-2">
+                      <AlertCircle className="h-3.5 w-3.5" />
+                      Inconsistências identificadas no saldo ou valores. Verifique a aba Divergências.
+                    </div>
+                  )}
+                  {log.status === 'concluido' && log.divergencias_encontradas === 0 && (
+                    <div className="mt-3 p-2 rounded bg-success/5 border border-success/10 text-[11px] text-success flex items-center gap-2">
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      Conciliação retroativa concluída com 100% de integridade.
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
