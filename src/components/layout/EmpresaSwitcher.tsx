@@ -45,9 +45,19 @@ export function EmpresaSwitcher() {
 
   if (isLoading || vinculos.length === 0) return null;
 
+  const navigate = useNavigate();
+
   const switchTo = (id: string) => {
     setCurrentEmpresaId(id);
     setCurrentId(id);
+    setOpen(false);
+    toast.success('Empresa alterada com sucesso', {
+      description: 'Todos os dashboards e filtros foram sincronizados.',
+    });
+  };
+
+  const goTo = (path: string) => {
+    navigate(path);
     setOpen(false);
   };
 
