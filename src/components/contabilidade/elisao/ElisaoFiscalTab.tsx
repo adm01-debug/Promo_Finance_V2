@@ -188,7 +188,10 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
             <Calculator className="h-4 w-4" /> Simulador de Regimes
           </TabsTrigger>
           <TabsTrigger value="creditos" className="gap-2">
-            <Zap className="h-4 w-4" /> Créditos & Monofásicos
+            <Zap className="h-4 w-4" /> Créditos & Auditoria
+          </TabsTrigger>
+          <TabsTrigger value="acionaveis" className="gap-2">
+            <ClipboardList className="h-4 w-4" /> Régua de Acionáveis
           </TabsTrigger>
           <TabsTrigger value="dashboard" className="gap-2">
             <BarChart4 className="h-4 w-4" /> Dashboard de Gap
