@@ -12014,6 +12014,14 @@ export type Database = {
       gerar_alertas_vencimento: { Args: never; Returns: undefined }
       gerar_contas_recorrentes: { Args: never; Returns: number }
       gerar_numero_acordo: { Args: never; Returns: string }
+      get_asaas_payment_stats: {
+        Args: { p_empresa_id: string }
+        Returns: {
+          status: string
+          total_count: number
+          total_value: number
+        }[]
+      }
       get_cron_jobs: {
         Args: never
         Returns: {
