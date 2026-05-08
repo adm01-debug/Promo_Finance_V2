@@ -50,6 +50,12 @@ interface ElisaoTabProps {
 export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
   const [activeTab, setActiveTab] = useState('simulador');
   const [isSimModalOpen, setIsSimModalOpen] = useState(false);
+  const [premissas, setPremissas] = useState({
+    aliquota_cbs: 0.088,
+    aliquota_ibs: 0.177,
+    crescimento: 5,
+    folha_prolabore: 28
+  });
 
   // Queries
   const { data: simulacoes = [], isLoading: loadingSims } = useQuery({
@@ -60,6 +66,18 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
         .select('*')
         .eq('empresa_id', empresaId)
         .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!empresaId
+  });
+
+  const { data: oportunidades = [] } = useQuery({
+    queryKey: ['elisao_oportunidades_reais', empresaId],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('calcular_potencial_elisao', {
+        p_empresa_id: empresaId
+      });
       if (error) throw error;
       return data;
     },
@@ -80,7 +98,7 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
     enabled: !!empresaId
   });
 
-  const economiaTotal = gaps.reduce((acc: number, curr: any) => acc + (curr.economia_identificada || 0), 0);
+  const economiaTotal = oportunidades.reduce((acc: number, curr: any) => acc + (curr.valor_estimado || 0), 0);
 
   return (
     <div className="space-y-6">
