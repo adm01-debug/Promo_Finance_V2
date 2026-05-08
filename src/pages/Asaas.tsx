@@ -776,7 +776,6 @@ export default function Asaas() {
         confirmText="Confirmar e Sincronizar"
         onConfirm={handleReprocessar}
         isLoading={reprocessarManual.isPending}
-        disabled={!reprocessReason.trim()}
       />
     </MainLayout>
   );
