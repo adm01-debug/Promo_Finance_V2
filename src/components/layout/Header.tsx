@@ -248,7 +248,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
           {/* User Menu with gradient avatar */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-14 gap-4 pl-2 pr-6 hover:bg-white/5 rounded-2xl transition-all duration-500 ring-1 ring-white/5 hover:ring-primary/20 bg-white/[0.02] shadow-xl">
+              <Button variant="ghost" className="h-14 gap-4 pl-2 pr-6 hover:bg-muted/20 rounded-2xl transition-all duration-500 ring-1 ring-border hover:ring-primary/20 bg-muted/10 shadow-xl">
                 {/* Gradient Avatar */}
                 <div className="relative">
                   <div className={cn(
