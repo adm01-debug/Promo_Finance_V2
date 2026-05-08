@@ -85,7 +85,7 @@ export default function Asaas() {
     // Novos do hook
     config, loadingConfig, salvarConfig,
     syncQueue, loadingQueue, reprocessarManual,
-    exportarAuditoria, queueStats, simularBackoff,
+    exportarAuditoria, exportarAuditoriaPDF, queueStats, simularBackoff,
   } = useAsaas(empresaId);
 
   // States for Advanced Filters
@@ -375,9 +375,21 @@ export default function Asaas() {
                       <Button variant="outline" size="sm" onClick={() => simularBackoff.mutate()} disabled={simularBackoff.isPending}>
                         <PlayCircle className="h-4 w-4 mr-2" /> Simular
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => exportarAuditoria()}>
-                        <FileSpreadsheet className="h-4 w-4 mr-2" /> Exportar
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            <FileSpreadsheet className="h-4 w-4 mr-2" /> Exportar
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => exportarAuditoria()}>
+                            CSV
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => exportarAuditoriaPDF()}>
+                            PDF
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -505,6 +517,25 @@ export default function Asaas() {
                         value={config?.failure_threshold || 5} 
                         onChange={(e) => salvarConfig.mutate({ failure_threshold: parseInt(e.target.value) })} 
                       />
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <h3 className="text-sm font-bold flex items-center gap-2">
+                    <History className="h-4 w-4" /> Integração Bitrix24
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label>Etapa Gatilho (Auto-Boleto)</Label>
+                      <Input 
+                        placeholder="Ex: WON, C1:PREPARATION..." 
+                        value={config?.bitrix_trigger_stage || 'WON'} 
+                        onChange={(e) => salvarConfig.mutate({ bitrix_trigger_stage: e.target.value })} 
+                      />
+                      <p className="text-[10px] text-muted-foreground">ID da etapa no Bitrix24 que dispara a geração automática.</p>
                     </div>
                   </div>
                 </div>

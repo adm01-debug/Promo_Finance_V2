@@ -981,6 +981,7 @@ export type Database = {
           alert_whatsapp_number: string | null
           auto_sync_enabled: boolean | null
           backoff_multiplier: number | null
+          bitrix_trigger_stage: string | null
           created_at: string | null
           empresa_id: string
           failure_threshold: number | null
@@ -996,6 +997,7 @@ export type Database = {
           alert_whatsapp_number?: string | null
           auto_sync_enabled?: boolean | null
           backoff_multiplier?: number | null
+          bitrix_trigger_stage?: string | null
           created_at?: string | null
           empresa_id: string
           failure_threshold?: number | null
@@ -1011,6 +1013,7 @@ export type Database = {
           alert_whatsapp_number?: string | null
           auto_sync_enabled?: boolean | null
           backoff_multiplier?: number | null
+          bitrix_trigger_stage?: string | null
           created_at?: string | null
           empresa_id?: string
           failure_threshold?: number | null

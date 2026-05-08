@@ -163,6 +163,8 @@ async function processDealEvent(
   const empresaId = empresas?.[0]?.id;
 
   if (eventType.includes("add") || eventType.includes("update")) {
+    const stageId = fields.STAGE_ID;
+    
     // Map Bitrix deal to conta_receber
     const contaData = {
       bitrix_deal_id: dealId,
@@ -173,39 +175,79 @@ async function processDealEvent(
         : new Date().toISOString().split("T")[0],
       cliente_nome: fields.COMPANY_TITLE || fields.CONTACT_FULL_NAME || `Bitrix Deal #${dealId}`,
       empresa_id: empresaId,
-      status: mapDealStageToStatus(fields.STAGE_ID),
+      status: mapDealStageToStatus(stageId),
     };
 
     // Check if exists
+    let recordId: string | null = null;
     const { data: existing } = await supabase
       .from("contas_receber")
       .select("id")
       .eq("bitrix_deal_id", dealId)
-      .single();
+      .maybeSingle();
 
     if (existing) {
       await supabase.from("contas_receber").update(contaData).eq("id", existing.id);
+      recordId = existing.id;
       console.log(`[bitrix24-webhook] Updated conta_receber for deal ${dealId}`);
-      return { action: "updated", entityId: dealId, success: true };
     } else if (empresaId) {
-      // Only insert if we have empresa_id and created_by
-      const { data: systemUser } = await supabase
-        .from("profiles")
-        .select("id")
-        .limit(1)
-        .single();
-
+      const { data: systemUser } = await supabase.from("profiles").select("id").limit(1).maybeSingle();
       if (systemUser) {
-        await supabase.from("contas_receber").insert({
+        const { data: inserted } = await supabase.from("contas_receber").insert({
           ...contaData,
           created_by: systemUser.id,
-        });
+        }).select('id').single();
+        recordId = inserted?.id;
         console.log(`[bitrix24-webhook] Created conta_receber for deal ${dealId}`);
-        return { action: "created", entityId: dealId, success: true };
       }
     }
 
-    return { action: "skipped", entityId: dealId, success: true };
+    // GERAÇÃO AUTOMÁTICA DE BOLETO ASAAS
+    if (recordId && empresaId && stageId) {
+      const { data: asaasConfig } = await supabase
+        .from('asaas_config')
+        .select('bitrix_trigger_stage')
+        .eq('empresa_id', empresaId)
+        .maybeSingle();
+      
+      const triggerStage = asaasConfig?.bitrix_trigger_stage || 'WON';
+
+      if (stageId === triggerStage) {
+        console.log(`[bitrix24-webhook] Triggering automatic Asaas boleto for deal ${dealId} (Stage: ${stageId})`);
+        
+        // Verificar se já existe boleto para este deal para evitar duplicidade
+        const { data: existingBoleto } = await supabase
+          .from('asaas_payments')
+          .select('id')
+          .eq('conta_receber_id', recordId)
+          .maybeSingle();
+
+        if (!existingBoleto) {
+          try {
+            // Invocar asaas-proxy para criar a cobrança
+            await supabase.functions.invoke('asaas-proxy', {
+              body: {
+                action: 'criar_cobranca',
+                data: {
+                  empresa_id: empresaId,
+                  asaas_customer_id: fields.CONTACT_ID || fields.COMPANY_ID || dealId, // Idealmente buscaria o asaas_id do cliente
+                  valor: contaData.valor,
+                  data_vencimento: contaData.data_vencimento,
+                  tipo: 'boleto',
+                  descricao: `[AUTO-GERADO BITRIX] ${contaData.descricao}`,
+                  conta_receber_id: recordId
+                }
+              }
+            });
+            console.log(`[bitrix24-webhook] Auto-boleto generated successfully for deal ${dealId}`);
+          } catch (e) {
+            console.error(`[bitrix24-webhook] Failed to generate auto-boleto:`, e);
+          }
+        }
+      }
+    }
+
+    return { action: existing ? "updated" : "created", entityId: dealId, success: true };
   }
 
   if (eventType.includes("delete")) {

@@ -5,6 +5,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+import { format, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 export type AsaasPaymentStatus = 
   | 'PENDING' | 'RECEIVED' | 'CONFIRMED' | 'OVERDUE' 
@@ -490,9 +494,44 @@ export function useAsaas(empresaId?: string) {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      toast.success('Exportação concluída');
+      toast.success('Exportação CSV concluída');
     } catch (e: any) {
-      toast.error('Erro ao exportar: ' + e.message);
+      toast.error('Erro ao exportar CSV: ' + e.message);
+    }
+  };
+
+  const exportarAuditoriaPDF = async () => {
+    if (!empresaId || !auditTrail.length) return;
+    
+    try {
+      const doc = new jsPDF() as any;
+      
+      doc.setFontSize(18);
+      doc.text('Trilha de Auditoria - ASAAS', 14, 22);
+      doc.setFontSize(10);
+      doc.text(`Gerado em: ${format(new Date(), 'dd/MM/yyyy HH:mm', { locale: ptBR })}`, 14, 30);
+      
+      const tableData = auditTrail.map((log: any) => [
+        format(parseISO(log.created_at), 'dd/MM/yy HH:mm', { locale: ptBR }),
+        log.action.replace(/_/g, ' '),
+        log.previous_status || '-',
+        log.new_status || '-',
+        log.details?.message || log.details?.reason || '-'
+      ]);
+
+      doc.autoTable({
+        startY: 35,
+        head: [['Data', 'Ação', 'Status Ant.', 'Status Novo', 'Detalhes']],
+        body: tableData,
+        theme: 'striped',
+        headStyles: { fillColor: [63, 81, 181] },
+        styles: { fontSize: 8 },
+      });
+
+      doc.save(`auditoria_asaas_${new Date().toISOString().split('T')[0]}.pdf`);
+      toast.success('Exportação PDF concluída');
+    } catch (e: any) {
+      toast.error('Erro ao exportar PDF: ' + e.message);
     }
   };
 
@@ -524,7 +563,7 @@ export function useAsaas(empresaId?: string) {
     // Novos
     config, loadingConfig, salvarConfig,
     syncQueue, loadingQueue, reprocessarManual,
-    exportarAuditoria, queueStats, simularBackoff,
+    exportarAuditoria, exportarAuditoriaPDF, queueStats, simularBackoff,
   };
 }
 
