@@ -89,6 +89,7 @@ const ComplianceAuditoria = lazy(() => import('./pages/admin/ComplianceAuditoria
 const AuditoriaIA = lazy(() => import('./pages/admin/AuditoriaIA'));
 const SharedFiltersAdmin = lazy(() => import('./pages/admin/SharedFiltersAdmin'));
 const Contabilidade = lazy(() => import('./pages/Contabilidade'));
+const StyleGuide = lazy(() => import('./pages/StyleGuide'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Inner app component that can use routing hooks
