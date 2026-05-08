@@ -33,7 +33,20 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-interface Props { empresaId?: string; ano: number }
+interface Props { empresaId?: string; ano: number; anoFim?: number }
+
+interface DrillDownState {
+  open: boolean;
+  linha?: any;
+  filtro?: {
+    empresa_id?: string;
+    ano?: number;
+    mes?: number;
+    centro_resultado?: string;
+    tipo?: string;
+    natureza?: string;
+  };
+}
 
 export function DreBalancoTab({ empresaId, ano }: Props) {
   const [modo, setModo] = useState<'dre' | 'balanco'>('dre');
