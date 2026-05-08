@@ -22,8 +22,11 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
   const { recentItems, favoriteItems, toggleFavorite, isFavorite, clearRecent } = useRecentItems();
   const [isRecentOpen, setIsRecentOpen] = useState(true);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(true);
+  const [isEmpresasOpen, setIsEmpresasOpen] = useState(true);
+  const { data: vinculos = [] } = useUserEmpresas();
+  const currentEmpresaId = getCurrentEmpresaId();
 
-  const hasItems = recentItems.length > 0 || favoriteItems.length > 0;
+  const hasItems = recentItems.length > 0 || favoriteItems.length > 0 || vinculos.length > 0;
 
   if (collapsed) return null;
 
