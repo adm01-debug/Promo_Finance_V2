@@ -28,7 +28,10 @@ export function useContasPagarLogic() {
   const [selectedConta, setSelectedConta] = useState<ContaPagarType | null>(null);
   const [editingConta, setEditingConta] = useState<ContaPagarType | null>(null);
   const [observacoesAprovacao, setObservacoesAprovacao] = useState('');
-  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({});
+  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({
+    empresaId: 'all',
+    contaBancariaId: 'all'
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
