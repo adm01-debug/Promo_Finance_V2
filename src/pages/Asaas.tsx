@@ -183,7 +183,9 @@ export default function Asaas() {
     const matchesSearch = !filterSearch || 
       (p.descricao?.toLowerCase().includes(filterSearch.toLowerCase())) ||
       (p.asaas_id?.toLowerCase().includes(filterSearch.toLowerCase())) ||
-      (p.asaas_customer_id?.toLowerCase().includes(filterSearch.toLowerCase())); // Search by CNPJ/ID
+      (p.asaas_customer_id?.toLowerCase().includes(filterSearch.toLowerCase())) || // Search by Asaas Customer ID
+      (p.sacado_cpf_cnpj?.toLowerCase().includes(filterSearch.toLowerCase())) || // Search by CPF/CNPJ if available
+      (p.sacado_nome?.toLowerCase().includes(filterSearch.toLowerCase())); // Search by Name
     
     let matchesDate = true;
     if (filterDateStart && p.data_vencimento < filterDateStart) matchesDate = false;
