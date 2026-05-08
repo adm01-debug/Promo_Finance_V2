@@ -22,46 +22,52 @@ import { formatCurrency } from '@/lib/formatters';
 export function RegrasConciliacaoPanel() {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [search, setSearch] = useState('');
+  const [previewExtrato, setPreviewExtrato] = useState<any[]>([]);
+  const [showPreview, setShowPreview] = useState(false);
+  const { currentEmpresaId } = useAuth();
   const queryClient = useQueryClient();
 
   const { data: regras, isLoading } = useQuery({
-    queryKey: ['regras-conciliacao'],
+    queryKey: ['regras-conciliacao', currentEmpresaId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('regras_conciliacao')
         .select('*')
         .order('vezes_aplicada', { ascending: false });
+      
+      if (currentEmpresaId) {
+        query = query.eq('empresa_id', currentEmpresaId);
+      }
+      
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
   });
 
-  const toggleRegra = useMutation({
-    mutationFn: async ({ id, ativo }: { id: string; ativo: boolean }) => {
-      const { error } = await supabase
-        .from('regras_conciliacao')
-        .update({ ativo })
-        .eq('id', id);
-      if (error) throw error;
-    },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['regras-conciliacao'] }),
-  });
+  const generatePreview = () => {
+    // Mock de extrato para demonstração da regra
+    const mockExtrato = [
+      { data: '2024-05-01', descricao: 'PIX FORNECEDOR ABC SERVICOS', valor: -1500.00, tipo: 'debito' },
+      { data: '2024-05-02', descricao: 'RECEBIMENTO CLIENTE XYZ LTDA', valor: 4500.00, tipo: 'credito' },
+      { data: '2024-05-03', descricao: 'TARIFA BANCARIA MANUTENCAO', valor: -45.90, tipo: 'debito' },
+    ];
 
-  const deleteRegra = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from('regras_conciliacao').delete().eq('id', id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['regras-conciliacao'] });
-      toast.success('Regra removida');
-    },
-  });
+    const preview = mockExtrato.map(item => {
+      const match = regras?.find(r => 
+        r.ativo && item.descricao.toUpperCase().includes(r.padrao_descricao.toUpperCase())
+      );
+      return { ...item, match };
+    });
+
+    setPreviewExtrato(preview);
+    setShowPreview(true);
+  };
 
   const filtered = regras?.filter(r => {
     if (!search) return true;
     const s = search.toLowerCase();
-    return r.padrao_descricao.toLowerCase().includes(s) || r.entidade_nome.toLowerCase().includes(s);
+    return r.padrao_descricao.toLowerCase().includes(s) || (r.entidade_nome || '').toLowerCase().includes(s);
   }) || [];
 
   return (
