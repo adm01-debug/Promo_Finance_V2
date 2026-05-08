@@ -115,6 +115,17 @@ export function useBoletos() {
         .eq('ativo', true);
 
       if (error) throw error;
+      
+      // Registrar evento de envio de boleto
+      if (data && data.conta_receber_id) {
+        await supabase.rpc('registrar_evento_receber', {
+          p_conta_id: data.conta_receber_id,
+          p_tipo: 'envio_boleto',
+          p_mensagem: `Boleto #${data.numero} gerado e enviado para o cliente.`,
+          p_metadata: { boleto_id: data.id, numero: data.numero }
+        });
+      }
+      
       return data;
     },
   });
