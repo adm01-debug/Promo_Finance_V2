@@ -161,10 +161,18 @@ export function DashboardFiltersHeader({
                     <SelectValue placeholder="Selecione a Organização" />
                   </SelectTrigger>
                   <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-2xl">
-                    <SelectItem value="all">Todas as Empresas</SelectItem>
+                    <SelectItem value="all">
+                      <div className="flex items-center gap-2">
+                        Todas as Empresas
+                        {empresaFilter === 'all' && <CheckCircle className="h-3 w-3 text-success" />}
+                      </div>
+                    </SelectItem>
                     {empresas.map(e => (
                       <SelectItem key={e.id} value={e.id} className="rounded-lg">
-                        {e.nome_fantasia || e.razao_social}
+                        <div className="flex items-center gap-2">
+                          {e.nome_fantasia || e.razao_social}
+                          {empresaFilter === e.id && <CheckCircle className="h-3 w-3 text-success" />}
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>
