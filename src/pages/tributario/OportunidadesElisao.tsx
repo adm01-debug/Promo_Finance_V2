@@ -442,10 +442,11 @@ export default function OportunidadesElisao() {
                     </div>
                   )}
                   
-                  <div className="flex gap-2 justify-end pt-2">
+                  <div className="flex gap-2 justify-end pt-4 border-t border-white/5 mt-4">
                     <Button 
                       variant="outline" 
                       size="sm" 
+                      className="gap-2 h-9 rounded-xl border-white/10 hover:bg-white/5"
                       onClick={() => {
                         const csvContent = "data:text/csv;charset=utf-8," 
                           + "ID,NCM,CST,Valor,Status,Score,Metodologia\n"
@@ -458,11 +459,21 @@ export default function OportunidadesElisao() {
                         link.click();
                       }}
                     >
-                      <Download className="h-4 w-4 mr-2" />
-                      Auditoria (CSV)
+                      <Download className="h-4 w-4" />
+                      Exportar CSV
                     </Button>
-                  
+
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="gap-2 h-9 rounded-xl border-white/10 hover:bg-white/5"
+                      onClick={() => baixarRelatorioAuditoriaCreditos(empresaSelecionada?.razao_social || 'Empresa', [c])}
+                    >
+                      <FilePieChart className="h-4 w-4 text-primary" />
+                      Auditoria PDF
+                    </Button>
                   </div>
+
                   
                   {c.status_aprovacao === 'pendente' && (
                     <div className="flex gap-2 justify-end pt-2">
