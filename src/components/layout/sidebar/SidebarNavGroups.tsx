@@ -53,7 +53,6 @@ import { useAlertasTributariosCount } from '@/hooks/useAlertasTributariosCount';
 import { useRealtimeAlertas } from '@/hooks/useRealtimeAlertas';
 import { useRealtimeAnomalias } from '@/hooks/useRealtimeAnomalias';
 import { useWhatsAppUnreadCount } from '@/hooks/useWhatsAppUnreadCount';
-import { useWhatsAppUnreadCount } from '@/hooks/useWhatsAppUnreadCount';
 
 interface NavItem {
   label: string;
