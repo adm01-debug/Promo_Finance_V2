@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 import { LancamentoSistema } from '@/lib/transaction-matcher';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 
 interface TransacaoExtrato {
   id: string;
@@ -43,6 +43,14 @@ export function ConciliacaoSplitDialog({
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
+  const { data: centrosCusto } = useQuery({
+    queryKey: ['centros-custo'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('centros_custo').select('*').eq('ativo', true);
+      if (error) throw error;
+      return data;
+    }
+  });
 
   const tipoFiltro = transacao?.tipo === 'credito' ? 'receber' : 'pagar';
 
@@ -168,7 +176,12 @@ export function ConciliacaoSplitDialog({
                   <div key={i} className="flex items-center gap-3 p-3 rounded-lg border bg-primary/5">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{split.lancamento.descricao}</p>
-                      <p className="text-xs text-muted-foreground">{split.lancamento.entidade}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-xs text-muted-foreground">{split.lancamento.entidade}</p>
+                        {split.lancamento.centro_custo_nome && (
+                          <Badge variant="secondary" className="text-[10px] h-4 px-1">{split.lancamento.centro_custo_nome}</Badge>
+                        )}
+                      </div>
                     </div>
                     <Input
                       type="number"
