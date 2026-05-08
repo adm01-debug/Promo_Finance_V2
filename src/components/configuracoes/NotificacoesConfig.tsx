@@ -1,4 +1,4 @@
-import { Bell, BellOff, Send, Smartphone, AlertTriangle } from 'lucide-react';
+import { Bell, BellOff, Send, Smartphone, AlertTriangle, ShieldAlert } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -112,15 +112,16 @@ export function NotificacoesConfig() {
             <h4 className="text-sm font-medium">Você receberá notificações para:</h4>
             <div className="grid gap-2">
               {[
-                { label: 'Alertas Críticos', desc: 'Pagamentos muito atrasados, saldo negativo' },
-                { label: 'Alertas de Alta Prioridade', desc: 'Vencimentos próximos, inadimplência' },
-                { label: 'Aprovações Pendentes', desc: 'Pagamentos aguardando sua aprovação' }
+                { label: 'Tentativas de Duplicidade', desc: 'Alertas imediatos para pagamentos duplicados bloqueados 10/10', icon: ShieldAlert },
+                { label: 'Alertas Críticos', desc: 'Pagamentos muito atrasados, saldo negativo', icon: Bell },
+                { label: 'Alertas de Alta Prioridade', desc: 'Vencimentos próximos, inadimplência', icon: Bell },
+                { label: 'Aprovações Pendentes', desc: 'Pagamentos aguardando sua aprovação', icon: Bell }
               ].map((item) => (
                 <div
                   key={item.label}
                   className="flex items-start gap-2 p-2 rounded-md bg-muted/50"
                 >
-                  <Bell className="h-4 w-4 text-primary mt-0.5" />
+                  <item.icon className="h-4 w-4 text-primary mt-0.5" />
                   <div>
                     <span className="text-sm font-medium">{item.label}</span>
                     <p className="text-xs text-muted-foreground">{item.desc}</p>
