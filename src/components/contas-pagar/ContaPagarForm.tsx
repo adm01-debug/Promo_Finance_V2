@@ -85,7 +85,29 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
   const createMutation = useMutation({
     mutationFn: async (data: ContaPagarFormData) => {
       if (!user?.id) throw new Error('Usuário não autenticado');
-      const { error } = await supabase.from('contas_pagar').insert({ fornecedor_id: data.fornecedor_id || null, fornecedor_nome: data.fornecedor_nome, descricao: data.descricao, valor: data.valor, data_vencimento: data.data_vencimento, data_emissao: data.data_emissao || new Date().toISOString().split('T')[0], empresa_id: data.empresa_id, centro_custo_id: data.centro_custo_id || null, conta_bancaria_id: data.conta_bancaria_id || null, tipo_cobranca: data.tipo_cobranca, numero_documento: data.numero_documento || null, codigo_barras: data.codigo_barras || null, observacoes: data.observacoes || null, recorrente: data.recorrente, created_by: user.id, status: 'pendente' });
+      
+      // Gerar chave de idempotência para evitar duplicidade no reenvio
+      const idempotency_key = `cp_${user.id}_${Date.now()}`;
+
+      const { error } = await supabase.from('contas_pagar').insert({ 
+        fornecedor_id: data.fornecedor_id || null, 
+        fornecedor_nome: data.fornecedor_nome, 
+        descricao: data.descricao, 
+        valor: data.valor, 
+        data_vencimento: data.data_vencimento, 
+        data_emissao: data.data_emissao || new Date().toISOString().split('T')[0], 
+        empresa_id: data.empresa_id, 
+        centro_custo_id: data.centro_custo_id || null, 
+        conta_bancaria_id: data.conta_bancaria_id || null, 
+        tipo_cobranca: data.tipo_cobranca, 
+        numero_documento: data.numero_documento || null, 
+        codigo_barras: data.codigo_barras || null, 
+        observacoes: data.observacoes || null, 
+        recorrente: data.recorrente, 
+        created_by: user.id, 
+        status: 'pendente',
+        idempotency_key
+      });
       if (error) throw error;
     },
     onSuccess: () => { 
@@ -98,14 +120,14 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
     onError: (error: any) => { 
       sounds.error(); 
       logger.error('Error creating conta pagar:', error); 
-      const isDuplicate = error?.message?.includes('ALERTA DE DUPLICIDADE') || error?.code === '23505';
+      const isDuplicate = error?.message?.includes('DUPLICIDADE_DETECTADA') || error?.code === '23505';
       toast({ 
-        title: isDuplicate ? 'Possível Duplicidade Detectada' : 'Erro ao criar conta', 
+        title: isDuplicate ? '⚠️ Bloqueio de Duplicidade' : 'Erro ao criar conta', 
         description: isDuplicate 
-          ? 'Já existe um pagamento idêntico cadastrado (mesmo fornecedor, valor e vencimento). Verifique para evitar pagamentos duplicados.' 
+          ? `Operação barrada: ${error?.message?.split(': ')[1] || 'Já existe um pagamento idêntico para este fornecedor e valor no período.'}` 
           : 'Não foi possível criar a conta. Tente novamente.', 
         variant: isDuplicate ? 'default' : 'destructive' 
-      }); 
+      });
     },
 
   });

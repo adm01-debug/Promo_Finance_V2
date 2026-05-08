@@ -2026,6 +2026,54 @@ export type Database = {
         }
         Relationships: []
       }
+      bloqueios_duplicidade: {
+        Row: {
+          campos_conflitantes: Json
+          created_at: string | null
+          dados_tentativa: Json
+          empresa_id: string | null
+          id: string
+          motivo_bloqueio: string
+          tabela: string
+          usuario_id: string | null
+        }
+        Insert: {
+          campos_conflitantes: Json
+          created_at?: string | null
+          dados_tentativa: Json
+          empresa_id?: string | null
+          id?: string
+          motivo_bloqueio: string
+          tabela: string
+          usuario_id?: string | null
+        }
+        Update: {
+          campos_conflitantes?: Json
+          created_at?: string | null
+          dados_tentativa?: Json
+          empresa_id?: string | null
+          id?: string
+          motivo_bloqueio?: string
+          tabela?: string
+          usuario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bloqueios_duplicidade_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bloqueios_duplicidade_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       boleto_events: {
         Row: {
           boleto_id: string | null
@@ -2903,6 +2951,7 @@ export type Database = {
           fornecedor_nome: string
           frequencia_recorrencia: string | null
           id: string
+          idempotency_key: string | null
           is_frete: boolean | null
           numero_documento: string | null
           numero_parcela_atual: number | null
@@ -2954,6 +3003,7 @@ export type Database = {
           fornecedor_nome: string
           frequencia_recorrencia?: string | null
           id?: string
+          idempotency_key?: string | null
           is_frete?: boolean | null
           numero_documento?: string | null
           numero_parcela_atual?: number | null
@@ -3005,6 +3055,7 @@ export type Database = {
           fornecedor_nome?: string
           frequencia_recorrencia?: string | null
           id?: string
+          idempotency_key?: string | null
           is_frete?: boolean | null
           numero_documento?: string | null
           numero_parcela_atual?: number | null

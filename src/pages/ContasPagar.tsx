@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { Plus, CheckCircle2, XCircle, ArrowUpDown, Sparkles } from 'lucide-react';
+import { Plus, CheckCircle2, XCircle, ArrowUpDown, Sparkles, ShieldAlert } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { CategorizacaoLoteButton } from '@/components/contas-pagar/CategorizacaoIABadge';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,6 +37,7 @@ const itemVariants = {
 
 export default function ContasPagar() {
   const logic = useContasPagarLogic();
+  const navigate = useNavigate();
   useHighlightFromUrl('highlight', (logic.sortedContas?.length ?? 0) > 0);
 
   const bulkActions = [
@@ -98,6 +100,14 @@ export default function ContasPagar() {
                   filename="contas_pagar"
                   title="Relatório de Contas a Pagar"
                 />
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  className="h-12 px-4 rounded-xl font-black gap-2 transition-all hover:bg-destructive/10 hover:text-destructive"
+                  onClick={() => navigate('/contas-pagar/bloqueios')}
+                >
+                  <ShieldAlert className="h-5 w-5" /> Auditoria
+                </Button>
                 <Button 
                   size="lg" 
                   className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]"
