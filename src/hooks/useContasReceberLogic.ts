@@ -54,6 +54,8 @@ export function useContasReceberLogic() {
   const { data: allContas = [] } = useContasReceber();
   const { data: centrosCusto = [] } = useCentrosCusto();
   const { data: empresas = [] } = useEmpresas();
+  const { data: contasBancarias = [] } = useContasBancarias();
+
 
   const contas = paginatedResult?.data || [];
   const totalCount = paginatedResult?.totalCount || 0;
