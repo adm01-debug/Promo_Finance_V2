@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Plus, Zap, CheckCircle2, AlertTriangle, Trash2, Power, Activity } from 'lucide-react';
+import { Plus, Zap, CheckCircle2, AlertTriangle, Trash2, Power, Activity, Edit2, Copy, Play, Save, X, Info } from 'lucide-react';
 import { supabase as supabaseTyped } from '@/integrations/supabase/client';
 // Tabelas novas ainda não refletidas em types.ts — cast controlado.
 const supabase = supabaseTyped as unknown as {
@@ -61,9 +61,21 @@ const EVENTOS = [
 export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }) {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [editingRegra, setEditingRegra] = useState<Regra | null>(null);
+  const [simulating, setSimulating] = useState(false);
+  const [simForm, setSimForm] = useState({
+    tipo_evento: 'conta_pagar' as Regra['tipo_evento'],
+    valor: 100,
+    data: new Date().toISOString().split('T')[0],
+    descricao: 'Simulação de teste',
+    categoria_id: '',
+  });
+  const [simResult, setSimResult] = useState<any>(null);
+
   const [form, setForm] = useState({
     nome: '',
     tipo_evento: 'conta_pagar' as Regra['tipo_evento'],
+    categoria_id: null as string | null,
     conta_debito_id: '',
     conta_credito_id: '',
     historico_template: '{descricao}',
@@ -96,6 +108,20 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
       if (error) throw error;
       return (data as PlanoConta[]) ?? [];
     },
+  });
+
+  const { data: categorias = [] } = useQuery<{ id: string; nome: string }[]>({
+    queryKey: ['categorias', empresaId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('categorias')
+        .select('id, nome')
+        .eq('empresa_id', empresaId)
+        .order('nome');
+      if (error) throw error;
+      return (data as any[]) ?? [];
+    },
+    enabled: !!empresaId,
   });
 
   const { data: logs = [], isLoading: loadingLogs } = useQuery<EventoLog[]>({
@@ -133,6 +159,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
       setForm({
         nome: '',
         tipo_evento: 'conta_pagar',
+        categoria_id: null,
         conta_debito_id: '',
         conta_credito_id: '',
         historico_template: '{descricao}',
@@ -141,6 +168,62 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
       qc.invalidateQueries({ queryKey: ['regras_contab', empresaId] });
     },
     onError: (e: Error) => toast.error(e.message),
+  });
+
+  const updateRegra = useMutation({
+    mutationFn: async (regra: Partial<Regra> & { id: string }) => {
+      const { error } = await supabase
+        .from('regras_contabilizacao_automatica')
+        .update(regra)
+        .eq('id', regra.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Regra atualizada');
+      setEditingRegra(null);
+      qc.invalidateQueries({ queryKey: ['regras_contab', empresaId] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const duplicateRegra = useMutation({
+    mutationFn: async (regra: Regra) => {
+      const { id, ...data } = regra;
+      const { error } = await supabase
+        .from('regras_contabilizacao_automatica')
+        .insert({
+          ...data,
+          nome: `${data.nome} (Cópia)`,
+          prioridade: (data.prioridade ?? 0) + 1,
+        });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Regra duplicada');
+      qc.invalidateQueries({ queryKey: ['regras_contab', empresaId] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const dryRunSimulation = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabaseTyped.functions.invoke('contabilizar-evento', {
+        body: {
+          ...simForm,
+          categoria_id: simForm.categoria_id === 'none' ? null : (simForm.categoria_id || null),
+          empresa_id: empresaId,
+          evento_id: 'sim-preview-' + Date.now(),
+          dry_run: true,
+        },
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      setSimResult(data);
+      toast.info('Simulação concluída');
+    },
+    onError: (e: Error) => toast.error('Falha na simulação: ' + e.message),
   });
 
   const toggleAtivo = useMutation({
@@ -233,12 +316,125 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
               Cada evento financeiro dispara uma regra que gera lançamento em partidas dobradas.
             </CardDescription>
           </div>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="gap-1.5">
-                <Plus className="h-4 w-4" />Nova regra
-              </Button>
-            </DialogTrigger>
+          <div className="flex gap-2">
+            <Dialog open={simulating} onOpenChange={setSimulating}>
+              <DialogTrigger asChild>
+                <Button size="sm" variant="outline" className="gap-1.5">
+                  <Play className="h-4 w-4" />Simular dry-run
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-xl">
+                <DialogHeader>
+                  <DialogTitle>Simulação de Contabilização (Dry-run)</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Tipo de evento</Label>
+                      <Select
+                        value={simForm.tipo_evento}
+                        onValueChange={(v) => setSimForm({ ...simForm, tipo_evento: v as any })}
+                      >
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {EVENTOS.map((e) => (
+                            <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Valor</Label>
+                      <Input
+                        type="number"
+                        value={simForm.valor}
+                        onChange={(e) => setSimForm({ ...simForm, valor: Number(e.target.value) })}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Descrição</Label>
+                      <Input
+                        value={simForm.descricao}
+                        onChange={(e) => setSimForm({ ...simForm, descricao: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Categoria (Opcional)</Label>
+                      <Select
+                        value={simForm.categoria_id}
+                        onValueChange={(v) => setSimForm({ ...simForm, categoria_id: v })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Qualquer uma" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Nenhuma</SelectItem>
+                          {categorias.map((c) => (
+                            <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {simResult && (
+                    <Alert className={simResult.status === 'simulado' ? 'bg-blue-500/10 border-blue-500/20' : 'bg-amber-500/10 border-amber-500/20'}>
+                      <Info className="h-4 w-4" />
+                      <AlertTitle>Resultado da Simulação</AlertTitle>
+                      <AlertDescription className="mt-2 space-y-2">
+                        <div className="flex justify-between text-xs">
+                          <span>Status:</span>
+                          <Badge variant="outline">{simResult.status}</Badge>
+                        </div>
+                        {simResult.regra && (
+                          <div className="flex justify-between text-xs">
+                            <span>Regra aplicada:</span>
+                            <span className="font-medium">{simResult.regra.nome}</span>
+                          </div>
+                        )}
+                        {simResult.debito && (
+                          <div className="flex flex-col gap-1 text-[11px] bg-background/50 p-2 rounded border border-border/50">
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Débito:</span>
+                              <span className="font-mono">{contas.find(c => c.id === simResult.debito)?.codigo || simResult.debito}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Crédito:</span>
+                              <span className="font-mono">{contas.find(c => c.id === simResult.credito)?.codigo || simResult.credito}</span>
+                            </div>
+                            <div className="flex justify-between pt-1 border-t border-border/30">
+                              <span className="text-muted-foreground">Valor:</span>
+                              <span className="font-bold">R$ {simResult.valor?.toFixed(2)}</span>
+                            </div>
+                          </div>
+                        )}
+                        {simResult.status === 'sem_regra' && (
+                          <p className="text-xs text-amber-600">Nenhuma regra ativa foi encontrada para este tipo de evento.</p>
+                        )}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+                <DialogFooter>
+                  <Button variant="ghost" onClick={() => { setSimulating(false); setSimResult(null); }}>Fechar</Button>
+                  <Button
+                    onClick={() => dryRunSimulation.mutate()}
+                    disabled={dryRunSimulation.isPending}
+                    className="gap-2"
+                  >
+                    <Play className="h-4 w-4" />
+                    Executar teste
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="gap-1.5">
+                  <Plus className="h-4 w-4" />Nova regra
+                </Button>
+              </DialogTrigger>
             <DialogContent className="max-w-lg">
               <DialogHeader>
                 <DialogTitle>Nova regra de contabilização</DialogTitle>
@@ -252,21 +448,40 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                     placeholder="Ex.: Pagamento de fornecedores via banco"
                   />
                 </div>
-                <div>
-                  <Label>Tipo de evento</Label>
-                  <Select
-                    value={form.tipo_evento}
-                    onValueChange={(v) =>
-                      setForm({ ...form, tipo_evento: v as Regra['tipo_evento'] })
-                    }
-                  >
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {EVENTOS.map((e) => (
-                        <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Tipo de evento</Label>
+                    <Select
+                      value={form.tipo_evento}
+                      onValueChange={(v) =>
+                        setForm({ ...form, tipo_evento: v as Regra['tipo_evento'] })
+                      }
+                    >
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {EVENTOS.map((e) => (
+                          <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Categoria (Filtro)</Label>
+                    <Select
+                      value={form.categoria_id || 'all'}
+                      onValueChange={(v) =>
+                        setForm({ ...form, categoria_id: v === 'all' ? null : v })
+                      }
+                    >
+                      <SelectTrigger><SelectValue placeholder="Todas" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Qualquer uma</SelectItem>
+                        {categorias.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -329,7 +544,8 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                 </Button>
               </DialogFooter>
             </DialogContent>
-          </Dialog>
+            </Dialog>
+          </div>
         </CardHeader>
         <CardContent>
           {loadingRegras ? (
@@ -347,23 +563,100 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                   <TableHead>D / C</TableHead>
                   <TableHead className="text-right">Prio</TableHead>
                   <TableHead className="text-center">Ativo</TableHead>
-                  <TableHead></TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {regras.map((r) => {
                   const dCta = contas.find((c) => c.id === r.conta_debito_id);
                   const cCta = contas.find((c) => c.id === r.conta_credito_id);
+                  const isEditing = editingRegra?.id === r.id;
+
                   return (
                     <TableRow key={r.id}>
-                      <TableCell className="font-medium">{r.nome}</TableCell>
+                      <TableCell className="font-medium">
+                        {isEditing ? (
+                          <Input
+                            value={editingRegra.nome}
+                            onChange={(e) => setEditingRegra({ ...editingRegra, nome: e.target.value })}
+                            className="h-8"
+                          />
+                        ) : (
+                          r.nome
+                        )}
+                      </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{r.tipo_evento}</Badge>
+                        {isEditing ? (
+                          <Select
+                            value={editingRegra.tipo_evento}
+                            onValueChange={(v) =>
+                              setEditingRegra({ ...editingRegra, tipo_evento: v as Regra['tipo_evento'] })
+                            }
+                          >
+                            <SelectTrigger className="h-8"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              {EVENTOS.map((e) => (
+                                <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <div className="flex flex-col gap-1">
+                            <Badge variant="outline">{r.tipo_evento}</Badge>
+                            {r.categoria_id && (
+                              <Badge variant="secondary" className="text-[9px] h-4">
+                                {categorias.find(c => c.id === r.categoria_id)?.nome || 'Cat. externa'}
+                              </Badge>
+                            )}
+                          </div>
+                        )}
                       </TableCell>
                       <TableCell className="text-xs font-mono">
-                        D {dCta?.codigo ?? '?'} / C {cCta?.codigo ?? '?'}
+                        {isEditing ? (
+                          <div className="flex flex-col gap-1">
+                            <Select
+                              value={editingRegra.conta_debito_id}
+                              onValueChange={(v) => setEditingRegra({ ...editingRegra, conta_debito_id: v })}
+                            >
+                              <SelectTrigger className="h-7 text-[10px]"><SelectValue placeholder="Débito" /></SelectTrigger>
+                              <SelectContent className="max-h-60">
+                                {contas.map((c) => (
+                                  <SelectItem key={c.id} value={c.id} className="text-xs">
+                                    {c.codigo} - {c.nome}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Select
+                              value={editingRegra.conta_credito_id}
+                              onValueChange={(v) => setEditingRegra({ ...editingRegra, conta_credito_id: v })}
+                            >
+                              <SelectTrigger className="h-7 text-[10px]"><SelectValue placeholder="Crédito" /></SelectTrigger>
+                              <SelectContent className="max-h-60">
+                                {contas.map((c) => (
+                                  <SelectItem key={c.id} value={c.id} className="text-xs">
+                                    {c.codigo} - {c.nome}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        ) : (
+                          <>D {dCta?.codigo ?? '?'} / C {cCta?.codigo ?? '?'}</>
+                        )}
                       </TableCell>
-                      <TableCell className="text-right">{r.prioridade}</TableCell>
+                      <TableCell className="text-right">
+                        {isEditing ? (
+                          <Input
+                            type="number"
+                            value={editingRegra.prioridade}
+                            onChange={(e) => setEditingRegra({ ...editingRegra, prioridade: Number(e.target.value) })}
+                            className="h-8 w-16 ml-auto"
+                          />
+                        ) : (
+                          r.prioridade
+                        )}
+                      </TableCell>
                       <TableCell className="text-center">
                         <Switch
                           checked={r.ativo}
@@ -373,13 +666,61 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                         />
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => deleteRegra.mutate(r.id)}
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
+                        <div className="flex justify-end gap-1">
+                          {isEditing ? (
+                            <>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-emerald-500"
+                                onClick={() => updateRegra.mutate(editingRegra)}
+                                disabled={updateRegra.isPending}
+                              >
+                                <Save className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-muted-foreground"
+                                onClick={() => setEditingRegra(null)}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8"
+                                onClick={() => setEditingRegra(r)}
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8"
+                                onClick={() => duplicateRegra.mutate(r)}
+                                disabled={duplicateRegra.isPending}
+                              >
+                                <Copy className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-destructive"
+                                onClick={() => {
+                                  if (confirm('Deseja remover esta regra?')) {
+                                    deleteRegra.mutate(r.id);
+                                  }
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
