@@ -43,6 +43,7 @@ import { SessoesConciliacaoPanel } from '@/components/conciliacao/SessoesConcili
 import { BulkActionsBar } from '@/components/ui/bulk-actions-bar';
 import { useConciliacaoPage } from '@/hooks/useConciliacaoPage';
 import { useHighlightFromUrl } from '@/hooks/useHighlightFromUrl';
+import { useAuth } from '@/hooks/useAuth';
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.06 } } } as const;
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } } } as const;
