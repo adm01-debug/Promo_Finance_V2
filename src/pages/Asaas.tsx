@@ -8,7 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { AntecipacaoDialog } from '@/components/asaas/AntecipacaoDialog';
 import { TransferenciaPixHistoryPanel } from '@/components/asaas/TransferenciaPixHistoryPanel';
 import { BoletoPreviewPanel } from '@/components/boletos/BoletoPreviewPanel';
 import { useToast } from '@/hooks/use-toast';
