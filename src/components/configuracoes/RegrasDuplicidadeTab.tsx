@@ -125,7 +125,7 @@ export function RegrasDuplicidadeTab() {
                       <Checkbox 
                         id={field.id}
                         checked={selectedFields.includes(field.id)}
-                        onCheckedChange={() => toggleField(field.id)}
+                        onChange={() => toggleField(field.id)}
                       />
                       <Label htmlFor={field.id} className="text-base font-bold cursor-pointer">
                         {field.label}
@@ -169,7 +169,7 @@ export function RegrasDuplicidadeTab() {
                   type="number"
                   className="h-10 bg-white/5 border-white/5 rounded-xl font-bold"
                   value={toleranciaDias}
-                  onChange={(e) => setTeneranciaDias(Number(e.target.value))}
+                  onChange={(e) => setToleranciaDias(Number(e.target.value))}
                 />
               </div>
             </div>
