@@ -1,5 +1,5 @@
 import { History, MessageCircle, FileText, CheckCircle2, Zap, ArrowRightLeft } from 'lucide-react';
-import { formatDateTime } from '@/lib/formatters';
+import { formatDateTime, formatCurrency } from '@/lib/formatters';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 

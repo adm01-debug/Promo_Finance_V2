@@ -231,7 +231,7 @@ export function ContaReceberDetailDrawer({
             </TabsContent>
 
             <TabsContent value="timeline" className="mt-0 space-y-4">
-              <DrawerTimelineTab auditHistory={auditHistory as any} events={conta.metadata?.events as any[]} />
+              <DrawerTimelineTab auditHistory={auditHistory as any} events={(conta.metadata as any)?.events as any[]} />
             </TabsContent>
 
             <TabsContent value="boletos" className="mt-0">
