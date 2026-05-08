@@ -119,17 +119,25 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
       style={{ boxShadow: '0 4px 24px -1px rgba(0, 0, 0, 0.03)' }}
     >
       <div className="h-full flex items-center justify-between px-8 gap-8">
-        {/* Left: Search Command */}
-        <div className="flex items-center flex-1 max-w-2xl group" data-tour="search">
-          <div className="relative w-full">
+        {/* Left: Search Command & Filter Status */}
+        <div className="flex items-center flex-1 max-w-2xl gap-4 group" data-tour="search">
+          <div className="relative w-full max-w-md">
             <div className="absolute inset-0 bg-white/5 rounded-2xl -m-0.5 opacity-0 group-focus-within:opacity-100 transition-opacity blur-sm pointer-events-none" />
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-white/20 group-focus-within:text-primary transition-all duration-500 group-focus-within:scale-110" />
             <Input
-              placeholder="Search Intelligence Command (⌘K)"
+              placeholder="Search (⌘K)"
               className="pl-14 bg-white/5 border-white/5 focus:bg-background/80 focus:border-primary/40 h-14 rounded-2xl transition-all duration-700 font-bold text-sm shadow-inner placeholder:text-white/20 text-white"
             />
           </div>
+
+          <div className="hidden xl:flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+            <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 whitespace-nowrap">
+              Empresa: {empresaLabel || 'Global'}
+            </span>
+          </div>
         </div>
+
 
         {/* Right: Actions */}
         <div className="flex items-center gap-3">
