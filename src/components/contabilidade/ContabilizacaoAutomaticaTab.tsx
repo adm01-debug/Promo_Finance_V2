@@ -62,6 +62,9 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editingRegra, setEditingRegra] = useState<Regra | null>(null);
+  const [originalRegra, setOriginalRegra] = useState<Regra | null>(null);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  
   const [simulating, setSimulating] = useState(false);
   const [simForm, setSimForm] = useState({
     tipo_evento: 'conta_pagar' as Regra['tipo_evento'],
@@ -71,6 +74,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
     categoria_id: '',
   });
   const [simResult, setSimResult] = useState<any>(null);
+  const [dryRunNoRuleResult, setDryRunNoRuleResult] = useState<any>(null);
 
   const [form, setForm] = useState({
     nome: '',
