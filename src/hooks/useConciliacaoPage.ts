@@ -350,11 +350,22 @@ export function useConciliacaoPage() {
 
   const exportData = useMemo(() => ({
     transacoes: transacoes.map(t => ({
-      descricao: t.descricao, data: t.data, valor: t.valor,
-      tipo: t.tipo, status: t.conciliada ? 'conciliada' : 'pendente',
+      id: t.id,
+      descricao: t.descricao,
+      data: t.data,
+      valor: t.valor,
+      tipo: t.tipo,
+      status: t.conciliada ? 'conciliada' : 'pendente',
+      compensacao_valor: t.compensacao_valor,
+      compensacao_motivo: t.compensacao_motivo,
+      compensacao_classificacao: t.compensacao_classificacao,
+      compensacao_regra: t.compensacao_regra,
+      compensacao_evidencia_url: t.compensacao_evidencia_url,
     })),
     stats: {
-      total: totalTransacoes, conciliadas, pendentes,
+      total: totalTransacoes,
+      conciliadas,
+      pendentes,
       percentual: percentualConciliado,
       valorConciliado: transacoes.filter(t => t.conciliada).reduce((s, t) => s + t.valor, 0),
       valorPendente: transacoes.filter(t => !t.conciliada).reduce((s, t) => s + t.valor, 0),
