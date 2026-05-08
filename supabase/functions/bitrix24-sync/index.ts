@@ -678,6 +678,8 @@ async function syncBoleto(
     return { success: false, message: error?.message || "Erro na sincronização" };
   }
 }
+
+serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
