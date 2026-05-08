@@ -343,7 +343,16 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
               Cada evento financeiro dispara uma regra que gera lançamento em partidas dobradas.
             </CardDescription>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 gap-1.5 text-xs"
+              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+            >
+              {sortOrder === 'asc' ? <ArrowDownAZ className="h-4 w-4" /> : <ArrowUpAZ className="h-4 w-4" />}
+              Prioridade
+            </Button>
             <Dialog open={simulating} onOpenChange={setSimulating}>
               <DialogTrigger asChild>
                 <Button size="sm" variant="outline" className="gap-1.5">
