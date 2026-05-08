@@ -26,7 +26,7 @@ import { maskIp } from '@/lib/ip-mask';
 import { useManagedFilters } from '@/hooks/useManagedFilters';
 import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 
-type AuditAction = 'INSERT' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'LOGOUT' | 'EXPORT' | 'APPROVE' | 'REJECT';
+type AuditAction = 'INSERT' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'LOGOUT' | 'EXPORT' | 'APPROVE' | 'REJECT' | 'troca_empresa' | 'filtro_alterado';
 
 interface AuditLog {
   id: string; user_id: string | null; user_email: string | null; action: AuditAction;
