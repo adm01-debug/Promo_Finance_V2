@@ -851,12 +851,23 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                       </TableCell>
                       <TableCell className="text-right">
                         {isEditing ? (
-                          <Input
-                            type="number"
-                            value={editingRegra.prioridade}
-                            onChange={(e) => setEditingRegra({ ...editingRegra, prioridade: Number(e.target.value) })}
-                            className="h-8 w-16 ml-auto"
-                          />
+                          <div className="flex items-center gap-1 justify-end">
+                            <Input
+                              type="number"
+                              value={editingRegra.prioridade}
+                              onChange={(e) => setEditingRegra({ ...editingRegra, prioridade: Number(e.target.value) })}
+                              className="h-8 w-16"
+                            />
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-6 w-6 text-muted-foreground"
+                              title="Restaurar prioridade"
+                              onClick={() => setEditingRegra({ ...editingRegra, prioridade: originalRegra?.prioridade || 100 })}
+                            >
+                              <RefreshCcw className="h-3 w-3" />
+                            </Button>
+                          </div>
                         ) : (
                           r.prioridade
                         )}
