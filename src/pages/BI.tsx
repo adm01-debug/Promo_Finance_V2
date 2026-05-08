@@ -27,13 +27,23 @@ const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, trans
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
 
 export default function BI() {
+  const { currentEmpresaId } = useAuth();
   const [periodo, setPeriodo] = useState("6");
-  const [empresaId, setEmpresaId] = useState<string>("todas");
+  const [empresaId, setEmpresaId] = useState<string>(currentEmpresaId || "todas");
   const [dataInicio, setDataInicio] = useState<Date | undefined>(undefined);
   const [dataFim, setDataFim] = useState<Date | undefined>(undefined);
   const [usarPeriodoCustom, setUsarPeriodoCustom] = useState(false);
   const [futuristicMode, setFuturisticMode] = useState(true);
-  const [filters, setFilters] = useState({ centroCustoId: 'todos' });
+  const [filters, setFilters] = useState({ centroCustoId: 'todos', contaBancariaId: 'todos' });
+  const [drillDownItem, setDrillDownItem] = useState<string | null>(null);
+
+  // Sincroniza com a empresa ativa do sistema
+  useEffect(() => {
+    if (currentEmpresaId && empresaId !== currentEmpresaId && empresaId === 'todas') {
+      setEmpresaId(currentEmpresaId);
+    }
+  }, [currentEmpresaId]);
+
 
   const { data: empresas = [] } = useEmpresas();
   const { data: contasPagar = [] } = useContasPagar();
