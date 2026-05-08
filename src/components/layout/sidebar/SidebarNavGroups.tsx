@@ -141,6 +141,7 @@ const navGroups: NavGroup[] = [
     items: [
       { label: 'Clientes', icon: User, href: '/clientes', badgeKey: 'whatsapp' },
       { label: 'Scoring & Risco', icon: Target, href: '/clientes/scoring', highlight: true },
+      { label: 'Portal de Tokens', icon: Key, href: '/clientes/portal-tokens' },
       { label: 'Fornecedores', icon: Truck, href: '/fornecedores' },
       { label: 'Vendedores', icon: UserCog, href: '/vendedores' },
       { label: 'Empresas (CNPJs)', icon: Building2, href: '/empresas' },
