@@ -351,6 +351,7 @@ export function useDemonstrativosContabeis(params: {
       const refsLanc = new Set(all.map((p) => p.lancamento?.data_lancamento + '|' + (p.conta?.codigo || '')));
       return {
         ...result,
+        params,
         cobertura: { totalLancamentos: refsLanc.size, totalPartidas: all.length },
         origem: 'competencia',
         isLoading: partidasQuery.isLoading,
