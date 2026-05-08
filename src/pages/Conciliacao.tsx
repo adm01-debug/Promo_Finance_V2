@@ -92,6 +92,7 @@ export default function Conciliacao() {
     handleConciliar, handleIgnorar,
     handleBulkConciliar, handleBulkIgnorar,
     toggleSelect, toggleSelectAll,
+    handleDesfazerConciliacao,
   } = useConciliacaoPage();
 
   // Sincroniza conta bancária padrão da empresa se nenhuma selecionada
@@ -319,7 +320,19 @@ export default function Conciliacao() {
                                 )}
                               </div>
                               <p className={cn("font-bold text-base whitespace-nowrap", isCredito ? "text-success" : "text-destructive")}>{isCredito ? '+' : ''}{formatCurrency(transacao.valor)}</p>
-                              {transacao.conciliada && <Badge className="bg-success/10 text-success border-success/20 gap-1 flex-shrink-0"><CheckCircle2 className="h-3 w-3" />Conciliada</Badge>}
+                              {transacao.conciliada && (
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                  <Badge className="bg-success/10 text-success border-success/20 gap-1"><CheckCircle2 className="h-3 w-3" />Conciliada</Badge>
+                                  <Button 
+                                    size="sm" 
+                                    variant="ghost" 
+                                    className="h-8 text-xs text-muted-foreground hover:text-destructive"
+                                    onClick={() => handleDesfazerConciliacao(transacao.id)}
+                                  >
+                                    Desfazer
+                                  </Button>
+                                </div>
+                              )}
                               {!transacao.conciliada && (
                                 <div className="flex items-center gap-1 flex-shrink-0">
                                   <Button size="sm" variant="outline" className="gap-1.5 h-8" onClick={() => handleConciliar(transacao.id)}><Check className="h-3.5 w-3.5" />Conciliar</Button>
