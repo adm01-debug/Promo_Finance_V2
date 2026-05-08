@@ -41,11 +41,12 @@ const itemVariants = {
 export default function ContasReceber() {
   const {
     searchTerm, statusFilter, centroCustoFilter, empresaFilter, formaFilter,
+    contaBancariaFilter, handleContaBancariaChange,
     formOpen, recebimentoDialogOpen, selectedConta, editingConta, advancedFilters,
     currentPage, pageSize, deleteDialogOpen, deletingConta, isDeleting, isLoading, filterType,
     viewMode, detailDrawerOpen, detailConta, cobrancaDialogOpen, cobrancaConta,
     descontoDialogOpen, descontoConta,
-    contas, sortedContas, centrosCusto, empresas, totalCount, totalPages, kpis, sortKey, sortDirection,
+    contas, sortedContas, centrosCusto, empresas, contasBancarias, totalCount, totalPages, kpis, sortKey, sortDirection,
     handleSearchChange, handleStatusChange, handleCentroCustoChange, handleEmpresaChange,
     handleFormaChange, handlePageSizeChange, handleSort, handleOpenDeleteDialog, handleDeleteConta,
     handleFilterChange, handleBulkMarkAsReceived, handleBulkCancel, handleViewConta,
@@ -56,6 +57,7 @@ export default function ContasReceber() {
     selectedIds, selectedCount, isProcessing, progress, isSelected, isAllSelected,
     selectAll, toggleSelect, clearSelection,
   } = useContasReceberLogic();
+
 
   useHighlightFromUrl('highlight', (sortedContas?.length ?? 0) > 0);
 
