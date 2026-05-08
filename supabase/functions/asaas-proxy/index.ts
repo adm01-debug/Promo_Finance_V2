@@ -465,6 +465,7 @@ Deno.serve(async (req) => {
           
           // Registrar na auditoria
           await supabase.from('asaas_audit_trail').insert({
+            payment_id: null, // transfers don't have a payment_id link here, but we could use metadata if needed
             action: 'PIX_CASHOUT_CREATED',
             details: { asaas_id: result.id, valor: data.valor, chave: data.chave_pix },
             user_id: user.id

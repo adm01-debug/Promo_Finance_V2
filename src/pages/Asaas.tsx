@@ -178,11 +178,12 @@ export default function Asaas() {
     );
   }
 
-  const filteredPayments = payments.filter(p => {
+  const filteredPayments = (payments || []).filter(p => {
     const matchesStatus = filterStatus === 'all' || p.status === filterStatus;
     const matchesSearch = !filterSearch || 
       (p.descricao?.toLowerCase().includes(filterSearch.toLowerCase())) ||
-      (p.asaas_id?.toLowerCase().includes(filterSearch.toLowerCase()));
+      (p.asaas_id?.toLowerCase().includes(filterSearch.toLowerCase())) ||
+      (p.asaas_customer_id?.toLowerCase().includes(filterSearch.toLowerCase())); // Search by CNPJ/ID
     
     let matchesDate = true;
     if (filterDateStart && p.data_vencimento < filterDateStart) matchesDate = false;

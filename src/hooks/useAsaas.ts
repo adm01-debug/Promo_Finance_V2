@@ -450,19 +450,8 @@ export function useAsaas(empresaId?: string) {
         .eq('payment_id', paymentId);
       if (queueError) throw queueError;
       
-      // 2. Registramos na trilha de auditoria com o motivo e usuário
-      const { error: auditError } = await supabase
-        .from('asaas_audit_trail')
-        .insert({
-          payment_id: paymentId,
-          action: 'MANUAL_REPROCESS',
-          details: { reason, manual: true },
-          user_id: userId
-        });
-      if (auditError) throw auditError;
-
-      // 3. Invocamos o proxy para sincronizar imediatamente
-      return invokeAsaas('sincronizar_pagamento', { payment_id: paymentId });
+      // 3. Invocamos o proxy para sincronizar imediatamente (o proxy agora registra a auditoria com o motivo)
+      return invokeAsaas('sincronizar_pagamento', { payment_id: paymentId, reason });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['asaas-sync-queue'] });
