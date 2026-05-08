@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion } from 'framer-motion';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { ClientesTableBody } from '@/pages/clientes/ClientesTableBody';
@@ -74,6 +75,7 @@ import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ClienteForm } from '@/components/clientes/ClienteForm';
 import { ClienteDetailDialog } from '@/components/clientes/ClienteDetailDialog';
+import { ScoringClientesPanel } from '@/components/clientes/ScoringClientesPanel';
 import { TablePagination } from '@/components/ui/table-pagination';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
