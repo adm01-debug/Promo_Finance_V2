@@ -204,6 +204,10 @@ export function ContasPagarTableRow({
             {conta.numero_documento && (
               <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-white/5 bg-white/5 text-muted-foreground/60 tracking-wider">REF: {conta.numero_documento}</Badge>
             )}
+            {conta.status === 'pendente' && (
+              <Badge variant="outline" className="text-[8px] font-black uppercase px-1.5 py-0 rounded-md border-emerald-500/30 bg-emerald-500/10 text-emerald-400 tracking-widest">Anti-Duplicidade Ativo</Badge>
+            )}
+
           </div>
         </div>
       </TableCell>

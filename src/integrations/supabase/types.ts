@@ -8728,6 +8728,33 @@ export type Database = {
           },
         ]
       }
+      registro_duplicidade: {
+        Row: {
+          created_at: string | null
+          entidade_id: string | null
+          hash_identificador: string
+          id: string
+          tipo_entidade: string | null
+          usuario_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          entidade_id?: string | null
+          hash_identificador: string
+          id?: string
+          tipo_entidade?: string | null
+          usuario_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          entidade_id?: string | null
+          hash_identificador?: string
+          id?: string
+          tipo_entidade?: string | null
+          usuario_id?: string | null
+        }
+        Relationships: []
+      }
       regras_conciliacao: {
         Row: {
           ativo: boolean | null
@@ -12117,6 +12144,17 @@ export type Database = {
       gerar_alertas_pendencias_conciliacao: { Args: never; Returns: undefined }
       gerar_alertas_vencimento: { Args: never; Returns: undefined }
       gerar_contas_recorrentes: { Args: never; Returns: number }
+      gerar_hash_pagamento: {
+        Args: {
+          p_codigo_barras?: string
+          p_data_vencimento: string
+          p_empresa_id: string
+          p_fornecedor_id: string
+          p_numero_documento?: string
+          p_valor: number
+        }
+        Returns: string
+      }
       gerar_numero_acordo: { Args: never; Returns: string }
       get_asaas_payment_stats: {
         Args: { p_empresa_id: string }

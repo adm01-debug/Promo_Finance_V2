@@ -88,8 +88,26 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
       const { error } = await supabase.from('contas_pagar').insert({ fornecedor_id: data.fornecedor_id || null, fornecedor_nome: data.fornecedor_nome, descricao: data.descricao, valor: data.valor, data_vencimento: data.data_vencimento, data_emissao: data.data_emissao || new Date().toISOString().split('T')[0], empresa_id: data.empresa_id, centro_custo_id: data.centro_custo_id || null, conta_bancaria_id: data.conta_bancaria_id || null, tipo_cobranca: data.tipo_cobranca, numero_documento: data.numero_documento || null, codigo_barras: data.codigo_barras || null, observacoes: data.observacoes || null, recorrente: data.recorrente, created_by: user.id, status: 'pendente' });
       if (error) throw error;
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['contas-pagar'] }); sounds.success(); celebrateSuccess('Conta criada com sucesso!'); form.reset(); onOpenChange(false); },
-    onError: (error: unknown) => { sounds.error(); logger.error('Error creating conta pagar:', error); toast({ title: 'Erro ao criar conta', description: 'Não foi possível criar a conta. Tente novamente.', variant: 'destructive' }); },
+    onSuccess: () => { 
+      queryClient.invalidateQueries({ queryKey: ['contas-pagar'] }); 
+      sounds.success(); 
+      celebrateSuccess('Conta criada com sucesso!'); 
+      form.reset(); 
+      onOpenChange(false); 
+    },
+    onError: (error: any) => { 
+      sounds.error(); 
+      logger.error('Error creating conta pagar:', error); 
+      const isDuplicate = error?.message?.includes('ALERTA DE DUPLICIDADE') || error?.code === '23505';
+      toast({ 
+        title: isDuplicate ? 'Possível Duplicidade Detectada' : 'Erro ao criar conta', 
+        description: isDuplicate 
+          ? 'Já existe um pagamento idêntico cadastrado (mesmo fornecedor, valor e vencimento). Verifique para evitar pagamentos duplicados.' 
+          : 'Não foi possível criar a conta. Tente novamente.', 
+        variant: isDuplicate ? 'default' : 'destructive' 
+      }); 
+    },
+
   });
 
   const updateMutation = useMutation({
