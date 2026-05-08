@@ -119,6 +119,61 @@ describe('encontrarMatchesParaTransacao', () => {
 });
 
 // ============================
+// Boundary Cases (Valor e Lucro/JCP)
+// ============================
+describe('transaction-matcher - Boundary Cases', () => {
+  it('exatamente no limite de tolerância de valor (percentual)', () => {
+    const tolerancia = 2; // 2%
+    const valorOriginal = 1000;
+    const valorNoLimite = 1020; // 2% de 1000
+    
+    const matches = encontrarMatchesParaTransacao(
+      mockTransacao({ valor: valorOriginal }),
+      [mockLancamento({ valor: valorNoLimite })],
+      { ...DEFAULT_CONFIG, toleranciaValor: tolerancia }
+    );
+    
+    expect(matches.length).toBeGreaterThan(0);
+    expect(matches[0].motivos.some(m => m.tipo === 'valor_proximo')).toBe(true);
+  });
+
+  it('exatamente no limite de tolerância de data (dias)', () => {
+    const toleranciaDias = 10; // Aumentado para garantir score > 0.5
+    const dataBase = new Date('2024-01-15T12:00:00Z');
+    const dataLimite = new Date('2024-01-20T12:00:00Z'); // 5 dias depois
+    
+    const matches = encontrarMatchesParaTransacao(
+      mockTransacao({ data: dataBase }),
+      [mockLancamento({ dataVencimento: dataLimite })],
+      { ...DEFAULT_CONFIG, toleranciaDias }
+    );
+    
+    // score = 1 - (5/10)*0.5 = 0.75 (> 0.5)
+    expect(matches.length).toBeGreaterThan(0);
+    expect(matches[0].motivos.some(m => m.tipo === 'data_proxima')).toBe(true);
+  });
+
+  it('quase no limite (centavos)', () => {
+    const matches = encontrarMatchesParaTransacao(
+      mockTransacao({ valor: 1000.50 }),
+      [mockLancamento({ valor: 1000.51 })]
+    );
+    expect(matches.length).toBeGreaterThan(0);
+    expect(matches[0].motivos.some(m => m.tipo === 'valor_exato' || m.tipo === 'valor_proximo')).toBe(true);
+  });
+
+  it('valor zero (caso de borda)', () => {
+    const matches = encontrarMatchesParaTransacao(
+      mockTransacao({ valor: 0 }),
+      [mockLancamento({ valor: 0 })]
+    );
+    // similaridadeValor.tipo === 'exato' se diff < 0.01
+    expect(matches.length).toBeGreaterThan(0);
+    expect(matches[0].motivos.some(m => m.tipo === 'valor_exato')).toBe(true);
+  });
+});
+
+// ============================
 // encontrarTodosMatches
 // ============================
 describe('encontrarTodosMatches', () => {
