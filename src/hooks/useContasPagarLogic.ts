@@ -369,6 +369,8 @@ export function useContasPagarLogic() {
     isLoading,
     profilesMap,
     historicoAprovacaoPorConta,
+    empresas,
+    contasBancarias,
 
     // KPIs
     totalPagar,
