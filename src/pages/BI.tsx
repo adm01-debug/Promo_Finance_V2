@@ -256,8 +256,13 @@ export default function BI() {
         </motion.div>
 
         {futuristicMode ? (
-          <FuturisticDashboard kpis={kpis} evolucaoMensal={evolucaoMensal} />
+          <FuturisticDashboard 
+            kpis={kpis} 
+            evolucaoMensal={evolucaoMensal} 
+            onMetricClick={(metric: string) => setDrillDownItem(metric)}
+          />
         ) : (
+
           <>
             <BIMainKpis kpis={kpis} />
             <BISecondaryKpis kpis={kpis} />
