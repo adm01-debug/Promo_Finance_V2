@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Plus, Search, ShieldCheck, History, Wand2, Filter, ChevronDown, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Plus, Search, ShieldCheck, History, Wand2, Filter, ChevronDown, CheckCircle2, AlertCircle, TrendingUp, BookOpen, Layers, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { usePlanoContas, useUpsertPlanoConta } from '@/hooks/usePlanoContas';
 import { useAuditoriaCFC } from '@/hooks/useAuditoriaCFC';
 import { usePlanoContaHistory } from '@/hooks/usePlanoContaHistory';
@@ -32,9 +33,20 @@ export function PlanoContasTab({ empresaId }: Props) {
   const history = usePlanoContaHistory({ empresaId, limit: 200 });
   const upsert = useUpsertPlanoConta();
 
-  const filtered = contas.filter(c =>
-    c.codigo.includes(busca) || (c.descricao || '').toLowerCase().includes(busca.toLowerCase()),
-  );
+  const filtered = useMemo(() => {
+    return contas.filter(c =>
+      c.codigo.includes(busca) || (c.descricao || '').toLowerCase().includes(busca.toLowerCase()),
+    );
+  }, [contas, busca]);
+
+  const stats = useMemo(() => {
+    return {
+      total: contas.length,
+      analiticas: contas.filter(c => c.tipo === 'analitica').length,
+      sinteticas: contas.filter(c => c.tipo === 'sintetica').length,
+      referenciadas: contas.filter(c => !!c.codigo_referencial).length,
+    };
+  }, [contas]);
 
   const handleSalvar = async () => {
     await upsert.mutateAsync({ ...form, empresa_id: empresaId } as never);
@@ -154,6 +166,57 @@ export function PlanoContasTab({ empresaId }: Props) {
         </div>
       </CardHeader>
       <CardContent className="p-8 pt-2 relative z-10 space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+            className="p-4 rounded-3xl bg-white/5 border border-white/5 flex items-center gap-4 group/stat"
+          >
+            <div className="p-3 rounded-2xl bg-primary/10 text-primary group-hover:scale-110 transition-transform">
+              <BookOpen className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Total de Contas</p>
+              <p className="text-xl font-black">{stats.total}</p>
+            </div>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+            className="p-4 rounded-3xl bg-white/5 border border-white/5 flex items-center gap-4 group/stat"
+          >
+            <div className="p-3 rounded-2xl bg-purple-500/10 text-purple-400 group-hover:scale-110 transition-transform">
+              <Layers className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Analíticas</p>
+              <p className="text-xl font-black">{stats.analiticas}</p>
+            </div>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+            className="p-4 rounded-3xl bg-white/5 border border-white/5 flex items-center gap-4 group/stat"
+          >
+            <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-400 group-hover:scale-110 transition-transform">
+              <TrendingUp className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Sintéticas</p>
+              <p className="text-xl font-black">{stats.sinteticas}</p>
+            </div>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+            className="p-4 rounded-3xl bg-white/5 border border-white/5 flex items-center gap-4 group/stat"
+          >
+            <div className="p-3 rounded-2xl bg-success/10 text-success group-hover:scale-110 transition-transform">
+              <CheckCircle className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Referenciadas</p>
+              <p className="text-xl font-black">{stats.referenciadas}</p>
+            </div>
+          </motion.div>
+        </div>
+
         <div className="flex flex-wrap items-center gap-4">
           <div className="relative flex-1 min-w-[320px] group/search">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within/search:text-primary" />
@@ -161,12 +224,21 @@ export function PlanoContasTab({ empresaId }: Props) {
               placeholder="Buscar por código, descrição ou referencial..." 
               value={busca} 
               onChange={e => setBusca(e.target.value)} 
-              className="h-14 pl-12 bg-white/5 border-white/5 rounded-2xl font-bold text-lg transition-all focus:ring-primary/20 placeholder:text-muted-foreground/40" 
+              className="h-14 pl-12 bg-white/5 border-white/10 rounded-2xl font-bold text-lg transition-all focus:ring-primary/20 placeholder:text-muted-foreground/40" 
             />
           </div>
-          <div className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 bg-white/5 px-5 py-4 rounded-2xl border border-white/5">
-            {filtered.length} / {contas.length} registros
-          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 bg-white/5 px-5 py-4 rounded-2xl border border-white/5 cursor-help">
+                  {filtered.length} / {contas.length} registros
+                </div>
+              </TooltipTrigger>
+              <TooltipContent className="bg-background/95 backdrop-blur-xl border-white/10 p-4 rounded-2xl">
+                <p className="text-xs font-bold">Filtro ativo: <span className="text-primary">{busca || 'Nenhum'}</span></p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         {isLoading ? (
@@ -201,27 +273,56 @@ export function PlanoContasTab({ empresaId }: Props) {
                           {c.codigo}
                         </Badge>
                       </TableCell>
-                      <TableCell className="font-bold text-foreground/80">{c.descricao}</TableCell>
+                      <TableCell className="font-bold text-foreground/80">
+                        <div className="flex flex-col">
+                          <span className="text-sm font-black tracking-tight">{c.descricao}</span>
+                          <span className="text-[9px] font-bold uppercase opacity-30 tracking-widest">{c.natureza}</span>
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <Badge variant="outline" className={cn(
-                          "uppercase text-[10px] font-black tracking-widest border-none px-3 rounded-full",
-                          c.natureza === 'ativo' ? "bg-success/20 text-success" : 
-                          c.natureza === 'passivo' ? "bg-destructive/20 text-destructive" :
-                          "bg-primary/20 text-primary"
+                          "uppercase text-[9px] font-black tracking-widest border-none px-3 py-1 rounded-full flex items-center gap-1.5 w-fit",
+                          c.natureza === 'ativo' ? "bg-emerald-500/10 text-emerald-400" : 
+                          c.natureza === 'passivo' ? "bg-rose-500/10 text-rose-400" :
+                          c.natureza === 'patrimonio' ? "bg-amber-500/10 text-amber-400" :
+                          "bg-primary/10 text-primary"
                         )}>
+                          <div className={cn("h-1 w-1 rounded-full animate-pulse", 
+                            c.natureza === 'ativo' ? "bg-emerald-400" : 
+                            c.natureza === 'passivo' ? "bg-rose-400" : "bg-primary-400"
+                          )} />
                           {c.natureza}
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <span className={cn(
-                          "text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full",
-                          c.tipo === 'analitica' ? "bg-purple-500/10 text-purple-400" : "bg-blue-500/10 text-blue-400"
-                        )}>
-                          {c.tipo}
-                        </span>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className={cn(
+                                "text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full cursor-help",
+                                c.tipo === 'analitica' ? "bg-purple-500/10 text-purple-400" : "bg-blue-500/10 text-blue-400"
+                              )}>
+                                {c.tipo}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-background/95 backdrop-blur-xl border-white/10 p-2 rounded-xl">
+                              <p className="text-[10px] font-bold">Conta {c.tipo === 'analitica' ? 'que recebe lançamentos' : 'que soma saldos'}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </TableCell>
-                      <TableCell className="font-mono text-xs opacity-60 font-black tracking-tighter">
-                        {c.codigo_referencial || <span className="opacity-20">—</span>}
+                      <TableCell className="font-mono text-xs font-black tracking-tighter">
+                        {c.codigo_referencial ? (
+                          <div className="flex items-center gap-2 text-primary">
+                            <CheckCircle2 className="h-3 w-3" />
+                            <span>{c.codigo_referencial}</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 text-muted-foreground/30">
+                            <AlertCircle className="h-3 w-3" />
+                            <span className="text-[10px] font-black uppercase">Não vinculado</span>
+                          </div>
+                        )}
                       </TableCell>
                     </motion.tr>
                   ))}
