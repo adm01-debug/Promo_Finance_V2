@@ -48,6 +48,10 @@ export function ContaBancariaCard({ conta, empresaNome, showSaldos, bancoIcon: B
               <DropdownMenuContent align="end">
                 <DropdownMenuItem><RefreshCw className="h-4 w-4 mr-2" />Sincronizar</DropdownMenuItem>
                 <DropdownMenuItem><Edit className="h-4 w-4 mr-2" />Editar</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem><Settings2 className="h-4 w-4 mr-2" />Regras de Conciliação</DropdownMenuItem>
+                <DropdownMenuItem><FileText className="h-4 w-4 mr-2" />Mapeamento de Extrato</DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-destructive" onClick={() => onDelete(conta)}>
                   <Trash2 className="h-4 w-4 mr-2" />Excluir
                 </DropdownMenuItem>
