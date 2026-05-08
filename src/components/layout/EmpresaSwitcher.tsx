@@ -67,14 +67,14 @@ export function EmpresaSwitcher() {
   }
 
   return (
-    <div className="flex items-center gap-1.5">
-      {/* Quick switch pills - até 4 empresas do Grupo Promo Brindes */}
-      <div className="hidden xl:flex items-center gap-1">
+    <div className="flex items-center gap-2">
+      {/* Quick switch pills - 4 empresas do Grupo Promo Brindes */}
+      <div className="hidden lg:flex items-center gap-1.5 p-1 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
         {quickAccess.map((v) => {
           const label = v.empresa.nome_fantasia || v.empresa.razao_social;
           const isActive = v.empresa_id === currentId;
           return (
-            <Tooltip key={v.empresa_id} delayDuration={200}>
+            <Tooltip key={v.empresa_id} delayDuration={0}>
               <TooltipTrigger asChild>
                 <button
                   type="button"
@@ -82,32 +82,42 @@ export function EmpresaSwitcher() {
                   aria-label={`Trocar para ${label}`}
                   aria-pressed={isActive}
                   className={cn(
-                    'relative h-10 min-w-10 px-3 rounded-xl flex items-center gap-2 text-xs font-bold transition-all duration-300 border',
+                    'relative h-9 px-3 rounded-xl flex items-center gap-2 text-[10px] font-black transition-all duration-500 border group',
                     isActive
-                      ? 'bg-gradient-to-br from-primary to-accent text-primary-foreground border-primary/40 shadow-lg shadow-primary/20 scale-105'
-                      : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10 hover:text-white hover:border-white/20',
+                      ? 'bg-primary text-primary-foreground border-primary shadow-[0_8px_20px_-4px_rgba(var(--primary),0.4)] scale-105 z-10'
+                      : 'bg-transparent text-white/40 border-transparent hover:bg-white/10 hover:text-white hover:border-white/10',
                   )}
                 >
-                  <span className="text-[11px] font-black tracking-wider">
+                  <span className="tracking-tighter uppercase whitespace-nowrap">
                     {getInitials(label)}
                   </span>
                   {isActive && (
-                    <span className="hidden 2xl:inline truncate max-w-[110px] text-[11px] font-semibold">
+                    <motion.span 
+                      initial={{ width: 0, opacity: 0 }}
+                      animate={{ width: 'auto', opacity: 1 }}
+                      className="truncate max-w-[80px] font-bold"
+                    >
                       {label}
-                    </span>
+                    </motion.span>
+                  )}
+                  {!isActive && (
+                    <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 blur-md rounded-xl transition-opacity" />
                   )}
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">
-                <div className="font-semibold">{label}</div>
-                <div className="text-[10px] text-muted-foreground">{v.empresa.cnpj}</div>
+              <TooltipContent side="bottom" className="text-[10px] font-bold bg-background/95 backdrop-blur-md border-white/10">
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-foreground uppercase tracking-wider">{label}</span>
+                  <span className="text-muted-foreground font-mono">{v.empresa.cnpj}</span>
+                </div>
               </TooltipContent>
             </Tooltip>
           );
         })}
       </div>
 
-      <div className="hidden xl:block w-px h-6 bg-white/10 mx-1" />
+      <div className="hidden lg:block w-px h-6 bg-white/10 mx-1" />
+
 
       {/* Dropdown completo (sempre visível) */}
       <Popover open={open} onOpenChange={setOpen}>
