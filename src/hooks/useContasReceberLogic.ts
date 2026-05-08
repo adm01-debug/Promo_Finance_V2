@@ -50,7 +50,10 @@ export function useContasReceberLogic() {
     search: debouncedSearch,
     status: statusFilter,
     centroCustoId: centroCustoFilter,
+    empresaId: empresaFilter,
+    contaBancariaId: contaBancariaFilter,
   });
+
 
   const { data: allContas = [] } = useContasReceber();
   const { data: centrosCusto = [] } = useCentrosCusto();
