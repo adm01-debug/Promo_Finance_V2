@@ -381,6 +381,25 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                   <DialogTitle>Simulação de Contabilização (Dry-run)</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
+                  <div className="flex items-center gap-2 mb-4 bg-muted/30 p-1 rounded-md">
+                    <Button 
+                      variant={!isLote ? "secondary" : "ghost"} 
+                      size="sm" 
+                      className="flex-1 h-7 text-xs"
+                      onClick={() => setIsLote(false)}
+                    >
+                      Evento Único
+                    </Button>
+                    <Button 
+                      variant={isLote ? "secondary" : "ghost"} 
+                      size="sm" 
+                      className="flex-1 h-7 text-xs"
+                      onClick={() => setIsLote(true)}
+                    >
+                      Lote (Stress Test)
+                    </Button>
+                  </div>
+
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>Tipo de evento</Label>
@@ -397,7 +416,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label>Valor</Label>
+                      <Label>{isLote ? 'Valor base' : 'Valor'}</Label>
                       <Input
                         type="number"
                         value={simForm.valor}
@@ -430,51 +449,140 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                     </div>
                   </div>
 
-                  {simResult && (
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2 text-sm font-medium">
-                        <ArrowRightLeft className="h-4 w-4" />
-                        Comparativo Antes vs Depois
+                  {isLote && (
+                    <div className="space-y-2 bg-primary/5 p-3 rounded-lg border border-primary/10">
+                      <div className="flex items-center justify-between">
+                        <Label className="flex items-center gap-2">
+                          <Layers className="h-4 w-4 text-primary" />
+                          Quantidade no lote
+                        </Label>
+                        <Badge variant="secondary">{simForm.lote_quantidade} eventos</Badge>
+                      </div>
+                      <Input 
+                        type="range" 
+                        min="1" 
+                        max="20" 
+                        value={simForm.lote_quantidade} 
+                        onChange={(e) => setSimForm({...simForm, lote_quantidade: parseInt(e.target.value)})}
+                        className="h-4"
+                      />
+                    </div>
+                  )}
+
+                  {simResult && simResult.type === 'single' && (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 text-sm font-medium border-b pb-2">
+                        <ArrowRightLeft className="h-4 w-4 text-primary" />
+                        Visualização Comparativa "Antes e Depois"
                       </div>
                       
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label className="text-[10px] uppercase text-muted-foreground">Estado Atual (Sem Regra)</Label>
-                          <div className="h-24 rounded border border-dashed flex flex-col items-center justify-center p-3 bg-muted/20">
-                            <X className="h-5 w-5 text-muted-foreground/50 mb-1" />
-                            <span className="text-[10px] text-muted-foreground text-center">Nenhum lançamento contábil automático gerado</span>
+                          <Label className="text-[10px] uppercase text-muted-foreground font-bold">Estado Atual (Sem Regras)</Label>
+                          <div className="min-h-[120px] rounded-lg border border-dashed flex flex-col p-3 bg-muted/10">
+                            {dryRunBefore?.status === 'sem_regra' ? (
+                              <div className="flex flex-col items-center justify-center h-full text-center py-4">
+                                <X className="h-6 w-6 text-muted-foreground/30 mb-1" />
+                                <span className="text-[10px] text-muted-foreground">Nenhum lançamento automático configurado para este evento.</span>
+                              </div>
+                            ) : (
+                              <div className="text-[10px] space-y-2">
+                                <div className="flex justify-between items-center border-b border-muted pb-1 mb-1">
+                                  <span className="font-bold text-muted-foreground">Lançamento Padrão</span>
+                                  <Badge variant="outline" className="text-[8px] h-3 px-1">ATIVO</Badge>
+                                </div>
+                                <div className="grid grid-cols-5 gap-1 font-mono">
+                                  <span className="col-span-1 text-muted-foreground">D:</span>
+                                  <span className="col-span-4">{contas.find(c => c.id === dryRunBefore?.debito)?.codigo || '—'}</span>
+                                  <span className="col-span-1 text-muted-foreground">C:</span>
+                                  <span className="col-span-4">{contas.find(c => c.id === dryRunBefore?.credito)?.codigo || '—'}</span>
+                                  <span className="col-span-1 text-muted-foreground">V:</span>
+                                  <span className="col-span-4 text-emerald-600 font-bold">R$ {dryRunBefore?.valor?.toFixed(2)}</span>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
 
                         <div className="space-y-2">
-                          <Label className="text-[10px] uppercase text-emerald-600">Simulação (Com Regra Aplicada)</Label>
-                          <div className={`h-24 rounded border ${simResult.status === 'simulado' ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-amber-500/30 bg-amber-500/5'} p-3 flex flex-col justify-between`}>
-                            {simResult.status === 'simulado' ? (
-                              <>
-                                <div className="flex justify-between items-start">
-                                  <Badge variant="outline" className="text-[9px] px-1 h-4 border-emerald-500/50 text-emerald-700">SUCESSO</Badge>
-                                  <span className="text-[10px] font-mono font-bold">R$ {simResult.valor?.toFixed(2)}</span>
+                          <Label className="text-[10px] uppercase text-emerald-600 font-bold">Simulação (Com Regras)</Label>
+                          <div className={`min-h-[120px] rounded-lg border ${simResult.after.status === 'simulado' ? 'border-emerald-500/40 bg-emerald-500/5' : 'border-amber-500/30 bg-amber-500/5'} p-3`}>
+                            {simResult.after.status === 'simulado' ? (
+                              <div className="text-[10px] space-y-2">
+                                <div className="flex justify-between items-center border-b border-emerald-500/20 pb-1 mb-1">
+                                  <Badge variant="outline" className="text-[8px] h-3 px-1 border-emerald-500/50 text-emerald-700 bg-emerald-100/50">NOVO FLUXO</Badge>
+                                  <span className="font-bold text-emerald-700">R$ {simResult.after.valor?.toFixed(2)}</span>
                                 </div>
-                                <div className="text-[9px] font-mono leading-tight truncate mt-1">
-                                  <span className="text-muted-foreground">D:</span> {contas.find(c => c.id === simResult.debito)?.codigo || '?'}<br/>
-                                  <span className="text-muted-foreground">C:</span> {contas.find(c => c.id === simResult.credito)?.codigo || '?'}
+                                <div className="grid grid-cols-5 gap-1 font-mono">
+                                  <span className="col-span-1 text-emerald-600/70">D:</span>
+                                  <span className="col-span-4 font-bold">{contas.find(c => c.id === simResult.after.debito)?.codigo || '?'}</span>
+                                  <span className="col-span-1 text-emerald-600/70">C:</span>
+                                  <span className="col-span-4 font-bold">{contas.find(c => c.id === simResult.after.credito)?.codigo || '?'}</span>
                                 </div>
-                              </>
+                                <div className="mt-2 pt-1 border-t border-emerald-500/10 text-[9px] text-emerald-800/70 flex items-center gap-1">
+                                  <Zap className="h-2 w-2" /> {simResult.after.regra.nome}
+                                </div>
+                              </div>
                             ) : (
-                              <div className="flex flex-col items-center justify-center h-full">
-                                <AlertTriangle className="h-4 w-4 text-amber-500 mb-1" />
-                                <span className="text-[9px] text-amber-600 text-center">Nenhuma regra compatível</span>
+                              <div className="flex flex-col items-center justify-center h-full py-4">
+                                <AlertTriangle className="h-6 w-6 text-amber-500 mb-1" />
+                                <span className="text-[10px] text-amber-600 text-center font-medium">Nenhuma regra compatível encontrada.</span>
                               </div>
                             )}
                           </div>
                         </div>
                       </div>
-                      
-                      {simResult.regra && (
-                        <div className="text-[10px] text-muted-foreground flex items-center gap-1 justify-center bg-muted/30 py-1 rounded">
-                          <Zap className="h-3 w-3" /> Regra aplicada: <strong>{simResult.regra.nome}</strong> (Prio {regras.find(r => r.id === simResult.regra.id)?.prioridade})
+                    </div>
+                  )}
+
+                  {simResult && simResult.type === 'lote' && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between text-sm font-medium border-b pb-2">
+                        <div className="flex items-center gap-2">
+                          <Layers className="h-4 w-4 text-primary" />
+                          Resumo do Processamento em Lote
                         </div>
-                      )}
+                        <Badge variant="outline">{simResult.results.length} Eventos</Badge>
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-lg text-center">
+                          <div className="text-lg font-bold text-emerald-700">
+                            {simResult.results.filter((r: any) => r.status === 'simulado').length}
+                          </div>
+                          <div className="text-[10px] uppercase text-emerald-600 font-bold">Sucesso</div>
+                        </div>
+                        <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-lg text-center">
+                          <div className="text-lg font-bold text-amber-700">
+                            {simResult.results.filter((r: any) => r.status === 'sem_regra').length}
+                          </div>
+                          <div className="text-[10px] uppercase text-amber-600 font-bold">Sem Regra</div>
+                        </div>
+                        <div className="bg-destructive/10 border border-destructive/20 p-3 rounded-lg text-center">
+                          <div className="text-lg font-bold text-destructive">
+                            {simResult.results.filter((r: any) => r.error).length}
+                          </div>
+                          <div className="text-[10px] uppercase text-destructive font-bold">Falhas</div>
+                        </div>
+                      </div>
+
+                      <div className="max-h-40 overflow-y-auto border rounded-md p-2 space-y-1">
+                        {simResult.results.map((r: any, idx: number) => (
+                          <div key={idx} className="text-[9px] flex items-center justify-between p-1 border-b last:border-0 hover:bg-muted/50">
+                            <span className="text-muted-foreground">Evento #{idx + 1}</span>
+                            <div className="flex items-center gap-2">
+                              {r.status === 'simulado' ? (
+                                <>
+                                  <span className="font-mono">{contas.find(c => c.id === r.debito)?.codigo} / {contas.find(c => c.id === r.credito)?.codigo}</span>
+                                  <CheckCircle2 className="h-3 w-3 text-emerald-500" />
+                                </>
+                              ) : (
+                                <AlertTriangle className="h-3 w-3 text-amber-500" />
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
