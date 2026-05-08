@@ -96,18 +96,24 @@ export function useExecucoesCobranca(empresaId?: string) {
 export function useProcessarRegua() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (empresaId?: string) => {
+    mutationFn: async ({ empresaId, simulate = false }: { empresaId?: string; simulate?: boolean } = {}) => {
       const { data, error } = await supabase.rpc('processar_regua_cobranca', {
         p_empresa_id: empresaId || null,
+        p_simulate: simulate
       });
       if (error) throw error;
-      return data;
+      return { data, simulate };
     },
-    onSuccess: (data) => {
-      qc.invalidateQueries({ queryKey: ['fila-cobrancas'] });
-      qc.invalidateQueries({ queryKey: ['views', 'metricas-cobranca'] });
-      const result = Array.isArray(data) ? data[0] : data;
-      toast.success(`Régua processada! ${result?.total_enfileirados || 0} cobranças enfileiradas.`);
+    onSuccess: (result) => {
+      if (result.simulate) {
+        const stats = Array.isArray(result.data) ? result.data[0] : result.data;
+        toast.info(`Simulação concluída! ${stats?.total_enfileirados || 0} cobranças seriam disparadas hoje.`);
+      } else {
+        qc.invalidateQueries({ queryKey: ['fila-cobrancas'] });
+        qc.invalidateQueries({ queryKey: ['views', 'metricas-cobranca'] });
+        const stats = Array.isArray(result.data) ? result.data[0] : result.data;
+        toast.success(`Régua processada! ${stats?.total_enfileirados || 0} cobranças enfileiradas.`);
+      }
     },
     onError: (e: Error) => toast.error(`Erro ao processar régua: ${e.message}`),
   });
