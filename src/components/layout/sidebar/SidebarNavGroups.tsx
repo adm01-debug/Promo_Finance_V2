@@ -171,7 +171,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
   // Monitora filtros sincronizados para a empresa ativa
   useEffect(() => {
     const checkSync = () => {
-      const keys = ['contas-receber-filters', 'contas-pagar-filters', 'conciliacao_filters', 'aging_filters'];
+      const keys = ['contas-receber-filters', 'contas-pagar-filters', 'conciliacao_filters', 'aging_filters', 'app-dashboard-receber-filters'];
       const status: Record<string, boolean> = {};
       keys.forEach(k => {
         const val = localStorage.getItem(k);
