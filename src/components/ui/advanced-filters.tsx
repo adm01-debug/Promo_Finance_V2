@@ -241,6 +241,52 @@ export function AdvancedFiltersPopover({
             </Select>
           </div>
 
+          {/* Empresa */}
+          {empresas.length > 0 && (
+            <div className="space-y-2">
+              <Label className="text-xs font-medium text-muted-foreground">Empresa</Label>
+              <Select
+                value={filters.empresaId || 'all'}
+                onValueChange={(value) => updateFilter('empresaId', value)}
+              >
+                <SelectTrigger className="h-9 text-xs">
+                  <SelectValue placeholder="Todas as empresas" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border border-border z-[60]">
+                  <SelectItem value="all">Todas as empresas</SelectItem>
+                  {empresas.map((e) => (
+                    <SelectItem key={e.value} value={e.value}>
+                      {e.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* Conta Bancária */}
+          {contasBancarias.length > 0 && (
+            <div className="space-y-2">
+              <Label className="text-xs font-medium text-muted-foreground">Conta Bancária</Label>
+              <Select
+                value={filters.contaBancariaId || 'all'}
+                onValueChange={(value) => updateFilter('contaBancariaId', value)}
+              >
+                <SelectTrigger className="h-9 text-xs">
+                  <SelectValue placeholder="Todas as contas" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border border-border z-[60]">
+                  <SelectItem value="all">Todas as contas</SelectItem>
+                  {contasBancarias.map((cb) => (
+                    <SelectItem key={cb.value} value={cb.value}>
+                      {cb.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           {/* Active Filters Summary */}
           {activeFiltersCount > 0 && (
             <>
