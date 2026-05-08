@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 interface AlertaEmailRequest {
-  tipo: 'vencimento' | 'inadimplencia' | 'aprovacao' | 'ruptura';
+  tipo: 'vencimento' | 'inadimplencia' | 'aprovacao' | 'ruptura' | 'asaas_failure';
   destinatario: string;
   dados: {
     titulo: string;
