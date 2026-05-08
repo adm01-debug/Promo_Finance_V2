@@ -961,6 +961,11 @@ export default function Asaas() {
                                     <DropdownMenuItem onClick={() => setSelectedBoletoPreview(payment)}>
                                       <Eye className="h-4 w-4 mr-2" /> Visualizar Boleto
                                     </DropdownMenuItem>
+                                    {payment.status === 'CONFIRMED' && (
+                                      <DropdownMenuItem onClick={() => setSelectedAnticipationId(payment.asaas_id)} className="text-yellow-600 font-medium">
+                                        <Zap className="h-4 w-4 mr-2" /> Antecipar Valor
+                                      </DropdownMenuItem>
+                                    )}
                                     <DropdownMenuItem onClick={() => setReprocessDialog({ paymentId: payment.id, asaasId: payment.asaas_id })}>
                                       <RefreshCw className={`h-4 w-4 mr-2 ${reprocessarManual.isPending ? 'animate-spin' : ''}`} /> Sincronizar Agora
                                     </DropdownMenuItem>
