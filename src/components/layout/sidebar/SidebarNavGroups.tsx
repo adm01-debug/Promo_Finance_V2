@@ -13,6 +13,7 @@ import {
   Bell,
   Settings,
   ChevronDown,
+  Key,
   Building2,
   CreditCard,
   BarChart3,
