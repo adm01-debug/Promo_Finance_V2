@@ -446,21 +446,40 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                     placeholder="Ex.: Pagamento de fornecedores via banco"
                   />
                 </div>
-                <div>
-                  <Label>Tipo de evento</Label>
-                  <Select
-                    value={form.tipo_evento}
-                    onValueChange={(v) =>
-                      setForm({ ...form, tipo_evento: v as Regra['tipo_evento'] })
-                    }
-                  >
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {EVENTOS.map((e) => (
-                        <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Tipo de evento</Label>
+                    <Select
+                      value={form.tipo_evento}
+                      onValueChange={(v) =>
+                        setForm({ ...form, tipo_evento: v as Regra['tipo_evento'] })
+                      }
+                    >
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {EVENTOS.map((e) => (
+                          <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Categoria (Filtro)</Label>
+                    <Select
+                      value={form.categoria_id || 'all'}
+                      onValueChange={(v) =>
+                        setForm({ ...form, categoria_id: v === 'all' ? null : v })
+                      }
+                    >
+                      <SelectTrigger><SelectValue placeholder="Todas" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Qualquer uma</SelectItem>
+                        {categorias.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
