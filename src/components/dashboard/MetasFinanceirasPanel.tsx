@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { Target, Plus, TrendingUp, Lightbulb, Loader2, Sparkles, Trash2, LayoutGrid, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
