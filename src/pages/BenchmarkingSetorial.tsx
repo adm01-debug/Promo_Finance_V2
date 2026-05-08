@@ -23,6 +23,7 @@ import { Separator } from '@/components/ui/separator';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { BenchmarkResultTabs } from './benchmarking/BenchmarkResultTabs';
+import { BenchmarkingConcorrentes } from './benchmarking/BenchmarkingConcorrentes';
 import { toast } from 'sonner';
 
 interface Benchmark {
@@ -118,25 +119,6 @@ export default function BenchmarkingSetorial() {
     if (score >= 40) return 'text-warning';
     return 'text-destructive';
   };
-
-  // Radar chart data
-  const radarData = useMemo(() => {
-    if (!result?.benchmarks) return [];
-    return result.benchmarks.slice(0, 6).map(b => ({
-      metrica: b.metrica.length > 15 ? b.metrica.substring(0, 15) + '...' : b.metrica,
-      empresa: Math.min(100, Math.max(0, 50 + b.diferenca_percentual)),
-      setor: 50,
-    }));
-  }, [result]);
-
-  // Bar chart data
-  const barData = useMemo(() => {
-    if (!result?.benchmarks) return [];
-    return result.benchmarks.map(b => ({
-      metrica: b.metrica.length > 12 ? b.metrica.substring(0, 12) + '...' : b.metrica,
-      diferenca: b.diferenca_percentual,
-    }));
-  }, [result]);
 
   return (
     <MainLayout>
@@ -245,6 +227,9 @@ export default function BenchmarkingSetorial() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        <Separator className="my-8" />
+        <BenchmarkingConcorrentes />
 
         {/* Empty state */}
         {!result && !mutation.isPending && (
