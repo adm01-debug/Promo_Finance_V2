@@ -78,7 +78,8 @@ import { EtapaReguaCobranca } from '@/types/financial';
 import { ReguaCobrancaTab } from '@/components/configuracoes/ReguaCobrancaTab';
 import { SistemaTab } from '@/components/configuracoes/SistemaTab';
 import { TemplatesTab } from '@/components/configuracoes/TemplatesTab';
-import { NotificacoesPreferencias } from '@/components/configuracoes/NotificacoesPreferencias';
+import { RegrasDuplicidadeTab } from '@/components/configuracoes/RegrasDuplicidadeTab';
+import { ShieldAlert } from 'lucide-react';
 
 const containerVariants = {
   hidden: { opacity: 0 },
