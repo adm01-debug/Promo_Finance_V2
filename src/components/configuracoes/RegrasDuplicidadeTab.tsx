@@ -5,11 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } };
 
@@ -26,9 +26,9 @@ export function RegrasDuplicidadeTab() {
         .eq('ativo', true)
         .order('versao', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
       
-      if (error && error.code !== 'PGRST116') throw error;
+      if (error) throw error;
       if (data) setSelectedFields(data.campos_validacao);
       return data;
     }
@@ -38,15 +38,13 @@ export function RegrasDuplicidadeTab() {
     mutationFn: async (newFields: string[]) => {
       const { data: userData } = await supabase.auth.getUser();
       
-      // Obter empresa_id do perfil ou empresa ativa
       const { data: perfil } = await supabase
         .from('profiles')
-        .select('empresa_ativa_id')
+        .select('empresa_id')
         .single();
 
-      if (!perfil?.empresa_ativa_id) throw new Error("Empresa ativa não encontrada");
+      if (!perfil?.empresa_id) throw new Error("Empresa não encontrada");
 
-      // Desativar atual e criar nova versão
       if (config) {
         await supabase
           .from('configuracoes_duplicidade')
@@ -57,7 +55,7 @@ export function RegrasDuplicidadeTab() {
       const { error } = await supabase
         .from('configuracoes_duplicidade')
         .insert({
-          empresa_id: perfil.empresa_ativa_id,
+          empresa_id: perfil.empresa_id,
           campos_validacao: newFields,
           versao: (config?.versao || 0) + 1,
           ativo: true,
@@ -70,7 +68,7 @@ export function RegrasDuplicidadeTab() {
       queryClient.invalidateQueries({ queryKey: ['configuracoes-duplicidade'] });
       toast.success("Regras de duplicidade atualizadas e versionadas com sucesso!");
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error("Erro ao salvar regras: " + error.message);
     }
   });
@@ -113,13 +111,16 @@ export function RegrasDuplicidadeTab() {
               {fields.map((field) => (
                 <div key={field.id} className="flex items-start justify-between p-4 rounded-2xl bg-white/[0.03] hover:bg-white/[0.05] transition-colors border border-white/5">
                   <div className="space-y-1">
-                    <Label className="text-base font-bold flex items-center gap-2 cursor-pointer">
+                    <div className="flex items-center gap-2">
                       <Checkbox 
+                        id={field.id}
                         checked={selectedFields.includes(field.id)}
                         onCheckedChange={() => toggleField(field.id)}
                       />
-                      {field.label}
-                    </Label>
+                      <Label htmlFor={field.id} className="text-base font-bold cursor-pointer">
+                        {field.label}
+                      </Label>
+                    </div>
                     <p className="text-sm text-muted-foreground ml-6">{field.description}</p>
                   </div>
                   {selectedFields.includes(field.id) ? (
