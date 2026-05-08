@@ -10,6 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { QrCode, Banknote, CreditCard, Loader2, UserPlus, Settings2 } from 'lucide-react';
 import { useAsaas, type AsaasBillingType } from '@/hooks/useAsaas';
 import { toast } from 'sonner';
@@ -33,6 +35,7 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
   const [valor, setValor] = useState('');
   const [vencimento, setVencimento] = useState('');
   const [descricao, setDescricao] = useState('');
+  const [contaReceberId, setContaReceberId] = useState('');
   
   // Parcelamento
   const [parcelas, setParcelas] = useState('');
@@ -60,6 +63,35 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
   const [cpfCnpj, setCpfCnpj] = useState('');
   const [emailCliente, setEmailCliente] = useState('');
   const [telefoneCliente, setTelefoneCliente] = useState('');
+
+  // Fetch pending receivables to link
+  const { data: pendencias } = useQuery({
+    queryKey: ['contas-receber-pendentes', empresaId],
+    queryFn: async () => {
+      if (!empresaId) return [];
+      const { data, error } = await supabase
+        .from('contas_receber')
+        .select('id, descricao, valor, data_vencimento')
+        .eq('empresa_id', empresaId)
+        .eq('status', 'pendente')
+        .order('data_vencimento', { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!empresaId && open
+  });
+
+  const handleSelectPendencia = (id: string) => {
+    const pendencia = pendencias?.find(p => p.id === id);
+    if (pendencia) {
+      setContaReceberId(id);
+      setValor(String(pendencia.valor));
+      setVencimento(pendencia.data_vencimento);
+      setDescricao(pendencia.descricao || '');
+    } else {
+      setContaReceberId('');
+    }
+  };
 
   const resetForm = () => {
     setTipo('boleto');
@@ -172,6 +204,7 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
           cep: cardCep.replace(/\D/g, ''),
           telefone: cardPhone,
         } : {}),
+        conta_receber_id: contaReceberId || undefined,
       });
       resetForm();
       onOpenChange(false);
@@ -217,30 +250,45 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
               ))}
             </div>
 
-            {/* Cliente */}
-            <div className="space-y-2">
-              <Label>Cliente ASAAS *</Label>
-              {customers.length === 0 ? (
-                <div className="text-sm text-muted-foreground p-3 border border-border rounded-lg text-center">
-                  Nenhum cliente cadastrado.{' '}
-                  <button className="text-primary underline" onClick={() => setTab('cliente')}>
-                    Cadastre um cliente primeiro
-                  </button>
-                </div>
-              ) : (
-                <Select value={customerId} onValueChange={setCustomerId}>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Vincular Conta a Receber</Label>
+                <Select value={contaReceberId} onValueChange={handleSelectPendencia}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione o cliente" />
+                    <SelectValue placeholder="Opcional" />
                   </SelectTrigger>
                   <SelectContent>
-                    {customers.map(c => (
-                      <SelectItem key={c.id} value={c.asaas_id}>
-                        {c.nome} {c.cpf_cnpj ? `(${c.cpf_cnpj})` : ''}
+                    <SelectItem value="none">Nenhuma (Lançamento avulso)</SelectItem>
+                    {pendencias?.map(p => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.descricao} (R$ {p.valor})
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-              )}
+              </div>
+
+              <div className="space-y-2">
+                <Label>Cliente ASAAS *</Label>
+                {customers.length === 0 ? (
+                  <div className="text-sm text-muted-foreground p-2 border rounded-md text-center h-10 flex items-center justify-center">
+                    <button className="text-primary underline" onClick={() => setTab('cliente')}>Cadastrar</button>
+                  </div>
+                ) : (
+                  <Select value={customerId} onValueChange={setCustomerId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {customers.map(c => (
+                        <SelectItem key={c.id} value={c.asaas_id}>
+                          {c.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
             </div>
 
             {/* Valor, Vencimento e Parcelas */}

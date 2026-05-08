@@ -215,6 +215,7 @@ Deno.serve(async (req) => {
           value: data.valor,
           dueDate: data.data_vencimento,
           description: data.descricao,
+          externalReference: data.conta_receber_id, // Link with internal ID
         }
 
         // Parcelamento
