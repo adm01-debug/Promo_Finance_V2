@@ -27,11 +27,43 @@ const itemVariants = {
 };
 
 const Demonstrativos = () => {
-  const [periodo, setPeriodo] = useState('mensal');
-  const [mes, setMes] = useState(new Date().getMonth().toString());
-  const [ano, setAno] = useState(new Date().getFullYear().toString());
-  const [empresaId, setEmpresaId] = useState<string>('todas');
-  const [fonte, setFonte] = useState<FonteDemonstrativo>('competencia');
+  const [periodo, setPeriodo] = useState(() => localStorage.getItem('demonstrativos_periodo') || 'mensal');
+  const [mes, setMes] = useState(() => localStorage.getItem('demonstrativos_mes') || new Date().getMonth().toString());
+  const [ano, setAno] = useState(() => localStorage.getItem('demonstrativos_ano') || new Date().getFullYear().toString());
+  const [empresaId, setEmpresaId] = useState<string>(() => localStorage.getItem('demonstrativos_empresaId') || 'todas');
+  const [fonte, setFonte] = useState<FonteDemonstrativo>(() => (localStorage.getItem('demonstrativos_fonte') as FonteDemonstrativo) || 'competencia');
+  const [activeTab, setActiveTab] = useState(() => localStorage.getItem('demonstrativos_active_tab') || 'dre');
+
+  const handleSetPeriodo = (v: string) => {
+    setPeriodo(v);
+    localStorage.setItem('demonstrativos_periodo', v);
+  };
+
+  const handleSetMes = (v: string) => {
+    setMes(v);
+    localStorage.setItem('demonstrativos_mes', v);
+  };
+
+  const handleSetAno = (v: string) => {
+    setAno(v);
+    localStorage.setItem('demonstrativos_ano', v);
+  };
+
+  const handleSetEmpresaId = (v: string) => {
+    setEmpresaId(v);
+    localStorage.setItem('demonstrativos_empresaId', v);
+  };
+
+  const handleSetFonte = (v: FonteDemonstrativo) => {
+    setFonte(v);
+    localStorage.setItem('demonstrativos_fonte', v);
+  };
+
+  const handleTabChange = (v: string) => {
+    setActiveTab(v);
+    localStorage.setItem('demonstrativos_active_tab', v);
+  };
+
   const { data: empresas } = useEmpresas();
 
   // Detecta cobertura de contabilidade para o período (decide se permite competência)
@@ -94,7 +126,7 @@ const Demonstrativos = () => {
             <div className="flex flex-wrap items-center gap-6 bg-white/[0.03] p-5 rounded-[2.5rem] border border-white/10 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] ring-1 ring-white/10">
               <div className="flex items-center gap-3 px-4 border-r border-white/10 pr-6">
                 <Building2 className="h-5 w-5 text-primary" />
-                <Select value={empresaId} onValueChange={setEmpresaId}>
+                <Select value={empresaId} onValueChange={handleSetEmpresaId}>
                   <SelectTrigger className="w-[200px] border-none bg-transparent hover:bg-white/5 transition-all h-10 font-semibold text-sm">
                     <SelectValue placeholder="Empresa" />
                   </SelectTrigger>
@@ -112,7 +144,7 @@ const Demonstrativos = () => {
               <div className="flex items-center gap-2 px-2">
                 <Calendar className="h-5 w-5 text-muted-foreground/60 ml-2" />
                 <div className="flex items-center gap-1">
-                  <Select value={periodo} onValueChange={setPeriodo}>
+                  <Select value={periodo} onValueChange={handleSetPeriodo}>
                     <SelectTrigger className="w-[110px] border-none bg-transparent hover:bg-white/5 transition-all h-10 font-medium">
                       <SelectValue />
                     </SelectTrigger>
@@ -124,7 +156,7 @@ const Demonstrativos = () => {
                   </Select>
 
                   {periodo === 'mensal' && (
-                    <Select value={mes} onValueChange={setMes}>
+                    <Select value={mes} onValueChange={handleSetMes}>
                       <SelectTrigger className="w-[120px] border-none bg-transparent hover:bg-white/5 transition-all h-10 font-medium">
                         <SelectValue />
                       </SelectTrigger>
@@ -136,7 +168,7 @@ const Demonstrativos = () => {
                     </Select>
                   )}
 
-                  <Select value={ano} onValueChange={setAno}>
+                  <Select value={ano} onValueChange={handleSetAno}>
                     <SelectTrigger className="w-[85px] border-none bg-transparent hover:bg-white/5 transition-all h-10 font-medium">
                       <SelectValue />
                     </SelectTrigger>
@@ -168,7 +200,7 @@ const Demonstrativos = () => {
           <motion.div variants={itemVariants} className="max-w-4xl mx-auto">
             <FonteDadosToggle
               value={fonteEfetiva}
-              onChange={setFonte}
+              onChange={handleSetFonte}
               totalPartidas={cobertura.totalPartidas}
               hasContabilidade={hasContabilidade}
             />
@@ -176,7 +208,7 @@ const Demonstrativos = () => {
 
           {/* Interactive Navigation Content */}
           <motion.div variants={itemVariants}>
-            <Tabs defaultValue="dre" className="space-y-12">
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-12">
               <div className="flex justify-center">
                 <TabsList className="inline-flex h-16 items-center justify-center rounded-[2rem] bg-white/[0.03] p-2 text-muted-foreground w-full max-w-[700px] border border-white/10 backdrop-blur-3xl shadow-2xl ring-1 ring-white/10">
                   <TabsTrigger value="dre" className="relative inline-flex items-center justify-center whitespace-nowrap rounded-xl px-10 py-3 text-sm font-bold tracking-tight transition-all data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg gap-3">
