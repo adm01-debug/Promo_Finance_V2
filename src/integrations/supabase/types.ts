@@ -1266,6 +1266,75 @@ export type Database = {
           },
         ]
       }
+      asaas_transfers: {
+        Row: {
+          asaas_id: string | null
+          chave_pix: string
+          comprovante_url: string | null
+          created_at: string
+          descricao: string | null
+          empresa_id: string | null
+          id: string
+          idempotency_key: string
+          last_error: string | null
+          status: string
+          tipo_chave: string
+          transaction_receipt_url: string | null
+          updated_at: string
+          user_id: string | null
+          valor: number
+        }
+        Insert: {
+          asaas_id?: string | null
+          chave_pix: string
+          comprovante_url?: string | null
+          created_at?: string
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          idempotency_key: string
+          last_error?: string | null
+          status?: string
+          tipo_chave: string
+          transaction_receipt_url?: string | null
+          updated_at?: string
+          user_id?: string | null
+          valor: number
+        }
+        Update: {
+          asaas_id?: string | null
+          chave_pix?: string
+          comprovante_url?: string | null
+          created_at?: string
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          idempotency_key?: string
+          last_error?: string | null
+          status?: string
+          tipo_chave?: string
+          transaction_receipt_url?: string | null
+          updated_at?: string
+          user_id?: string | null
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asaas_transfers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asaas_transfers_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: Database["public"]["Enums"]["audit_action"]
