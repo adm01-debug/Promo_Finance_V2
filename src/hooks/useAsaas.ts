@@ -5,6 +5,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+import { format, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 export type AsaasPaymentStatus = 
   | 'PENDING' | 'RECEIVED' | 'CONFIRMED' | 'OVERDUE' 
