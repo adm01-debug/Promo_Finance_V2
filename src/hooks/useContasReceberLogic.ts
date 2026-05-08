@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { useContasReceber, useContasReceberPaginated, useCentrosCusto, useEmpresas, useContasBancarias } from '@/hooks/useFinancialData';
@@ -10,6 +10,7 @@ import { useQuickDateFilter } from '@/components/ui/quick-date-filters';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { AdvancedFilters } from '@/components/ui/advanced-filters';
+import { useAuth } from '@/hooks/useAuth';
 import type { Database } from '@/integrations/supabase/types';
 import type { ContaReceberWithRelations } from '@/components/contas-receber/ContasReceberTableRow';
 
