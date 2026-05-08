@@ -167,6 +167,12 @@ export function useContasPagarLogic() {
     if (advancedFilters.tipoCobranca) {
       matchesAdvanced = matchesAdvanced && c.tipo_cobranca === advancedFilters.tipoCobranca;
     }
+    if (advancedFilters.empresaId && advancedFilters.empresaId !== 'all') {
+      matchesAdvanced = matchesAdvanced && c.empresa_id === advancedFilters.empresaId;
+    }
+    if (advancedFilters.contaBancariaId && advancedFilters.contaBancariaId !== 'all') {
+      matchesAdvanced = matchesAdvanced && c.conta_bancaria_id === advancedFilters.contaBancariaId;
+    }
 
     return matchesAprovacao && matchesAdvanced;
   });
