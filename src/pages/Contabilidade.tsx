@@ -25,7 +25,7 @@ import { AuditoriaLancamentosPanel } from '@/components/contabilidade/AuditoriaL
 import { ContabilizacaoAutomaticaTab } from '@/components/contabilidade/ContabilizacaoAutomaticaTab';
 import { ElisaoFiscalTab } from '@/components/contabilidade/elisao/ElisaoFiscalTab';
 
-const VALID_TABS = ['inicio', 'plano', 'lancamentos', 'razao', 'dre', 'auto', 'integracoes', 'auditoria', 'ecd', 'ecf'] as const;
+const VALID_TABS = ['inicio', 'plano', 'lancamentos', 'razao', 'dre', 'auto', 'elisao', 'integracoes', 'auditoria', 'ecd', 'ecf'] as const;
 type TabId = typeof VALID_TABS[number];
 
 const ANO_DEFAULT = new Date().getFullYear() - 1;
