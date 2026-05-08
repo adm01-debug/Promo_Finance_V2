@@ -77,11 +77,11 @@ export function useConciliacaoPage() {
     setIsProcessingImport(true);
 
     // Validação de Saldo (Adicionado)
-    if (extrato.saldoFinal !== undefined) {
-      const saldoCalculado = (extrato.saldoInicial || 0) + extrato.transacoes.reduce((acc, t) => acc + t.valor, 0);
-      if (Math.abs(saldoCalculado - extrato.saldoFinal) > 0.01) {
+    if (extrato.conta.saldoFinal !== undefined) {
+      const saldoCalculado = (extrato.conta.saldoInicial || 0) + extrato.transacoes.reduce((acc, t) => acc + t.valor, 0);
+      if (Math.abs(saldoCalculado - extrato.conta.saldoFinal) > 0.01) {
         toast.warning('Divergência de Saldo Detectada', {
-          description: `O saldo final do arquivo (R$ ${extrato.saldoFinal.toFixed(2)}) não bate com o calculado (R$ ${saldoCalculado.toFixed(2)}).`
+          description: `O saldo final do arquivo (R$ ${extrato.conta.saldoFinal.toFixed(2)}) não bate com o calculado (R$ ${saldoCalculado.toFixed(2)}).`
         });
       }
     }
