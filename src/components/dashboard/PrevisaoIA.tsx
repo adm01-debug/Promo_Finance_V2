@@ -155,7 +155,7 @@ export function PrevisaoIA({ className }: { className?: string }) {
                 <Brain className="h-6 w-6" />
               </div>
               <div>
-                <CardTitle className="text-2xl font-black tracking-tight">Cyber-Neural Matrix & Quantum Forecast</CardTitle>
+                <CardTitle className="text-2xl font-black tracking-tight">Cyber-Neural Matrix & Quantum Forecast 10/10</CardTitle>
                 {geradoEm && <CardDescription className="text-xs font-bold uppercase tracking-widest opacity-60">Insight gerado às {new Date(geradoEm).toLocaleTimeString('pt-BR')}</CardDescription>}
               </div>
             </div>
