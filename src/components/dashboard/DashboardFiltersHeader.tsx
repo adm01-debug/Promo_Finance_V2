@@ -108,7 +108,7 @@ export function DashboardFiltersHeader({
                 
                 <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-success/10 border border-success/20">
                   <div className="h-1.5 w-1.5 rounded-full bg-success animate-ping" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.15em] text-success">Sistema Autônomo Online</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.15em] text-success">Neural Governance 10/10 Online</span>
                 </div>
               </div>
 
@@ -123,7 +123,7 @@ export function DashboardFiltersHeader({
                 </motion.div>
                 <div>
                   <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-foreground flex items-center gap-3">
-                    {greeting.text}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600">{user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Gestor'}</span>
+                    Singularity: <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600">{user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Gestor'}</span>
                   </h1>
                   <p className="text-lg font-medium text-muted-foreground/70 mt-1 max-w-xl italic">
                     "{insight}"
