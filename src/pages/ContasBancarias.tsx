@@ -10,7 +10,12 @@ import {
   PiggyBank,
   Landmark,
   ArrowLeftRight,
+  Upload,
+  Settings,
 } from 'lucide-react';
+import { RegrasConciliacaoDialog } from '@/components/contas-bancarias/RegrasConciliacaoDialog';
+import { ImportarExtratoDialog } from '@/components/conciliacao/ImportarExtratoDialog';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -23,6 +28,8 @@ import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
+import { toast } from 'sonner';
+
 import { TransferenciaDialog } from '@/components/contas-bancarias/TransferenciaDialog';
 import { ContasBancariasKPIs } from '@/components/contas-bancarias/ContasBancariasKPIs';
 import { NovaContaDialog } from '@/components/contas-bancarias/NovaContaDialog';
@@ -60,6 +67,9 @@ export default function ContasBancarias() {
   const [deletingConta, setDeletingConta] = useState<ContaBancaria | null>(null);
   const [isDeleting] = useState(false);
   const [transferenciaOpen, setTransferenciaOpen] = useState(false);
+  const [regrasOpen, setRegrasOpen] = useState(false);
+  const [importarOpen, setImportarOpen] = useState(false);
+
 
   const queryClient = useQueryClient();
 
@@ -128,14 +138,22 @@ export default function ContasBancarias() {
             <h1 className="text-3xl font-bold tracking-tight">Gestão de Contas Bancárias</h1>
             <p className="text-muted-foreground">Configure multi-contas, regras de conciliação e mapeamentos por CNPJ</p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => setTransferenciaOpen(true)}>
-              <ArrowLeftRight className="h-4 w-4 mr-2" />Transferência
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" onClick={() => setImportarOpen(true)} className="gap-2 h-10 rounded-xl border-white/10 hover:bg-white/5 transition-all">
+              <Upload className="h-4 w-4 text-primary" />Importar Extrato
             </Button>
-            <Button variant="outline" size="sm" onClick={() => setShowSaldos(!showSaldos)}>
-              {showSaldos ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
+            <Button variant="outline" size="sm" onClick={() => setRegrasOpen(true)} className="gap-2 h-10 rounded-xl border-white/10 hover:bg-white/5 transition-all">
+              <Settings className="h-4 w-4 text-warning" />Regras Conciliação
+            </Button>
+            <div className="w-px h-10 bg-white/10 mx-1 hidden sm:block" />
+            <Button variant="outline" size="sm" onClick={() => setTransferenciaOpen(true)} className="gap-2 h-10 rounded-xl border-white/10 hover:bg-white/5 transition-all">
+              <ArrowLeftRight className="h-4 w-4 text-streak" />Transferência
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setShowSaldos(!showSaldos)} className="gap-2 h-10 rounded-xl border-white/10 hover:bg-white/5 transition-all">
+              {showSaldos ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
               {showSaldos ? 'Ocultar Saldos' : 'Mostrar Saldos'}
             </Button>
+
             <NovaContaDialog
               open={dialogOpen}
               onOpenChange={setDialogOpen}
@@ -241,7 +259,20 @@ export default function ContasBancarias() {
         />
 
         <TransferenciaDialog open={transferenciaOpen} onOpenChange={setTransferenciaOpen} />
+        <RegrasConciliacaoDialog open={regrasOpen} onOpenChange={setRegrasOpen} />
+        <ImportarExtratoDialog 
+          open={importarOpen} 
+          onOpenChange={setImportarOpen} 
+          onImportSuccess={(extrato) => {
+            console.log('Extrato importado:', extrato);
+            toast.success(`${extrato.transacoes.length} transações importadas com sucesso para processamento.`);
+            setImportarOpen(false);
+            queryClient.invalidateQueries({ queryKey: ['extratos-bancarios'] });
+          }}
+        />
+
       </div>
     </MainLayout>
   );
 }
+

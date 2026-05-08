@@ -1,6 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Building2, Calendar, CalendarIcon, BarChart3, PieChart as PieChartIcon, LineChart as LineChartIcon, AlertTriangle, Zap, LayoutGrid, Download } from "lucide-react";
+import { Building2, Calendar, CalendarIcon, BarChart3, PieChart as PieChartIcon, LineChart as LineChartIcon, AlertTriangle, Zap, LayoutGrid, Download, Wallet } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -22,18 +24,30 @@ import { FuturisticDashboard } from "@/components/bi/FuturisticDashboard";
 import { InadimplenciaSegmentada } from "@/components/analytics/InadimplenciaSegmentada";
 import { BenchmarkingSetorial } from "@/components/analytics/BenchmarkingSetorial";
 import { HistoricoAnalisesPreditivasPanel } from "@/components/analytics/HistoricoAnalisesPreditivasPanel";
+import { BIDrillDown } from "@/components/bi/BIDrillDown";
+
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } };
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
 
 export default function BI() {
+  const { currentEmpresaId } = useAuth();
   const [periodo, setPeriodo] = useState("6");
-  const [empresaId, setEmpresaId] = useState<string>("todas");
+  const [empresaId, setEmpresaId] = useState<string>(currentEmpresaId || "todas");
   const [dataInicio, setDataInicio] = useState<Date | undefined>(undefined);
   const [dataFim, setDataFim] = useState<Date | undefined>(undefined);
   const [usarPeriodoCustom, setUsarPeriodoCustom] = useState(false);
   const [futuristicMode, setFuturisticMode] = useState(true);
-  const [filters, setFilters] = useState({ centroCustoId: 'todos' });
+  const [filters, setFilters] = useState({ centroCustoId: 'todos', contaBancariaId: 'todos' });
+  const [drillDownItem, setDrillDownItem] = useState<string | null>(null);
+
+  // Sincroniza com a empresa ativa do sistema
+  useEffect(() => {
+    if (currentEmpresaId && empresaId !== currentEmpresaId && empresaId === 'todas') {
+      setEmpresaId(currentEmpresaId);
+    }
+  }, [currentEmpresaId]);
+
 
   const { data: empresas = [] } = useEmpresas();
   const { data: contasPagar = [] } = useContasPagar();
@@ -202,6 +216,14 @@ export default function BI() {
                 {centrosCusto?.map(c => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}
               </SelectContent>
             </Select>
+            <Select value={filters?.contaBancariaId || "todos"} onValueChange={(val) => setFilters(f => ({...f, contaBancariaId: val}))}>
+              <SelectTrigger className="w-[180px] bg-background/50 backdrop-blur-sm border-white/10"><Wallet className="w-4 h-4 mr-2" /><SelectValue placeholder="Conta Bancária" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todas as Contas</SelectItem>
+                {contasBancarias?.map(c => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}
+              </SelectContent>
+            </Select>
+
             <Select value={usarPeriodoCustom ? "custom" : periodo} onValueChange={(val) => { if (val === "custom") { setUsarPeriodoCustom(true); } else { setUsarPeriodoCustom(false); setPeriodo(val); setDataInicio(undefined); setDataFim(undefined); } }}>
               <SelectTrigger className="w-[160px] bg-background/50 backdrop-blur-sm border-white/10"><Calendar className="w-4 h-4 mr-2" /><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -236,8 +258,13 @@ export default function BI() {
         </motion.div>
 
         {futuristicMode ? (
-          <FuturisticDashboard kpis={kpis} evolucaoMensal={evolucaoMensal} />
+          <FuturisticDashboard 
+            kpis={kpis} 
+            evolucaoMensal={evolucaoMensal} 
+            onMetricClick={(metric: string) => setDrillDownItem(metric)}
+          />
         ) : (
+
           <>
             <BIMainKpis kpis={kpis} />
             <BISecondaryKpis kpis={kpis} />
@@ -278,6 +305,23 @@ export default function BI() {
             <HistoricoAnalisesPreditivasPanel />
           </div>
         </motion.div>
+        <BIDrillDown
+          isOpen={!!drillDownItem}
+          onClose={() => setDrillDownItem(null)}
+          title={
+            drillDownItem === 'receber' ? 'Detalhamento: Contas a Receber' :
+            drillDownItem === 'pagar' ? 'Detalhamento: Contas a Pagar' :
+            drillDownItem === 'atraso' ? 'Detalhamento: Pagamentos em Atraso' :
+            'Detalhamento de Lançamentos'
+          }
+          type={drillDownItem === 'receber' || drillDownItem === 'atraso' ? 'receber' : 'pagar'}
+          data={
+            drillDownItem === 'receber' ? filteredReceber :
+            drillDownItem === 'pagar' ? filteredPagar :
+            drillDownItem === 'atraso' ? filteredReceber.filter(c => c.status === 'vencido') :
+            []
+          }
+        />
       </motion.div>
     </MainLayout>
   );

@@ -5,11 +5,15 @@ import { formatCurrency } from "@/lib/formatters";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar, Cell } from "recharts";
 import { cn } from "@/lib/utils";
 
-const FuturisticMetricCard = ({ title, value, icon: Icon, trend, glowColor }: any) => (
-  <div className={cn(
-    "premium-card p-6 border border-white/10 bg-gradient-to-b from-card/80 to-card/40 backdrop-blur-md relative group transition-all duration-500 overflow-hidden",
-    "hover:border-primary/50 hover:shadow-[0_0_20px_rgba(var(--primary),0.1)]"
-  )}>
+const FuturisticMetricCard = ({ title, value, icon: Icon, trend, glowColor, onClick }: any) => (
+  <div 
+    onClick={onClick}
+    className={cn(
+      "premium-card p-6 border border-white/10 bg-gradient-to-b from-card/80 to-card/40 backdrop-blur-md relative group transition-all duration-500 overflow-hidden cursor-pointer",
+      "hover:border-primary/50 hover:shadow-[0_0_20px_rgba(var(--primary),0.1)] active:scale-95"
+    )}
+  >
+
     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
       <Icon className="w-12 h-12" style={{ color: glowColor }} />
     </div>
@@ -38,7 +42,7 @@ const FuturisticMetricCard = ({ title, value, icon: Icon, trend, glowColor }: an
   </div>
 );
 
-export function FuturisticDashboard({ kpis, evolucaoMensal }: any) {
+export function FuturisticDashboard({ kpis, evolucaoMensal, onMetricClick }: any) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -71,6 +75,7 @@ export function FuturisticDashboard({ kpis, evolucaoMensal }: any) {
           icon={TrendingUp} 
           glowColor="#22c55e"
           trend={kpis.variacaoReceita}
+          onClick={() => onMetricClick('receber')}
         />
         <FuturisticMetricCard 
           title="Contas a Pagar" 
@@ -78,6 +83,7 @@ export function FuturisticDashboard({ kpis, evolucaoMensal }: any) {
           icon={TrendingDown} 
           glowColor="#ef4444"
           trend={-1.2}
+          onClick={() => onMetricClick('pagar')}
         />
         <FuturisticMetricCard 
           title="Eficiência de Conciliação" 
@@ -85,6 +91,7 @@ export function FuturisticDashboard({ kpis, evolucaoMensal }: any) {
           icon={CheckCircle2} 
           glowColor="#3b82f6"
           trend={0.5}
+          onClick={() => onMetricClick('conciliacao')}
         />
         <FuturisticMetricCard 
           title="Pagamentos em Atraso" 
@@ -92,7 +99,9 @@ export function FuturisticDashboard({ kpis, evolucaoMensal }: any) {
           icon={AlertTriangle} 
           glowColor="#f59e0b"
           trend={kpis.inadimplencia}
+          onClick={() => onMetricClick('atraso')}
         />
+
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

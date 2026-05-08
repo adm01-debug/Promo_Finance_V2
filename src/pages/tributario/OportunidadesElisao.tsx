@@ -33,6 +33,8 @@ import {
   FileSearch,
   CheckCheck,
   Filter,
+  FilePieChart,
+  ClipboardCheck,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useOportunidadesElisao } from '@/hooks/useOportunidadesElisao';
@@ -40,6 +42,8 @@ import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { formatCurrency } from '@/lib/formatters';
 import type { RegimeAplicavel, RiscoElisao } from '@/lib/tributario/elisao';
 import { Progress } from '@/components/ui/progress';
+import { baixarRelatorioAuditoriaCreditos } from '@/lib/tributario/relatorio-pdf';
+
 
 const RISCO_BADGE: Record<RiscoElisao, string> = {
   baixo: 'bg-success/10 text-success border-success/30',
@@ -66,6 +70,8 @@ export default function OportunidadesElisao() {
   const [pd, setPd] = useState<number>(0);
   const [beneficioIcms, setBeneficioIcms] = useState<number>(0);
   const [dividendos, setDividendos] = useState<number>(0);
+  const empresaSelecionada = empresas.find(e => e.id === empresaId);
+
 
   const {
     relatorio,
@@ -438,10 +444,11 @@ export default function OportunidadesElisao() {
                     </div>
                   )}
                   
-                  <div className="flex gap-2 justify-end pt-2">
+                  <div className="flex gap-2 justify-end pt-4 border-t border-white/5 mt-4">
                     <Button 
                       variant="outline" 
                       size="sm" 
+                      className="gap-2 h-9 rounded-xl border-white/10 hover:bg-white/5"
                       onClick={() => {
                         const csvContent = "data:text/csv;charset=utf-8," 
                           + "ID,NCM,CST,Valor,Status,Score,Metodologia\n"
@@ -454,11 +461,21 @@ export default function OportunidadesElisao() {
                         link.click();
                       }}
                     >
-                      <Download className="h-4 w-4 mr-2" />
-                      Auditoria (CSV)
+                      <Download className="h-4 w-4" />
+                      Exportar CSV
                     </Button>
-                  
+
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="gap-2 h-9 rounded-xl border-white/10 hover:bg-white/5"
+                      onClick={() => baixarRelatorioAuditoriaCreditos(empresaSelecionada?.razao_social || 'Empresa', [c])}
+                    >
+                      <FilePieChart className="h-4 w-4 text-primary" />
+                      Auditoria PDF
+                    </Button>
                   </div>
+
                   
                   {c.status_aprovacao === 'pendente' && (
                     <div className="flex gap-2 justify-end pt-2">

@@ -288,11 +288,17 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
         {isSynced && !collapsed && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <CheckCircle className="h-3 w-3 text-success ml-auto shrink-0" />
+              <div className="ml-auto flex items-center">
+                <div className="h-1.5 w-1.5 rounded-full bg-success animate-pulse mr-2" />
+                <CheckCircle className="h-3 w-3 text-success shrink-0" />
+              </div>
             </TooltipTrigger>
-            <TooltipContent side="right">Filtros sincronizados</TooltipContent>
+            <TooltipContent side="right" className="font-bold text-[10px] uppercase tracking-widest">
+              Filtros Sincronizados
+            </TooltipContent>
           </Tooltip>
         )}
+
         {badge && !collapsed && (
           <Badge
             variant="secondary"

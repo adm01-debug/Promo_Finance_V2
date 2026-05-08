@@ -1,12 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Building2, Check, ChevronsUpDown } from 'lucide-react';
+import { Building2, Check, ChevronsUpDown, BarChart3, ArrowUpCircle, ArrowDownCircle, RefreshCcw, Receipt, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useUserEmpresas, getCurrentEmpresaId, setCurrentEmpresaId } from '@/hooks/useUserEmpresas';
 import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+
+
 
 function getInitials(label: string): string {
   return label
@@ -42,9 +47,19 @@ export function EmpresaSwitcher() {
 
   if (isLoading || vinculos.length === 0) return null;
 
+  const navigate = useNavigate();
+
   const switchTo = (id: string) => {
     setCurrentEmpresaId(id);
     setCurrentId(id);
+    setOpen(false);
+    toast.success('Empresa alterada com sucesso', {
+      description: 'Todos os dashboards e filtros foram sincronizados.',
+    });
+  };
+
+  const goTo = (path: string) => {
+    navigate(path);
     setOpen(false);
   };
 
@@ -67,14 +82,14 @@ export function EmpresaSwitcher() {
   }
 
   return (
-    <div className="flex items-center gap-1.5">
-      {/* Quick switch pills - até 4 empresas do Grupo Promo Brindes */}
-      <div className="hidden xl:flex items-center gap-1">
+    <div className="flex items-center gap-2">
+      {/* Quick switch pills - 4 empresas do Grupo Promo Brindes */}
+      <div className="hidden lg:flex items-center gap-1.5 p-1 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
         {quickAccess.map((v) => {
           const label = v.empresa.nome_fantasia || v.empresa.razao_social;
           const isActive = v.empresa_id === currentId;
           return (
-            <Tooltip key={v.empresa_id} delayDuration={200}>
+            <Tooltip key={v.empresa_id} delayDuration={0}>
               <TooltipTrigger asChild>
                 <button
                   type="button"
@@ -82,32 +97,42 @@ export function EmpresaSwitcher() {
                   aria-label={`Trocar para ${label}`}
                   aria-pressed={isActive}
                   className={cn(
-                    'relative h-10 min-w-10 px-3 rounded-xl flex items-center gap-2 text-xs font-bold transition-all duration-300 border',
+                    'relative h-9 px-3 rounded-xl flex items-center gap-2 text-[10px] font-black transition-all duration-500 border group',
                     isActive
-                      ? 'bg-gradient-to-br from-primary to-accent text-primary-foreground border-primary/40 shadow-lg shadow-primary/20 scale-105'
-                      : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10 hover:text-white hover:border-white/20',
+                      ? 'bg-primary text-primary-foreground border-primary shadow-[0_8px_20px_-4px_rgba(var(--primary),0.4)] scale-105 z-10'
+                      : 'bg-transparent text-white/40 border-transparent hover:bg-white/10 hover:text-white hover:border-white/10',
                   )}
                 >
-                  <span className="text-[11px] font-black tracking-wider">
+                  <span className="tracking-tighter uppercase whitespace-nowrap">
                     {getInitials(label)}
                   </span>
                   {isActive && (
-                    <span className="hidden 2xl:inline truncate max-w-[110px] text-[11px] font-semibold">
+                    <motion.span 
+                      initial={{ width: 0, opacity: 0 }}
+                      animate={{ width: 'auto', opacity: 1 }}
+                      className="truncate max-w-[80px] font-bold"
+                    >
                       {label}
-                    </span>
+                    </motion.span>
+                  )}
+                  {!isActive && (
+                    <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 blur-md rounded-xl transition-opacity" />
                   )}
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">
-                <div className="font-semibold">{label}</div>
-                <div className="text-[10px] text-muted-foreground">{v.empresa.cnpj}</div>
+              <TooltipContent side="bottom" className="text-[10px] font-bold bg-background/95 backdrop-blur-md border-white/10">
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-foreground uppercase tracking-wider">{label}</span>
+                  <span className="text-muted-foreground font-mono">{v.empresa.cnpj}</span>
+                </div>
               </TooltipContent>
             </Tooltip>
           );
         })}
       </div>
 
-      <div className="hidden xl:block w-px h-6 bg-white/10 mx-1" />
+      <div className="hidden lg:block w-px h-6 bg-white/10 mx-1" />
+
 
       {/* Dropdown completo (sempre visível) */}
       <Popover open={open} onOpenChange={setOpen}>
@@ -135,48 +160,70 @@ export function EmpresaSwitcher() {
           className="w-[360px] p-0 rounded-2xl overflow-hidden border-border/40 shadow-2xl"
           align="end"
         >
-          <Command>
-            <CommandInput placeholder="Buscar empresa…" />
-            <CommandList>
-              <CommandEmpty>Nenhuma empresa</CommandEmpty>
+          <Command className="bg-transparent">
+            <CommandInput placeholder="Buscar empresa…" className="h-12" />
+            <CommandList className="max-h-[500px]">
+              <CommandEmpty>Nenhuma empresa encontrada.</CommandEmpty>
+              
+              <CommandGroup heading="Acesso Rápido a Dashboards">
+                <div className="grid grid-cols-2 gap-1 p-2">
+                  {[
+                    { label: 'Contas a Pagar', icon: ArrowUpCircle, path: '/dashboard-pagar' },
+                    { label: 'Contas a Receber', icon: ArrowDownCircle, path: '/dashboard-receber' },
+                    { label: 'Conciliação', icon: RefreshCcw, path: '/dashboard-conciliacao' },
+                    { label: 'Aging & Cobrança', icon: Receipt, path: '/dashboard-aging' },
+                  ].map((dash) => (
+                    <Button
+                      key={dash.path}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => goTo(dash.path)}
+                      className="h-14 flex flex-col items-center justify-center gap-1 rounded-xl hover:bg-primary/10 hover:text-primary transition-all group"
+                    >
+                      <dash.icon className="h-4 w-4 transition-transform group-hover:scale-110" />
+                      <span className="text-[10px] font-bold uppercase tracking-tighter">{dash.label}</span>
+                    </Button>
+                  ))}
+                </div>
+              </CommandGroup>
+
+              <CommandSeparator />
+
               <CommandGroup heading="Grupo Promo Brindes">
                 {vinculos.map((v) => {
                   const label = v.empresa.nome_fantasia || v.empresa.razao_social;
-                  const sso = v.provisioned_via === 'sso' || v.provisioned_via === 'scim';
+                  const isActive = currentId === v.empresa_id;
                   return (
                     <CommandItem
                       key={v.empresa_id}
-                      className="p-3 rounded-xl m-1 transition-all duration-300 hover:bg-primary/5 cursor-pointer"
+                      className={cn(
+                        "p-3 rounded-xl m-1 transition-all duration-300 cursor-pointer group",
+                        isActive ? "bg-primary/10" : "hover:bg-white/5"
+                      )}
                       onSelect={() => switchTo(v.empresa_id)}
                     >
-                      <Check
-                        className={cn(
-                          'mr-2 h-4 w-4 text-primary',
-                          currentId === v.empresa_id ? 'opacity-100' : 'opacity-0',
-                        )}
-                      />
+                      <div className={cn(
+                        "h-8 w-8 rounded-lg flex items-center justify-center mr-3 font-black text-xs transition-colors",
+                        isActive ? "bg-primary text-primary-foreground" : "bg-white/5 text-white/40 group-hover:bg-white/10 group-hover:text-white"
+                      )}>
+                        {getInitials(label)}
+                      </div>
                       <div className="flex-1 min-w-0">
-                        <div className="truncate text-sm font-semibold">{label}</div>
-                        <div className="text-xs text-muted-foreground truncate">
+                        <div className={cn("truncate text-sm font-bold", isActive ? "text-primary" : "text-foreground")}>
+                          {label}
+                        </div>
+                        <div className="text-[10px] text-muted-foreground font-mono opacity-60">
                           {v.empresa.cnpj}
                         </div>
                       </div>
-                      <div className="flex items-center gap-1 ml-2">
-                        <Badge variant="outline" className="text-[10px] uppercase">
-                          {v.role}
-                        </Badge>
-                        {sso && (
-                          <Badge variant="outline" className="text-[10px] uppercase">
-                            SSO
-                          </Badge>
-                        )}
-                      </div>
+                      {isActive && <Check className="h-4 w-4 text-primary ml-2" />}
                     </CommandItem>
                   );
                 })}
               </CommandGroup>
             </CommandList>
           </Command>
+
         </PopoverContent>
       </Popover>
     </div>
