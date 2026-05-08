@@ -713,7 +713,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
                             {equilibrado ? "BALANÇO CONSOLIDADO" : "ERRO DE EQUILÍBRIO PATRIMONIAL"}
                           </h2>
                           <div className="flex items-center gap-2 mt-1">
-                            <Info className="h-3 w-3 opacity-40" />
+                            <InfoIcon className="h-3 w-3 opacity-40" />
                             <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Verificação de Integridade Contábil (Ativo = Passivo + PL)</p>
                           </div>
                         </div>
