@@ -243,6 +243,7 @@ const HOME_CARDS: HomeCard[] = [
   { id: 'dre', label: 'DRE & Balanço', description: 'Demonstrações apuradas pela escrituração contábil.', icon: BarChart3, accent: 'text-success' },
   { id: 'ecd', label: 'SPED ECD', description: 'Geração e validação da Escrituração Contábil Digital.', icon: FileText, accent: 'text-warning' },
   { id: 'ecf', label: 'SPED ECF', description: 'Escrituração Contábil Fiscal — depende da ECD do ano.', icon: FileText, accent: 'text-warning' },
+  { id: 'elisao', label: 'Elisão Fiscal', description: 'Simulação de regimes e redução estratégica de carga tributária.', icon: ShieldCheck, accent: 'text-emerald-500' },
 ];
 
 interface ContabilidadeHomeProps {
