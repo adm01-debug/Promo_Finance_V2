@@ -59,6 +59,43 @@ export function useConciliacaoPage() {
   const { data: contasReceber } = useContasReceber();
   const { confirmarConciliacao, salvarExtratoBanco } = useConciliacao();
 
+  // Carregar transações do banco ao selecionar conta
+  useEffect(() => {
+    if (!selectedBanco) {
+      setTransacoes([]);
+      return;
+    }
+
+    const loadTransacoes = async () => {
+      const { data, error } = await supabase
+        .from('transacoes_bancarias')
+        .select('*')
+        .eq('conta_bancaria_id', selectedBanco)
+        .order('data', { ascending: false });
+
+      if (error) {
+        toast.error('Erro ao carregar transações');
+        return;
+      }
+
+      setTransacoes((data || []).map(t => ({
+        id: t.id,
+        data: new Date(t.data),
+        descricao: t.descricao || '',
+        valor: Number(t.valor),
+        tipo: t.tipo === 'credito' ? 'credito' : 'debito',
+        conciliada: !!t.conciliada,
+        compensacao_valor: t.compensacao_valor ? Number(t.compensacao_valor) : undefined,
+        compensacao_motivo: t.compensacao_motivo || undefined,
+        compensacao_classificacao: t.compensacao_classificacao || undefined,
+        compensacao_regra: t.compensacao_regra || undefined,
+        compensacao_evidencia_url: t.compensacao_evidencia_url || undefined,
+      })));
+    };
+
+    loadTransacoes();
+  }, [selectedBanco]);
+
   const lancamentosSistema = useMemo((): LancamentoSistema[] => {
     const lancamentosPagar = contasPagar 
       ? converterContasPagarParaLancamentos(contasPagar.map(cp => ({
