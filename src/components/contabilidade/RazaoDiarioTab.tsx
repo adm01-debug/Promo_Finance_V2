@@ -116,7 +116,20 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
       case 'ano': ini = toIsoDate(startOfYear(new Date(ano, 0, 1))); fim = toIsoDate(endOfYear(new Date(ano, 0, 1))); break;
       case 'custom': filtersController.setField('preset', p); return;
     }
-    filtersController.setValues({ ...filtersController.values, preset: p, dataInicio: ini, dataFim: fim });
+
+    const oldValues = { ...filtersController.values };
+    const nextValues = { ...filtersController.values, preset: p, dataInicio: ini, dataFim: fim };
+    filtersController.setValues(nextValues);
+
+    if (user) {
+      logUserAction({
+        userId: user.id,
+        actionType: 'filter_change',
+        entityType: 'razao-diario',
+        oldValue: oldValues,
+        newValue: nextValues
+      });
+    }
   };
 
   const { data: lancs = [], isLoading } = useLancamentosContabeis(empresaId, ano);
