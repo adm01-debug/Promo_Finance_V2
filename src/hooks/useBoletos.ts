@@ -216,9 +216,17 @@ export function useBoletos() {
   // Update boleto status mutation
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: Boleto['status'] }) => {
+      const { data: currentBoleto } = await supabase.from('boletos').select('rastreio_status').eq('id', id).single();
+      const currentRastreio = Array.isArray(currentBoleto?.rastreio_status) ? currentBoleto.rastreio_status : [];
+      
+      const newRastreio = [
+        ...currentRastreio,
+        { status, data: new Date().toISOString(), detalhe: `Status alterado para ${status}` }
+      ];
+
       const { error } = await supabase
         .from('boletos')
-        .update({ status })
+        .update({ status, rastreio_status: newRastreio })
         .eq('id', id);
 
       if (error) throw error;
@@ -227,7 +235,7 @@ export function useBoletos() {
       queryClient.invalidateQueries({ queryKey: ['boletos'] });
       toast({
         title: 'Status atualizado',
-        description: 'O status do boleto foi atualizado.',
+        description: 'O status e rastreio do boleto foram atualizados.',
       });
     },
     onError: (error: Error) => {
