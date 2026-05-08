@@ -331,6 +331,7 @@ export default function Conciliacao() {
             <TabsContent value="sessoes" className="mt-4"><SessoesConciliacaoPanel /></TabsContent>
             <TabsContent value="divergencias" className="mt-4"><DivergenciasConciliacaoPanel /></TabsContent>
             <TabsContent value="retroativo" className="mt-4"><ConciliacaoRetroativaPanel contaBancariaId={selectedBanco || undefined} /></TabsContent>
+            <TabsContent value="configuracoes" className="mt-4"><ConfiguracaoConciliacaoPanel contaId={selectedBanco || undefined} /></TabsContent>
           </Tabs>
         </motion.div>
 
