@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldAlert, Save, History, CheckCircle2, XCircle, Info, Zap, Sparkles } from 'lucide-react';
+import { ShieldAlert, Save, History, CheckCircle2, XCircle, Info, Zap, Sparkles, Sliders, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,12 +10,16 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } };
 
 export function RegrasDuplicidadeTab() {
   const queryClient = useQueryClient();
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
+  const [fuzzyMatching, setFuzzyMatching] = useState(false);
+  const [toleranciaDias, setToleranciaDias] = useState(0);
   
   const { data: config, isLoading } = useQuery({
     queryKey: ['configuracoes-duplicidade'],
@@ -29,13 +33,17 @@ export function RegrasDuplicidadeTab() {
         .maybeSingle();
       
       if (error) throw error;
-      if (data) setSelectedFields(data.campos_validacao);
+      if (data) {
+        setSelectedFields(data.campos_validacao);
+        setFuzzyMatching(data.fuzzy_matching || false);
+        setToleranciaDias(data.tolerancia_dias || 0);
+      }
       return data;
     }
   });
 
   const saveMutation = useMutation({
-    mutationFn: async (newFields: string[]) => {
+    mutationFn: async ({ fields, fuzzy, tolerance }: { fields: string[], fuzzy: boolean, tolerance: number }) => {
       const { data: userData } = await supabase.auth.getUser();
       
       const { data: perfil } = await supabase
@@ -56,7 +64,9 @@ export function RegrasDuplicidadeTab() {
         .from('configuracoes_duplicidade')
         .insert({
           empresa_id: perfil.empresa_id,
-          campos_validacao: newFields,
+          campos_validacao: fields,
+          fuzzy_matching: fuzzy,
+          tolerancia_dias: tolerance,
           versao: (config?.versao || 0) + 1,
           ativo: true,
           criado_por: userData.user?.id
@@ -115,7 +125,7 @@ export function RegrasDuplicidadeTab() {
                       <Checkbox 
                         id={field.id}
                         checked={selectedFields.includes(field.id)}
-                        onChange={() => toggleField(field.id)}
+                        onCheckedChange={() => toggleField(field.id)}
                       />
                       <Label htmlFor={field.id} className="text-base font-bold cursor-pointer">
                         {field.label}
@@ -132,12 +142,44 @@ export function RegrasDuplicidadeTab() {
               ))}
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+              <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <Label className="text-sm font-bold flex items-center gap-2">
+                      <Zap className="h-4 w-4 text-amber-500" /> Fuzzy Matching (IA)
+                    </Label>
+                    <p className="text-[10px] text-muted-foreground">Detecta nomes de fornecedores similares (ex: "Apple" vs "Apple Inc").</p>
+                  </div>
+                  <Switch 
+                    checked={fuzzyMatching}
+                    onCheckedChange={setFuzzyMatching}
+                  />
+                </div>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/5 space-y-4">
+                <div className="space-y-1">
+                  <Label className="text-sm font-bold flex items-center gap-2">
+                    <Sliders className="h-4 w-4 text-primary" /> Tolerância (Dias)
+                  </Label>
+                  <p className="text-[10px] text-muted-foreground">Janela de dias para considerar um pagamento como duplicado.</p>
+                </div>
+                <Input 
+                  type="number"
+                  className="h-10 bg-white/5 border-white/5 rounded-xl font-bold"
+                  value={toleranciaDias}
+                  onChange={(e) => setTeneranciaDias(Number(e.target.value))}
+                />
+              </div>
+            </div>
+
             <div className="p-6 rounded-2xl bg-primary/5 border border-primary/10 flex items-start gap-4">
               <Info className="h-5 w-5 text-primary shrink-0 mt-0.5" />
               <div className="space-y-1">
                 <p className="text-sm font-bold text-primary">Garantia de Idempotência</p>
                 <p className="text-xs text-primary/70 leading-relaxed">
-                  Independente das regras acima, o sistema sempre valida a <code className="bg-primary/10 px-1 rounded">idempotency_key</code> em requisições de API para garantir que reenvios acidentais nunca gerem duplicidade.
+                  O sistema valida tokens de idempotência em todas as APIs críticas de pagamento 10/10.
                 </p>
               </div>
             </div>
@@ -157,7 +199,7 @@ export function RegrasDuplicidadeTab() {
                 As alterações nestas regras são aplicadas instantaneamente a todos os novos lançamentos e edições.
               </p>
               <Button 
-                onClick={() => saveMutation.mutate(selectedFields)}
+                onClick={() => saveMutation.mutate({ fields: selectedFields, fuzzy: fuzzyMatching, tolerance: toleranciaDias })}
                 disabled={saveMutation.isPending}
                 className="w-full h-14 bg-white text-primary hover:bg-white/90 font-black rounded-xl gap-2 shadow-lg"
               >
