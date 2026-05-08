@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useFilaCobrancas, useExecucoesCobranca, useProcessarRegua } from '@/hooks/useReguaCobranca';
+import { useFilaCobrancas, useExecucoesCobranca, useProcessarRegua, useProcessarFila } from '@/hooks/useReguaCobranca';
 import { useMetricasCobranca } from '@/hooks/useViews';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 
