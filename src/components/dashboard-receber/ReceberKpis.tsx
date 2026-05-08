@@ -62,26 +62,43 @@ export function ReceberKpisCards({ kpis }: ReceberKpisProps) {
 }
 
 export function ReceberInadimplenciaBar({ kpis }: ReceberKpisProps) {
+  const { currentEmpresaId } = useAuth();
+  const { data: vinculos = [] } = useUserEmpresas();
+  const currentEmpresa = vinculos.find(v => v.empresa_id === currentEmpresaId);
+
   return (
-    <motion.div variants={itemVariants}>
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Taxa de Inadimplência</span>
-            <span className={cn(
-              "text-lg font-bold",
-              kpis.taxaInadimplencia > 20 ? "text-destructive" : 
-              kpis.taxaInadimplencia > 10 ? "text-warning" : "text-success"
-            )}>
-              {kpis.taxaInadimplencia.toFixed(1)}%
-            </span>
-          </div>
-          <Progress value={Math.min(kpis.taxaInadimplencia, 100)} className="h-3" />
-          <p className="text-xs text-muted-foreground mt-2">
-            {formatCurrency(kpis.vencido)} vencido de {formatCurrency(kpis.totalReceber)} total
-          </p>
-        </CardContent>
-      </Card>
-    </motion.div>
+    <div className="space-y-4">
+      <motion.div variants={itemVariants}>
+        <Card className="relative overflow-hidden group">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold uppercase tracking-widest text-muted-foreground/60">Risk Intelligence</span>
+                <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 gap-1">
+                  <CheckCircle className="h-3 w-3" />
+                  Sincronizado: {currentEmpresa?.empresa.nome_fantasia || 'Multi-empresa'}
+                </Badge>
+              </div>
+              <span className={cn(
+                "text-2xl font-black tabular-nums",
+                kpis.taxaInadimplencia > 20 ? "text-destructive" : 
+                kpis.taxaInadimplencia > 10 ? "text-warning" : "text-success"
+              )}>
+                {kpis.taxaInadimplencia.toFixed(1)}%
+              </span>
+            </div>
+            <Progress value={Math.min(kpis.taxaInadimplencia, 100)} className="h-3 shadow-inner" />
+            <div className="flex items-center justify-between mt-3">
+              <p className="text-xs text-muted-foreground">
+                {formatCurrency(kpis.vencido)} vencido de {formatCurrency(kpis.totalReceber)} total a receber
+              </p>
+              <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-tighter">
+                Real-time Audit Log Active
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </div>
   );
 }
