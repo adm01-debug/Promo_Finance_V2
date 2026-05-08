@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Building2, Target, Settings2, Sparkles, Sun, Moon, Sunrise, Sunset, Activity, TrendingUp, Calendar } from 'lucide-react';
+import { Building2, Target, Settings2, Sparkles, Sun, Moon, Sunrise, Sunset, Activity, TrendingUp, Calendar, CheckCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,6 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useAuth } from '@/hooks/useAuth';
+import { useEffect } from 'react';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
