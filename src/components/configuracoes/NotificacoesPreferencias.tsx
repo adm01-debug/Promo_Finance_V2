@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Separator } from '@/components/ui/separator';
-import { Mail, AlertTriangle, CreditCard, RotateCcw } from 'lucide-react';
+import { Mail, AlertTriangle, CreditCard, RotateCcw, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { NotificacoesConfig } from '@/components/configuracoes/NotificacoesConfig';
 import { PushNotificationsBanner } from '@/components/settings/PushNotificationsBanner';
@@ -126,6 +126,24 @@ export function NotificacoesPreferencias({ preferencias, onPreferenciasChange }:
             <Switch
               checked={preferencias.alertasFluxoCaixa}
               onCheckedChange={(checked) => onPreferenciasChange(p => ({ ...p, alertasFluxoCaixa: checked }))}
+            />
+          </motion.div>
+
+          <Separator />
+
+          <motion.div variants={itemVariants} className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <ShieldAlert className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="font-medium">Alertas de Duplicidade</p>
+                <p className="text-sm text-muted-foreground">Notificar quando o motor anti-duplicidade bloquear um pagamento</p>
+              </div>
+            </div>
+            <Switch
+              checked={true}
+              disabled
             />
           </motion.div>
         </CardContent>

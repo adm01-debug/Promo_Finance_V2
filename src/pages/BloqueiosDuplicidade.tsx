@@ -190,7 +190,8 @@ export default function BloqueiosDuplicidade() {
                 <TableHead className="p-6 text-[10px] uppercase tracking-widest font-black text-muted-foreground/60">Agente Responsável</TableHead>
                 <TableHead className="p-6 text-[10px] uppercase tracking-widest font-black text-muted-foreground/60">Análise de Bloqueio</TableHead>
                 <TableHead className="p-6 text-[10px] uppercase tracking-widest font-black text-muted-foreground/60">Contexto do Conflito</TableHead>
-                <TableHead className="p-6 text-[10px] uppercase tracking-widest font-black text-muted-foreground/60">Ações</TableHead>
+                <TableHead className="p-6 text-[10px] uppercase tracking-widest font-black text-muted-foreground/60 text-center">Idempotency</TableHead>
+                <TableHead className="p-6 text-[10px] uppercase tracking-widest font-black text-muted-foreground/60 text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody className="divide-y divide-white/5">
@@ -267,6 +268,21 @@ export default function BloqueiosDuplicidade() {
                           </div>
                         ))}
                       </div>
+                    </TableCell>
+                    <TableCell className="p-6 text-center">
+                      {(b.dados_tentativa as any)?.idempotency_key ? (
+                        <div className="flex flex-col items-center gap-1 group/key cursor-help" onClick={() => {
+                          navigator.clipboard.writeText((b.dados_tentativa as any).idempotency_key);
+                          toast.success("Chave copiada para o clipboard!");
+                        }}>
+                          <Badge className="bg-streak/20 text-streak text-[9px] border-none font-mono">
+                            {(b.dados_tentativa as any).idempotency_key.substring(0, 12)}...
+                          </Badge>
+                          <span className="text-[8px] text-muted-foreground uppercase opacity-0 group-hover/key:opacity-100 transition-opacity">Copy Key</span>
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground/20 text-[10px]">--</span>
+                      )}
                     </TableCell>
                     <TableCell className="p-6 text-right">
                       <Button 
