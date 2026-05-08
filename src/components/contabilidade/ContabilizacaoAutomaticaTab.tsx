@@ -752,11 +752,22 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                     <TableRow key={r.id}>
                       <TableCell className="font-medium">
                         {isEditing ? (
-                          <Input
-                            value={editingRegra.nome}
-                            onChange={(e) => setEditingRegra({ ...editingRegra, nome: e.target.value })}
-                            className="h-8"
-                          />
+                          <div className="flex items-center gap-1">
+                            <Input
+                              value={editingRegra.nome}
+                              onChange={(e) => setEditingRegra({ ...editingRegra, nome: e.target.value })}
+                              className="h-8"
+                            />
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-6 w-6 text-muted-foreground hover:text-primary"
+                              title="Restaurar nome"
+                              onClick={() => setEditingRegra({ ...editingRegra, nome: originalRegra?.nome || '' })}
+                            >
+                              <RefreshCcw className="h-3 w-3" />
+                            </Button>
+                          </div>
                         ) : (
                           r.nome
                         )}
