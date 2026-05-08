@@ -216,10 +216,37 @@ export function useAsaas(empresaId?: string) {
   // ===== TRANSFERÊNCIA PIX =====
   const transferirPix = useMutation({
     mutationFn: async (payload: {
-      valor: number; chave_pix: string; tipo_chave?: string; descricao?: string;
+      valor: number; chave_pix: string; tipo_chave?: string; descricao?: string; 
+      empresa_id: string; idempotency_key: string;
     }) => invokeAsaas('transferir_pix', payload),
-    onSuccess: () => toast.success('Transferência Pix realizada!'),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-transfers'] });
+      toast.success('Transferência Pix realizada!');
+    },
     onError: (e) => toast.error('Erro na transferência: ' + e.message),
+  });
+
+  const { data: transfers = [], isLoading: loadingTransfers } = useQuery({
+    queryKey: ['asaas-transfers', empresaId],
+    queryFn: async () => {
+      if (!empresaId) return [];
+      const { data, error } = await supabase
+        .from('asaas_transfers')
+        .select('*')
+        .eq('empresa_id', empresaId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!empresaId,
+  });
+
+  const sincronizarTransferencia = useMutation({
+    mutationFn: async (asaasId: string) => invokeAsaas('sincronizar_transferencia', { asaas_id: asaasId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-transfers'] });
+      toast.success('Status da transferência atualizado');
+    },
   });
 
   // ===== EXTRATO =====
