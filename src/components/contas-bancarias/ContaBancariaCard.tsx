@@ -112,6 +112,39 @@ export function ContaBancariaCard({ conta, empresaNome, showSaldos, bancoIcon: B
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={showMapping} onOpenChange={setShowMapping}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Mapeamento de Campos CSV</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Coluna Data</Label>
+                <Input value={mapping.data} onChange={e => setMapping({...mapping, data: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Coluna Descrição</Label>
+                <Input value={mapping.descricao} onChange={e => setMapping({...mapping, descricao: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Coluna Valor</Label>
+                <Input value={mapping.valor} onChange={e => setMapping({...mapping, valor: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Coluna Tipo (D/C)</Label>
+                <Input value={mapping.tipo} onChange={e => setMapping({...mapping, tipo: e.target.value})} />
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">Informe exatamente o nome do cabeçalho como aparece no seu arquivo CSV.</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowMapping(false)}>Cancelar</Button>
+            <Button onClick={saveMapping}>Salvar Mapeamento</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
