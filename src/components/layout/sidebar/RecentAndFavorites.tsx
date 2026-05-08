@@ -33,6 +33,60 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
   return (
     <div className="px-4 py-8 space-y-8 border-b border-white/5 bg-white/[0.02] relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
+      {/* Quick Company Switcher */}
+      {vinculos.length > 0 && (
+        <div className="space-y-3">
+          <button
+            onClick={() => setIsEmpresasOpen(!isEmpresasOpen)}
+            className="w-full flex items-center gap-4 px-2 text-[10px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-white transition-all group"
+          >
+            <div className="p-2 rounded-xl bg-primary/10 text-primary group-hover:bg-primary/20 transition-all shadow-sm ring-1 ring-primary/20">
+              <Building2 className="h-4 w-4" />
+            </div>
+            <span className="flex-1 text-left">Empresas do Grupo</span>
+            <motion.div
+              animate={{ rotate: isEmpresasOpen ? 180 : 0 }}
+              transition={{ duration: 0.4, ease: "backOut" }}
+              className="opacity-40 group-hover:opacity-100"
+            >
+              <ChevronDown className="h-3.5 w-3.5" />
+            </motion.div>
+          </button>
+          
+          <AnimatePresence initial={false}>
+            {isEmpresasOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="space-y-1 pl-2">
+                  {vinculos.map(v => (
+                    <button
+                      key={v.empresa_id}
+                      onClick={() => setCurrentEmpresaId(v.empresa_id)}
+                      className={cn(
+                        'w-full flex items-center justify-between px-4 py-2.5 text-[11px] rounded-xl transition-all duration-700 truncate font-black tracking-tight uppercase group/comp',
+                        currentEmpresaId === v.empresa_id
+                          ? 'bg-primary/10 text-primary shadow-[0_0_20px_rgba(var(--primary),0.1)] ring-1 ring-primary/20'
+                          : 'text-muted-foreground/50 hover:bg-primary/5 hover:text-primary hover:translate-x-1'
+                      )}
+                    >
+                      <span className="truncate">{v.empresa.nome_fantasia || v.empresa.razao_social}</span>
+                      {currentEmpresaId === v.empresa_id && (
+                        <CheckCircle className="h-3 w-3 text-success shrink-0" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
+
       {/* Favoritos */}
       {favoriteItems.length > 0 && (
         <div className="space-y-3">
