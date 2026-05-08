@@ -11,6 +11,10 @@ interface ConfirmarConciliacaoParams {
   contaPagarId?: string;
   contaReceberId?: string;
   ajusteCentavos?: number;
+  motivo?: string;
+  classificacao?: string;
+  regra?: string;
+  evidenciaUrl?: string;
 }
 
 export function useConciliacao() {
