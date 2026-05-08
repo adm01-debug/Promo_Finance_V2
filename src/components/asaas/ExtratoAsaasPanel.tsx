@@ -11,8 +11,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Loader2, FileText, Search } from 'lucide-react';
+import { Loader2, FileText, Search, CheckCircle2, Sparkles } from 'lucide-react';
 import { useAsaas } from '@/hooks/useAsaas';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { formatCurrency } from '@/lib/currency';
 import { format, subDays } from 'date-fns';
 
