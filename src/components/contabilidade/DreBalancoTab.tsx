@@ -82,51 +82,49 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
 
     if (format === 'json') {
       const payload = {
-        empresa: {
-          nome: empresaTitulo,
-          cnpj: empresa?.cnpj || '—',
-        },
+        empresa: { nome: empresaTitulo, cnpj: empresa?.cnpj || '—' },
         periodo: { ano, mes: mes + 1 },
         fonte,
-        totais: {
-          receitas: dreNovo.receitaBruta,
-          resultado: dreNovo.lucroLiquido,
-        },
+        totais: { receitas: dreNovo.receitaBruta, resultado: dreNovo.lucroLiquido },
         linhas: dreNovo.linhas,
-        naoClassificadas: dreNovo.naoClassificadas,
       };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = `${filename}.json`;
-      a.click();
+      a.href = url; a.download = `${filename}.json`; a.click();
       URL.revokeObjectURL(url);
       toast.success('DRE exportada em JSON');
       return;
     }
 
-    // PDF
+    // PDF Premium
     const doc = new jsPDF();
     const margins = getAutoTableMargins();
     let cursorY = getContentStartY();
 
-    // Sumário
+    // Sumário Executivo
     const totalW = doc.internal.pageSize.getWidth() - margins.left - margins.right;
     doc.setFillColor(PDF_BRAND.surface[0], PDF_BRAND.surface[1], PDF_BRAND.surface[2]);
     doc.setDrawColor(PDF_BRAND.border[0], PDF_BRAND.border[1], PDF_BRAND.border[2]);
-    doc.roundedRect(margins.left, cursorY, totalW, 16, 1, 1, 'FD');
+    doc.roundedRect(margins.left, cursorY, totalW, 20, 2, 2, 'FD');
     
-    doc.setFontSize(8);
+    doc.setFontSize(7);
     doc.setTextColor(PDF_BRAND.muted[0], PDF_BRAND.muted[1], PDF_BRAND.muted[2]);
-    doc.text('LUCRO/PREJUÍZO LÍQUIDO DO PERÍODO', margins.left + 4, cursorY + 6);
+    doc.text('LUCRO/PREJUÍZO LÍQUIDO DO PERÍODO', margins.left + 5, cursorY + 7);
+    doc.text(`FONTE: ${fonte.toUpperCase()} / EMPRESA: ${empresaTitulo.toUpperCase()}`, pageWidth - margins.right - 5, cursorY + 7, { align: 'right' });
     
-    doc.setFontSize(14);
+    doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(dreNovo.lucroLiquido >= 0 ? PDF_BRAND.success[0] : PDF_BRAND.destructive[0], dreNovo.lucroLiquido >= 0 ? PDF_BRAND.success[1] : PDF_BRAND.destructive[1], dreNovo.lucroLiquido >= 0 ? PDF_BRAND.success[2] : PDF_BRAND.destructive[2]);
-    doc.text(formatCurrency(dreNovo.lucroLiquido), margins.left + 4, cursorY + 12);
+    doc.text(formatCurrency(dreNovo.lucroLiquido), margins.left + 5, cursorY + 15);
     
-    cursorY += 22;
+    const margemLiq = ((dreNovo.lucroLiquido / (dreNovo.receitaBruta || 1)) * 100).toFixed(1);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(PDF_BRAND.muted[0], PDF_BRAND.muted[1], PDF_BRAND.muted[2]);
+    doc.text(`MARGEM LÍQUIDA: ${margemLiq}%`, pageWidth - margins.right - 5, cursorY + 15, { align: 'right' });
+
+    cursorY += 28;
 
     const rows: any[] = dreNovo.linhas.map(l => [
       { content: l.descricao, styles: { paddingLeft: l.nivel * 4, fontStyle: l.nivel === 0 ? 'bold' : 'normal' } },
