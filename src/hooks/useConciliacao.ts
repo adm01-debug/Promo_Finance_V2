@@ -15,6 +15,7 @@ interface ConfirmarConciliacaoParams {
   classificacao?: string;
   regra?: string;
   evidenciaUrl?: string;
+  regraId?: string;
 }
 
 export function useConciliacao() {
@@ -23,7 +24,7 @@ export function useConciliacao() {
   const confirmarConciliacao = useMutation({
     mutationFn: async ({ 
       transacaoId, contaPagarId, contaReceberId, ajusteCentavos, 
-      motivo, classificacao, regra, evidenciaUrl 
+      motivo, classificacao, regra, evidenciaUrl, regraId
     }: ConfirmarConciliacaoParams) => {
       const { data: transacao } = await supabase.from('transacoes_bancarias').select('*').eq('id', transacaoId).single();
       
@@ -210,11 +211,36 @@ export function useConciliacao() {
     },
   });
 
+  const desfazerConciliacao = useMutation({
+    mutationFn: async (transacaoId: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Usuário não autenticado');
+
+      const { error } = await supabase.rpc('desfazer_conciliacao', {
+        p_transacao_id: transacaoId,
+        p_user_id: user.id
+      });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transacoes-bancarias'] });
+      queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
+      queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
+      toast.success('Conciliação desfeita com sucesso');
+    },
+    onError: (error) => {
+      logger.error('[useConciliacao] Erro ao desfazer conciliação:', error);
+      toast.error('Erro ao desfazer conciliação');
+    },
+  });
+
   return {
     confirmarConciliacao,
     inserirTransacao,
     importarTransacoes,
     salvarExtratoBanco,
+    desfazerConciliacao,
   };
 }
 
