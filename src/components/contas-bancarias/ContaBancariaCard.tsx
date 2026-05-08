@@ -3,8 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreVertical, RefreshCw, Edit, Trash2, type LucideIcon } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { MoreVertical, RefreshCw, Edit, Trash2, Settings2, FileText, type LucideIcon } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import type { ContaBancaria } from '@/hooks/useFinancialData';
@@ -48,6 +48,10 @@ export function ContaBancariaCard({ conta, empresaNome, showSaldos, bancoIcon: B
               <DropdownMenuContent align="end">
                 <DropdownMenuItem><RefreshCw className="h-4 w-4 mr-2" />Sincronizar</DropdownMenuItem>
                 <DropdownMenuItem><Edit className="h-4 w-4 mr-2" />Editar</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem><Settings2 className="h-4 w-4 mr-2" />Regras de Conciliação</DropdownMenuItem>
+                <DropdownMenuItem><FileText className="h-4 w-4 mr-2" />Mapeamento de Extrato</DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-destructive" onClick={() => onDelete(conta)}>
                   <Trash2 className="h-4 w-4 mr-2" />Excluir
                 </DropdownMenuItem>

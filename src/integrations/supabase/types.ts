@@ -1148,6 +1148,54 @@ export type Database = {
         }
         Relationships: []
       }
+      auditoria_configuracoes: {
+        Row: {
+          created_at: string | null
+          detalhes: Json
+          empresa_id: string
+          id: string
+          ip_address: string | null
+          tipo_acao: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          detalhes?: Json
+          empresa_id: string
+          id?: string
+          ip_address?: string | null
+          tipo_acao: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          detalhes?: Json
+          empresa_id?: string
+          id?: string
+          ip_address?: string | null
+          tipo_acao?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auditoria_configuracoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "auditoria_configuracoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       auditoria_financeira: {
         Row: {
           acao: string | null
@@ -11615,6 +11663,10 @@ export type Database = {
         }[]
       }
       refresh_mv_benchmark_setorial: { Args: never; Returns: undefined }
+      registrar_auditoria_config: {
+        Args: { _detalhes: Json; _empresa_id: string; _tipo_acao: string }
+        Returns: undefined
+      }
       registrar_evento_pagar: {
         Args: {
           p_conta_id: string

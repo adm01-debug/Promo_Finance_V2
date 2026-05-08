@@ -26,16 +26,24 @@ import { maskIp } from '@/lib/ip-mask';
 import { useManagedFilters } from '@/hooks/useManagedFilters';
 import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 
-type AuditAction = 'INSERT' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'LOGOUT' | 'EXPORT' | 'APPROVE' | 'REJECT';
+type AuditAction = string;
 
 interface AuditLog {
-  id: string; user_id: string | null; user_email: string | null; action: AuditAction;
-  table_name: string | null; record_id: string | null; old_data: Record<string, unknown> | null;
-  new_data: Record<string, unknown> | null; details: string | null; ip_address: string | null;
-  user_agent: string | null; created_at: string;
+  id: string; 
+  user_id: string | null; 
+  user_email: string | null; 
+  action: string;
+  table_name: string | null; 
+  record_id: string | null; 
+  old_data: Record<string, unknown> | null;
+  new_data: Record<string, unknown> | null; 
+  details: string | null; 
+  ip_address: string | null;
+  user_agent: string | null; 
+  created_at: string;
 }
 
-const actionConfig: Record<AuditAction, { label: string; color: string }> = {
+const actionConfig: Record<string, { label: string; color: string }> = {
   INSERT: { label: 'Criação', color: 'bg-success/10 text-success border-success/20' },
   UPDATE: { label: 'Atualização', color: 'bg-accent/10 text-accent border-accent/20' },
   DELETE: { label: 'Exclusão', color: 'bg-destructive/10 text-destructive border-destructive/20' },
@@ -44,6 +52,8 @@ const actionConfig: Record<AuditAction, { label: string; color: string }> = {
   EXPORT: { label: 'Exportação', color: 'bg-secondary/10 text-secondary border-secondary/20' },
   APPROVE: { label: 'Aprovação', color: 'bg-success/10 text-success border-success/20' },
   REJECT: { label: 'Rejeição', color: 'bg-destructive/10 text-destructive border-destructive/20' },
+  troca_empresa: { label: 'Troca de Empresa', color: 'bg-primary/20 text-primary border-primary/30' },
+  filtro_alterado: { label: 'Filtro Alterado', color: 'bg-streak/10 text-streak border-streak/20' },
 };
 
 export default function AuditLogs() {
@@ -66,8 +76,8 @@ export default function AuditLogs() {
   const { data: logs, isLoading, refetch } = useQuery({
     queryKey: ['audit-logs', actionFilter, tableFilter, userFilter, dateRange],
     queryFn: async () => {
-      let query = supabase.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(500);
-      if (actionFilter !== 'all') query = query.eq('action', actionFilter as AuditAction);
+      let query = (supabase as any).from('audit_logs').select('*').order('created_at', { ascending: false }).limit(500);
+      if (actionFilter !== 'all') query = query.eq('action', actionFilter);
       if (tableFilter !== 'all') query = query.eq('table_name', tableFilter);
       if (userFilter !== 'all') query = query.eq('user_email', userFilter);
       if (dateRange?.from) query = query.gte('created_at', startOfDay(dateRange.from).toISOString());
