@@ -230,7 +230,7 @@ async function processDealEvent(
                 action: 'criar_cobranca',
                 data: {
                   empresa_id: empresaId,
-                  asaas_customer_id: fields.CONTACT_ID || fields.COMPANY_ID || dealId, // Idealmente buscaria o asaas_id do cliente
+                  asaas_customer_id: fields.CONTACT_ID || fields.COMPANY_ID || fields.CLIENT_ID || dealId, // Attempt common ID fields
                   valor: contaData.valor,
                   data_vencimento: contaData.data_vencimento,
                   tipo: 'boleto',
