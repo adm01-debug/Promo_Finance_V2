@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   TrendingDown, 
   Target, 
@@ -14,7 +14,15 @@ import {
   Zap,
   FileSearch,
   CheckCircle2,
-  RefreshCcw
+  RefreshCcw,
+  ClipboardList,
+  Calendar,
+  FileText,
+  FileDown,
+  ChevronRight,
+  Search,
+  CheckSquare,
+  Clock
 } from 'lucide-react';
 import { supabase as supabaseTyped } from '@/integrations/supabase/client';
 const supabase = supabaseTyped as any;
