@@ -19,6 +19,9 @@ import { StatusContasPieChart } from './StatusContasPieChart';
 import { TopCentrosCustoChart } from './TopCentrosCustoChart';
 import { DraggableDashboard } from './DraggableDashboard';
 import { CentroAcoesInteligentes } from './CentroAcoesInteligentes';
+import { BlingNFeTab } from '@/components/bling/BlingNFeTab';
+import { BlingFinanceiroPanel } from '@/components/bling/BlingFinanceiroPanel';
+
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -126,6 +129,11 @@ export const DashboardExecutivo = () => {
         );
       case 'metas':
         return <MetasFinanceirasPanel />;
+      case 'bling-nfe':
+        return <BlingNFeTab />;
+      case 'bling-financeiro':
+        return <BlingFinanceiroPanel />;
+
       default:
         return <div className="p-4 text-sm text-muted-foreground">Widget: {widget.title}</div>;
     }
