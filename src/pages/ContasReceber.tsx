@@ -134,9 +134,11 @@ export default function ContasReceber() {
                 centrosCusto={centrosCusto}
                 empresaFilter={empresaFilter} onEmpresaChange={handleEmpresaChange} empresas={empresas}
                 formaFilter={formaFilter} onFormaChange={handleFormaChange}
+                contaBancariaFilter={contaBancariaFilter} onContaBancariaChange={handleContaBancariaChange} contasBancarias={contasBancarias}
                 advancedFilters={advancedFilters} onAdvancedFiltersChange={setAdvancedFilters}
               />
             </motion.div>
+
           </div>
 
           {/* Core Content: Table or Kanban */}
