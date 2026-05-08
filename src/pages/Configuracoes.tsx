@@ -79,6 +79,7 @@ import { ReguaCobrancaTab } from '@/components/configuracoes/ReguaCobrancaTab';
 import { SistemaTab } from '@/components/configuracoes/SistemaTab';
 import { TemplatesTab } from '@/components/configuracoes/TemplatesTab';
 import { RegrasDuplicidadeTab } from '@/components/configuracoes/RegrasDuplicidadeTab';
+import { NotificacoesPreferencias } from '@/components/configuracoes/NotificacoesPreferencias';
 import { ShieldAlert } from 'lucide-react';
 
 const containerVariants = {
