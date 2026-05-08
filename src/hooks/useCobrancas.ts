@@ -163,15 +163,22 @@ export function useCobrancaKPIs() {
 }
 
 export function useAgingData() {
+  const { currentEmpresaId } = useAuth();
   return useQuery({
-    queryKey: ['aging-inadimplencia'],
+    queryKey: ['aging-inadimplencia', currentEmpresaId],
     queryFn: async (): Promise<AgingData[]> => {
       const hoje = new Date().toISOString().split('T')[0];
       
-      const { data, error } = await supabase
+      let query = supabase
         .from('contas_receber')
         .select('id, valor, valor_recebido, data_vencimento')
         .or(`status.eq.vencido,and(status.eq.pendente,data_vencimento.lt.${hoje})`);
+
+      if (currentEmpresaId) {
+        query = query.eq('empresa_id', currentEmpresaId);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
