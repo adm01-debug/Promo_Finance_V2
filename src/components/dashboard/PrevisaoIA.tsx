@@ -99,7 +99,7 @@ export function PrevisaoIA({ className }: { className?: string }) {
               </div>
             </div>
           </motion.div>
-          <h3 className="mb-3 text-3xl font-black tracking-tight text-foreground">Intelligence Analysis</h3>
+          <h3 className="mb-3 text-3xl font-black tracking-tight text-foreground">Cognitive Intelligence</h3>
           <p className="mb-8 max-w-md text-base font-medium text-muted-foreground/70 leading-relaxed italic px-6">
             Ative o processamento neural para identificar tendências, anomalias e projeções estratégicas personalizadas para seu negócio.
           </p>

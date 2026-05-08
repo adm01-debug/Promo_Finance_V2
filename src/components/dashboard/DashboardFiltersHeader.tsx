@@ -108,7 +108,7 @@ export function DashboardFiltersHeader({
                 
                 <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-success/10 border border-success/20">
                   <div className="h-1.5 w-1.5 rounded-full bg-success animate-ping" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.15em] text-success">Sistema Autônomo Online</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.15em] text-success">Neural Governance 10/10 Online</span>
                 </div>
               </div>
 
@@ -123,7 +123,7 @@ export function DashboardFiltersHeader({
                 </motion.div>
                 <div>
                   <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-foreground flex items-center gap-3">
-                    {greeting.text}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600">{user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Gestor'}</span>
+                    Singularity: <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600">{user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Gestor'}</span>
                   </h1>
                   <p className="text-lg font-medium text-muted-foreground/70 mt-1 max-w-xl italic">
                     "{insight}"
@@ -138,10 +138,10 @@ export function DashboardFiltersHeader({
                 variant="outline"
                 size="lg"
                 onClick={onOpenConfig}
-                className="h-14 px-6 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 font-bold gap-3 transition-all hover:translate-y-[-2px] shadow-xl"
+                className="h-14 px-6 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 font-black gap-3 transition-all hover:translate-y-[-2px] shadow-xl group/btn"
               >
-                <Settings2 className="h-5 w-5 text-primary" />
-                Customizar Painel
+                <Settings2 className="h-5 w-5 text-primary group-hover/btn:rotate-90 transition-transform duration-500" />
+                Command Center
               </Button>
             </div>
           </div>
@@ -150,7 +150,7 @@ export function DashboardFiltersHeader({
           <div className="flex flex-col sm:flex-row items-center gap-6 p-2 rounded-[1.8rem] bg-black/20 border border-white/5 backdrop-blur-xl">
             <div className="flex items-center gap-3 pl-6 border-r border-white/10 pr-6 h-10 hidden sm:flex">
               <Sparkles className="h-4 w-4 text-purple-400" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Governança</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Cyber-Governance 10/10</span>
             </div>
             
             <div className="grid grid-cols-1 sm:flex items-center gap-4 flex-1 w-full px-4 sm:px-0">
