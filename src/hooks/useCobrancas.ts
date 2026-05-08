@@ -45,12 +45,13 @@ export interface EtapaCount {
 }
 
 export function useContasVencidas() {
+  const { currentEmpresaId } = useAuth();
   return useQuery({
-    queryKey: ['contas-vencidas'],
+    queryKey: ['contas-vencidas', currentEmpresaId],
     queryFn: async (): Promise<ContaVencida[]> => {
       const hoje = new Date().toISOString().split('T')[0];
       
-      const { data, error } = await supabase
+      let query = supabase
         .from('contas_receber')
         .select(`
           id,
@@ -63,8 +64,13 @@ export function useContasVencidas() {
           status,
           clientes:cliente_id (score)
         `)
-        .or(`status.eq.vencido,and(status.eq.pendente,data_vencimento.lt.${hoje})`)
-        .order('data_vencimento', { ascending: true });
+        .or(`status.eq.vencido,and(status.eq.pendente,data_vencimento.lt.${hoje})`);
+
+      if (currentEmpresaId) {
+        query = query.eq('empresa_id', currentEmpresaId);
+      }
+
+      const { data, error } = await query.order('data_vencimento', { ascending: true });
 
       if (error) throw error;
 
