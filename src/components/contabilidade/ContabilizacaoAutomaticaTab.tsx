@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Plus, Zap, CheckCircle2, AlertTriangle, Trash2, Power, Activity } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase as supabaseTyped } from '@/integrations/supabase/client';
+// Tabelas novas ainda não refletidas em types.ts — cast controlado.
+const supabase = supabaseTyped as unknown as {
+  from: (t: string) => any;
+};
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
