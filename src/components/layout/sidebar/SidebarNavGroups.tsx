@@ -40,6 +40,8 @@ import {
   FileCheck,
   BookOpen,
   CheckCircle,
+  EyeOff,
+  History,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -98,6 +100,7 @@ const navGroups: NavGroup[] = [
       { label: 'Tesouraria Multi-CNPJ', icon: Landmark, href: '/tesouraria' },
       { label: 'Simulador Antecipação', icon: Calculator, href: '/simulador-antecipacao' },
       { label: 'Asaas Pagamentos', icon: CreditCard, href: '/asaas', highlight: true },
+      { label: 'Bloqueios Duplicidade', icon: EyeOff, href: '/contas-pagar/bloqueios', highlight: true },
     ],
   },
   {
@@ -118,6 +121,7 @@ const navGroups: NavGroup[] = [
       { label: 'Assinatura Digital', icon: FileSignature, href: '/assinatura-digital' },
       { label: 'Comprovante OCR', icon: Camera, href: '/comprovante-ocr' },
       { label: 'Relatórios', icon: FileText, href: '/relatorios' },
+      { label: 'Auditoria Detalhada', icon: History, href: '/contas-pagar/bloqueios' },
     ],
   },
   {

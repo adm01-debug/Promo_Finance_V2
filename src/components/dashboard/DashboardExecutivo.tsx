@@ -1,6 +1,6 @@
 import { useState, ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, ArrowDownCircle, ArrowUpCircle, AlertTriangle, BarChart3, Brain, Target } from 'lucide-react';
+import { Wallet, ArrowDownCircle, ArrowUpCircle, AlertTriangle, BarChart3, Brain, Target, ShieldCheck } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import { useAuth } from '@/hooks/useAuth';
 import { useDashboardConfig, DashboardWidget } from '@/hooks/useDashboardConfig';
@@ -24,6 +24,10 @@ import { BlingNFeTab } from '@/components/bling/BlingNFeTab';
 import { BlingFinanceiroPanel } from '@/components/bling/BlingFinanceiroPanel';
 import { InadimplenciaSegmentada } from '@/components/analytics/InadimplenciaSegmentada';
 import { BenchmarkingSetorial } from '@/components/analytics/BenchmarkingSetorial';
+import { RelatoriosModelos } from '@/components/relatorios/RelatoriosModelos';
+import { ShieldAlert, FileText, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 
 const containerVariants = {
@@ -261,6 +265,49 @@ export const DashboardExecutivo = () => {
             {/* Analytics Section */}
             <div className="space-y-6">
               <SectionDivider label="Cyber-Neural Matrix: Strategic Analytics 10/10" icon={BarChart3} />
+              
+              {/* Intelligent Purchasing 360 & Anti-Duplicity Hub */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                <motion.div variants={itemVariants} className="premium-card p-6 border border-white/10 bg-gradient-to-br from-primary/5 to-transparent backdrop-blur-md rounded-[2rem] relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <ShieldCheck className="h-12 w-12 text-primary" />
+                  </div>
+                  <div className="relative z-10 space-y-4">
+                    <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-primary/20 text-primary text-[9px] font-black uppercase tracking-widest">
+                      <ShieldAlert className="h-3 w-3" /> Anti-Duplicity Engine
+                    </div>
+                    <h3 className="text-xl font-black tracking-tight">Inteligência de Compras 360°</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Proteção multicamadas com detecção em tempo real e bloqueio automático de pagamentos duplicados.</p>
+                    <div className="flex items-center gap-3 pt-2">
+                      <Button asChild size="sm" className="rounded-xl font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+                        <Link to="/contas-pagar/bloqueios">Ver Auditoria</Link>
+                      </Button>
+                      <Button asChild variant="ghost" size="sm" className="rounded-xl font-bold text-muted-foreground hover:text-primary">
+                        <Link to="/configuracoes">Regras de Bloqueio</Link>
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+
+                <motion.div variants={itemVariants} className="premium-card p-6 border border-white/10 bg-gradient-to-br from-blue-500/5 to-transparent backdrop-blur-md rounded-[2rem] relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <FileText className="h-12 w-12 text-blue-400" />
+                  </div>
+                  <div className="relative z-10 space-y-4">
+                    <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-400 text-[9px] font-black uppercase tracking-widest">
+                      <Download className="h-3 w-3" /> Conciliation Reports
+                    </div>
+                    <h3 className="text-xl font-black tracking-tight">Relatórios & Conciliação</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Exporte trilhas de auditoria completas em PDF/CSV para conciliações bancárias impecáveis.</p>
+                    <div className="flex items-center gap-3 pt-2">
+                      <Button asChild size="sm" variant="secondary" className="rounded-xl font-bold">
+                        <Link to="/relatorios">Painel de Relatórios</Link>
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+
               <DraggableDashboard
                 widgets={widgets}
                 isEditing={isEditing}
