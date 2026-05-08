@@ -352,9 +352,9 @@ export function useAsaas(empresaId?: string) {
   });
 
   const reprocessarManual = useMutation({
-    mutationFn: async (paymentId: string) => {
-      // Forçamos a retentativa limpando tentativas e agendando para agora
-      const { error } = await supabase
+    mutationFn: async ({ paymentId, reason, userId }: { paymentId: string; reason: string; userId: string }) => {
+      // 1. Forçamos a retentativa na fila
+      const { error: queueError } = await supabase
         .from('asaas_sync_queue')
         .update({
           attempts: 0,
@@ -362,17 +362,35 @@ export function useAsaas(empresaId?: string) {
           next_retry_at: new Date().toISOString()
         })
         .eq('payment_id', paymentId);
-      if (error) throw error;
+      if (queueError) throw queueError;
       
-      // Também podemos invocar diretamente o proxy para sincronizar
+      // 2. Registramos na trilha de auditoria com o motivo e usuário
+      const { error: auditError } = await supabase
+        .from('asaas_audit_trail')
+        .insert({
+          payment_id: paymentId,
+          action: 'MANUAL_REPROCESS',
+          details: { reason, manual: true },
+          user_id: userId
+        });
+      if (auditError) throw auditError;
+
+      // 3. Invocamos o proxy para sincronizar imediatamente
       return invokeAsaas('sincronizar_pagamento', { payment_id: paymentId });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['asaas-sync-queue'] });
       queryClient.invalidateQueries({ queryKey: ['asaas-payments'] });
+      queryClient.invalidateQueries({ queryKey: ['asaas-audit-trail'] });
       toast.success('Sincronização manual iniciada');
     },
     onError: (e) => toast.error('Erro ao reprocessar: ' + e.message),
+  });
+
+  const simularBackoff = useMutation({
+    mutationFn: async () => invokeAsaas('simular_backoff', {}),
+    onSuccess: () => toast.success('Simulação de backoff concluída'),
+    onError: (e) => toast.error('Erro na simulação: ' + e.message),
   });
 
   // ===== EXPORTAÇÃO =====
@@ -421,7 +439,7 @@ export function useAsaas(empresaId?: string) {
     // Novos
     config, loadingConfig, salvarConfig,
     syncQueue, loadingQueue, reprocessarManual,
-    exportarAuditoria, queueStats,
+    exportarAuditoria, queueStats, simularBackoff,
   };
 }
 

@@ -975,30 +975,45 @@ export type Database = {
       }
       asaas_config: {
         Row: {
+          alert_email_address: string | null
+          alert_email_enabled: boolean | null
+          alert_whatsapp_enabled: boolean | null
+          alert_whatsapp_number: string | null
           auto_sync_enabled: boolean | null
           backoff_multiplier: number | null
           created_at: string | null
           empresa_id: string
+          failure_threshold: number | null
           id: string
           retry_interval_minutes: number | null
           retry_limit: number | null
           updated_at: string | null
         }
         Insert: {
+          alert_email_address?: string | null
+          alert_email_enabled?: boolean | null
+          alert_whatsapp_enabled?: boolean | null
+          alert_whatsapp_number?: string | null
           auto_sync_enabled?: boolean | null
           backoff_multiplier?: number | null
           created_at?: string | null
           empresa_id: string
+          failure_threshold?: number | null
           id?: string
           retry_interval_minutes?: number | null
           retry_limit?: number | null
           updated_at?: string | null
         }
         Update: {
+          alert_email_address?: string | null
+          alert_email_enabled?: boolean | null
+          alert_whatsapp_enabled?: boolean | null
+          alert_whatsapp_number?: string | null
           auto_sync_enabled?: boolean | null
           backoff_multiplier?: number | null
           created_at?: string | null
           empresa_id?: string
+          failure_threshold?: number | null
           id?: string
           retry_interval_minutes?: number | null
           retry_limit?: number | null
@@ -1093,6 +1108,7 @@ export type Database = {
           asaas_customer_id: string | null
           asaas_id: string
           codigo_barras: string | null
+          conta_bancaria: string | null
           conta_receber_id: string | null
           created_at: string | null
           data_pagamento: string | null
@@ -1120,6 +1136,7 @@ export type Database = {
           asaas_customer_id?: string | null
           asaas_id: string
           codigo_barras?: string | null
+          conta_bancaria?: string | null
           conta_receber_id?: string | null
           created_at?: string | null
           data_pagamento?: string | null
@@ -1147,6 +1164,7 @@ export type Database = {
           asaas_customer_id?: string | null
           asaas_id?: string
           codigo_barras?: string | null
+          conta_bancaria?: string | null
           conta_receber_id?: string | null
           created_at?: string | null
           data_pagamento?: string | null
