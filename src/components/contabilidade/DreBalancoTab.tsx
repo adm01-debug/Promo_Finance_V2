@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { 
   BarChart3, Scale, Download, AlertTriangle, CheckCircle2, 
   FileJson, FileText, Calendar as CalendarIcon, Filter,
   TrendingUp, TrendingDown, Layers, PieChart, ArrowUpRight,
-  ChevronRight, Info as InfoIcon, Zap, RefreshCw, Eye, History, Globe, Search
+  ChevronRight, Info as InfoIcon, Zap, RefreshCw, Eye, History, Globe, Search, RotateCcw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
@@ -43,6 +43,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useLancamentosContabeis } from '@/hooks/useLancamentosContabeis';
+import { useUserDemonstrativoPreferences } from '@/hooks/useUserDemonstrativoPreferences';
 
 interface Props { empresaId?: string; ano: number; anoFim?: number }
 
@@ -56,38 +57,84 @@ interface DrillDownState {
 }
 
 export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
-  const [modo, setModo] = useState<'dre' | 'balanco'>(() => (localStorage.getItem('dre_balanco_tab_modo') as 'dre' | 'balanco') || 'dre');
-  const [fonte, setFonte] = useState<FonteDemonstrativo>(() => (localStorage.getItem('dre_balanco_tab_fonte') as FonteDemonstrativo) || 'competencia');
-  const [mes, setMes] = useState(() => {
-    const saved = localStorage.getItem('dre_balanco_tab_mes');
-    return saved !== null ? parseInt(saved) : new Date().getMonth();
-  });
-  const [selectedEmpresaId, setSelectedEmpresaId] = useState<string>(() => {
-    const saved = localStorage.getItem('dre_balanco_tab_empresaId');
-    return saved || empresaId || 'todas';
-  });
+  const { preferences, update: updatePrefs } = useUserDemonstrativoPreferences();
+  
+  const [modo, setModo] = useState<'dre' | 'balanco'>('dre');
+  const [fonte, setFonte] = useState<FonteDemonstrativo>('competencia');
+  const [mes, setMes] = useState(() => new Date().getMonth());
+  const [selectedEmpresaId, setSelectedEmpresaId] = useState<string>('todas');
+  const [drillDown, setDrillDown] = useState<DrillDownState>({ open: false });
+
+  // Sync preferences from profile
+  useEffect(() => {
+    if (preferences) {
+      if (preferences.modo_padrao) setModo(preferences.modo_padrao);
+      if (preferences.fonte_padrao) setFonte(preferences.fonte_padrao);
+      
+      // Sync drills if persisted (simplified for now to open/close state)
+      if (preferences.drill_down_estado?.open) {
+        // We only restore if there's enough metadata
+        // For now, let's keep local state for the current session but allow syncing some parts
+      }
+    }
+  }, [preferences]);
+
+  // Handle empresa-specific filters
+  useEffect(() => {
+    if (preferences?.filtros_por_empresa?.[selectedEmpresaId]) {
+      const f = preferences.filtros_por_empresa[selectedEmpresaId];
+      if (f.mes !== undefined) setMes(f.mes);
+    } else if (selectedEmpresaId === 'todas') {
+      setMes(new Date().getMonth());
+    }
+  }, [selectedEmpresaId, preferences]);
 
   const handleSetModo = (v: 'dre' | 'balanco') => {
     setModo(v);
-    localStorage.setItem('dre_balanco_tab_modo', v);
+    updatePrefs.mutate({ modo_padrao: v });
   };
 
   const handleSetFonte = (v: FonteDemonstrativo) => {
     setFonte(v);
-    localStorage.setItem('dre_balanco_tab_fonte', v);
+    updatePrefs.mutate({ fonte_padrao: v });
   };
 
   const handleSetMes = (v: number) => {
     setMes(v);
-    localStorage.setItem('dre_balanco_tab_mes', v.toString());
+    const currentFiltros = preferences?.filtros_por_empresa || {};
+    updatePrefs.mutate({ 
+      filtros_por_empresa: {
+        ...currentFiltros,
+        [selectedEmpresaId]: { ...currentFiltros[selectedEmpresaId], mes: v }
+      }
+    });
   };
 
   const handleSetEmpresaId = (v: string) => {
     setSelectedEmpresaId(v);
-    localStorage.setItem('dre_balanco_tab_empresaId', v);
   };
 
-  const [drillDown, setDrillDown] = useState<DrillDownState>({ open: false });
+  const resetPreferences = () => {
+    setModo('dre');
+    setFonte('competencia');
+    setMes(new Date().getMonth());
+    setSelectedEmpresaId(empresaId || 'todas');
+    updatePrefs.mutate({
+      modo_padrao: 'dre',
+      fonte_padrao: 'competencia',
+      filtros_por_empresa: {},
+      drill_down_estado: {}
+    });
+    toast.info('Preferências restauradas para o padrão.');
+  };
+
+  const handleSetDrillDown = (state: DrillDownState) => {
+    setDrillDown(state);
+    // Persist basic state (whether it's open)
+    updatePrefs.mutate({
+      drill_down_estado: { ...state } as any
+    });
+  };
 
   const {
     dre: dreNovo,
@@ -101,6 +148,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
     mes,
     fonte,
   });
+
 
   const { data: empresas = [] } = useEmpresas();
   const empresa = empresas.find((e) => e.id === selectedEmpresaId);
