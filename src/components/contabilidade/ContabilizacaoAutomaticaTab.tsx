@@ -159,6 +159,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
       setForm({
         nome: '',
         tipo_evento: 'conta_pagar',
+        categoria_id: null,
         conta_debito_id: '',
         conta_credito_id: '',
         historico_template: '{descricao}',
