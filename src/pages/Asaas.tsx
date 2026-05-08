@@ -123,6 +123,7 @@ export default function Asaas() {
   const [selectedPaymentAudit, setSelectedPaymentAudit] = useState<string | null>(null);
   const [selectedBoletoPreview, setSelectedBoletoPreview] = useState<any | null>(null);
   const [selectedAnticipationId, setSelectedAnticipationId] = useState<string | null>(null);
+  const [selectedQueueHistory, setSelectedQueueHistory] = useState<any[] | null>(null);
 
   const { toast: toastToast } = useToast();
   const [saldo, setSaldo] = useState<{ balance: number; totalPending: number } | null>(null);
