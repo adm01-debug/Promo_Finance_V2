@@ -87,6 +87,7 @@ export default function Boletos() {
   const [statusFilter, setStatusFilter] = useState<string>('todos');
   const [selectedBoleto, setSelectedBoleto] = useState<Boleto | null>(null);
   const [showNovoBoleto, setShowNovoBoleto] = useState(false);
+  const [activeTab, setActiveTab] = useState('lista');
 
   const {
     boletos,
@@ -109,11 +110,12 @@ export default function Boletos() {
   }) || [];
 
   const kpis = [
-    { label: 'Total Gerado', value: stats.totalGerado, icon: FileText, color: 'text-primary', bg: 'bg-primary/10' },
-    { label: 'Total Pago', value: stats.totalPago, icon: CheckCircle2, color: 'text-success', bg: 'bg-success/10' },
-    { label: 'Total Vencido', value: stats.totalVencido, icon: XCircle, color: 'text-destructive', bg: 'bg-destructive/10' },
-    { label: 'Pendente', value: stats.totalPendente, icon: Clock, color: 'text-warning', bg: 'bg-warning/10' }
+    { label: 'Total Gerado', value: stats.totalGerado, icon: FileText, color: 'text-primary', bg: 'bg-primary/10', filter: 'todos' },
+    { label: 'Total Pago', value: stats.totalPago, icon: CheckCircle2, color: 'text-success', bg: 'bg-success/10', filter: 'pago' },
+    { label: 'Total Vencido', value: stats.totalVencido, icon: XCircle, color: 'text-destructive', bg: 'bg-destructive/10', filter: 'vencido' },
+    { label: 'Pendente', value: stats.totalPendente, icon: Clock, color: 'text-warning', bg: 'bg-warning/10', filter: 'gerado' }
   ];
+
 
   return (
     <MainLayout>
