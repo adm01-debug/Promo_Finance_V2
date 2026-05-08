@@ -43,6 +43,7 @@ interface ConciliacaoExportProps {
     valorConciliado: number;
     valorPendente: number;
   };
+  filters?: any;
 }
 
 type ExportScope = 'todas' | 'conciliadas' | 'feedback_ia';
@@ -64,7 +65,7 @@ const SCOPE_LABEL: Record<ExportScope, string> = {
   feedback_ia: 'Com feedback de IA',
 };
 
-export function ConciliacaoExport({ transacoes, stats }: ConciliacaoExportProps) {
+export function ConciliacaoExport({ transacoes, stats, filters }: ConciliacaoExportProps) {
   const [isExporting, setIsExporting] = useState(false);
 
   async function carregarFeedbackIA(): Promise<FeedbackRow[]> {
@@ -220,6 +221,15 @@ export function ConciliacaoExport({ transacoes, stats }: ConciliacaoExportProps)
         doc.setFontSize(10);
         doc.text(`Escopo: ${scopeLabel}`, 14, 28);
         doc.text(`Gerado em: ${formatDate(new Date())}`, 14, 34);
+        
+        if (filters && Object.values(filters).some(v => v && v !== 'todos')) {
+          const filterDesc = Object.entries(filters)
+            .filter(([_, v]) => v && v !== 'todos')
+            .map(([k, v]) => `${k}: ${v}`)
+            .join(' | ');
+          doc.setFontSize(8);
+          doc.text(`Filtros: ${filterDesc}`, 14, 40);
+        }
 
         doc.setFontSize(12);
         doc.text('Resumo', 14, 46);

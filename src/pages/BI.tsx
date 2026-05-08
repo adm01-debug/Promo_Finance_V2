@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Building2, Calendar, CalendarIcon, BarChart3, PieChart as PieChartIcon, LineChart as LineChartIcon, AlertTriangle, Zap } from "lucide-react";
+import { Building2, Calendar, CalendarIcon, BarChart3, PieChart as PieChartIcon, LineChart as LineChartIcon, AlertTriangle, Zap, LayoutGrid, Download } from "lucide-react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -32,6 +32,7 @@ export default function BI() {
   const [dataFim, setDataFim] = useState<Date | undefined>(undefined);
   const [usarPeriodoCustom, setUsarPeriodoCustom] = useState(false);
   const [futuristicMode, setFuturisticMode] = useState(true);
+  const [filters, setFilters] = useState({ centroCustoId: 'todos' });
 
   const { data: empresas = [] } = useEmpresas();
   const { data: contasPagar = [] } = useContasPagar();
@@ -40,8 +41,18 @@ export default function BI() {
   const { data: clientes = [] } = useClientes();
   const { data: centrosCusto = [] } = useCentrosCusto();
 
-  const filteredPagar = useMemo(() => empresaId === "todas" ? contasPagar : contasPagar.filter(c => c.empresa_id === empresaId), [contasPagar, empresaId]);
-  const filteredReceber = useMemo(() => empresaId === "todas" ? contasReceber : contasReceber.filter(c => c.empresa_id === empresaId), [contasReceber, empresaId]);
+  const filteredPagar = useMemo(() => {
+    let base = empresaId === "todas" ? contasPagar : contasPagar.filter(c => c.empresa_id === empresaId);
+    if (filters.centroCustoId !== 'todos') base = base.filter(c => c.centro_custo_id === filters.centroCustoId);
+    return base;
+  }, [contasPagar, empresaId, filters.centroCustoId]);
+
+  const filteredReceber = useMemo(() => {
+    let base = empresaId === "todas" ? contasReceber : contasReceber.filter(c => c.empresa_id === empresaId);
+    if (filters.centroCustoId !== 'todos') base = base.filter(c => c.centro_custo_id === filters.centroCustoId);
+    return base;
+  }, [contasReceber, empresaId, filters.centroCustoId]);
+
   const filteredContas = useMemo(() => empresaId === "todas" ? contasBancarias : contasBancarias.filter(c => c.empresa_id === empresaId), [contasBancarias, empresaId]);
 
   const kpis = useMemo(() => {
@@ -157,8 +168,9 @@ export default function BI() {
         
         <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
           <div>
-            <h1 className={cn("text-3xl font-bold tracking-tight", futuristicMode ? "text-white drop-shadow-[0_0_10px_rgba(var(--primary),0.5)]" : "bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent")}>
+            <h1 className={cn("text-3xl font-bold tracking-tight flex items-center gap-3", futuristicMode ? "text-white drop-shadow-[0_0_10px_rgba(var(--primary),0.5)]" : "bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent")}>
               Business Intelligence
+              {empresaId !== 'todas' && <Badge variant="outline" className="text-[10px] uppercase tracking-widest border-primary/30 text-primary">CNPJ: {empresas.find(e => e.id === empresaId)?.cnpj}</Badge>}
             </h1>
             <p className="text-muted-foreground">Visão executiva consolidada para gestão estratégica</p>
           </div>
@@ -180,6 +192,13 @@ export default function BI() {
               <SelectContent>
                 <SelectItem value="todas">Todas as Empresas</SelectItem>
                 {empresas.filter(e => e.ativo).map(empresa => <SelectItem key={empresa.id} value={empresa.id}>{empresa.nome_fantasia || empresa.razao_social}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={filters?.centroCustoId || "todos"} onValueChange={(val) => setFilters(f => ({...f, centroCustoId: val}))}>
+              <SelectTrigger className="w-[180px] bg-background/50 backdrop-blur-sm border-white/10"><LayoutGrid className="w-4 h-4 mr-2" /><SelectValue placeholder="Centro de Custo" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos os Centros</SelectItem>
+                {centrosCusto?.map(c => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={usarPeriodoCustom ? "custom" : periodo} onValueChange={(val) => { if (val === "custom") { setUsarPeriodoCustom(true); } else { setUsarPeriodoCustom(false); setPeriodo(val); setDataInicio(undefined); setDataFim(undefined); } }}>
@@ -207,6 +226,11 @@ export default function BI() {
                 ))}
               </div>
             )}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="bg-background/50 backdrop-blur-sm border-white/10 gap-2">
+              <Download className="w-4 h-4" /> Exportar BI
+            </Button>
           </div>
         </motion.div>
 

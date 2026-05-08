@@ -166,7 +166,7 @@ export default function Conciliacao() {
                 ))}
               </SelectContent>
             </Select>
-            <ConciliacaoExport transacoes={exportData.transacoes} stats={exportData.stats} />
+            <ConciliacaoExport transacoes={exportData.transacoes} stats={exportData.stats} filters={filters} />
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button size="sm" onClick={() => setShowImportDialog(true)} className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25">
