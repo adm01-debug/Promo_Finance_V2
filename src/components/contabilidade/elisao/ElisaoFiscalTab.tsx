@@ -65,6 +65,7 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
     crescimento: 5,
     folha_prolabore: 28
   });
+  const [selectedPeriod, setSelectedPeriod] = useState('anual');
 
   // Queries
   const { data: simulacoes = [], isLoading: loadingSims } = useQuery({
@@ -73,6 +74,34 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
       const { data, error } = await supabase
         .from('elisao_simulacoes_regime')
         .select('*')
+        .eq('empresa_id', empresaId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!empresaId
+  });
+
+  const { data: tarefas = [] } = useQuery({
+    queryKey: ['elisao_tarefas', empresaId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('elisao_tarefas_acionaveis')
+        .select('*')
+        .eq('empresa_id', empresaId)
+        .order('prazo', { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!empresaId
+  });
+
+  const { data: auditoriaLogs = [] } = useQuery({
+    queryKey: ['elisao_auditoria', empresaId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('elisao_creditos_auditoria')
+        .select('*, elisao_regras_creditos(*)')
         .eq('empresa_id', empresaId)
         .order('created_at', { ascending: false });
       if (error) throw error;
