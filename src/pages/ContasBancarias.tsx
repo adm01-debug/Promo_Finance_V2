@@ -28,6 +28,8 @@ import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
+import { toast } from 'sonner';
+
 import { TransferenciaDialog } from '@/components/contas-bancarias/TransferenciaDialog';
 import { ContasBancariasKPIs } from '@/components/contas-bancarias/ContasBancariasKPIs';
 import { NovaContaDialog } from '@/components/contas-bancarias/NovaContaDialog';
