@@ -47,7 +47,15 @@ export default function DashboardReceber() {
     defaults: RECEBER_DEFAULTS,
     localStorageKey: "app-dashboard-receber-filters",
   });
+  const { user, currentEmpresaId } = useAuth();
   const { empresaId, vendedorId, ramoAtividade, statusFilter, clienteId, periodo, dataInicioIso, dataFimIso } = filtersController.values;
+
+  // Sincroniza com empresa ativa do sistema
+  useEffect(() => {
+    if (currentEmpresaId && empresaId !== currentEmpresaId && empresaId === 'todas') {
+      filtersController.setField('empresaId', currentEmpresaId);
+    }
+  }, [currentEmpresaId, empresaId]);
   const dataInicio = dataInicioIso ? new Date(dataInicioIso) : undefined;
   const dataFim = dataFimIso ? new Date(dataFimIso) : undefined;
   const setEmpresaId = (v: string) => filtersController.setField('empresaId', v);
