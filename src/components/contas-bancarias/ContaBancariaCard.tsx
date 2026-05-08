@@ -27,6 +27,27 @@ interface Props {
 }
 
 export function ContaBancariaCard({ conta, empresaNome, showSaldos, bancoIcon: BancoIcon, bancoColor, onDelete }: Props) {
+  const [showMapping, setShowMapping] = useState(false);
+  const [mapping, setMapping] = useState<Record<string, string>>((conta as any).mapeamento_extrato || {
+    data: 'Data',
+    descricao: 'Descrição',
+    valor: 'Valor',
+    tipo: 'Tipo'
+  });
+
+  const saveMapping = async () => {
+    const { error } = await (supabase as any)
+      .from('contas_bancarias')
+      .update({ mapeamento_extrato: mapping })
+      .eq('id', conta.id);
+    
+    if (error) toast.error('Erro ao salvar mapeamento');
+    else {
+      toast.success('Mapeamento salvo com sucesso');
+      setShowMapping(false);
+    }
+  };
+
   const percentualDisponivel = conta.saldo_atual > 0 ? (conta.saldo_disponivel / conta.saldo_atual) * 100 : 0;
 
   return (
