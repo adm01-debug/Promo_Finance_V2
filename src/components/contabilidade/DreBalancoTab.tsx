@@ -32,6 +32,9 @@ import autoTable from 'jspdf-autotable';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useLancamentosContabeis } from '@/hooks/useLancamentosContabeis';
 
 interface Props { empresaId?: string; ano: number; anoFim?: number }
 
