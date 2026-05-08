@@ -22,6 +22,21 @@ export function ConciliacaoRetroativaPanel({ contaBancariaId }: Props) {
     to: new Date()
   });
   const { agendar } = useConciliacaoRetroativa();
+  
+  const { data: logs, isLoading } = useQuery({
+    queryKey: ['logs-conciliacao-retroativa', contaBancariaId],
+    queryFn: async () => {
+      if (!contaBancariaId) return [];
+      const { data, error } = await supabase
+        .from('logs_conciliacao_retroativa')
+        .select('*')
+        .eq('conta_bancaria_id', contaBancariaId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!contaBancariaId,
+  });
 
   const handleAgendar = () => {
     if (!contaBancariaId) return;
