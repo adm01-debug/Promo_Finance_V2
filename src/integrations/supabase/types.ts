@@ -973,6 +973,54 @@ export type Database = {
           },
         ]
       }
+      asaas_config: {
+        Row: {
+          auto_sync_enabled: boolean | null
+          backoff_multiplier: number | null
+          created_at: string | null
+          empresa_id: string
+          id: string
+          retry_interval_minutes: number | null
+          retry_limit: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          auto_sync_enabled?: boolean | null
+          backoff_multiplier?: number | null
+          created_at?: string | null
+          empresa_id: string
+          id?: string
+          retry_interval_minutes?: number | null
+          retry_limit?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          auto_sync_enabled?: boolean | null
+          backoff_multiplier?: number | null
+          created_at?: string | null
+          empresa_id?: string
+          id?: string
+          retry_interval_minutes?: number | null
+          retry_limit?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asaas_config_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: true
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asaas_config_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: true
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       asaas_customers: {
         Row: {
           asaas_id: string
@@ -11794,6 +11842,10 @@ export type Database = {
       }
       duplicate_saved_filter: {
         Args: { _new_name: string; _source_id: string }
+        Returns: string
+      }
+      export_asaas_audit_csv: {
+        Args: { p_empresa_id: string }
         Returns: string
       }
       fn_verificar_vencidos: { Args: never; Returns: undefined }

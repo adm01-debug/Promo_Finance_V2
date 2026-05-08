@@ -301,6 +301,109 @@ export function useAsaas(empresaId?: string) {
     valorRecebido: payments.filter(p => ['RECEIVED', 'CONFIRMED'].includes(p.status)).reduce((s, p) => s + (p.valor_liquido || p.valor), 0),
   };
 
+  // ===== CONFIGURAÇÕES =====
+  const { data: config, isLoading: loadingConfig } = useQuery({
+    queryKey: ['asaas-config', empresaId],
+    queryFn: async () => {
+      if (!empresaId) return null;
+      const { data, error } = await supabase
+        .from('asaas_config')
+        .select('*')
+        .eq('empresa_id', empresaId)
+        .single();
+      if (error && error.code !== 'PGRST116') throw error;
+      return data;
+    },
+    enabled: !!empresaId,
+  });
+
+  const salvarConfig = useMutation({
+    mutationFn: async (payload: any) => {
+      if (!empresaId) throw new Error('Empresa não selecionada');
+      const { data, error } = await supabase
+        .from('asaas_config')
+        .upsert({ ...payload, empresa_id: empresaId })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-config'] });
+      toast.success('Configurações salvas');
+    },
+    onError: (e) => toast.error('Erro ao salvar config: ' + e.message),
+  });
+
+  // ===== FILA DE RETENTATIVAS =====
+  const { data: syncQueue = [], isLoading: loadingQueue } = useQuery({
+    queryKey: ['asaas-sync-queue', empresaId],
+    queryFn: async () => {
+      if (!empresaId) return [];
+      const { data, error } = await supabase
+        .from('asaas_sync_queue')
+        .select('*, asaas_payments!inner(empresa_id)')
+        .eq('asaas_payments.empresa_id', empresaId)
+        .order('next_retry_at', { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!empresaId,
+  });
+
+  const reprocessarManual = useMutation({
+    mutationFn: async (paymentId: string) => {
+      // Forçamos a retentativa limpando tentativas e agendando para agora
+      const { error } = await supabase
+        .from('asaas_sync_queue')
+        .update({
+          attempts: 0,
+          status: 'pending',
+          next_retry_at: new Date().toISOString()
+        })
+        .eq('payment_id', paymentId);
+      if (error) throw error;
+      
+      // Também podemos invocar diretamente o proxy para sincronizar
+      return invokeAsaas('sincronizar_pagamento', { payment_id: paymentId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-sync-queue'] });
+      queryClient.invalidateQueries({ queryKey: ['asaas-payments'] });
+      toast.success('Sincronização manual iniciada');
+    },
+    onError: (e) => toast.error('Erro ao reprocessar: ' + e.message),
+  });
+
+  // ===== EXPORTAÇÃO =====
+  const exportarAuditoria = async () => {
+    if (!empresaId) return;
+    try {
+      const { data, error } = await supabase.rpc('export_asaas_audit_csv', { p_empresa_id: empresaId });
+      if (error) throw error;
+      
+      const blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `auditoria_asaas_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success('Exportação concluída');
+    } catch (e: any) {
+      toast.error('Erro ao exportar: ' + e.message);
+    }
+  };
+
+  // ===== STATS ADICIONAIS PARA DASHBOARD =====
+  const queueStats = {
+    total: syncQueue.length,
+    falhas: syncQueue.filter(q => q.status === 'failed').length,
+    pendentes: syncQueue.filter(q => q.status === 'pending').length,
+    sucesso: syncQueue.filter(q => q.status === 'completed').length,
+  };
+
   return {
     customers, loadingCustomers,
     criarCliente, editarCliente, excluirCliente,
@@ -315,6 +418,10 @@ export function useAsaas(empresaId?: string) {
     obterComprovante,
     auditTrail,
     loadingAudit,
+    // Novos
+    config, loadingConfig, salvarConfig,
+    syncQueue, loadingQueue, reprocessarManual,
+    exportarAuditoria, queueStats,
   };
 }
 

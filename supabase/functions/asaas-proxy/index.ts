@@ -536,14 +536,47 @@ Deno.serve(async (req) => {
         break
       }
 
+      case 'sincronizar_pagamento': {
+        if (!data?.payment_id) return err('payment_id é obrigatório')
+        const { data: localPayment, error: fetchErr } = await supabase
+          .from('asaas_payments')
+          .select('*')
+          .eq('id', data.payment_id)
+          .single()
+        
+        if (fetchErr || !localPayment) return err('Pagamento não encontrado')
+        if (!localPayment.asaas_id) return err('Pagamento sem ID Asaas')
+
+        const asaasData = await asaasFetch(`/payments/${localPayment.asaas_id}`, ASAAS_API_KEY)
+        const errSync = checkErrors(asaasData)
+        if (errSync) return errSync
+
+        const { error: updateErr } = await supabase
+          .from('asaas_payments')
+          .update({
+            status: asaasData.status,
+            valor_liquido: asaasData.netValue,
+            data_pagamento: asaasData.paymentDate || null
+          })
+          .eq('id', data.payment_id)
+        
+        if (updateErr) return err('Erro ao atualizar status local')
+
+        await supabase
+          .from('asaas_sync_queue')
+          .update({ status: 'completed' })
+          .eq('payment_id', data.payment_id)
+
+        result = { success: true, status: asaasData.status }
+        break
+      }
+
       case 'processar_fila_sincronizacao': {
-        // Busca itens pendentes na fila
         const { data: queueItems, error: queueError } = await supabase
           .from('asaas_sync_queue')
-          .select('*, asaas_payments(asaas_id)')
+          .select('*, asaas_payments(asaas_id, id)')
           .eq('status', 'PENDING')
           .lte('next_retry_at', new Date().toISOString())
-          .order('next_retry_at', { ascending: true })
           .limit(10)
 
         if (queueError) return err(`Erro ao buscar fila: ${queueError.message}`)
@@ -551,36 +584,38 @@ Deno.serve(async (req) => {
         const results = []
         for (const item of (queueItems || [])) {
           try {
-            // Lógica de retentativa baseada no tipo de operação
-            // Aqui poderíamos chamar as mesmas funções internas do switch
-            // Para simplificar, vamos apenas marcar como processando por enquanto
-            await supabase.from('asaas_sync_queue').update({ 
-              status: 'PROCESSING', 
-              attempts: item.attempts + 1 
-            }).eq('id', item.id)
+            const asaasId = (item.asaas_payments as any)?.asaas_id
+            const paymentId = (item.asaas_payments as any)?.id
+            if (!asaasId) throw new Error('Pagamento sem ID Asaas')
+
+            const asaasData = await asaasFetch(`/payments/${asaasId}`, ASAAS_API_KEY)
             
-            // Simulação de processamento... (Seria expandido conforme necessário)
-            
+            await supabase.from('asaas_payments').update({
+              status: asaasData.status,
+              valor_liquido: asaasData.netValue,
+              data_pagamento: asaasData.paymentDate || null
+            }).eq('id', paymentId)
+
             await supabase.from('asaas_sync_queue').update({ 
               status: 'COMPLETED',
-              updated_at: new Date().toISOString()
+              attempts: item.attempts + 1
             }).eq('id', item.id)
             
             results.push({ id: item.id, status: 'COMPLETED' })
           } catch (e) {
             const nextRetry = new Date()
-            nextRetry.setMinutes(nextRetry.getMinutes() + Math.pow(2, item.attempts + 1)) // Exponential backoff
+            nextRetry.setMinutes(nextRetry.getMinutes() + Math.pow(2, item.attempts + 1) * 30)
             
             await supabase.from('asaas_sync_queue').update({ 
               status: item.attempts + 1 >= item.max_attempts ? 'FAILED' : 'PENDING',
               last_error: e.message,
+              attempts: item.attempts + 1,
               next_retry_at: nextRetry.toISOString()
             }).eq('id', item.id)
-            
-            results.push({ id: item.id, status: 'FAILED', error: e.message })
+            results.push({ id: item.id, status: 'FAILED' })
           }
         }
-        result = { processed: results.length, details: results }
+        result = { processed: results.length }
         break
       }
 
