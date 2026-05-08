@@ -17,7 +17,7 @@ export interface Boleto {
   conta: string;
   linha_digitavel: string;
   codigo_barras: string;
-  status: 'gerado' | 'enviado' | 'pago' | 'vencido' | 'cancelado';
+  status: 'gerado' | 'enviado' | 'pago' | 'vencido' | 'cancelado' | 'rastreio';
   descricao: string | null;
   observacoes: string | null;
   conta_receber_id: string | null;
@@ -37,6 +37,7 @@ export interface NovoBoletoData {
   conta_bancaria_id: string;
   descricao?: string;
   conta_receber_id?: string;
+  conta_pagar_id?: string;
 }
 
 function generateLinhaDigitavel(valor: number, vencimento: string): string {
@@ -182,6 +183,16 @@ export function useBoletos() {
           p_metadata: { boleto_id: (data as any).id, numero: (data as any).numero }
         });
       }
+
+      if (data && (data as any).conta_pagar_id) {
+        await supabase.rpc('registrar_evento_pagar', {
+          p_conta_id: (data as any).conta_pagar_id,
+          p_tipo: 'envio_boleto',
+          p_mensagem: `Boleto #${(data as any).numero} gerado para pagamento de fornecedor.`,
+          p_metadata: { boleto_id: (data as any).id, numero: (data as any).numero }
+        });
+      }
+
       queryClient.invalidateQueries({ queryKey: ['boletos'] });
       toast({
         title: 'Boleto gerado',
