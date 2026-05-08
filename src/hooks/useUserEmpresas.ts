@@ -26,7 +26,31 @@ export function useUserEmpresas() {
         .eq('ativo', true)
         .order('is_default', { ascending: false });
       if (error) throw error;
-      return (data ?? []) as UserEmpresaLink[];
+      const links = (data ?? []) as UserEmpresaLink[];
+
+      // Fallback: sistema exclusivo Grupo Promo Brindes — usuário autenticado
+      // sem vínculos específicos recebe acesso automático a todas as empresas ativas do grupo.
+      if (links.length === 0) {
+        const { data: empresasData } = await (supabase as any)
+          .from('empresas')
+          .select('id, razao_social, nome_fantasia, cnpj')
+          .eq('ativo', true)
+          .order('nome_fantasia', { ascending: true });
+
+        const empresas = (empresasData ?? []) as Array<{ id: string; razao_social: string; nome_fantasia: string | null; cnpj: string }>;
+        const defaultId = localStorage.getItem(STORAGE_KEY);
+        return empresas.map((e, idx) => ({
+          id: `auto-${e.id}`,
+          empresa_id: e.id,
+          role: 'admin' as const,
+          is_default: defaultId ? e.id === defaultId : idx === 0,
+          provisioned_via: 'manual' as const,
+          ativo: true,
+          empresa: e,
+        })) as UserEmpresaLink[];
+      }
+
+      return links;
     },
     enabled: !!user,
   });
