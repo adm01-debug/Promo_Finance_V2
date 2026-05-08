@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileText, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,11 +14,12 @@ interface ImportarExtratoDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onImportSuccess: (extrato: ExtratoOFX) => void;
+  contaBancariaId?: string;
 }
 
 type Step = 'upload' | 'processing' | 'preview' | 'error';
 
-export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess }: ImportarExtratoDialogProps) {
+export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess, contaBancariaId }: ImportarExtratoDialogProps) {
   const [step, setStep] = useState<Step>('upload');
   const [dragActive, setDragActive] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -38,7 +40,20 @@ export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess }: I
       const progressInterval = setInterval(() => { setProgress(prev => Math.min(prev + 15, 70)); }, 100);
       const content = await file.text();
       clearInterval(progressInterval); setProgress(80);
-      const result = parseExtratoBancario(content, file.name);
+      
+      let mapeamento = undefined;
+      if (contaBancariaId) {
+        const { data: conta } = await (supabase as any)
+          .from('contas_bancarias')
+          .select('mapeamento_extrato')
+          .eq('id', contaBancariaId)
+          .maybeSingle();
+        if (conta?.mapeamento_extrato) {
+          mapeamento = conta.mapeamento_extrato as Record<string, string>;
+        }
+      }
+
+      const result = parseExtratoBancario(content, file.name, mapeamento);
       setProgress(100);
       await new Promise(resolve => setTimeout(resolve, 300));
       setResultado(result);

@@ -40,6 +40,8 @@ import { GestaoContratos } from '@/components/contratos/GestaoContratos';
 import { AssinaturaDigital } from '@/components/documentos/AssinaturaDigital';
 import { ComprovanteOCR } from '@/components/comprovantes/ComprovanteOCR';
 import { BiometricSettings } from '@/components/configuracoes/BiometricSettings';
+import { ConfiguracaoConciliacaoPanel } from '@/components/conciliacao/ConfiguracaoConciliacaoPanel';
+import { RegrasConciliacaoPanel } from '@/components/conciliacao/RegrasConciliacaoPanel';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -290,7 +292,7 @@ export default function Configuracoes() {
       </div>
 
       <Tabs defaultValue="regua" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-9 lg:w-[1200px]">
+        <TabsList className="grid w-full grid-cols-10 lg:w-[1300px]">
           <TabsTrigger value="regua" className="gap-2">
             <Clock className="h-4 w-4" />
             <span className="hidden sm:inline">Régua</span>
@@ -298,6 +300,10 @@ export default function Configuracoes() {
           <TabsTrigger value="templates" className="gap-2">
             <Mail className="h-4 w-4" />
             <span className="hidden sm:inline">Templates</span>
+          </TabsTrigger>
+          <TabsTrigger value="conciliacao" className="gap-2 text-primary font-bold">
+            <CheckCircle2 className="h-4 w-4" />
+            <span className="hidden sm:inline">Conciliação</span>
           </TabsTrigger>
           <TabsTrigger value="notificacoes" className="gap-2">
             <Bell className="h-4 w-4" />
@@ -328,6 +334,27 @@ export default function Configuracoes() {
             <span className="hidden sm:inline">Sistema</span>
           </TabsTrigger>
         </TabsList>
+
+        {/* Configurações de Conciliação Multi-CNPJ */}
+        <TabsContent value="conciliacao" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ConfiguracaoConciliacaoPanel />
+            <RegrasConciliacaoPanel />
+          </div>
+          <Card className="premium-card">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" /> Mapeamento de Campos (Extrato CSV)
+              </CardTitle>
+              <CardDescription>Configure como as colunas do seu arquivo CSV devem ser interpretadas pelo sistema para este CNPJ.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="bg-muted/30 p-4 rounded-xl border border-dashed text-center">
+                <p className="text-sm text-muted-foreground">O mapeamento é feito individualmente por conta bancária dentro do menu lateral em <strong>Contas Bancárias → Mapeamento de Extrato</strong>.</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         {/* Régua de Cobrança */}
         <TabsContent value="regua">

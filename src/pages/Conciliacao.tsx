@@ -175,7 +175,12 @@ export default function Conciliacao() {
               </TooltipTrigger>
               <TooltipContent><p className="flex items-center gap-1"><Keyboard className="h-3 w-3" /> Ctrl+I</p></TooltipContent>
             </Tooltip>
-            <ImportarExtratoDialog open={showImportDialog} onOpenChange={setShowImportDialog} onImportSuccess={handleImportSuccess} />
+            <ImportarExtratoDialog 
+              open={showImportDialog} 
+              onOpenChange={setShowImportDialog} 
+              onImportSuccess={handleImportSuccess} 
+              contaBancariaId={selectedBanco}
+            />
           </div>
         </motion.div>
 
