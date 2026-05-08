@@ -3,7 +3,8 @@ import {
   Upload, FileText, CheckCircle2, AlertTriangle, Search,
   SplitSquareHorizontal, Link2, Unlink, Calendar,
   TrendingUp, TrendingDown, Check, MoreHorizontal,
-  BarChart3, Zap, History, Keyboard, Database, Clock
+  BarChart3, Zap, History, Keyboard, Database, Clock,
+  Shield
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
