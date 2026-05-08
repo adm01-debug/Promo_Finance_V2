@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { BookOpen, FileText, Calculator, Building2, BookText, BarChart3, AlertTriangle, Plug, History, ArrowRight, LayoutGrid, Pin, Zap } from 'lucide-react';
+import { BookOpen, FileText, Calculator, Building2, BookText, BarChart3, AlertTriangle, Plug, History, ArrowRight, LayoutGrid, Pin, Zap, ShieldCheck } from 'lucide-react';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { formatCNPJ } from '@/lib/brazilian-validators';
 import { motion } from 'framer-motion';
@@ -23,8 +23,9 @@ import { DreBalancoTab } from '@/components/contabilidade/DreBalancoTab';
 import { VerificacaoIntegracoesPanel } from '@/components/contabilidade/VerificacaoIntegracoesPanel';
 import { AuditoriaLancamentosPanel } from '@/components/contabilidade/AuditoriaLancamentosPanel';
 import { ContabilizacaoAutomaticaTab } from '@/components/contabilidade/ContabilizacaoAutomaticaTab';
+import { ElisaoFiscalTab } from '@/components/contabilidade/elisao/ElisaoFiscalTab';
 
-const VALID_TABS = ['inicio', 'plano', 'lancamentos', 'razao', 'dre', 'auto', 'integracoes', 'auditoria', 'ecd', 'ecf'] as const;
+const VALID_TABS = ['inicio', 'plano', 'lancamentos', 'razao', 'dre', 'auto', 'elisao', 'integracoes', 'auditoria', 'ecd', 'ecf'] as const;
 type TabId = typeof VALID_TABS[number];
 
 const ANO_DEFAULT = new Date().getFullYear() - 1;
@@ -169,13 +170,14 @@ export default function Contabilidade() {
         </div>
 
         <Tabs value={tab} onValueChange={setTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-10">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-11">
             <TabsTrigger value="inicio" className="gap-1.5"><LayoutGrid className="h-4 w-4" />Início</TabsTrigger>
             <TabsTrigger value="plano" className="gap-1.5"><BookOpen className="h-4 w-4" />Plano</TabsTrigger>
             <TabsTrigger value="lancamentos" className="gap-1.5"><Calculator className="h-4 w-4" />Lançamentos</TabsTrigger>
             <TabsTrigger value="razao" className="gap-1.5"><BookText className="h-4 w-4" />Razão & Diário</TabsTrigger>
             <TabsTrigger value="dre" className="gap-1.5"><BarChart3 className="h-4 w-4" />DRE & Balanço</TabsTrigger>
             <TabsTrigger value="auto" className="gap-1.5"><Zap className="h-4 w-4" />Automático</TabsTrigger>
+            <TabsTrigger value="elisao" className="gap-1.5"><ShieldCheck className="h-4 w-4 text-emerald-500" />Elisão Fiscal</TabsTrigger>
             <TabsTrigger value="integracoes" className="gap-1.5"><Plug className="h-4 w-4" />Integrações</TabsTrigger>
             <TabsTrigger value="auditoria" className="gap-1.5"><History className="h-4 w-4" />Auditoria</TabsTrigger>
             <TabsTrigger value="ecd" className="gap-1.5"><FileText className="h-4 w-4" />SPED ECD</TabsTrigger>
@@ -215,6 +217,7 @@ export default function Contabilidade() {
           <TabsContent value="razao"><RazaoDiarioTab empresaId={empresaId} ano={ano} /></TabsContent>
           <TabsContent value="dre"><DreBalancoTab empresaId={empresaId} ano={ano} /></TabsContent>
           <TabsContent value="auto"><ContabilizacaoAutomaticaTab empresaId={empresaId} /></TabsContent>
+          <TabsContent value="elisao"><ElisaoFiscalTab empresaId={empresaId} /></TabsContent>
           <TabsContent value="integracoes"><VerificacaoIntegracoesPanel empresaId={empresaId} ano={ano} /></TabsContent>
           <TabsContent value="auditoria"><AuditoriaLancamentosPanel empresaId={empresaId} ano={ano} /></TabsContent>
           <TabsContent value="ecd"><SpedContabilTab tipo="ECD" empresaId={empresaId} /></TabsContent>
@@ -240,6 +243,7 @@ const HOME_CARDS: HomeCard[] = [
   { id: 'dre', label: 'DRE & Balanço', description: 'Demonstrações apuradas pela escrituração contábil.', icon: BarChart3, accent: 'text-success' },
   { id: 'ecd', label: 'SPED ECD', description: 'Geração e validação da Escrituração Contábil Digital.', icon: FileText, accent: 'text-warning' },
   { id: 'ecf', label: 'SPED ECF', description: 'Escrituração Contábil Fiscal — depende da ECD do ano.', icon: FileText, accent: 'text-warning' },
+  { id: 'elisao', label: 'Elisão Fiscal', description: 'Simulação de regimes e redução estratégica de carga tributária.', icon: ShieldCheck, accent: 'text-emerald-500' },
 ];
 
 interface ContabilidadeHomeProps {

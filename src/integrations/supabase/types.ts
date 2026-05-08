@@ -3388,6 +3388,156 @@ export type Database = {
         }
         Relationships: []
       }
+      elisao_analise_gap: {
+        Row: {
+          created_at: string
+          detalhes_oportunidades: Json
+          economia_identificada: number | null
+          empresa_id: string
+          id: string
+          periodo_referencia: string
+          status: string | null
+          valor_otimizado_projetado: number
+          valor_pago_efetivo: number
+        }
+        Insert: {
+          created_at?: string
+          detalhes_oportunidades?: Json
+          economia_identificada?: number | null
+          empresa_id: string
+          id?: string
+          periodo_referencia: string
+          status?: string | null
+          valor_otimizado_projetado: number
+          valor_pago_efetivo: number
+        }
+        Update: {
+          created_at?: string
+          detalhes_oportunidades?: Json
+          economia_identificada?: number | null
+          empresa_id?: string
+          id?: string
+          periodo_referencia?: string
+          status?: string | null
+          valor_otimizado_projetado?: number
+          valor_pago_efetivo?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "elisao_analise_gap_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "elisao_analise_gap_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
+      elisao_regras_creditos: {
+        Row: {
+          aliquota_cofins_reducao: number | null
+          aliquota_pis_reducao: number | null
+          ativo: boolean | null
+          created_at: string
+          descricao: string | null
+          fundamentacao_legal: string | null
+          id: string
+          ncm: string
+          tipo_credito: string
+        }
+        Insert: {
+          aliquota_cofins_reducao?: number | null
+          aliquota_pis_reducao?: number | null
+          ativo?: boolean | null
+          created_at?: string
+          descricao?: string | null
+          fundamentacao_legal?: string | null
+          id?: string
+          ncm: string
+          tipo_credito: string
+        }
+        Update: {
+          aliquota_cofins_reducao?: number | null
+          aliquota_pis_reducao?: number | null
+          ativo?: boolean | null
+          created_at?: string
+          descricao?: string | null
+          fundamentacao_legal?: string | null
+          id?: string
+          ncm?: string
+          tipo_credito?: string
+        }
+        Relationships: []
+      }
+      elisao_simulacoes_regime: {
+        Row: {
+          ano_base: number
+          created_at: string
+          criado_por: string | null
+          dados_despesas: Json
+          dados_faturamento: Json
+          empresa_id: string
+          id: string
+          nome: string
+          resultado_presumido: Json | null
+          resultado_real: Json | null
+          resultado_reforma_transicao: Json | null
+          resultado_simples: Json | null
+          updated_at: string
+        }
+        Insert: {
+          ano_base: number
+          created_at?: string
+          criado_por?: string | null
+          dados_despesas?: Json
+          dados_faturamento?: Json
+          empresa_id: string
+          id?: string
+          nome: string
+          resultado_presumido?: Json | null
+          resultado_real?: Json | null
+          resultado_reforma_transicao?: Json | null
+          resultado_simples?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          ano_base?: number
+          created_at?: string
+          criado_por?: string | null
+          dados_despesas?: Json
+          dados_faturamento?: Json
+          empresa_id?: string
+          id?: string
+          nome?: string
+          resultado_presumido?: Json | null
+          resultado_real?: Json | null
+          resultado_reforma_transicao?: Json | null
+          resultado_simples?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "elisao_simulacoes_regime_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "elisao_simulacoes_regime_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       empresas: {
         Row: {
           ativo: boolean
