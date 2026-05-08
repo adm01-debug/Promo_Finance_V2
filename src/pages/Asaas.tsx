@@ -1164,6 +1164,28 @@ export default function Asaas() {
         onClose={() => setSelectedAnticipationId(null)} 
         empresaId={empresaId}
       />
+
+      {/* NOVO: Dialog de Logs da Fila */}
+      <ConfirmationDialog
+        isOpen={!!selectedQueueHistory}
+        onClose={() => setSelectedQueueHistory(null)}
+        title="Histórico de Falhas (Fila)"
+        message={
+          <div className="space-y-4 max-h-[350px] overflow-y-auto">
+            {selectedQueueHistory?.map((log: any, i: number) => (
+              <div key={i} className="p-3 bg-muted/20 rounded-md border text-xs">
+                <div className="flex justify-between font-bold mb-1">
+                  <span>Tentativa #{log.attempt}</span>
+                  <span className="text-muted-foreground">{format(parseISO(log.timestamp), 'dd/MM HH:mm', { locale: ptBR })}</span>
+                </div>
+                <p className="text-destructive font-mono">{log.message}</p>
+              </div>
+            ))}
+          </div>
+        }
+        confirmText="Entendido"
+        onConfirm={() => setSelectedQueueHistory(null)}
+      />
     </MainLayout>
   );
 }
