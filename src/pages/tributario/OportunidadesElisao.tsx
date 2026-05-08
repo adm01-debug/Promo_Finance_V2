@@ -29,12 +29,17 @@ import {
   AlertCircle,
   ArrowRight,
   RefreshCw,
+  Download,
+  FileSearch,
+  CheckCheck,
+  Filter,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useOportunidadesElisao } from '@/hooks/useOportunidadesElisao';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { formatCurrency } from '@/lib/formatters';
 import type { RegimeAplicavel, RiscoElisao } from '@/lib/tributario/elisao';
+import { Progress } from '@/components/ui/progress';
 
 const RISCO_BADGE: Record<RiscoElisao, string> = {
   baixo: 'bg-success/10 text-success border-success/30',
@@ -363,7 +368,7 @@ export default function OportunidadesElisao() {
             creditosAuditoria.map((c) => (
               <Card key={c.id}>
                 <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start">
+                   <div className="flex justify-between items-start">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <Badge variant="outline">{c.ncm}</Badge>
@@ -371,26 +376,88 @@ export default function OportunidadesElisao() {
                         <span className="text-sm font-medium">Nota: {c.nota?.arquivo_nome || 'Identificada'}</span>
                       </div>
                       <CardTitle className="text-lg">Crédito de {formatCurrency(c.valor_credito_calculado)}</CardTitle>
+                      {c.regra && (
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <CheckCheck className="h-3 w-3 text-success" />
+                          <span>Regra: {c.regra.descricao}</span>
+                        </div>
+                      )}
                     </div>
-                    <Badge className={
-                      c.status_aprovacao === 'aprovado' ? 'bg-success/10 text-success' :
-                      c.status_aprovacao === 'rejeitado' ? 'bg-destructive/10 text-destructive' :
-                      'bg-warning/10 text-warning'
-                    }>
-                      {c.status_aprovacao.toUpperCase()}
-                    </Badge>
+                    <div className="flex flex-col items-end gap-2">
+                      <Badge className={
+                        c.status_aprovacao === 'aprovado' ? 'bg-success/10 text-success' :
+                        c.status_aprovacao === 'rejeitado' ? 'bg-destructive/10 text-destructive' :
+                        'bg-warning/10 text-warning'
+                      }>
+                        {c.status_aprovacao.toUpperCase()}
+                      </Badge>
+                      <div className="flex flex-col items-end gap-1">
+                        <span className="text-[10px] text-muted-foreground">Score de Confiança</span>
+                        <div className="flex items-center gap-2 w-24">
+                          <Progress value={c.score_confianca || 100} className="h-1" />
+                          <span className="text-[10px] font-bold">{c.score_confianca || 100}%</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="grid grid-cols-2 gap-4 text-sm bg-muted/30 p-3 rounded-md">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm bg-muted/30 p-3 rounded-md">
                     <div>
-                      <span className="text-muted-foreground block">Base de cálculo</span>
+                      <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Base de cálculo</span>
                       <span className="font-semibold">{formatCurrency(c.valor_base)}</span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground block">Metodologia</span>
+                      <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Metodologia</span>
                       <span className="font-semibold">{c.metodologia_aplicada}</span>
                     </div>
+                    <div>
+                      <span className="text-muted-foreground block text-[10px] uppercase font-semibold">CST Origem (XML)</span>
+                      <span className="font-semibold">{((c.nota?.dados_extraidos as any)?.cst) || 'N/D'}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Identificado em</span>
+                      <span className="font-semibold">{new Date(c.created_at).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+
+                  {Array.isArray(c.divergencias_detectadas) && c.divergencias_detectadas.length > 0 && (
+                    <div className="bg-destructive/5 border border-destructive/20 rounded-md p-3">
+                      <div className="flex items-center gap-2 text-destructive text-xs font-bold mb-2 uppercase">
+                        <AlertCircle className="h-4 w-4" />
+                        Divergências Encontradas
+                      </div>
+                      <ul className="space-y-1">
+                        {(c.divergencias_detectadas as any[]).map((d: any, idx: number) => (
+                          <li key={idx} className="text-xs flex items-start gap-2">
+                            <span className="text-destructive">•</span>
+                            <span>{d.campo}: {d.mensagem}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  <div className="flex gap-2 justify-end pt-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => {
+                        const csvContent = "data:text/csv;charset=utf-8," 
+                          + "ID,NCM,CST,Valor,Status,Score,Metodologia\n"
+                          + `${c.id},${c.ncm},${c.cst_csosn},${c.valor_credito_calculado},${c.status_aprovacao},${c.score_confianca},${c.metodologia_aplicada}`;
+                        const encodedUri = encodeURI(csvContent);
+                        const link = document.createElement("a");
+                        link.setAttribute("href", encodedUri);
+                        link.setAttribute("download", `auditoria_credito_${c.id}.csv`);
+                        document.body.appendChild(link);
+                        link.click();
+                      }}
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Auditoria (CSV)
+                    </Button>
+                  
                   </div>
                   
                   {c.status_aprovacao === 'pendente' && (

@@ -3496,6 +3496,7 @@ export type Database = {
           created_at: string
           cst_csosn: string | null
           data_aprovacao: string | null
+          divergencias_detectadas: Json | null
           empresa_id: string
           evidencias: Json | null
           historico_decisoes: Json | null
@@ -3505,6 +3506,7 @@ export type Database = {
           ncm: string
           nota_fiscal_id: string
           regra_id: string | null
+          score_confianca: number | null
           status_aprovacao: string
           status_validacao: string | null
           valor_base: number
@@ -3515,6 +3517,7 @@ export type Database = {
           created_at?: string
           cst_csosn?: string | null
           data_aprovacao?: string | null
+          divergencias_detectadas?: Json | null
           empresa_id: string
           evidencias?: Json | null
           historico_decisoes?: Json | null
@@ -3524,6 +3527,7 @@ export type Database = {
           ncm: string
           nota_fiscal_id: string
           regra_id?: string | null
+          score_confianca?: number | null
           status_aprovacao?: string
           status_validacao?: string | null
           valor_base: number
@@ -3534,6 +3538,7 @@ export type Database = {
           created_at?: string
           cst_csosn?: string | null
           data_aprovacao?: string | null
+          divergencias_detectadas?: Json | null
           empresa_id?: string
           evidencias?: Json | null
           historico_decisoes?: Json | null
@@ -3543,6 +3548,7 @@ export type Database = {
           ncm?: string
           nota_fiscal_id?: string
           regra_id?: string | null
+          score_confianca?: number | null
           status_aprovacao?: string
           status_validacao?: string | null
           valor_base?: number
