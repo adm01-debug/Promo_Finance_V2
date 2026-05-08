@@ -214,7 +214,16 @@ export function useOportunidadesElisao({ empresaId, contexto }: UseElisaoOptions
           .eq('empresa_id', empresaId)
           .order('created_at', { ascending: false });
         if (error) throw error;
-        return data || [];
+        
+        // Auto-validação de consistência
+        return (data || []).map(c => {
+          if (c.score_confianca === null || c.score_confianca === 100) {
+            const v = validarConsistenciaNcmCst(c.ncm, c.cst_csosn);
+            return { ...c, score_confianca: v.score, divergencias_detectadas: [...(c.divergencias_detectadas || []), ...v.divergencias] };
+          }
+          return c;
+        });
+
       },
       enabled: !!empresaId,
     }).data || [],
