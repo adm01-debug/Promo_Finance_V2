@@ -3,9 +3,10 @@ import {
   BarChart3, Scale, Download, AlertTriangle, CheckCircle2, 
   FileJson, FileText, Calendar as CalendarIcon, Filter,
   TrendingUp, TrendingDown, Layers, PieChart, ArrowUpRight,
-  ChevronRight, Info, Zap, RefreshCw, Eye, History, Globe
+  ChevronRight, Info as InfoIcon, Zap, RefreshCw, Eye, History, Globe, Search
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { format } from 'date-fns';
 import { useDemonstrativosContabeis, type FonteDemonstrativo } from '@/hooks/useDemonstrativosContabeis';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
