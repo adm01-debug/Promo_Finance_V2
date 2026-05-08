@@ -368,7 +368,7 @@ export default function OportunidadesElisao() {
                       <div className="flex items-center gap-2">
                         <Badge variant="outline">{c.ncm}</Badge>
                         <Badge variant="secondary">{c.cst_csosn}</Badge>
-                        <span className="text-sm font-medium">Nota #{c.nota?.numero_nota || 'N/A'}</span>
+                        <span className="text-sm font-medium">Nota: {c.nota?.arquivo_nome || 'Identificada'}</span>
                       </div>
                       <CardTitle className="text-lg">Crédito de {formatCurrency(c.valor_credito_calculado)}</CardTitle>
                     </div>
