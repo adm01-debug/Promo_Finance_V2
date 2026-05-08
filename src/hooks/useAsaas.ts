@@ -501,6 +501,7 @@ export function useAsaas(empresaId?: string) {
     criarAssinatura, cancelarAssinatura,
     consultarSaldo, transferirPix, consultarExtrato,
     transfers, loadingTransfers, sincronizarTransferencia,
+    suggestions, loadingSuggestions, gerarSugestoes, aceitarSugestao,
     criarLinkPagamento, listarLinksPagamento, excluirLinkPagamento,
     simularAntecipacao, solicitarAntecipacao,
     stats,
