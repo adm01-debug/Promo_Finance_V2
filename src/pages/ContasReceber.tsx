@@ -114,7 +114,14 @@ export default function ContasReceber() {
               <div className="w-px h-8 bg-white/10 mx-2" />
 
               <div className="flex items-center gap-3">
-                <ExportMenu data={sortedContas} columns={contasReceberColumns} filename="contas_receber" title="Relatório de Contas a Receber" />
+                <ExportMenu 
+                  data={sortedContas} 
+                  columns={contasReceberColumns} 
+                  filename="contas_receber" 
+                  title="Relatório de Contas a Receber" 
+                  empresa={empresas.find(e => e.id === empresaFilter)}
+                  kpis={kpis}
+                />
                 <Button variant="outline" size="lg" className="h-12 px-6 rounded-xl border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary font-black gap-2 transition-all" onClick={() => setBaixaDialogOpen(true)}>
                   <Zap className="h-5 w-5" /> Baixa Automática
                 </Button>
