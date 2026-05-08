@@ -3,9 +3,10 @@ import {
   BarChart3, Scale, Download, AlertTriangle, CheckCircle2, 
   FileJson, FileText, Calendar as CalendarIcon, Filter,
   TrendingUp, TrendingDown, Layers, PieChart, ArrowUpRight,
-  ChevronRight, Info, Zap, RefreshCw, Eye, History, Globe
+  ChevronRight, Info as InfoIcon, Zap, RefreshCw, Eye, History, Globe, Search
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { format } from 'date-fns';
 import { useDemonstrativosContabeis, type FonteDemonstrativo } from '@/hooks/useDemonstrativosContabeis';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -16,6 +17,13 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,15 +40,27 @@ import autoTable from 'jspdf-autotable';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useLancamentosContabeis } from '@/hooks/useLancamentosContabeis';
 
-interface Props { empresaId?: string; ano: number }
+interface Props { empresaId?: string; ano: number; anoFim?: number }
 
-export function DreBalancoTab({ empresaId, ano }: Props) {
+interface DrillDownState {
+  open: boolean;
+  titulo?: string;
+  subtitulo?: string;
+  centro_resultado?: string;
+  tipo_bp?: 'circulante_ativo' | 'nao_circ_ativo' | 'circulante_pas' | 'nao_circ_pas' | 'pl';
+  natureza?: string;
+}
+
+export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
   const [modo, setModo] = useState<'dre' | 'balanco'>('dre');
   const [fonte, setFonte] = useState<FonteDemonstrativo>('competencia');
   const [mes, setMes] = useState(new Date().getMonth());
-  const [dataInicio, setDataInicio] = useState(`${ano}-01-01`);
-  const [dataFim, setDataFim] = useState(`${ano}-12-31`);
+  const [selectedEmpresaId, setSelectedEmpresaId] = useState<string>(empresaId || 'todas');
+  const [drillDown, setDrillDown] = useState<DrillDownState>({ open: false });
 
   const {
     dre: dreNovo,
@@ -49,15 +69,15 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
     isLoading: isLoadingNovo,
     error,
   } = useDemonstrativosContabeis({
-    empresaId: empresaId || 'todas',
+    empresaId: selectedEmpresaId,
     ano,
     mes,
     fonte,
   });
 
   const { data: empresas = [] } = useEmpresas();
-  const empresa = empresas.find((e) => e.id === empresaId);
-  const empresaTitulo = empresa ? (empresa.nome_fantasia || empresa.razao_social) : 'Empresa';
+  const empresa = empresas.find((e) => e.id === selectedEmpresaId);
+  const empresaTitulo = empresa ? (empresa.nome_fantasia || empresa.razao_social) : (selectedEmpresaId === 'todas' ? 'Consolidado' : 'Empresa');
 
   const exportarDRE = (format: 'pdf' | 'json') => {
     if (dreNovo.linhas.length === 0) {
@@ -69,51 +89,50 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
 
     if (format === 'json') {
       const payload = {
-        empresa: {
-          nome: empresaTitulo,
-          cnpj: empresa?.cnpj || '—',
-        },
+        empresa: { nome: empresaTitulo, cnpj: empresa?.cnpj || '—' },
         periodo: { ano, mes: mes + 1 },
         fonte,
-        totais: {
-          receitas: dreNovo.receitaBruta,
-          resultado: dreNovo.lucroLiquido,
-        },
+        totais: { receitas: dreNovo.receitaBruta, resultado: dreNovo.lucroLiquido },
         linhas: dreNovo.linhas,
-        naoClassificadas: dreNovo.naoClassificadas,
       };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = `${filename}.json`;
-      a.click();
+      a.href = url; a.download = `${filename}.json`; a.click();
       URL.revokeObjectURL(url);
       toast.success('DRE exportada em JSON');
       return;
     }
 
-    // PDF
+    // PDF Premium
     const doc = new jsPDF();
     const margins = getAutoTableMargins();
+    const pageWidth = doc.internal.pageSize.getWidth();
     let cursorY = getContentStartY();
 
-    // Sumário
-    const totalW = doc.internal.pageSize.getWidth() - margins.left - margins.right;
+    // Sumário Executivo
+    const totalW = pageWidth - margins.left - margins.right;
     doc.setFillColor(PDF_BRAND.surface[0], PDF_BRAND.surface[1], PDF_BRAND.surface[2]);
     doc.setDrawColor(PDF_BRAND.border[0], PDF_BRAND.border[1], PDF_BRAND.border[2]);
-    doc.roundedRect(margins.left, cursorY, totalW, 16, 1, 1, 'FD');
+    doc.roundedRect(margins.left, cursorY, totalW, 20, 2, 2, 'FD');
     
-    doc.setFontSize(8);
+    doc.setFontSize(7);
     doc.setTextColor(PDF_BRAND.muted[0], PDF_BRAND.muted[1], PDF_BRAND.muted[2]);
-    doc.text('LUCRO/PREJUÍZO LÍQUIDO DO PERÍODO', margins.left + 4, cursorY + 6);
+    doc.text('LUCRO/PREJUÍZO LÍQUIDO DO PERÍODO', margins.left + 5, cursorY + 7);
+    doc.text(`FONTE: ${fonte.toUpperCase()} / EMPRESA: ${empresaTitulo.toUpperCase()}`, pageWidth - margins.right - 5, cursorY + 7, { align: 'right' });
     
-    doc.setFontSize(14);
+    doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(dreNovo.lucroLiquido >= 0 ? PDF_BRAND.success[0] : PDF_BRAND.destructive[0], dreNovo.lucroLiquido >= 0 ? PDF_BRAND.success[1] : PDF_BRAND.destructive[1], dreNovo.lucroLiquido >= 0 ? PDF_BRAND.success[2] : PDF_BRAND.destructive[2]);
-    doc.text(formatCurrency(dreNovo.lucroLiquido), margins.left + 4, cursorY + 12);
+    doc.text(formatCurrency(dreNovo.lucroLiquido), margins.left + 5, cursorY + 15);
     
-    cursorY += 22;
+    const margemLiq = ((dreNovo.lucroLiquido / (dreNovo.receitaBruta || 1)) * 100).toFixed(1);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(PDF_BRAND.muted[0], PDF_BRAND.muted[1], PDF_BRAND.muted[2]);
+    doc.text(`MARGEM LÍQUIDA: ${margemLiq}%`, pageWidth - margins.right - 5, cursorY + 15, { align: 'right' });
+
+    cursorY += 28;
 
     const rows: any[] = dreNovo.linhas.map(l => [
       { content: l.descricao, styles: { paddingLeft: l.nivel * 4, fontStyle: l.nivel === 0 ? 'bold' : 'normal' } },
@@ -151,10 +170,7 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
 
     if (format === 'json') {
       const payload = {
-        empresa: {
-          nome: empresaTitulo,
-          cnpj: empresa?.cnpj || '—',
-        },
+        empresa: { nome: empresaTitulo, cnpj: empresa?.cnpj || '—' },
         periodo: { ano, mes: mes + 1 },
         fonte,
         balanco: balancoNovo,
@@ -162,18 +178,34 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = `${filename}.json`;
-      a.click();
+      a.href = url; a.download = `${filename}.json`; a.click();
       URL.revokeObjectURL(url);
       toast.success('Balanço exportado em JSON');
       return;
     }
 
-    // PDF
+    // PDF Premium
     const doc = new jsPDF();
     const margins = getAutoTableMargins();
+    const pageWidth = doc.internal.pageSize.getWidth();
     let cursorY = getContentStartY();
+
+    // Cabeçalho de Status
+    const totalW = pageWidth - margins.left - margins.right;
+    const equilibrado = balancoNovo.equilibrado;
+    doc.setFillColor(equilibrado ? 240 : 255, equilibrado ? 248 : 240, equilibrado ? 240 : 240);
+    doc.setDrawColor(equilibrado ? PDF_BRAND.success[0] : PDF_BRAND.destructive[0], equilibrado ? PDF_BRAND.success[1] : PDF_BRAND.destructive[1], equilibrado ? PDF_BRAND.success[2] : PDF_BRAND.destructive[2]);
+    doc.roundedRect(margins.left, cursorY, totalW, 12, 1.5, 1.5, 'FD');
+    
+    doc.setFontSize(8);
+    doc.setTextColor(equilibrado ? PDF_BRAND.success[0] : PDF_BRAND.destructive[0], equilibrado ? PDF_BRAND.success[1] : PDF_BRAND.destructive[1], equilibrado ? PDF_BRAND.success[2] : PDF_BRAND.destructive[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.text(
+      equilibrado ? 'SITUAÇÃO PATRIMONIAL: BALANÇO CONSOLIDADO' : `DIVERGÊNCIA IDENTIFICADA: ${formatCurrency(balancoNovo.totalAtivo - balancoNovo.totalPassivo)}`,
+      margins.left + 5,
+      cursorY + 7.5
+    );
+    cursorY += 18;
 
     const rowsAtivo: any[] = balancoNovo.ativo.map(a => [
       { content: a.descricao, styles: { paddingLeft: a.nivel * 3, fontStyle: a.nivel === 0 ? 'bold' : 'normal' } },
@@ -190,9 +222,9 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
       head: [['Ativo', 'Valor (R$)']],
       body: rowsAtivo,
       theme: 'plain',
-      styles: { fontSize: 8, cellPadding: 1.5 },
+      styles: { fontSize: 7.5, cellPadding: 1.5 },
       headStyles: { fillColor: PDF_BRAND.foreground, textColor: [255, 255, 255] },
-      margin: { ...margins, right: doc.internal.pageSize.getWidth() / 2 + 2 },
+      margin: { ...margins, right: pageWidth / 2 + 2 },
     });
 
     autoTable(doc, {
@@ -200,26 +232,10 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
       head: [['Passivo + PL', 'Valor (R$)']],
       body: rowsPassivo,
       theme: 'plain',
-      styles: { fontSize: 8, cellPadding: 1.5 },
+      styles: { fontSize: 7.5, cellPadding: 1.5 },
       headStyles: { fillColor: PDF_BRAND.foreground, textColor: [255, 255, 255] },
-      margin: { ...margins, left: doc.internal.pageSize.getWidth() / 2 + 2 },
+      margin: { ...margins, left: pageWidth / 2 + 2 },
     });
-
-    const finalY = (doc as any).lastAutoTable.finalY || cursorY;
-    const equilibrado = balancoNovo.equilibrado;
-
-    doc.setFillColor(equilibrado ? 240 : 255, equilibrado ? 248 : 240, equilibrado ? 240 : 240);
-    doc.setDrawColor(equilibrado ? PDF_BRAND.success[0] : PDF_BRAND.destructive[0], equilibrado ? PDF_BRAND.success[1] : PDF_BRAND.destructive[1], equilibrado ? PDF_BRAND.success[2] : PDF_BRAND.destructive[2]);
-    doc.roundedRect(margins.left, finalY + 6, doc.internal.pageSize.getWidth() - margins.left - margins.right, 10, 1, 1, 'FD');
-    
-    doc.setFontSize(8);
-    doc.setTextColor(equilibrado ? PDF_BRAND.success[0] : PDF_BRAND.destructive[0], equilibrado ? PDF_BRAND.success[1] : PDF_BRAND.destructive[1], equilibrado ? PDF_BRAND.success[2] : PDF_BRAND.destructive[2]);
-    doc.setFont('helvetica', 'bold');
-    doc.text(
-      equilibrado ? 'BALANÇO EQUILIBRADO' : `DIVERGÊNCIA NO BALANÇO: ${formatCurrency(balancoNovo.totalAtivo - balancoNovo.totalPassivo)}`,
-      margins.left + 4,
-      finalY + 12.5
-    );
 
     applyPdfLayout(doc, {
       titulo: 'Balanço Patrimonial',
@@ -248,7 +264,36 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
   }
 
   return (
-    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group">
+    <>
+      {/* Modal de Drill Down Analítico */}
+      <Dialog open={drillDown.open} onOpenChange={(open) => setDrillDown({ ...drillDown, open })}>
+        <DialogContent className="max-w-5xl border-none bg-background/95 backdrop-blur-3xl shadow-3xl rounded-[2.5rem] p-0 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
+          <DialogHeader className="p-8 pb-4 relative z-10">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-primary/10 rounded-2xl">
+                <Search className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <DialogTitle className="text-2xl font-black tracking-tight">{drillDown.titulo}</DialogTitle>
+                <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">{drillDown.subtitulo}</p>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <div className="p-8 pt-0 relative z-10">
+            <LancamentosDrillDown 
+              empresaId={selectedEmpresaId} 
+              ano={ano} 
+              mes={mes} 
+              centroResultado={drillDown.centro_resultado}
+              tipoBp={drillDown.tipo_bp}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
       <CardHeader className="p-8 pb-4 relative z-10">
         <div className="flex flex-wrap items-center justify-between gap-6">
@@ -312,15 +357,30 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
 
           <div className="h-8 w-px bg-white/10 hidden md:block" />
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 relative z-10">
             <div className="flex flex-col gap-1">
-              <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Período de Referência</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Empresa</Label>
+              <Select value={selectedEmpresaId} onValueChange={setSelectedEmpresaId}>
+                <SelectTrigger className="h-12 w-[220px] rounded-2xl border-white/5 bg-white/5 font-bold">
+                  <SelectValue placeholder="Selecione a empresa" />
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
+                  <SelectItem value="todas">Consolidado (Todas)</SelectItem>
+                  {empresas.map((e) => (
+                    <SelectItem key={e.id} value={e.id}>{e.nome_fantasia || e.razao_social}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Mês de Referência</Label>
               <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
-                <SelectTrigger className="h-12 w-[160px] rounded-2xl border-white/5 bg-white/5 font-bold">
+                <SelectTrigger className="h-12 w-[140px] rounded-2xl border-white/5 bg-white/5 font-bold">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
-                  {['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'].map((m, i) => (
+                  {['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'].map((m, i) => (
                     <SelectItem key={i} value={String(i)}>{m} / {ano}</SelectItem>
                   ))}
                 </SelectContent>
@@ -434,6 +494,15 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.05 }}
+                        onClick={() => setDrillDown({ 
+                          open: true, 
+                          titulo: `Partidas: ${l.descricao}`, 
+                          subtitulo: `${empresaTitulo} · Mês ${mes + 1}/${ano}`,
+                          centro_resultado: l.codigo === '1' ? 'receita_operacional' : 
+                                          l.codigo === '4' ? 'cmv' : 
+                                          l.codigo === '6.1' ? 'despesa_administrativa' : 
+                                          l.codigo === '6.2' ? 'despesa_comercial' : undefined
+                        })}
                         className="flex items-center justify-between py-4 px-5 rounded-2xl hover:bg-white/10 transition-all group/row cursor-pointer border border-transparent hover:border-white/5" 
                         style={{ marginLeft: `${(l.nivel - 1) * 1.5}rem` }}
                       >
@@ -483,6 +552,15 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.05 }}
+                        onClick={() => setDrillDown({ 
+                          open: true, 
+                          titulo: `Partidas: ${l.descricao}`, 
+                          subtitulo: `${empresaTitulo} · Mês ${mes + 1}/${ano}`,
+                          centro_resultado: l.codigo === '1' ? 'receita_operacional' : 
+                                          l.codigo === '4' ? 'cmv' : 
+                                          l.codigo === '6.1' ? 'despesa_administrativa' : 
+                                          l.codigo === '6.2' ? 'despesa_comercial' : undefined
+                        })}
                         className="flex items-center justify-between py-4 px-5 rounded-2xl hover:bg-white/10 transition-all group/row cursor-pointer border border-transparent hover:border-white/5" 
                         style={{ marginLeft: `${(l.nivel - 1) * 1.5}rem` }}
                       >
@@ -565,7 +643,14 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
                               initial={{ opacity: 0, x: -10 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: i * 0.02 }}
-                              className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/5 transition-colors group/row" 
+                              onClick={() => setDrillDown({ 
+                                open: true, 
+                                titulo: `Analítico: ${l.descricao}`, 
+                                subtitulo: `${empresaTitulo} · Acumulado até ${mes + 1}/${ano}`,
+                                tipo_bp: l.codigo === '1.1' ? 'circulante_ativo' : 
+                                        l.codigo === '1.2' ? 'nao_circ_ativo' : undefined
+                              })}
+                              className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/5 transition-colors group/row cursor-pointer" 
                               style={{ marginLeft: `${l.nivel * 1.5}rem` }}
                             >
                               <div className="flex items-center gap-3">
@@ -611,7 +696,15 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
                               initial={{ opacity: 0, x: 10 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: i * 0.02 }}
-                              className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/5 transition-colors group/row" 
+                              onClick={() => setDrillDown({ 
+                                open: true, 
+                                titulo: `Analítico: ${l.descricao}`, 
+                                subtitulo: `${empresaTitulo} · Acumulado até ${mes + 1}/${ano}`,
+                                tipo_bp: l.codigo === '2.1' ? 'circulante_pas' : 
+                                        l.codigo === '2.2' ? 'nao_circ_pas' :
+                                        l.codigo === '3' ? 'pl' : undefined
+                              })}
+                              className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/5 transition-colors group/row cursor-pointer" 
                               style={{ marginLeft: `${l.nivel * 1.5}rem` }}
                             >
                               <div className="flex items-center gap-3">
@@ -653,7 +746,7 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
                             {equilibrado ? "BALANÇO CONSOLIDADO" : "ERRO DE EQUILÍBRIO PATRIMONIAL"}
                           </h2>
                           <div className="flex items-center gap-2 mt-1">
-                            <Info className="h-3 w-3 opacity-40" />
+                            <InfoIcon className="h-3 w-3 opacity-40" />
                             <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Verificação de Integridade Contábil (Ativo = Passivo + PL)</p>
                           </div>
                         </div>
@@ -693,5 +786,123 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
         )}
       </CardContent>
     </Card>
+    </>
+  );
+}
+
+function LancamentosDrillDown({ empresaId, ano, mes, centroResultado, tipoBp }: { 
+  empresaId: string; ano: number; mes: number; centroResultado?: string; tipoBp?: string 
+}) {
+  const { data: lancs = [], isLoading } = useLancamentosContabeis(empresaId === 'todas' ? undefined : empresaId, ano);
+  
+  const partidasFiltradas = useMemo(() => {
+    const dataRefInicio = new Date(ano, mes, 1);
+    const dataRefFim = new Date(ano, mes + 1, 0);
+    
+    const todasPartidas: any[] = [];
+    lancs.forEach((l: any) => {
+      const dataL = new Date(l.data_lancamento + 'T00:00:00');
+      // Filtro de data: se for BP (saldo acumulado), pega tudo até o fim do mês. Se for DRE, pega só o mês.
+      const dataOk = tipoBp ? dataL <= dataRefFim : (dataL >= dataRefInicio && dataL <= dataRefFim);
+      
+      if (dataOk && l.partidas) {
+        l.partidas.forEach((p: any) => {
+          todasPartidas.push({
+            ...p,
+            data_lancamento: l.data_lancamento,
+            historico: l.historico,
+            numero_lancamento: l.numero_lancamento
+          });
+        });
+      }
+    });
+
+    return todasPartidas.filter(p => {
+      if (centroResultado) {
+        return p.conta?.centro_resultado === centroResultado;
+      }
+      if (tipoBp) {
+        // Lógica simplificada de classificação BP
+        const codigo = p.conta?.codigo || '';
+        const tipo = p.conta?.tipo?.toLowerCase() || '';
+        if (tipoBp === 'circulante_ativo') return (tipo === 'ativo' || codigo.startsWith('1')) && !codigo.startsWith('1.2');
+        if (tipoBp === 'nao_circ_ativo') return (tipo === 'ativo' || codigo.startsWith('1')) && codigo.startsWith('1.2');
+        if (tipoBp === 'circulante_pas') return (tipo === 'passivo' || codigo.startsWith('2')) && !codigo.startsWith('2.2') && !codigo.startsWith('2.3') && !codigo.startsWith('3');
+        if (tipoBp === 'nao_circ_pas') return (tipo === 'passivo' || codigo.startsWith('2')) && codigo.startsWith('2.2');
+        if (tipoBp === 'pl') return (tipo === 'passivo' || codigo.startsWith('2')) && (codigo.startsWith('2.3') || codigo.startsWith('3'));
+      }
+      return true;
+    });
+  }, [lancs, mes, centroResultado, tipoBp, ano]);
+
+  if (isLoading) return (
+    <div className="space-y-4">
+      <Skeleton className="h-10 w-full" />
+      <Skeleton className="h-32 w-full" />
+    </div>
+  );
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <Badge variant="outline" className="bg-primary/5 text-primary border-primary/10 font-black">
+          {partidasFiltradas.length} Partidas Encontradas
+        </Badge>
+        <span className="text-xs font-black uppercase opacity-40">Total: {formatCurrency(partidasFiltradas.reduce((a, b) => a + Number(b.valor), 0))}</span>
+      </div>
+      
+      <div className="rounded-2xl border border-white/5 overflow-hidden">
+        <ScrollArea className="h-[400px]">
+          <Table>
+            <TableHeader className="bg-white/5 sticky top-0 z-20">
+              <TableRow className="border-white/5">
+                <TableHead className="text-[9px] font-black uppercase tracking-widest">Data</TableHead>
+                <TableHead className="text-[9px] font-black uppercase tracking-widest">Lanç.</TableHead>
+                <TableHead className="text-[9px] font-black uppercase tracking-widest">Conta</TableHead>
+                <TableHead className="text-[9px] font-black uppercase tracking-widest">D/C</TableHead>
+                <TableHead className="text-right text-[9px] font-black uppercase tracking-widest">Valor</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {partidasFiltradas.map((p, i) => (
+                <TableRow key={i} className="border-white/5 hover:bg-white/5 transition-colors">
+                  <TableCell className="text-[10px] font-bold py-3">{format(new Date(p.data_lancamento + 'T00:00:00'), 'dd/MM/yy')}</TableCell>
+                  <TableCell className="text-[10px] font-mono py-3">#{p.numero_lancamento}</TableCell>
+                  <TableCell className="py-3">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-black">{p.conta?.descricao || p.conta?.nome}</span>
+                      <span className="text-[9px] opacity-40 font-mono">{p.conta?.codigo}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-3">
+                    <Badge variant="outline" className={cn(
+                      "text-[8px] font-black px-1.5 py-0 border-none",
+                      p.tipo === 'D' ? "bg-success/20 text-success" : "bg-destructive/20 text-destructive"
+                    )}>
+                      {p.tipo}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right font-mono text-[11px] font-black py-3">{formatCurrency(p.valor)}</TableCell>
+                </TableRow>
+              ))}
+              {partidasFiltradas.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-10 opacity-40 text-xs font-bold uppercase">Nenhum lançamento analítico encontrado</TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </ScrollArea>
+      </div>
+    </div>
+  );
+}
+
+function Info({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+  return (
+    <div>
+      <p className="text-[11px] text-muted-foreground">{label}</p>
+      <p className={`text-sm ${mono ? 'font-mono' : ''}`}>{value}</p>
+    </div>
   );
 }

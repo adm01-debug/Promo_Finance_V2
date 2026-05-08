@@ -32,6 +32,7 @@ export interface ContaNaoClassificada {
 }
 
 export interface DemonstrativosResult {
+  params: { empresaId: string; ano: number; mes: number; fonte: FonteDemonstrativo };
   dre: {
     linhas: DRELinha[];
     receitaBruta: number;
@@ -350,6 +351,7 @@ export function useDemonstrativosContabeis(params: {
       const refsLanc = new Set(all.map((p) => p.lancamento?.data_lancamento + '|' + (p.conta?.codigo || '')));
       return {
         ...result,
+        params,
         cobertura: { totalLancamentos: refsLanc.size, totalPartidas: all.length },
         origem: 'competencia',
         isLoading: partidasQuery.isLoading,
@@ -433,6 +435,7 @@ export function useDemonstrativosContabeis(params: {
     const totalPassivo = passivoCirc + pl;
 
     return {
+      params,
       dre: { linhas, receitaBruta, lucroLiquido, naoClassificadas: [], totalNaoClassificado: 0 },
       balanco: {
         ativo: [
