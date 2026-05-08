@@ -15,6 +15,7 @@ import { ReceberKpisCards, ReceberInadimplenciaBar } from "@/components/dashboar
 import { ReceberChartsSection } from "@/components/dashboard-receber/ReceberCharts";
 import { useManagedFilters } from "@/hooks/useManagedFilters";
 import { ClearFiltersButton } from "@/components/filters/ClearFiltersButton";
+import { useAuth } from "@/hooks/useAuth";
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } };
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
