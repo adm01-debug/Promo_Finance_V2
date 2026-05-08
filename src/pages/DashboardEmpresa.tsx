@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Building2, CreditCard, FileText, Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
