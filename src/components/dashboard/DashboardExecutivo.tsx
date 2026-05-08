@@ -21,6 +21,8 @@ import { DraggableDashboard } from './DraggableDashboard';
 import { CentroAcoesInteligentes } from './CentroAcoesInteligentes';
 import { BlingNFeTab } from '@/components/bling/BlingNFeTab';
 import { BlingFinanceiroPanel } from '@/components/bling/BlingFinanceiroPanel';
+import { InadimplenciaSegmentada } from '@/components/analytics/InadimplenciaSegmentada';
+import { BenchmarkingSetorial } from '@/components/analytics/BenchmarkingSetorial';
 
 
 const containerVariants = {
