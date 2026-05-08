@@ -62,7 +62,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
     isLoading: isLoadingNovo,
     error,
   } = useDemonstrativosContabeis({
-    empresaId: empresaId || 'todas',
+    empresaId: selectedEmpresaId,
     ano,
     mes,
     fonte,
