@@ -3293,6 +3293,8 @@ export type Database = {
           extrato_id: string | null
           id: string
           recomendacao: string | null
+          resolvido_em: string | null
+          resolvido_por: string | null
           status: string | null
           tipo_divergencia: string
           transacao_id: string | null
@@ -3305,6 +3307,8 @@ export type Database = {
           extrato_id?: string | null
           id?: string
           recomendacao?: string | null
+          resolvido_em?: string | null
+          resolvido_por?: string | null
           status?: string | null
           tipo_divergencia: string
           transacao_id?: string | null
@@ -3317,6 +3321,8 @@ export type Database = {
           extrato_id?: string | null
           id?: string
           recomendacao?: string | null
+          resolvido_em?: string | null
+          resolvido_por?: string | null
           status?: string | null
           tipo_divergencia?: string
           transacao_id?: string | null
@@ -5225,8 +5231,10 @@ export type Database = {
           data_fim: string
           data_inicio: string
           divergencias_encontradas: number | null
+          erro_detalhe: string | null
           id: string
           logs: Json | null
+          progresso: number | null
           status: string | null
           total_conciliado: number | null
           total_processado: number | null
@@ -5238,8 +5246,10 @@ export type Database = {
           data_fim: string
           data_inicio: string
           divergencias_encontradas?: number | null
+          erro_detalhe?: string | null
           id?: string
           logs?: Json | null
+          progresso?: number | null
           status?: string | null
           total_conciliado?: number | null
           total_processado?: number | null
@@ -5251,8 +5261,10 @@ export type Database = {
           data_fim?: string
           data_inicio?: string
           divergencias_encontradas?: number | null
+          erro_detalhe?: string | null
           id?: string
           logs?: Json | null
+          progresso?: number | null
           status?: string | null
           total_conciliado?: number | null
           total_processado?: number | null
@@ -9246,6 +9258,8 @@ export type Database = {
       }
       transacoes_bancarias: {
         Row: {
+          compensacao_aceita_em: string | null
+          compensacao_aceita_por: string | null
           compensacao_classificacao: string | null
           compensacao_evidencia_url: string | null
           compensacao_motivo: string | null
@@ -9268,6 +9282,8 @@ export type Database = {
           valor_conciliado: number | null
         }
         Insert: {
+          compensacao_aceita_em?: string | null
+          compensacao_aceita_por?: string | null
           compensacao_classificacao?: string | null
           compensacao_evidencia_url?: string | null
           compensacao_motivo?: string | null
@@ -9290,6 +9306,8 @@ export type Database = {
           valor_conciliado?: number | null
         }
         Update: {
+          compensacao_aceita_em?: string | null
+          compensacao_aceita_por?: string | null
           compensacao_classificacao?: string | null
           compensacao_evidencia_url?: string | null
           compensacao_motivo?: string | null

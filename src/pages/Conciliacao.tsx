@@ -3,7 +3,8 @@ import {
   Upload, FileText, CheckCircle2, AlertTriangle, Search,
   SplitSquareHorizontal, Link2, Unlink, Calendar,
   TrendingUp, TrendingDown, Check, MoreHorizontal,
-  BarChart3, Zap, History, Keyboard, Database, Clock
+  BarChart3, Zap, History, Keyboard, Database, Clock,
+  Shield
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,6 +14,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DivergenciasConciliacaoPanel } from '@/components/conciliacao/DivergenciasConciliacaoPanel';
 import { ConciliacaoRetroativaPanel } from '@/components/conciliacao/ConciliacaoRetroativaPanel';
+import { ConciliacaoAuditPanel } from '@/components/conciliacao/ConciliacaoAuditPanel';
 import { ConfiguracaoConciliacaoPanel } from '@/components/conciliacao/ConfiguracaoConciliacaoPanel';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -205,6 +207,7 @@ export default function Conciliacao() {
               <TabsTrigger value="extrato" className="gap-2"><Database className="h-4 w-4" />Extrato</TabsTrigger>
               <TabsTrigger value="sessoes" className="gap-2"><History className="h-4 w-4" />Sessões</TabsTrigger>
               <TabsTrigger value="divergencias" className="gap-2"><AlertTriangle className="h-4 w-4" />Divergências</TabsTrigger>
+              <TabsTrigger value="auditoria" className="gap-2"><Shield className="h-4 w-4" />Auditoria</TabsTrigger>
               <TabsTrigger value="retroativo" className="gap-2"><Clock className="h-4 w-4" />Retroativo</TabsTrigger>
               <TabsTrigger value="configuracoes" className="gap-2"><Keyboard className="h-4 w-4" />Ajustes</TabsTrigger>
             </TabsList>
@@ -356,6 +359,7 @@ export default function Conciliacao() {
             <TabsContent value="extrato" className="mt-4"><ExtratoBancarioPanel contaBancariaId={selectedBanco || undefined} /></TabsContent>
             <TabsContent value="sessoes" className="mt-4"><SessoesConciliacaoPanel /></TabsContent>
             <TabsContent value="divergencias" className="mt-4"><DivergenciasConciliacaoPanel /></TabsContent>
+            <TabsContent value="auditoria" className="mt-4"><ConciliacaoAuditPanel /></TabsContent>
             <TabsContent value="retroativo" className="mt-4"><ConciliacaoRetroativaPanel contaBancariaId={selectedBanco || undefined} /></TabsContent>
             <TabsContent value="configuracoes" className="mt-4"><ConfiguracaoConciliacaoPanel contaId={selectedBanco || undefined} /></TabsContent>
           </Tabs>
