@@ -150,19 +150,48 @@
     @apply bg-background/60 backdrop-blur-md border border-white/10 dark:border-white/5;
   }
 
+  /* Standardized UI States */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background transition-all duration-300;
+  }
+
+  .interactive-element {
+    @apply transition-all duration-300 ease-apple active:scale-95 hover:brightness-110;
+  }
+
+  /* Table Standardization */
+  .premium-table {
+    @apply w-full text-left border-separate border-spacing-0;
+  }
+  .premium-table th {
+    @apply px-4 py-3 bg-muted/50 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-b border-border first:rounded-tl-xl last:rounded-tr-xl;
+  }
+  .premium-table td {
+    @apply px-4 py-4 text-sm border-b border-border/50 transition-colors;
+  }
+  .premium-table tr:hover td {
+    @apply bg-primary/[0.02];
+  }
+  .premium-table tr:last-child td {
+    @apply border-b-0;
+  }
+
   /* Shimmer & Pulse */
   .shimmer {
-    background: linear-gradient(90deg, hsl(var(--muted)) 0%, hsl(var(--card)) 50%, hsl(var(--muted)) 100%);
-    background-size: 200% 100%;
-    animation: shimmer 2s linear infinite;
+    @apply relative overflow-hidden bg-muted/20;
   }
-  .pulse-glow { animation: glow-pulse 2s ease-in-out infinite; }
+  .shimmer::after {
+    content: '';
+    @apply absolute inset-0 -translate-x-full;
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.05), transparent);
+    animation: shimmer-slide 2s infinite;
+  }
 
-  /* Animations */
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+  @keyframes shimmer-slide {
+    100% { transform: translateX(100%); }
   }
+
+  .pulse-glow { animation: glow-pulse 2s ease-in-out infinite; }
 
   @keyframes glow-pulse {
     0%, 100% { opacity: 0.4; transform: scale(1); }
