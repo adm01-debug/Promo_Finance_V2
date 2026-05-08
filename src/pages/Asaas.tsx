@@ -524,9 +524,14 @@ export default function Asaas() {
                               <Badge variant={item.status === 'failed' ? 'destructive' : 'secondary'} className="text-[10px]">{item.status}</Badge>
                             </TableCell>
                             <TableCell className="text-right">
-                              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setReprocessDialog({ paymentId: item.payment_id, asaasId: item.id })} disabled={reprocessarManual.isPending}>
+                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setReprocessDialog({ paymentId: item.payment_id, asaasId: item.id })} disabled={reprocessarManual.isPending}>
                                 <PlayCircle className="h-3.5 w-3.5" />
                               </Button>
+                              {item.error_history && item.error_history.length > 0 && (
+                                <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground" onClick={() => setSelectedQueueHistory(item.error_history)}>
+                                  <History className="h-3.5 w-3.5" />
+                                </Button>
+                              )}
                             </TableCell>
                           </TableRow>
                         ))}
