@@ -122,6 +122,7 @@ export default function Asaas() {
   const [selectedPaymentAudit, setSelectedPaymentAudit] = useState<string | null>(null);
   const [selectedBoletoPreview, setSelectedBoletoPreview] = useState<any | null>(null);
 
+  const { toast: toastAlt } = toastHook();
   const [saldo, setSaldo] = useState<{ balance: number; totalPending: number } | null>(null);
   const [loadingSaldo, setLoadingSaldo] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
