@@ -738,7 +738,7 @@ export default function Asaas() {
                             />
                           </TableHead>
                           <TableHead>Tipo</TableHead>
-                          <TableHead>Descrição</TableHead>
+                          <TableHead>Cliente / CPF / Descrição</TableHead>
                           <TableHead>Valor</TableHead>
                           <TableHead>Vencimento</TableHead>
                           <TableHead>Status</TableHead>
@@ -773,7 +773,13 @@ export default function Asaas() {
                                   <span className="text-sm">{tipoLabels[payment.tipo] || payment.tipo}</span>
                                 </div>
                               </TableCell>
-                              <TableCell className="max-w-[200px] truncate">{payment.descricao || '-'}</TableCell>
+                              <TableCell className="max-w-[250px]">
+                                <div className="flex flex-col">
+                                  <span className="font-bold text-xs truncate uppercase">{payment.sacado_nome || 'Cliente não identificado'}</span>
+                                  <span className="text-[10px] text-muted-foreground">{payment.sacado_cpf_cnpj || 'Sem CPF/CNPJ'}</span>
+                                  <span className="text-[10px] truncate italic mt-0.5">{payment.descricao || '-'}</span>
+                                </div>
+                              </TableCell>
                               <TableCell className="font-medium">{formatCurrency(payment.valor)}</TableCell>
                               <TableCell>{formatDate(payment.data_vencimento)}</TableCell>
                               <TableCell><Badge variant={statusInfo.variant}>{statusInfo.label}</Badge></TableCell>
