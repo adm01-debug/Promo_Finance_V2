@@ -69,8 +69,8 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
   });
 
   const { data: empresas = [] } = useEmpresas();
-  const empresa = empresas.find((e) => e.id === empresaId);
-  const empresaTitulo = empresa ? (empresa.nome_fantasia || empresa.razao_social) : 'Empresa';
+  const empresa = empresas.find((e) => e.id === selectedEmpresaId);
+  const empresaTitulo = empresa ? (empresa.nome_fantasia || empresa.razao_social) : (selectedEmpresaId === 'todas' ? 'Consolidado' : 'Empresa');
 
   const exportarDRE = (format: 'pdf' | 'json') => {
     if (dreNovo.linhas.length === 0) {
