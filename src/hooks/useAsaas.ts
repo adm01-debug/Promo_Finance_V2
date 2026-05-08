@@ -563,7 +563,7 @@ export function useAsaas(empresaId?: string) {
     // Novos
     config, loadingConfig, salvarConfig,
     syncQueue, loadingQueue, reprocessarManual,
-    exportarAuditoria, queueStats, simularBackoff,
+    exportarAuditoria, exportarAuditoriaPDF, queueStats, simularBackoff,
   };
 }
 
