@@ -181,6 +181,8 @@ function AppRoutes() {
             <Route path="/configuracoes/notificacoes/sino" element={<ProtectedRoute><SinoNotificacoesFiltros /></ProtectedRoute>} />
             <Route path="/admin/filtros-compartilhados" element={<ProtectedRoute requiredRoles={['admin']}><SharedFiltersAdmin /></ProtectedRoute>} />
             
+            <Route path="/style-guide" element={<ProtectedRoute><StyleGuide /></ProtectedRoute>} />
+            
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
