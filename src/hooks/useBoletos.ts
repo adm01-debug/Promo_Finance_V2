@@ -159,9 +159,11 @@ export function useBoletos() {
         status: 'gerado',
         descricao: data.descricao || null,
         conta_receber_id: data.conta_receber_id || null,
+        conta_pagar_id: data.conta_pagar_id || null,
         conta_bancaria_id: data.conta_bancaria_id,
         empresa_id: data.empresa_id,
         created_by: user.id,
+        rastreio_status: [{ status: 'gerado', data: new Date().toISOString(), detalhe: 'Boleto gerado pelo sistema' }]
       };
 
       const { data: newBoleto, error } = await supabase
