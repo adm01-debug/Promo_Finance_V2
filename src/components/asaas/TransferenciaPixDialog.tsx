@@ -2,7 +2,7 @@
 // DIALOG: Transferência Pix ASAAS
 // ============================================
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,9 +10,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
-import { Loader2, Send } from 'lucide-react';
+import { Loader2, Send, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useAsaas } from '@/hooks/useAsaas';
 import { toast } from 'sonner';
+import { validateCPF, validateCNPJ } from '@/lib/validators'; // Assumed to exist or I will create it
 
 interface Props {
   open: boolean;
