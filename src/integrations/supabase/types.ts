@@ -11085,6 +11085,15 @@ export type Database = {
         }[]
       }
       refresh_mv_benchmark_setorial: { Args: never; Returns: undefined }
+      registrar_evento_pagar: {
+        Args: {
+          p_conta_id: string
+          p_mensagem: string
+          p_metadata?: Json
+          p_tipo: string
+        }
+        Returns: undefined
+      }
       registrar_evento_receber: {
         Args: {
           p_conta_id: string
