@@ -22,6 +22,13 @@ import {
   Banknote,
   SearchX,
   Upload,
+  ShieldCheck,
+  FileText,
+  ExternalLink,
+  History,
+  AlertCircle,
+  ArrowRight,
+  RefreshCw,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useOportunidadesElisao } from '@/hooks/useOportunidadesElisao';
