@@ -135,6 +135,21 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
         `,
       },
+      asaas_failure: {
+        subject: `⚠️ ALERTA: Falha Crítica na Fila Asaas`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #f43f5e, #e11d48); padding: 20px; text-align: center;">
+              <h1 style="color: white; margin: 0;">⚠️ FALHA NA FILA ASAAS</h1>
+            </div>
+            <div style="padding: 30px; background: #fff1f2; border: 2px solid #fecdd3;">
+              <h2 style="color: #9f1239; margin-top: 0;">${dados.titulo}</h2>
+              <p style="color: #4b5563; line-height: 1.6;">${dados.mensagem}</p>
+              ${dados.urlAcao ? `<a href="${dados.urlAcao}" style="display: inline-block; background: #e11d48; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Ver Painel de Retentativas</a>` : ''}
+            </div>
+          </div>
+        `,
+      },
     };
 
     const template = templates[tipo] || templates.vencimento;
