@@ -352,6 +352,149 @@ export default function OportunidadesElisao() {
               </Card>
             ))
           )}
+        <TabsContent value="auditoria" className="space-y-4 mt-4">
+          {creditosAuditoria.length === 0 ? (
+            <div className="text-center py-10 text-muted-foreground border rounded-lg border-dashed">
+              Nenhum crédito pendente de auditoria para esta empresa.
+            </div>
+          ) : (
+            creditosAuditoria.map((c) => (
+              <Card key={c.id}>
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">{c.ncm}</Badge>
+                        <Badge variant="secondary">{c.cst_csosn}</Badge>
+                        <span className="text-sm font-medium">Nota #{c.nota?.numero_nota || 'N/A'}</span>
+                      </div>
+                      <CardTitle className="text-lg">Crédito de {formatCurrency(c.valor_credito_calculado)}</CardTitle>
+                    </div>
+                    <Badge className={
+                      c.status_aprovacao === 'aprovado' ? 'bg-success/10 text-success' :
+                      c.status_aprovacao === 'rejeitado' ? 'bg-destructive/10 text-destructive' :
+                      'bg-warning/10 text-warning'
+                    }>
+                      {c.status_aprovacao.toUpperCase()}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-2 gap-4 text-sm bg-muted/30 p-3 rounded-md">
+                    <div>
+                      <span className="text-muted-foreground block">Base de cálculo</span>
+                      <span className="font-semibold">{formatCurrency(c.valor_base)}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground block">Metodologia</span>
+                      <span className="font-semibold">{c.metodologia_aplicada}</span>
+                    </div>
+                  </div>
+                  
+                  {c.status_aprovacao === 'pendente' && (
+                    <div className="flex gap-2 justify-end pt-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-destructive hover:bg-destructive/5"
+                        onClick={() => decidirCredito.mutate({ id: c.id, status: 'rejeitado' })}
+                      >
+                        <XCircle className="h-4 w-4 mr-2" />
+                        Rejeitar
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        className="bg-success hover:bg-success/90"
+                        onClick={() => decidirCredito.mutate({ id: c.id, status: 'aprovado' })}
+                      >
+                        <CheckCircle2 className="h-4 w-4 mr-2" />
+                        Aprovar para Recuperação
+                      </Button>
+                    </div>
+                  )}
+                  
+                  {c.historico_decisoes?.length > 0 && (
+                    <div className="text-[10px] text-muted-foreground border-t pt-2 mt-2">
+                      <div className="flex items-center gap-1 mb-1">
+                        <History className="h-3 w-3" />
+                        <span>Histórico de decisões</span>
+                      </div>
+                      {c.historico_decisoes.map((h: any, i: number) => (
+                        <div key={i}>
+                          • {new Date(h.data).toLocaleString()} - Alterado para {h.status}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </TabsContent>
+
+        <TabsContent value="alertas" className="space-y-4 mt-4">
+          {alertas.length === 0 ? (
+            <div className="text-center py-10 text-muted-foreground border rounded-lg border-dashed">
+              Nenhum alerta de divergência para o período selecionado.
+            </div>
+          ) : (
+            alertas.map((a) => (
+              <Alert key={a.id} variant={a.severidade === 'alta' ? 'destructive' : 'default'}>
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle className="flex items-center justify-between">
+                  <span>{a.tipo_divergencia.replace('_', ' ').toUpperCase()}</span>
+                  <Badge variant="outline" className="text-[10px] uppercase">{a.severidade}</Badge>
+                </AlertTitle>
+                <AlertDescription className="mt-2">
+                  <p className="text-sm">{a.descricao}</p>
+                  <div className="mt-2 text-[10px] opacity-70">
+                    Detectado em {new Date(a.created_at).toLocaleString()}
+                  </div>
+                </AlertDescription>
+              </Alert>
+            ))
+          )}
+        </TabsContent>
+
+        <TabsContent value="acoes" className="space-y-4 mt-4">
+          {tarefasAcionaveis.length === 0 ? (
+            <div className="text-center py-10 text-muted-foreground border rounded-lg border-dashed">
+              Nenhuma tarefa de recuperação ativa.
+            </div>
+          ) : (
+            tarefasAcionaveis.map((t) => (
+              <Card key={t.id}>
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-base">{t.titulo}</CardTitle>
+                    <Badge variant={t.bitrix_sync_status === 'sincronizado' ? 'success' : 'outline'} className="gap-1">
+                      {t.bitrix_sync_status === 'sincronizado' && <CheckCircle2 className="h-3 w-3" />}
+                      Bitrix: {t.bitrix_sync_status.replace('_', ' ')}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-sm text-muted-foreground">{t.descricao}</p>
+                  <div className="flex items-center justify-between mt-4">
+                    <div className="text-xs">
+                      <span className="text-muted-foreground">Valor em jogo: </span>
+                      <span className="font-semibold text-primary">{formatCurrency(t.valor_envolvido)}</span>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="gap-2"
+                      onClick={() => sincronizarBitrix.mutate(t.id)}
+                      disabled={sincronizarBitrix.isPending}
+                    >
+                      <RefreshCw className={`h-4 w-4 ${sincronizarBitrix.isPending && 'animate-spin'}`} />
+                      {t.bitrix_task_id ? 'Atualizar no Bitrix24' : 'Criar Tarefa no Bitrix24'}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
         </TabsContent>
       </Tabs>
     </div>
