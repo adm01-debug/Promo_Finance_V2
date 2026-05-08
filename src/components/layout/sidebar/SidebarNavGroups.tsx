@@ -9,6 +9,7 @@ import {
   Landmark,
   FileText,
   PieChart,
+  Palette,
   Bell,
   Settings,
   ChevronDown,
