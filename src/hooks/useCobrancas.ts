@@ -104,27 +104,40 @@ export function useContasVencidas() {
 }
 
 export function useCobrancaKPIs() {
+  const { currentEmpresaId } = useAuth();
   return useQuery({
-    queryKey: ['cobranca-kpis'],
+    queryKey: ['cobranca-kpis', currentEmpresaId],
     queryFn: async (): Promise<CobrancaKPIs> => {
       const hoje = new Date().toISOString().split('T')[0];
       const trintaDiasAtras = subDays(new Date(), 30).toISOString().split('T')[0];
 
       // Buscar contas vencidas (não pagas)
-      const { data: vencidas, error: errorVencidas } = await supabase
+      let vencidasQuery = supabase
         .from('contas_receber')
         .select('id, valor, valor_recebido')
         .or(`status.eq.vencido,and(status.eq.pendente,data_vencimento.lt.${hoje})`);
 
+      if (currentEmpresaId) {
+        vencidasQuery = vencidasQuery.eq('empresa_id', currentEmpresaId);
+      }
+
+      const { data: vencidas, error: errorVencidas } = await vencidasQuery;
+
       if (errorVencidas) throw errorVencidas;
 
       // Buscar contas recuperadas (pagas nos últimos 30 dias que estavam vencidas)
-      const { data: recuperadas, error: errorRecuperadas } = await supabase
+      let recuperadasQuery = supabase
         .from('contas_receber')
         .select('id, valor, valor_recebido, data_recebimento')
         .eq('status', 'pago')
         .gte('data_recebimento', trintaDiasAtras)
         .lt('data_vencimento', 'data_recebimento');
+
+      if (currentEmpresaId) {
+        recuperadasQuery = recuperadasQuery.eq('empresa_id', currentEmpresaId);
+      }
+
+      const { data: recuperadas, error: errorRecuperadas } = await recuperadasQuery;
 
       if (errorRecuperadas) throw errorRecuperadas;
 
