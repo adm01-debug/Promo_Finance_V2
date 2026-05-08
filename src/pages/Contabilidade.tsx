@@ -23,6 +23,7 @@ import { DreBalancoTab } from '@/components/contabilidade/DreBalancoTab';
 import { VerificacaoIntegracoesPanel } from '@/components/contabilidade/VerificacaoIntegracoesPanel';
 import { AuditoriaLancamentosPanel } from '@/components/contabilidade/AuditoriaLancamentosPanel';
 import { ContabilizacaoAutomaticaTab } from '@/components/contabilidade/ContabilizacaoAutomaticaTab';
+import { ElisaoFiscalTab } from '@/components/contabilidade/elisao/ElisaoFiscalTab';
 
 const VALID_TABS = ['inicio', 'plano', 'lancamentos', 'razao', 'dre', 'auto', 'integracoes', 'auditoria', 'ecd', 'ecf'] as const;
 type TabId = typeof VALID_TABS[number];
