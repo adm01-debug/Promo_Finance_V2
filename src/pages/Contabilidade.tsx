@@ -217,6 +217,7 @@ export default function Contabilidade() {
           <TabsContent value="razao"><RazaoDiarioTab empresaId={empresaId} ano={ano} /></TabsContent>
           <TabsContent value="dre"><DreBalancoTab empresaId={empresaId} ano={ano} /></TabsContent>
           <TabsContent value="auto"><ContabilizacaoAutomaticaTab empresaId={empresaId} /></TabsContent>
+          <TabsContent value="elisao"><ElisaoFiscalTab empresaId={empresaId} /></TabsContent>
           <TabsContent value="integracoes"><VerificacaoIntegracoesPanel empresaId={empresaId} ano={ano} /></TabsContent>
           <TabsContent value="auditoria"><AuditoriaLancamentosPanel empresaId={empresaId} ano={ano} /></TabsContent>
           <TabsContent value="ecd"><SpedContabilTab tipo="ECD" empresaId={empresaId} /></TabsContent>
