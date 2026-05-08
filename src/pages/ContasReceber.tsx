@@ -161,6 +161,8 @@ export default function ContasReceber() {
                           <th className="p-6"><SortableHeader label="Maturity Date" sortKey="data_vencimento" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></th>
                           <th className="w-24 p-6 text-center"><SortableHeader label="Delay" sortKey="data_vencimento" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></th>
                           <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-center">Status</th>
+                          <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Conta Bancária</th>
+
                           {empresas.length > 1 && <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Corporate</th>}
                           <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-center">Credit Score</th>
                           <th className="w-20 p-6"></th>
