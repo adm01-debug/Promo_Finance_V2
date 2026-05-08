@@ -380,6 +380,44 @@ export default function Asaas() {
       <NovaCobrancaDialog open={dialogOpen} onOpenChange={setDialogOpen} empresaId={empresaId} />
       <TransferenciaPixDialog open={pixTransferOpen} onOpenChange={setPixTransferOpen} empresaId={empresaId} />
       <ClientesAsaasDialog open={clientesOpen} onOpenChange={setClientesOpen} empresaId={empresaId} />
+      
+      {/* Dialog de Auditoria */}
+      <ConfirmationDialog
+        isOpen={!!selectedPaymentAudit}
+        onClose={() => setSelectedPaymentAudit(null)}
+        title="Trilha de Auditoria"
+        message={
+          <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+            {auditTrail
+              .filter(a => a.payment_id === selectedPaymentAudit)
+              .map((log: any) => (
+                <div key={log.id} className="border-b pb-2 last:border-0">
+                  <div className="flex justify-between items-start mb-1">
+                    <Badge variant="outline" className="text-[10px] uppercase">
+                      {log.action.replace(/_/g, ' ')}
+                    </Badge>
+                    <span className="text-[10px] text-muted-foreground">
+                      {format(parseISO(log.created_at), 'dd/MM/yy HH:mm', { locale: ptBR })}
+                    </span>
+                  </div>
+                  <p className="text-xs">{log.details?.message || 'Evento registrado no sistema.'}</p>
+                  {log.previous_status && (
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      Status: {log.previous_status} → {log.new_status}
+                    </p>
+                  )}
+                </div>
+              ))}
+            {auditTrail.filter(a => a.payment_id === selectedPaymentAudit).length === 0 && (
+              <p className="text-sm text-center text-muted-foreground py-4">Nenhum evento registrado ainda.</p>
+            )}
+          </div>
+        }
+        confirmText="Fechar"
+        onConfirm={() => setSelectedPaymentAudit(null)}
+      />
+      <TransferenciaPixDialog open={pixTransferOpen} onOpenChange={setPixTransferOpen} empresaId={empresaId} />
+      <ClientesAsaasDialog open={clientesOpen} onOpenChange={setClientesOpen} empresaId={empresaId} />
       <AssinaturaDialog open={assinaturaOpen} onOpenChange={(v) => { setAssinaturaOpen(v); if (!v) setRefreshKey(k => k + 1); }} empresaId={empresaId} />
       <LinkPagamentoDialog open={linkPagamentoOpen} onOpenChange={(v) => { setLinkPagamentoOpen(v); if (!v) setRefreshKey(k => k + 1); }} empresaId={empresaId} />
 
