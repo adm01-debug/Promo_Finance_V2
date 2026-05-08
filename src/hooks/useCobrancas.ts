@@ -273,15 +273,22 @@ export function useTopDevedores(limit: number = 10) {
 }
 
 export function useEtapasCobranca() {
+  const { currentEmpresaId } = useAuth();
   return useQuery({
-    queryKey: ['etapas-cobranca'],
+    queryKey: ['etapas-cobranca', currentEmpresaId],
     queryFn: async (): Promise<EtapaCount[]> => {
       const hoje = new Date().toISOString().split('T')[0];
       
-      const { data, error } = await supabase
+      let query = supabase
         .from('contas_receber')
         .select('id, valor, valor_recebido, etapa_cobranca')
         .or(`status.eq.vencido,and(status.eq.pendente,data_vencimento.lt.${hoje})`);
+
+      if (currentEmpresaId) {
+        query = query.eq('empresa_id', currentEmpresaId);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
