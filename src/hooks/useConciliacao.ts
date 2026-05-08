@@ -21,7 +21,10 @@ export function useConciliacao() {
   const queryClient = useQueryClient();
 
   const confirmarConciliacao = useMutation({
-    mutationFn: async ({ transacaoId, contaPagarId, contaReceberId, ajusteCentavos }: ConfirmarConciliacaoParams) => {
+    mutationFn: async ({ 
+      transacaoId, contaPagarId, contaReceberId, ajusteCentavos, 
+      motivo, classificacao, regra, evidenciaUrl 
+    }: ConfirmarConciliacaoParams) => {
       const { data: transacao } = await supabase.from('transacoes_bancarias').select('*').eq('id', transacaoId).single();
       
       const { error } = await supabase.rpc('confirmar_conciliacao', {
@@ -32,6 +35,17 @@ export function useConciliacao() {
       });
 
       if (error) throw error;
+
+      // Atualiza metadados extras na transação bancária
+      if (ajusteCentavos && ajusteCentavos !== 0) {
+        await supabase.from('transacoes_bancarias').update({
+          compensacao_valor: ajusteCentavos,
+          compensacao_motivo: motivo || 'Tolerância configurada',
+          compensacao_classificacao: classificacao || (ajusteCentavos > 0 ? 'Juros' : 'Desconto'),
+          compensacao_regra: regra || 'Ajuste automático de centavos',
+          compensacao_evidencia_url: evidenciaUrl
+        } as any).eq('id', transacaoId);
+      }
 
       const regraAplicada = ajusteCentavos && ajusteCentavos !== 0 
         ? (ajusteCentavos > 0 ? 'Compensação automática: Juros' : 'Compensação automática: Desconto')
