@@ -207,9 +207,12 @@ export default function OportunidadesElisao() {
       </div>
 
       <Tabs defaultValue="analise">
-        <TabsList>
+        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
           <TabsTrigger value="analise">Análise atual</TabsTrigger>
-          <TabsTrigger value="historico">Histórico salvo ({oportunidadesSalvas.length})</TabsTrigger>
+          <TabsTrigger value="historico">Estratégias ({oportunidadesSalvas.length})</TabsTrigger>
+          <TabsTrigger value="auditoria">Auditoria ({creditosAuditoria.length})</TabsTrigger>
+          <TabsTrigger value="alertas">Alertas ({alertas.length})</TabsTrigger>
+          <TabsTrigger value="acoes">Ações Bitrix ({tarefasAcionaveis.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="analise" className="space-y-4 mt-4">
