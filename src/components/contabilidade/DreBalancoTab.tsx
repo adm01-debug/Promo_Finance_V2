@@ -40,15 +40,11 @@ interface Props { empresaId?: string; ano: number; anoFim?: number }
 
 interface DrillDownState {
   open: boolean;
-  linha?: any;
-  filtro?: {
-    empresa_id?: string;
-    ano?: number;
-    mes?: number;
-    centro_resultado?: string;
-    tipo?: string;
-    natureza?: string;
-  };
+  titulo?: string;
+  subtitulo?: string;
+  centro_resultado?: string;
+  tipo_bp?: 'circulante_ativo' | 'nao_circ_ativo' | 'circulante_pas' | 'nao_circ_pas' | 'pl';
+  natureza?: string;
 }
 
 export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
