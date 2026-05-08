@@ -78,6 +78,7 @@ const MinhasPreferencias = lazy(() => import('./pages/configuracoes/MinhasPrefer
 const HistoricoNotificacoes = lazy(() => import('./pages/configuracoes/HistoricoNotificacoes'));
 const SinoNotificacoesFiltros = lazy(() => import('./pages/configuracoes/SinoNotificacoesFiltros'));
 const ContadorReadonly = lazy(() => import('./pages/ContadorReadonly'));
+const BloqueiosDuplicidade = lazy(() => import('./pages/BloqueiosDuplicidade'));
 const SSOAdmin = lazy(() => import('./pages/admin/SSOAdmin'));
 const SSOJitEvents = lazy(() => import('./pages/admin/SSOJitEvents'));
 const ScimAudit = lazy(() => import('./pages/admin/ScimAudit'));
@@ -116,6 +117,7 @@ function AppRoutes() {
             <Route path="/dashboard-empresa" element={<ProtectedRoute><DashboardEmpresa /></ProtectedRoute>} />
             <Route path="/bi" element={<ProtectedRoute><BI /></ProtectedRoute>} />
             <Route path="/contas-pagar" element={<ProtectedRoute><ContasPagar /></ProtectedRoute>} />
+            <Route path="/contas-pagar/bloqueios" element={<ProtectedRoute><BloqueiosDuplicidade /></ProtectedRoute>} />
             <Route path="/contas-receber" element={<ProtectedRoute><ContasReceber /></ProtectedRoute>} />
             <Route path="/notas-fiscais" element={<ProtectedRoute><NotasFiscais /></ProtectedRoute>} />
             <Route path="/fluxo-caixa" element={<ProtectedRoute><FluxoCaixa /></ProtectedRoute>} />
