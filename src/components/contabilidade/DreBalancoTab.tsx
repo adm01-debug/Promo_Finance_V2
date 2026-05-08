@@ -56,10 +56,37 @@ interface DrillDownState {
 }
 
 export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
-  const [modo, setModo] = useState<'dre' | 'balanco'>('dre');
-  const [fonte, setFonte] = useState<FonteDemonstrativo>('competencia');
-  const [mes, setMes] = useState(new Date().getMonth());
-  const [selectedEmpresaId, setSelectedEmpresaId] = useState<string>(empresaId || 'todas');
+  const [modo, setModo] = useState<'dre' | 'balanco'>(() => (localStorage.getItem('dre_balanco_tab_modo') as 'dre' | 'balanco') || 'dre');
+  const [fonte, setFonte] = useState<FonteDemonstrativo>(() => (localStorage.getItem('dre_balanco_tab_fonte') as FonteDemonstrativo) || 'competencia');
+  const [mes, setMes] = useState(() => {
+    const saved = localStorage.getItem('dre_balanco_tab_mes');
+    return saved !== null ? parseInt(saved) : new Date().getMonth();
+  });
+  const [selectedEmpresaId, setSelectedEmpresaId] = useState<string>(() => {
+    const saved = localStorage.getItem('dre_balanco_tab_empresaId');
+    return saved || empresaId || 'todas';
+  });
+
+  const handleSetModo = (v: 'dre' | 'balanco') => {
+    setModo(v);
+    localStorage.setItem('dre_balanco_tab_modo', v);
+  };
+
+  const handleSetFonte = (v: FonteDemonstrativo) => {
+    setFonte(v);
+    localStorage.setItem('dre_balanco_tab_fonte', v);
+  };
+
+  const handleSetMes = (v: number) => {
+    setMes(v);
+    localStorage.setItem('dre_balanco_tab_mes', v.toString());
+  };
+
+  const handleSetEmpresaId = (v: string) => {
+    setSelectedEmpresaId(v);
+    localStorage.setItem('dre_balanco_tab_empresaId', v);
+  };
+
   const [drillDown, setDrillDown] = useState<DrillDownState>({ open: false });
 
   const {
@@ -317,7 +344,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
             <ToggleGroup 
               type="single" 
               value={modo} 
-              onValueChange={(v) => v && setModo(v as 'dre' | 'balanco')} 
+              onValueChange={(v) => v && handleSetModo(v as 'dre' | 'balanco')} 
               className="bg-background/40 p-1 rounded-2xl border border-white/10"
             >
               <ToggleGroupItem 
@@ -337,7 +364,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
             <ToggleGroup 
               type="single" 
               value={fonte} 
-              onValueChange={(v) => v && setFonte(v as FonteDemonstrativo)} 
+              onValueChange={(v) => v && handleSetFonte(v as FonteDemonstrativo)} 
               className="bg-background/40 p-1 rounded-2xl border border-white/10"
             >
               <ToggleGroupItem 
@@ -360,7 +387,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
           <div className="flex items-center gap-3 relative z-10">
             <div className="flex flex-col gap-1">
               <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Empresa</Label>
-              <Select value={selectedEmpresaId} onValueChange={setSelectedEmpresaId}>
+              <Select value={selectedEmpresaId} onValueChange={handleSetEmpresaId}>
                 <SelectTrigger className="h-12 w-[220px] rounded-2xl border-white/5 bg-white/5 font-bold">
                   <SelectValue placeholder="Selecione a empresa" />
                 </SelectTrigger>
@@ -375,7 +402,7 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
 
             <div className="flex flex-col gap-1">
               <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Mês de Referência</Label>
-              <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
+              <Select value={String(mes)} onValueChange={(v) => handleSetMes(Number(v))}>
                 <SelectTrigger className="h-12 w-[140px] rounded-2xl border-white/5 bg-white/5 font-bold">
                   <SelectValue />
                 </SelectTrigger>
