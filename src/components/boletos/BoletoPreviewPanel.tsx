@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Download, Printer, Mail, CheckCircle2, Copy, Check, History, Clock } from 'lucide-react';
+import { Download, Printer, Mail, CheckCircle2, Copy, Check, History, Clock, Share2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/formatters';
@@ -12,6 +12,7 @@ interface Boleto {
   valor: number; vencimento: string; cedente_nome: string; cedente_cnpj: string | null;
   sacado_nome: string; sacado_cpf_cnpj: string | null; banco: string; agencia: string;
   conta: string; descricao: string | null; status: string;
+  bitrix_id?: string | null; bitrix_status?: string | null; eventos_pagamento?: any[] | null;
   rastreio_status?: Array<{ status: string; data: string; detalhe: string }>;
 }
 
@@ -146,6 +147,27 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
         <Button onClick={handleDownload} className="flex-1 gap-2"><Download className="h-4 w-4" />Download PDF</Button>
         <Button variant="outline" onClick={() => window.print()} className="gap-2"><Printer className="h-4 w-4" />Imprimir</Button>
         <Button variant="outline" onClick={() => { onUpdateStatus({ id: boleto.id, status: 'enviado' }); toast.success('Boleto enviado!'); }} className="gap-2"><Mail className="h-4 w-4" />Enviar</Button>
+        
+        {boleto.bitrix_id ? (
+          <Badge variant="secondary" className="gap-1 flex items-center px-3">
+            <Share2 className="h-3 w-3" />
+            Bitrix24: {boleto.bitrix_status || 'Sincronizado'}
+          </Badge>
+        ) : (
+          <Button 
+            variant="outline" 
+            onClick={() => {
+              // @ts-ignore - Adding dynamically to keep it simple for now
+              if (window.syncBitrixBoleto) window.syncBitrixBoleto(boleto.id);
+              else toast.info('Funcionalidade de sincronização Bitrix24 sendo ativada...');
+            }} 
+            className="gap-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Sincronizar Bitrix24
+          </Button>
+        )}
+
         {boleto.status !== 'pago' && boleto.status !== 'cancelado' && (
           <Button variant="outline" onClick={() => onUpdateStatus({ id: boleto.id, status: 'pago' })} className="gap-2 text-success"><CheckCircle2 className="h-4 w-4" />Marcar Pago</Button>
         )}
