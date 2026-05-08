@@ -75,6 +75,7 @@ export function FuturisticDashboard({ kpis, evolucaoMensal, onMetricClick }: any
           icon={TrendingUp} 
           glowColor="#22c55e"
           trend={kpis.variacaoReceita}
+          onClick={() => onMetricClick('receber')}
         />
         <FuturisticMetricCard 
           title="Contas a Pagar" 
@@ -82,6 +83,7 @@ export function FuturisticDashboard({ kpis, evolucaoMensal, onMetricClick }: any
           icon={TrendingDown} 
           glowColor="#ef4444"
           trend={-1.2}
+          onClick={() => onMetricClick('pagar')}
         />
         <FuturisticMetricCard 
           title="Eficiência de Conciliação" 
@@ -89,6 +91,7 @@ export function FuturisticDashboard({ kpis, evolucaoMensal, onMetricClick }: any
           icon={CheckCircle2} 
           glowColor="#3b82f6"
           trend={0.5}
+          onClick={() => onMetricClick('conciliacao')}
         />
         <FuturisticMetricCard 
           title="Pagamentos em Atraso" 
@@ -96,7 +99,9 @@ export function FuturisticDashboard({ kpis, evolucaoMensal, onMetricClick }: any
           icon={AlertTriangle} 
           glowColor="#f59e0b"
           trend={kpis.inadimplencia}
+          onClick={() => onMetricClick('atraso')}
         />
+
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
