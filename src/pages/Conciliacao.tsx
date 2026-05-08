@@ -13,6 +13,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DivergenciasConciliacaoPanel } from '@/components/conciliacao/DivergenciasConciliacaoPanel';
 import { ConciliacaoRetroativaPanel } from '@/components/conciliacao/ConciliacaoRetroativaPanel';
+import { ConciliacaoAuditPanel } from '@/components/conciliacao/ConciliacaoAuditPanel';
 import { ConfiguracaoConciliacaoPanel } from '@/components/conciliacao/ConfiguracaoConciliacaoPanel';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -205,6 +206,7 @@ export default function Conciliacao() {
               <TabsTrigger value="extrato" className="gap-2"><Database className="h-4 w-4" />Extrato</TabsTrigger>
               <TabsTrigger value="sessoes" className="gap-2"><History className="h-4 w-4" />Sessões</TabsTrigger>
               <TabsTrigger value="divergencias" className="gap-2"><AlertTriangle className="h-4 w-4" />Divergências</TabsTrigger>
+              <TabsTrigger value="auditoria" className="gap-2"><Shield className="h-4 w-4" />Auditoria</TabsTrigger>
               <TabsTrigger value="retroativo" className="gap-2"><Clock className="h-4 w-4" />Retroativo</TabsTrigger>
               <TabsTrigger value="configuracoes" className="gap-2"><Keyboard className="h-4 w-4" />Ajustes</TabsTrigger>
             </TabsList>
