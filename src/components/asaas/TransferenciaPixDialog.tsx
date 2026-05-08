@@ -113,8 +113,17 @@ export function TransferenciaPixDialog({ open, onOpenChange, empresaId }: Props)
                 </Select>
               </div>
               <div className="col-span-2 space-y-2">
-                <Label>Chave Pix *</Label>
-                <Input value={chavePix} onChange={e => setChavePix(e.target.value)} placeholder="Chave Pix do destinatário" />
+                <Label className="flex justify-between">
+                  Chave Pix *
+                  {isValidKey === true && <span className="text-[10px] text-success flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> Válida</span>}
+                  {isValidKey === false && <span className="text-[10px] text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3" /> Inválida</span>}
+                </Label>
+                <Input 
+                  value={chavePix} 
+                  onChange={e => setChavePix(e.target.value)} 
+                  placeholder="Chave Pix do destinatário" 
+                  className={isValidKey === false ? 'border-destructive focus-visible:ring-destructive' : ''}
+                />
               </div>
             </div>
             <div className="space-y-2">
