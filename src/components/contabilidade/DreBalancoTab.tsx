@@ -321,15 +321,30 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
 
           <div className="h-8 w-px bg-white/10 hidden md:block" />
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 relative z-10">
             <div className="flex flex-col gap-1">
-              <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Período de Referência</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Empresa</Label>
+              <Select value={selectedEmpresaId} onValueChange={setSelectedEmpresaId}>
+                <SelectTrigger className="h-12 w-[220px] rounded-2xl border-white/5 bg-white/5 font-bold">
+                  <SelectValue placeholder="Selecione a empresa" />
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
+                  <SelectItem value="todas">Consolidado (Todas)</SelectItem>
+                  {empresas.map((e) => (
+                    <SelectItem key={e.id} value={e.id}>{e.nome_fantasia || e.razao_social}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Mês de Referência</Label>
               <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
-                <SelectTrigger className="h-12 w-[160px] rounded-2xl border-white/5 bg-white/5 font-bold">
+                <SelectTrigger className="h-12 w-[140px] rounded-2xl border-white/5 bg-white/5 font-bold">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
-                  {['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'].map((m, i) => (
+                  {['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'].map((m, i) => (
                     <SelectItem key={i} value={String(i)}>{m} / {ano}</SelectItem>
                   ))}
                 </SelectContent>
