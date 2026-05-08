@@ -108,42 +108,42 @@ export function SecondaryKPICards({
   return (
     <div className="col-span-1 lg:col-span-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
       <MiniKPICard
-        icon={Building2} label="Empresas" value={empresasCount}
+        icon={Building2} label="Unidades de Negócio" value={empresasCount}
         iconBg="bg-primary/10" iconColor="text-primary"
         accentGradient="bg-gradient-to-r from-primary to-primary/60"
-        href="/empresas" tooltip="Total de empresas cadastradas" index={0}
+        href="/empresas" tooltip="Total de CNPJs sob gestão" index={0}
       />
       <MiniKPICard
-        icon={CreditCard} label="Contas Bancárias" value={contasBancariasCount}
+        icon={CreditCard} label="Contas Conciliadas" value={contasBancariasCount}
         iconBg="bg-secondary/10" iconColor="text-secondary"
         accentGradient="bg-gradient-to-r from-secondary to-secondary/60"
-        href="/contas-bancarias" tooltip="Contas bancárias ativas" index={1}
+        href="/contas-bancarias" tooltip="Integrações bancárias ativas" index={1}
       />
       <MiniKPICard
-        icon={CheckCircle2} label="Receber Hoje" value={venceHojeReceberCount}
+        icon={CheckCircle2} label="Entradas (D+0)" value={venceHojeReceberCount}
         iconBg="bg-success/10" iconColor="text-success"
         accentGradient="bg-gradient-to-r from-success to-success/60"
-        href="/contas-receber" tooltip="Contas a receber com vencimento hoje" index={2}
+        href="/contas-receber" tooltip="Créditos previstos para liquidação hoje" index={2}
       />
       <MiniKPICard
-        icon={Clock} label="Pagar Hoje" value={venceHojePagarCount}
+        icon={Clock} label="Saídas (D+0)" value={venceHojePagarCount}
         iconBg="bg-warning/10" iconColor="text-warning"
         accentGradient="bg-gradient-to-r from-warning to-warning/60"
-        href="/contas-pagar" tooltip="Contas a pagar com vencimento hoje" index={3}
+        href="/contas-pagar" tooltip="Débitos agendados para liquidação hoje" index={3}
       />
       <MiniKPICard
-        icon={ShieldAlert} label="Aprovações" value={aprovacoesPendentes}
+        icon={ShieldAlert} label="Workflow Aprovações" value={aprovacoesPendentes}
         iconBg={aprovacoesPendentes > 0 ? "bg-warning/10" : "bg-muted/50"}
         iconColor={aprovacoesPendentes > 0 ? "text-warning" : "text-muted-foreground"}
         accentGradient="bg-gradient-to-r from-warning to-warning/60"
-        href="/aprovacoes" alertLevel="warning" tooltip="Aprovações pendentes" index={4}
+        href="/aprovacoes" alertLevel="warning" tooltip="Pendências aguardando sua assinatura" index={4}
       />
       <MiniKPICard
-        icon={AlertTriangle} label="Vencidas" value={vencidasTotal}
+        icon={AlertTriangle} label="Exposição Vencida" value={vencidasTotal}
         iconBg={vencidasTotal > 0 ? "bg-destructive/10" : "bg-muted/50"}
         iconColor={vencidasTotal > 0 ? "text-destructive" : "text-muted-foreground"}
         accentGradient="bg-gradient-to-r from-destructive to-destructive/60"
-        alertLevel="danger" tooltip="Total de contas vencidas" index={5}
+        alertLevel="danger" tooltip="Total de anomalias em atraso" index={5}
       />
     </div>
   );
