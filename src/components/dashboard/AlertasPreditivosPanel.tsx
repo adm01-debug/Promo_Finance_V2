@@ -100,7 +100,7 @@ export function AlertasPreditivosPanel({
               <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-warning to-destructive flex items-center justify-center">
                 <Brain className="h-4 w-4 text-white" />
               </div>
-              Alertas Preditivos
+              Cyber-Sentinel: Risk Matrix 10/10
             </CardTitle>
             <CardDescription>Previsões baseadas em padrões históricos</CardDescription>
           </div>

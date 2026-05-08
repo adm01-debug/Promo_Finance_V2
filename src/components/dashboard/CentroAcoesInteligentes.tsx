@@ -37,7 +37,7 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
             <Sparkles className="h-7 w-7" />
           </div>
           <div>
-            <CardTitle className="text-2xl font-black tracking-tight">Intelligence Command</CardTitle>
+            <CardTitle className="text-2xl font-black tracking-tight">Quantum Governance</CardTitle>
             <CardDescription className="text-sm font-medium opacity-60">
               Top 5 prioridades processadas por Redes Neurais Financeiras
             </CardDescription>

@@ -33,7 +33,7 @@ export function PrevisaoIAVisaoGeral({ indicadores, inadimplencia, getTendenciaI
         <motion.div variants={itemVariants}>
           <h3 className="mb-3 flex items-center gap-2 font-semibold">
             <Target className="h-4 w-4 text-primary" />
-            Indicadores Chave
+            Deep Insights: Performance Matrix
           </h3>
           <div className="grid gap-4 md:grid-cols-5">
             <Card className="text-center p-4"><Clock className="h-5 w-5 text-primary mx-auto mb-2" /><p className="text-xs text-muted-foreground">PMR</p><p className="text-lg font-bold">{indicadores.prazo_medio_recebimento}</p></Card>
