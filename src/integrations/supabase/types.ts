@@ -12126,6 +12126,15 @@ export type Database = {
         Args: { p_transacao_id: string; p_user_id: string }
         Returns: undefined
       }
+      detectar_duplicidades_financeiras: {
+        Args: { p_empresa_id: string; p_tabela: string }
+        Returns: {
+          data_vencimento: string
+          numero_documento: string
+          total_ocorrencias: number
+          valor: number
+        }[]
+      }
       duplicate_saved_filter: {
         Args: { _new_name: string; _source_id: string }
         Returns: string
