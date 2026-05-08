@@ -9475,6 +9475,39 @@ export type Database = {
           },
         ]
       }
+      user_action_audit: {
+        Row: {
+          action_type: string
+          created_at: string
+          entity_type: string | null
+          id: string
+          metadata: Json | null
+          new_value: Json | null
+          old_value: Json | null
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          entity_type?: string | null
+          id?: string
+          metadata?: Json | null
+          new_value?: Json | null
+          old_value?: Json | null
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          entity_type?: string | null
+          id?: string
+          metadata?: Json | null
+          new_value?: Json | null
+          old_value?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_active_filters: {
         Row: {
           entity_type: string
@@ -9631,6 +9664,42 @@ export type Database = {
           },
         ]
       }
+      user_filter_presets: {
+        Row: {
+          created_at: string
+          empresa_id: string | null
+          entity_type: string
+          filters: Json
+          id: string
+          is_default: boolean | null
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          empresa_id?: string | null
+          entity_type: string
+          filters: Json
+          id?: string
+          is_default?: boolean | null
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          empresa_id?: string | null
+          entity_type?: string
+          filters?: Json
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_onboarding_progress: {
         Row: {
           etapas_completas: string[]
@@ -9653,6 +9722,33 @@ export type Database = {
           finalizado_em?: string | null
           iniciado_em?: string
           pulado?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          payload: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          payload?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          payload?: Json
           updated_at?: string
           user_id?: string
         }

@@ -3,7 +3,7 @@ import {
   BarChart3, Scale, Download, AlertTriangle, CheckCircle2, 
   FileJson, FileText, Calendar as CalendarIcon, Filter,
   TrendingUp, TrendingDown, Layers, PieChart, ArrowUpRight,
-  ChevronRight, Info as InfoIcon, Zap, RefreshCw, Eye, History, Globe, Search, RotateCcw
+  ChevronRight, Info as InfoIcon, Zap, RefreshCw, Eye, History, Globe, Search, RotateCcw, FolderOpen
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
@@ -44,6 +44,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useLancamentosContabeis } from '@/hooks/useLancamentosContabeis';
 import { useUserDemonstrativoPreferences } from '@/hooks/useUserDemonstrativoPreferences';
+import { FilterPresetsManager } from './FilterPresetsManager';
+import { logUserAction } from '@/lib/audit-logger';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Props { empresaId?: string; ano: number; anoFim?: number }
 
@@ -57,6 +60,7 @@ interface DrillDownState {
 }
 
 export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
+  const { user } = useAuth();
   const { preferences, update: updatePrefs } = useUserDemonstrativoPreferences();
   
   const [modo, setModo] = useState<'dre' | 'balanco'>('dre');
@@ -114,18 +118,47 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
     setSelectedEmpresaId(v);
   };
 
-  const resetPreferences = () => {
+  const resetPreferences = async () => {
+    const oldValues = { ...preferences };
     setModo('dre');
     setFonte('competencia');
     setMes(new Date().getMonth());
     setSelectedEmpresaId(empresaId || 'todas');
+    
     updatePrefs.mutate({
       modo_padrao: 'dre',
       fonte_padrao: 'competencia',
       filtros_por_empresa: {},
       drill_down_estado: {}
     });
+
+    if (user) {
+      await logUserAction({
+        userId: user.id,
+        actionType: 'filters_reset',
+        entityType: 'dre-balanco',
+        oldValue: oldValues,
+        newValue: { modo: 'dre', fonte: 'competencia', mes: new Date().getMonth() }
+      });
+    }
+
     toast.info('Preferências restauradas para o padrão.');
+  };
+
+  const handleLoadPreset = (filters: any) => {
+    if (filters.modo) setModo(filters.modo);
+    if (filters.fonte) setFonte(filters.fonte);
+    if (filters.mes !== undefined) setMes(filters.mes);
+    if (filters.empresaId) setSelectedEmpresaId(filters.empresaId);
+    
+    updatePrefs.mutate({
+      modo_padrao: filters.modo || modo,
+      fonte_padrao: filters.fonte || fonte,
+      filtros_por_empresa: {
+        ...preferences?.filtros_por_empresa,
+        [filters.empresaId || selectedEmpresaId]: { mes: filters.mes }
+      }
+    });
   };
 
   const handleSetDrillDown = (state: DrillDownState) => {
@@ -464,7 +497,25 @@ export function DreBalancoTab({ empresaId, ano, anoFim }: Props) {
           </div>
 
           <div className="flex items-center gap-3 bg-white/5 p-3 rounded-2xl border border-white/5 ml-auto">
-            <div className="flex flex-col items-end">
+            <FilterPresetsManager 
+              entityType="dre-balanco"
+              empresaId={selectedEmpresaId}
+              currentFilters={{ modo, fonte, mes, empresaId: selectedEmpresaId }}
+              onLoadPreset={handleLoadPreset}
+            />
+
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={resetPreferences}
+              className="h-10 rounded-xl border-white/10 bg-white/5 gap-2 px-4 font-bold text-muted-foreground hover:text-primary"
+            >
+              <RotateCcw className="h-4 w-4" />
+              <span className="hidden sm:inline">Restaurar</span>
+            </Button>
+
+            <div className="h-8 w-px bg-white/10" />
+            <div className="flex flex-col items-end mr-3">
               <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Governança Fiscal</span>
               <span className="text-[9px] font-bold text-primary">Nível de Auditoria: Máximo</span>
             </div>

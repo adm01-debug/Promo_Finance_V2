@@ -13,6 +13,9 @@ import { ptBR } from 'date-fns/locale';
 import { BookText, CalendarIcon, Download, FileSpreadsheet, FileText, Search, Wand2, Filter, ChevronDown, CheckCircle2, AlertTriangle, BookOpen, Activity, ArrowRightLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useManagedFilters } from '@/hooks/useManagedFilters';
+import { FilterPresetsManager } from './FilterPresetsManager';
+import { logUserAction } from '@/lib/audit-logger';
+import { useAuth } from '@/hooks/useAuth';
 import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -65,6 +68,7 @@ interface RazaoFilters extends Record<string, unknown> {
 }
 
 export function RazaoDiarioTab({ empresaId, ano }: Props) {
+  const { user } = useAuth();
   const [modo, setModo] = useState<'diario' | 'razao'>('diario');
 
   const defaults = useMemo<RazaoFilters>(() => ({
@@ -112,7 +116,20 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
       case 'ano': ini = toIsoDate(startOfYear(new Date(ano, 0, 1))); fim = toIsoDate(endOfYear(new Date(ano, 0, 1))); break;
       case 'custom': filtersController.setField('preset', p); return;
     }
-    filtersController.setValues({ ...filtersController.values, preset: p, dataInicio: ini, dataFim: fim });
+
+    const oldValues = { ...filtersController.values };
+    const nextValues = { ...filtersController.values, preset: p, dataInicio: ini, dataFim: fim };
+    filtersController.setValues(nextValues);
+
+    if (user) {
+      logUserAction({
+        userId: user.id,
+        actionType: 'filter_change',
+        entityType: 'razao-diario',
+        oldValue: oldValues,
+        newValue: nextValues
+      });
+    }
   };
 
   const { data: lancs = [], isLoading } = useLancamentosContabeis(empresaId, ano);
@@ -363,6 +380,12 @@ export function RazaoDiarioTab({ empresaId, ano }: Props) {
 
         <div className="flex flex-wrap items-center justify-between gap-6 bg-white/[0.03] p-4 rounded-3xl border border-white/5">
           <div className="flex items-center gap-4">
+            <FilterPresetsManager 
+              entityType="razao-diario"
+              empresaId={empresaId}
+              currentFilters={filtersController.values}
+              onLoadPreset={(f) => filtersController.setValues(f)}
+            />
             <ToggleGroup type="single" value={modo} onValueChange={(v) => v && setModo(v as 'diario' | 'razao')} className="bg-background/40 p-1 rounded-2xl border border-white/5">
               <ToggleGroupItem value="diario" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all px-6 font-black uppercase text-[10px] tracking-widest">Diário</ToggleGroupItem>
               <ToggleGroupItem value="razao" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all px-6 font-black uppercase text-[10px] tracking-widest">Razão</ToggleGroupItem>
