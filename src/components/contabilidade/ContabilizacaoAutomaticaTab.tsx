@@ -405,41 +405,51 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                   </div>
 
                   {simResult && (
-                    <Alert className={simResult.status === 'simulado' ? 'bg-blue-500/10 border-blue-500/20' : 'bg-amber-500/10 border-amber-500/20'}>
-                      <Info className="h-4 w-4" />
-                      <AlertTitle>Resultado da Simulação</AlertTitle>
-                      <AlertDescription className="mt-2 space-y-2">
-                        <div className="flex justify-between text-xs">
-                          <span>Status:</span>
-                          <Badge variant="outline">{simResult.status}</Badge>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-sm font-medium">
+                        <ArrowRightLeft className="h-4 w-4" />
+                        Comparativo Antes vs Depois
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label className="text-[10px] uppercase text-muted-foreground">Estado Atual (Sem Regra)</Label>
+                          <div className="h-24 rounded border border-dashed flex flex-col items-center justify-center p-3 bg-muted/20">
+                            <X className="h-5 w-5 text-muted-foreground/50 mb-1" />
+                            <span className="text-[10px] text-muted-foreground text-center">Nenhum lançamento contábil automático gerado</span>
+                          </div>
                         </div>
-                        {simResult.regra && (
-                          <div className="flex justify-between text-xs">
-                            <span>Regra aplicada:</span>
-                            <span className="font-medium">{simResult.regra.nome}</span>
+
+                        <div className="space-y-2">
+                          <Label className="text-[10px] uppercase text-emerald-600">Simulação (Com Regra Aplicada)</Label>
+                          <div className={`h-24 rounded border ${simResult.status === 'simulado' ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-amber-500/30 bg-amber-500/5'} p-3 flex flex-col justify-between`}>
+                            {simResult.status === 'simulado' ? (
+                              <>
+                                <div className="flex justify-between items-start">
+                                  <Badge variant="outline" className="text-[9px] px-1 h-4 border-emerald-500/50 text-emerald-700">SUCESSO</Badge>
+                                  <span className="text-[10px] font-mono font-bold">R$ {simResult.valor?.toFixed(2)}</span>
+                                </div>
+                                <div className="text-[9px] font-mono leading-tight truncate mt-1">
+                                  <span className="text-muted-foreground">D:</span> {contas.find(c => c.id === simResult.debito)?.codigo || '?'}<br/>
+                                  <span className="text-muted-foreground">C:</span> {contas.find(c => c.id === simResult.credito)?.codigo || '?'}
+                                </div>
+                              </>
+                            ) : (
+                              <div className="flex flex-col items-center justify-center h-full">
+                                <AlertTriangle className="h-4 w-4 text-amber-500 mb-1" />
+                                <span className="text-[9px] text-amber-600 text-center">Nenhuma regra compatível</span>
+                              </div>
+                            )}
                           </div>
-                        )}
-                        {simResult.debito && (
-                          <div className="flex flex-col gap-1 text-[11px] bg-background/50 p-2 rounded border border-border/50">
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Débito:</span>
-                              <span className="font-mono">{contas.find(c => c.id === simResult.debito)?.codigo || simResult.debito}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Crédito:</span>
-                              <span className="font-mono">{contas.find(c => c.id === simResult.credito)?.codigo || simResult.credito}</span>
-                            </div>
-                            <div className="flex justify-between pt-1 border-t border-border/30">
-                              <span className="text-muted-foreground">Valor:</span>
-                              <span className="font-bold">R$ {simResult.valor?.toFixed(2)}</span>
-                            </div>
-                          </div>
-                        )}
-                        {simResult.status === 'sem_regra' && (
-                          <p className="text-xs text-amber-600">Nenhuma regra ativa foi encontrada para este tipo de evento.</p>
-                        )}
-                      </AlertDescription>
-                    </Alert>
+                        </div>
+                      </div>
+                      
+                      {simResult.regra && (
+                        <div className="text-[10px] text-muted-foreground flex items-center gap-1 justify-center bg-muted/30 py-1 rounded">
+                          <Zap className="h-3 w-3" /> Regra aplicada: <strong>{simResult.regra.nome}</strong> (Prio {regras.find(r => r.id === simResult.regra.id)?.prioridade})
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
                 <DialogFooter>
