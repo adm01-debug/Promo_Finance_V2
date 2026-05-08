@@ -97,7 +97,7 @@ const navGroups: NavGroup[] = [
       { label: 'Fluxo de Caixa', icon: BarChart3, href: '/fluxo-caixa' },
       { label: 'Tesouraria Multi-CNPJ', icon: Landmark, href: '/tesouraria' },
       { label: 'Simulador Antecipação', icon: Calculator, href: '/simulador-antecipacao' },
-      { label: 'PIX & ASAAS', icon: Zap, href: '/pix-hub' },
+      { label: 'Asaas Pagamentos', icon: CreditCard, href: '/asaas', highlight: true },
     ],
   },
   {
@@ -132,6 +132,7 @@ const navGroups: NavGroup[] = [
       { label: 'Gestão de Contas', icon: Landmark, href: '/contas-bancarias' },
       { label: 'Centro de Custos', icon: PieChart, href: '/centro-custos' },
       { label: 'Orçamento x Realizado', icon: Scale, href: '/orcamento-evento', highlight: true },
+      { label: 'Gestão de Boletos', icon: FileText, href: '/boletos', highlight: true },
     ],
   },
   {
@@ -145,7 +146,7 @@ const navGroups: NavGroup[] = [
       { label: 'Eventos JIT (SSO)', icon: ShieldCheck, href: '/admin/sso-jit-events' },
       { label: 'Privacidade & LGPD', icon: Shield, href: '/configuracoes/privacidade', highlight: true },
       { label: 'Usuários', icon: UserCog, href: '/usuarios' },
-      { label: 'Bitrix24', icon: Zap, href: '/bitrix24' },
+      { label: 'Bitrix24 CRM', icon: Zap, href: '/bitrix24', highlight: true },
       { label: 'Bling ERP', icon: Package, href: '/bling', highlight: true },
       { label: 'Configurações', icon: Settings, href: '/configuracoes' },
       { label: 'Meu Perfil', icon: User, href: '/meu-perfil' },
