@@ -375,9 +375,21 @@ export default function Asaas() {
                       <Button variant="outline" size="sm" onClick={() => simularBackoff.mutate()} disabled={simularBackoff.isPending}>
                         <PlayCircle className="h-4 w-4 mr-2" /> Simular
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => exportarAuditoria()}>
-                        <FileSpreadsheet className="h-4 w-4 mr-2" /> Exportar
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            <FileSpreadsheet className="h-4 w-4 mr-2" /> Exportar
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => exportarAuditoria()}>
+                            CSV
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => exportarAuditoriaPDF()}>
+                            PDF
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </CardHeader>
                   <CardContent>
