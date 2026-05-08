@@ -34,8 +34,16 @@ export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess, con
     try {
       const ext = file.name.toLowerCase().split('.').pop();
       if (ext === 'xlsx' || ext === 'xls') {
-        setResultado({ sucesso: false, erro: 'Arquivos Excel (.xlsx/.xls) ainda não são suportados. Por favor, exporte o extrato do seu banco em formato OFX ou CSV.', avisos: ['Dica: A maioria dos bancos oferece a opção de exportar extratos em OFX no internet banking.'] });
-        setStep('error'); return;
+        const buffer = await file.arrayBuffer();
+        const { parseExcel } = await import('@/lib/ofx-parser');
+        const result = parseExcel(buffer, file.name);
+        setProgress(100);
+        setResultado(result);
+        if (result.sucesso && result.extrato) {
+          setSelectedTransacoes(new Set(result.extrato.transacoes.map(t => t.id)));
+          setStep('preview');
+        } else { setStep('error'); }
+        return;
       }
       const progressInterval = setInterval(() => { setProgress(prev => Math.min(prev + 15, 70)); }, 100);
       const content = await file.text();
@@ -120,7 +128,7 @@ export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess, con
                 <div className="flex items-center justify-center gap-2 mt-4">
                   <Badge variant="outline" className="text-xs">.OFX</Badge><Badge variant="outline" className="text-xs">.OFC</Badge>
                   <Badge variant="outline" className="text-xs">.CSV</Badge><Badge variant="outline" className="text-xs">.TXT</Badge>
-                  <Badge variant="outline" className="text-xs opacity-50">.XLSX (em breve)</Badge>
+                  <Badge variant="outline" className="text-xs">.XLSX</Badge>
                 </div>
               </div>
               <div className="mt-4 p-3 rounded-lg bg-accent/30 text-sm text-muted-foreground">
@@ -128,7 +136,7 @@ export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess, con
                 <ul className="space-y-1 text-xs">
                   <li>• <strong>OFX/OFC</strong> - Formato padrão de bancos brasileiros</li>
                   <li>• <strong>CSV/TXT</strong> - Colunas: Data, Descrição, Valor, Tipo</li>
-                  <li>• <strong>XLSX/XLS</strong> - Em breve</li>
+                  <li>• <strong>XLSX/XLS</strong> - Colunas: Data, Descrição, Valor</li>
                 </ul>
               </div>
             </motion.div>

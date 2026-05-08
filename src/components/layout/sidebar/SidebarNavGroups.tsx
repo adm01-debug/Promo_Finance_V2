@@ -171,7 +171,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
   // Monitora filtros sincronizados para a empresa ativa
   useEffect(() => {
     const checkSync = () => {
-      const keys = ['contas-receber-filters', 'contas-pagar-filters', 'conciliacao_filters', 'aging_filters'];
+      const keys = ['contas-receber-filters', 'contas-pagar-filters', 'conciliacao_filters', 'aging_filters', 'app-dashboard-receber-filters'];
       const status: Record<string, boolean> = {};
       keys.forEach(k => {
         const val = localStorage.getItem(k);
@@ -224,7 +224,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
 
   // Helper to determine if an item is synced
   const isItemSynced = (href: string) => {
-    if (href === '/contas-receber' || href === '/dashboard-receber') return syncStatus['contas-receber-filters'];
+    if (href === '/contas-receber' || href === '/dashboard-receber') return syncStatus['contas-receber-filters'] || syncStatus['app-dashboard-receber-filters'];
     if (href === '/contas-pagar' || href === '/dashboard-pagar') return syncStatus['contas-pagar-filters'];
     if (href === '/conciliacao' || href === '/dashboard-conciliacao') return syncStatus['conciliacao_filters'];
     if (href === '/cobrancas' || href === '/dashboard-aging') return syncStatus['aging_filters'];

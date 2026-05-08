@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Building2, Target, Settings2, Sparkles, Sun, Moon, Sunrise, Sunset, Activity, TrendingUp, Calendar } from 'lucide-react';
+import { Building2, Target, Settings2, Sparkles, Sun, Moon, Sunrise, Sunset, Activity, TrendingUp, Calendar, CheckCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,6 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useAuth } from '@/hooks/useAuth';
+import { useEffect } from 'react';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -65,10 +67,18 @@ export function DashboardFiltersHeader({
   setCentroCustoFilter,
   onOpenConfig,
 }: DashboardFiltersHeaderProps) {
+  const { currentEmpresaId } = useAuth();
   const greeting = getGreeting();
   const GreetingIcon = greeting.icon;
   const insight = getMotivationalInsight();
   const dateStr = formatDate();
+
+  // Sincroniza filtro de empresa do dashboard com a empresa ativa do sistema
+  useEffect(() => {
+    if (currentEmpresaId && empresaFilter !== currentEmpresaId && empresaFilter === 'all') {
+      setEmpresaFilter(currentEmpresaId);
+    }
+  }, [currentEmpresaId, empresaFilter, setEmpresaFilter]);
 
   return (
     <motion.div variants={itemVariants} className="relative px-1">
@@ -151,10 +161,18 @@ export function DashboardFiltersHeader({
                     <SelectValue placeholder="Selecione a Organização" />
                   </SelectTrigger>
                   <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-2xl">
-                    <SelectItem value="all">Todas as Empresas</SelectItem>
+                    <SelectItem value="all">
+                      <div className="flex items-center gap-2">
+                        Todas as Empresas
+                        {empresaFilter === 'all' && <CheckCircle className="h-3 w-3 text-success" />}
+                      </div>
+                    </SelectItem>
                     {empresas.map(e => (
                       <SelectItem key={e.id} value={e.id} className="rounded-lg">
-                        {e.nome_fantasia || e.razao_social}
+                        <div className="flex items-center gap-2">
+                          {e.nome_fantasia || e.razao_social}
+                          {empresaFilter === e.id && <CheckCircle className="h-3 w-3 text-success" />}
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from './useAuth';
+import { differenceInDays, parseISO } from 'date-fns';
 
 export interface UserEmpresaLink {
   id: string;
@@ -93,7 +94,7 @@ export async function setCurrentEmpresaId(id: string) {
 
       // Notificar o usuário sobre a mudança crítica
       toast.info(`Ambiente alterado para: ${nomeEmpresa}`, {
-        description: 'Todos os filtros e dashboards foram sincronizados.',
+        description: 'Os dados foram sincronizados para a nova empresa.',
         action: {
           label: 'Ver Log',
           onClick: () => window.location.href = '/audit-logs'
