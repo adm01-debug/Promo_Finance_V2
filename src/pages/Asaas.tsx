@@ -89,6 +89,7 @@ export default function Asaas() {
     config, loadingConfig, salvarConfig,
     syncQueue, loadingQueue, reprocessarManual,
     exportarAuditoria, exportarAuditoriaPDF, queueStats, simularBackoff,
+    sincronizarTransferencia,
   } = useAsaas(empresaId);
 
   // States for Advanced Filters
