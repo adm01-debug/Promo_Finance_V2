@@ -123,7 +123,7 @@ export function DashboardFiltersHeader({
                 </motion.div>
                 <div>
                   <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-foreground flex items-center gap-3">
-                    {greeting.text}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600">Usuário</span>
+                    {greeting.text}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600">{user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Gestor'}</span>
                   </h1>
                   <p className="text-lg font-medium text-muted-foreground/70 mt-1 max-w-xl italic">
                     "{insight}"

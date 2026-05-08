@@ -52,7 +52,8 @@ function SectionDivider({ label, icon: Icon }: { label: string; icon: React.Elem
 }
 
 export const DashboardExecutivo = () => {
-  const [empresaFilter, setEmpresaFilter] = useState<string>('all');
+  const { currentEmpresaId } = useAuth();
+  const [empresaFilter, setEmpresaFilter] = useState<string>(currentEmpresaId || 'all');
   const [centroCustoFilter, setCentroCustoFilter] = useState<string>('all');
   const [periodoFluxo, setPeriodoFluxo] = useState('30');
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
