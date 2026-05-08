@@ -48,6 +48,8 @@ export interface AsaasPayment {
   pix_copia_cola: string | null;
   link_boleto: string | null;
   link_fatura: string | null;
+  sacado_nome?: string;
+  sacado_cpf_cnpj?: string;
   created_at: string;
 }
 
