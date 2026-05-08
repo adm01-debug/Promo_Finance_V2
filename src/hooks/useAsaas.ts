@@ -125,12 +125,20 @@ export function useAsaas(empresaId?: string) {
       if (!empresaId) return [];
       const { data, error } = await supabase
         .from('asaas_payments')
-        .select('*')
+        .select(`
+          *,
+          clientes:asaas_customer_id(razao_social, cpf_cnpj)
+        `)
         .eq('empresa_id', empresaId)
         .order('created_at', { ascending: false })
         .limit(500);
       if (error) throw error;
-      return (data || []) as AsaasPayment[];
+      
+      return (data || []).map((p: any) => ({
+        ...p,
+        sacado_nome: p.clientes?.razao_social,
+        sacado_cpf_cnpj: p.clientes?.cpf_cnpj
+      })) as AsaasPayment[];
     },
     enabled: !!empresaId,
   });
