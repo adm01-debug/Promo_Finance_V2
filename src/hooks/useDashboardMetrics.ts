@@ -10,6 +10,8 @@ export interface DashboardFilters {
 
 export function useDashboardMetrics(filters: DashboardFilters) {
   const { empresaFilter, centroCustoFilter, periodoFluxo } = filters;
+  const { currentEmpresaId } = useAuth();
+
   
   // Dados reais do Supabase
   const { data: empresas = [], isLoading: loadingEmpresas } = useEmpresas();
@@ -24,26 +26,26 @@ export function useDashboardMetrics(filters: DashboardFilters) {
 
   // Filtrar dados por empresa e centro de custo
   const contasPagarFiltradas = useMemo(() => {
-    return contasPagar.filter(c => {
-      const matchEmpresa = empresaFilter === 'all' || c.empresa_id === empresaFilter;
+    return (contasPagar || []).filter(c => {
+      const matchEmpresa = (empresaFilter === 'all' ? (c.empresa_id === currentEmpresaId || currentEmpresaId === null) : c.empresa_id === empresaFilter);
       const matchCC = centroCustoFilter === 'all' || c.centro_custo_id === centroCustoFilter;
       return matchEmpresa && matchCC;
     });
-  }, [contasPagar, empresaFilter, centroCustoFilter]);
+  }, [contasPagar, empresaFilter, centroCustoFilter, currentEmpresaId]);
 
   const contasReceberFiltradas = useMemo(() => {
-    return contasReceber.filter(c => {
-      const matchEmpresa = empresaFilter === 'all' || c.empresa_id === empresaFilter;
+    return (contasReceber || []).filter(c => {
+      const matchEmpresa = (empresaFilter === 'all' ? (c.empresa_id === currentEmpresaId || currentEmpresaId === null) : c.empresa_id === empresaFilter);
       const matchCC = centroCustoFilter === 'all' || c.centro_custo_id === centroCustoFilter;
       return matchEmpresa && matchCC;
     });
-  }, [contasReceber, empresaFilter, centroCustoFilter]);
+  }, [contasReceber, empresaFilter, centroCustoFilter, currentEmpresaId]);
 
   const contasBancariasFiltradas = useMemo(() => {
-    return contasBancarias.filter(c => {
-      return empresaFilter === 'all' || c.empresa_id === empresaFilter;
+    return (contasBancarias || []).filter(c => {
+      return (empresaFilter === 'all' ? (c.empresa_id === currentEmpresaId || currentEmpresaId === null) : c.empresa_id === empresaFilter);
     });
-  }, [contasBancarias, empresaFilter]);
+  }, [contasBancarias, empresaFilter, currentEmpresaId]);
 
   // Cálculos de KPIs
   const hoje = new Date();

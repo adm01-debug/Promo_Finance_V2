@@ -3,12 +3,13 @@ import { useAuth } from '@/hooks/useAuth';
 
 export interface DashboardWidget {
   id: string;
-  type: 'kpi-saldo' | 'kpi-receber' | 'kpi-pagar' | 'kpi-vencidas' | 'fluxo-caixa' | 'composicao' | 'vencimentos' | 'previsao-ia' | 'aprovacoes' | 'top-clientes';
+  type: 'kpi-saldo' | 'kpi-receber' | 'kpi-pagar' | 'kpi-vencidas' | 'fluxo-caixa' | 'composicao' | 'vencimentos' | 'previsao-ia' | 'aprovacoes' | 'top-clientes' | 'bling-nfe' | 'bling-financeiro';
   title: string;
   visible: boolean;
   order: number;
   size: 'sm' | 'md' | 'lg';
 }
+
 
 const DEFAULT_WIDGETS: DashboardWidget[] = [
   { id: 'fluxo-caixa', type: 'fluxo-caixa', title: 'Fluxo de Caixa', visible: true, order: 0, size: 'lg' },
@@ -19,7 +20,10 @@ const DEFAULT_WIDGETS: DashboardWidget[] = [
   { id: 'previsao-ia', type: 'previsao-ia', title: 'Previsão IA', visible: true, order: 5, size: 'lg' },
   { id: 'alertas-preditivos', type: 'kpi-vencidas', title: 'Alertas Preditivos', visible: true, order: 6, size: 'md' },
   { id: 'metas', type: 'kpi-saldo', title: 'Metas Financeiras', visible: true, order: 7, size: 'md' },
+  { id: 'bling-nfe', type: 'bling-nfe', title: 'Notas Fiscais (Bling)', visible: false, order: 8, size: 'md' },
+  { id: 'bling-financeiro', type: 'bling-financeiro', title: 'Financeiro (Bling)', visible: false, order: 9, size: 'md' },
 ];
+
 
 const STORAGE_KEY = 'dashboard-widgets-config';
 
