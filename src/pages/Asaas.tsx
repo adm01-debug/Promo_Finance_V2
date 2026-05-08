@@ -224,7 +224,135 @@ export default function Asaas() {
             <TabsTrigger value="links">Links</TabsTrigger>
             <TabsTrigger value="extrato">Extrato</TabsTrigger>
             <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
+            <TabsTrigger value="fila">Retentativas</TabsTrigger>
+            <TabsTrigger value="config">Configurações</TabsTrigger>
           </TabsList>
+
+          {/* NOVO: Dashboard de Retentativas */}
+          <TabsContent value="fila">
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <Card>
+                  <CardContent className="pt-4">
+                    <div className="flex items-center gap-2">
+                      <LayoutDashboard className="h-4 w-4 text-primary" />
+                      <span className="text-sm text-muted-foreground">Total na Fila</span>
+                    </div>
+                    <p className="text-2xl font-bold mt-1">{queueStats.total}</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-warning" />
+                      <span className="text-sm text-muted-foreground">Pendentes</span>
+                    </div>
+                    <p className="text-2xl font-bold mt-1">{queueStats.pendentes}</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4 text-destructive" />
+                      <span className="text-sm text-muted-foreground">Falhas Críticas</span>
+                    </div>
+                    <p className="text-2xl font-bold mt-1">{queueStats.falhas}</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-success" />
+                      <span className="text-sm text-muted-foreground">Sucesso</span>
+                    </div>
+                    <p className="text-2xl font-bold mt-1">{queueStats.sucesso}</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>Fila de Sincronização</CardTitle>
+                    <CardDescription>Monitoramento de retentativas automáticas</CardDescription>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={() => exportarAuditoria()}>
+                    <FileSpreadsheet className="h-4 w-4 mr-2" /> Exportar Auditoria
+                  </Button>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Pagamento ID</TableHead>
+                        <TableHead>Tentativas</TableHead>
+                        <TableHead>Próxima Retentativa</TableHead>
+                        <TableHead>Último Erro</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Ações</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {loadingQueue ? (
+                        <TableRow><TableCell colSpan={6} className="text-center py-8">Carregando fila...</TableCell></TableRow>
+                      ) : syncQueue.length === 0 ? (
+                        <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Fila vazia</TableCell></TableRow>
+                      ) : syncQueue.map((item: any) => (
+                        <TableRow key={item.id}>
+                          <TableCell className="font-mono text-xs">{item.payment_id.substring(0,8)}...</TableCell>
+                          <TableCell>{item.attempts} / {item.max_attempts}</TableCell>
+                          <TableCell>{item.next_retry_at ? formatDate(item.next_retry_at) : '-'}</TableCell>
+                          <TableCell className="max-w-[200px] truncate text-xs text-destructive">{item.last_error || '-'}</TableCell>
+                          <TableCell>
+                            <Badge variant={item.status === 'failed' ? 'destructive' : 'secondary'}>{item.status.toUpperCase()}</Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button size="icon" variant="ghost" onClick={() => reprocessarManual.mutate(item.payment_id)} disabled={reprocessarManual.isPending} title="Reprocessar Manual">
+                              <PlayCircle className={`h-4 w-4 ${reprocessarManual.isPending ? 'animate-spin' : ''}`} />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* NOVO: Configurações de Retentativa */}
+          <TabsContent value="config">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <SettingsIcon className="h-5 w-5" /> Políticas de Retentativa
+                </CardTitle>
+                <CardDescription>Configure como o sistema deve lidar com falhas de comunicação com o Asaas</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Limite de Tentativas</label>
+                    <Input type="number" value={config?.retry_limit || 5} 
+                      onChange={(e) => salvarConfig.mutate({ retry_limit: parseInt(e.target.value) })} />
+                    <p className="text-xs text-muted-foreground">Número máximo de vezes que o sistema tentará sincronizar.</p>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Intervalo Inicial (minutos)</label>
+                    <Input type="number" value={config?.retry_interval_minutes || 30} 
+                      onChange={(e) => salvarConfig.mutate({ retry_interval_minutes: parseInt(e.target.value) })} />
+                    <p className="text-xs text-muted-foreground">Tempo de espera antes da primeira retentativa.</p>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Multiplicador Backoff</label>
+                    <Input type="number" step="0.5" value={config?.backoff_multiplier || 2.0} 
+                      onChange={(e) => salvarConfig.mutate({ backoff_multiplier: parseFloat(e.target.value) })} />
+                    <p className="text-xs text-muted-foreground">Fator de aumento do intervalo entre tentativas (ex: 2.0 = dobra o tempo).</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="cobrancas">
             <Card>
