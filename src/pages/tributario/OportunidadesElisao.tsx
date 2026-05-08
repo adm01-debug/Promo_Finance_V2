@@ -33,6 +33,8 @@ import {
   FileSearch,
   CheckCheck,
   Filter,
+  FilePieChart,
+  ClipboardCheck,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useOportunidadesElisao } from '@/hooks/useOportunidadesElisao';
@@ -40,6 +42,8 @@ import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { formatCurrency } from '@/lib/formatters';
 import type { RegimeAplicavel, RiscoElisao } from '@/lib/tributario/elisao';
 import { Progress } from '@/components/ui/progress';
+import { baixarRelatorioAuditoriaCreditos } from '@/lib/tributario/relatorio-pdf';
+
 
 const RISCO_BADGE: Record<RiscoElisao, string> = {
   baixo: 'bg-success/10 text-success border-success/30',
