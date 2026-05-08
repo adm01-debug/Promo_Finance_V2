@@ -10,30 +10,37 @@ interface ConfirmarConciliacaoParams {
   transacaoId: string;
   contaPagarId?: string;
   contaReceberId?: string;
+  ajusteCentavos?: number;
 }
 
 export function useConciliacao() {
   const queryClient = useQueryClient();
 
   const confirmarConciliacao = useMutation({
-    mutationFn: async ({ transacaoId, contaPagarId, contaReceberId }: ConfirmarConciliacaoParams) => {
+    mutationFn: async ({ transacaoId, contaPagarId, contaReceberId, ajusteCentavos }: ConfirmarConciliacaoParams) => {
       const { data: transacao } = await supabase.from('transacoes_bancarias').select('*').eq('id', transacaoId).single();
       
       const { error } = await supabase.rpc('confirmar_conciliacao', {
         p_transacao_id: transacaoId,
         p_conta_pagar_id: contaPagarId || null,
         p_conta_receber_id: contaReceberId || null,
+        p_ajuste_centavos: ajusteCentavos || 0,
       });
 
       if (error) throw error;
 
       // Adiciona metadados de conciliação para rastreabilidade
       if (contaReceberId && transacao) {
+        let mensagem = `Conciliado manualmente com transação bancária em ${new Date(transacao.data).toLocaleDateString('pt-BR')}`;
+        if (ajusteCentavos && ajusteCentavos !== 0) {
+          mensagem += ` (Ajuste de centavos: R$ ${ajusteCentavos.toFixed(2)})`;
+        }
+
         await supabase.rpc('registrar_evento_receber', {
           p_conta_id: contaReceberId,
           p_tipo: 'conciliacao',
-          p_mensagem: `Conciliado manualmente com transação bancária em ${new Date(transacao.data).toLocaleDateString('pt-BR')}`,
-          p_metadata: { transacao_banco: transacao }
+          p_mensagem: mensagem,
+          p_metadata: { transacao_banco: transacao, ajuste_centavos: ajusteCentavos }
         });
         
         await supabase.from('contas_receber').update({ 

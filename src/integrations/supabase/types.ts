@@ -10796,14 +10796,24 @@ export type Database = {
         Args: { _max?: number; _user_id: string; _window_minutes?: number }
         Returns: boolean
       }
-      confirmar_conciliacao: {
-        Args: {
-          p_conta_pagar_id?: string
-          p_conta_receber_id?: string
-          p_transacao_id: string
-        }
-        Returns: undefined
-      }
+      confirmar_conciliacao:
+        | {
+            Args: {
+              p_conta_pagar_id?: string
+              p_conta_receber_id?: string
+              p_transacao_id: string
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              p_ajuste_centavos?: number
+              p_conta_pagar_id?: string
+              p_conta_receber_id?: string
+              p_transacao_id: string
+            }
+            Returns: undefined
+          }
       confirmar_envio_cobranca: {
         Args: {
           p_erro?: string

@@ -15,6 +15,8 @@ export interface LancamentoSistema {
   entidadeNome?: string;
   status: string;
   numeroDocumento?: string;
+  centro_custo_nome?: string;
+  centro_custo_id?: string;
 }
 
 export interface MatchSugestao {
@@ -57,6 +59,8 @@ export const DEFAULT_CONFIG: ConfiguracaoMatch = {
   toleranciaDias: 5, // 5 dias de tolerância
   scoreMinimo: 50,
 };
+
+export const TOLERANCIA_CENTAVOS = 0.50; // Tolerância para ajuste automático de centavos
 
 // Text normalization for comparison
 function normalizarTexto(texto: string): string {

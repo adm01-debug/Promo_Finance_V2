@@ -90,10 +90,14 @@ export function ConciliacaoManualDialog({
     try {
       const tipo = lancamento.tipo;
       
+      const valorDiff = Math.abs(transacao.valor) - lancamento.valor;
+      const isWithinPennyTolerance = Math.abs(valorDiff) <= 0.50; // TOLERANCIA_CENTAVOS
+
       await confirmarConciliacao.mutateAsync({
         transacaoId: transacao.id,
         contaPagarId: tipo === 'pagar' ? lancamento.id : undefined,
         contaReceberId: tipo === 'receber' ? lancamento.id : undefined,
+        ajusteCentavos: isWithinPennyTolerance ? valorDiff : 0,
       });
       
       // Learn rule from this manual match

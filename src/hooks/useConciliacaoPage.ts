@@ -7,6 +7,7 @@ import { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
 import { 
   LancamentoSistema, converterContasPagarParaLancamentos, 
   converterContasReceberParaLancamentos, encontrarTodosMatches, calcularEstatisticasMatch,
+  TOLERANCIA_CENTAVOS,
 } from '@/lib/transaction-matcher';
 import { type ImportReport } from '@/components/conciliacao/RelatorioImportacaoDialog';
 import { toast } from 'sonner';
@@ -34,7 +35,14 @@ export function useConciliacaoPage() {
   const [transacoes, setTransacoes] = useState<TransacaoExtrato[]>([]);
   const [extratoImportado, setExtratoImportado] = useState<ExtratoOFX | null>(null);
   const [transacoesImportadas, setTransacoesImportadas] = useState<TransacaoOFX[]>([]);
-  const [filters, setFilters] = useState<ConciliacaoFilterState>(INITIAL_FILTERS);
+  const [filters, setFilters] = useState<ConciliacaoFilterState>(() => {
+    const saved = localStorage.getItem('conciliacao_filters');
+    return saved ? JSON.parse(saved) : INITIAL_FILTERS;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('conciliacao_filters', JSON.stringify(filters));
+  }, [filters]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [importReport, setImportReport] = useState<ImportReport | null>(null);
@@ -52,6 +60,7 @@ export function useConciliacaoPage() {
           data_vencimento: cp.data_vencimento, fornecedor_nome: cp.fornecedor_nome,
           status: cp.status, numero_documento: cp.numero_documento,
           fornecedores: cp.fornecedor ? { razao_social: cp.fornecedor, nome_fantasia: null } : null,
+          centro_custo_nome: cp.centro_custo,
         }))) 
       : [];
     const lancamentosReceber = contasReceber 
@@ -60,6 +69,7 @@ export function useConciliacaoPage() {
           data_vencimento: cr.data_vencimento, cliente_nome: cr.cliente_nome,
           status: cr.status, numero_documento: cr.numero_documento,
           clientes: cr.cliente ? { razao_social: cr.cliente, nome_fantasia: null } : null,
+          centro_custo_nome: cr.centro_custo,
         }))) 
       : [];
     return [...lancamentosPagar, ...lancamentosReceber];
@@ -67,6 +77,17 @@ export function useConciliacaoPage() {
 
   const handleImportSuccess = useCallback(async (extrato: ExtratoOFX) => {
     setIsProcessingImport(true);
+
+    // Validação de Saldo (Adicionado)
+    if (extrato.conta.saldoFinal !== undefined) {
+      const saldoCalculado = (extrato.conta.saldoInicial || 0) + extrato.transacoes.reduce((acc, t) => acc + t.valor, 0);
+      if (Math.abs(saldoCalculado - extrato.conta.saldoFinal) > 0.01) {
+        toast.warning('Divergência de Saldo Detectada', {
+          description: `O saldo final do arquivo (R$ ${extrato.conta.saldoFinal.toFixed(2)}) não bate com o calculado (R$ ${saldoCalculado.toFixed(2)}).`
+        });
+      }
+    }
+
     const novasTransacoes = extrato.transacoes.map((t: TransacaoOFX) => ({
       id: t.id, data: t.data, descricao: t.descricao, valor: t.valor, tipo: t.tipo, conciliada: false,
     }));
@@ -92,11 +113,27 @@ export function useConciliacaoPage() {
     for (const transacao of extrato.transacoes) {
       const sugestoes = matches.get(transacao.id);
       if (sugestoes && sugestoes.length > 0 && sugestoes[0].confianca === 'alta') {
-        matchesAlta.push({ transacao, match: sugestoes[0] });
+        const melhorMatch = sugestoes[0];
+        const valorDiff = Math.abs(transacao.valor) - melhorMatch.lancamento.valor;
+        const isWithinPennyTolerance = Math.abs(valorDiff) <= TOLERANCIA_CENTAVOS;
+
+        matchesAlta.push({ transacao, match: melhorMatch });
         autoConciliadas++;
         valorAutoConciliado += Math.abs(transacao.valor);
         const idx = novasTransacoes.findIndex(t => t.id === transacao.id);
         if (idx >= 0) novasTransacoes[idx].conciliada = true;
+
+        // Efetivar conciliação automática no banco
+        try {
+          await confirmarConciliacao.mutateAsync({
+            transacaoId: transacao.id,
+            contaPagarId: melhorMatch.lancamentoTipo === 'pagar' ? melhorMatch.lancamentoId : undefined,
+            contaReceberId: melhorMatch.lancamentoTipo === 'receber' ? melhorMatch.lancamentoId : undefined,
+            ajusteCentavos: isWithinPennyTolerance ? valorDiff : 0,
+          });
+        } catch (err) {
+          console.error('Erro na conciliação automática:', err);
+        }
       }
     }
 

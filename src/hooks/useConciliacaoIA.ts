@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { TransacaoOFX } from '@/lib/ofx-parser';
 import { LancamentoSistema } from '@/lib/transaction-matcher';
 import { logger } from '@/lib/logger';
+import { useHistoricoConciliacaoIA } from './useHistoricoConciliacaoIA';
 
 export interface MatchSugestaoIA {
   transacaoId: string;
@@ -31,6 +32,7 @@ export function useConciliacaoIA() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [matchesIA, setMatchesIA] = useState<Map<string, MatchSugestaoIA[]>>(new Map());
   const [lastAnalysis, setLastAnalysis] = useState<Date | null>(null);
+  const { feedback } = useHistoricoConciliacaoIA();
 
   const analisarConciliacao = useCallback(async (
     transacoes: TransacaoOFX[],
@@ -66,7 +68,8 @@ export function useConciliacaoIA() {
       const { data, error } = await supabase.functions.invoke<ConciliacaoIAResponse>('conciliacao-ia', {
         body: { 
           transacoes: transacoesData, 
-          lancamentos: lancamentosData 
+          lancamentos: lancamentosData,
+          historicoFeedback: feedback.slice(0, 20) // Enviar os 20 feedbacks mais recentes
         }
       });
 
