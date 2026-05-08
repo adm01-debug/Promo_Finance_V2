@@ -15,7 +15,7 @@ interface BitrixResponse {
 }
 
 interface SyncRequest {
-  action: "sync_deals" | "sync_contacts" | "sync_companies" | "export_payment_status" | "test_connection" | "refresh_token" | "sync_elisao_task";
+  action: "sync_deals" | "sync_contacts" | "sync_companies" | "export_payment_status" | "test_connection" | "refresh_token" | "sync_elisao_task" | "sync_boleto";
   params?: Record<string, any>;
 }
 
@@ -621,6 +621,64 @@ async function syncElisaoTask(
   }
 }
 
+async function syncBoleto(
+  supabase: any,
+  accessToken: string,
+  boleto: any,
+  userId: string
+): Promise<{ success: boolean; message: string; bitrix_id?: string }> {
+  console.log(`[bitrix24-sync] Syncing boleto ${boleto.id} to Bitrix...`);
+  
+  try {
+    // 1. Localizar o Deal no Bitrix (pela conta_receber)
+    let dealId = boleto.bitrix_id;
+    
+    if (!dealId && boleto.conta_receber_id) {
+      const { data: conta } = await supabase
+        .from("contas_receber")
+        .select("bitrix_deal_id")
+        .eq("id", boleto.conta_receber_id)
+        .single();
+      dealId = conta?.bitrix_deal_id;
+    }
+
+    if (!dealId) {
+      throw new Error("Deal Bitrix24 não encontrado para este boleto");
+    }
+
+    // 2. Atualizar o Deal com informações do boleto
+    const message = `
+      <b>BOLETO GERADO</b><br/>
+      Número: ${boleto.numero}<br/>
+      Valor: R$ ${boleto.valor}<br/>
+      Vencimento: ${boleto.vencimento}<br/>
+      Linha Digitável: ${boleto.linha_digitavel}<br/>
+      <a href="${boleto.link_fatura || boleto.link_boleto}">Clique aqui para ver o boleto</a>
+    `;
+
+    const result = await callBitrixAPI("crm.timeline.item.add", accessToken, {
+      fields: {
+        ENTITY_ID: dealId,
+        ENTITY_TYPE_ID: 2, // 2 = Deal
+        BASE_ID: dealId,
+        BASE_TYPE_ID: 2,
+        CONTENT: message,
+      }
+    });
+
+    if (result.error) throw new Error(result.error_description || result.error);
+
+    return { 
+      success: true, 
+      message: "Boleto sincronizado com o timeline do Bitrix24",
+      bitrix_id: dealId 
+    };
+  } catch (error: any) {
+    console.error("[bitrix24-sync] Boleto sync failed:", error);
+    return { success: false, message: error?.message || "Erro na sincronização" };
+  }
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -669,6 +727,9 @@ serve(async (req) => {
         break;
       case "sync_elisao_task":
         result = await syncElisaoTask(supabase, accessToken, params?.id, user.id);
+        break;
+      case "sync_boleto":
+        result = await syncBoleto(supabase, accessToken, params?.boleto, user.id);
         break;
       default:
         throw new Error(`Unknown action: ${action}`);

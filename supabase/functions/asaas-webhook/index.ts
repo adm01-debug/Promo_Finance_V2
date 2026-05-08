@@ -31,9 +31,9 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json()
-    const { event, payment } = body
+    const { event, payment, transfer } = body
 
-    if (!event || !payment) {
+    if (!event) {
       return new Response(JSON.stringify({ error: 'Payload inválido' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -44,39 +44,78 @@ Deno.serve(async (req) => {
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, serviceRoleKey)
 
-    // Buscar pagamento local
-    const { data: localPayment } = await supabase
-      .from('asaas_payments')
-      .select('id, status, asaas_id')
-      .eq('asaas_id', payment.id)
-      .maybeSingle()
+    // 1. Processar COBRANÇAS (Payments)
+    if (payment) {
+      const { data: localPayment } = await supabase
+        .from('asaas_payments')
+        .select('id, status, asaas_id')
+        .eq('asaas_id', payment.id)
+        .maybeSingle()
 
-    if (localPayment) {
-      // Mapeamento de status (simplificado para o exemplo)
-      const statusMap: Record<string, string> = {
-        'PAYMENT_RECEIVED': 'RECEIVED',
-        'PAYMENT_CONFIRMED': 'CONFIRMED',
-        'PAYMENT_OVERDUE': 'OVERDUE',
-        'PAYMENT_DELETED': 'CANCELLED',
+      if (localPayment) {
+        const statusMap: Record<string, string> = {
+          'PAYMENT_RECEIVED': 'RECEIVED',
+          'PAYMENT_CONFIRMED': 'CONFIRMED',
+          'PAYMENT_OVERDUE': 'OVERDUE',
+          'PAYMENT_DELETED': 'CANCELLED',
+          'PAYMENT_REFUNDED': 'REFUNDED',
+          'PAYMENT_CHARGEBACK_REQUESTED': 'CHARGEBACK',
+        }
+        
+        const newStatus = statusMap[event] || payment.status
+
+        if (newStatus !== localPayment.status) {
+          await supabase.from('asaas_payments').update({ 
+            status: newStatus,
+            updated_at: new Date().toISOString()
+          }).eq('id', localPayment.id)
+
+          await supabase.from('asaas_audit_trail').insert({
+            payment_id: localPayment.id,
+            action: 'WEBHOOK_PAYMENT',
+            previous_status: localPayment.status,
+            new_status: newStatus,
+            details: { event, message: `Status de cobrança alterado via Webhook: ${event}` }
+          })
+        }
       }
-      
-      const newStatus = statusMap[event] || payment.status
+    }
 
-      if (newStatus !== localPayment.status) {
-        // Atualizar status
-        await supabase.from('asaas_payments').update({ 
-          status: newStatus,
-          updated_at: new Date().toISOString()
-        }).eq('id', localPayment.id)
+    // 2. Processar TRANSFERÊNCIAS (Cashout)
+    if (transfer) {
+      const { data: localTransfer } = await supabase
+        .from('asaas_transfers')
+        .select('id, status, asaas_id')
+        .eq('asaas_id', transfer.id)
+        .maybeSingle()
 
-        // Registrar na trilha de auditoria
-        await supabase.from('asaas_audit_trail').insert({
-          payment_id: localPayment.id,
-          action: 'WEBHOOK_RECEIVED',
-          previous_status: localPayment.status,
-          new_status: newStatus,
-          details: { event, message: `Status alterado via Webhook Asaas: ${event}` }
-        })
+      if (localTransfer) {
+        const transferStatusMap: Record<string, string> = {
+          'TRANSFER_DONE': 'DONE',
+          'TRANSFER_CANCELLED': 'CANCELLED',
+          'TRANSFER_FAILED': 'FAILED',
+        }
+        
+        const newStatus = transferStatusMap[event] || transfer.status
+
+        if (newStatus !== localTransfer.status) {
+          await supabase.from('asaas_transfers').update({ 
+            status: newStatus,
+            updated_at: new Date().toISOString(),
+            transaction_receipt_url: transfer.transactionReceiptUrl || null
+          }).eq('id', localTransfer.id)
+
+          await supabase.from('asaas_audit_trail').insert({
+            action: 'WEBHOOK_TRANSFER',
+            details: { 
+              transfer_id: localTransfer.id,
+              event, 
+              previous_status: localTransfer.status,
+              new_status: newStatus,
+              message: `Status de transferência alterado via Webhook: ${event}` 
+            }
+          })
+        }
       }
     }
 

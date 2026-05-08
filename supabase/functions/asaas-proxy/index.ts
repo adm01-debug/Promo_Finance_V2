@@ -621,6 +621,16 @@ Deno.serve(async (req) => {
           .update({ status: 'completed' })
           .eq('payment_id', data.payment_id)
 
+        // Registrar auditoria se houver motivo (reprocessamento manual)
+        if (data?.reason) {
+          await supabase.from('asaas_audit_trail').insert({
+            payment_id: data.payment_id,
+            action: 'MANUAL_SYNC',
+            user_id: user.id,
+            details: { reason: data.reason, manual: true }
+          });
+        }
+
         result = { success: true, status: asaasData.status }
         break
       }
@@ -678,6 +688,41 @@ Deno.serve(async (req) => {
             results.push({ id: item.id, status: 'FAILED' })
           }
         }
+        // Verificar se houve muitas falhas na última hora para disparar alerta
+        const { count: failureCount } = await supabase
+          .from('asaas_sync_queue')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'FAILED')
+          .gte('updated_at', new Date(Date.now() - 3600000).toISOString());
+
+        const threshold = config?.failure_threshold || 5;
+        if (failureCount && failureCount >= threshold) {
+          // Disparar Alerta Email
+          if (config?.alert_email_enabled && config?.alert_email_address) {
+            await supabase.functions.invoke('enviar-alerta-email', {
+              body: {
+                tipo: 'asaas_failure',
+                destinatario: config.alert_email_address,
+                dados: {
+                  titulo: 'Limite de falhas na sincronização Asaas atingido',
+                  mensagem: `Foram detectadas ${failureCount} falhas na fila de retentativas na última hora. O limite configurado é de ${threshold}.`,
+                  urlAcao: `${supabaseUrl.replace('.supabase.co', '.lovable.app')}/asaas` // Ajuste para URL real se necessário
+                }
+              }
+            });
+          }
+          
+          // Disparar Alerta WhatsApp
+          if (config?.alert_whatsapp_enabled && config?.alert_whatsapp_number) {
+            await supabase.functions.invoke('whatsapp-ia-proativo', {
+              body: {
+                phone: config.alert_whatsapp_number,
+                message: `⚠️ *ALERTA ASAAS:* Foram detectadas ${failureCount} falhas na fila de retentativas na última hora. Acesse o painel para verificar.`
+              }
+            });
+          }
+        }
+
         result = { processed: results.length }
         break
       }

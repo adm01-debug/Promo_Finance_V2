@@ -2,7 +2,7 @@
 // DIALOG: Transferência Pix ASAAS
 // ============================================
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,9 +10,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
-import { Loader2, Send } from 'lucide-react';
+import { Loader2, Send, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useAsaas } from '@/hooks/useAsaas';
 import { toast } from 'sonner';
+import { validateCPF, validateCNPJ } from '@/lib/validators'; // Assumed to exist or I will create it
 
 interface Props {
   open: boolean;
@@ -28,11 +29,31 @@ export function TransferenciaPixDialog({ open, onOpenChange, empresaId }: Props)
   const [tipoChave, setTipoChave] = useState('CPF');
   const [descricao, setDescricao] = useState('');
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [isValidKey, setIsValidKey] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!chavePix) {
+      setIsValidKey(null);
+      return;
+    }
+    
+    let valid = true;
+    if (tipoChave === 'CPF') valid = validateCPF(chavePix);
+    else if (tipoChave === 'CNPJ') valid = validateCNPJ(chavePix);
+    else if (tipoChave === 'EMAIL') valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(chavePix);
+    else if (tipoChave === 'PHONE') valid = chavePix.replace(/\D/g, '').length >= 10;
+    
+    setIsValidKey(valid);
+  }, [chavePix, tipoChave]);
 
   const handleConfirmar = () => {
     const valorNum = parseFloat(valor);
     if (!chavePix || isNaN(valorNum) || valorNum <= 0) {
-      toast.error('Preencha valor e chave Pix');
+      toast.error('Preencha valor e chave Pix corretamente');
+      return;
+    }
+    if (isValidKey === false) {
+      toast.error(`A chave Pix informada não é um ${tipoChave} válido`);
       return;
     }
     setConfirmOpen(true);
@@ -92,8 +113,17 @@ export function TransferenciaPixDialog({ open, onOpenChange, empresaId }: Props)
                 </Select>
               </div>
               <div className="col-span-2 space-y-2">
-                <Label>Chave Pix *</Label>
-                <Input value={chavePix} onChange={e => setChavePix(e.target.value)} placeholder="Chave Pix do destinatário" />
+                <Label className="flex justify-between">
+                  Chave Pix *
+                  {isValidKey === true && <span className="text-[10px] text-success flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> Válida</span>}
+                  {isValidKey === false && <span className="text-[10px] text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3" /> Inválida</span>}
+                </Label>
+                <Input 
+                  value={chavePix} 
+                  onChange={e => setChavePix(e.target.value)} 
+                  placeholder="Chave Pix do destinatário" 
+                  className={isValidKey === false ? 'border-destructive focus-visible:ring-destructive' : ''}
+                />
               </div>
             </div>
             <div className="space-y-2">
