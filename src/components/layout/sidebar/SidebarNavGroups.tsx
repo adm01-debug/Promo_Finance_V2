@@ -239,6 +239,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
   // Render nav item
   const NavItemComponent = ({ item }: { item: NavItem }) => {
     const isActive = location.pathname === item.href;
+    const isSynced = isItemSynced(item.href);
     const Icon = item.icon;
     const badge = getBadgeCount(item.badgeKey);
 
