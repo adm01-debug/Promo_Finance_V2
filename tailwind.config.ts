@@ -314,8 +314,8 @@ export default {
         "streak-fire": "streak-fire 0.8s ease-in-out infinite",
         "coin-shine": "coin-shine 2s ease-in-out infinite",
         "level-up": "level-up 0.6s ease-out",
-        enter: "fade-in 0.3s ease-out, scale-in 0.2s ease-out",
-        exit: "fade-out 0.3s ease-out, scale-out 0.2s ease-out",
+        enter: "fade-in 0.4s ease-apple, scale-in 0.3s ease-apple",
+        exit: "fade-out 0.4s ease-apple, scale-out 0.3s ease-apple",
       },
       transitionDuration: {
         "150": "150ms",
@@ -327,6 +327,7 @@ export default {
       },
       transitionTimingFunction: {
         "bounce-in": "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+        apple: "cubic-bezier(0.25, 0.1, 0.25, 1)",
         smooth: "cubic-bezier(0.4, 0, 0.2, 1)",
         spring: "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
       },
