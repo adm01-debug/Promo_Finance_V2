@@ -28,15 +28,15 @@ interface TopClientesLeaderboardProps {
 export function TopClientesLeaderboard({ topClientesReceita }: TopClientesLeaderboardProps) {
   return (
     <motion.div variants={itemVariants} className="lg:col-span-1">
-      <Card className="h-[450px] overflow-hidden">
+      <Card className="h-[450px] overflow-hidden border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2rem]">
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg flex items-center gap-2">
+          <CardTitle className="text-lg font-black tracking-tight flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-coins/10 flex items-center justify-center">
               <Trophy className="h-4 w-4 text-coins" />
             </div>
-            Top 10 Clientes
+            Elite Entity Leaderboard
           </CardTitle>
-          <CardDescription>Por receita gerada</CardDescription>
+          <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">Top 10 Performance de Receita</CardDescription>
         </CardHeader>
         <CardContent className="space-y-1.5 overflow-y-auto max-h-[360px] pr-2">
           {topClientesReceita.length === 0 ? (

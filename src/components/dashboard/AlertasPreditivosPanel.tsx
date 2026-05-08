@@ -92,17 +92,17 @@ export function AlertasPreditivosPanel({
   }), [alertas]);
 
   return (
-    <Card className="card-elevated">
+    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem] overflow-hidden">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-lg font-display flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-warning to-destructive flex items-center justify-center">
+            <CardTitle className="text-lg font-black tracking-tight flex items-center gap-2">
+              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-warning to-destructive flex items-center justify-center shadow-lg shadow-destructive/20">
                 <Brain className="h-4 w-4 text-white" />
               </div>
               Cyber-Sentinel: Risk Matrix 10/10
             </CardTitle>
-            <CardDescription>Previsões baseadas em padrões históricos</CardDescription>
+            <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">Previsões baseadas em padrões neurais</CardDescription>
           </div>
           <Button 
             variant="outline" 

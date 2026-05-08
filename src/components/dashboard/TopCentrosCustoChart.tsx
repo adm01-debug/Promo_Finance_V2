@@ -32,15 +32,15 @@ function CustomTooltip({ active, payload, label }: any) {
 export function TopCentrosCustoChart({ dadosPorCentroCusto }: { dadosPorCentroCusto: CentroCustoData[] }) {
   return (
     <motion.div variants={itemVariants}>
-      <Card className="h-[450px] overflow-hidden">
+      <Card className="h-[450px] overflow-hidden border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2rem]">
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg flex items-center gap-2">
+          <CardTitle className="text-lg font-black tracking-tight flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
               <Layers className="h-4 w-4 text-primary" />
             </div>
-            Top Centros de Custo
+            Neural Cost Allocation Matrix
           </CardTitle>
-          <CardDescription>Por volume financeiro</CardDescription>
+          <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">Por volume financeiro estratégico</CardDescription>
         </CardHeader>
         <CardContent className="h-[360px]">
           <ResponsiveContainer width="100%" height="100%">
