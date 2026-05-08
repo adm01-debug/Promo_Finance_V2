@@ -242,7 +242,7 @@ export function ConciliacaoExport({ transacoes, stats }: ConciliacaoExportProps)
 
         const head = isFeedback
           ? [['Descrição', 'Data', 'Valor', 'Tipo', 'Status', 'Ação IA', 'Motivo']]
-          : [['Descrição', 'Data', 'Valor', 'Tipo', 'Status']];
+          : [['Descrição', 'Data', 'Valor', 'Tipo', 'Status', 'Ajuste', 'Regra']];
 
         const body = rows.slice(0, 100).map((r) => {
           const base = [
@@ -252,10 +252,15 @@ export function ConciliacaoExport({ transacoes, stats }: ConciliacaoExportProps)
             r.tipo === 'credito' ? 'Crédito' : 'Débito',
             r.status === 'conciliada' ? 'Conciliada' : 'Pendente',
           ];
+          
           if (isFeedback) {
             const fb = r as FeedbackRow;
             base.push(fb.acao_ia === 'aprovado' ? 'Aprovado' : 'Rejeitado');
             base.push((fb.motivo_rejeicao || '').slice(0, 50));
+          } else {
+            const tx = r as TransacaoExport;
+            base.push(formatCurrency(tx.compensacao_valor || 0));
+            base.push((tx.compensacao_regra || '').slice(0, 30));
           }
           return base;
         });
