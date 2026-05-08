@@ -15,7 +15,7 @@ interface BitrixResponse {
 }
 
 interface SyncRequest {
-  action: "sync_deals" | "sync_contacts" | "sync_companies" | "export_payment_status" | "test_connection" | "refresh_token" | "sync_elisao_task";
+  action: "sync_deals" | "sync_contacts" | "sync_companies" | "export_payment_status" | "test_connection" | "refresh_token" | "sync_elisao_task" | "sync_boleto";
   params?: Record<string, any>;
 }
 
