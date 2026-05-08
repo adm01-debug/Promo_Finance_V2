@@ -10,7 +10,8 @@ export function useWhatsAppUnreadCount() {
       const { count, error } = await supabase
         .from('historico_cobranca_whatsapp')
         .select('*', { count: 'exact', head: true })
-        .eq('status', 'recebido');
+        .eq('status', 'recebido')
+        .is('lido_em', null);
       
       if (error) return 0;
       return count || 0;
