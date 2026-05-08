@@ -30,6 +30,8 @@ export interface AdvancedFilters {
   valorMinimo?: number;
   valorMaximo?: number;
   tipoCobranca?: string;
+  empresaId?: string;
+  contaBancariaId?: string;
 }
 
 interface AdvancedFiltersProps {
