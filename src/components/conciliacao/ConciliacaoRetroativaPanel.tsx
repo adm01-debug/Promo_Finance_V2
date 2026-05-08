@@ -1,14 +1,16 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
-import { CalendarIcon, History, PlayCircle } from 'lucide-react';
+import { CalendarIcon, History, PlayCircle, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { useConciliacaoRetroativa } from '@/hooks/useConciliacaoRetroativa';
 import { ptBR } from 'date-fns/locale';
+import { Badge } from '@/components/ui/badge';
 
 interface Props {
   contaBancariaId?: string;
