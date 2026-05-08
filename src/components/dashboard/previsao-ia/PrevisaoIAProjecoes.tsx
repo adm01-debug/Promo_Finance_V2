@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, Lightbulb, CheckCircle2 } from 'lucide-react';
+import { Calendar, Lightbulb, CheckCircle2, ArrowRight } from 'lucide-react';
 
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } } as const;
 
@@ -18,21 +18,35 @@ interface Props {
 
 export function PrevisaoIAProjecoes({ projecao, recomendacoes, parseValor }: Props) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       <motion.div variants={itemVariants}>
-        <h3 className="mb-3 flex items-center gap-2 font-semibold"><Calendar className="h-4 w-4 text-primary" />Projeção de Fluxo de Caixa</h3>
+        <h3 className="mb-4 flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+          <Calendar className="h-4 w-4 text-primary" />
+          Quantum Projections: Cash Flow Horizon
+        </h3>
         <div className="grid gap-4 md:grid-cols-3">
           {projecao && Object.entries(projecao).map(([periodo, dados]) => (
-            <Card key={periodo} className="overflow-hidden">
-              <CardHeader className="bg-muted/50 py-3">
-                <CardTitle className="text-sm">
-                  {periodo === 'proximos_7_dias' ? 'Próximos 7 dias' : periodo === 'proximos_30_dias' ? 'Próximos 30 dias' : 'Próximos 90 dias'}
+            <Card key={periodo} className="border-white/5 bg-black/20 backdrop-blur-xl overflow-hidden group hover:scale-[1.02] transition-transform">
+              <CardHeader className="bg-white/5 py-3 border-b border-white/5">
+                <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/80">
+                  {periodo === 'proximos_7_dias' ? 'Short Term (7d)' : periodo === 'proximos_30_dias' ? 'Mid Term (30d)' : 'Long Term (90d)'}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="py-4 space-y-2">
-                <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">Entradas:</span><span className="font-medium text-success">{dados.entradas_previstas}</span></div>
-                <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">Saídas:</span><span className="font-medium text-destructive">{dados.saidas_previstas}</span></div>
-                <div className="border-t pt-2 flex items-center justify-between"><span className="text-sm font-medium">Saldo:</span><span className={`font-bold ${parseValor(dados.saldo_projetado) >= 0 ? 'text-success' : 'text-destructive'}`}>{dados.saldo_projetado}</span></div>
+              <CardContent className="p-5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">Inbound</span>
+                  <span className="font-black text-lg tracking-tighter text-success">{dados.entradas_previstas}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">Outbound</span>
+                  <span className="font-black text-lg tracking-tighter text-destructive">{dados.saidas_previstas}</span>
+                </div>
+                <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Balance</span>
+                  <span className={`font-black text-xl tracking-tighter ${parseValor(dados.saldo_projetado) >= 0 ? 'text-success' : 'text-destructive'}`}>
+                    {dados.saldo_projetado}
+                  </span>
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -40,16 +54,32 @@ export function PrevisaoIAProjecoes({ projecao, recomendacoes, parseValor }: Pro
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <Card>
-          <CardHeader className="pb-3"><CardTitle className="flex items-center gap-2 text-base"><Lightbulb className="h-4 w-4 text-primary" />Recomendações Estratégicas</CardTitle></CardHeader>
-          <CardContent>
-            <ul className="space-y-2">
+        <Card className="border-white/5 bg-black/20 backdrop-blur-xl overflow-hidden shadow-2xl">
+          <CardHeader className="pb-4 border-b border-white/5">
+            <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+              <Lightbulb className="h-4 w-4 text-primary" />
+              Strategic Neural Directives
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="grid gap-4 sm:grid-cols-2">
               {recomendacoes?.map((rec, i) => (
-                <motion.li key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }} className="flex items-start gap-2 text-sm">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" /><span>{rec}</span>
-                </motion.li>
+                <motion.div 
+                  key={i} 
+                  initial={{ opacity: 0, x: -10 }} 
+                  animate={{ opacity: 1, x: 0 }} 
+                  transition={{ delay: i * 0.05 }} 
+                  className="group flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-all cursor-default"
+                >
+                  <div className="mt-1 h-6 w-6 rounded-lg bg-success/20 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="h-4 w-4 text-success" />
+                  </div>
+                  <span className="text-sm font-bold text-muted-foreground/90 leading-relaxed group-hover:text-foreground transition-colors">
+                    {rec}
+                  </span>
+                </motion.div>
               ))}
-            </ul>
+            </div>
           </CardContent>
         </Card>
       </motion.div>
