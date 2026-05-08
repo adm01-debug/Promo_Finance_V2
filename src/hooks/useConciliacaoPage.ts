@@ -92,11 +92,27 @@ export function useConciliacaoPage() {
     for (const transacao of extrato.transacoes) {
       const sugestoes = matches.get(transacao.id);
       if (sugestoes && sugestoes.length > 0 && sugestoes[0].confianca === 'alta') {
-        matchesAlta.push({ transacao, match: sugestoes[0] });
+        const melhorMatch = sugestoes[0];
+        const valorDiff = Math.abs(transacao.valor) - melhorMatch.lancamento.valor;
+        const isWithinPennyTolerance = Math.abs(valorDiff) <= TOLERANCIA_CENTAVOS;
+
+        matchesAlta.push({ transacao, match: melhorMatch });
         autoConciliadas++;
         valorAutoConciliado += Math.abs(transacao.valor);
         const idx = novasTransacoes.findIndex(t => t.id === transacao.id);
         if (idx >= 0) novasTransacoes[idx].conciliada = true;
+
+        // Efetivar conciliação automática no banco
+        try {
+          await confirmarConciliacao.mutateAsync({
+            transacaoId: transacao.id,
+            contaPagarId: melhorMatch.lancamentoTipo === 'pagar' ? melhorMatch.lancamentoId : undefined,
+            contaReceberId: melhorMatch.lancamentoTipo === 'receber' ? melhorMatch.lancamentoId : undefined,
+            ajusteCentavos: isWithinPennyTolerance ? valorDiff : 0,
+          });
+        } catch (err) {
+          console.error('Erro na conciliação automática:', err);
+        }
       }
     }
 
