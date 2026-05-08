@@ -39,17 +39,17 @@ function CustomTooltip({ active, payload, label }: any) {
 export function FluxoCaixaChart({ data, periodoFluxo, setPeriodoFluxo }: FluxoCaixaChartProps) {
   return (
     <motion.div variants={itemVariants} className="w-full">
-      <Card className="h-[320px] sm:h-[360px] md:h-[400px] overflow-hidden">
+      <Card className="h-[320px] sm:h-[360px] md:h-[400px] overflow-hidden border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem]">
         <CardHeader className="pb-2 p-3 sm:p-4 md:p-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="min-w-0">
-              <CardTitle className="text-sm sm:text-base md:text-lg flex items-center gap-2">
+              <CardTitle className="text-sm sm:text-base md:text-lg font-black tracking-tight flex items-center gap-2">
                 <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                   <Activity className="h-4 w-4 text-primary" />
                 </div>
-                <span className="truncate">Fluxo de Caixa</span>
+                <span className="truncate">Quantum Cash Horizon</span>
               </CardTitle>
-              <CardDescription className="text-xs sm:text-sm hidden sm:block mt-1">Projeção de receitas vs despesas</CardDescription>
+              <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 hidden sm:block mt-1">Projeção Neural de Liquidez</CardDescription>
             </div>
             <Tabs value={periodoFluxo} onValueChange={setPeriodoFluxo}>
               <TabsList className="h-8 bg-muted/60">
