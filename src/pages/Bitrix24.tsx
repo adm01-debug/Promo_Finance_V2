@@ -153,13 +153,13 @@ export default function Bitrix24() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg">
+          <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg" data-tour="bitrix24-icon">
             <Zap className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Bitrix24</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Bitrix24 CRM</h1>
             <p className="text-muted-foreground">
-              Integração e sincronização de dados
+              Integração e sincronização bidirecional de deals e clientes
             </p>
           </div>
         </div>
