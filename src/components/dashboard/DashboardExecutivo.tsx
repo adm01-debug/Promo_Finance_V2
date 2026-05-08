@@ -2,6 +2,7 @@ import { useState, ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Wallet, ArrowDownCircle, ArrowUpCircle, AlertTriangle, BarChart3, Brain, Target } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
+import { useAuth } from '@/hooks/useAuth';
 import { useDashboardConfig, DashboardWidget } from '@/hooks/useDashboardConfig';
 import { useDashboardMetrics } from '@/hooks/useDashboardMetrics';
 import { PrevisaoIA } from './PrevisaoIA';
@@ -52,7 +53,8 @@ function SectionDivider({ label, icon: Icon }: { label: string; icon: React.Elem
 }
 
 export const DashboardExecutivo = () => {
-  const [empresaFilter, setEmpresaFilter] = useState<string>('all');
+  const { currentEmpresaId } = useAuth();
+  const [empresaFilter, setEmpresaFilter] = useState<string>(currentEmpresaId || 'all');
   const [centroCustoFilter, setCentroCustoFilter] = useState<string>('all');
   const [periodoFluxo, setPeriodoFluxo] = useState('30');
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
@@ -176,7 +178,7 @@ export const DashboardExecutivo = () => {
         <motion.div variants={itemVariants} className="px-1">
           <HeroKPIGrid layout="hero-first">
             <HeroKPICard
-              title="Saldo Total"
+              title="Disponibilidade Total"
               value={metrics.saldoTotal}
               icon={Wallet}
               iconColor="text-primary"
@@ -184,12 +186,12 @@ export const DashboardExecutivo = () => {
               accentColor="hsl(24, 95%, 46%)"
               href="/contas-bancarias"
               size="hero"
-              badge={`${metrics.contasBancariasFiltradas.length} conta(s)`}
-              tooltip="Soma de todos os saldos das contas bancárias"
-              insight="Mantenha reserva de 3 meses de despesas"
+              badge={`${metrics.contasBancariasFiltradas.length} contas`}
+              tooltip="Consolidado bancário em tempo real"
+              insight="Otimize aplicações para CDI superior"
             />
             <HeroKPICard
-              title="A Receber"
+              title="Receita Provisionada"
               value={metrics.totalReceber}
               previousValue={metrics.totalReceber - metrics.receitasMes}
               icon={ArrowDownCircle}
@@ -198,12 +200,12 @@ export const DashboardExecutivo = () => {
               accentColor="hsl(150, 70%, 42%)"
               href="/contas-receber"
               size="primary"
-              badge={metrics.receitasMes > 0 ? formatCurrency(metrics.receitasMes) + " este mês" : undefined}
-              emptyStateMessage={metrics.totalReceber === 0 ? "Crie sua primeira conta a receber →" : undefined}
+              badge={metrics.receitasMes > 0 ? formatCurrency(metrics.receitasMes) + " realizados" : undefined}
+              emptyStateMessage={metrics.totalReceber === 0 ? "Aguardando faturamento..." : undefined}
               emptyStateHref="/contas-receber"
             />
             <HeroKPICard
-              title="A Pagar"
+              title="Exposição de Caixa"
               value={metrics.totalPagar}
               previousValue={metrics.totalPagar - metrics.despesasMes}
               icon={ArrowUpCircle}
@@ -212,12 +214,12 @@ export const DashboardExecutivo = () => {
               accentColor="hsl(0, 78%, 55%)"
               href="/contas-pagar"
               size="primary"
-              badge={metrics.despesasMes > 0 ? formatCurrency(metrics.despesasMes) + " este mês" : undefined}
-              emptyStateMessage={metrics.totalPagar === 0 ? "Registre seu primeiro pagamento →" : undefined}
+              badge={metrics.despesasMes > 0 ? formatCurrency(metrics.despesasMes) + " pagos" : undefined}
+              emptyStateMessage={metrics.totalPagar === 0 ? "Nenhum compromisso pendente" : undefined}
               emptyStateHref="/contas-pagar"
             />
             <HeroKPICard
-              title="Inadimplência"
+              title="Indice de Inadimplência"
               value={metrics.inadimplencia}
               icon={AlertTriangle}
               iconColor={metrics.inadimplencia > 10 ? "text-destructive" : metrics.inadimplencia > 5 ? "text-warning" : "text-success"}
@@ -229,7 +231,7 @@ export const DashboardExecutivo = () => {
               isCurrency={false}
               badge={inadimplenciaBadge}
               badgeVariant={inadimplenciaBadgeVariant}
-              emptyStateMessage={metrics.inadimplencia === 0 ? "✓ Nenhuma inadimplência — excelente!" : undefined}
+              emptyStateMessage={metrics.inadimplencia === 0 ? "Performance 100% — Zero Atrasos" : undefined}
             />
           </HeroKPIGrid>
         </motion.div>
