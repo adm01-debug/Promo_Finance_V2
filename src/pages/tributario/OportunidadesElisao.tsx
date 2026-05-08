@@ -352,6 +352,8 @@ export default function OportunidadesElisao() {
               </Card>
             ))
           )}
+        </TabsContent>
+
         <TabsContent value="auditoria" className="space-y-4 mt-4">
           {creditosAuditoria.length === 0 ? (
             <div className="text-center py-10 text-muted-foreground border rounded-lg border-dashed">
