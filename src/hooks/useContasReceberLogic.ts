@@ -222,11 +222,12 @@ export function useContasReceberLogic() {
 
   return {
     searchTerm, statusFilter, centroCustoFilter, empresaFilter, formaFilter,
+    contaBancariaFilter, handleContaBancariaChange,
     formOpen, recebimentoDialogOpen, selectedConta, editingConta, advancedFilters,
     currentPage, pageSize, deleteDialogOpen, deletingConta, isDeleting, isLoading, filterType,
     viewMode, detailDrawerOpen, detailConta, cobrancaDialogOpen, cobrancaConta,
     descontoDialogOpen, descontoConta,
-    contas, sortedContas, centrosCusto, empresas, totalCount, totalPages, kpis, sortKey, sortDirection,
+    contas, sortedContas, centrosCusto, empresas, contasBancarias, totalCount, totalPages, kpis, sortKey, sortDirection,
     handleSearchChange, handleStatusChange, handleCentroCustoChange, handleEmpresaChange,
     handleFormaChange, handlePageSizeChange, handleSort, handleOpenDeleteDialog, handleDeleteConta,
     handleFilterChange, handleBulkMarkAsReceived, handleBulkCancel, handleViewConta,
@@ -237,3 +238,4 @@ export function useContasReceberLogic() {
     ...bulkActionsHook, getRowAnimation,
   };
 }
+
