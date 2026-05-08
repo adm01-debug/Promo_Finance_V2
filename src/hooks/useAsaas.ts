@@ -328,6 +328,18 @@ export function useAsaas(empresaId?: string) {
     valorRecebido: payments.filter(p => ['RECEIVED', 'CONFIRMED'].includes(p.status)).reduce((s, p) => s + (p.valor_liquido || p.valor), 0),
   };
 
+  // ===== ESTATÍSTICAS DETALHADAS =====
+  const { data: detailStats } = useQuery({
+    queryKey: ['asaas-stats', empresaId],
+    queryFn: async () => {
+      if (!empresaId) return null;
+      const { data, error } = await supabase.rpc('get_asaas_payment_stats', { p_empresa_id: empresaId });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!empresaId,
+  });
+
   // ===== CONFIGURAÇÕES =====
   const { data: config, isLoading: loadingConfig } = useQuery({
     queryKey: ['asaas-config', empresaId],
@@ -360,6 +372,49 @@ export function useAsaas(empresaId?: string) {
       toast.success('Configurações salvas');
     },
     onError: (e) => toast.error('Erro ao salvar config: ' + e.message),
+  });
+
+  // ===== CONCILIAÇÃO =====
+  const { data: suggestions = [], isLoading: loadingSuggestions } = useQuery({
+    queryKey: ['asaas-reconciliation-suggestions', empresaId],
+    queryFn: async () => {
+      if (!empresaId) return [];
+      const { data, error } = await supabase
+        .from('asaas_reconciliation_suggestions')
+        .select('*, contas_receber(descricao, valor, data_vencimento)')
+        .eq('empresa_id', empresaId)
+        .eq('status', 'PENDING');
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!empresaId,
+  });
+
+  const gerarSugestoes = useMutation({
+    mutationFn: async (payload: { date: string; value: number; transaction_id: string }) => {
+      if (!empresaId) throw new Error('Empresa não identificada');
+      const { error } = await supabase.rpc('generate_reconciliation_suggestions', {
+        p_empresa_id: empresaId,
+        p_transaction_date: payload.date,
+        p_transaction_value: payload.value,
+        p_transaction_id: payload.transaction_id
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['asaas-reconciliation-suggestions'] }),
+  });
+
+  const aceitarSugestao = useMutation({
+    mutationFn: async ({ suggestionId, contaId }: { suggestionId: string, contaId: string }) => {
+      // 1. Marcar como aceito
+      await supabase.from('asaas_reconciliation_suggestions').update({ status: 'ACCEPTED' }).eq('id', suggestionId);
+      // 2. Baixar a conta no financeiro (simplificado)
+      await supabase.from('contas_receber').update({ status: 'pago', data_recebimento: new Date().toISOString().split('T')[0] }).eq('id', contaId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-reconciliation-suggestions'] });
+      toast.success('Conciliação realizada com sucesso');
+    }
   });
 
   // ===== FILA DE RETENTATIVAS =====
@@ -458,6 +513,8 @@ export function useAsaas(empresaId?: string) {
     criarAssinatura, cancelarAssinatura,
     consultarSaldo, transferirPix, consultarExtrato,
     transfers, loadingTransfers, sincronizarTransferencia,
+    suggestions, loadingSuggestions, gerarSugestoes, aceitarSugestao,
+    detailStats,
     criarLinkPagamento, listarLinksPagamento, excluirLinkPagamento,
     simularAntecipacao, solicitarAntecipacao,
     stats,

@@ -119,10 +119,8 @@ export function useProcessarRegua() {
 export function useProcessarFila() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (limite: number = 50) => {
-      const { data, error } = await supabase.rpc('processar_fila_cobrancas', {
-        p_limite: limite,
-      });
+    mutationFn: async () => {
+      const { data, error } = await supabase.functions.invoke('processar-fila-cobrancas');
       if (error) throw error;
       return data;
     },

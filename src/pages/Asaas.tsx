@@ -80,6 +80,8 @@ export default function Asaas() {
     payments, loadingPayments, stats,
     cancelarCobranca, consultarSaldo,
     obterComprovante, auditTrail, loadingAudit,
+    suggestions, loadingSuggestions, aceitarSugestao, gerarSugestoes,
+    detailStats,
     // Novos do hook
     config, loadingConfig, salvarConfig,
     syncQueue, loadingQueue, reprocessarManual,
