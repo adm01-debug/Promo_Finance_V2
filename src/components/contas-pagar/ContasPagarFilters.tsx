@@ -57,6 +57,8 @@ export const ContasPagarFilters = forwardRef<HTMLDivElement, ContasPagarFiltersP
   onAdvancedFiltersChange,
   centrosCusto,
   countPendentesAprovacao,
+  empresas = [],
+  contasBancarias = [],
 }, ref) {
   return (
     <motion.div ref={ref} variants={itemVariants}>
