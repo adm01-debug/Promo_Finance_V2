@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
-import { CalendarIcon, History, PlayCircle, AlertCircle, CheckCircle2, Loader2, RefreshCw, Layers, Filter } from 'lucide-react';
+import { CalendarIcon, History, PlayCircle, AlertCircle, CheckCircle2, Loader2, RefreshCw, Layers, Sparkles } from 'lucide-react';
 import { useConciliacaoRetroativa } from '@/hooks/useConciliacaoRetroativa';
 import { ptBR } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
@@ -45,9 +45,9 @@ export function ConciliacaoRetroativaPanel({ contaBancariaId }: Props) {
       if (error) throw error;
       return data;
     },
-    refetchInterval: (data) => {
-      // Poll if any job is processing
-      return data?.some(log => log.status === 'processando') ? 3000 : false;
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      return Array.isArray(data) && data.some((log: any) => log.status === 'processando') ? 3000 : false;
     }
   });
 
