@@ -728,10 +728,24 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                                 size="icon"
                                 variant="ghost"
                                 className="h-8 w-8 text-muted-foreground"
-                                onClick={() => setEditingRegra(null)}
+                                onClick={() => {
+                                  setEditingRegra(null);
+                                  setOriginalRegra(null);
+                                }}
                               >
                                 <X className="h-4 w-4" />
                               </Button>
+                              {originalRegra && (
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="h-8 w-8 text-blue-500"
+                                  title="Restaurar valores originais"
+                                  onClick={() => setEditingRegra(originalRegra)}
+                                >
+                                  <HistoryIcon className="h-4 w-4" />
+                                </Button>
+                              )}
                             </>
                           ) : (
                             <>
