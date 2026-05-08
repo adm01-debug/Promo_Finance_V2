@@ -78,6 +78,7 @@ export default function Asaas() {
   const [pixQrDialog, setPixQrDialog] = useState<{ asaasId: string; pixCola?: string | null; pixQr?: string | null } | null>(null);
   const [estornoDialog, setEstornoDialog] = useState<{ asaasId: string; valor: number } | null>(null);
   const [segundaViaDialog, setSegundaViaDialog] = useState<string | null>(null);
+  const [selectedPaymentAudit, setSelectedPaymentAudit] = useState<string | null>(null);
 
   const [saldo, setSaldo] = useState<{ balance: number; totalPending: number } | null>(null);
   const [loadingSaldo, setLoadingSaldo] = useState(false);
