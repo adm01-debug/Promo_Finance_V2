@@ -13,6 +13,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { EmpresaKpiCards } from '@/components/dashboard-empresa/EmpresaKpis';
 import { EmpresaChartsSection } from '@/components/dashboard-empresa/EmpresaCharts';
 import { EmpresaDrillDownSection } from '@/components/dashboard-empresa/EmpresaDrillDown';
+import { useAuth } from '@/hooks/useAuth';
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } } as const;
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } } } as const;
