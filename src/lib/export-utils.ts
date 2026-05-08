@@ -57,7 +57,8 @@ export function exportToCSV<T extends object>(
 export function exportToPDF<T extends object>(
   data: T[],
   columns: ExportColumn<T>[],
-  title: string
+  title: string,
+  options?: { empresa?: any; kpis?: any }
 ): void {
   // Criar HTML para impressão
   const printWindow = window.open('', '_blank');
@@ -109,6 +110,35 @@ export function exportToPDF<T extends object>(
     <body>
       <h1>${title}</h1>
       <p class="date">Gerado em ${formatDate(new Date())} às ${new Date().toLocaleTimeString('pt-BR')}</p>
+      
+      ${options?.empresa ? `
+        <div style="margin-bottom: 24px; padding: 16px; background: #f3f4f6; border-radius: 8px;">
+          <h2 style="margin: 0; font-size: 16px;">${options.empresa.nome_fantasia || options.empresa.razao_social}</h2>
+          <p style="margin: 4px 0 0 0; font-size: 12px; color: #4b5563;">CNPJ: ${options.empresa.cnpj}</p>
+        </div>
+      ` : ''}
+
+      ${options?.kpis ? `
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+          <div style="padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            <p style="margin: 0; font-size: 10px; text-transform: uppercase; color: #6b7280;">Total a Receber</p>
+            <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: bold;">${formatCurrency(options.kpis.totalReceber)}</p>
+          </div>
+          <div style="padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            <p style="margin: 0; font-size: 10px; text-transform: uppercase; color: #6b7280;">Vencido</p>
+            <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: bold; color: #dc2626;">${formatCurrency(options.kpis.totalVencido)}</p>
+          </div>
+          <div style="padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            <p style="margin: 0; font-size: 10px; text-transform: uppercase; color: #6b7280;">Recebido (Mês)</p>
+            <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: bold; color: #16a34a;">${formatCurrency(options.kpis.totalRecebidoMes)}</p>
+          </div>
+          <div style="padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            <p style="margin: 0; font-size: 10px; text-transform: uppercase; color: #6b7280;">Inadimplência</p>
+            <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: bold;">${options.kpis.taxaInadimplencia.toFixed(1)}%</p>
+          </div>
+        </div>
+      ` : ''}
+
       <table>
         <thead><tr>${tableHeaders}</tr></thead>
         <tbody>${tableRows}</tbody>

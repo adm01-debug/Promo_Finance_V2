@@ -13,13 +13,17 @@ interface ExportMenuProps<T extends object> {
   columns: ExportColumn<T>[];
   filename: string;
   title: string;
+  empresa?: any;
+  kpis?: any;
 }
 
 export function ExportMenu<T extends object>({ 
   data, 
   columns, 
   filename, 
-  title 
+  title,
+  empresa,
+  kpis
 }: ExportMenuProps<T>) {
   return (
     <DropdownMenu>
@@ -39,7 +43,7 @@ export function ExportMenu<T extends object>({
         </DropdownMenuItem>
         <DropdownMenuItem 
           className="gap-2 cursor-pointer"
-          onClick={() => exportToPDF(data, columns, title)}
+          onClick={() => exportToPDF(data, columns, title, { empresa, kpis })}
         >
           <FileText className="h-4 w-4" />
           Exportar PDF

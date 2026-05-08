@@ -27,6 +27,12 @@ import { useHighlightFromUrl } from '@/hooks/useHighlightFromUrl';
 import { contasReceberColumns } from '@/lib/export-utils';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
+import { BaixaAutomaticaDialog } from '@/components/contas-receber/BaixaAutomaticaDialog';
+import { History, Zap, Settings, BarChart3, FileSpreadsheet } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { exportToCSV, exportToPDF } from '@/lib/export-utils';
+import { toast } from 'sonner';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -56,6 +62,7 @@ export default function ContasReceber() {
     setDetailDrawerOpen, setCobrancaDialogOpen, setDescontoDialogOpen,
     selectedIds, selectedCount, isProcessing, progress, isSelected, isAllSelected,
     selectAll, toggleSelect, clearSelection,
+    baixaDialogOpen, setBaixaDialogOpen,
   } = useContasReceberLogic();
 
 
@@ -107,7 +114,17 @@ export default function ContasReceber() {
               <div className="w-px h-8 bg-white/10 mx-2" />
 
               <div className="flex items-center gap-3">
-                <ExportMenu data={sortedContas} columns={contasReceberColumns} filename="contas_receber" title="Relatório de Contas a Receber" />
+                <ExportMenu 
+                  data={sortedContas} 
+                  columns={contasReceberColumns} 
+                  filename="contas_receber" 
+                  title="Relatório de Contas a Receber" 
+                  empresa={empresas.find(e => e.id === empresaFilter)}
+                  kpis={kpis}
+                />
+                <Button variant="outline" size="lg" className="h-12 px-6 rounded-xl border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary font-black gap-2 transition-all" onClick={() => setBaixaDialogOpen(true)}>
+                  <Zap className="h-5 w-5" /> Baixa Automática
+                </Button>
                 <Button size="lg" className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]" onClick={() => setFormOpen(true)}>
                   <Plus className="h-5 w-5" /> Novo Comando
                 </Button>
@@ -224,6 +241,7 @@ export default function ContasReceber() {
           <ConfirmDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} title="Exclusão Irreversível"
             description={`Confirmar a remoção definitiva do título "${deletingConta?.descricao}" (${deletingConta?.valor ? formatCurrency(deletingConta.valor) : ''}) do repositório?`}
             confirmLabel="Confirmar Exclusão" variant="danger" isLoading={isDeleting} onConfirm={handleDeleteConta} />
+          <BaixaAutomaticaDialog open={baixaDialogOpen} onOpenChange={setBaixaDialogOpen} empresaId={empresaFilter !== 'all' ? empresaFilter : ''} />
           <BulkActionsBar selectedCount={selectedCount} isProcessing={isProcessing} progress={progress} actions={bulkActions} onClear={clearSelection} />
         </motion.div>
       </div>

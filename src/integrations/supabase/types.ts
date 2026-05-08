@@ -1598,6 +1598,7 @@ export type Database = {
           sacado_cpf_cnpj: string | null
           sacado_nome: string
           status: string
+          transacao_conciliada_id: string | null
           updated_at: string
           valor: number
           vencimento: string
@@ -1622,6 +1623,7 @@ export type Database = {
           sacado_cpf_cnpj?: string | null
           sacado_nome: string
           status?: string
+          transacao_conciliada_id?: string | null
           updated_at?: string
           valor: number
           vencimento: string
@@ -1646,6 +1648,7 @@ export type Database = {
           sacado_cpf_cnpj?: string | null
           sacado_nome?: string
           status?: string
+          transacao_conciliada_id?: string | null
           updated_at?: string
           valor?: number
           vencimento?: string
@@ -1692,6 +1695,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "boletos_transacao_conciliada_id_fkey"
+            columns: ["transacao_conciliada_id"]
+            isOneToOne: false
+            referencedRelation: "transacoes_bancarias"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -2181,6 +2191,51 @@ export type Database = {
         }
         Relationships: []
       }
+      configuracoes_receber: {
+        Row: {
+          baixa_automatica_ativa: boolean | null
+          created_at: string | null
+          empresa_id: string
+          id: string
+          regua_ativa: boolean | null
+          regua_config: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          baixa_automatica_ativa?: boolean | null
+          created_at?: string | null
+          empresa_id: string
+          id?: string
+          regua_ativa?: boolean | null
+          regua_config?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          baixa_automatica_ativa?: boolean | null
+          created_at?: string | null
+          empresa_id?: string
+          id?: string
+          regua_ativa?: boolean | null
+          regua_config?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "configuracoes_receber_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: true
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "configuracoes_receber_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: true
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       contas_bancarias: {
         Row: {
           agencia: string
@@ -2519,6 +2574,7 @@ export type Database = {
           frequencia_recorrencia: string | null
           id: string
           link_boleto: string | null
+          metadata: Json | null
           numero_documento: string | null
           numero_nf: string | null
           numero_parcela_atual: number | null
@@ -2532,6 +2588,7 @@ export type Database = {
           taxa_gateway: number | null
           tipo_cobranca: Database["public"]["Enums"]["tipo_cobranca"]
           total_parcelas: number | null
+          transacao_conciliada_id: string | null
           updated_at: string
           user_id: string | null
           valor: number
@@ -2578,6 +2635,7 @@ export type Database = {
           frequencia_recorrencia?: string | null
           id?: string
           link_boleto?: string | null
+          metadata?: Json | null
           numero_documento?: string | null
           numero_nf?: string | null
           numero_parcela_atual?: number | null
@@ -2591,6 +2649,7 @@ export type Database = {
           taxa_gateway?: number | null
           tipo_cobranca?: Database["public"]["Enums"]["tipo_cobranca"]
           total_parcelas?: number | null
+          transacao_conciliada_id?: string | null
           updated_at?: string
           user_id?: string | null
           valor: number
@@ -2637,6 +2696,7 @@ export type Database = {
           frequencia_recorrencia?: string | null
           id?: string
           link_boleto?: string | null
+          metadata?: Json | null
           numero_documento?: string | null
           numero_nf?: string | null
           numero_parcela_atual?: number | null
@@ -2650,6 +2710,7 @@ export type Database = {
           taxa_gateway?: number | null
           tipo_cobranca?: Database["public"]["Enums"]["tipo_cobranca"]
           total_parcelas?: number | null
+          transacao_conciliada_id?: string | null
           updated_at?: string
           user_id?: string | null
           valor?: number
@@ -2733,6 +2794,13 @@ export type Database = {
             columns: ["plano_conta_id"]
             isOneToOne: false
             referencedRelation: "plano_contas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contas_receber_transacao_conciliada_id_fkey"
+            columns: ["transacao_conciliada_id"]
+            isOneToOne: false
+            referencedRelation: "transacoes_bancarias"
             referencedColumns: ["id"]
           },
           {
@@ -3551,6 +3619,71 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "fila_cobrancas"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      execucoes_regua_cobranca: {
+        Row: {
+          canal: string
+          conta_receber_id: string
+          created_at: string | null
+          empresa_id: string
+          etapa: string
+          id: string
+          mensagem_erro: string | null
+          metadata: Json | null
+          status: string
+        }
+        Insert: {
+          canal: string
+          conta_receber_id: string
+          created_at?: string | null
+          empresa_id: string
+          etapa: string
+          id?: string
+          mensagem_erro?: string | null
+          metadata?: Json | null
+          status: string
+        }
+        Update: {
+          canal?: string
+          conta_receber_id?: string
+          created_at?: string | null
+          empresa_id?: string
+          etapa?: string
+          id?: string
+          mensagem_erro?: string | null
+          metadata?: Json | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "execucoes_regua_cobranca_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execucoes_regua_cobranca_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "vw_contas_receber_painel"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execucoes_regua_cobranca_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execucoes_regua_cobranca_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
           },
         ]
       }
@@ -4968,6 +5101,57 @@ export type Database = {
           user_email?: string
         }
         Relationships: []
+      }
+      logs_baixa_automatica: {
+        Row: {
+          arquivo_nome: string
+          created_at: string | null
+          created_by: string | null
+          empresa_id: string
+          falha_count: number | null
+          id: string
+          matching_info: Json | null
+          sucesso_count: number | null
+          total_registros: number
+        }
+        Insert: {
+          arquivo_nome: string
+          created_at?: string | null
+          created_by?: string | null
+          empresa_id: string
+          falha_count?: number | null
+          id?: string
+          matching_info?: Json | null
+          sucesso_count?: number | null
+          total_registros: number
+        }
+        Update: {
+          arquivo_nome?: string
+          created_at?: string | null
+          created_by?: string | null
+          empresa_id?: string
+          falha_count?: number | null
+          id?: string
+          matching_info?: Json | null
+          sucesso_count?: number | null
+          total_registros?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "logs_baixa_automatica_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "logs_baixa_automatica_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
       }
       metas_financeiras: {
         Row: {
@@ -10674,6 +10858,15 @@ export type Database = {
         }[]
       }
       refresh_mv_benchmark_setorial: { Args: never; Returns: undefined }
+      registrar_evento_receber: {
+        Args: {
+          p_conta_id: string
+          p_mensagem: string
+          p_metadata?: Json
+          p_tipo: string
+        }
+        Returns: undefined
+      }
       registrar_tentativa_sso: {
         Args: {
           _duration_ms?: number

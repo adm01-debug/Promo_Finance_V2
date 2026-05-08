@@ -39,6 +39,7 @@ export function useContasReceberLogic() {
   const [cobrancaConta, setCobrancaConta] = useState<ContaReceberWithRelations | null>(null);
   const [descontoDialogOpen, setDescontoDialogOpen] = useState(false);
   const [descontoConta, setDescontoConta] = useState<ContaReceberWithRelations | null>(null);
+  const [baixaDialogOpen, setBaixaDialogOpen] = useState(false);
   const queryClient = useQueryClient();
 
 
@@ -244,6 +245,7 @@ export function useContasReceberLogic() {
     setFormOpen, setRecebimentoDialogOpen, setSelectedConta, setEditingConta,
     setAdvancedFilters, setCurrentPage, setDeleteDialogOpen, setViewMode,
     setDetailDrawerOpen, setCobrancaDialogOpen, setDescontoDialogOpen,
+    baixaDialogOpen, setBaixaDialogOpen,
     ...bulkActionsHook, getRowAnimation,
   };
 }

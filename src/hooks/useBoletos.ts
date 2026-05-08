@@ -101,6 +101,8 @@ export function useBoletos() {
         .eq('ativo', true);
 
       if (error) throw error;
+      
+      
       return data;
     },
   });
@@ -115,6 +117,8 @@ export function useBoletos() {
         .eq('ativo', true);
 
       if (error) throw error;
+      
+      
       return data;
     },
   });
@@ -168,7 +172,16 @@ export function useBoletos() {
       if (error) throw error;
       return newBoleto;
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
+      // Registrar evento de envio de boleto
+      if (data && (data as any).conta_receber_id) {
+        await supabase.rpc('registrar_evento_receber', {
+          p_conta_id: (data as any).conta_receber_id,
+          p_tipo: 'envio_boleto',
+          p_mensagem: `Boleto #${(data as any).numero} gerado e enviado para o cliente.`,
+          p_metadata: { boleto_id: (data as any).id, numero: (data as any).numero }
+        });
+      }
       queryClient.invalidateQueries({ queryKey: ['boletos'] });
       toast({
         title: 'Boleto gerado',
