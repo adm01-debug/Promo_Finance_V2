@@ -67,10 +67,18 @@ export function DashboardFiltersHeader({
   setCentroCustoFilter,
   onOpenConfig,
 }: DashboardFiltersHeaderProps) {
+  const { currentEmpresaId } = useAuth();
   const greeting = getGreeting();
   const GreetingIcon = greeting.icon;
   const insight = getMotivationalInsight();
   const dateStr = formatDate();
+
+  // Sincroniza filtro de empresa do dashboard com a empresa ativa do sistema
+  useEffect(() => {
+    if (currentEmpresaId && empresaFilter !== currentEmpresaId && empresaFilter === 'all') {
+      setEmpresaFilter(currentEmpresaId);
+    }
+  }, [currentEmpresaId, empresaFilter, setEmpresaFilter]);
 
   return (
     <motion.div variants={itemVariants} className="relative px-1">
