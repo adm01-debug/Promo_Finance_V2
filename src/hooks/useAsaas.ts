@@ -312,6 +312,9 @@ export function useAsaas(empresaId?: string) {
     criarLinkPagamento, listarLinksPagamento, excluirLinkPagamento,
     simularAntecipacao, solicitarAntecipacao,
     stats,
+    obterComprovante,
+    auditTrail,
+    loadingAudit,
   };
 }
 
