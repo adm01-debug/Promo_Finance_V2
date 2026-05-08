@@ -145,7 +145,7 @@ const navGroups: NavGroup[] = [
       { label: 'Eventos JIT (SSO)', icon: ShieldCheck, href: '/admin/sso-jit-events' },
       { label: 'Privacidade & LGPD', icon: Shield, href: '/configuracoes/privacidade', highlight: true },
       { label: 'Usuários', icon: UserCog, href: '/usuarios' },
-      { label: 'Bitrix24', icon: Zap, href: '/bitrix24' },
+      { label: 'Bitrix24 CRM', icon: Zap, href: '/bitrix24', highlight: true },
       { label: 'Bling ERP', icon: Package, href: '/bling', highlight: true },
       { label: 'Configurações', icon: Settings, href: '/configuracoes' },
       { label: 'Meu Perfil', icon: User, href: '/meu-perfil' },
