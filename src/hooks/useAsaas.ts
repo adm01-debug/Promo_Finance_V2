@@ -269,6 +269,28 @@ export function useAsaas(empresaId?: string) {
     onError: (e) => toast.error('Erro na antecipação: ' + e.message),
   });
 
+  // ===== COMPROVANTE =====
+  const obterComprovante = useMutation({
+    mutationFn: async (asaasId: string) => invokeAsaas('obter_comprovante', { asaas_id: asaasId }),
+    onError: (e) => toast.error('Erro ao obter comprovante: ' + e.message),
+  });
+
+  // ===== AUDITORIA =====
+  const { data: auditTrail = [], isLoading: loadingAudit } = useQuery({
+    queryKey: ['asaas-audit-trail', empresaId],
+    queryFn: async () => {
+      if (!empresaId) return [];
+      const { data, error } = await supabase
+        .from('asaas_audit_trail')
+        .select('*, asaas_payments!inner(empresa_id)')
+        .eq('asaas_payments.empresa_id', empresaId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!empresaId,
+  });
+
   // ===== STATS =====
   const stats = {
     total: payments.length,
@@ -290,6 +312,9 @@ export function useAsaas(empresaId?: string) {
     criarLinkPagamento, listarLinksPagamento, excluirLinkPagamento,
     simularAntecipacao, solicitarAntecipacao,
     stats,
+    obterComprovante,
+    auditTrail,
+    loadingAudit,
   };
 }
 

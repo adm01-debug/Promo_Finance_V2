@@ -929,6 +929,50 @@ export type Database = {
           },
         ]
       }
+      asaas_audit_trail: {
+        Row: {
+          action: string
+          created_at: string | null
+          details: Json | null
+          id: string
+          ip_address: string | null
+          new_status: string | null
+          payment_id: string | null
+          previous_status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          new_status?: string | null
+          payment_id?: string | null
+          previous_status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          new_status?: string | null
+          payment_id?: string | null
+          previous_status?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asaas_audit_trail_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "asaas_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       asaas_customers: {
         Row: {
           asaas_id: string
@@ -1011,7 +1055,9 @@ export type Database = {
           id: string
           linha_digitavel: string | null
           link_boleto: string | null
+          link_comprovante: string | null
           link_fatura: string | null
+          metadata: Json | null
           nosso_numero: string | null
           pix_copia_cola: string | null
           pix_qrcode: string | null
@@ -1036,7 +1082,9 @@ export type Database = {
           id?: string
           linha_digitavel?: string | null
           link_boleto?: string | null
+          link_comprovante?: string | null
           link_fatura?: string | null
+          metadata?: Json | null
           nosso_numero?: string | null
           pix_copia_cola?: string | null
           pix_qrcode?: string | null
@@ -1061,7 +1109,9 @@ export type Database = {
           id?: string
           linha_digitavel?: string | null
           link_boleto?: string | null
+          link_comprovante?: string | null
           link_fatura?: string | null
+          metadata?: Json | null
           nosso_numero?: string | null
           pix_copia_cola?: string | null
           pix_qrcode?: string | null
@@ -1100,6 +1150,53 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_tributario_dashboard"
             referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
+      asaas_sync_queue: {
+        Row: {
+          attempts: number
+          created_at: string | null
+          id: string
+          last_error: string | null
+          max_attempts: number
+          next_retry_at: string | null
+          operation_type: string
+          payment_id: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string | null
+          id?: string
+          last_error?: string | null
+          max_attempts?: number
+          next_retry_at?: string | null
+          operation_type: string
+          payment_id?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          attempts?: number
+          created_at?: string | null
+          id?: string
+          last_error?: string | null
+          max_attempts?: number
+          next_retry_at?: string | null
+          operation_type?: string
+          payment_id?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asaas_sync_queue_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "asaas_payments"
+            referencedColumns: ["id"]
           },
         ]
       }

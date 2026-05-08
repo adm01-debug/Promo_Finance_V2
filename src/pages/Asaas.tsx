@@ -15,7 +15,7 @@ import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import {
   CreditCard, QrCode, Banknote, Plus, RefreshCw, X,
   DollarSign, Clock, CheckCircle2, AlertTriangle, Copy, ExternalLink,
-  Send, Users, Undo2, FileText, MoreHorizontal, Link2,
+  Send, Users, Undo2, FileText, MoreHorizontal, Link2, Download, History,
 } from 'lucide-react';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -63,6 +63,7 @@ export default function Asaas() {
   const {
     payments, loadingPayments, stats,
     cancelarCobranca, consultarSaldo,
+    obterComprovante, auditTrail, loadingAudit,
   } = useAsaas(empresaId);
 
   // Dialog states
@@ -77,6 +78,7 @@ export default function Asaas() {
   const [pixQrDialog, setPixQrDialog] = useState<{ asaasId: string; pixCola?: string | null; pixQr?: string | null } | null>(null);
   const [estornoDialog, setEstornoDialog] = useState<{ asaasId: string; valor: number } | null>(null);
   const [segundaViaDialog, setSegundaViaDialog] = useState<string | null>(null);
+  const [selectedPaymentAudit, setSelectedPaymentAudit] = useState<string | null>(null);
 
   const [saldo, setSaldo] = useState<{ balance: number; totalPending: number } | null>(null);
   const [loadingSaldo, setLoadingSaldo] = useState(false);
@@ -105,6 +107,19 @@ export default function Asaas() {
 
   const formatDate = (dateStr: string) => {
     try { return format(parseISO(dateStr), 'dd/MM/yyyy', { locale: ptBR }); } catch { return dateStr; }
+  };
+
+  const handleDownloadComprovante = async (asaasId: string) => {
+    try {
+      const result = await obterComprovante.mutateAsync(asaasId);
+      if (result?.url) {
+        window.open(result.url, '_blank');
+      } else {
+        toast.error('Comprovante ainda não disponível para esta cobrança');
+      }
+    } catch (e: any) {
+      toast.error('Erro ao buscar comprovante: ' + e.message);
+    }
   };
 
   if (loadingEmpresas) {
@@ -311,6 +326,14 @@ export default function Asaas() {
                                         </DropdownMenuItem>
                                       </>
                                     )}
+                                    <DropdownMenuItem onClick={() => setSelectedPaymentAudit(payment.id)}>
+                                      <History className="h-4 w-4 mr-2" /> Auditoria
+                                    </DropdownMenuItem>
+                                    {isPaid && (
+                                      <DropdownMenuItem onClick={() => handleDownloadComprovante(payment.asaas_id)}>
+                                        <Download className="h-4 w-4 mr-2" /> Comprovante
+                                      </DropdownMenuItem>
+                                    )}
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                               </TableCell>
@@ -355,6 +378,44 @@ export default function Asaas() {
 
       {/* Dialogs */}
       <NovaCobrancaDialog open={dialogOpen} onOpenChange={setDialogOpen} empresaId={empresaId} />
+      <TransferenciaPixDialog open={pixTransferOpen} onOpenChange={setPixTransferOpen} empresaId={empresaId} />
+      <ClientesAsaasDialog open={clientesOpen} onOpenChange={setClientesOpen} empresaId={empresaId} />
+      
+      {/* Dialog de Auditoria */}
+      <ConfirmationDialog
+        isOpen={!!selectedPaymentAudit}
+        onClose={() => setSelectedPaymentAudit(null)}
+        title="Trilha de Auditoria"
+        message={
+          <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+            {auditTrail
+              .filter(a => a.payment_id === selectedPaymentAudit)
+              .map((log: any) => (
+                <div key={log.id} className="border-b pb-2 last:border-0">
+                  <div className="flex justify-between items-start mb-1">
+                    <Badge variant="outline" className="text-[10px] uppercase">
+                      {log.action.replace(/_/g, ' ')}
+                    </Badge>
+                    <span className="text-[10px] text-muted-foreground">
+                      {format(parseISO(log.created_at), 'dd/MM/yy HH:mm', { locale: ptBR })}
+                    </span>
+                  </div>
+                  <p className="text-xs">{log.details?.message || 'Evento registrado no sistema.'}</p>
+                  {log.previous_status && (
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      Status: {log.previous_status} → {log.new_status}
+                    </p>
+                  )}
+                </div>
+              ))}
+            {auditTrail.filter(a => a.payment_id === selectedPaymentAudit).length === 0 && (
+              <p className="text-sm text-center text-muted-foreground py-4">Nenhum evento registrado ainda.</p>
+            )}
+          </div>
+        }
+        confirmText="Fechar"
+        onConfirm={() => setSelectedPaymentAudit(null)}
+      />
       <TransferenciaPixDialog open={pixTransferOpen} onOpenChange={setPixTransferOpen} empresaId={empresaId} />
       <ClientesAsaasDialog open={clientesOpen} onOpenChange={setClientesOpen} empresaId={empresaId} />
       <AssinaturaDialog open={assinaturaOpen} onOpenChange={(v) => { setAssinaturaOpen(v); if (!v) setRefreshKey(k => k + 1); }} empresaId={empresaId} />
