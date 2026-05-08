@@ -224,17 +224,27 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
 
   const dryRunSimulation = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabaseTyped.functions.invoke('contabilizar-evento', {
+      setSimResult(null);
+      setDryRunNoRuleResult(null);
+
+      // 1. Simulação com regras normais
+      const { data: withRules, error: errWith } = await supabaseTyped.functions.invoke('contabilizar-evento', {
         body: {
           ...simForm,
           categoria_id: simForm.categoria_id === 'none' ? null : (simForm.categoria_id || null),
           empresa_id: empresaId,
-          evento_id: 'sim-preview-' + Date.now(),
+          evento_id: 'sim-with-' + Date.now(),
           dry_run: true,
         },
       });
-      if (error) throw error;
-      return data;
+      if (errWith) throw errWith;
+
+      // 2. Simulação forçando "sem regra" (poderíamos ter um flag no edge function, mas para "dry-run" rápido
+      // se o status for 'sem_regra' já temos o 'antes', senão comparamos com o que seria o comportamento padrão se não houvesse regra compatível)
+      // Como o edge function não tem "ignore_rules", vamos apenas mostrar o "Antes" como vazio se não houver regra
+      // ou se houver regra, mostrar o que a regra faria.
+      
+      return withRules;
     },
     onSuccess: (data) => {
       setSimResult(data);
