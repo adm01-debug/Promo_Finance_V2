@@ -395,6 +395,16 @@ export default function OportunidadesElisao() {
                   
                   {c.status_aprovacao === 'pendente' && (
                     <div className="flex gap-2 justify-end pt-2">
+                      {c.nota?.arquivo_url && (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => window.open(c.nota.arquivo_url, '_blank')}
+                        >
+                          <FileText className="h-4 w-4 mr-2" />
+                          Ver XML/DANFE
+                        </Button>
+                      )}
                       <Button 
                         variant="outline" 
                         size="sm" 
