@@ -109,6 +109,19 @@ export default function Asaas() {
     try { return format(parseISO(dateStr), 'dd/MM/yyyy', { locale: ptBR }); } catch { return dateStr; }
   };
 
+  const handleDownloadComprovante = async (asaasId: string) => {
+    try {
+      const result = await obterComprovante.mutateAsync(asaasId);
+      if (result?.url) {
+        window.open(result.url, '_blank');
+      } else {
+        toast.error('Comprovante ainda não disponível para esta cobrança');
+      }
+    } catch (e: any) {
+      toast.error('Erro ao buscar comprovante: ' + e.message);
+    }
+  };
+
   if (loadingEmpresas) {
     return (
       <MainLayout>
