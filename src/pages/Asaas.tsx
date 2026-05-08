@@ -291,6 +291,96 @@ export default function Asaas() {
           </Card>
         </div>
 
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card className="lg:col-span-2">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-display flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                Performance de Cobrança
+              </CardTitle>
+              <CardDescription>Volume financeiro por status de pagamento</CardDescription>
+            </CardHeader>
+            <CardContent className="h-[300px] pt-4">
+              {loadingPayments ? (
+                <div className="flex items-center justify-center h-full"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={detailStats || []}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} />
+                    <XAxis 
+                      dataKey="status" 
+                      fontSize={11} 
+                      tickLine={false} 
+                      axisLine={false} 
+                      tickFormatter={(v) => statusConfig[v]?.label || v}
+                    />
+                    <YAxis 
+                      fontSize={11} 
+                      tickLine={false} 
+                      axisLine={false} 
+                      tickFormatter={(v) => `R$ ${v >= 1000 ? (v/1000).toFixed(1) + 'k' : v}`}
+                    />
+                    <Tooltip 
+                      cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                      contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px', color: '#fff' }}
+                      formatter={(v: number) => [formatCurrency(v), 'Volume']}
+                      labelFormatter={(label) => `Status: ${statusConfig[label]?.label || label}`}
+                    />
+                    <Bar dataKey="total_value" radius={[4, 4, 0, 0]} barSize={40}>
+                      {(detailStats || []).map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={
+                          entry.status === 'RECEIVED' || entry.status === 'CONFIRMED' ? '#10b981' : 
+                          entry.status === 'OVERDUE' ? '#ef4444' : 
+                          entry.status === 'PENDING' ? '#f59e0b' : '#6b7280'
+                        } />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="lg:col-span-1">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-display flex items-center gap-2">
+                <Target className="h-5 w-5 text-success" />
+                Metas de Recebimento
+              </CardTitle>
+              <CardDescription>Conversão de títulos pendentes</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6 pt-4">
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Taxa de Liquidez</span>
+                  <span className="font-bold">
+                    {stats.total > 0 ? ((stats.recebidos / stats.total) * 100).toFixed(1) : 0}%
+                  </span>
+                </div>
+                <Progress value={stats.total > 0 ? (stats.recebidos / stats.total) * 100 : 0} className="h-2 bg-muted" />
+              </div>
+              
+              <div className="space-y-4">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Resumo Rápido</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-3 rounded-lg bg-success/5 border border-success/10">
+                    <p className="text-[10px] text-success font-bold uppercase">Liquidados</p>
+                    <p className="text-lg font-bold">{stats.recebidos}</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-warning/5 border border-warning/10">
+                    <p className="text-[10px] text-warning font-bold uppercase">Aguardando</p>
+                    <p className="text-lg font-bold">{stats.pendentes}</p>
+                  </div>
+                </div>
+              </div>
+
+              <Button variant="outline" className="w-full text-xs h-8 border-dashed" onClick={() => setDialogOpen(true)}>
+                <Plus className="h-3 w-3 mr-2" /> Gerar Nova Cobrança
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Main Tabs */}
         <Tabs defaultValue="cobrancas" className="space-y-4">
           <TabsList>
