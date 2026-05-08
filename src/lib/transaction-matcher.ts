@@ -15,6 +15,8 @@ export interface LancamentoSistema {
   entidadeNome?: string;
   status: string;
   numeroDocumento?: string;
+  centro_custo_nome?: string;
+  centro_custo_id?: string;
 }
 
 export interface MatchSugestao {
