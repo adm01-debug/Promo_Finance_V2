@@ -299,15 +299,17 @@ export interface PaginatedContasReceberParams {
   search?: string;
   status?: string;
   centroCustoId?: string;
+  empresaId?: string;
+  contaBancariaId?: string;
 }
 
 export function useContasReceberPaginated(params: PaginatedContasReceberParams) {
-  const { page, pageSize, search, status, centroCustoId } = params;
+  const { page, pageSize, search, status, centroCustoId, empresaId, contaBancariaId } = params;
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
   return useQuery({
-    queryKey: ['contas-receber', 'paginated', page, pageSize, search, status, centroCustoId],
+    queryKey: ['contas-receber', 'paginated', page, pageSize, search, status, centroCustoId, empresaId, contaBancariaId],
     queryFn: async () => {
       let countQuery = supabase
         .from('contas_receber')
@@ -333,6 +335,14 @@ export function useContasReceberPaginated(params: PaginatedContasReceberParams) 
         countQuery = countQuery.eq('centro_custo_id', centroCustoId);
         dataQuery = dataQuery.eq('centro_custo_id', centroCustoId);
       }
+      if (empresaId && empresaId !== 'all') {
+        countQuery = countQuery.eq('empresa_id', empresaId);
+        dataQuery = dataQuery.eq('empresa_id', empresaId);
+      }
+      if (contaBancariaId && contaBancariaId !== 'all') {
+        countQuery = countQuery.eq('conta_bancaria_id', contaBancariaId);
+        dataQuery = dataQuery.eq('conta_bancaria_id', contaBancariaId);
+      }
 
       const [countResult, dataResult] = await Promise.all([countQuery, dataQuery]);
 
@@ -348,6 +358,7 @@ export function useContasReceberPaginated(params: PaginatedContasReceberParams) 
     staleTime: STALE_TIMES.financial,
   });
 }
+
 
 export interface PaginatedClientesParams {
   page: number;
