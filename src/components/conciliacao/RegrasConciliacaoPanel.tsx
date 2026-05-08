@@ -30,7 +30,7 @@ export function RegrasConciliacaoPanel() {
   const { data: regras, isLoading } = useQuery({
     queryKey: ['regras-conciliacao', currentEmpresaId],
     queryFn: async () => {
-      let query = supabase
+      let query = (supabase as any)
         .from('regras_conciliacao')
         .select('*')
         .order('vezes_aplicada', { ascending: false });
@@ -45,12 +45,33 @@ export function RegrasConciliacaoPanel() {
     },
   });
 
+  const toggleRegra = useMutation({
+    mutationFn: async ({ id, ativo }: { id: string; ativo: boolean }) => {
+      const { error } = await supabase
+        .from('regras_conciliacao')
+        .update({ ativo })
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['regras-conciliacao'] }),
+  });
+
+  const deleteRegra = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('regras_conciliacao').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['regras-conciliacao'] });
+      toast.success('Regra removida');
+    },
+  });
+
   const generatePreview = () => {
-    // Mock de extrato para demonstração da regra
     const mockExtrato = [
-      { data: '2024-05-01', descricao: 'PIX FORNECEDOR ABC SERVICOS', valor: -1500.00, tipo: 'debito' },
-      { data: '2024-05-02', descricao: 'RECEBIMENTO CLIENTE XYZ LTDA', valor: 4500.00, tipo: 'credito' },
-      { data: '2024-05-03', descricao: 'TARIFA BANCARIA MANUTENCAO', valor: -45.90, tipo: 'debito' },
+      { id: 'm1', data: '2024-05-01', descricao: 'PIX FORNECEDOR ABC SERVICOS', valor: -1500.00, tipo: 'debito' },
+      { id: 'm2', data: '2024-05-02', descricao: 'RECEBIMENTO CLIENTE XYZ LTDA', valor: 4500.00, tipo: 'credito' },
+      { id: 'm3', data: '2024-05-03', descricao: 'TARIFA BANCARIA MANUTENCAO', valor: -45.90, tipo: 'debito' },
     ];
 
     const preview = mockExtrato.map(item => {
@@ -67,7 +88,7 @@ export function RegrasConciliacaoPanel() {
   const filtered = regras?.filter(r => {
     if (!search) return true;
     const s = search.toLowerCase();
-    return r.padrao_descricao.toLowerCase().includes(s) || (r.entidade_nome || '').toLowerCase().includes(s);
+    return (r.padrao_descricao || '').toLowerCase().includes(s) || (r.entidade_nome || '').toLowerCase().includes(s);
   }) || [];
 
   return (
