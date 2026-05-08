@@ -350,12 +350,29 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label>Descrição</Label>
-                    <Input
-                      value={simForm.descricao}
-                      onChange={(e) => setSimForm({ ...simForm, descricao: e.target.value })}
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Descrição</Label>
+                      <Input
+                        value={simForm.descricao}
+                        onChange={(e) => setSimForm({ ...simForm, descricao: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Categoria (Opcional)</Label>
+                      <Select
+                        value={simForm.categoria_id}
+                        onValueChange={(v) => setSimForm({ ...simForm, categoria_id: v })}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Qualquer uma" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Nenhuma</SelectItem>
+                          {categorias.map((c) => (
+                            <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
                   {simResult && (
