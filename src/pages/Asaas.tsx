@@ -618,6 +618,47 @@ export default function Asaas() {
                   </div>
                 </div>
 
+                {selectedPayments.length > 0 && (
+                  <div className="flex items-center gap-4 p-2 bg-primary/5 border border-primary/20 rounded-lg mb-4 animate-in fade-in slide-in-from-top-2">
+                    <span className="text-sm font-medium text-primary ml-2">
+                      {selectedPayments.length} item(s) selecionado(s)
+                    </span>
+                    <div className="flex gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="h-8"
+                        onClick={async () => {
+                          const { data: { user } } = await supabase.auth.getUser();
+                          if (!user) return;
+                          setIsBulkReprocessing(true);
+                          try {
+                            for (const id of selectedPayments) {
+                              await reprocessarManual.mutateAsync({ paymentId: id, reason: 'Reprocessamento em massa', userId: user.id });
+                            }
+                            setSelectedSelectedPayments([]);
+                            toast.success('Sincronização em massa iniciada');
+                          } finally {
+                            setIsBulkReprocessing(false);
+                          }
+                        }}
+                        disabled={isBulkReprocessing}
+                      >
+                        {isBulkReprocessing ? <Loader2 className="h-3 w-3 animate-spin mr-2" /> : <RefreshCw className="h-3 w-3 mr-2" />}
+                        Sincronizar Selecionados
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="h-8"
+                        onClick={() => setSelectedSelectedPayments([])}
+                      >
+                        Limpar Seleção
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
                 {loadingPayments ? (
                   <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
                 ) : filteredPayments.length === 0 ? (
