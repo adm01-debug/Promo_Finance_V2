@@ -67,7 +67,7 @@ export function DashboardFiltersHeader({
   setCentroCustoFilter,
   onOpenConfig,
 }: DashboardFiltersHeaderProps) {
-  const { currentEmpresaId } = useAuth();
+  const { currentEmpresaId, user } = useAuth();
   const greeting = getGreeting();
   const GreetingIcon = greeting.icon;
   const insight = getMotivationalInsight();

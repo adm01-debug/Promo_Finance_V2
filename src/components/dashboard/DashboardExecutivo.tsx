@@ -2,6 +2,7 @@ import { useState, ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Wallet, ArrowDownCircle, ArrowUpCircle, AlertTriangle, BarChart3, Brain, Target } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
+import { useAuth } from '@/hooks/useAuth';
 import { useDashboardConfig, DashboardWidget } from '@/hooks/useDashboardConfig';
 import { useDashboardMetrics } from '@/hooks/useDashboardMetrics';
 import { PrevisaoIA } from './PrevisaoIA';
