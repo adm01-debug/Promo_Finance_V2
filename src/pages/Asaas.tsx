@@ -521,8 +521,13 @@ export default function Asaas() {
 
                 {loadingPayments ? (
                   <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
-                ) : payments.length === 0 ? (
-                  <EmptyState icon={CreditCard} title="Nenhuma cobrança" description="Crie sua primeira cobrança via Boleto ou Pix" action={{ label: 'Nova Cobrança', onClick: () => setDialogOpen(true) }} />
+                ) : filteredPayments.length === 0 ? (
+                  <EmptyState 
+                    icon={filterSearch || filterStatus !== 'all' || filterDateStart || filterDateEnd ? Search : CreditCard} 
+                    title={payments.length === 0 ? "Nenhuma cobrança" : "Nenhum resultado encontrado"} 
+                    description={payments.length === 0 ? "Crie sua primeira cobrança via Boleto ou Pix" : "Tente ajustar os filtros de busca"} 
+                    action={payments.length === 0 ? { label: 'Nova Cobrança', onClick: () => setDialogOpen(true) } : undefined} 
+                  />
                 ) : (
                   <div className="overflow-x-auto">
                     <Table>
