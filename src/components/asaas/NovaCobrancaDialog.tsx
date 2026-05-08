@@ -250,30 +250,45 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
               ))}
             </div>
 
-            {/* Cliente */}
-            <div className="space-y-2">
-              <Label>Cliente ASAAS *</Label>
-              {customers.length === 0 ? (
-                <div className="text-sm text-muted-foreground p-3 border border-border rounded-lg text-center">
-                  Nenhum cliente cadastrado.{' '}
-                  <button className="text-primary underline" onClick={() => setTab('cliente')}>
-                    Cadastre um cliente primeiro
-                  </button>
-                </div>
-              ) : (
-                <Select value={customerId} onValueChange={setCustomerId}>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Vincular Conta a Receber</Label>
+                <Select value={contaReceberId} onValueChange={handleSelectPendencia}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione o cliente" />
+                    <SelectValue placeholder="Opcional" />
                   </SelectTrigger>
                   <SelectContent>
-                    {customers.map(c => (
-                      <SelectItem key={c.id} value={c.asaas_id}>
-                        {c.nome} {c.cpf_cnpj ? `(${c.cpf_cnpj})` : ''}
+                    <SelectItem value="none">Nenhuma (Lançamento avulso)</SelectItem>
+                    {pendencias?.map(p => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.descricao} (R$ {p.valor})
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-              )}
+              </div>
+
+              <div className="space-y-2">
+                <Label>Cliente ASAAS *</Label>
+                {customers.length === 0 ? (
+                  <div className="text-sm text-muted-foreground p-2 border rounded-md text-center h-10 flex items-center justify-center">
+                    <button className="text-primary underline" onClick={() => setTab('cliente')}>Cadastrar</button>
+                  </div>
+                ) : (
+                  <Select value={customerId} onValueChange={setCustomerId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {customers.map(c => (
+                        <SelectItem key={c.id} value={c.asaas_id}>
+                          {c.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
             </div>
 
             {/* Valor, Vencimento e Parcelas */}
