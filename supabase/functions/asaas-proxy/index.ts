@@ -621,6 +621,16 @@ Deno.serve(async (req) => {
           .update({ status: 'completed' })
           .eq('payment_id', data.payment_id)
 
+        // Registrar auditoria se houver motivo (reprocessamento manual)
+        if (data?.reason) {
+          await supabase.from('asaas_audit_trail').insert({
+            payment_id: data.payment_id,
+            action: 'MANUAL_SYNC',
+            user_id: user.id,
+            details: { reason: data.reason, manual: true }
+          });
+        }
+
         result = { success: true, status: asaasData.status }
         break
       }
