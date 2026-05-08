@@ -52,16 +52,17 @@ export function NovoBoletoForm({ onClose, empresas, contasBancarias, onSubmit, i
 
   useEffect(() => {
     if (prefillData) {
+      const data = prefillData as any;
       setFormData(prev => ({
         ...prev,
-        sacado_nome: prefillData.type === 'receber' ? prefillData.cliente_nome : prefillData.fornecedor_nome,
-        valor: prefillData.valor.toString(),
-        vencimento: prefillData.data_vencimento,
-        empresa_id: prefillData.empresa_id,
-        descricao: prefillData.descricao,
-        conta_receber_id: prefillData.type === 'receber' ? prefillData.id : '',
-        conta_pagar_id: prefillData.type === 'pagar' ? prefillData.id : '',
-        conta_bancaria_id: prefillData.conta_bancaria_id || ''
+        sacado_nome: data.type === 'receber' ? data.cliente_nome : data.fornecedor_nome,
+        valor: data.valor.toString(),
+        vencimento: data.data_vencimento,
+        empresa_id: data.empresa_id,
+        descricao: data.descricao || '',
+        conta_receber_id: data.type === 'receber' ? data.id : '',
+        conta_pagar_id: data.type === 'pagar' ? data.id : '',
+        conta_bancaria_id: data.conta_bancaria_id || ''
       }));
     }
   }, [prefillData]);
