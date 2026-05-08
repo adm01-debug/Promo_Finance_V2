@@ -128,7 +128,7 @@ export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess, con
                 <div className="flex items-center justify-center gap-2 mt-4">
                   <Badge variant="outline" className="text-xs">.OFX</Badge><Badge variant="outline" className="text-xs">.OFC</Badge>
                   <Badge variant="outline" className="text-xs">.CSV</Badge><Badge variant="outline" className="text-xs">.TXT</Badge>
-                  <Badge variant="outline" className="text-xs opacity-50">.XLSX (em breve)</Badge>
+                  <Badge variant="outline" className="text-xs">.XLSX</Badge>
                 </div>
               </div>
               <div className="mt-4 p-3 rounded-lg bg-accent/30 text-sm text-muted-foreground">
