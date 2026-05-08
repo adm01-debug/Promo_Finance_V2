@@ -3,7 +3,7 @@ import {
   BarChart3, Scale, Download, AlertTriangle, CheckCircle2, 
   FileJson, FileText, Calendar as CalendarIcon, Filter,
   TrendingUp, TrendingDown, Layers, PieChart, ArrowUpRight,
-  ChevronRight, Info, Zap
+  ChevronRight, Info, Zap, RefreshCw, Eye, History, Globe
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDemonstrativosContabeis, type FonteDemonstrativo } from '@/hooks/useDemonstrativosContabeis';
@@ -31,6 +31,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface Props { empresaId?: string; ano: number }
 
@@ -265,23 +266,24 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
         </div>
       </CardHeader>
       <CardContent className="p-8 pt-2 relative z-10 space-y-8">
-        <div className="flex flex-wrap items-center gap-4 bg-white/5 p-4 rounded-3xl border border-white/5 backdrop-blur-sm">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-4 bg-white/5 p-4 rounded-3xl border border-white/5 backdrop-blur-sm relative overflow-hidden group/filter">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-transparent opacity-0 group-hover/filter:opacity-100 transition-opacity duration-700 pointer-events-none" />
+          <div className="flex items-center gap-3 relative z-10">
             <ToggleGroup 
               type="single" 
               value={modo} 
               onValueChange={(v) => v && setModo(v as 'dre' | 'balanco')} 
-              className="bg-background/40 p-1 rounded-2xl border border-white/5"
+              className="bg-background/40 p-1 rounded-2xl border border-white/10"
             >
               <ToggleGroupItem 
                 value="dre" 
-                className="rounded-xl data-[state=on]:bg-primary data-[state=on]:text-primary-foreground transition-all px-6 font-black uppercase text-[10px] tracking-widest"
+                className="rounded-xl data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:shadow-lg data-[state=on]:shadow-primary/20 transition-all px-6 font-black uppercase text-[10px] tracking-widest"
               >
                 DRE
               </ToggleGroupItem>
               <ToggleGroupItem 
                 value="balanco" 
-                className="rounded-xl data-[state=on]:bg-primary data-[state=on]:text-primary-foreground transition-all px-6 font-black uppercase text-[10px] tracking-widest"
+                className="rounded-xl data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:shadow-lg data-[state=on]:shadow-primary/20 transition-all px-6 font-black uppercase text-[10px] tracking-widest"
               >
                 Balanço
               </ToggleGroupItem>
@@ -291,7 +293,7 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
               type="single" 
               value={fonte} 
               onValueChange={(v) => v && setFonte(v as FonteDemonstrativo)} 
-              className="bg-background/40 p-1 rounded-2xl border border-white/5"
+              className="bg-background/40 p-1 rounded-2xl border border-white/10"
             >
               <ToggleGroupItem 
                 value="competencia" 
@@ -432,19 +434,31 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.05 }}
-                        className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/5 transition-colors group/row" 
+                        className="flex items-center justify-between py-4 px-5 rounded-2xl hover:bg-white/10 transition-all group/row cursor-pointer border border-transparent hover:border-white/5" 
                         style={{ marginLeft: `${(l.nivel - 1) * 1.5}rem` }}
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-1.5 h-1.5 rounded-full bg-success opacity-40" />
+                        <div className="flex items-center gap-4">
+                          <div className={cn(
+                            "w-2 h-2 rounded-full transition-all group-hover/row:scale-125",
+                            l.nivel === 1 ? "bg-success" : "bg-success/40"
+                          )} />
                           <div className="flex flex-col">
-                            <span className="text-xs font-bold text-foreground/80">{l.descricao}</span>
+                            <span className={cn("text-xs font-black transition-colors group-hover/row:text-primary", l.nivel === 1 ? "text-foreground" : "text-foreground/70")}>{l.descricao}</span>
                             <span className="font-mono text-[9px] opacity-40 uppercase tracking-tighter">{l.codigo}</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-4">
-                          <span className="text-[10px] font-black opacity-30 tracking-tighter">{l.percentual.toFixed(1)}%</span>
-                          <span className="font-mono text-sm font-black tabular-nums text-success">{formatCurrency(l.valor)}</span>
+                        <div className="flex items-center gap-6">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="text-[10px] font-black opacity-30 tracking-tighter group-hover/row:opacity-60 transition-opacity">{l.percentual.toFixed(1)}%</span>
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-background/95 backdrop-blur-xl border-white/10 p-2 rounded-xl">
+                                <p className="text-[10px] font-bold">Representatividade na Receita Bruta</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                          <span className="font-mono text-sm font-black tabular-nums text-success group-hover/row:scale-105 transition-transform">{formatCurrency(l.valor)}</span>
                         </div>
                       </motion.div>
                     ))}
@@ -469,19 +483,31 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.05 }}
-                        className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/5 transition-colors group/row" 
+                        className="flex items-center justify-between py-4 px-5 rounded-2xl hover:bg-white/10 transition-all group/row cursor-pointer border border-transparent hover:border-white/5" 
                         style={{ marginLeft: `${(l.nivel - 1) * 1.5}rem` }}
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-1.5 h-1.5 rounded-full bg-destructive opacity-40" />
+                        <div className="flex items-center gap-4">
+                          <div className={cn(
+                            "w-2 h-2 rounded-full transition-all group-hover/row:scale-125",
+                            l.nivel === 1 ? "bg-destructive" : "bg-destructive/40"
+                          )} />
                           <div className="flex flex-col">
-                            <span className="text-xs font-bold text-foreground/80">{l.descricao}</span>
+                            <span className={cn("text-xs font-black transition-colors group-hover/row:text-primary", l.nivel === 1 ? "text-foreground" : "text-foreground/70")}>{l.descricao}</span>
                             <span className="font-mono text-[9px] opacity-40 uppercase tracking-tighter">{l.codigo}</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-4">
-                          <span className="text-[10px] font-black opacity-30 tracking-tighter">{l.percentual.toFixed(1)}%</span>
-                          <span className="font-mono text-sm font-black tabular-nums text-destructive">{formatCurrency(l.valor)}</span>
+                        <div className="flex items-center gap-6">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="text-[10px] font-black opacity-30 tracking-tighter group-hover/row:opacity-60 transition-opacity">{l.percentual.toFixed(1)}%</span>
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-background/95 backdrop-blur-xl border-white/10 p-2 rounded-xl">
+                                <p className="text-[10px] font-bold">Impacto sobre a Receita Bruta</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                          <span className="font-mono text-sm font-black tabular-nums text-destructive group-hover/row:scale-105 transition-transform">{formatCurrency(l.valor)}</span>
                         </div>
                       </motion.div>
                     ))}
