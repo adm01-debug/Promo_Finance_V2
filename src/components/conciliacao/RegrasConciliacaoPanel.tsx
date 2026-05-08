@@ -92,23 +92,38 @@ export function RegrasConciliacaoPanel() {
   }) || [];
 
   return (
-    <Card className="card-base">
-      <CardHeader className="pb-3">
+    <Card className="card-base group overflow-hidden border-primary/10 shadow-xl shadow-primary/5">
+      <CardHeader className="pb-3 border-b border-primary/5 bg-primary/[0.02]">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Zap className="h-5 w-5 text-warning" />
-            Regras Automáticas
-          </CardTitle>
-          <Button size="sm" variant="outline" onClick={() => setShowAddDialog(true)} className="gap-1">
-            <Plus className="h-4 w-4" /> Nova Regra
-          </Button>
+          <div className="space-y-1">
+            <CardTitle className="flex items-center gap-2 text-lg font-black">
+              <Zap className="h-5 w-5 text-warning animate-pulse" />
+              Regras de Conciliação
+            </CardTitle>
+            <CardDescription className="text-[10px] font-black uppercase tracking-widest text-primary/40">
+              Mapeamento Inteligente por CNPJ
+            </CardDescription>
+          </div>
+          <div className="flex gap-2">
+            <Button size="sm" variant="ghost" onClick={generatePreview} className="gap-2 h-9 px-4 rounded-xl hover:bg-primary/10 text-primary font-bold">
+              <Eye className="h-4 w-4" /> Preview
+            </Button>
+            <Button size="sm" onClick={() => setShowAddDialog(true)} className="gap-2 h-9 px-4 rounded-xl bg-primary hover:bg-primary/90 font-black shadow-lg shadow-primary/20">
+              <Plus className="h-4 w-4" /> Nova Regra
+            </Button>
+          </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="pt-6 space-y-6">
         {filtered.length > 0 && (
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Buscar regras..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/30" />
+            <Input 
+              placeholder="Buscar regras por descrição ou entidade..." 
+              value={search} 
+              onChange={e => setSearch(e.target.value)} 
+              className="pl-11 h-12 rounded-2xl border-primary/10 bg-primary/[0.02] focus:ring-primary/20 transition-all font-medium"
+            />
           </div>
         )}
 
