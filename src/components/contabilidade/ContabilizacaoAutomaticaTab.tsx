@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Plus, Zap, CheckCircle2, AlertTriangle, Trash2, Power, Activity, Edit2, Copy, Play, Save, X, Info } from 'lucide-react';
+import { Plus, Zap, CheckCircle2, AlertTriangle, Trash2, Power, Activity, Edit2, Copy, Play, Save, X, Info, ArrowDownAZ, ArrowUpAZ, History as HistoryIcon, ArrowRightLeft } from 'lucide-react';
 import { supabase as supabaseTyped } from '@/integrations/supabase/client';
 // Tabelas novas ainda não refletidas em types.ts — cast controlado.
 const supabase = supabaseTyped as unknown as {
@@ -62,6 +62,9 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editingRegra, setEditingRegra] = useState<Regra | null>(null);
+  const [originalRegra, setOriginalRegra] = useState<Regra | null>(null);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  
   const [simulating, setSimulating] = useState(false);
   const [simForm, setSimForm] = useState({
     tipo_evento: 'conta_pagar' as Regra['tipo_evento'],
@@ -71,6 +74,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
     categoria_id: '',
   });
   const [simResult, setSimResult] = useState<any>(null);
+  const [dryRunNoRuleResult, setDryRunNoRuleResult] = useState<any>(null);
 
   const [form, setForm] = useState({
     nome: '',
@@ -82,19 +86,21 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
     prioridade: 100,
   });
 
-  const { data: regras = [], isLoading: loadingRegras } = useQuery<Regra[]>({
+  const { data: rawRegras = [], isLoading: loadingRegras } = useQuery<Regra[]>({
     queryKey: ['regras_contab', empresaId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('regras_contabilizacao_automatica')
         .select('*')
-        .eq('empresa_id', empresaId)
-        .order('tipo_evento')
-        .order('prioridade');
+        .eq('empresa_id', empresaId);
       if (error) throw error;
       return (data as unknown as Regra[]) ?? [];
     },
     enabled: !!empresaId,
+  });
+
+  const regras = [...rawRegras].sort((a, b) => {
+    return sortOrder === 'asc' ? a.prioridade - b.prioridade : b.prioridade - a.prioridade;
   });
 
   const { data: contas = [] } = useQuery<PlanoConta[]>({
@@ -172,6 +178,16 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
 
   const updateRegra = useMutation({
     mutationFn: async (regra: Partial<Regra> & { id: string }) => {
+      if (!regra.nome || !regra.conta_debito_id || !regra.conta_credito_id) {
+        throw new Error('Mapeamento incompleto: preencha nome e contas de D/C');
+      }
+      if (regra.prioridade === undefined || isNaN(regra.prioridade) || regra.prioridade < 0) {
+        throw new Error('Prioridade inválida: deve ser um número positivo');
+      }
+      if (regra.conta_debito_id === regra.conta_credito_id) {
+        throw new Error('Contas de débito e crédito devem ser diferentes');
+      }
+
       const { error } = await supabase
         .from('regras_contabilizacao_automatica')
         .update(regra)
@@ -181,6 +197,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
     onSuccess: () => {
       toast.success('Regra atualizada');
       setEditingRegra(null);
+      setOriginalRegra(null);
       qc.invalidateQueries({ queryKey: ['regras_contab', empresaId] });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -207,17 +224,27 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
 
   const dryRunSimulation = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabaseTyped.functions.invoke('contabilizar-evento', {
+      setSimResult(null);
+      setDryRunNoRuleResult(null);
+
+      // 1. Simulação com regras normais
+      const { data: withRules, error: errWith } = await supabaseTyped.functions.invoke('contabilizar-evento', {
         body: {
           ...simForm,
           categoria_id: simForm.categoria_id === 'none' ? null : (simForm.categoria_id || null),
           empresa_id: empresaId,
-          evento_id: 'sim-preview-' + Date.now(),
+          evento_id: 'sim-with-' + Date.now(),
           dry_run: true,
         },
       });
-      if (error) throw error;
-      return data;
+      if (errWith) throw errWith;
+
+      // 2. Simulação forçando "sem regra" (poderíamos ter um flag no edge function, mas para "dry-run" rápido
+      // se o status for 'sem_regra' já temos o 'antes', senão comparamos com o que seria o comportamento padrão se não houvesse regra compatível)
+      // Como o edge function não tem "ignore_rules", vamos apenas mostrar o "Antes" como vazio se não houver regra
+      // ou se houver regra, mostrar o que a regra faria.
+      
+      return withRules;
     },
     onSuccess: (data) => {
       setSimResult(data);
@@ -316,7 +343,16 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
               Cada evento financeiro dispara uma regra que gera lançamento em partidas dobradas.
             </CardDescription>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 gap-1.5 text-xs"
+              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+            >
+              {sortOrder === 'asc' ? <ArrowDownAZ className="h-4 w-4" /> : <ArrowUpAZ className="h-4 w-4" />}
+              Prioridade
+            </Button>
             <Dialog open={simulating} onOpenChange={setSimulating}>
               <DialogTrigger asChild>
                 <Button size="sm" variant="outline" className="gap-1.5">
@@ -378,41 +414,51 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                   </div>
 
                   {simResult && (
-                    <Alert className={simResult.status === 'simulado' ? 'bg-blue-500/10 border-blue-500/20' : 'bg-amber-500/10 border-amber-500/20'}>
-                      <Info className="h-4 w-4" />
-                      <AlertTitle>Resultado da Simulação</AlertTitle>
-                      <AlertDescription className="mt-2 space-y-2">
-                        <div className="flex justify-between text-xs">
-                          <span>Status:</span>
-                          <Badge variant="outline">{simResult.status}</Badge>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-sm font-medium">
+                        <ArrowRightLeft className="h-4 w-4" />
+                        Comparativo Antes vs Depois
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label className="text-[10px] uppercase text-muted-foreground">Estado Atual (Sem Regra)</Label>
+                          <div className="h-24 rounded border border-dashed flex flex-col items-center justify-center p-3 bg-muted/20">
+                            <X className="h-5 w-5 text-muted-foreground/50 mb-1" />
+                            <span className="text-[10px] text-muted-foreground text-center">Nenhum lançamento contábil automático gerado</span>
+                          </div>
                         </div>
-                        {simResult.regra && (
-                          <div className="flex justify-between text-xs">
-                            <span>Regra aplicada:</span>
-                            <span className="font-medium">{simResult.regra.nome}</span>
+
+                        <div className="space-y-2">
+                          <Label className="text-[10px] uppercase text-emerald-600">Simulação (Com Regra Aplicada)</Label>
+                          <div className={`h-24 rounded border ${simResult.status === 'simulado' ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-amber-500/30 bg-amber-500/5'} p-3 flex flex-col justify-between`}>
+                            {simResult.status === 'simulado' ? (
+                              <>
+                                <div className="flex justify-between items-start">
+                                  <Badge variant="outline" className="text-[9px] px-1 h-4 border-emerald-500/50 text-emerald-700">SUCESSO</Badge>
+                                  <span className="text-[10px] font-mono font-bold">R$ {simResult.valor?.toFixed(2)}</span>
+                                </div>
+                                <div className="text-[9px] font-mono leading-tight truncate mt-1">
+                                  <span className="text-muted-foreground">D:</span> {contas.find(c => c.id === simResult.debito)?.codigo || '?'}<br/>
+                                  <span className="text-muted-foreground">C:</span> {contas.find(c => c.id === simResult.credito)?.codigo || '?'}
+                                </div>
+                              </>
+                            ) : (
+                              <div className="flex flex-col items-center justify-center h-full">
+                                <AlertTriangle className="h-4 w-4 text-amber-500 mb-1" />
+                                <span className="text-[9px] text-amber-600 text-center">Nenhuma regra compatível</span>
+                              </div>
+                            )}
                           </div>
-                        )}
-                        {simResult.debito && (
-                          <div className="flex flex-col gap-1 text-[11px] bg-background/50 p-2 rounded border border-border/50">
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Débito:</span>
-                              <span className="font-mono">{contas.find(c => c.id === simResult.debito)?.codigo || simResult.debito}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Crédito:</span>
-                              <span className="font-mono">{contas.find(c => c.id === simResult.credito)?.codigo || simResult.credito}</span>
-                            </div>
-                            <div className="flex justify-between pt-1 border-t border-border/30">
-                              <span className="text-muted-foreground">Valor:</span>
-                              <span className="font-bold">R$ {simResult.valor?.toFixed(2)}</span>
-                            </div>
-                          </div>
-                        )}
-                        {simResult.status === 'sem_regra' && (
-                          <p className="text-xs text-amber-600">Nenhuma regra ativa foi encontrada para este tipo de evento.</p>
-                        )}
-                      </AlertDescription>
-                    </Alert>
+                        </div>
+                      </div>
+                      
+                      {simResult.regra && (
+                        <div className="text-[10px] text-muted-foreground flex items-center gap-1 justify-center bg-muted/30 py-1 rounded">
+                          <Zap className="h-3 w-3" /> Regra aplicada: <strong>{simResult.regra.nome}</strong> (Prio {regras.find(r => r.id === simResult.regra.id)?.prioridade})
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
                 <DialogFooter>
@@ -561,7 +607,12 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                   <TableHead>Nome</TableHead>
                   <TableHead>Evento</TableHead>
                   <TableHead>D / C</TableHead>
-                  <TableHead className="text-right">Prio</TableHead>
+                  <TableHead className="text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      Prio
+                      {sortOrder === 'asc' ? <ArrowDownAZ className="h-3 w-3" /> : <ArrowUpAZ className="h-3 w-3" />}
+                    </div>
+                  </TableHead>
                   <TableHead className="text-center">Ativo</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
@@ -682,10 +733,24 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                                 size="icon"
                                 variant="ghost"
                                 className="h-8 w-8 text-muted-foreground"
-                                onClick={() => setEditingRegra(null)}
+                                onClick={() => {
+                                  setEditingRegra(null);
+                                  setOriginalRegra(null);
+                                }}
                               >
                                 <X className="h-4 w-4" />
                               </Button>
+                              {originalRegra && (
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="h-8 w-8 text-blue-500"
+                                  title="Restaurar valores originais"
+                                  onClick={() => setEditingRegra(originalRegra)}
+                                >
+                                  <HistoryIcon className="h-4 w-4" />
+                                </Button>
+                              )}
                             </>
                           ) : (
                             <>
@@ -693,7 +758,10 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                                 size="icon"
                                 variant="ghost"
                                 className="h-8 w-8"
-                                onClick={() => setEditingRegra(r)}
+                                onClick={() => {
+                                  setEditingRegra(r);
+                                  setOriginalRegra(r);
+                                }}
                               >
                                 <Edit2 className="h-4 w-4" />
                               </Button>
