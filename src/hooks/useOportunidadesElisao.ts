@@ -208,7 +208,7 @@ export function useOportunidadesElisao({ empresaId, contexto }: UseElisaoOptions
         if (!empresaId) return [];
         const { data, error } = await supabase
           .from('elisao_creditos_auditoria')
-          .select('*, nota:notas_fiscais_ocr(*)')
+          .select('*, nota:notas_fiscais_ocr(*), regra:elisao_regras_creditos(*)')
           .eq('empresa_id', empresaId)
           .order('created_at', { ascending: false });
         if (error) throw error;
