@@ -50,6 +50,8 @@ export function useContasPagarLogic() {
 
   const { data: allContas = [] } = useContasPagar();
   const { data: centrosCusto = [] } = useCentrosCusto();
+  const { data: empresas = [] } = useEmpresas();
+  const { data: contasBancarias = [] } = useContasBancarias();
   const { data: configuracao } = useConfiguracaoAprovacao();
   const criarSolicitacaoMutation = useCriarSolicitacaoAprovacao();
 
