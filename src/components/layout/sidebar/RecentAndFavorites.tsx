@@ -24,7 +24,7 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
 
   const hasItems = recentItems.length > 0 || favoriteItems.length > 0;
 
-  if (!hasItems || collapsed) return null;
+  if (collapsed) return null;
 
   return (
     <div className="px-4 py-8 space-y-8 border-b border-white/5 bg-white/[0.02] relative overflow-hidden">
