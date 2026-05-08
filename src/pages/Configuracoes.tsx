@@ -452,6 +452,11 @@ export default function Configuracoes() {
           </div>
         </TabsContent>
 
+        {/* Anti-Duplicidade */}
+        <TabsContent value="duplicidade">
+          <RegrasDuplicidadeTab />
+        </TabsContent>
+
         {/* OCR de Comprovantes */}
         <TabsContent value="ocr">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
