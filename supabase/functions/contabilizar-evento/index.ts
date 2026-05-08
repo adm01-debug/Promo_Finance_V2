@@ -125,9 +125,10 @@ Deno.serve(async (req) => {
   }
 
   // Selecionar regra: prioriza categoria match
-  const regra =
+  const regra = body.ignore_rules ? null : (
     regras?.find((r) => r.categoria_id === body.categoria_id) ??
-    regras?.find((r) => !r.categoria_id);
+    regras?.find((r) => !r.categoria_id)
+  );
 
   if (!regra) {
     await admin.from('eventos_contabilizacao_log').insert({
