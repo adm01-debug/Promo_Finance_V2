@@ -125,8 +125,8 @@ export default function ContasBancarias() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Contas Bancárias</h1>
-            <p className="text-muted-foreground">Gerencie suas contas e acompanhe saldos em tempo real</p>
+            <h1 className="text-3xl font-bold tracking-tight">Gestão de Contas Bancárias</h1>
+            <p className="text-muted-foreground">Configure multi-contas, regras de conciliação e mapeamentos por CNPJ</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={() => setTransferenciaOpen(true)}>
