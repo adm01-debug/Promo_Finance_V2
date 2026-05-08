@@ -491,7 +491,8 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
                 </Button>
               </DialogFooter>
             </DialogContent>
-          </Dialog>
+            </Dialog>
+          </div>
         </CardHeader>
         <CardContent>
           {loadingRegras ? (
