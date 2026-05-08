@@ -129,7 +129,7 @@ const navGroups: NavGroup[] = [
       { label: 'Fornecedores', icon: Truck, href: '/fornecedores' },
       { label: 'Vendedores', icon: UserCog, href: '/vendedores' },
       { label: 'Empresas (CNPJs)', icon: Building2, href: '/empresas' },
-      { label: 'Contas Bancárias', icon: Landmark, href: '/contas-bancarias' },
+      { label: 'Gestão de Contas', icon: Landmark, href: '/contas-bancarias' },
       { label: 'Centro de Custos', icon: PieChart, href: '/centro-custos' },
       { label: 'Orçamento x Realizado', icon: Scale, href: '/orcamento-evento', highlight: true },
     ],
