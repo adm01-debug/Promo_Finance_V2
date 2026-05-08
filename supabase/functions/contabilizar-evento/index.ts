@@ -21,6 +21,7 @@ interface Body {
   descricao?: string;
   categoria_id?: string | null;
   dry_run?: boolean;
+  ignore_rules?: boolean;
 }
 
 function renderTemplate(tpl: string, data: Record<string, unknown>): string {
