@@ -86,19 +86,21 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
     prioridade: 100,
   });
 
-  const { data: regras = [], isLoading: loadingRegras } = useQuery<Regra[]>({
+  const { data: rawRegras = [], isLoading: loadingRegras } = useQuery<Regra[]>({
     queryKey: ['regras_contab', empresaId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('regras_contabilizacao_automatica')
         .select('*')
-        .eq('empresa_id', empresaId)
-        .order('tipo_evento')
-        .order('prioridade');
+        .eq('empresa_id', empresaId);
       if (error) throw error;
       return (data as unknown as Regra[]) ?? [];
     },
     enabled: !!empresaId,
+  });
+
+  const regras = [...rawRegras].sort((a, b) => {
+    return sortOrder === 'asc' ? a.prioridade - b.prioridade : b.prioridade - a.prioridade;
   });
 
   const { data: contas = [] } = useQuery<PlanoConta[]>({
