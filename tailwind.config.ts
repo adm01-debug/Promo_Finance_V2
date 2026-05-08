@@ -314,8 +314,8 @@ export default {
         "streak-fire": "streak-fire 0.8s ease-in-out infinite",
         "coin-shine": "coin-shine 2s ease-in-out infinite",
         "level-up": "level-up 0.6s ease-out",
-        enter: "fade-in 0.3s ease-out, scale-in 0.2s ease-out",
-        exit: "fade-out 0.3s ease-out, scale-out 0.2s ease-out",
+        enter: "fade-in 0.4s ease-apple, scale-in 0.3s ease-apple",
+        exit: "fade-out 0.4s ease-apple, scale-out 0.3s ease-apple",
       },
       transitionDuration: {
         "150": "150ms",
