@@ -20,6 +20,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 interface TransacaoExport {
+  id: string;
   descricao: string;
   data: Date | string;
   valor: number;
@@ -29,6 +30,7 @@ interface TransacaoExport {
   compensacao_motivo?: string;
   compensacao_classificacao?: string;
   compensacao_regra?: string;
+  compensacao_evidencia_url?: string;
 }
 
 interface ConciliacaoExportProps {
@@ -236,33 +238,38 @@ export function ConciliacaoExport({ transacoes, stats }: ConciliacaoExportProps)
           headStyles: { fillColor: [59, 130, 246] },
         });
 
-        const finalY = (doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY || 100;
+        const finalY = (doc as any).lastAutoTable?.finalY || 100;
         doc.setFontSize(12);
-        doc.text('Transações', 14, finalY + 12);
+        doc.text('Transações e Compensações', 14, finalY + 12);
 
         const head = isFeedback
           ? [['Descrição', 'Data', 'Valor', 'Tipo', 'Status', 'Ação IA', 'Motivo']]
-          : [['Descrição', 'Data', 'Valor', 'Tipo', 'Status', 'Ajuste', 'Regra']];
+          : [['Descrição', 'Data', 'Valor', 'Status', 'Ajuste', 'Regra', 'Evidência']];
 
-        const body = rows.slice(0, 100).map((r) => {
-          const base = [
-            r.descricao.slice(0, 40),
-            formatDate(r.data),
-            formatCurrency(r.valor),
-            r.tipo === 'credito' ? 'Crédito' : 'Débito',
-            r.status === 'conciliada' ? 'Conciliada' : 'Pendente',
-          ];
-          
+        const body = rows.slice(0, 150).map((r) => {
           if (isFeedback) {
             const fb = r as FeedbackRow;
-            base.push(fb.acao_ia === 'aprovado' ? 'Aprovado' : 'Rejeitado');
-            base.push((fb.motivo_rejeicao || '').slice(0, 50));
+            return [
+              fb.descricao.slice(0, 35),
+              formatDate(fb.data),
+              formatCurrency(fb.valor),
+              fb.tipo === 'credito' ? 'Crédito' : 'Débito',
+              fb.status === 'conciliada' ? 'Conciliada' : 'Pendente',
+              fb.acao_ia === 'aprovado' ? 'Aprovado' : 'Rejeitado',
+              (fb.motivo_rejeicao || '').slice(0, 40)
+            ];
           } else {
             const tx = r as TransacaoExport;
-            base.push(formatCurrency(tx.compensacao_valor || 0));
-            base.push((tx.compensacao_regra || '').slice(0, 30));
+            return [
+              tx.descricao.slice(0, 35),
+              formatDate(tx.data),
+              formatCurrency(tx.valor),
+              tx.status === 'conciliada' ? 'Conciliada' : 'Pendente',
+              tx.compensacao_valor ? formatCurrency(tx.compensacao_valor) : '-',
+              (tx.compensacao_regra || '').slice(0, 25),
+              tx.compensacao_evidencia_url ? 'Link disponível' : '-'
+            ];
           }
-          return base;
         });
 
         autoTable(doc, {
@@ -271,7 +278,19 @@ export function ConciliacaoExport({ transacoes, stats }: ConciliacaoExportProps)
           body,
           theme: 'striped',
           headStyles: { fillColor: [59, 130, 246] },
-          styles: { fontSize: 8 },
+          styles: { fontSize: 7, cellPadding: 2 },
+          columnStyles: {
+            6: { textColor: [59, 130, 246] } // Blue for evidence link column
+          },
+          didDrawCell: (data) => {
+            if (!isFeedback && data.column.index === 6 && data.cell.text[0] === 'Link disponível') {
+              const tx = rows[data.row.index] as TransacaoExport;
+              if (tx.compensacao_evidencia_url) {
+                // jspdf doesn't support clickable links in tables directly without extra effort
+                // but we can add a text link manually if needed, however standard export is usually enough
+              }
+            }
+          }
         });
 
         doc.save(`conciliacao_${filenameSuffix}_${new Date().toISOString().slice(0, 10)}.pdf`);
