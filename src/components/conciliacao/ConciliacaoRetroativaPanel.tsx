@@ -117,8 +117,20 @@ export function ConciliacaoRetroativaPanel({ contaBancariaId }: Props) {
                 <div key={log.id} className="p-4 rounded-lg border bg-card hover:bg-muted/30 transition-colors">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <Badge variant={log.status === 'concluido' ? 'default' : log.status === 'erro' ? 'destructive' : 'secondary'}>
-                        {log.status === 'concluido' ? 'Concluído' : log.status === 'erro' ? 'Erro' : 'Processando'}
+                      <Badge variant={log.status === 'concluido' ? 'default' : log.status === 'erro' ? 'destructive' : 'secondary'} className="gap-1.5">
+                        {log.status === 'concluido' ? (
+                          <>
+                            <CheckCircle2 className="h-3 w-3" /> Concluído
+                          </>
+                        ) : log.status === 'erro' ? (
+                          <>
+                            <AlertCircle className="h-3 w-3" /> Erro
+                          </>
+                        ) : (
+                          <>
+                            <Loader2 className="h-3 w-3 animate-spin" /> Processando {log.progresso ? `(${Math.round(log.progresso)}%)` : ''}
+                          </>
+                        )}
                       </Badge>
                       <span className="text-xs text-muted-foreground">{format(new Date(log.created_at), "dd/MM/yyyy HH:mm")}</span>
                     </div>
@@ -138,7 +150,39 @@ export function ConciliacaoRetroativaPanel({ contaBancariaId }: Props) {
                       <p className="font-medium mt-0.5">{log.total_conciliado} / {log.total_processado} conciliados</p>
                     </div>
                   </div>
-                  {log.divergencias_encontradas > 0 && (
+                  {log.status === 'processando' && (
+                    <div className="mt-3 space-y-1.5">
+                      <div className="flex items-center justify-between text-[10px] text-muted-foreground uppercase font-semibold">
+                        <span>Progresso da tarefa</span>
+                        <span>{Math.round(log.progresso || 0)}%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-primary transition-all duration-500" 
+                          style={{ width: `${log.progresso || 0}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {log.status === 'erro' && log.erro_detalhe && (
+                    <div className="mt-3 p-2 rounded bg-destructive/5 border border-destructive/10 text-[11px] text-destructive">
+                      <p className="font-semibold flex items-center gap-1 mb-1">
+                        <AlertCircle className="h-3.5 w-3.5" /> Erro no processamento
+                      </p>
+                      {log.erro_detalhe}
+                      <Button 
+                        variant="link" 
+                        size="sm" 
+                        className="h-auto p-0 mt-1 text-destructive font-bold underline"
+                        onClick={() => handleAgendar()}
+                      >
+                        Tentar novamente
+                      </Button>
+                    </div>
+                  )}
+
+                  {log.divergencias_encontradas > 0 && log.status === 'concluido' && (
                     <div className="mt-3 p-2 rounded bg-destructive/5 border border-destructive/10 text-[11px] text-destructive flex items-center gap-2">
                       <AlertCircle className="h-3.5 w-3.5" />
                       Inconsistências identificadas no saldo ou valores. Verifique a aba Divergências.
