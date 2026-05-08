@@ -185,10 +185,15 @@ export function useContasReceberLogic() {
       if (empresaFilter !== 'all') {
         match = match && c.empresa_id === empresaFilter;
       }
+      // Conta Bancária filter
+      if (contaBancariaFilter !== 'all') {
+        match = match && c.conta_bancaria_id === contaBancariaFilter;
+      }
       // Forma de pagamento filter (#32)
       if (formaFilter !== 'all') {
         match = match && c.tipo_cobranca === formaFilter;
       }
+
       return match;
     });
   }, [contas, advancedFilters, filterByDate, empresaFilter, formaFilter]);
