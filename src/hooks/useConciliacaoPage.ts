@@ -404,6 +404,7 @@ export function useConciliacaoPage() {
     filters, setFilters, selectedIds,
     showReportDialog, setShowReportDialog,
     importReport, isProcessingImport,
+    showSugestoesFila, setShowSugestoesFila,
     // Data
     contasBancarias, lancamentosSistema,
     filteredTransacoes, exportData,
