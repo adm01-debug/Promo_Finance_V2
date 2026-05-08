@@ -362,6 +362,49 @@ export function useAsaas(empresaId?: string) {
     onError: (e) => toast.error('Erro ao salvar config: ' + e.message),
   });
 
+  // ===== CONCILIAÇÃO =====
+  const { data: suggestions = [], isLoading: loadingSuggestions } = useQuery({
+    queryKey: ['asaas-reconciliation-suggestions', empresaId],
+    queryFn: async () => {
+      if (!empresaId) return [];
+      const { data, error } = await supabase
+        .from('asaas_reconciliation_suggestions')
+        .select('*, contas_receber(descricao, valor, data_vencimento)')
+        .eq('empresa_id', empresaId)
+        .eq('status', 'PENDING');
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!empresaId,
+  });
+
+  const gerarSugestoes = useMutation({
+    mutationFn: async (payload: { date: string; value: number; transaction_id: string }) => {
+      if (!empresaId) throw new Error('Empresa não identificada');
+      const { error } = await supabase.rpc('generate_reconciliation_suggestions', {
+        p_empresa_id: empresaId,
+        p_transaction_date: payload.date,
+        p_transaction_value: payload.value,
+        p_transaction_id: payload.transaction_id
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['asaas-reconciliation-suggestions'] }),
+  });
+
+  const aceitarSugestao = useMutation({
+    mutationFn: async ({ suggestionId, contaId }: { suggestionId: string, contaId: string }) => {
+      // 1. Marcar como aceito
+      await supabase.from('asaas_reconciliation_suggestions').update({ status: 'ACCEPTED' }).eq('id', suggestionId);
+      // 2. Baixar a conta no financeiro (simplificado)
+      await supabase.from('contas_receber').update({ status: 'pago', data_recebimento: new Date().toISOString().split('T')[0] }).eq('id', contaId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-reconciliation-suggestions'] });
+      toast.success('Conciliação realizada com sucesso');
+    }
+  });
+
   // ===== FILA DE RETENTATIVAS =====
   const { data: syncQueue = [], isLoading: loadingQueue } = useQuery({
     queryKey: ['asaas-sync-queue', empresaId],
