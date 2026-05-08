@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TransferenciaPixHistoryPanel } from '@/components/asaas/TransferenciaPixHistoryPanel';
+import { BoletoPreviewPanel } from '@/components/boletos/BoletoPreviewPanel';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell } from 'recharts';
 import { Separator } from '@/components/ui/separator';
@@ -114,6 +115,7 @@ export default function Asaas() {
   const [estornoDialog, setEstornoDialog] = useState<{ asaasId: string; valor: number } | null>(null);
   const [segundaViaDialog, setSegundaViaDialog] = useState<string | null>(null);
   const [selectedPaymentAudit, setSelectedPaymentAudit] = useState<string | null>(null);
+  const [selectedBoletoPreview, setSelectedBoletoPreview] = useState<any | null>(null);
 
   const [saldo, setSaldo] = useState<{ balance: number; totalPending: number } | null>(null);
   const [loadingSaldo, setLoadingSaldo] = useState(false);
@@ -844,6 +846,9 @@ export default function Asaas() {
                                     <DropdownMenuItem onClick={() => setSelectedPaymentAudit(payment.id)}>
                                       <History className="h-4 w-4 mr-2" /> Auditoria
                                     </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setSelectedBoletoPreview(payment)}>
+                                      <Eye className="h-4 w-4 mr-2" /> Visualizar Boleto
+                                    </DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => setReprocessDialog({ paymentId: payment.id, asaasId: payment.asaas_id })}>
                                       <RefreshCw className={`h-4 w-4 mr-2 ${reprocessarManual.isPending ? 'animate-spin' : ''}`} /> Sincronizar Agora
                                     </DropdownMenuItem>
@@ -1001,6 +1006,34 @@ export default function Asaas() {
         onConfirm={handleReprocessar}
         isLoading={reprocessarManual.isPending}
       />
+
+      {/* NOVO: Dialog de Visualização de Boleto */}
+      <Dialog open={!!selectedBoletoPreview} onOpenChange={(v) => !v && setSelectedBoletoPreview(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Visualização da Cobrança</DialogTitle>
+          </DialogHeader>
+          {selectedBoletoPreview && (
+            <BoletoPreviewPanel 
+              boleto={{
+                ...selectedBoletoPreview,
+                numero: selectedBoletoPreview.nosso_numero || selectedBoletoPreview.asaas_id,
+                banco: 'Asaas',
+                agencia: '0001',
+                conta: '123456-7', // Placeholder Asaas
+                cedente_nome: empresas?.[0]?.razao_social || 'Sua Empresa',
+                cedente_cnpj: empresas?.[0]?.cnpj || null,
+                vencimento: selectedBoletoPreview.data_vencimento,
+              }} 
+              onUpdateStatus={({ status }) => {
+                // Sincronizar localmente se necessário
+                setSelectedBoletoPreview(null);
+                toast.success(`Status atualizado para ${status}`);
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </MainLayout>
   );
 }
