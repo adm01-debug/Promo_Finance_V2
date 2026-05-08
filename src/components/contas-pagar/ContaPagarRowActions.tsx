@@ -5,6 +5,7 @@ import {
   CheckCircle2,
   ShieldAlert,
   MoreHorizontal,
+  Banknote,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,6 +24,7 @@ interface ContaPagarRowActionsProps {
   onDelete: () => void;
   onRegistrarPagamento: () => void;
   onSolicitarAprovacao: () => void;
+  id?: string;
 }
 
 export function ContaPagarRowActions({
@@ -33,6 +35,7 @@ export function ContaPagarRowActions({
   onDelete,
   onRegistrarPagamento,
   onSolicitarAprovacao,
+  id,
 }: ContaPagarRowActionsProps) {
   return (
     <DropdownMenu>
@@ -50,6 +53,14 @@ export function ContaPagarRowActions({
           <Edit className="h-4 w-4" />
           Editar
         </DropdownMenuItem>
+        
+        {status !== 'pago' && status !== 'cancelado' && id && (
+          <DropdownMenuItem className="gap-2" onClick={() => window.location.href = `/boletos?novo=true&pagar_id=${id}`}>
+            <Banknote className="h-4 w-4" />
+            Gerar Boleto Pagamento
+          </DropdownMenuItem>
+        )}
+
         <DropdownMenuSeparator />
         {aguardandoSolicitacao && (
           <DropdownMenuItem className="gap-2 text-warning" onClick={onSolicitarAprovacao}>
