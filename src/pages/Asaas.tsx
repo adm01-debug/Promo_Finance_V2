@@ -63,6 +63,7 @@ export default function Asaas() {
   const {
     payments, loadingPayments, stats,
     cancelarCobranca, consultarSaldo,
+    obterComprovante, auditTrail, loadingAudit,
   } = useAsaas(empresaId);
 
   // Dialog states
