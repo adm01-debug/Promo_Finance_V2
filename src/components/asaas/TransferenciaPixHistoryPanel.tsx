@@ -19,11 +19,18 @@ export function TransferenciaPixHistoryPanel({ empresaId }: Props) {
   const { transfers, loadingTransfers, sincronizarTransferencia } = useAsaas(empresaId);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [dateStart, setDateStart] = useState('');
+  const [dateEnd, setDateEnd] = useState('');
 
   const filteredTransfers = (transfers || []).filter(t => {
     const matchesSearch = !searchTerm || t.chave_pix.includes(searchTerm) || t.asaas_id?.includes(searchTerm);
     const matchesStatus = statusFilter === 'all' || t.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    
+    let matchesDate = true;
+    if (dateStart && t.created_at < dateStart) matchesDate = false;
+    if (dateEnd && t.created_at > dateEnd + 'T23:59:59') matchesDate = false;
+
+    return matchesSearch && matchesStatus && matchesDate;
   });
 
   const getStatusBadge = (status: string) => {
