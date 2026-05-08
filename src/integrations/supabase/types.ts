@@ -1629,6 +1629,8 @@ export type Database = {
         Row: {
           agencia: string
           banco: string
+          bitrix_id: string | null
+          bitrix_status: string | null
           cedente_cnpj: string | null
           cedente_nome: string
           codigo_barras: string
@@ -1640,6 +1642,7 @@ export type Database = {
           created_by: string
           descricao: string | null
           empresa_id: string
+          eventos_pagamento: Json | null
           id: string
           linha_digitavel: string
           numero: string
@@ -1656,6 +1659,8 @@ export type Database = {
         Insert: {
           agencia: string
           banco: string
+          bitrix_id?: string | null
+          bitrix_status?: string | null
           cedente_cnpj?: string | null
           cedente_nome: string
           codigo_barras: string
@@ -1667,6 +1672,7 @@ export type Database = {
           created_by: string
           descricao?: string | null
           empresa_id: string
+          eventos_pagamento?: Json | null
           id?: string
           linha_digitavel: string
           numero: string
@@ -1683,6 +1689,8 @@ export type Database = {
         Update: {
           agencia?: string
           banco?: string
+          bitrix_id?: string | null
+          bitrix_status?: string | null
           cedente_cnpj?: string | null
           cedente_nome?: string
           codigo_barras?: string
@@ -1694,6 +1702,7 @@ export type Database = {
           created_by?: string
           descricao?: string | null
           empresa_id?: string
+          eventos_pagamento?: Json | null
           id?: string
           linha_digitavel?: string
           numero?: string
@@ -2056,6 +2065,36 @@ export type Database = {
           request_count?: number
           user_id?: string
           window_start?: string
+        }
+        Relationships: []
+      }
+      conciliacao_sugestoes: {
+        Row: {
+          analisado_em: string | null
+          created_at: string | null
+          empresa_id: string
+          id: string
+          status: string | null
+          sugestoes: Json
+          transacao_id: string
+        }
+        Insert: {
+          analisado_em?: string | null
+          created_at?: string | null
+          empresa_id: string
+          id?: string
+          status?: string | null
+          sugestoes: Json
+          transacao_id: string
+        }
+        Update: {
+          analisado_em?: string | null
+          created_at?: string | null
+          empresa_id?: string
+          id?: string
+          status?: string | null
+          sugestoes?: Json
+          transacao_id?: string
         }
         Relationships: []
       }
@@ -8432,6 +8471,45 @@ export type Database = {
             referencedColumns: ["empresa_id"]
           },
         ]
+      }
+      regua_cobranca_status: {
+        Row: {
+          cliente_id: string
+          created_at: string | null
+          data_proximo_disparo: string | null
+          empresa_id: string
+          etapa_atual: string
+          historico: Json | null
+          id: string
+          status: string
+          titulo_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          cliente_id: string
+          created_at?: string | null
+          data_proximo_disparo?: string | null
+          empresa_id: string
+          etapa_atual?: string
+          historico?: Json | null
+          id?: string
+          status?: string
+          titulo_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          cliente_id?: string
+          created_at?: string | null
+          data_proximo_disparo?: string | null
+          empresa_id?: string
+          etapa_atual?: string
+          historico?: Json | null
+          id?: string
+          status?: string
+          titulo_id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       relatorios_agendados: {
         Row: {
