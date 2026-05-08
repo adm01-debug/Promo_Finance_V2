@@ -144,9 +144,10 @@ export default function Boletos() {
              <Tabs value={activeTab} onValueChange={setActiveTab} className="bg-muted/50 p-1 rounded-xl">
               <TabsList className="bg-transparent border-none">
                 <TabsTrigger value="lista" className="rounded-lg gap-2"><FileText className="h-4 w-4" /> Lista</TabsTrigger>
-                <TabsTrigger value="historico" className="rounded-lg gap-2"><History className="h-4 w-4" /> Histórico</TabsTrigger>
+                <TabsTrigger value="historico" className="rounded-lg gap-2"><HistoryIcon className="h-4 w-4" /> Histórico</TabsTrigger>
               </TabsList>
             </Tabs>
+
             <Dialog open={showNovoBoleto} onOpenChange={setShowNovoBoleto}>
               <DialogTrigger asChild>
                 <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25 h-10" size="sm">
