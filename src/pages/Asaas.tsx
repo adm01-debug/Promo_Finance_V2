@@ -16,6 +16,7 @@ import {
   CreditCard, QrCode, Banknote, Plus, RefreshCw, X,
   DollarSign, Clock, CheckCircle2, AlertTriangle, Copy, ExternalLink,
   Send, Users, Undo2, FileText, MoreHorizontal, Link2, Download, History,
+  Settings as SettingsIcon, LayoutDashboard, FileSpreadsheet, PlayCircle,
 } from 'lucide-react';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -64,6 +65,10 @@ export default function Asaas() {
     payments, loadingPayments, stats,
     cancelarCobranca, consultarSaldo,
     obterComprovante, auditTrail, loadingAudit,
+    // Novos do hook
+    config, loadingConfig, salvarConfig,
+    syncQueue, loadingQueue, reprocessarManual,
+    exportarAuditoria, queueStats,
   } = useAsaas(empresaId);
 
   // Dialog states
