@@ -10,6 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { QrCode, Banknote, CreditCard, Loader2, UserPlus, Settings2 } from 'lucide-react';
 import { useAsaas, type AsaasBillingType } from '@/hooks/useAsaas';
 import { toast } from 'sonner';
