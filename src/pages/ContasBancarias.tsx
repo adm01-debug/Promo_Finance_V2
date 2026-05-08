@@ -14,7 +14,7 @@ import {
   Settings,
 } from 'lucide-react';
 import { RegrasConciliacaoDialog } from '@/components/contas-bancarias/RegrasConciliacaoDialog';
-import { ImportExtratoDialog } from '@/components/conciliacao/ImportExtratoDialog';
+import { ImportarExtratoDialog } from '@/components/conciliacao/ImportarExtratoDialog';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
