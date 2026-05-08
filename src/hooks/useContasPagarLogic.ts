@@ -15,6 +15,7 @@ import { AdvancedFilters } from '@/components/ui/advanced-filters';
 type ContaPagarType = ContaPagar;
 
 export function useContasPagarLogic() {
+  const { currentEmpresaId } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -34,6 +35,13 @@ export function useContasPagarLogic() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingConta, setDeletingConta] = useState<ContaPagarType | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Sincroniza com empresa ativa do sistema
+  useEffect(() => {
+    if (currentEmpresaId && advancedFilters.empresaId !== currentEmpresaId && (!advancedFilters.empresaId || advancedFilters.empresaId === 'all')) {
+      setAdvancedFilters(prev => ({ ...prev, empresaId: currentEmpresaId }));
+    }
+  }, [currentEmpresaId, advancedFilters.empresaId]);
 
   const { filterType, handleFilterChange, filterByDate } = useQuickDateFilter();
   const queryClient = useQueryClient();
