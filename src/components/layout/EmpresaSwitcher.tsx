@@ -160,48 +160,70 @@ export function EmpresaSwitcher() {
           className="w-[360px] p-0 rounded-2xl overflow-hidden border-border/40 shadow-2xl"
           align="end"
         >
-          <Command>
-            <CommandInput placeholder="Buscar empresa…" />
-            <CommandList>
-              <CommandEmpty>Nenhuma empresa</CommandEmpty>
+          <Command className="bg-transparent">
+            <CommandInput placeholder="Buscar empresa…" className="h-12" />
+            <CommandList className="max-h-[500px]">
+              <CommandEmpty>Nenhuma empresa encontrada.</CommandEmpty>
+              
+              <CommandGroup heading="Acesso Rápido a Dashboards">
+                <div className="grid grid-cols-2 gap-1 p-2">
+                  {[
+                    { label: 'Contas a Pagar', icon: ArrowUpCircle, path: '/dashboard-pagar' },
+                    { label: 'Contas a Receber', icon: ArrowDownCircle, path: '/dashboard-receber' },
+                    { label: 'Conciliação', icon: RefreshCcw, path: '/dashboard-conciliacao' },
+                    { label: 'Aging & Cobrança', icon: Receipt, path: '/dashboard-aging' },
+                  ].map((dash) => (
+                    <Button
+                      key={dash.path}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => goTo(dash.path)}
+                      className="h-14 flex flex-col items-center justify-center gap-1 rounded-xl hover:bg-primary/10 hover:text-primary transition-all group"
+                    >
+                      <dash.icon className="h-4 w-4 transition-transform group-hover:scale-110" />
+                      <span className="text-[10px] font-bold uppercase tracking-tighter">{dash.label}</span>
+                    </Button>
+                  ))}
+                </div>
+              </CommandGroup>
+
+              <CommandSeparator />
+
               <CommandGroup heading="Grupo Promo Brindes">
                 {vinculos.map((v) => {
                   const label = v.empresa.nome_fantasia || v.empresa.razao_social;
-                  const sso = v.provisioned_via === 'sso' || v.provisioned_via === 'scim';
+                  const isActive = currentId === v.empresa_id;
                   return (
                     <CommandItem
                       key={v.empresa_id}
-                      className="p-3 rounded-xl m-1 transition-all duration-300 hover:bg-primary/5 cursor-pointer"
+                      className={cn(
+                        "p-3 rounded-xl m-1 transition-all duration-300 cursor-pointer group",
+                        isActive ? "bg-primary/10" : "hover:bg-white/5"
+                      )}
                       onSelect={() => switchTo(v.empresa_id)}
                     >
-                      <Check
-                        className={cn(
-                          'mr-2 h-4 w-4 text-primary',
-                          currentId === v.empresa_id ? 'opacity-100' : 'opacity-0',
-                        )}
-                      />
+                      <div className={cn(
+                        "h-8 w-8 rounded-lg flex items-center justify-center mr-3 font-black text-xs transition-colors",
+                        isActive ? "bg-primary text-primary-foreground" : "bg-white/5 text-white/40 group-hover:bg-white/10 group-hover:text-white"
+                      )}>
+                        {getInitials(label)}
+                      </div>
                       <div className="flex-1 min-w-0">
-                        <div className="truncate text-sm font-semibold">{label}</div>
-                        <div className="text-xs text-muted-foreground truncate">
+                        <div className={cn("truncate text-sm font-bold", isActive ? "text-primary" : "text-foreground")}>
+                          {label}
+                        </div>
+                        <div className="text-[10px] text-muted-foreground font-mono opacity-60">
                           {v.empresa.cnpj}
                         </div>
                       </div>
-                      <div className="flex items-center gap-1 ml-2">
-                        <Badge variant="outline" className="text-[10px] uppercase">
-                          {v.role}
-                        </Badge>
-                        {sso && (
-                          <Badge variant="outline" className="text-[10px] uppercase">
-                            SSO
-                          </Badge>
-                        )}
-                      </div>
+                      {isActive && <Check className="h-4 w-4 text-primary ml-2" />}
                     </CommandItem>
                   );
                 })}
               </CommandGroup>
             </CommandList>
           </Command>
+
         </PopoverContent>
       </Popover>
     </div>
