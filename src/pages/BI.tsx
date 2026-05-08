@@ -214,6 +214,14 @@ export default function BI() {
                 {centrosCusto?.map(c => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}
               </SelectContent>
             </Select>
+            <Select value={filters?.contaBancariaId || "todos"} onValueChange={(val) => setFilters(f => ({...f, contaBancariaId: val}))}>
+              <SelectTrigger className="w-[180px] bg-background/50 backdrop-blur-sm border-white/10"><Wallet className="w-4 h-4 mr-2" /><SelectValue placeholder="Conta Bancária" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todas as Contas</SelectItem>
+                {contasBancarias?.map(c => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}
+              </SelectContent>
+            </Select>
+
             <Select value={usarPeriodoCustom ? "custom" : periodo} onValueChange={(val) => { if (val === "custom") { setUsarPeriodoCustom(true); } else { setUsarPeriodoCustom(false); setPeriodo(val); setDataInicio(undefined); setDataFim(undefined); } }}>
               <SelectTrigger className="w-[160px] bg-background/50 backdrop-blur-sm border-white/10"><Calendar className="w-4 h-4 mr-2" /><SelectValue /></SelectTrigger>
               <SelectContent>
