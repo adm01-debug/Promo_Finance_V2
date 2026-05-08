@@ -51,16 +51,27 @@ export function FilaCobrancasPanel() {
         </div>
       )}
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <h3 className="text-lg font-semibold">Engine de Cobrança</h3>
-        <Button
-          onClick={() => processarRegua.mutate(undefined)}
-          disabled={processarRegua.isPending}
-          className="gap-2"
-        >
-          {processarRegua.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCcw className="h-4 w-4" />}
-          Processar Régua
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => processarRegua.mutate(undefined)}
+            disabled={processarRegua.isPending}
+            variant="outline"
+            className="gap-2"
+          >
+            {processarRegua.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCcw className="h-4 w-4" />}
+            Enfileirar Régua
+          </Button>
+          <Button
+            onClick={() => processarFila.mutate()}
+            disabled={processarFila.isPending}
+            className="gap-2"
+          >
+            {processarFila.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            Disparar Fila
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="fila">
