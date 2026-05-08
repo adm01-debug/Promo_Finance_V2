@@ -2903,6 +2903,7 @@ export type Database = {
           fornecedor_nome: string
           frequencia_recorrencia: string | null
           id: string
+          is_frete: boolean | null
           numero_documento: string | null
           numero_parcela_atual: number | null
           observacoes: string | null
@@ -2953,6 +2954,7 @@ export type Database = {
           fornecedor_nome: string
           frequencia_recorrencia?: string | null
           id?: string
+          is_frete?: boolean | null
           numero_documento?: string | null
           numero_parcela_atual?: number | null
           observacoes?: string | null
@@ -3003,6 +3005,7 @@ export type Database = {
           fornecedor_nome?: string
           frequencia_recorrencia?: string | null
           id?: string
+          is_frete?: boolean | null
           numero_documento?: string | null
           numero_parcela_atual?: number | null
           observacoes?: string | null
