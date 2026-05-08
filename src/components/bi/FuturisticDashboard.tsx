@@ -5,11 +5,15 @@ import { formatCurrency } from "@/lib/formatters";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar, Cell } from "recharts";
 import { cn } from "@/lib/utils";
 
-const FuturisticMetricCard = ({ title, value, icon: Icon, trend, glowColor }: any) => (
-  <div className={cn(
-    "premium-card p-6 border border-white/10 bg-gradient-to-b from-card/80 to-card/40 backdrop-blur-md relative group transition-all duration-500 overflow-hidden",
-    "hover:border-primary/50 hover:shadow-[0_0_20px_rgba(var(--primary),0.1)]"
-  )}>
+const FuturisticMetricCard = ({ title, value, icon: Icon, trend, glowColor, onClick }: any) => (
+  <div 
+    onClick={onClick}
+    className={cn(
+      "premium-card p-6 border border-white/10 bg-gradient-to-b from-card/80 to-card/40 backdrop-blur-md relative group transition-all duration-500 overflow-hidden cursor-pointer",
+      "hover:border-primary/50 hover:shadow-[0_0_20px_rgba(var(--primary),0.1)] active:scale-95"
+    )}
+  >
+
     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
       <Icon className="w-12 h-12" style={{ color: glowColor }} />
     </div>
