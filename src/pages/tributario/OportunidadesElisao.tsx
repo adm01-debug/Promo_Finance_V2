@@ -441,7 +441,7 @@ export default function OportunidadesElisao() {
             </div>
           ) : (
             alertas.map((a) => (
-              <Alert key={a.id} variant={a.severidade === 'alta' ? 'destructive' : 'default'}>
+              <Alert key={a.id} variant={a.severidade === 'alta' ? 'error' : 'default'}>
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle className="flex items-center justify-between">
                   <span>{a.tipo_divergencia.replace('_', ' ').toUpperCase()}</span>
