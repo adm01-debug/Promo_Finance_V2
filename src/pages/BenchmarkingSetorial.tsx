@@ -23,6 +23,7 @@ import { Separator } from '@/components/ui/separator';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { BenchmarkResultTabs } from './benchmarking/BenchmarkResultTabs';
+import { BenchmarkingConcorrentes } from './benchmarking/BenchmarkingConcorrentes';
 import { toast } from 'sonner';
 
 interface Benchmark {
