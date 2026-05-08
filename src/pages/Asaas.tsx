@@ -85,7 +85,7 @@ export default function Asaas() {
     // Novos do hook
     config, loadingConfig, salvarConfig,
     syncQueue, loadingQueue, reprocessarManual,
-    exportarAuditoria, queueStats, simularBackoff,
+    exportarAuditoria, exportarAuditoriaPDF, queueStats, simularBackoff,
   } = useAsaas(empresaId);
 
   // States for Advanced Filters
