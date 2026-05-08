@@ -16,6 +16,7 @@ import type { ContaReceberWithRelations } from '@/components/contas-receber/Cont
 
 
 export function useContasReceberLogic() {
+  const { currentEmpresaId } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -41,6 +42,13 @@ export function useContasReceberLogic() {
   const [descontoDialogOpen, setDescontoDialogOpen] = useState(false);
   const [descontoConta, setDescontoConta] = useState<ContaReceberWithRelations | null>(null);
   const [baixaDialogOpen, setBaixaDialogOpen] = useState(false);
+
+  // Sincroniza com empresa ativa do sistema
+  useEffect(() => {
+    if (currentEmpresaId && empresaFilter !== currentEmpresaId && empresaFilter === 'all') {
+      setEmpresaFilter(currentEmpresaId);
+    }
+  }, [currentEmpresaId, empresaFilter]);
   const queryClient = useQueryClient();
 
 
