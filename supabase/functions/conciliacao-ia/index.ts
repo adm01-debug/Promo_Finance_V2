@@ -39,6 +39,9 @@ interface MatchSugestaoIA {
 
 const SYSTEM_PROMPT = `Você é um especialista em conciliação bancária. Sua tarefa é analisar transações de extrato bancário e encontrar correspondências com lançamentos do sistema financeiro.
 
+Você deve levar em conta o histórico de decisões anteriores (Aprovados/Rejeitados) para aprender padrões específicos deste usuário. Se uma transação similar foi rejeitada antes, diminua o score. Se foi aprovada, aumente.
+`
+
 Para cada transação do extrato, você deve:
 1. Analisar o valor, descrição, data e tipo (crédito/débito)
 2. Comparar com os lançamentos disponíveis
@@ -78,9 +81,10 @@ serve(async (req) => {
   }
 
   try {
-    const { transacoes, lancamentos } = await req.json() as {
+    const { transacoes, lancamentos, historicoFeedback } = await req.json() as {
       transacoes: TransacaoExtrato[];
       lancamentos: LancamentoSistema[];
+      historicoFeedback?: any[];
     };
 
     if (!transacoes?.length || !lancamentos?.length) {
@@ -123,6 +127,9 @@ ${JSON.stringify(transacoesResumo, null, 2)}
 
 LANÇAMENTOS DO SISTEMA:
 ${JSON.stringify(lancamentosResumo, null, 2)}
+
+${historicoFeedback?.length ? `HISTÓRICO DE APRENDIZADO (FEEDBACKS ANTERIORES):
+${JSON.stringify(historicoFeedback, null, 2)}` : ''}
 
 Encontre os melhores matches e retorne o JSON conforme especificado.`;
 
