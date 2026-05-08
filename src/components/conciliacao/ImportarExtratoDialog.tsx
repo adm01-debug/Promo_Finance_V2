@@ -136,7 +136,7 @@ export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess, con
                 <ul className="space-y-1 text-xs">
                   <li>• <strong>OFX/OFC</strong> - Formato padrão de bancos brasileiros</li>
                   <li>• <strong>CSV/TXT</strong> - Colunas: Data, Descrição, Valor, Tipo</li>
-                  <li>• <strong>XLSX/XLS</strong> - Em breve</li>
+                  <li>• <strong>XLSX/XLS</strong> - Colunas: Data, Descrição, Valor</li>
                 </ul>
               </div>
             </motion.div>
