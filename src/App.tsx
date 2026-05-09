@@ -140,6 +140,7 @@ function AppRoutes() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/contador/:token" element={<ContadorReadonly />} />
             <Route path="/status" element={<StatusPage />} />
+            <Route path="/portal-cliente" element={<PortalCliente />} />
 
             
             {/* Protected Routes */}
