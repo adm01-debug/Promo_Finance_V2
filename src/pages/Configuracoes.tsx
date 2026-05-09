@@ -343,7 +343,67 @@ export default function Configuracoes() {
             <Settings className="h-4 w-4" />
             <span className="hidden sm:inline">Sistema</span>
           </TabsTrigger>
+          <TabsTrigger value="automacao-compras" className="gap-2 text-primary font-bold animate-pulse">
+            <Zap className="h-4 w-4" />
+            <span className="hidden sm:inline">IA Compras</span>
+          </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="automacao-compras">
+          <Card className="premium-card">
+            <CardHeader>
+              <CardTitle className="text-xl flex items-center gap-2">
+                <Zap className="h-6 w-6 text-primary" /> Automação de Compras IA
+              </CardTitle>
+              <CardDescription>
+                Configure o motor de inteligência preditiva para compras automáticas e reposição de estoque.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/5">
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-bold">Compras Preditivas</Label>
+                      <p className="text-xs text-muted-foreground">Reposição automática baseada em demanda histórica.</p>
+                    </div>
+                    <Switch defaultChecked />
+                  </div>
+                  <div className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/5">
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-bold">Otimização Tributária</Label>
+                      <p className="text-xs text-muted-foreground">Selecionar fornecedores por melhor benefício fiscal (ICMS/IPI).</p>
+                    </div>
+                    <Switch defaultChecked />
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Margem de Segurança (Estoque)</Label>
+                    <Slider defaultValue={[20]} max={50} step={5} />
+                    <div className="flex justify-between text-[10px] font-bold text-muted-foreground">
+                      <span>Mínimo (5%)</span>
+                      <span>Atual: 20%</span>
+                      <span>Máximo (50%)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <Separator className="bg-white/5" />
+              
+              <div className="bg-primary/5 p-4 rounded-xl border border-primary/20 flex items-start gap-4">
+                <Brain className="h-10 w-10 text-primary shrink-0" />
+                <div className="space-y-1">
+                  <p className="text-sm font-bold">Quantum-Sentinel Insight</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    O motor de IA detectou uma oportunidade de economia tributária de <strong>12.4%</strong> ao centralizar compras de insumos via fornecedores em estados com regime especial de ICMS. Ative a automação para permitir que o sistema sugira ordens de compra otimizadas.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="asaas">
           <Card className="premium-card">
