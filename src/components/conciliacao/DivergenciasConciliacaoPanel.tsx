@@ -34,11 +34,35 @@ export function DivergenciasConciliacaoPanel({ empresaId }: { empresaId?: string
             <AlertTriangle className="h-8 w-8 text-destructive opacity-50" />
           </CardContent>
         </Card>
+        
+        <Card className="bg-primary/5 border-primary/20">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-primary">Auditoria Preventiva</p>
+              <Button 
+                variant="link" 
+                className="h-auto p-0 text-xs font-black uppercase text-primary/70 hover:text-primary"
+                onClick={handleRunAudit}
+                disabled={isAuditing}
+              >
+                {isAuditing ? (
+                  <><Loader2 className="h-3 w-3 animate-spin mr-1" /> Executando...</>
+                ) : (
+                  <><ShieldCheck className="h-3 w-3 mr-1" /> Executar Auditoria Agora</>
+                )}
+              </Button>
+            </div>
+            <ShieldCheck className="h-8 w-8 text-primary opacity-50" />
+          </CardContent>
+        </Card>
       </div>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg">Audit de Divergências</CardTitle>
+          <Badge variant="outline" className="font-mono text-[10px] uppercase tracking-widest opacity-60">
+            Real-Time Monitoring
+          </Badge>
         </CardHeader>
         <CardContent className="space-y-4">
           {divergencias.length === 0 ? (
