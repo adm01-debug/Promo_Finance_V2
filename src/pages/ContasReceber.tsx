@@ -129,6 +129,9 @@ export default function ContasReceber() {
                   <Button variant="outline" size="lg" className="h-12 px-6 rounded-xl border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary font-black gap-2 transition-all" onClick={() => setBaixaDialogOpen(true)}>
                     <Zap className="h-5 w-5" /> Baixa Automática
                   </Button>
+                  <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl border-white/5 bg-white/5 hover:bg-white/10 text-muted-foreground transition-all" onClick={() => setWebhookDialogOpen(true)}>
+                    <Settings className="h-5 w-5" />
+                  </Button>
                 <Button size="lg" className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]" onClick={() => setFormOpen(true)}>
                   <Plus className="h-5 w-5" /> Novo Comando
                 </Button>
