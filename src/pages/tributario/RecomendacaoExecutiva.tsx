@@ -34,7 +34,7 @@ export default function RecomendacaoExecutiva() {
   const navigate = useNavigate();
   const { data: empresas = [] } = useAllEmpresas();
   const [empresaId, setEmpresaId] = useState<string | undefined>();
-  const { resultado, regimeAtual, setRegimeAtual, parametros, salvarSimulacao } =
+  const { resultado, regimeAtual, setRegimeAtual, parametros, salvarSimulacao, isRecomendacaoIA } =
     useSimulacaoRegimes({ empresaId });
   const gerarPdf = useGerarPdfTributario();
   const enviarBitrix = useEnviarBitrix24Tributario();
