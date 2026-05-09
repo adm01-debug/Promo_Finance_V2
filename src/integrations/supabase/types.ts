@@ -719,6 +719,38 @@ export type Database = {
           },
         ]
       }
+      aprovacao_comentarios: {
+        Row: {
+          created_at: string | null
+          id: string
+          solicitacao_id: string
+          texto: string
+          usuario_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          solicitacao_id: string
+          texto: string
+          usuario_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          solicitacao_id?: string
+          texto?: string
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aprovacao_comentarios_solicitacao_id_fkey"
+            columns: ["solicitacao_id"]
+            isOneToOne: false
+            referencedRelation: "solicitacoes_aprovacao"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       apuracoes_irpj_csll: {
         Row: {
           adicoes_permanentes: number | null
@@ -5618,6 +5650,42 @@ export type Database = {
           },
         ]
       }
+      fluxos_aprovacao_niveis: {
+        Row: {
+          aprovadores_obrigatorios: number | null
+          created_at: string | null
+          descricao: string | null
+          empresa_id: string
+          id: string
+          nome: string
+          ordem: number
+          updated_at: string | null
+          valor_minimo: number | null
+        }
+        Insert: {
+          aprovadores_obrigatorios?: number | null
+          created_at?: string | null
+          descricao?: string | null
+          empresa_id: string
+          id?: string
+          nome: string
+          ordem: number
+          updated_at?: string | null
+          valor_minimo?: number | null
+        }
+        Update: {
+          aprovadores_obrigatorios?: number | null
+          created_at?: string | null
+          descricao?: string | null
+          empresa_id?: string
+          id?: string
+          nome?: string
+          ordem?: number
+          updated_at?: string | null
+          valor_minimo?: number | null
+        }
+        Relationships: []
+      }
       folha_pagamento: {
         Row: {
           ano: number
@@ -10406,38 +10474,47 @@ export type Database = {
         Row: {
           aprovado_em: string | null
           aprovado_por: string | null
+          assinaturas: Json | null
           conta_pagar_id: string
           created_at: string
           id: string
           motivo_rejeicao: string | null
+          nivel_atual: number | null
           observacoes: string | null
           solicitado_em: string
           solicitado_por: string
           status: string
+          total_niveis: number | null
         }
         Insert: {
           aprovado_em?: string | null
           aprovado_por?: string | null
+          assinaturas?: Json | null
           conta_pagar_id: string
           created_at?: string
           id?: string
           motivo_rejeicao?: string | null
+          nivel_atual?: number | null
           observacoes?: string | null
           solicitado_em?: string
           solicitado_por: string
           status?: string
+          total_niveis?: number | null
         }
         Update: {
           aprovado_em?: string | null
           aprovado_por?: string | null
+          assinaturas?: Json | null
           conta_pagar_id?: string
           created_at?: string
           id?: string
           motivo_rejeicao?: string | null
+          nivel_atual?: number | null
           observacoes?: string | null
           solicitado_em?: string
           solicitado_por?: string
           status?: string
+          total_niveis?: number | null
         }
         Relationships: [
           {
