@@ -12,7 +12,9 @@ import {
   Palette,
   Bell,
   Settings,
+  Settings2,
   ChevronDown,
+
   Key,
   Building2,
   CreditCard,
