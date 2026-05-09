@@ -22,6 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/lib/utils';
 import { logger } from '@/lib/logger';
 import { ContaPagarFormFields } from './ContaPagarFormFields';
+import { AnexoList } from '@/components/financeiro/AnexoList';
 
 const contaPagarSchema = z.object({
   fornecedor_id: z.string().optional(),
