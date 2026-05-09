@@ -2,7 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useDivergenciasConciliacao } from '@/hooks/useDivergenciasConciliacao';
-import { AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import { useConciliacaoAudit } from '@/hooks/useConciliacaoAudit';
+import { AlertTriangle, CheckCircle, Clock, ShieldCheck, Loader2 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 
 export function DivergenciasConciliacaoPanel() {
