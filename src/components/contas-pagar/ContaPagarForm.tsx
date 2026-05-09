@@ -2,15 +2,20 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, DollarSign, Edit, Scan } from 'lucide-react';
 import { ActionButton } from '@/components/ui/action-button';
 import { LeitorCodigoBarras } from './LeitorCodigoBarras';
 import { DadosBoleto } from '@/lib/barcode-parser';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { useFornecedores, useCentrosCusto, useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
+import { 
+  useFornecedores, 
+  useCentrosCusto, 
+  useContasBancarias, 
+  useEmpresas,
+  useCreateContaPagar,
+  useUpdateContaPagar 
+} from '@/hooks/useFinancialData';
 import { useCategorias } from '@/hooks/useCategorias';
 import { toast } from '@/hooks/use-toast';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
