@@ -54,7 +54,7 @@ export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess, con
       const mockExtrato: ExtratoOFX = {
         nomeArquivo: 'Open Finance Sync',
         dataImportacao: new Date(),
-        formato: 'Open Finance',
+        formato: 'OPEN_FINANCE',
         conta: {
           agencia: '0001',
           conta: '12345-6',
