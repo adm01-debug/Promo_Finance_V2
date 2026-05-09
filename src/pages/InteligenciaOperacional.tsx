@@ -2,8 +2,10 @@ import { HealthScoreCard } from '@/components/dashboard/HealthScoreCard';
 import { CentroAcoesInteligentes } from '@/components/dashboard/CentroAcoesInteligentes';
 import { AlertasPreditivosPanel } from '@/components/dashboard/AlertasPreditivosPanel';
 import { MetasFinanceirasPanel } from '@/components/dashboard/MetasFinanceirasPanel';
+import { PlanosAcaoPanel } from '@/components/dashboard/PlanosAcaoPanel';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Sparkles, BrainCircuit } from 'lucide-react';
+import { Sparkles, BrainCircuit, Target, ClipboardCheck } from 'lucide-react';
+
 import { motion } from 'framer-motion';
 
 export default function InteligenciaOperacionalPage() {
@@ -59,9 +61,18 @@ export default function InteligenciaOperacionalPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <MetasFinanceirasPanel defaultExpanded={true} />
+            <PlanosAcaoPanel />
           </motion.div>
         </div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <MetasFinanceirasPanel defaultExpanded={true} />
+        </motion.div>
+
       </div>
     </MainLayout>
   );

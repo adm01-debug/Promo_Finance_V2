@@ -6387,6 +6387,45 @@ export type Database = {
         }
         Relationships: []
       }
+      kpis_operacionais: {
+        Row: {
+          categoria: string | null
+          created_at: string | null
+          id: string
+          meta: number | null
+          nome: string
+          tendencia: string | null
+          unidade: string | null
+          updated_at: string | null
+          user_id: string
+          valor_atual: number | null
+        }
+        Insert: {
+          categoria?: string | null
+          created_at?: string | null
+          id?: string
+          meta?: number | null
+          nome: string
+          tendencia?: string | null
+          unidade?: string | null
+          updated_at?: string | null
+          user_id: string
+          valor_atual?: number | null
+        }
+        Update: {
+          categoria?: string | null
+          created_at?: string | null
+          id?: string
+          meta?: number | null
+          nome?: string
+          tendencia?: string | null
+          unidade?: string | null
+          updated_at?: string | null
+          user_id?: string
+          valor_atual?: number | null
+        }
+        Relationships: []
+      }
       lalur_lancamentos: {
         Row: {
           apuracao_id: string | null
@@ -8181,6 +8220,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      planos_acao: {
+        Row: {
+          created_at: string | null
+          descricao: string | null
+          id: string
+          prazo: string | null
+          prioridade: string | null
+          progresso: number | null
+          responsavel: string | null
+          status: string | null
+          tags: string[] | null
+          titulo: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          descricao?: string | null
+          id?: string
+          prazo?: string | null
+          prioridade?: string | null
+          progresso?: number | null
+          responsavel?: string | null
+          status?: string | null
+          tags?: string[] | null
+          titulo: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          descricao?: string | null
+          id?: string
+          prazo?: string | null
+          prioridade?: string | null
+          progresso?: number | null
+          responsavel?: string | null
+          status?: string | null
+          tags?: string[] | null
+          titulo?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       ponto_departamentos: {
         Row: {
