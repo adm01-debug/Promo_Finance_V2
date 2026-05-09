@@ -84,37 +84,94 @@ export function WebhookConfigPanel() {
       </Card>
 
       <div className="space-y-3">
-        <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 flex items-center gap-2 px-1">
-          <Terminal className="h-3.5 w-3.5" /> Recent Payloads / Logs
-        </h4>
-        <div className="space-y-2">
-          {mockLogs.map((log) => (
-            <div key={log.id} className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between text-xs transition-all hover:bg-white/10">
-              <div className="flex items-center gap-3">
-                <div className={cn(
-                  "h-8 w-8 rounded-lg flex items-center justify-center",
-                  log.status === 'success' ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'
-                )}>
-                  {log.status === 'success' ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
-                </div>
-                <div>
-                  <p className="font-bold">{log.event}</p>
-                  <p className="text-[10px] text-muted-foreground font-medium">{log.details}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest flex items-center gap-1 justify-end">
-                  <Clock className="h-3 w-3" /> {log.time}
-                </p>
-                <Badge variant="outline" className={cn(
-                  "text-[9px] mt-1 font-black",
-                  log.status === 'success' ? 'bg-success/20 text-success border-none' : 'bg-destructive/20 text-destructive border-none'
-                )}>
-                  {log.status === 'success' ? 'COMPLETED' : 'FAILED'}
-                </Badge>
-              </div>
+        <div className="flex items-center justify-between px-1">
+          <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 flex items-center gap-2">
+            <Terminal className="h-3.5 w-3.5" /> Recent Payloads / Logs
+          </h4>
+          {isLoading && <div className="h-3 w-3 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />}
+        </div>
+        
+        <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
+          {logs.length === 0 && !isLoading ? (
+            <div className="p-8 text-center bg-white/5 rounded-xl border border-white/5">
+              <Braces className="h-8 w-8 text-muted-foreground/20 mx-auto mb-2" />
+              <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest">Nenhum evento capturado</p>
             </div>
-          ))}
+          ) : (
+            logs.map((log) => (
+              <div key={log.id} className="group space-y-2">
+                <div 
+                  onClick={() => setExpandedLogId(expandedLogId === log.id ? null : log.id)}
+                  className={cn(
+                    "p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between text-xs transition-all hover:bg-white/10 cursor-pointer",
+                    expandedLogId === log.id && "bg-white/10 border-primary/20"
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "h-8 w-8 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110",
+                      log.status === 'success' || log.processado ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'
+                    )}>
+                      {log.status === 'success' || log.processado ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+                    </div>
+                    <div>
+                      <p className="font-bold flex items-center gap-2">
+                        {log.evento || log.event_type || 'Unknown Event'}
+                        <ChevronRight className={cn("h-3 w-3 opacity-0 group-hover:opacity-40 transition-all", expandedLogId === log.id && "rotate-90 opacity-100")} />
+                      </p>
+                      <p className="text-[10px] text-muted-foreground font-medium truncate max-w-[150px]">
+                        {log.erro_mensagem || `Origem: ${log.origem || log.provider || 'API'}`}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest flex items-center gap-1 justify-end">
+                      <Clock className="h-3 w-3" /> {formatDistanceToNow(new Date(log.created_at), { addSuffix: true, locale: ptBR })}
+                    </p>
+                    <Badge variant="outline" className={cn(
+                      "text-[9px] mt-1 font-black",
+                      log.status === 'success' || log.processado ? 'bg-success/20 text-success border-none' : 'bg-destructive/20 text-destructive border-none'
+                    )}>
+                      {log.status === 'success' || log.processado ? 'COMPLETED' : 'FAILED'}
+                    </Badge>
+                  </div>
+                </div>
+
+                {expandedLogId === log.id && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }} 
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 rounded-xl bg-black/40 border border-white/5 font-mono text-[10px] overflow-x-auto"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-primary font-bold uppercase tracking-tighter">Payload RAW</span>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 px-2 text-[9px]"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigator.clipboard.writeText(JSON.stringify(log.payload, null, 2));
+                          toast.success('JSON copiado!');
+                        }}
+                      >
+                        COPY JSON
+                      </Button>
+                    </div>
+                    <pre className="text-muted-foreground leading-tight">
+                      {JSON.stringify(log.payload, null, 2)}
+                    </pre>
+                    {log.erro_detalhe && (
+                      <div className="mt-3 pt-3 border-t border-white/5">
+                        <span className="text-destructive font-bold uppercase tracking-tighter block mb-1">Stack Trace / Error Detail</span>
+                        <p className="text-red-400/70 whitespace-pre-wrap">{log.erro_detalhe}</p>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </div>
+            ))
+          )}
         </div>
       </div>
       
