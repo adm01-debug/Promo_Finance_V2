@@ -351,13 +351,53 @@ Deno.serve(async (req) => {
 
     const resultado = decidirRegime(params, ano, mes, regimeAtual);
 
+    // ---------- IA JUSTIFICATION (P7 Premium) ----------
+    let justificativaIA = null;
+    try {
+      const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+      if (LOVABLE_API_KEY) {
+        const prompt = `Analise os cenários tributários abaixo e forneça uma recomendação executiva curta (máx 3 frases) em português:
+        ${JSON.stringify(resultado.cenarios)}
+        
+        Regime Recomendado: ${resultado.recomendado.nome}
+        Economia Estimada: R$ ${resultado.economiaAnualVsAtual || 0}
+        
+        Foque na eficiência tributária e riscos.`;
+
+        const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "google/gemini-2.0-flash-exp",
+            messages: [
+              { role: "system", content: "Você é um consultor tributário sênior." },
+              { role: "user", content: prompt },
+            ],
+          }),
+        });
+
+        if (aiResponse.ok) {
+          const aiData = await aiResponse.json();
+          justificativaIA = aiData.choices?.[0]?.message?.content;
+        }
+      }
+    } catch (e) {
+      logger.error('ai_justification_error', { error: e.message });
+    }
+
+
     // ---------- CACHE WRITE (P7) ----------
+    const responseData = { ...resultado, justificativaIA, simulacaoId: null, params };
+
     if (cacheable) {
       await sb.from('regime_decision_cache').upsert({
         empresa_id: empresaId,
         ano,
         mes,
-        decisao: resultado as unknown as Record<string, unknown>,
+        decisao: responseData as unknown as Record<string, unknown>,
         computed_at: new Date().toISOString(),
         expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       });
@@ -375,12 +415,13 @@ Deno.serve(async (req) => {
         regime_recomendado: resultado.recomendado.regime,
         cenarios: resultado.cenarios as unknown as Record<string, unknown>,
         alertas: resultado.alertas,
-        justificativa: resultado.justificativa,
+        justificativa: justificativaIA || resultado.justificativa,
         economia_anual_estimada: resultado.economiaAnualVsAtual ?? null,
         parametros: params as unknown as Record<string, unknown>,
         created_by: claims.claims.sub,
       }).select('id').maybeSingle();
       simulacaoId = ins?.id ?? null;
+      responseData.simulacaoId = simulacaoId;
     }
 
     logger.info('fn_success', {
@@ -389,7 +430,7 @@ Deno.serve(async (req) => {
       context: { empresaId, ano, mes, regime: resultado.recomendado.regime },
     });
     await logger.flush();
-    return new Response(JSON.stringify({ ...resultado, simulacaoId, params }), {
+    return new Response(JSON.stringify(responseData), {
       status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (err) {
