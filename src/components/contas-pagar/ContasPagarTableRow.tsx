@@ -249,6 +249,19 @@ export const ContasPagarTableRow = memo(({
               <History className="h-4 w-4" /> Version History
             </DropdownMenuItem>
             
+            <DuplicateButton 
+              data={conta} 
+              onDuplicate={(duplicated) => {
+                onEdit(duplicated);
+                toast.success('Registro clonado. Revise os dados e salve.');
+              }}
+              label="Clone Record"
+              className="w-full justify-start px-2 py-1.5 h-auto font-normal text-sm gap-2 rounded-lg focus:bg-primary/10"
+              variant="ghost"
+              size="default"
+              iconClassName="h-4 w-4"
+            />
+            
             {(conta.status === 'pendente' || conta.status === 'vencido' || conta.status === 'parcial') && (
               <DropdownMenuItem onClick={onRegistrarPagamento} className="gap-2 text-success focus:text-success focus:bg-success/10">
                 <CheckCircle2 className="h-4 w-4" /> Register Payment
