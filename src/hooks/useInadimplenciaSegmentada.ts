@@ -1,7 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-// Tipos internos para os dados do Supabase
+export interface PredicaoInadimplencia {
+  id: string;
+  tipo: string;
+  titulo: string;
+  descricao: string;
+  probabilidade: number;
+  impacto_estimado: number;
+  data_previsao: string;
+  prioridade: 'baixa' | 'media' | 'alta' | 'critica';
+  status: string;
+}
+
 interface ContaReceberComCliente {
   id: string;
   valor: number;
@@ -50,7 +61,6 @@ export function useInadimplenciaPorRamo() {
     queryFn: async () => {
       const hoje = new Date().toISOString().split('T')[0];
       
-      // Buscar contas a receber com dados do cliente
       const { data: contas, error } = await supabase
         .from("contas_receber")
         .select(`
@@ -66,7 +76,6 @@ export function useInadimplenciaPorRamo() {
 
       if (error) throw error;
 
-      // Agrupar por ramo de atividade
       const porRamo = new Map<string, {
         total_contas: number;
         total_vencido: number;
@@ -75,7 +84,7 @@ export function useInadimplenciaPorRamo() {
         dias_atraso_total: number;
       }>();
 
-      (contas as ContaReceberComCliente[] | null)?.forEach((conta) => {
+      (contas as any[] | null)?.forEach((conta) => {
         const ramo = conta.clientes?.ramo_atividade || "Não informado";
         const valorPendente = conta.valor - (conta.valor_recebido || 0);
         const isVencido = conta.data_vencimento < hoje;
@@ -133,7 +142,6 @@ export function useInadimplenciaPorVendedor() {
       const hoje = new Date().toISOString().split('T')[0];
       const inicioMes = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
       
-      // Buscar vendedores
       const { data: vendedores, error: vendedoresError } = await supabase
         .from("vendedores")
         .select("*")
@@ -141,7 +149,6 @@ export function useInadimplenciaPorVendedor() {
 
       if (vendedoresError) throw vendedoresError;
 
-      // Buscar contas a receber com vendedor
       const { data: contas, error: contasError } = await supabase
         .from("contas_receber")
         .select("*")
@@ -149,7 +156,6 @@ export function useInadimplenciaPorVendedor() {
 
       if (contasError) throw contasError;
 
-      // Buscar recebimentos do mês para meta
       const { data: recebidosMes, error: recebidosError } = await supabase
         .from("contas_receber")
         .select("vendedor_id, valor_recebido")
@@ -159,14 +165,12 @@ export function useInadimplenciaPorVendedor() {
 
       if (recebidosError) throw recebidosError;
 
-      // Calcular recebido por vendedor no mês
       const recebidoPorVendedor = new Map<string, number>();
       recebidosMes?.forEach((r) => {
         const atual = recebidoPorVendedor.get(r.vendedor_id as string) || 0;
         recebidoPorVendedor.set(r.vendedor_id as string, atual + (r.valor_recebido || 0));
       });
 
-      // Agrupar por vendedor
       const porVendedor = new Map<string, {
         total_contas: number;
         total_vencido: number;
@@ -207,7 +211,7 @@ export function useInadimplenciaPorVendedor() {
 
       const resultado: InadimplenciaPorVendedor[] = [];
       
-      (vendedores as VendedorData[] | null)?.forEach((vendedor) => {
+      (vendedores as any[] | null)?.forEach((vendedor) => {
         const stats = porVendedor.get(vendedor.id) || {
           total_contas: 0,
           total_vencido: 0,
@@ -238,6 +242,23 @@ export function useInadimplenciaPorVendedor() {
       });
 
       return resultado.sort((a, b) => b.taxa_inadimplencia - a.taxa_inadimplencia);
+    },
+  });
+}
+
+export function usePrevisoesInadimplencia() {
+  return useQuery({
+    queryKey: ["previsoes-inadimplencia"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("alertas_preditivos")
+        .select("*")
+        .eq("tipo", "inadimplencia")
+        .eq("status", "pendente")
+        .order("probabilidade", { ascending: false });
+
+      if (error) throw error;
+      return data as PredicaoInadimplencia[];
     },
   });
 }
