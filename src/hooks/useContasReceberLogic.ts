@@ -301,7 +301,7 @@ export function useContasReceberLogic() {
     handleSearchChange, handleStatusChange, handleCentroCustoChange, handleEmpresaChange,
     handleFormaChange, handlePageSizeChange, handleSort, handleOpenDeleteDialog, handleDeleteConta,
     handleFilterChange, handleBulkMarkAsReceived, handleBulkCancel, handleViewConta,
-    handleEnviarCobranca, handleKpiClick, handleAplicarDesconto,
+    handleEnviarCobranca, handleKpiClick, handleAplicarDesconto, handleSyncStages,
     setFormOpen, setRecebimentoDialogOpen, setSelectedConta, setEditingConta,
     setAdvancedFilters, setCurrentPage, setDeleteDialogOpen, setViewMode,
     setDetailDrawerOpen, setCobrancaDialogOpen, setDescontoDialogOpen,
