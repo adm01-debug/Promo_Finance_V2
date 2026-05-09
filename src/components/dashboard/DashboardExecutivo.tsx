@@ -306,7 +306,7 @@ export const DashboardExecutivo = () => {
                     <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-primary/20 text-primary text-[9px] font-black uppercase tracking-widest">
                       <ShieldAlert className="h-3 w-3" /> Anti-Duplicity Engine
                     </div>
-                    <h3 className="text-xl font-black tracking-tight">Inteligência Operacional 360°</h3>
+                    <h3 className="text-xl font-black tracking-tight">Sentinel Hub: Anti-Duplicidade</h3>
                     <div className="flex items-center gap-2 py-1">
                       <div className="flex flex-col">
                         <span className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">Proteção Ativa</span>

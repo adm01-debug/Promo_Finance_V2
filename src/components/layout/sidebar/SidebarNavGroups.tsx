@@ -111,7 +111,7 @@ const navGroups: NavGroup[] = [
       { label: 'Asaas Pagamentos', icon: CreditCard, href: '/asaas', highlight: true },
       { label: 'Auditoria de Duplicidade', icon: ShieldAlert, href: '/contas-pagar/bloqueios', highlight: true },
       { label: 'Metas Financeiras', icon: Target, href: '/metas', highlight: true },
-      { label: 'Alertas Preditivos', icon: Brain, href: '/inteligencia#alertas-preditivos', highlight: true },
+      { label: 'Cyber-Sentinel: Riscos', icon: Brain, href: '/inteligencia#alertas-preditivos', highlight: true },
     ],
   },
   {
@@ -152,8 +152,8 @@ const navGroups: NavGroup[] = [
     label: 'Cadastros',
     icon: Users,
     items: [
-      { label: 'Clientes', icon: User, href: '/clientes', badgeKey: 'whatsapp' },
-      { label: 'WhatsApp History', icon: MessageSquare, href: '/cobrancas#whatsapp', badgeKey: 'whatsapp', highlight: true },
+      { label: 'Clientes', icon: User, href: '/clientes' },
+      { label: 'Chat & Histórico (WA)', icon: MessageSquare, href: '/cobrancas#whatsapp', badgeKey: 'whatsapp', highlight: true },
       { label: 'Scoring & Risco', icon: Target, href: '/clientes/scoring', highlight: true },
       { label: 'Portal de Tokens', icon: Key, href: '/clientes/portal-tokens' },
       { label: 'Fornecedores', icon: Truck, href: '/fornecedores' },
