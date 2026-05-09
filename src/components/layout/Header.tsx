@@ -31,6 +31,8 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
+
 import { useAlertas } from '@/hooks/useAlertas';
 import { useUserEmpresas } from '@/hooks/useUserEmpresas';
 import { KeyboardShortcutsDialog } from './KeyboardShortcutsDialog';
