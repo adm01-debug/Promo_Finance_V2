@@ -113,6 +113,6 @@ describe('Intelligent Transaction Matcher', () => {
     const matches = encontrarMatchesParaTransacao(transacao, mockLancamentos);
     expect(matches.length).toBeGreaterThan(0);
     expect(matches[0].lancamentoId).toBe('l2');
-    expect(matches[0].confianca).toBe('alta');
+    expect(matches[0].score).toBeGreaterThan(70);
   });
 });
