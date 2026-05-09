@@ -90,10 +90,11 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
       cidade: '',
       estado: '',
       contato: '',
-      limite_credito: 0,
-      observacoes: '',
-      ativo: true,
-    },
+        limite_credito: 0,
+        ramo_atividade: '',
+        observacoes: '',
+        ativo: true,
+      },
   });
 
   useEffect(() => {
