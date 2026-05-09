@@ -179,7 +179,7 @@ export default function Relatorios() {
           </div>
         </motion.div>
 
-      </div>
+      <RelatoriosFilters
         periodoInicio={periodoInicio}
         periodoFim={periodoFim}
         empresaSelecionada={empresaSelecionada}
