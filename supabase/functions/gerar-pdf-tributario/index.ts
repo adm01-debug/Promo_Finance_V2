@@ -163,16 +163,36 @@ Deno.serve(async (req) => {
       280
     );
 
-    // PÁGINA 2 — Resumo Executivo
+    // PÁGINA 2 — Parâmetros e Resumo Executivo
     doc.addPage();
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(16);
-    doc.text('Resumo Executivo', 15, 20);
+    doc.text('Parâmetros da Simulação', 15, 20);
+    
+    const params = decisao?.params || {};
+    autoTable(doc, {
+      startY: 28,
+      head: [['Parâmetro', 'Valor']],
+      body: [
+        ['Faturamento Anual Est.', formatBRL(params.faturamentoAnual || 0)],
+        ['Margem de Lucro', formatPct(params.margemLucro || 0)],
+        ['Percentual de Serviços', formatPct(params.percentualServicos || 0)],
+        ['Folha Salarial Anual', formatBRL(params.folhaAnual || 0)],
+        ['Compras com Crédito (LR)', formatBRL(params.comprasComCredito || 0)],
+        ['Despesas Operacionais (LR)', formatBRL(params.despesasOperacionais || 0)],
+      ],
+      styles: { fontSize: 9 },
+      theme: 'striped',
+    });
+
+    const resumoY = (doc as any).lastAutoTable.finalY + 15;
+    doc.setFontSize(16);
+    doc.text('Resumo Executivo', 15, resumoY);
     doc.setFontSize(10);
     doc.setTextColor(71, 85, 105);
-    const justificativa = decisao?.justificativa ?? 'Análise baseada nos parâmetros informados.';
+    const justificativa = decisao?.justificativaIA || decisao?.justificativa || 'Análise baseada nos parâmetros informados.';
     const splitJust = doc.splitTextToSize(justificativa, pageWidth - 30);
-    doc.text(splitJust, 15, 32);
+    doc.text(splitJust, 15, resumoY + 10);
 
     if (decisao?.alertas?.length > 0) {
       doc.setFontSize(12);

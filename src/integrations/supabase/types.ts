@@ -11168,6 +11168,66 @@ export type Database = {
           },
         ]
       }
+      tax_audit_trail: {
+        Row: {
+          action: string
+          ano: number
+          cache_id: string | null
+          created_at: string | null
+          empresa_id: string
+          id: string
+          is_ai_justified: boolean | null
+          mes: number
+          parameters: Json | null
+          prompt: string | null
+          response: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          ano: number
+          cache_id?: string | null
+          created_at?: string | null
+          empresa_id: string
+          id?: string
+          is_ai_justified?: boolean | null
+          mes: number
+          parameters?: Json | null
+          prompt?: string | null
+          response?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          ano?: number
+          cache_id?: string | null
+          created_at?: string | null
+          empresa_id?: string
+          id?: string
+          is_ai_justified?: boolean | null
+          mes?: number
+          parameters?: Json | null
+          prompt?: string | null
+          response?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tax_audit_trail_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tax_audit_trail_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       templates_cobranca: {
         Row: {
           assunto: string | null
