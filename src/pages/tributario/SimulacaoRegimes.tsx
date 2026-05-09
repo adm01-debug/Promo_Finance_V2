@@ -175,7 +175,7 @@ export default function SimulacaoRegimes() {
                 <div className="flex-1">
                   <p className="text-sm text-muted-foreground">Regime Recomendado</p>
                   <h2 className="text-2xl md:text-3xl font-bold text-success">{resultado.recomendado.nome}</h2>
-                  <p className="text-sm text-muted-foreground mt-1">{resultado.justificativa}</p>
+                  <p className="text-sm text-muted-foreground mt-1">{resultado.justificativaIA || resultado.justificativa}</p>
                   {resultado.economiaAnualVsAtual !== undefined && resultado.economiaAnualVsAtual > 0 && (
                     <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-success/10 text-success">
                       <TrendingDown className="h-4 w-4" aria-hidden="true" />
