@@ -1,28 +1,25 @@
 import { motion } from 'framer-motion';
-import { Plus, CheckCircle2, XCircle, ArrowUpDown, Sparkles, ShieldAlert } from 'lucide-react';
+import { Plus, CheckCircle2, XCircle, ShieldAlert } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { CategorizacaoLoteButton } from '@/components/contas-pagar/CategorizacaoIABadge';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ExportMenu } from '@/components/ui/export-menu';
-import { TablePagination } from '@/components/ui/table-pagination';
 import { contasPagarColumns } from '@/lib/export-utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ContaPagarForm } from '@/components/contas-pagar/ContaPagarForm';
 import { RegistrarPagamentoDialog } from '@/components/contas-pagar/RegistrarPagamentoDialog';
 import { ContasPagarKPIs } from '@/components/contas-pagar/ContasPagarKPIs';
-import { ContasPagarFilters } from '@/components/contas-pagar/ContasPagarFilters';
-import { ContasPagarTableRow } from '@/components/contas-pagar/ContasPagarTableRow';
+import { ContasPagarList } from './ContasPagar/components/List';
+import { ContasPagarFilters } from './ContasPagar/components/Filters';
 import { SolicitarAprovacaoDialog } from '@/components/contas-pagar/SolicitarAprovacaoDialog';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { BulkActionsBar } from '@/components/ui/bulk-actions-bar';
-import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { QuickDateFilters } from '@/components/ui/quick-date-filters';
 import { useContasPagarLogic } from '@/hooks/useContasPagarLogic';
 import { useHighlightFromUrl } from '@/hooks/useHighlightFromUrl';
 import { formatCurrency } from '@/lib/formatters';
+
 import { cn } from '@/lib/utils';
 
 const containerVariants = {
@@ -167,87 +164,44 @@ export default function ContasPagar() {
           {/* Core Content: High-Fidelity Table */}
           <motion.div variants={itemVariants} className="min-h-[600px]">
             <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] rounded-[2.5rem] overflow-hidden ring-1 ring-white/10">
-              {logic.isLoading ? (
-                <TableShimmerSkeleton rows={logic.pageSize} columns={8} showCheckbox showAvatar />
-              ) : (
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <tr className="bg-white/[0.02] border-b border-white/5">
-                        <th className="w-16 p-6 text-center">
-                          <Checkbox 
-                            checked={logic.isAllSelected}
-                            onChange={logic.selectAll}
-                            aria-label="Selecionar todos"
-                          />
-                        </th>
-                        <th className="w-[300px] p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Supplier / Entity</th>
-                        <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Internal Reference</th>
-                        <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Gross Value</th>
-                        <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Maturity Horizon</th>
-                        <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Operational Unit</th>
-                        <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-center">Governance</th>
-                        <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-center">Ledger Status</th>
-                        <th className="w-20 p-6"></th>
-                      </tr>
-                    </TableHeader>
-                    <TableBody className="divide-y divide-white/5">
-                      {logic.sortedContas.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={9} className="h-[400px] text-center p-0">
-                            <div className="flex flex-col items-center justify-center space-y-4">
-                              <Sparkles className="h-12 w-12 text-muted-foreground/20 animate-pulse" />
-                              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 italic">Global Vault Cleared</p>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ) : (
-                        logic.sortedContas.map((conta, index) => {
-                          const approvalStatus = logic.getApprovalStatus(conta);
-                          const historico = logic.historicoAprovacaoPorConta.get(conta.id) || [];
-                          
-                          return (
-                            <ContasPagarTableRow
-                              key={conta.id}
-                              conta={conta}
-                              index={index}
-                              isSelected={logic.isSelected(conta.id)}
-                              onToggleSelect={() => logic.toggleSelect(conta.id)}
-                              onEdit={() => {
-                                logic.setEditingConta(conta);
-                                logic.setFormOpen(true);
-                              }}
-                              onDelete={() => logic.handleOpenDeleteDialog(conta)}
-                              onRegistrarPagamento={() => {
-                                logic.setSelectedConta(conta);
-                                logic.setPagamentoDialogOpen(true);
-                              }}
-                              onSolicitarAprovacao={() => logic.abrirModalAprovacao(conta)}
-                              {...approvalStatus}
-                              historico={historico}
-                              profilesMap={logic.profilesMap}
-                              valorMinimoAprovacao={logic.valorMinimoAprovacao}
-                              getRowAnimation={logic.getRowAnimation}
-                            />
-                          );
-                        })
-                      )}
-                    </TableBody>
-                  </Table>
-                  <div className="p-6 border-t border-white/5 bg-black/20">
-                    <TablePagination
-                      currentPage={logic.currentPage}
-                      totalPages={logic.totalPages}
-                      pageSize={logic.pageSize}
-                      totalItems={logic.totalCount}
-                      onPageChange={logic.setCurrentPage}
-                      onPageSizeChange={logic.handlePageSizeChange}
-                    />
-                  </div>
+              <ContasPagarList
+                contas={logic.sortedContas}
+                isLoading={logic.isLoading}
+                isAllSelected={logic.isAllSelected}
+                selectAll={logic.selectAll}
+                isSelected={logic.isSelected}
+                toggleSelect={logic.toggleSelect}
+                onEdit={(conta) => {
+                  logic.setEditingConta(conta);
+                  logic.setFormOpen(true);
+                }}
+                onDelete={logic.handleOpenDeleteDialog}
+                onRegistrarPagamento={(conta) => {
+                  logic.setSelectedConta(conta);
+                  logic.setPagamentoDialogOpen(true);
+                }}
+                onSolicitarAprovacao={logic.abrirModalAprovacao}
+                getApprovalStatus={logic.getApprovalStatus}
+                historicoAprovacaoPorConta={logic.historicoAprovacaoPorConta}
+                profilesMap={logic.profilesMap}
+                valorMinimoAprovacao={logic.valorMinimoAprovacao}
+                getRowAnimation={logic.getRowAnimation}
+              />
+              {!logic.isLoading && (
+                <div className="p-6 border-t border-white/5 bg-black/20">
+                  <TablePagination
+                    currentPage={logic.currentPage}
+                    totalPages={logic.totalPages}
+                    pageSize={logic.pageSize}
+                    totalItems={logic.totalCount}
+                    onPageChange={logic.setCurrentPage}
+                    onPageSizeChange={logic.handlePageSizeChange}
+                  />
                 </div>
               )}
             </Card>
           </motion.div>
+
 
           {/* Dialogs */}
           <ContaPagarForm 
