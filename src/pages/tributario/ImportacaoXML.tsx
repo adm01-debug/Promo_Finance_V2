@@ -2,8 +2,11 @@ import { ImportacaoXMLPanel } from '@/components/reforma-tributaria/ImportacaoXM
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
 import { FileSpreadsheet } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function ImportacaoXMLPage() {
+  const { currentEmpresaId } = useAuth();
+
   return (
     <MainLayout>
       <div className="relative min-h-screen">
@@ -20,7 +23,7 @@ export default function ImportacaoXMLPage() {
             gradientTo="to-teal-600"
           />
           
-          <ImportacaoXMLPanel />
+          <ImportacaoXMLPanel empresaId={currentEmpresaId || ''} />
         </div>
       </div>
     </MainLayout>
