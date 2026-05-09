@@ -48,6 +48,7 @@ import {
   BrainCircuit,
   ShieldAlert,
   MessageSquare,
+  Tag,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -163,6 +164,7 @@ const navGroups: NavGroup[] = [
       { label: 'Gestão de Contas', icon: Landmark, href: '/contas-bancarias' },
       { label: 'Centro de Custos', icon: PieChart, href: '/centro-custos' },
       { label: 'Orçamento x Realizado', icon: Scale, href: '/orcamento-evento', highlight: true },
+      { label: 'Categorias', icon: Tag, href: '/categorias' },
       { label: 'Gestão de Boletos', icon: FileText, href: '/boletos', highlight: true },
     ],
   },
