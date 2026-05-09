@@ -197,6 +197,8 @@ interface SidebarNavGroupsProps {
 
 export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
   const location = useLocation();
+  const { t } = useTranslation();
+
   const { count: aprovacoesPendentes } = useAprovacoesPendentesCount();
   const { data: alertasNaoLidos = 0 } = useAlertasNaoLidos();
   const { data: alertasTributarios = 0 } = useAlertasTributariosCount();
