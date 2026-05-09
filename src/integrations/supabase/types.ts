@@ -2284,6 +2284,57 @@ export type Database = {
           },
         ]
       }
+      budgets: {
+        Row: {
+          budgeted_amount: number
+          category: string
+          company_id: string | null
+          created_at: string
+          id: string
+          period: string
+          spent_amount: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          budgeted_amount?: number
+          category: string
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          period: string
+          spent_amount?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          budgeted_amount?: number
+          category?: string
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          period?: string
+          spent_amount?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budgets_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budgets_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       categorias: {
         Row: {
           ativo: boolean

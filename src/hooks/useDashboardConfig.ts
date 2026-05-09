@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 export interface DashboardWidget {
   id: string;
-  type: 'kpi-saldo' | 'kpi-receber' | 'kpi-pagar' | 'kpi-vencidas' | 'fluxo-caixa' | 'composicao' | 'vencimentos' | 'previsao-ia' | 'aprovacoes' | 'top-clientes' | 'bling-nfe' | 'bling-financeiro';
+  type: 'kpi-saldo' | 'kpi-receber' | 'kpi-pagar' | 'kpi-vencidas' | 'fluxo-caixa' | 'composicao' | 'vencimentos' | 'previsao-ia' | 'aprovacoes' | 'top-clientes' | 'bling-nfe' | 'bling-financeiro' | 'alertas-orcamento';
   title: string;
   visible: boolean;
   order: number;
@@ -24,6 +24,7 @@ const DEFAULT_WIDGETS: DashboardWidget[] = [
   { id: 'benchmarking', type: 'fluxo-caixa', title: 'Benchmarking Setorial', visible: true, order: 9, size: 'md' },
   { id: 'bling-nfe', type: 'bling-nfe', title: 'Notas Fiscais (Bling)', visible: true, order: 10, size: 'md' },
   { id: 'bling-financeiro', type: 'bling-financeiro', title: 'Financeiro (Bling)', visible: true, order: 11, size: 'md' },
+  { id: 'alertas-orcamento', type: 'alertas-orcamento', title: 'Alertas de Orçamento', visible: true, order: 12, size: 'md' },
 ];
 
 
