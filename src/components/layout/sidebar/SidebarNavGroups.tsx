@@ -368,8 +368,9 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>{content}</TooltipTrigger>
           <TooltipContent side="right" className="flex items-center gap-2">
-            {item.label}
+            {t(item.label.toLowerCase().replace(/\s+/g, '_'), item.label)}
             {badge && (
+
               <Badge variant="secondary" className="text-xs">
                 {badge}
               </Badge>
