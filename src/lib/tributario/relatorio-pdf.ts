@@ -296,7 +296,7 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
   });
   y += 2;
 
-  const justText = doc.splitTextToSize(opts.decisao.justificativa || '', pageWidth - 28);
+  const justText = doc.splitTextToSize(opts.decisao.justificativaIA || opts.decisao.justificativa || '', pageWidth - 28);
   doc.text(justText, 14, y);
   y += justText.length * 5 + 8;
 
