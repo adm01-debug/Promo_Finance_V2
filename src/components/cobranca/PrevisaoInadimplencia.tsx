@@ -128,7 +128,7 @@ function useAnaliseInadimplencia() {
         .from('contas_receber')
         .select(`
           id, valor, valor_recebido, data_vencimento, status, cliente_id, cliente_nome,
-          clientes(id, razao_social, nome_fantasia, score, limite_credito)
+          clientes(id, razao_social, nome_fantasia, score, limite_credito, ramo_atividade)
         `)
         .in('status', ['pendente', 'parcial'])
         .gte('data_vencimento', format(hoje, 'yyyy-MM-dd'))
@@ -173,6 +173,11 @@ function useAnaliseInadimplencia() {
         const probabilidade = calcularProbabilidadeAtraso(cliente, contas, historico || []);
         const nivelRisco = determinarNivelRisco(probabilidade);
         const fatoresRisco = gerarFatoresRisco(cliente, contas, historico || []);
+        
+        // Refinamento por Ramo de Atividade (Engine 10/10)
+        if (cliente.ramo_atividade && ['Construção', 'Varejo'].includes(cliente.ramo_atividade)) {
+          fatoresRisco.push(`Setor de alto risco: ${cliente.ramo_atividade}`);
+        }
 
         interface ContaReceberData {
           valor: number;

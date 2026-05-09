@@ -250,6 +250,7 @@ export function usePrevisoesInadimplencia() {
   return useQuery({
     queryKey: ["previsoes-inadimplencia"],
     queryFn: async () => {
+      // Prioriza dados reais da tabela de alertas_preditivos (Predictive Engine 10/10)
       const { data, error } = await supabase
         .from("alertas_preditivos")
         .select("*")
@@ -258,6 +259,9 @@ export function usePrevisoesInadimplencia() {
         .order("probabilidade", { ascending: false });
 
       if (error) throw error;
+      
+      // Se não houver alertas pré-gerados, retornamos vazio para que o front processe via algoritmo local
+      // ou podemos disparar um RPC aqui para gerar novos alertas baseados em buckets
       return data as PredicaoInadimplencia[];
     },
   });

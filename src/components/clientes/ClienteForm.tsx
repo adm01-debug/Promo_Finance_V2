@@ -43,6 +43,7 @@ const clienteSchema = z.object({
   estado: z.string().max(2, 'Use a sigla do estado').optional(),
   contato: z.string().max(100, 'Nome muito longo').optional(),
   limite_credito: z.number().min(0, 'Limite não pode ser negativo').optional(),
+  ramo_atividade: z.string().optional(),
   observacoes: z.string().max(1000, 'Observações muito longas').optional(),
   ativo: z.boolean().default(true),
 });
@@ -61,6 +62,7 @@ interface Cliente {
   estado: string | null;
   contato: string | null;
   limite_credito: number | null;
+  ramo_atividade: string | null;
   observacoes: string | null;
   ativo: boolean;
 }
@@ -88,10 +90,11 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
       cidade: '',
       estado: '',
       contato: '',
-      limite_credito: 0,
-      observacoes: '',
-      ativo: true,
-    },
+        limite_credito: 0,
+        ramo_atividade: '',
+        observacoes: '',
+        ativo: true,
+      },
   });
 
   useEffect(() => {
@@ -107,6 +110,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
         estado: cliente.estado || '',
         contato: cliente.contato || '',
         limite_credito: cliente.limite_credito || 0,
+        ramo_atividade: cliente.ramo_atividade || '',
         observacoes: cliente.observacoes || '',
         ativo: cliente.ativo,
       });
@@ -122,6 +126,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
         estado: '',
         contato: '',
         limite_credito: 0,
+        ramo_atividade: '',
         observacoes: '',
         ativo: true,
       });
@@ -141,6 +146,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
         estado: data.estado || null,
         contato: data.contato || null,
         limite_credito: data.limite_credito || 0,
+        ramo_atividade: data.ramo_atividade || null,
         observacoes: data.observacoes || null,
         ativo: data.ativo,
       });
@@ -182,6 +188,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
           estado: data.estado || null,
           contato: data.contato || null,
           limite_credito: data.limite_credito || 0,
+          ramo_atividade: data.ramo_atividade || null,
           observacoes: data.observacoes || null,
           ativo: data.ativo,
         })
