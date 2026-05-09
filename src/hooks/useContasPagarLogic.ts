@@ -72,6 +72,8 @@ export function useContasPagarLogic() {
   const { data: contasBancarias = [] } = useContasBancarias();
   const { data: configuracao } = useConfiguracaoAprovacao();
   const criarSolicitacaoMutation = useCriarSolicitacaoAprovacao();
+  const deleteMutation = useDeleteContaPagar();
+  const updateMutation = useUpdateContaPagar();
 
   const contas = paginatedResult?.data || [];
   const totalCount = paginatedResult?.totalCount || 0;
