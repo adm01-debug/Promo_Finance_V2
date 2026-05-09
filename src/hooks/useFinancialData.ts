@@ -250,12 +250,12 @@ export interface PaginatedContasPagarParams {
 }
 
 export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
-  const { page, pageSize, search, status, centroCustoId } = params;
+  const { page, pageSize, search, status, centroCustoId, empresaId } = params;
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
   return useQuery({
-    queryKey: ['contas-pagar', 'paginated', page, pageSize, search, status, centroCustoId],
+    queryKey: ['contas-pagar', 'paginated', page, pageSize, search, status, centroCustoId, empresaId],
     queryFn: async () => {
       let countQuery = supabase
         .from('contas_pagar')
