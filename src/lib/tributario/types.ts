@@ -78,4 +78,5 @@ export interface ResultadoDecisao {
   alertas: string[];
   justificativa: string;
   justificativaIA?: string | null;
+  auditLogId?: string | null;
 }
