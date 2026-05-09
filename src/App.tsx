@@ -136,6 +136,8 @@ function AppRoutes() {
             <Route path="/auth/corporate" element={<CorporateOnboarding />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/contador/:token" element={<ContadorReadonly />} />
+            <Route path="/status" element={<StatusPage />} />
+
             
             {/* Protected Routes */}
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
