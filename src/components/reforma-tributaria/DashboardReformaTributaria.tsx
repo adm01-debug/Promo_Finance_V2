@@ -73,7 +73,27 @@ export function DashboardReformaTributaria({ initialTab }: { initialTab?: string
 
   const handleTabChange = useCallback((tabId: string) => {
     setActiveTab(tabId);
-    navigate(`/reforma-tributaria/${tabId}`);
+    
+    // Mapeamento de abas internas para rotas dedicadas (exposição P16)
+    const routeMap: Record<string, string> = {
+      'split-payment': '/tributario/split-payment',
+      'conciliacao': '/tributario/conciliacao',
+      'incentivos': '/tributario/incentivos',
+      'auditoria': '/tributario/auditoria',
+      'comparativo': '/tributario/comparativo',
+      'cashback': '/tributario/cashback',
+      'importacao-xml': '/tributario/importacao-xml',
+      'exportacao': '/tributario/sped',
+      'relatorios': '/tributario/relatorios-contabeis',
+      'per-dcomp': '/tributario/per-dcomp',
+      'retencoes': '/tributario/retencoes'
+    };
+
+    if (routeMap[tabId]) {
+      navigate(routeMap[tabId]);
+    } else {
+      navigate(`/reforma-tributaria/${tabId}`);
+    }
   }, [navigate]);
   const [empresaId, setEmpresaId] = useState<string>('all');
   const empresaIdFiltro = normalizarEmpresaId(empresaId);
@@ -122,8 +142,8 @@ export function DashboardReformaTributaria({ initialTab }: { initialTab?: string
 
   // Deep-linking: clicar em KPI muda aba
   const handleKPIClick = useCallback((tabId: string) => {
-    setActiveTab(tabId);
-  }, []);
+    handleTabChange(tabId);
+  }, [handleTabChange]);
 
   // Verificar se é primeiro acesso (sem apurações e sem operações)
   const isFirstAccess = !isLoadingMetricas && !apuracoes?.length && !empresaIdFiltro;
@@ -156,8 +176,8 @@ export function DashboardReformaTributaria({ initialTab }: { initialTab?: string
           return (
             <EmptyStateTributario
               type="onboarding"
-              onPrimaryAction={() => setActiveTab('importacao-xml')}
-              onSecondaryAction={() => setActiveTab('calculadora')}
+              onPrimaryAction={() => handleTabChange('importacao-xml')}
+              onSecondaryAction={() => handleTabChange('calculadora')}
             />
           );
         }
