@@ -242,6 +242,7 @@ export default function Relatorios() {
           <RelatoriosAgendados />
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 }
