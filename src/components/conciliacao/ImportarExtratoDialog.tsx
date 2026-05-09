@@ -57,7 +57,9 @@ export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess, con
           agencia: '0001',
           conta: '12345-6',
           banco: 'Open Finance',
-          saldoFinal: 15420.50
+          saldoFinal: 15420.50,
+          tipoConta: 'CORRENTE',
+          moeda: 'BRL'
         },
         transacoes: [
           { id: 'of1', data: new Date(), descricao: 'SYNC: RECEBIMENTO PIX CLIENTE A', valor: 1250.00, tipo: 'credito' },
@@ -83,7 +85,34 @@ export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess, con
     setStep('processing'); setProgress(0);
     try {
       const ext = file.name.toLowerCase().split('.').pop();
-// ... keep existing code
+      if (ext === 'xlsx' || ext === 'xls') {
+        const buffer = await file.arrayBuffer();
+        const { parseExcel } = await import('@/lib/ofx-parser');
+        const result = parseExcel(buffer, file.name);
+        setProgress(100);
+        setResultado(result);
+        if (result.sucesso && result.extrato) {
+          setSelectedTransacoes(new Set(result.extrato.transacoes.map(t => t.id)));
+          setStep('preview');
+        } else { setStep('error'); }
+        return;
+      }
+      const progressInterval = setInterval(() => { setProgress(prev => Math.min(prev + 15, 70)); }, 100);
+      const content = await file.text();
+      clearInterval(progressInterval); setProgress(80);
+      
+      let mapeamento = undefined;
+      if (contaBancariaId) {
+        const { data: conta } = await (supabase as any)
+          .from('contas_bancarias')
+          .select('mapeamento_extrato')
+          .eq('id', contaBancariaId)
+          .maybeSingle();
+        if (conta?.mapeamento_extrato) {
+          mapeamento = conta.mapeamento_extrato as Record<string, string>;
+        }
+      }
+
       const result = parseExtratoBancario(content, file.name, mapeamento);
       setProgress(100);
       await new Promise(resolve => setTimeout(resolve, 300));
@@ -175,10 +204,10 @@ export function ImportarExtratoDialog({ open, onOpenChange, onImportSuccess, con
                       </p>
                     </div>
                     <div className="flex flex-wrap justify-center gap-4 py-4 opacity-50 grayscale hover:grayscale-0 transition-all">
-                      <Building2 className="h-6 w-6" title="Itaú" />
-                      <Building2 className="h-6 w-6" title="Bradesco" />
-                      <Building2 className="h-6 w-6" title="Nubank" />
-                      <Building2 className="h-6 w-6" title="Banco do Brasil" />
+                      <Building2 className="h-6 w-6" />
+                      <Building2 className="h-6 w-6" />
+                      <Building2 className="h-6 w-6" />
+                      <Building2 className="h-6 w-6" />
                     </div>
                     <Button onClick={handleOpenFinanceConnect} className="w-full gap-2 bg-gradient-to-r from-primary to-primary/80">
                       <Link2 className="h-4 w-4" /> Conectar via Open Finance
