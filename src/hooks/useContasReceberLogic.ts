@@ -53,6 +53,14 @@ export function useContasReceberLogic() {
       setEmpresaFilter(currentEmpresaId);
     }
   }, [currentEmpresaId, empresaFilter]);
+
+  // Sincroniza com conta bancária ativa do sistema
+  useEffect(() => {
+    if (currentBankAccountId && contaBancariaFilter !== currentBankAccountId && contaBancariaFilter === 'all') {
+      setContaBancariaFilter(currentBankAccountId);
+    }
+  }, [currentBankAccountId, contaBancariaFilter]);
+
   const queryClient = useQueryClient();
 
 
@@ -311,4 +319,3 @@ export function useContasReceberLogic() {
     ...bulkActionsHook, getRowAnimation,
   };
 }
-
