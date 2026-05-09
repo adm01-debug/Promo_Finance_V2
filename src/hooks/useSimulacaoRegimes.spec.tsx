@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useSimulacaoRegimes } from './useSimulacaoRegimes';
+import { useSimulacaoRegimes } from './useSimulacaoRegimes.ts';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 
