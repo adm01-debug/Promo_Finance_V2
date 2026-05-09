@@ -164,6 +164,19 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
         }
       }
 
+      // Registra alertas para divergências (itens não encontrados)
+      for (const t of unmatched) {
+        await supabase.from('alertas').insert({
+          empresa_id: empresaId,
+          tipo: 'divergencia_baixa',
+          prioridade: 'alta',
+          titulo: 'Divergência na Baixa Automática',
+          mensagem: `Entrada bancária de ${formatCurrency(t.valor)} (${t.descricao}) não encontrou par correspondente no financeiro.`,
+          status: 'pendente',
+          metadata: { transacao: t, arquivo: resultado?.extrato?.nomeArquivo }
+        } as any);
+      }
+
       // Registra log global da importação
       await (supabase.from('logs_baixa_automatica') as any).insert({
         empresa_id: empresaId,
