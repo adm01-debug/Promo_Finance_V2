@@ -67,7 +67,7 @@ export function ConciliacaoDashboard() {
     const valorConciliado = transacoes?.filter(t => t.conciliada).reduce((sum, t) => sum + Math.abs(t.valor), 0) || 0;
     const valorPendente = transacoes?.filter(t => !t.conciliada).reduce((sum, t) => sum + Math.abs(t.valor), 0) || 0;
     const feedbackTotal = feedbacks?.length || 0;
-    const feedbackConfirmados = feedbacks?.filter(f => f.acao === 'confirmado').length || 0;
+    const feedbackConfirmados = feedbacks?.filter(f => f.acao === 'aprovado').length || 0;
     const feedbackRejeitados = feedbacks?.filter(f => f.acao === 'rejeitado').length || 0;
     const taxaAcertoIA = feedbackTotal > 0 ? (feedbackConfirmados / feedbackTotal) * 100 : 0;
 
