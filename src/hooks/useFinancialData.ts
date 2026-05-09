@@ -500,29 +500,33 @@ export function useDeleteContaPagar() {
 }
 
 
+
 export function useDashboardKPIs(empresaId?: string) {
   return useQuery({
     queryKey: ['dashboard-kpis', empresaId],
     queryFn: async () => {
-      const { count: boletosAbertos } = await supabase
+      const boletosPromise = (supabase as any)
         .from('boletos')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'PENDING')
         .eq('empresa_id', empresaId);
 
-      const { count: divergenciasPendentes } = await supabase
+      const divergenciasPromise = (supabase as any)
         .from('divergencias_conciliacao')
         .select('*', { count: 'exact', head: true })
         .eq('resolvido', false)
         .eq('empresa_id', empresaId);
 
+      const [boletos, divergencias] = await Promise.all([boletosPromise, divergenciasPromise]);
+
       return {
-        boletosAbertos: boletosAbertos || 0,
-        divergenciasPendentes: divergenciasPendentes || 0,
+        boletosAbertos: boletos.count || 0,
+        divergenciasPendentes: divergencias.count || 0,
       };
     },
     staleTime: STALE_TIMES.financial,
     enabled: !!empresaId,
   });
 }
+
 
