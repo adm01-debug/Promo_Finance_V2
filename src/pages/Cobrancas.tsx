@@ -183,7 +183,7 @@ export default function Cobrancas() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Aging Chart */}
           <motion.div variants={itemVariants} className="lg:col-span-2">
-            <Card className="card-elevated h-[380px]">
+            <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem] h-[380px]">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-display flex items-center gap-2">
                   <BarChart3 className="h-5 w-5 text-primary" />
@@ -287,7 +287,7 @@ export default function Cobrancas() {
               diasAtraso: d.dias_atraso
             })) || []}
           />
-          <Card className="card-elevated">
+          <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-primary" />
