@@ -15,7 +15,6 @@ export interface DecidirRegimeServerInput {
   regimeAtual?: RegimeTributario;
   parametrosOverride?: Partial<ParametrosSimulacao>;
   persist?: boolean;
-  regimeAtual?: RegimeTributario;
 }
 
 export interface DecidirRegimeServerOutput extends ResultadoDecisao {
