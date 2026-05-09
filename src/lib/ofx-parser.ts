@@ -32,7 +32,7 @@ export interface ExtratoOFX {
   transacoes: TransacaoOFX[];
   dataImportacao: Date;
   nomeArquivo: string;
-  formato: 'OFX' | 'OFC' | 'CSV';
+  formato: 'OFX' | 'OFC' | 'CSV' | 'OPEN_FINANCE';
 }
 
 export interface ResultadoImportacao {

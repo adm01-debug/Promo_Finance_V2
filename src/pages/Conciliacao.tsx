@@ -1,11 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Upload, FileText, CheckCircle2, AlertTriangle, Search,
-  SplitSquareHorizontal, Link2, Unlink, Calendar,
-  TrendingUp, TrendingDown, Check, MoreHorizontal,
-  BarChart3, Zap, History, Keyboard, Database, Clock,
-  Shield
-} from 'lucide-react';
+   Upload, FileText, CheckCircle2, AlertTriangle, Search,
+   SplitSquareHorizontal, Link2, Unlink, Calendar,
+   TrendingUp, TrendingDown, Check, MoreHorizontal,
+   BarChart3, Zap, History, Keyboard, Database, Clock,
+   Shield, Brain
+ } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -265,10 +265,23 @@ export default function Conciliacao() {
                 <SugestoesMatchIA transacoes={transacoesImportadas} lancamentos={lancamentosSistema} onConfirmarMatch={handleConfirmarMatch} onRejeitarMatch={handleRejeitarMatch} onConciliarManual={handleConciliarManual} />
               )}
 
-              {statusTab === 'pendentes' && filteredTransacoes.length > 0 && (
-                <div className="flex items-center gap-3 px-1">
-                  <Checkbox checked={selectedIds.size > 0 && selectedIds.size === filteredTransacoes.filter(t => !t.conciliada).length} onChange={toggleSelectAll} />
-                  <span className="text-sm text-muted-foreground">{selectedIds.size > 0 ? `${selectedIds.size} selecionadas` : 'Selecionar todas'}</span>
+              {statusTab === 'pendentes' && (
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-1">
+                  <div className="flex items-center gap-3">
+                    <Checkbox checked={selectedIds.size > 0 && selectedIds.size === filteredTransacoes.filter(t => !t.conciliada).length} onChange={toggleSelectAll} />
+                    <span className="text-sm text-muted-foreground">{selectedIds.size > 0 ? `${selectedIds.size} selecionadas` : 'Selecionar todas'}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 bg-accent/5 px-3 py-1.5 rounded-full border border-accent/20">
+                    <div className="flex items-center gap-1.5">
+                      <Brain className="h-3.5 w-3.5 text-accent" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-accent">Confiança Alpha IA</span>
+                    </div>
+                    <div className="h-2 w-24 bg-accent/20 rounded-full overflow-hidden">
+                      <div className="h-full bg-accent animate-pulse" style={{ width: '94%' }} />
+                    </div>
+                    <span className="text-[10px] font-bold text-accent">94%</span>
+                  </div>
                 </div>
               )}
 
