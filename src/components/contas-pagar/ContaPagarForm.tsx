@@ -178,6 +178,39 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
     toast({ title: 'Dados preenchidos automaticamente', description: `Boleto do ${dados.banco} no valor de R$ ${dados.valor.toFixed(2)}` });
   };
 
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsOcrProcessing(true);
+    try {
+      const result = await processarNF.mutateAsync(file);
+      if (result.success && result.dados_extraidos) {
+        const dados = result.dados_extraidos;
+        if (dados.valor_total) form.setValue('valor', dados.valor_total);
+        if (dados.data_emissao) form.setValue('data_emissao', dados.data_emissao);
+        if (dados.numero_nf) form.setValue('numero_documento', dados.numero_nf);
+        if (dados.descricao) form.setValue('descricao', dados.descricao);
+        if (dados.razao_social_emissor) {
+          form.setValue('fornecedor_nome', dados.razao_social_emissor);
+          // Tenta encontrar fornecedor pelo nome ou CNPJ se disponível futuramente
+        }
+        
+        toast({ 
+          title: 'IA: Extração concluída', 
+          description: `Dados da NF #${dados.numero_nf || ''} extraídos com sucesso.` 
+        });
+        sounds.success();
+      }
+    } catch (error) {
+      console.error('Erro no OCR:', error);
+    } finally {
+      setIsOcrProcessing(false);
+      // Limpa o input para permitir selecionar o mesmo arquivo novamente
+      event.target.value = '';
+    }
+  };
+
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
