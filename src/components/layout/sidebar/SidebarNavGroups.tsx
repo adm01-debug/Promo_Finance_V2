@@ -325,8 +325,9 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
                 isActive ? "font-black" : "font-semibold"
               )}
             >
-              {item.label}
+              {t(item.label.toLowerCase().replace(/\s+/g, '_'), item.label)}
             </motion.span>
+
           )}
         </AnimatePresence>
         {isSynced && !collapsed && (
