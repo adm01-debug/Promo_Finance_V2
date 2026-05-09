@@ -53,7 +53,7 @@ export function DRETributariaPanel({ empresaId }: Props) {
   };
 
   return (
-    <Card>
+    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem] overflow-hidden">
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle>DRE Tributária</CardTitle>
