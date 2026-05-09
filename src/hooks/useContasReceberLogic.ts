@@ -10,6 +10,7 @@ import { useQuickDateFilter } from '@/components/ui/quick-date-filters';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { AdvancedFilters } from '@/components/ui/advanced-filters';
+import { useGlobalFinancialFilter } from '@/hooks/useGlobalFinancialFilter';
 import { useAuth } from '@/hooks/useAuth';
 import type { Database } from '@/integrations/supabase/types';
 import type { ContaReceberWithRelations } from '@/components/contas-receber/ContasReceberTableRow';
@@ -18,7 +19,7 @@ import { calculateCollectionStage } from '@/lib/collection-engine';
 
 
 export function useContasReceberLogic() {
-  const { currentEmpresaId } = useAuth();
+  const { currentEmpresaId, currentBankAccountId } = useGlobalFinancialFilter();
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -52,6 +53,14 @@ export function useContasReceberLogic() {
       setEmpresaFilter(currentEmpresaId);
     }
   }, [currentEmpresaId, empresaFilter]);
+
+  // Sincroniza com conta bancária ativa do sistema
+  useEffect(() => {
+    if (currentBankAccountId && contaBancariaFilter !== currentBankAccountId && contaBancariaFilter === 'all') {
+      setContaBancariaFilter(currentBankAccountId);
+    }
+  }, [currentBankAccountId, contaBancariaFilter]);
+
   const queryClient = useQueryClient();
 
 
@@ -310,4 +319,3 @@ export function useContasReceberLogic() {
     ...bulkActionsHook, getRowAnimation,
   };
 }
-

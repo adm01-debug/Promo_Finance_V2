@@ -20,12 +20,13 @@ import { useBulkActions } from '@/hooks/useBulkActions';
 import { useQuickDateFilter } from '@/components/ui/quick-date-filters';
 import { supabase } from '@/integrations/supabase/client';
 import { AdvancedFilters } from '@/components/ui/advanced-filters';
+import { useGlobalFinancialFilter } from '@/hooks/useGlobalFinancialFilter';
 
 import { differenceInDays, subMonths, isSameDay, addDays, startOfMonth, endOfMonth, parseISO, isWithinInterval } from 'date-fns';
 type ContaPagarType = ContaPagar;
 
 export function useContasPagarLogic() {
-  const { currentEmpresaId } = useAuth();
+  const { currentEmpresaId, currentBankAccountId } = useGlobalFinancialFilter();
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -65,6 +66,7 @@ export function useContasPagarLogic() {
     status: statusFilter,
     centroCustoId: centroCustoFilter,
     empresaId: currentEmpresaId || 'all',
+    contaBancariaId: currentBankAccountId || 'all',
   });
 
   const { data: allContas = [] } = useContasPagar(currentEmpresaId || 'all');

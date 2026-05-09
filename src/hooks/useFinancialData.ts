@@ -253,15 +253,16 @@ export interface PaginatedContasPagarParams {
   status?: string;
   centroCustoId?: string;
   empresaId?: string;
+  contaBancariaId?: string;
 }
 
 export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
-  const { page, pageSize, search, status, centroCustoId, empresaId } = params;
+  const { page, pageSize, search, status, centroCustoId, empresaId, contaBancariaId } = params;
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
   return useQuery({
-    queryKey: ['contas-pagar', 'paginated', page, pageSize, search, status, centroCustoId, empresaId],
+    queryKey: ['contas-pagar', 'paginated', page, pageSize, search, status, centroCustoId, empresaId, contaBancariaId],
     queryFn: async () => {
       let countQuery = supabase
         .from('contas_pagar')
@@ -290,6 +291,10 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
       if (empresaId && empresaId !== 'all') {
         countQuery = countQuery.eq('empresa_id', empresaId);
         dataQuery = dataQuery.eq('empresa_id', empresaId);
+      }
+      if (contaBancariaId && contaBancariaId !== 'all') {
+        countQuery = countQuery.eq('conta_bancaria_id', contaBancariaId);
+        dataQuery = dataQuery.eq('conta_bancaria_id', contaBancariaId);
       }
 
       const [countResult, dataResult] = await Promise.all([countQuery, dataQuery]);
