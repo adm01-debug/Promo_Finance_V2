@@ -19,7 +19,7 @@ import { calculateCollectionStage } from '@/lib/collection-engine';
 
 
 export function useContasReceberLogic() {
-  const { currentEmpresaId } = useAuth();
+  const { currentEmpresaId, currentBankAccountId } = useGlobalFinancialFilter();
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [statusFilter, setStatusFilter] = useState<string>('all');
