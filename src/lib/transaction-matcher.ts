@@ -27,6 +27,7 @@ export interface MatchSugestao {
   motivos: MatchMotivo[];
   lancamento: LancamentoSistema;
   confianca: 'alta' | 'media' | 'baixa';
+  divergenciaValor?: number;
 }
 
 export interface MatchMotivo {
