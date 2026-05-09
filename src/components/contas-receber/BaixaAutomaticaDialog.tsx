@@ -105,8 +105,9 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
       const result = parseExtratoBancario(content, file.name);
       
       if (result.sucesso && result.extrato) {
-        const foundMatches = await findMatches(result.extrato);
+        const { matched: foundMatches, unmatched: foundUnmatched } = await findMatches(result.extrato);
         setMatches(foundMatches);
+        setUnmatched(foundUnmatched);
         setResultado(result);
         setProgress(100);
         setStep('preview');
