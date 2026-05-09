@@ -27,8 +27,10 @@ import {
   Timer,
   Link2,
   FileText,
-  Brain
+  Brain,
+  Route
 } from 'lucide-react';
+import { RegrasRoteamentoTab } from '@/components/configuracoes/RegrasRoteamentoTab';
 import { OpenFinancePanel } from '@/components/integracoes/OpenFinancePanel';
 import { WhatsAppConfigPanel } from '@/components/integracoes/WhatsAppConfigPanel';
 import { NotificacoesConfig } from '@/components/configuracoes/NotificacoesConfig';
@@ -348,6 +350,10 @@ export default function Configuracoes() {
             <Zap className="h-4 w-4" />
             <span className="hidden sm:inline">IA Compras</span>
           </TabsTrigger>
+          <TabsTrigger value="roteamento" className="gap-2 text-primary font-bold">
+            <Route className="h-4 w-4" />
+            <span className="hidden sm:inline">Roteamento</span>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="automacao-compras">
@@ -528,6 +534,10 @@ export default function Configuracoes() {
             <ComprovanteOCR />
             <DocumentacaoAPI />
           </div>
+        </TabsContent>
+        {/* Roteamento Multi-CNPJ */}
+        <TabsContent value="roteamento">
+          <RegrasRoteamentoTab />
         </TabsContent>
       </Tabs>
     </div>
