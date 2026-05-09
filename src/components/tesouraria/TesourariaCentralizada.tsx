@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { AlertTriangle, Landmark, Search, TrendingUp, TrendingDown } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ProjectedCashFlowChart } from './ProjectedCashFlowChart';
 
 const SALDO_MINIMO_ALERTA = 1000;
 
