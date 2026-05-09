@@ -41,11 +41,12 @@ interface Props {
   showClienteSelect: boolean;
   setShowClienteSelect: (v: boolean) => void;
   onClienteSelect: (id: string) => void;
+  categorias?: any[];
 }
 
 export function ContaReceberFormFields({
   form, isEditing, clientes, empresas, centrosCusto, contasBancarias, vendedores,
-  showClienteSelect, setShowClienteSelect, onClienteSelect,
+  showClienteSelect, setShowClienteSelect, onClienteSelect, categorias = [],
 }: Props) {
   const [clienteSearch, setClienteSearch] = useState('');
 
@@ -135,6 +136,22 @@ export function ContaReceberFormFields({
           </FormItem>
         )} />
       </div>
+      
+      {/* Categoria */}
+      <FormField control={form.control} name="categoria_id" render={({ field }) => (
+        <FormItem>
+          <FieldLabel label="Categoria" tooltip="Classificação da receita para relatórios gerenciais" />
+          <Select onValueChange={field.onChange} value={field.value}>
+            <FormControl><SelectTrigger><SelectValue placeholder="Selecione a categoria" /></SelectTrigger></FormControl>
+            <SelectContent>
+              {categorias.map((c: any) => (
+                <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <FormMessage />
+        </FormItem>
+      )} />
 
       {/* Vendedor */}
       {vendedores.length > 0 && (

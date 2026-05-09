@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CategorizacaoIABadge } from './CategorizacaoIABadge';
 import { CategoriaDetectada } from '@/hooks/useCategorizacaoIA';
@@ -20,6 +21,10 @@ import {
   Trash2,
   Sparkles,
   Repeat,
+  MoreHorizontal,
+  History,
+  Eye,
+  Edit,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -28,6 +33,10 @@ import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime } fro
 import { cn } from '@/lib/utils';
 import { ContaPagarRowAprovacaoBadge } from './ContaPagarRowAprovacaoBadge';
 import { ContaPagarRowActions } from './ContaPagarRowActions';
+import { VersionHistory } from '@/components/common/VersionHistory';
+import { DuplicateButton } from '@/components/common/DuplicateButton';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 
 type StatusPagamento = 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
 type TipoCobranca = 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';

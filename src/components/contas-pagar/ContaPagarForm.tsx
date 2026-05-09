@@ -5,12 +5,13 @@ import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, DollarSign, Edit, Scan } from 'lucide-react';
-import { ActionButton, useActionState } from '@/components/ui/action-button';
+import { ActionButton } from '@/components/ui/action-button';
 import { LeitorCodigoBarras } from './LeitorCodigoBarras';
 import { DadosBoleto } from '@/lib/barcode-parser';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useFornecedores, useCentrosCusto, useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
+import { useCategorias } from '@/hooks/useCategorias';
 import { toast } from '@/hooks/use-toast';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 import { sounds } from '@/lib/sound-feedback';
@@ -33,6 +34,7 @@ const contaPagarSchema = z.object({
   data_emissao: z.string().optional(),
   empresa_id: z.string().min(1, 'Empresa é obrigatória'),
   centro_custo_id: z.string().optional(),
+  categoria_id: z.string().optional(),
   conta_bancaria_id: z.string().optional(),
   tipo_cobranca: z.enum(['boleto', 'pix', 'cartao', 'transferencia', 'dinheiro']),
   numero_documento: z.string().max(50, 'Número muito longo').optional(),
@@ -46,7 +48,7 @@ type ContaPagarFormData = z.infer<typeof contaPagarSchema>;
 interface ContaPagar {
   id: string; fornecedor_id: string | null; fornecedor_nome: string; descricao: string;
   valor: number; data_vencimento: string; data_emissao: string; empresa_id: string;
-  centro_custo_id: string | null; conta_bancaria_id: string | null;
+  centro_custo_id: string | null; categoria_id: string | null; conta_bancaria_id: string | null;
   tipo_cobranca: 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';
   numero_documento: string | null; codigo_barras: string | null; observacoes: string | null; recorrente: boolean;
 }
@@ -67,6 +69,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
   const { data: centrosCusto = [] } = useCentrosCusto();
   const { data: contasBancarias = [] } = useContasBancarias();
   const { data: empresas = [] } = useEmpresas();
+  const { categoriasDespesa } = useCategorias();
 
   const form = useForm<ContaPagarFormData>({
     resolver: zodResolver(contaPagarSchema),
@@ -75,7 +78,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
 
   useEffect(() => {
     if (conta && open) {
-      form.reset({ fornecedor_id: conta.fornecedor_id || undefined, fornecedor_nome: conta.fornecedor_nome, descricao: conta.descricao, valor: conta.valor, data_vencimento: conta.data_vencimento, data_emissao: conta.data_emissao, empresa_id: conta.empresa_id, centro_custo_id: conta.centro_custo_id || undefined, conta_bancaria_id: conta.conta_bancaria_id || undefined, tipo_cobranca: conta.tipo_cobranca, numero_documento: conta.numero_documento || undefined, codigo_barras: conta.codigo_barras || undefined, observacoes: conta.observacoes || undefined, recorrente: conta.recorrente });
+      form.reset({ fornecedor_id: conta.fornecedor_id || undefined, fornecedor_nome: conta.fornecedor_nome, descricao: conta.descricao, valor: conta.valor, data_vencimento: conta.data_vencimento, data_emissao: conta.data_emissao, empresa_id: conta.empresa_id, centro_custo_id: conta.centro_custo_id || undefined, categoria_id: conta.categoria_id || undefined, conta_bancaria_id: conta.conta_bancaria_id || undefined, tipo_cobranca: conta.tipo_cobranca, numero_documento: conta.numero_documento || undefined, codigo_barras: conta.codigo_barras || undefined, observacoes: conta.observacoes || undefined, recorrente: conta.recorrente });
       if (conta.fornecedor_id) setShowFornecedorSelect(true);
     } else if (!conta && open) {
       form.reset({ fornecedor_nome: '', descricao: '', valor: 0, data_vencimento: '', data_emissao: new Date().toISOString().split('T')[0], empresa_id: '', tipo_cobranca: 'boleto', recorrente: false });
@@ -136,7 +139,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
   const updateMutation = useMutation({
     mutationFn: async (data: ContaPagarFormData) => {
       if (!conta) throw new Error('Conta não encontrada');
-      const { error } = await supabase.from('contas_pagar').update({ fornecedor_id: data.fornecedor_id || null, fornecedor_nome: data.fornecedor_nome, descricao: data.descricao, valor: data.valor, data_vencimento: data.data_vencimento, data_emissao: data.data_emissao || new Date().toISOString().split('T')[0], empresa_id: data.empresa_id, centro_custo_id: data.centro_custo_id || null, conta_bancaria_id: data.conta_bancaria_id || null, tipo_cobranca: data.tipo_cobranca, numero_documento: data.numero_documento || null, codigo_barras: data.codigo_barras || null, observacoes: data.observacoes || null, recorrente: data.recorrente }).eq('id', conta.id);
+      const { error } = await supabase.from('contas_pagar').update({ fornecedor_id: data.fornecedor_id || null, fornecedor_nome: data.fornecedor_nome, descricao: data.descricao, valor: data.valor, data_vencimento: data.data_vencimento, data_emissao: data.data_emissao || new Date().toISOString().split('T')[0], empresa_id: data.empresa_id, centro_custo_id: data.centro_custo_id || null, categoria_id: data.categoria_id || null, conta_bancaria_id: data.conta_bancaria_id || null, tipo_cobranca: data.tipo_cobranca, numero_documento: data.numero_documento || null, codigo_barras: data.codigo_barras || null, observacoes: data.observacoes || null, recorrente: data.recorrente }).eq('id', conta.id);
       if (error) throw error;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['contas-pagar'] }); sounds.success(); celebrateSuccess('Conta atualizada com sucesso!'); onOpenChange(false); },
@@ -209,7 +212,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
               </div>
 
               <div className="space-y-6 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
-                <ContaPagarFormFields form={form} empresas={empresas} centrosCusto={centrosCusto} contasBancarias={contasBancarias} />
+                <ContaPagarFormFields form={form} empresas={empresas} centrosCusto={centrosCusto} contasBancarias={contasBancarias} categorias={categoriasDespesa} />
                 
                 {isEditing && conta?.id && (
                   <div className="pt-6 border-t border-white/5">

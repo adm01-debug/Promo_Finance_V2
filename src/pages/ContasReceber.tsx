@@ -228,7 +228,7 @@ export default function ContasReceber() {
           </motion.div>
 
           {/* Dialogs & Drawers */}
-          <ContaReceberForm open={formOpen} onOpenChange={(open) => { setFormOpen(open); if (!open) setEditingConta(null); }} conta={editingConta} />
+          <ContaReceberForm open={formOpen} onOpenChange={(open) => { setFormOpen(open); if (!open) setEditingConta(null); }} conta={editingConta as any} />
           <RegistrarRecebimentoDialog conta={selectedConta} open={recebimentoDialogOpen} onOpenChange={setRecebimentoDialogOpen} />
           <ContaReceberDetailDrawer
             conta={detailConta} open={detailDrawerOpen} onOpenChange={setDetailDrawerOpen}

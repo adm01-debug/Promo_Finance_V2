@@ -256,9 +256,9 @@ export default function ContasPagar() {
               logic.setFormOpen(open);
               if (!open) logic.setEditingConta(null);
             }}
-            conta={logic.editingConta}
+            conta={logic.editingConta as any}
           />
-          
+
           <RegistrarPagamentoDialog 
             conta={logic.selectedConta} 
             open={logic.pagamentoDialogOpen} 

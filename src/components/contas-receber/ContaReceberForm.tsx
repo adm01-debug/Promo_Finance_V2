@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useClientes, useCentrosCusto, useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
 import { useVendedoresAtivos } from '@/hooks/useVendedores';
+import { useCategorias } from '@/hooks/useCategorias';
 import { toast } from '@/hooks/use-toast';
 import { useConfetti } from '@/hooks/useConfetti';
 import { sounds } from '@/lib/sound-feedback';
@@ -29,6 +30,7 @@ const contaReceberSchema = z.object({
   data_emissao: z.string().optional(),
   empresa_id: z.string().min(1, 'Empresa é obrigatória'),
   centro_custo_id: z.string().optional(),
+  categoria_id: z.string().optional(),
   conta_bancaria_id: z.string().optional(),
   vendedor_id: z.string().optional(),
   tipo_cobranca: z.enum(['boleto', 'pix', 'cartao', 'transferencia', 'dinheiro']),
@@ -48,7 +50,7 @@ type ContaReceberFormData = z.infer<typeof contaReceberSchema>;
 interface ContaReceber {
   id: string; cliente_id: string | null; cliente_nome: string; descricao: string;
   valor: number; data_vencimento: string; data_emissao: string; empresa_id: string;
-  centro_custo_id: string | null; conta_bancaria_id: string | null; tipo_cobranca: string;
+  centro_custo_id: string | null; categoria_id: string | null; conta_bancaria_id: string | null; tipo_cobranca: string;
 }
 
 interface ContaReceberFormProps {
@@ -67,6 +69,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const { data: contasBancarias = [] } = useContasBancarias();
   const { data: empresas = [] } = useEmpresas();
   const { data: vendedores = [] } = useVendedoresAtivos();
+  const { categoriasReceita } = useCategorias();
 
   const form = useForm<ContaReceberFormData>({
     resolver: zodResolver(contaReceberSchema),
@@ -87,6 +90,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
         descricao: conta.descricao, valor: conta.valor, data_vencimento: conta.data_vencimento,
         data_emissao: conta.data_emissao, empresa_id: conta.empresa_id,
         centro_custo_id: conta.centro_custo_id || undefined,
+        categoria_id: conta.categoria_id || undefined,
         conta_bancaria_id: conta.conta_bancaria_id || undefined,
         tipo_cobranca: conta.tipo_cobranca as any,
       });
@@ -112,6 +116,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
         valor: data.valor, data_vencimento: data.data_vencimento,
         data_emissao: data.data_emissao || new Date().toISOString().split('T')[0],
         empresa_id: data.empresa_id, centro_custo_id: data.centro_custo_id || null,
+        categoria_id: data.categoria_id || null,
         conta_bancaria_id: finalContaId, vendedor_id: data.vendedor_id || null,
         tipo_cobranca: data.tipo_cobranca, numero_documento: data.numero_documento || null,
         codigo_barras: data.codigo_barras || null, chave_pix: data.chave_pix || null,
@@ -134,6 +139,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
         valor: data.valor, data_vencimento: data.data_vencimento,
         data_emissao: data.data_emissao || new Date().toISOString().split('T')[0],
         empresa_id: data.empresa_id, centro_custo_id: data.centro_custo_id || null,
+        categoria_id: data.categoria_id || null,
         conta_bancaria_id: data.conta_bancaria_id || null, tipo_cobranca: data.tipo_cobranca,
         numero_documento: data.numero_documento || null, codigo_barras: data.codigo_barras || null,
         chave_pix: data.chave_pix || null, link_boleto: data.link_boleto || null,
@@ -173,8 +179,9 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
                 centrosCusto={centrosCusto} contasBancarias={contasBancarias} vendedores={vendedores}
                 showClienteSelect={showClienteSelect} setShowClienteSelect={setShowClienteSelect}
                 onClienteSelect={handleClienteSelect}
+                categorias={categoriasReceita}
               />
-              
+
               {isEditing && conta?.id && (
                 <div className="pt-6 border-t border-white/5">
                   <AnexoList entidadeId={conta.id} entidadeTipo="contas_receber" />

@@ -23,9 +23,10 @@ interface Props {
   empresas: Array<{ id: string; nome_fantasia?: string | null; razao_social: string }>;
   centrosCusto: Array<{ id: string; codigo: string; nome: string }>;
   contasBancarias: Array<{ id: string; banco: string; agencia: string; conta: string }>;
+  categorias?: Array<{ id: string; nome: string }>;
 }
 
-export function ContaPagarFormFields({ form, empresas, centrosCusto, contasBancarias }: Props) {
+export function ContaPagarFormFields({ form, empresas, centrosCusto, contasBancarias, categorias = [] }: Props) {
   return (
     <>
       {/* Empresa e Centro de Custo */}
@@ -51,6 +52,22 @@ export function ContaPagarFormFields({ form, empresas, centrosCusto, contasBanca
           </FormItem>
         )} />
       </div>
+      
+      {/* Categoria */}
+      <FormField control={form.control} name="categoria_id" render={({ field }) => (
+        <FormItem>
+          <FieldLabel label="Categoria" tooltip="Classificação da despesa para relatórios gerenciais" />
+          <Select onValueChange={field.onChange} value={field.value}>
+            <FormControl><SelectTrigger><SelectValue placeholder="Selecione a categoria" /></SelectTrigger></FormControl>
+            <SelectContent>
+              {categorias.map((c) => (
+                <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <FormMessage />
+        </FormItem>
+      )} />
 
       {/* Descrição */}
       <FormField control={form.control} name="descricao" render={({ field }) => (
