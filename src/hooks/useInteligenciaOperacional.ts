@@ -54,12 +54,13 @@ export function useCreatePlanoAcao() {
       
       const { data, error } = await supabase
         .from('planos_acao')
-        .insert({ ...plano, user_id: userData.user.id })
+        .insert([{ ...plano, user_id: userData.user.id }])
         .select()
         .single();
       if (error) throw error;
       return data;
     },
+
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['planos-acao'] });
       toast.success('Plano de ação criado com sucesso!');
