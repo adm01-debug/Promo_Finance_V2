@@ -60,6 +60,8 @@ import { useRealtimeAlertas } from '@/hooks/useRealtimeAlertas';
 import { useRealtimeAnomalias } from '@/hooks/useRealtimeAnomalias';
 import { useWhatsAppUnreadCount } from '@/hooks/useWhatsAppUnreadCount';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
+
 
 interface NavItem {
   label: string;
