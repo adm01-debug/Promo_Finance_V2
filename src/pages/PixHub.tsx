@@ -19,14 +19,24 @@ export default function PixHub() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground flex items-center gap-3">
-            <QrCode className="h-7 w-7 text-primary" />
-            Central PIX
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Dashboard em tempo real, templates e aprovação rápida para 50+ PIX/dia
-          </p>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground flex items-center gap-3">
+              <QrCode className="h-7 w-7 text-primary" />
+              Central PIX
+            </h1>
+            <p className="text-muted-foreground mt-1 text-sm font-medium">
+              Ecosystem 360°: Dashboard em tempo real, templates, split e recebimento instantâneo.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" className="gap-2 border-primary/20 bg-primary/5 text-primary hover:bg-primary/10">
+              <Download className="h-4 w-4" /> Conciliação
+            </Button>
+            <Button onClick={() => setReceiveDialogOpen(true)} className="gap-2 bg-gradient-to-r from-primary to-blue-600 shadow-lg shadow-primary/20">
+              <Plus className="h-4 w-4" /> Receber via PIX
+            </Button>
+          </div>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
