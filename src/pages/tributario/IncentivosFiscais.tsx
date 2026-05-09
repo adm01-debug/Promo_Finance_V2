@@ -2,8 +2,11 @@ import { IncentivosFiscaisPanel } from '@/components/reforma-tributaria/Incentiv
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
 import { Zap } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function IncentivosFiscaisPage() {
+  const { currentEmpresaId } = useAuth();
+  
   return (
     <MainLayout>
       <div className="relative min-h-screen">
@@ -20,7 +23,7 @@ export default function IncentivosFiscaisPage() {
             gradientTo="to-amber-600"
           />
           
-          <IncentivosFiscaisPanel />
+          <IncentivosFiscaisPanel empresaId={currentEmpresaId || ''} />
         </div>
       </div>
     </MainLayout>
