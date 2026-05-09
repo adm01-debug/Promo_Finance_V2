@@ -117,6 +117,8 @@ const StatusPage = lazy(() => import('./pages/StatusPage'));
 
 
 
+const Compras = lazy(() => import('./pages/Compras'));
+const Compras = lazy(() => import('./pages/Compras'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 
