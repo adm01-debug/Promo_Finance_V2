@@ -14,6 +14,7 @@ import type {
   FaturamentoMes,
   FolhaMes,
 } from '@/lib/tributario/types';
+import { useDecidirRegimeServer } from './useDecidirRegimeServer';
 import { toast } from 'sonner';
 
 interface UseSimulacaoOptions {
