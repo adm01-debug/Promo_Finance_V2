@@ -171,6 +171,18 @@ Deno.serve(async (req) => {
 
     const finalResponse = { ...resultado, justificativaIA, params };
 
+    // Log simulation in audit trail
+    await sb.from('tax_audit_trail').insert({
+      user_id: claims.claims.sub,
+      empresa_id: empresaId,
+      ano, mes,
+      action: 'simulated',
+      parameters: params,
+      prompt: justificativaIA ? 'AI justification prompt' : null,
+      response: justificativaIA,
+      is_ai_justified: !!justificativaIA
+    });
+
     if (cacheable) {
       await sb.from('regime_decision_cache').upsert({
         empresa_id: empresaId,
