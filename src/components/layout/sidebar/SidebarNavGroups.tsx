@@ -49,7 +49,9 @@ import {
   ShieldAlert,
   MessageSquare,
   Tag,
+  Code2,
 } from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
