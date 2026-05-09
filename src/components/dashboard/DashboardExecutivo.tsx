@@ -26,7 +26,8 @@ import { BlingFinanceiroPanel } from '@/components/bling/BlingFinanceiroPanel';
 import { InadimplenciaSegmentada } from '@/components/analytics/InadimplenciaSegmentada';
 import { BenchmarkingSetorial } from '@/components/analytics/BenchmarkingSetorial';
 import { RelatoriosModelos } from '@/components/relatorios/RelatoriosModelos';
-import { ShieldAlert, FileText, Download, TrendingUp } from 'lucide-react';
+import { ShieldAlert, FileText, Download, TrendingUp, Target as TargetIcon } from 'lucide-react';
+import { AlertasOrcamento } from './AlertasOrcamento';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -168,6 +169,8 @@ export const DashboardExecutivo = () => {
           return <InadimplenciaSegmentada />;
         case 'benchmarking':
           return <BenchmarkingSetorial />;
+        case 'alertas-orcamento':
+          return <AlertasOrcamento />;
 
         default:
           return <div className="p-4 text-sm text-muted-foreground">Widget: {widget.title}</div>;
