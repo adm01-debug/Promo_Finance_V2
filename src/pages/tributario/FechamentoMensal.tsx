@@ -1,17 +1,14 @@
-import { AssistenteFechamentoMensal } from '@/components/tributario/dashboard/AssistenteFechamentoMensal';
+import React from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
-import { useAllEmpresas } from '@/hooks/useEmpresas';
-import { useState } from 'react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Building2, Clock } from 'lucide-react';
+import { FileCheck, Sparkles } from 'lucide-react';
+import { AssistenteFechamentoMensal } from '@/components/tributario/dashboard/AssistenteFechamentoMensal';
+import { motion } from 'framer-motion';
+
 import { useAuth } from '@/hooks/useAuth';
 
 export default function FechamentoMensalPage() {
-  const { data: empresas = [] } = useAllEmpresas();
   const { currentEmpresaId } = useAuth();
-  const [empresaId, setEmpresaId] = useState<string | null>(currentEmpresaId || null);
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth() + 1;
@@ -21,59 +18,36 @@ export default function FechamentoMensalPage() {
       <div className="relative min-h-screen">
         <PageBackground />
         
-        <div className="container mx-auto p-6 relative z-10">
+        <div className="container mx-auto p-6 relative z-10 space-y-8">
           <PageHeader 
-            title="Fechamento Mensal" 
-            subtitle={`Validação e encerramento do período fiscal de ${String(currentMonth).padStart(2, '0')}/${currentYear}.`}
-            badge="Processo de Encerramento"
-            icon={Clock}
-            gradientFrom="from-indigo-600"
+            title="Fechamento Mensal Tributário" 
+            subtitle="Assistente inteligente para conferência, conciliação e encerramento do período fiscal."
+            badge="Fiscal Compliance"
+            icon={FileCheck}
+            gradientFrom="from-emerald-600"
             gradientVia="via-primary"
-            gradientTo="to-purple-500"
-          />
+            gradientTo="to-blue-500"
+          >
+            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white/60 text-xs font-bold uppercase tracking-widest">
+              <Sparkles className="h-3 w-3 text-primary animate-pulse" />
+              Quantum AI Assistant
+            </div>
+          </PageHeader>
 
-          <div className="space-y-6">
-            <Card className="bg-background/40 backdrop-blur-xl border-white/10">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Building2 className="h-5 w-5 text-primary" />
-                  <div>
-                    <CardTitle>Configuração do Fechamento</CardTitle>
-                    <CardDescription>Selecione a empresa para iniciar o processo de fechamento</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Select value={empresaId || ''} onValueChange={setEmpresaId}>
-                  <SelectTrigger className="w-full md:w-[400px]">
-                    <SelectValue placeholder="Selecione uma empresa..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {empresas.map((emp) => (
-                      <SelectItem key={emp.id} value={emp.id}>
-                        {emp.razao_social || emp.nome_fantasia}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </CardContent>
-            </Card>
-
-            {empresaId ? (
-              <AssistenteFechamentoMensal 
-                empresaId={empresaId} 
-                ano={currentYear} 
-                mes={currentMonth} 
-                isAdmin={true}
-              />
-            ) : (
-              <div className="text-center py-12 border-2 border-dashed rounded-xl text-muted-foreground bg-background/20">
-                Selecione uma empresa acima para processar o fechamento do período atual ({String(currentMonth).padStart(2, '0')}/{currentYear}).
-              </div>
-            )}
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <AssistenteFechamentoMensal 
+              empresaId={currentEmpresaId || ''} 
+              ano={currentYear} 
+              mes={currentMonth} 
+            />
+          </motion.div>
         </div>
       </div>
     </MainLayout>
   );
 }
+

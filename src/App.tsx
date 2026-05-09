@@ -110,6 +110,12 @@ const ScoringClientesPage = lazy(() => import('./pages/clientes/ScoringClientes'
 
 const Orcamentos = lazy(() => import('./pages/Orcamentos'));
 const Categorias = lazy(() => import('./pages/Categorias'));
+const ApiManagement = lazy(() => import('./pages/admin/ApiManagement'));
+const CustomFieldsAdmin = lazy(() => import('./pages/admin/CustomFieldsAdmin'));
+const StatusPage = lazy(() => import('./pages/StatusPage'));
+
+
+
 
 const NotFound = lazy(() => import('./pages/NotFound'));
 
@@ -130,6 +136,8 @@ function AppRoutes() {
             <Route path="/auth/corporate" element={<CorporateOnboarding />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/contador/:token" element={<ContadorReadonly />} />
+            <Route path="/status" element={<StatusPage />} />
+
             
             {/* Protected Routes */}
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
@@ -204,6 +212,10 @@ function AppRoutes() {
             <Route path="/configuracoes/notificacoes/historico" element={<ProtectedRoute><HistoricoNotificacoes /></ProtectedRoute>} />
             <Route path="/configuracoes/notificacoes/sino" element={<ProtectedRoute><SinoNotificacoesFiltros /></ProtectedRoute>} />
             <Route path="/admin/filtros-compartilhados" element={<ProtectedRoute requiredRoles={['admin']}><SharedFiltersAdmin /></ProtectedRoute>} />
+            <Route path="/admin/api" element={<ProtectedRoute requiredRoles={['admin']}><ApiManagement /></ProtectedRoute>} />
+            <Route path="/admin/campos-customizados" element={<ProtectedRoute requiredRoles={['admin']}><CustomFieldsAdmin /></ProtectedRoute>} />
+
+
             
             <Route path="/tributario/split-payment" element={<ProtectedRoute><SplitPaymentPage /></ProtectedRoute>} />
             <Route path="/tributario/conciliacao" element={<ProtectedRoute><ConciliacaoTributariaPage /></ProtectedRoute>} />

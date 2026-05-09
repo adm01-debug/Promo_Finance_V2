@@ -261,3 +261,29 @@ export function useRelatorioKPIs(periodoInicio: string, periodoFim: string) {
     enabled: !!periodoInicio && !!periodoFim,
   });
 }
+
+export interface ResumoSemanal {
+  id: string;
+  empresa_id: string;
+  semana_inicio: string;
+  semana_fim: string;
+  resumo_md: string;
+  kpis: any;
+  enviado_em: string | null;
+  created_at: string;
+}
+
+export function useResumosSemanais() {
+  return useQuery({
+    queryKey: ['resumos-semanais'],
+    queryFn: async (): Promise<ResumoSemanal[]> => {
+      const { data, error } = await supabase
+        .from('resumos_executivos_semanais')
+        .select('*')
+        .order('semana_inicio', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    },
+  });
+}

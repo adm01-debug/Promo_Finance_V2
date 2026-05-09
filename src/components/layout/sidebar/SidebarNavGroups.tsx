@@ -12,7 +12,9 @@ import {
   Palette,
   Bell,
   Settings,
+  Settings2,
   ChevronDown,
+
   Key,
   Building2,
   CreditCard,
@@ -49,7 +51,9 @@ import {
   ShieldAlert,
   MessageSquare,
   Tag,
+  Code2,
 } from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -60,6 +64,8 @@ import { useRealtimeAlertas } from '@/hooks/useRealtimeAlertas';
 import { useRealtimeAnomalias } from '@/hooks/useRealtimeAnomalias';
 import { useWhatsAppUnreadCount } from '@/hooks/useWhatsAppUnreadCount';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
+
 
 interface NavItem {
   label: string;
@@ -185,8 +191,12 @@ const navGroups: NavGroup[] = [
       { label: 'Configurações', icon: Settings, href: '/configuracoes' },
       { label: 'Meu Perfil', icon: User, href: '/meu-perfil' },
       { label: 'Guia de Estilo', icon: Palette, href: '/style-guide', highlight: true },
+      { label: 'API & Integrações', icon: Code2, href: '/admin/api', highlight: true },
+      { label: 'Campos Customizados', icon: Settings2, href: '/admin/campos-customizados', highlight: true },
     ],
   },
+
+
 ];
 
 interface SidebarNavGroupsProps {
@@ -195,6 +205,8 @@ interface SidebarNavGroupsProps {
 
 export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
   const location = useLocation();
+  const { t } = useTranslation();
+
   const { count: aprovacoesPendentes } = useAprovacoesPendentesCount();
   const { data: alertasNaoLidos = 0 } = useAlertasNaoLidos();
   const { data: alertasTributarios = 0 } = useAlertasTributariosCount();
@@ -321,8 +333,9 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
                 isActive ? "font-black" : "font-semibold"
               )}
             >
-              {item.label}
+              {t(item.label.toLowerCase().replace(/\s+/g, '_'), item.label)}
             </motion.span>
+
           )}
         </AnimatePresence>
         {isSynced && !collapsed && (
@@ -363,8 +376,9 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>{content}</TooltipTrigger>
           <TooltipContent side="right" className="flex items-center gap-2">
-            {item.label}
+            {t(item.label.toLowerCase().replace(/\s+/g, '_'), item.label)}
             {badge && (
+
               <Badge variant="secondary" className="text-xs">
                 {badge}
               </Badge>
@@ -383,6 +397,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
         const GroupIcon = group.icon;
         const isOpen = openGroups[group.id];
         const hasActive = groupHasActiveItem(group);
+        const translatedGroupLabel = t(group.id, group.label);
 
         return (
           <div key={group.id} className="space-y-1">
@@ -403,7 +418,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="right" className="font-medium">
-                  {group.label}
+                  {translatedGroupLabel}
                 </TooltipContent>
               </Tooltip>
             ) : (
@@ -422,9 +437,10 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
                 )}>
                   <GroupIcon className="h-4.5 w-4.5 shrink-0" />
                 </div>
-                <span className="font-black text-[11px] uppercase tracking-[0.3em] flex-1 text-left">{group.label}</span>
+                <span className="font-black text-[11px] uppercase tracking-[0.3em] flex-1 text-left">{translatedGroupLabel}</span>
                 <motion.div
                   animate={{ rotate: isOpen ? 180 : 0 }}
+
                   transition={{ duration: 0.4, ease: "backOut" }}
                   className="opacity-40 group-hover:opacity-100 transition-opacity"
                 >

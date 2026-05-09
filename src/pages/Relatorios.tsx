@@ -24,6 +24,8 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { RelatoriosAgendados } from '@/components/relatorios/RelatoriosAgendados';
+import { RelatoriosResumosSemanais } from '@/components/relatorios/RelatoriosResumosSemanais';
+
 import { RelatorioDrillDown } from '@/components/relatorios/RelatorioDrillDown';
 import { ExportRelatorioAvancadoPDF } from '@/components/relatorios/ExportRelatorioAvancadoPDF';
 import { Button } from '@/components/ui/button';
@@ -211,6 +213,8 @@ export default function Relatorios() {
           <TabsTrigger value="detalhado" className="gap-2"><FileText className="h-4 w-4" />Detalhado</TabsTrigger>
           <TabsTrigger value="modelos" className="gap-2"><FileSpreadsheet className="h-4 w-4" />Modelos</TabsTrigger>
           <TabsTrigger value="agendados" className="gap-2"><Clock className="h-4 w-4" />Agendados</TabsTrigger>
+          <TabsTrigger value="resumos" className="gap-2"><Sparkles className="h-4 w-4" />Resumos Semanais</TabsTrigger>
+
         </TabsList>
 
         <TabsContent value="drill-down"><RelatorioDrillDown /></TabsContent>
@@ -241,6 +245,11 @@ export default function Relatorios() {
         <TabsContent value="agendados">
           <RelatoriosAgendados />
         </TabsContent>
+
+        <TabsContent value="resumos">
+          <RelatoriosResumosSemanais />
+        </TabsContent>
+
       </Tabs>
       </div>
     </div>
