@@ -42,6 +42,7 @@ export interface ConfiguracaoMatch {
   pesoNomeParcial: number;
   pesoDataProxima: number;
   pesoDocumento: number;
+  pesoCnpj: number;
   toleranciaValor: number; // Percentual de diferença aceita
   toleranciaDias: number; // Dias de diferença aceita para data
   scoreMinimo: number; // Score mínimo para considerar match
@@ -49,15 +50,16 @@ export interface ConfiguracaoMatch {
 
 // Default configuration
 export const DEFAULT_CONFIG: ConfiguracaoMatch = {
-  pesoValorExato: 40,
-  pesoValorProximo: 20,
-  pesoNomeExato: 35,
-  pesoNomeParcial: 20,
-  pesoDataProxima: 15,
+  pesoValorExato: 50,
+  pesoValorProximo: 30,
+  pesoNomeExato: 40,
+  pesoNomeParcial: 25,
+  pesoDataProxima: 20,
   pesoDocumento: 30,
+  pesoCnpj: 60,
   toleranciaValor: 2, // 2% de tolerância
   toleranciaDias: 5, // 5 dias de tolerância
-  scoreMinimo: 50,
+  scoreMinimo: 45,
 };
 
 export const TOLERANCIA_CENTAVOS = 0.50; // Tolerância para ajuste automático de centavos
@@ -249,6 +251,7 @@ export function encontrarMatchesParaTransacao(
         peso: config.pesoNomeExato,
       });
       scoreTotal += config.pesoNomeExato;
+      pesoTotal += config.pesoNomeExato;
     } else if (similaridadeTexto.tipo === 'parcial' && similaridadeTexto.score > 0.2) {
       const peso = config.pesoNomeParcial * similaridadeTexto.score;
       motivos.push({
@@ -257,8 +260,10 @@ export function encontrarMatchesParaTransacao(
         peso,
       });
       scoreTotal += peso;
+      pesoTotal += config.pesoNomeParcial;
+    } else {
+      pesoTotal += config.pesoNomeExato;
     }
-    pesoTotal += config.pesoNomeExato;
     
     // 3. Compare dates
     const similaridadeData = calcularSimilaridadeData(
@@ -267,18 +272,18 @@ export function encontrarMatchesParaTransacao(
       config.toleranciaDias
     );
     
-    if (similaridadeData > 0.5) {
+    if (similaridadeData > 0) {
       const peso = config.pesoDataProxima * similaridadeData;
       motivos.push({
         tipo: 'data_proxima',
-        descricao: `Data próxima ao vencimento`,
+        descricao: `Data próxima ao vencimento (${Math.floor(Math.abs(transacao.data.getTime() - lancamento.dataVencimento.getTime()) / (1000 * 60 * 60 * 24))} dias)`,
         peso,
       });
       scoreTotal += peso;
+      pesoTotal += config.pesoDataProxima;
     }
-    pesoTotal += config.pesoDataProxima;
-    
-    // 4. Document number matching (if available)
+
+    // 4. Document number matching
     if (transacao.numeroReferencia && lancamento.numeroDocumento) {
       if (transacao.numeroReferencia.includes(lancamento.numeroDocumento) ||
           lancamento.numeroDocumento.includes(transacao.numeroReferencia)) {
@@ -288,13 +293,32 @@ export function encontrarMatchesParaTransacao(
           peso: config.pesoDocumento,
         });
         scoreTotal += config.pesoDocumento;
+        pesoTotal += config.pesoDocumento;
+      }
+    }
+
+    // 5. CNPJ matching (Advanced)
+    // Se a descrição da transação contiver o CNPJ ou parte dele
+    if (lancamento.entidade && lancamento.entidade.match(/\d{2}\.?\d{3}\.?\d{3}\/?\d{4}-?\d{2}/)) {
+      const cnpj = lancamento.entidade.replace(/\D/g, '');
+      if (cnpj && transacao.descricao.replace(/\D/g, '').includes(cnpj)) {
+        motivos.push({
+          tipo: 'documento',
+          descricao: 'CNPJ identificado na transação',
+          peso: config.pesoCnpj,
+        });
+        scoreTotal += config.pesoCnpj;
+        pesoTotal += config.pesoCnpj;
       }
     }
     
     // Calculate final score (normalized to 0-100)
-    const scoreFinal = Math.min(100, (scoreTotal / pesoTotal) * 100);
+    const scoreFinal = pesoTotal > 0 ? Math.min(100, (scoreTotal / pesoTotal) * 100) : 0;
     
     if (scoreFinal >= config.scoreMinimo) {
+      // Bonus for high similarity or document match
+      const isHighConfidence = scoreFinal >= 80 || motivos.some(m => m.tipo === 'documento' || m.tipo === 'valor_exato');
+      
       sugestoes.push({
         transacaoId: transacao.id,
         lancamentoId: lancamento.id,
@@ -302,7 +326,7 @@ export function encontrarMatchesParaTransacao(
         score: Math.round(scoreFinal),
         motivos,
         lancamento,
-        confianca: scoreFinal >= 85 ? 'alta' : scoreFinal >= 65 ? 'media' : 'baixa',
+        confianca: scoreFinal >= 80 ? 'alta' : scoreFinal >= 60 ? 'media' : 'baixa',
       });
     }
   }

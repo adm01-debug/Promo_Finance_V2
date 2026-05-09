@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Building2, CreditCard, CheckCircle2, Clock, ShieldAlert, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Building2, CreditCard, CheckCircle2, Clock, ShieldAlert, AlertTriangle, ArrowRight, FileText, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCountUp } from '@/hooks/useCountUp';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -13,6 +13,8 @@ interface SecondaryKPICardsProps {
   aprovacoesPendentes: number;
   vencidasTotal: number;
   totalDivergencias?: number;
+  boletosAbertos?: number;
+  taxaRecuperacao?: number;
 }
 
 interface MiniCardProps {
@@ -106,9 +108,11 @@ export function SecondaryKPICards({
   aprovacoesPendentes,
   vencidasTotal,
   totalDivergencias = 0,
+  boletosAbertos = 0,
+  taxaRecuperacao = 0,
 }: SecondaryKPICardsProps) {
   return (
-    <div className="col-span-1 lg:col-span-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+    <div className="col-span-1 lg:col-span-3 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-9 gap-3">
       <MiniKPICard
         icon={Building2} label="Business Units" value={empresasCount}
         iconBg="bg-primary/10" iconColor="text-primary"
@@ -153,6 +157,20 @@ export function SecondaryKPICards({
         iconColor={totalDivergencias > 0 ? "text-destructive" : "text-muted-foreground"}
         accentGradient="bg-gradient-to-r from-destructive to-destructive/60"
         href="/conciliacao#divergencias" alertLevel={totalDivergencias > 0 ? "danger" : "none"} tooltip="Divergências de conciliação pendentes" index={6}
+      />
+      <MiniKPICard
+        icon={FileText} label="Active Billing" value={boletosAbertos}
+        iconBg={boletosAbertos > 0 ? "bg-blue-500/10" : "bg-muted/50"}
+        iconColor={boletosAbertos > 0 ? "text-blue-500" : "text-muted-foreground"}
+        accentGradient="bg-gradient-to-r from-blue-500 to-blue-500/60"
+        href="/boletos" tooltip="Boletos bancários em aberto" index={7}
+      />
+      <MiniKPICard
+        icon={Target} label="Recovery Rate" value={taxaRecuperacao}
+        iconBg={taxaRecuperacao > 50 ? "bg-emerald-500/10" : "bg-orange-500/10"}
+        iconColor={taxaRecuperacao > 50 ? "text-emerald-500" : "text-orange-500"}
+        accentGradient="bg-gradient-to-r from-emerald-500 to-emerald-500/60"
+        href="/cobrancas" tooltip="Eficiência na recuperação de títulos vencidos" index={8}
       />
     </div>
   );
