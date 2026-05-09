@@ -18,6 +18,10 @@ import {
   Users,
   ArrowUpDown,
   Clock,
+  Sparkles,
+  Scale,
+  Brain,
+  ShieldCheck,
 } from 'lucide-react';
 import { RelatoriosAgendados } from '@/components/relatorios/RelatoriosAgendados';
 import { RelatorioDrillDown } from '@/components/relatorios/RelatorioDrillDown';
@@ -47,6 +51,8 @@ import { RelatoriosFilters } from '@/components/relatorios/RelatoriosFilters';
 import { RelatoriosComparativo } from '@/components/relatorios/RelatoriosComparativo';
 import { RelatoriosDetalhado } from '@/components/relatorios/RelatoriosDetalhado';
 import { RelatoriosModelos } from '@/components/relatorios/RelatoriosModelos';
+import { PageBackground } from '@/components/layout/PageHeader';
+import { motion } from 'framer-motion';
 
 const relatoriosDisponiveis = [
   { id: '1', nome: 'DRE - Demonstrativo de Resultados', categoria: 'Contábil', icon: FileText },
@@ -57,6 +63,9 @@ const relatoriosDisponiveis = [
   { id: '6', nome: 'Centro de Custos Detalhado', categoria: 'Gerencial', icon: PieChartIcon },
   { id: '7', nome: 'Comparativo de Períodos', categoria: 'Gerencial', icon: BarChart3 },
   { id: '8', nome: 'Conciliação Bancária', categoria: 'Financeiro', icon: CreditCard },
+  { id: '9', nome: 'Relatório Tributário Anual (Quantum)', categoria: 'Fiscal', icon: Sparkles },
+  { id: '10', nome: 'Auditoria de Compliance IA', categoria: 'Fiscal', icon: ShieldCheck },
+  { id: '11', nome: 'Mapa de Riscos Quantum-Sentinel', categoria: 'Inteligência', icon: Brain },
 ];
 
 export default function Relatorios() {
@@ -128,12 +137,18 @@ export default function Relatorios() {
     : 'Todas as Empresas';
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-display-md text-foreground">Relatórios</h1>
-          <p className="text-muted-foreground mt-1">Análises financeiras e exportação de dados</p>
-        </div>
+    <div className="relative min-h-screen">
+      <PageBackground />
+      <div className="container mx-auto p-4 sm:p-8 space-y-8 relative z-10">
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6"
+        >
+          <div>
+            <h1 className="text-4xl font-black tracking-tight text-white mb-2">Relatórios & BI</h1>
+            <p className="text-white/60 font-medium">Ecossistema Central de Inteligência e Exportação Avançada</p>
+          </div>
         <div className="flex gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -160,8 +175,8 @@ export default function Relatorios() {
           />
           <ExportRelatorioAvancadoPDF tipo="dre" empresa={empresaNome} periodo={`${periodoInicio} a ${periodoFim}`} />
           <Button variant="outline" onClick={handlePrint}><Printer className="h-4 w-4 mr-2" />Imprimir</Button>
-          <Button variant="outline" onClick={handleEmail}><Mail className="h-4 w-4 mr-2" />Enviar</Button>
-        </div>
+          <Button variant="outline" onClick={handleEmail} className="h-11 rounded-xl bg-background/40"><Mail className="h-4 w-4 mr-2" />Enviar</Button>
+        </motion.div>
       </div>
 
       <RelatoriosFilters
