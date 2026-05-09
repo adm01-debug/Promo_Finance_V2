@@ -53,7 +53,13 @@ const resources = {
       sair: 'Cerrar Sesión',
       perfil: 'Mi Perfil',
       bem_vindo: 'Bienvenido a Quantum',
+      visao_geral: 'Visión General',
+      relatorios: 'Reportes y BI',
+      clientes: 'Clientes',
+      fornecedores: 'Proveedores',
+      seguranca: 'Seguridad',
     }
+
   }
 };
 
