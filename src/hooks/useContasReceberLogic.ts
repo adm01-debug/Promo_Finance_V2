@@ -44,6 +44,7 @@ export function useContasReceberLogic() {
   const [descontoDialogOpen, setDescontoDialogOpen] = useState(false);
   const [descontoConta, setDescontoConta] = useState<ContaReceberWithRelations | null>(null);
   const [baixaDialogOpen, setBaixaDialogOpen] = useState(false);
+  const [webhookDialogOpen, setWebhookDialogOpen] = useState(false);
 
   // Sincroniza com empresa ativa do sistema
   useEffect(() => {
