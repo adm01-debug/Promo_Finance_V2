@@ -124,6 +124,21 @@ export default function BloqueiosDuplicidade() {
     },
   });
 
+  const { data: empresas } = useQuery({
+    queryKey: ["empresas-simples"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("empresas").select("id, nome_fantasia, cnpj");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const stats = {
     totalValue: bloqueios?.reduce((acc, b) => acc + (Number(b.valor_bloqueado) || 0), 0) || 0,
     totalCount: bloqueios?.length || 0,
