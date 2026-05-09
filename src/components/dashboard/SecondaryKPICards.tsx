@@ -12,6 +12,7 @@ interface SecondaryKPICardsProps {
   venceHojePagarCount: number;
   aprovacoesPendentes: number;
   vencidasTotal: number;
+  totalDivergencias?: number;
 }
 
 interface MiniCardProps {
@@ -104,9 +105,10 @@ export function SecondaryKPICards({
   venceHojePagarCount,
   aprovacoesPendentes,
   vencidasTotal,
+  totalDivergencias = 0,
 }: SecondaryKPICardsProps) {
   return (
-    <div className="col-span-1 lg:col-span-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+    <div className="col-span-1 lg:col-span-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
       <MiniKPICard
         icon={Building2} label="Business Units" value={empresasCount}
         iconBg="bg-primary/10" iconColor="text-primary"
@@ -144,6 +146,13 @@ export function SecondaryKPICards({
         iconColor={vencidasTotal > 0 ? "text-destructive" : "text-muted-foreground"}
         accentGradient="bg-gradient-to-r from-destructive to-destructive/60"
         alertLevel="danger" tooltip="Anomalias de fluxo detectadas" index={5}
+      />
+      <MiniKPICard
+        icon={ShieldAlert} label="Divergências" value={totalDivergencias}
+        iconBg={totalDivergencias > 0 ? "bg-destructive/10" : "bg-muted/50"}
+        iconColor={totalDivergencias > 0 ? "text-destructive" : "text-muted-foreground"}
+        accentGradient="bg-gradient-to-r from-destructive to-destructive/60"
+        href="/conciliacao#divergencias" alertLevel={totalDivergencias > 0 ? "danger" : "none"} tooltip="Divergências de conciliação pendentes" index={6}
       />
     </div>
   );
