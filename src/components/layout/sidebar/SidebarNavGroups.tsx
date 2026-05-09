@@ -111,7 +111,7 @@ const navGroups: NavGroup[] = [
       { label: 'Asaas Pagamentos', icon: CreditCard, href: '/asaas', highlight: true },
       { label: 'Auditoria de Duplicidade', icon: ShieldAlert, href: '/contas-pagar/bloqueios', highlight: true },
       { label: 'Metas Financeiras', icon: Target, href: '/metas', highlight: true },
-      { label: 'Cyber-Sentinel: Riscos', icon: Brain, href: '/inteligencia#alertas-preditivos', highlight: true },
+      { label: 'Quantum-Sentinel: Riscos', icon: Brain, href: '/inteligencia#alertas-preditivos', highlight: true },
     ],
   },
   {
