@@ -10,6 +10,7 @@ import {
   FileText,
   PieChart,
   Palette,
+  Globe,
   Bell,
   Settings,
   Settings2,
