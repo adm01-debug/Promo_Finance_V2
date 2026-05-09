@@ -118,6 +118,8 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
     });
   }, [parametrosCompletos, anoReferencia, mesReferencia, regimeAtual, serverResult]);
 
+  const isRecomendacaoIA = !!resultado.justificativaIA;
+
   const sincronizarComServer = async () => {
     if (!empresaId) return;
     try {
