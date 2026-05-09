@@ -28,6 +28,7 @@ import { contasReceberColumns } from '@/lib/export-utils';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { BaixaAutomaticaDialog } from '@/components/contas-receber/BaixaAutomaticaDialog';
+import { WebhookConfigDialog } from '@/components/contas-receber/WebhookConfigDialog';
 import { History, Zap, Settings, BarChart3, FileSpreadsheet, RefreshCcw } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
