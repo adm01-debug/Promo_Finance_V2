@@ -1,6 +1,8 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import "./i18n";
+
 import "./styles/high-contrast.css";
 import { logger } from "@/lib/logger";
 import { initTelemetry } from "@/lib/telemetry";
