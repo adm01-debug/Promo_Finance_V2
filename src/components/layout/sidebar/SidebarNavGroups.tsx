@@ -82,7 +82,7 @@ const navGroups: NavGroup[] = [
     items: [
       { label: 'Dashboard', icon: LayoutDashboard, href: '/' },
       { label: 'BI Gestão', icon: BarChart3, href: '/bi', highlight: true },
-      { label: 'Inteligência IA', icon: Sparkles, href: '/inteligencia', highlight: true },
+      { label: 'Inteligência Operacional', icon: Brain, href: '/inteligencia', highlight: true },
       { label: 'Dashboard Empresa', icon: Building2, href: '/dashboard-empresa' },
       { label: 'Benchmarking', icon: Scale, href: '/benchmarking', highlight: true },
       { label: 'EXPERT (IA)', icon: Bot, href: '/expert', highlight: true },
@@ -104,7 +104,7 @@ const navGroups: NavGroup[] = [
       { label: 'Tesouraria Multi-CNPJ', icon: Landmark, href: '/tesouraria' },
       { label: 'Simulador Antecipação', icon: Calculator, href: '/simulador-antecipacao' },
       { label: 'Asaas Pagamentos', icon: CreditCard, href: '/asaas', highlight: true },
-      { label: 'Bloqueios Duplicidade', icon: EyeOff, href: '/contas-pagar/bloqueios', highlight: true },
+      { label: 'Auditoria de Duplicidade', icon: ShieldAlert, href: '/contas-pagar/bloqueios', highlight: true },
       { label: 'Metas Financeiras', icon: Target, href: '/metas' },
     ],
   },
@@ -132,7 +132,7 @@ const navGroups: NavGroup[] = [
       { label: 'Assinatura Digital', icon: FileSignature, href: '/assinatura-digital' },
       { label: 'Comprovante OCR', icon: Camera, href: '/comprovante-ocr' },
       { label: 'Relatórios', icon: FileText, href: '/relatorios' },
-      { label: 'Auditoria Detalhada', icon: History, href: '/contas-pagar/bloqueios' },
+      { label: 'Cofre de Integridade', icon: ShieldCheck, href: '/contas-pagar/bloqueios', highlight: true },
     ],
   },
   {
