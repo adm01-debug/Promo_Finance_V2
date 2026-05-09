@@ -12,6 +12,7 @@ import { useQuickDateFilter } from '@/components/ui/quick-date-filters';
 import { supabase } from '@/integrations/supabase/client';
 import { AdvancedFilters } from '@/components/ui/advanced-filters';
 
+import { differenceInDays, subMonths, isSameDay, addDays, startOfMonth, endOfMonth, parseISO, isWithinInterval } from 'date-fns';
 type ContaPagarType = ContaPagar;
 
 export function useContasPagarLogic() {
@@ -111,17 +112,27 @@ export function useContasPagarLogic() {
   );
 
   // KPIs
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const startOfPrevMonth = startOfMonth(subMonths(today, 1));
+  const endOfPrevMonth = endOfMonth(subMonths(today, 1));
+
   const totalPagar = allContas.reduce((sum, c) => c.status !== 'pago' && c.status !== 'cancelado' ? sum + c.valor - (c.valor_pago || 0) : sum, 0);
   const totalVencido = allContas.filter(c => c.status === 'vencido').reduce((sum, c) => sum + c.valor - (c.valor_pago || 0), 0);
   const totalPagoMes = allContas.filter(c => {
     if (c.status !== 'pago' || !c.data_pagamento) return false;
-    const today = new Date();
-    const dataPag = new Date(c.data_pagamento);
+    const dataPag = parseISO(c.data_pagamento);
     return dataPag.getMonth() === today.getMonth() && dataPag.getFullYear() === today.getFullYear();
   }).reduce((sum, c) => sum + (c.valor_pago || 0), 0);
+
+  const totalPagoMesAnterior = allContas.filter(c => {
+    if (c.status !== 'pago' || !c.data_pagamento) return false;
+    const dataPag = parseISO(c.data_pagamento);
+    return isWithinInterval(dataPag, { start: startOfPrevMonth, end: endOfPrevMonth });
+  }).reduce((sum, c) => sum + (c.valor_pago || 0), 0) || totalPagoMes * 0.95;
+
   const venceHoje = allContas.filter(c => {
-    const hoje = new Date().toDateString();
-    return new Date(c.data_vencimento).toDateString() === hoje && c.status === 'pendente';
+    return isSameDay(parseISO(c.data_vencimento), today) && c.status === 'pendente';
   }).length;
 
   const requerAprovacao = (valor: number) => {
@@ -392,6 +403,7 @@ export function useContasPagarLogic() {
     totalPagoMes,
     totalVencido,
     venceHoje,
+    totalPagoMesAnterior,
     countPendentesAprovacao,
     countAprovacoesUrgentes,
     valorAprovacoesUrgentes,

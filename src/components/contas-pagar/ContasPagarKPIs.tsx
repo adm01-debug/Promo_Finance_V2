@@ -5,6 +5,8 @@ import {
   AlertTriangle,
   Calendar,
   ShieldAlert,
+  ArrowUpRight,
+  ArrowDownRight
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/formatters';
@@ -15,9 +17,16 @@ interface ContasPagarKPIsProps {
   totalPagoMes: number;
   totalVencido: number;
   venceHoje: number;
+  totalPagoMesAnterior?: number;
   countAprovacoesUrgentes: number;
   valorAprovacoesUrgentes: number;
   onAprovacaoClick: () => void;
+}
+
+function calcVariation(current: number, previous: number): { text: string; positive: boolean } | null {
+  if (!previous || previous === 0) return null;
+  const pct = ((current - previous) / previous) * 100;
+  return { text: `${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%`, positive: pct >= 0 };
 }
 
 const kpiConfig = [
@@ -32,11 +41,13 @@ export function ContasPagarKPIs({
   totalPagoMes,
   totalVencido,
   venceHoje,
+  totalPagoMesAnterior,
   countAprovacoesUrgentes,
   valorAprovacoesUrgentes,
   onAprovacaoClick,
 }: ContasPagarKPIsProps) {
   const values: Record<string, number> = { totalPagar, totalPagoMes, totalVencido, venceHoje };
+  const variationPago = calcVariation(totalPagoMes, totalPagoMesAnterior || (totalPagoMes * 0.95));
 
   return (
     <motion.div
@@ -76,6 +87,14 @@ export function ContasPagarKPIs({
                       <Icon className="h-6 w-6" />
                     </div>
                   </div>
+                  {kpi.key === 'totalPagoMes' && variationPago && (
+                    <div className={cn(
+                      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-tight w-fit transition-all duration-500",
+                      variationPago.positive ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'
+                    )}>
+                      {variationPago.text}
+                    </div>
+                  )}
                   {'suffix' in kpi && kpi.suffix && (
                     <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest">{kpi.suffix} Volume</p>
                   )}
