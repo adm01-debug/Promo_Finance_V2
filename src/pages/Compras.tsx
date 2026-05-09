@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/formatters';
 import { useState } from 'react';
+import { PedidoCompraForm } from '@/components/compras/PedidoCompraForm';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -20,6 +21,7 @@ const itemVariants = {
 
 export default function Compras() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [formOpen, setFormOpen] = useState(false);
 
   // Mock data for initial UI
   const pedidos = [
@@ -63,7 +65,11 @@ export default function Compras() {
             </div>
 
             <div className="flex items-center gap-3">
-              <Button size="lg" className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]">
+              <Button 
+                size="lg" 
+                className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]"
+                onClick={() => setFormOpen(true)}
+              >
                 <Plus className="h-5 w-5" /> Novo Pedido
               </Button>
             </div>
@@ -150,6 +156,8 @@ export default function Compras() {
             </Card>
           </motion.div>
         </motion.div>
+
+        <PedidoCompraForm open={formOpen} onOpenChange={setFormOpen} />
       </div>
     </MainLayout>
   );
