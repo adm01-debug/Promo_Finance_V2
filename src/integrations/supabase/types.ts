@@ -2518,6 +2518,7 @@ export type Database = {
           contato_financeiro_id: string | null
           cpf_cnpj: string | null
           created_at: string
+          custom_fields: Json | null
           email: string | null
           empresa_id: string | null
           endereco: string | null
@@ -2552,6 +2553,7 @@ export type Database = {
           contato_financeiro_id?: string | null
           cpf_cnpj?: string | null
           created_at?: string
+          custom_fields?: Json | null
           email?: string | null
           empresa_id?: string | null
           endereco?: string | null
@@ -2586,6 +2588,7 @@ export type Database = {
           contato_financeiro_id?: string | null
           cpf_cnpj?: string | null
           created_at?: string
+          custom_fields?: Json | null
           email?: string | null
           empresa_id?: string | null
           endereco?: string | null
@@ -3107,6 +3110,7 @@ export type Database = {
           contato_id: string | null
           created_at: string
           created_by: string
+          custom_fields: Json | null
           data_competencia: string | null
           data_emissao: string
           data_pagamento: string | null
@@ -3159,6 +3163,7 @@ export type Database = {
           contato_id?: string | null
           created_at?: string
           created_by: string
+          custom_fields?: Json | null
           data_competencia?: string | null
           data_emissao?: string
           data_pagamento?: string | null
@@ -3211,6 +3216,7 @@ export type Database = {
           contato_id?: string | null
           created_at?: string
           created_by?: string
+          custom_fields?: Json | null
           data_competencia?: string | null
           data_emissao?: string
           data_pagamento?: string | null
@@ -3341,6 +3347,7 @@ export type Database = {
           contato_id: string | null
           created_at: string
           created_by: string
+          custom_fields: Json | null
           data_competencia: string | null
           data_credito: string | null
           data_emissao: string
@@ -3402,6 +3409,7 @@ export type Database = {
           contato_id?: string | null
           created_at?: string
           created_by: string
+          custom_fields?: Json | null
           data_competencia?: string | null
           data_credito?: string | null
           data_emissao?: string
@@ -3463,6 +3471,7 @@ export type Database = {
           contato_id?: string | null
           created_at?: string
           created_by?: string
+          custom_fields?: Json | null
           data_competencia?: string | null
           data_credito?: string | null
           data_emissao?: string
@@ -3981,6 +3990,66 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "notas_fiscais"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      custom_field_definitions: {
+        Row: {
+          active: boolean | null
+          created_at: string
+          empresa_id: string
+          entity_type: string
+          field_type: string
+          id: string
+          label: string
+          name: string
+          options: Json | null
+          placeholder: string | null
+          required: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string
+          empresa_id: string
+          entity_type: string
+          field_type?: string
+          id?: string
+          label: string
+          name: string
+          options?: Json | null
+          placeholder?: string | null
+          required?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string
+          empresa_id?: string
+          entity_type?: string
+          field_type?: string
+          id?: string
+          label?: string
+          name?: string
+          options?: Json | null
+          placeholder?: string | null
+          required?: boolean | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_field_definitions_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "custom_field_definitions_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
           },
         ]
       }
@@ -4545,6 +4614,7 @@ export type Database = {
           cnpj: string
           complemento: string | null
           created_at: string
+          custom_fields: Json | null
           email: string | null
           endereco: string | null
           estado: string | null
@@ -4568,6 +4638,7 @@ export type Database = {
           cnpj: string
           complemento?: string | null
           created_at?: string
+          custom_fields?: Json | null
           email?: string | null
           endereco?: string | null
           estado?: string | null
@@ -4591,6 +4662,7 @@ export type Database = {
           cnpj?: string
           complemento?: string | null
           created_at?: string
+          custom_fields?: Json | null
           email?: string | null
           endereco?: string | null
           estado?: string | null
@@ -5670,6 +5742,7 @@ export type Database = {
           contato_nome: string | null
           contato_telefone: string | null
           created_at: string
+          custom_fields: Json | null
           email: string | null
           empresa_id: string | null
           endereco: string | null
@@ -5704,6 +5777,7 @@ export type Database = {
           contato_nome?: string | null
           contato_telefone?: string | null
           created_at?: string
+          custom_fields?: Json | null
           email?: string | null
           empresa_id?: string | null
           endereco?: string | null
@@ -5738,6 +5812,7 @@ export type Database = {
           contato_nome?: string | null
           contato_telefone?: string | null
           created_at?: string
+          custom_fields?: Json | null
           email?: string | null
           empresa_id?: string | null
           endereco?: string | null
