@@ -160,15 +160,21 @@ export function useCentrosCusto() {
   });
 }
 
-export function useContasBancarias() {
+export function useContasBancarias(empresaId?: string) {
   return useQuery({
-    queryKey: ['contas-bancarias'],
+    queryKey: ['contas-bancarias', empresaId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('contas_bancarias')
         .select('*, empresas(razao_social, nome_fantasia)')
         .eq('ativo', true)
         .order('banco');
+      
+      if (empresaId && empresaId !== 'all') {
+        query = query.eq('empresa_id', empresaId);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       
       // Enhance with routing rules if they exist
@@ -218,15 +224,21 @@ export function useFornecedores() {
   });
 }
 
-export function useContasPagar() {
+export function useContasPagar(empresaId?: string) {
   return useQuery({
-    queryKey: ['contas-pagar'],
+    queryKey: ['contas-pagar', empresaId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('vw_contas_pagar_painel')
         .select('*')
         .order('data_vencimento', { ascending: true })
-        .limit(500);
+        .limit(1000);
+      
+      if (empresaId && empresaId !== 'all') {
+        query = query.eq('empresa_id', empresaId);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
@@ -240,15 +252,16 @@ export interface PaginatedContasPagarParams {
   search?: string;
   status?: string;
   centroCustoId?: string;
+  empresaId?: string;
 }
 
 export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
-  const { page, pageSize, search, status, centroCustoId } = params;
+  const { page, pageSize, search, status, centroCustoId, empresaId } = params;
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
   return useQuery({
-    queryKey: ['contas-pagar', 'paginated', page, pageSize, search, status, centroCustoId],
+    queryKey: ['contas-pagar', 'paginated', page, pageSize, search, status, centroCustoId, empresaId],
     queryFn: async () => {
       let countQuery = supabase
         .from('contas_pagar')
@@ -274,6 +287,10 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
         countQuery = countQuery.eq('centro_custo_id', centroCustoId);
         dataQuery = dataQuery.eq('centro_custo_id', centroCustoId);
       }
+      if (empresaId && empresaId !== 'all') {
+        countQuery = countQuery.eq('empresa_id', empresaId);
+        dataQuery = dataQuery.eq('empresa_id', empresaId);
+      }
 
       const [countResult, dataResult] = await Promise.all([countQuery, dataQuery]);
 
@@ -290,15 +307,21 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
   });
 }
 
-export function useContasReceber() {
+export function useContasReceber(empresaId?: string) {
   return useQuery({
-    queryKey: ['contas-receber'],
+    queryKey: ['contas-receber', empresaId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('vw_contas_receber_painel')
         .select('*')
         .order('data_vencimento', { ascending: true })
-        .limit(500);
+        .limit(1000);
+
+      if (empresaId && empresaId !== 'all') {
+        query = query.eq('empresa_id', empresaId);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
