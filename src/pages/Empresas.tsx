@@ -27,7 +27,7 @@ const itemVariants = { hidden: { opacity: 0, y: 16, scale: 0.98 }, visible: { op
 const heroVariants = { hidden: { opacity: 0, y: 24, scale: 0.96 }, visible: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 300, damping: 24, delay: 0.15 } } };
 
 export default function Empresas() {
-  const { data: empresas = [], isLoading } = useAllEmpresas();
+  const { data: empresas = [], isLoading } = useAllEmpresas({ includeInactive: true });
   const { data: contasBancarias = [] } = useContasBancarias();
   const { data: contasReceber = [] } = useContasReceber();
   const { data: contasPagar = [] } = useContasPagar();
