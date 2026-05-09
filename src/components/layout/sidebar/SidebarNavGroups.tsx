@@ -387,6 +387,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
         const GroupIcon = group.icon;
         const isOpen = openGroups[group.id];
         const hasActive = groupHasActiveItem(group);
+        const translatedGroupLabel = t(group.id, group.label);
 
         return (
           <div key={group.id} className="space-y-1">
@@ -407,7 +408,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="right" className="font-medium">
-                  {group.label}
+                  {translatedGroupLabel}
                 </TooltipContent>
               </Tooltip>
             ) : (
@@ -426,9 +427,10 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
                 )}>
                   <GroupIcon className="h-4.5 w-4.5 shrink-0" />
                 </div>
-                <span className="font-black text-[11px] uppercase tracking-[0.3em] flex-1 text-left">{group.label}</span>
+                <span className="font-black text-[11px] uppercase tracking-[0.3em] flex-1 text-left">{translatedGroupLabel}</span>
                 <motion.div
                   animate={{ rotate: isOpen ? 180 : 0 }}
+
                   transition={{ duration: 0.4, ease: "backOut" }}
                   className="opacity-40 group-hover:opacity-100 transition-opacity"
                 >
