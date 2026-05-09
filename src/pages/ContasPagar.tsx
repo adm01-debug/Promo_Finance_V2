@@ -13,6 +13,8 @@ import { ContasPagarKPIs } from '@/components/contas-pagar/ContasPagarKPIs';
 import { ContasPagarList } from './ContasPagar/components/List';
 import { ContasPagarFilters } from './ContasPagar/components/Filters';
 import { TablePagination } from '@/components/ui/table-pagination';
+import { BankAccountSwitcher } from '@/components/financeiro/BankAccountSwitcher';
+import { EmpresaSwitcher } from '@/components/layout/EmpresaSwitcher';
 
 import { SolicitarAprovacaoDialog } from '@/components/contas-pagar/SolicitarAprovacaoDialog';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
