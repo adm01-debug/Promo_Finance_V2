@@ -104,7 +104,13 @@ export default function ContasReceber() {
               </p>
             </div>
 
-            <div className="flex items-center gap-4 bg-background/40 p-2.5 rounded-[2rem] border border-white/10 backdrop-blur-2xl shadow-2xl ring-1 ring-white/10">
+            <div className="flex flex-col md:flex-row items-center gap-4 bg-background/40 p-2.5 rounded-[2rem] border border-white/10 backdrop-blur-2xl shadow-2xl ring-1 ring-white/10">
+              <div className="hidden lg:flex items-center gap-3 pr-3 border-r border-white/10">
+                <EmpresaSwitcher />
+              </div>
+              <div className="hidden lg:flex items-center gap-3 pr-3 border-r border-white/10">
+                <BankAccountSwitcher />
+              </div>
               <div className="flex items-center gap-1 bg-black/20 rounded-xl p-1 shadow-inner">
                 <Button variant={viewMode === 'table' ? 'default' : 'ghost'} size="icon" onClick={() => setViewMode('table')} className={cn("h-10 w-10 rounded-lg transition-all", viewMode === 'table' ? "bg-white text-primary shadow-lg" : "text-muted-foreground")}>
                   <TableIcon className="h-5 w-5" />
@@ -180,7 +186,7 @@ export default function ContasReceber() {
                     <Table>
                       <TableHeader>
                         <tr className="bg-white/[0.02] border-b border-white/5">
-                          <th className="w-16 p-6 text-center"><Checkbox checked={isAllSelected} onChange={selectAll} /></th>
+                          <th className="w-16 p-6 text-center"><Checkbox checked={isAllSelected} onClick={selectAll} /></th>
                           <th className="w-[300px] p-6"><SortableHeader label="Entity / Client" sortKey="cliente_nome" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></th>
                           <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Reference Description</th>
                           <th className="p-6"><SortableHeader label="Nominal Value" sortKey="valor" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></th>
