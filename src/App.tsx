@@ -206,6 +206,8 @@ function AppRoutes() {
             <Route path="/configuracoes/notificacoes/historico" element={<ProtectedRoute><HistoricoNotificacoes /></ProtectedRoute>} />
             <Route path="/configuracoes/notificacoes/sino" element={<ProtectedRoute><SinoNotificacoesFiltros /></ProtectedRoute>} />
             <Route path="/admin/filtros-compartilhados" element={<ProtectedRoute requiredRoles={['admin']}><SharedFiltersAdmin /></ProtectedRoute>} />
+            <Route path="/admin/api" element={<ProtectedRoute requiredRoles={['admin']}><ApiManagement /></ProtectedRoute>} />
+
             
             <Route path="/tributario/split-payment" element={<ProtectedRoute><SplitPaymentPage /></ProtectedRoute>} />
             <Route path="/tributario/conciliacao" element={<ProtectedRoute><ConciliacaoTributariaPage /></ProtectedRoute>} />
