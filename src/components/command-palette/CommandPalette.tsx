@@ -164,7 +164,7 @@ export function CommandPalette() {
       heading: 'Cadastros & CRM',
       items: [
         { id: 'clientes', title: 'Clientes', subtitle: 'Base de clientes & WhatsApp', icon: Users, action: () => navigate('/clientes'), keywords: ['cliente', 'cadastro'], shortcut: ['⌥', 'C'] },
-        { id: 'scoring', title: 'Scoring & Risco', subtitle: 'Análise de crédito neural', icon: Target, action: () => navigate('/clientes/scoring'), keywords: ['scoring', 'risco', 'credito'], badge: 'IA' },
+        { id: 'scoring', title: 'Scoring & Risco', subtitle: 'Análise de crédito neural', icon: Target, action: () => navigate('/clientes#scoring'), keywords: ['scoring', 'risco', 'credito'], badge: 'IA' },
         { id: 'portal-tokens', title: 'Portal de Tokens', subtitle: 'Gestão de acesso cliente', icon: Key, action: () => navigate('/clientes/portal-tokens'), keywords: ['portal', 'token', 'acesso'] },
         { id: 'fornecedores', title: 'Fornecedores', subtitle: 'Parceiros comerciais', icon: Building2, action: () => navigate('/fornecedores'), keywords: ['fornecedor', 'parceiro'], shortcut: ['⌥', 'U'] },
         { id: 'vendedores', title: 'Vendedores', subtitle: 'Equipe comercial', icon: UserCog, action: () => navigate('/vendedores'), keywords: ['vendedor', 'comercial'] },
