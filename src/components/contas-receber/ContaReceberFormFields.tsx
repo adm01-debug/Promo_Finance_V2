@@ -3,8 +3,9 @@ import { UseFormReturn } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Building2, Calendar, DollarSign, FileText, Tag, CreditCard, Banknote,
-  QrCode, Wallet, Link2, User, RefreshCw, Layers, Search,
+  QrCode, Wallet, Link2, User, RefreshCw, Layers, Search, Sparkles
 } from 'lucide-react';
+import { CategorizacaoIABadge } from './CategorizacaoIABadge';
 import { FieldLabel } from '@/components/ui/info-tooltip';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -140,7 +141,22 @@ export function ContaReceberFormFields({
       {/* Categoria */}
       <FormField control={form.control} name="categoria_id" render={({ field }) => (
         <FormItem>
-          <FieldLabel label="Categoria" tooltip="Classificação da receita para relatórios gerenciais" />
+          <div className="flex items-center justify-between">
+            <FieldLabel label="Categoria" tooltip="Classificação da receita para relatórios gerenciais" />
+            <CategorizacaoIABadge
+              despesa={{
+                descricao: form.watch('descricao') || '',
+                valor: form.watch('valor') || 0,
+                cliente_nome: form.watch('cliente_nome') || '',
+                data_vencimento: form.watch('data_vencimento') || '',
+              }}
+              categoriaAtual={categorias.find(c => c.id === field.value)?.nome}
+              onAplicar={(cat) => {
+                const matched = categorias.find(c => c.nome.toLowerCase() === cat.categoria.toLowerCase());
+                if (matched) form.setValue('categoria_id', matched.id);
+              }}
+            />
+          </div>
           <Select onValueChange={field.onChange} value={field.value}>
             <FormControl><SelectTrigger><SelectValue placeholder="Selecione a categoria" /></SelectTrigger></FormControl>
             <SelectContent>
