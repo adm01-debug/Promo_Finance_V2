@@ -194,6 +194,10 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
         desconto_valor: descontoValor ? parseFloat(descontoValor) : undefined,
         desconto_dias: descontoDias ? parseInt(descontoDias) : undefined,
         desconto_tipo: descontoValor ? 'FIXED' : undefined,
+        split: showSplit && splitWalletId && splitPercent ? [{
+          walletId: splitWalletId,
+          percentualValue: parseFloat(splitPercent)
+        }] : undefined,
         ...(tipo === 'credit_card' ? {
           cartao: {
             holder_name: cardHolderName,
