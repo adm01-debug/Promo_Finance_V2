@@ -17,6 +17,7 @@ import {
   useUpdateContaPagar 
 } from '@/hooks/useFinancialData';
 import { useCategorias } from '@/hooks/useCategorias';
+import { useProcessarNFOCR, type DadosExtraidosNF } from '@/hooks/useProcessarNFOCR';
 import { toast } from '@/hooks/use-toast';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 import { sounds } from '@/lib/sound-feedback';
