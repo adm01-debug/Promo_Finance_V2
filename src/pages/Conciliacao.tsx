@@ -81,9 +81,10 @@ export default function Conciliacao() {
     showImportDialog, setShowImportDialog,
     showManualDialog, setShowManualDialog,
     showSplitDialog, setShowSplitDialog,
-    selectedTransacaoManual, selectedTransacaoSplit,
+    selectedTransacaoManual, setSelectedTransacaoManual,
+    selectedTransacaoSplit, setSelectedTransacaoSplit,
     transacoesImportadas,
-    filters, setFilters, selectedIds,
+    filters, setFilters, selectedIds, setSelectedIds,
     showReportDialog, setShowReportDialog,
     importReport,
     contasBancarias, lancamentosSistema,
@@ -397,9 +398,22 @@ export default function Conciliacao() {
       />
 
       {/* Dialogs */}
-      <ConciliacaoManualDialog open={showManualDialog} onOpenChange={setShowManualDialog} transacao={selectedTransacaoManual} onManualSuccess={handleManualSuccess} />
-      <ConciliacaoSplitDialog open={showSplitDialog} onOpenChange={setShowSplitDialog} transacao={selectedTransacaoSplit} onSplitSuccess={handleManualSuccess} />
-      <RelatorioImportacaoDialog open={showReportDialog} onOpenChange={setShowReportDialog} report={importReport} />
+      <ConciliacaoManualDialog 
+        open={showManualDialog} 
+        onOpenChange={setShowManualDialog} 
+        transacao={selectedTransacaoManual as any} 
+      />
+      <ConciliacaoSplitDialog 
+        open={showSplitDialog} 
+        onOpenChange={setShowSplitDialog} 
+        transacao={selectedTransacaoSplit as any} 
+      />
+      <RelatorioImportacaoDialog 
+        open={showReportDialog} 
+        onOpenChange={setShowReportDialog} 
+        report={importReport as any} 
+        onIrParaConciliacao={() => {}}
+      />
     </MainLayout>
   );
 }
