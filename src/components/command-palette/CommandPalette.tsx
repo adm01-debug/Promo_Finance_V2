@@ -50,6 +50,8 @@ import {
   Landmark,
   Scale,
   Sparkles,
+  Key,
+  UserCog,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { toast } from 'sonner';
