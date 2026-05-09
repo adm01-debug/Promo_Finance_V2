@@ -142,8 +142,8 @@ export function DashboardReformaTributaria({ initialTab }: { initialTab?: string
 
   // Deep-linking: clicar em KPI muda aba
   const handleKPIClick = useCallback((tabId: string) => {
-    setActiveTab(tabId);
-  }, []);
+    handleTabChange(tabId);
+  }, [handleTabChange]);
 
   // Verificar se é primeiro acesso (sem apurações e sem operações)
   const isFirstAccess = !isLoadingMetricas && !apuracoes?.length && !empresaIdFiltro;
