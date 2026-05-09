@@ -78,7 +78,6 @@ export default function PixHub() {
           onOpenChange={setReceiveDialogOpen} 
           empresaId={firstEmpresaId} 
         />
-        </Tabs>
       </div>
     </MainLayout>
   );
