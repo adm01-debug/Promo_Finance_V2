@@ -126,6 +126,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
         estado: '',
         contato: '',
         limite_credito: 0,
+        ramo_atividade: '',
         observacoes: '',
         ativo: true,
       });
