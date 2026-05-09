@@ -353,6 +353,7 @@ Deno.serve(async (req) => {
 
     // ---------- IA JUSTIFICATION (P7 Premium) ----------
     let justificativaIA = null;
+    let auditLogId = null;
     try {
       const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
       if (LOVABLE_API_KEY) {
@@ -382,6 +383,20 @@ Deno.serve(async (req) => {
         if (aiResponse.ok) {
           const aiData = await aiResponse.json();
           justificativaIA = aiData.choices?.[0]?.message?.content;
+          
+          // Trilha de auditoria (P7)
+          const { data: audit } = await sb.from('log_auditoria').insert({
+            user_id: claims.claims.sub,
+            acao: 'ia_justificativa_tributaria',
+            tabela: 'regimes_simulados',
+            detalhes: {
+              prompt,
+              resposta: justificativaIA,
+              modelo: 'google/gemini-2.0-flash-exp',
+              contexto: { empresaId, ano, mes }
+            }
+          }).select('id').maybeSingle();
+          auditLogId = audit?.id;
         }
       }
     } catch (e) {
@@ -390,7 +405,7 @@ Deno.serve(async (req) => {
 
 
     // ---------- CACHE WRITE (P7) ----------
-    const responseData = { ...resultado, justificativaIA, simulacaoId: null, params };
+    const responseData = { ...resultado, justificativaIA, simulacaoId: null, params, auditLogId };
 
     if (cacheable) {
       await sb.from('regime_decision_cache').upsert({
@@ -419,6 +434,7 @@ Deno.serve(async (req) => {
         economia_anual_estimada: resultado.economiaAnualVsAtual ?? null,
         parametros: params as unknown as Record<string, unknown>,
         created_by: claims.claims.sub,
+        audit_log_id: auditLogId,
       }).select('id').maybeSingle();
       simulacaoId = ins?.id ?? null;
       responseData.simulacaoId = simulacaoId;
