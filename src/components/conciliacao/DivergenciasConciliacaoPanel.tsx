@@ -1,12 +1,22 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useDivergenciasConciliacao } from '@/hooks/useDivergenciasConciliacao';
-import { AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import { useConciliacaoAudit } from '@/hooks/useConciliacaoAudit';
+import { AlertTriangle, CheckCircle, Clock, ShieldCheck, Loader2 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 
-export function DivergenciasConciliacaoPanel() {
+export function DivergenciasConciliacaoPanel({ empresaId }: { empresaId?: string }) {
   const { divergencias, isLoading, resolverDivergencia } = useDivergenciasConciliacao();
+  const { runAudit } = useConciliacaoAudit(empresaId);
+  const [isAuditing, setIsAuditing] = useState(false);
+
+  const handleRunAudit = async () => {
+    setIsAuditing(true);
+    await runAudit.mutateAsync();
+    setIsAuditing(false);
+  };
 
   if (isLoading) return <div className="p-8 text-center">Carregando divergências...</div>;
 
@@ -24,11 +34,35 @@ export function DivergenciasConciliacaoPanel() {
             <AlertTriangle className="h-8 w-8 text-destructive opacity-50" />
           </CardContent>
         </Card>
+        
+        <Card className="bg-primary/5 border-primary/20">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-primary">Auditoria Preventiva</p>
+              <Button 
+                variant="link" 
+                className="h-auto p-0 text-xs font-black uppercase text-primary/70 hover:text-primary"
+                onClick={handleRunAudit}
+                disabled={isAuditing}
+              >
+                {isAuditing ? (
+                  <><Loader2 className="h-3 w-3 animate-spin mr-1" /> Executando...</>
+                ) : (
+                  <><ShieldCheck className="h-3 w-3 mr-1" /> Executar Auditoria Agora</>
+                )}
+              </Button>
+            </div>
+            <ShieldCheck className="h-8 w-8 text-primary opacity-50" />
+          </CardContent>
+        </Card>
       </div>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg">Audit de Divergências</CardTitle>
+          <Badge variant="outline" className="font-mono text-[10px] uppercase tracking-widest opacity-60">
+            Real-Time Monitoring
+          </Badge>
         </CardHeader>
         <CardContent className="space-y-4">
           {divergencias.length === 0 ? (

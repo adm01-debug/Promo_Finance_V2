@@ -83,6 +83,7 @@ const BarcodeVisual = ({ code }: { code: string }) => {
 };
 import { BoletoPreviewPanel } from '@/components/boletos/BoletoPreviewPanel';
 import { NovoBoletoForm } from '@/components/boletos/NovoBoletoForm';
+import { BoletoGlobalHistory } from '@/components/boletos/BoletoGlobalHistory';
 
 export default function Boletos() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -240,130 +241,144 @@ export default function Boletos() {
           </Select>
         </motion.div>
 
-        {/* Boletos List */}
-        <motion.div variants={itemVariants}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Boletos Emitidos</CardTitle>
-              <CardDescription>
-                {isLoading ? 'Carregando...' : `${filteredBoletos.length} boletos encontrados`}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <TableShimmerSkeleton rows={5} columns={4} />
-              ) : filteredBoletos.length > 0 ? (
-                <div className="space-y-4">
-                  <AnimatePresence>
-                    {filteredBoletos.map((boleto) => {
-                      const status = statusConfig[boleto.status];
-                      const StatusIcon = status.icon;
-                      
-                      return (
-                        <motion.div
-                          key={boleto.id}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                        >
-                          <div className="flex items-center gap-4">
-                            <div className={cn("p-2 rounded-lg", status.color)}>
-                              <StatusIcon className="h-5 w-5" />
-                            </div>
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <span className="font-mono text-sm text-muted-foreground">#{boleto.numero}</span>
-                                <Badge variant="outline" className={status.color}>
-                                  {status.label}
-                                </Badge>
+        {/* Tabs Content */}
+        <AnimatePresence mode="wait">
+          {activeTab === 'lista' ? (
+            <motion.div
+              key="lista"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 10 }}
+              className="space-y-6"
+            >
+              <Card>
+                <CardHeader>
+                  <CardTitle>Boletos Emitidos</CardTitle>
+                  <CardDescription>
+                    {isLoading ? 'Carregando...' : `${filteredBoletos.length} boletos encontrados`}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {isLoading ? (
+                    <TableShimmerSkeleton rows={5} columns={4} />
+                  ) : filteredBoletos.length > 0 ? (
+                    <div className="space-y-4">
+                      {filteredBoletos.map((boleto) => {
+                        const status = statusConfig[boleto.status];
+                        const StatusIcon = status.icon;
+                        
+                        return (
+                          <div
+                            key={boleto.id}
+                            className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className={cn("p-2 rounded-lg", status.color)}>
+                                <StatusIcon className="h-5 w-5" />
                               </div>
-                              <p className="font-medium">{boleto.sacado_nome}</p>
-                              <p className="text-sm text-muted-foreground">
-                                Vence em {formatDate(boleto.vencimento)}
-                              </p>
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-mono text-sm text-muted-foreground">#{boleto.numero}</span>
+                                  <Badge variant="outline" className={status.color}>
+                                    {status.label}
+                                  </Badge>
+                                </div>
+                                <p className="font-medium">{boleto.sacado_nome}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  Vence em {formatDate(boleto.vencimento)}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                          
-                          <div className="flex items-center gap-4">
-                            <div className="text-right">
-                              <p className="font-bold text-lg">{formatCurrency(boleto.valor)}</p>
-                              <p className="text-xs text-muted-foreground">{boleto.banco}</p>
-                            </div>
-                            <div className="flex gap-1">
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="icon"
-                                    onClick={() => setSelectedBoleto(boleto)}
-                                  >
-                                    <Eye className="h-4 w-4" />
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-                                  <DialogHeader>
-                                    <DialogTitle>Boleto #{boleto.numero}</DialogTitle>
-                                  </DialogHeader>
-                                   <BoletoPreviewPanel 
-                                    boleto={boleto} 
-                                    onUpdateStatus={updateStatus}
-                                  />
-                                </DialogContent>
-                              </Dialog>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => {
-                                  navigator.clipboard.writeText(boleto.linha_digitavel);
-                                  toast.success('Linha digitável copiada!');
-                                }}
-                              >
-                                <Copy className="h-4 w-4" />
-                              </Button>
-                              {boleto.status !== 'cancelado' && boleto.status !== 'pago' && (
+                            
+                            <div className="flex items-center gap-4">
+                              <div className="text-right">
+                                <p className="font-bold text-lg">{formatCurrency(boleto.valor)}</p>
+                                <p className="text-xs text-muted-foreground">{boleto.banco}</p>
+                              </div>
+                              <div className="flex gap-1">
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="icon"
+                                      onClick={() => setSelectedBoleto(boleto)}
+                                    >
+                                      <Eye className="h-4 w-4" />
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                                    <DialogHeader>
+                                      <DialogTitle>Boleto #{boleto.numero}</DialogTitle>
+                                    </DialogHeader>
+                                     <BoletoPreviewPanel 
+                                      boleto={boleto} 
+                                      onUpdateStatus={updateStatus}
+                                    />
+                                  </DialogContent>
+                                </Dialog>
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="text-destructive hover:text-destructive"
                                   onClick={() => {
-                                    const previousStatus = boleto.status;
-                                    cancelBoleto(boleto.id);
-                                    toastWithUndo({
-                                      title: `Boleto #${boleto.numero} cancelado`,
-                                      description: 'O boleto foi cancelado.',
-                                      onUndo: () => {
-                                        updateStatus({ id: boleto.id, status: previousStatus });
-                                      },
-                                    });
+                                    navigator.clipboard.writeText(boleto.linha_digitavel);
+                                    toast.success('Linha digitável copiada!');
                                   }}
                                 >
-                                  <Ban className="h-4 w-4" />
+                                  <Copy className="h-4 w-4" />
                                 </Button>
-                              )}
+                                {boleto.status !== 'cancelado' && boleto.status !== 'pago' && (
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-destructive hover:text-destructive"
+                                    onClick={() => {
+                                      const previousStatus = boleto.status;
+                                      cancelBoleto(boleto.id);
+                                      toastWithUndo({
+                                        title: `Boleto #${boleto.numero} cancelado`,
+                                        description: 'O boleto foi cancelado.',
+                                        onUndo: () => {
+                                          updateStatus({ id: boleto.id, status: previousStatus });
+                                        },
+                                      });
+                                    }}
+                                  >
+                                    <Ban className="h-4 w-4" />
+                                  </Button>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </motion.div>
-                      );
-                    })}
-                  </AnimatePresence>
-                </div>
-              ) : (
-                <EmptyState
-                  icon={<FileText className="h-8 w-8 text-muted-foreground" />}
-                  title="Nenhum boleto encontrado"
-                  description="Gere seu primeiro boleto para começar a receber pagamentos."
-                  action={
-                    <Button onClick={() => setShowNovoBoleto(true)} className="gap-2">
-                      <Plus className="h-4 w-4" />
-                      Criar Primeiro Boleto
-                    </Button>
-                  }
-                />
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <EmptyState
+                      icon={<FileText className="h-8 w-8 text-muted-foreground" />}
+                      title="Nenhum boleto encontrado"
+                      description="Gere seu primeiro boleto para começar a receber pagamentos."
+                      action={
+                        <Button onClick={() => setShowNovoBoleto(true)} className="gap-2">
+                          <Plus className="h-4 w-4" />
+                          Criar Primeiro Boleto
+                        </Button>
+                      }
+                    />
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="historico"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+            >
+              <BoletoGlobalHistory />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Quick Stats */}
         <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
