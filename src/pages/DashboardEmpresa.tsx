@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
-import { useEmpresas, useCentrosCusto, useContasBancarias, useContasPagar, useContasReceber, useClientes, useFornecedores } from '@/hooks/useFinancialData';
+import { useEmpresas, useCentrosCusto, useContasBancarias, useContasPagar, useContasReceber, useClientes, useFornecedores, useDashboardKPIs } from '@/hooks/useFinancialData';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { EmpresaKpiCards } from '@/components/dashboard-empresa/EmpresaKpis';
 import { EmpresaChartsSection } from '@/components/dashboard-empresa/EmpresaCharts';
@@ -35,6 +35,8 @@ export default function DashboardEmpresa() {
   const { data: contasBancarias = [] } = useContasBancarias();
   const { data: contasPagar = [] } = useContasPagar();
   const { data: contasReceber = [] } = useContasReceber();
+  const { data: kpis } = useDashboardKPIs(selectedEmpresa || (empresas.length > 0 ? empresas[0].id : ''));
+
 
   const empresaId = selectedEmpresa || (empresas.length > 0 ? empresas[0].id : '');
   const empresa = empresas.find((e) => e.id === empresaId);
@@ -133,7 +135,18 @@ export default function DashboardEmpresa() {
           </motion.div>
         )}
 
-        <EmpresaKpiCards saldoTotal={saldoTotal} saldoDisponivel={saldoDisponivel} totalReceber={totalReceber} totalPagar={totalPagar} totalVencidasReceber={totalVencidasReceber} totalVencidasPagar={totalVencidasPagar} saldoProjetado={saldoProjetado} />
+        <EmpresaKpiCards 
+          saldoTotal={saldoTotal} 
+          saldoDisponivel={saldoDisponivel} 
+          totalReceber={totalReceber} 
+          totalPagar={totalPagar} 
+          totalVencidasReceber={totalVencidasReceber} 
+          totalVencidasPagar={totalVencidasPagar} 
+          saldoProjetado={saldoProjetado}
+          boletosAbertos={kpis?.boletosAbertos}
+          divergenciasPendentes={kpis?.divergenciasPendentes}
+        />
+
         <EmpresaChartsSection fluxoCaixaProjetado={fluxoCaixaProjetado} statusReceberData={statusReceberData} statusPagarData={statusPagarData} periodoAnalise={periodoAnalise} />
         <EmpresaDrillDownSection contasBancarias={contasBancariasEmpresa} topClientesReceber={topClientesReceber} topFornecedoresPagar={topFornecedoresPagar} transacoesRecentes={transacoesRecentes} totalReceber={totalReceber} totalPagar={totalPagar} />
       </motion.div>

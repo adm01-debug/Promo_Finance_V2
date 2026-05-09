@@ -224,6 +224,44 @@ export class FornecedoresPage {
   }
 }
 
+export class ConciliacaoPage {
+  constructor(private page: any) {}
+
+  async goto() {
+    await this.page.goto('/conciliacao');
+  }
+
+  async waitForLoad() {
+    await expect(this.page.getByText(/Conciliação Bancária/i)).toBeVisible({ timeout: 10000 });
+  }
+
+  async selectAccount(accountName: string) {
+    await this.page.getByRole('combobox', { name: /banco/i }).click();
+    await this.page.getByRole('option', { name: new RegExp(accountName, 'i') }).click();
+  }
+
+  async openImportModal() {
+    await this.page.getByRole('button', { name: /Importar Extrato/i }).click();
+    await expect(this.page.getByRole('dialog')).toBeVisible();
+  }
+
+  async uploadOFX(content: string) {
+    const file = {
+      name: 'extrato.ofx',
+      mimeType: 'text/plain',
+      buffer: Buffer.from(content)
+    };
+    
+    await this.page.setInputFiles('input[type="file"]', file);
+  }
+
+  async confirmMatch(description: string) {
+    const row = this.page.locator('tr').filter({ hasText: description });
+    await row.getByRole('button', { name: /conciliar/i }).click();
+  }
+}
+
+
 // API mocking helpers
 export async function mockApiSuccess(page: any, pattern: string, data: any) {
   await page.route(new RegExp(pattern), (route: any) => {
