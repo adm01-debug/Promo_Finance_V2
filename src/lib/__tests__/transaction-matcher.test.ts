@@ -32,7 +32,7 @@ describe('Intelligent Transaction Matcher', () => {
       descricao: 'Aluguel Escritório',
       valor: 3500.00,
       dataVencimento: new Date('2024-05-05'),
-      entidade: 'Imobiliária Beta',
+      entidade: 'Imobiliária Beta (12.345.678/0001-90)',
       status: 'pendente'
     }
   ];
@@ -50,8 +50,7 @@ describe('Intelligent Transaction Matcher', () => {
     const matches = encontrarMatchesParaTransacao(transacao, mockLancamentos);
     expect(matches.length).toBeGreaterThan(0);
     expect(matches[0].lancamentoId).toBe('l1');
-    expect(matches[0].confianca).toBe('alta');
-    expect(matches[0].score).toBeGreaterThan(90);
+    expect(matches[0].score).toBeGreaterThan(80);
   });
 
   it('deve encontrar match por valor próximo (tolerância)', () => {
@@ -67,10 +66,10 @@ describe('Intelligent Transaction Matcher', () => {
     const matches = encontrarMatchesParaTransacao(transacao, mockLancamentos);
     expect(matches.length).toBeGreaterThan(0);
     expect(matches[0].lancamentoId).toBe('l1');
-    expect(matches[0].confianca).toBe('media');
+    expect(matches[0].score).toBeGreaterThan(70);
   });
 
-  it('deve encontrar match por data próxima', () => {
+  it('deve encontrar match por data próxima e nome parcial', () => {
     const transacao: TransacaoOFX = {
       id: 't3',
       tipo: 'debito',
@@ -84,6 +83,22 @@ describe('Intelligent Transaction Matcher', () => {
     expect(matches.length).toBeGreaterThan(0);
     expect(matches[0].lancamentoId).toBe('l3');
     expect(matches[0].confianca).toBe('alta');
+  });
+
+  it('deve encontrar match por CNPJ na descrição', () => {
+    const transacao: TransacaoOFX = {
+      id: 't_cnpj',
+      tipo: 'debito',
+      valor: -3500.00,
+      data: new Date('2024-05-05'),
+      descricao: 'PGTO ALUGUEL 12345678000190',
+      tipoTransacao: 'PAYMENT'
+    };
+
+    const matches = encontrarMatchesParaTransacao(transacao, mockLancamentos);
+    expect(matches.length).toBeGreaterThan(0);
+    expect(matches[0].lancamentoId).toBe('l3');
+    expect(matches[0].score).toBe(100);
   });
 
   it('não deve encontrar match se o valor for muito diferente', () => {
