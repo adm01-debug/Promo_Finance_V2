@@ -13,8 +13,10 @@ interface Props {
   onAnalisarElisao: () => void;
   onExportarPdf: () => void;
   onSalvar: () => void;
+  onSincronizarIA?: () => void;
   isAnalisandoElisao: boolean;
   isSalvando: boolean;
+  isSincronizando?: boolean;
 }
 
 export function SimulacaoHeaderActions({
@@ -24,11 +26,25 @@ export function SimulacaoHeaderActions({
   onAnalisarElisao,
   onExportarPdf,
   onSalvar,
+  onSincronizarIA,
   isAnalisandoElisao,
   isSalvando,
+  isSincronizando,
 }: Props) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2 items-center">
+      {onSincronizarIA && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onSincronizarIA}
+          disabled={!empresaId || isSincronizando}
+          className="bg-primary/5 border-primary/20 hover:bg-primary/10"
+        >
+          <Sparkles className={`h-4 w-4 mr-2 ${isSincronizando ? 'animate-pulse text-primary' : 'text-primary'}`} />
+          {isSincronizando ? 'Analisando...' : 'IA Executive'}
+        </Button>
+      )}
       <Button
         variant="outline"
         size="sm"

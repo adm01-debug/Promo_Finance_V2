@@ -296,9 +296,31 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
   });
   y += 2;
 
-  const justText = doc.splitTextToSize(opts.decisao.justificativa || '', pageWidth - 28);
+  const justText = doc.splitTextToSize(opts.decisao.justificativaIA || opts.decisao.justificativa || '', pageWidth - 28);
   doc.text(justText, 14, y);
   y += justText.length * 5 + 8;
+
+  // ===== DETALHAMENTO PARÂMETROS =====
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text('2. Parâmetros Analisados', 14, y);
+  y += 6;
+  
+  const col1 = 18;
+  const col2 = 110;
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  
+  const p = opts.parametros;
+  doc.text(`Faturamento Anual: ${fmt(p.faturamentoAnual)}`, col1, y);
+  doc.text(`Folha de Pagamento: ${fmt(p.folhaAnual || 0)}`, col2, y);
+  y += 5;
+  doc.text(`Margem de Lucro: ${p.margemLucro}%`, col1, y);
+  doc.text(`Mix de Serviços: ${p.percentualServicos}%`, col2, y);
+  y += 5;
+  doc.text(`Compras com Crédito: ${fmt(p.comprasComCredito || 0)}`, col1, y);
+  doc.text(`Despesas Operacionais: ${fmt(p.despesasOperacionais || 0)}`, col2, y);
+  y += 10;
 
   // ===== GRÁFICO COMPARATIVO =====
   const graficoBar = gerarGraficoComparativoBase64(opts.decisao);
@@ -307,9 +329,9 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
       doc.addPage();
       y = 20;
     }
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('2. Comparativo Visual', 14, y);
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text('3. Comparativo Visual', 14, y);
     y += 6;
     const imgW = pageWidth - 28;
     const imgH = (imgW * 400) / 800;
@@ -324,7 +346,7 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
   }
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
-  doc.text('3. Detalhamento por Regime', 14, y);
+  doc.text('4. Detalhamento por Regime', 14, y);
   y += 4;
 
   autoTable(doc, {
@@ -351,7 +373,7 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
     }
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text('4. Alertas Tributários', 14, y);
+    doc.text('5. Alertas Tributários', 14, y);
     y += 6;
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
@@ -371,7 +393,7 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
     }
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text('5. Oportunidades de Elisão Fiscal', 14, y);
+    doc.text('6. Oportunidades de Elisão Fiscal', 14, y);
     y += 6;
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
@@ -404,7 +426,7 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
       y = 20;
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
-      doc.text('6. Reforma Tributária 2026-2033', 14, y);
+      doc.text('7. Reforma Tributária 2026-2033', 14, y);
       y += 6;
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);

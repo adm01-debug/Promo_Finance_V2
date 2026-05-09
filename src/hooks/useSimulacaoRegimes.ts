@@ -13,7 +13,8 @@ import type {
   RegimeTributario,
   FaturamentoMes,
   FolhaMes,
-} from '@/lib/tributario';
+} from '@/lib/tributario/types';
+import { useDecidirRegimeServer } from './useDecidirRegimeServer';
 import { toast } from 'sonner';
 
 interface UseSimulacaoOptions {
@@ -35,9 +36,11 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
   const { empresaId, anoReferencia = new Date().getFullYear(), mesReferencia = new Date().getMonth() + 1 } = options;
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const decidirRegimeServer = useDecidirRegimeServer();
 
   const [parametros, setParametros] = useState<ParametrosSimulacao>(DEFAULT_PARAMS);
   const [regimeAtual, setRegimeAtual] = useState<RegimeTributario | undefined>();
+  const [serverResult, setServerResult] = useState<ResultadoDecisao | null>(null);
 
   // Histórico de faturamento
   const { data: faturamentoMensal = [] } = useQuery({
@@ -105,22 +108,39 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
     [parametros, faturamentoMensal, folhaMensal],
   );
 
-  // Resultado da simulação (computado em memória)
-  const resultado: ResultadoDecisao = useMemo(
-    () =>
-      decidirRegime(parametrosCompletos, {
+  // Resultado da simulação (computado em memória ou retornado do server)
+  const resultado: ResultadoDecisao = useMemo(() => {
+    if (serverResult) return serverResult;
+    return decidirRegime(parametrosCompletos, {
+      anoReferencia,
+      mesReferencia,
+      regimeAtual,
+    });
+  }, [parametrosCompletos, anoReferencia, mesReferencia, regimeAtual, serverResult]);
+
+  const sincronizarComServer = async () => {
+    if (!empresaId) return;
+    try {
+      const res = await decidirRegimeServer.mutateAsync({
+        empresaId,
         anoReferencia,
         mesReferencia,
         regimeAtual,
-      }),
-    [parametrosCompletos, anoReferencia, mesReferencia, regimeAtual],
-  );
+        parametrosOverride: parametros,
+        persist: false,
+      });
+      setServerResult(res);
+    } catch (e) {
+      // Fallback para memória já acontece via useMemo
+      console.error('Erro ao sincronizar com servidor:', e);
+    }
+  };
 
   // Salvar simulação no histórico
   const salvarSimulacao = useMutation({
     mutationFn: async () => {
       if (!empresaId) throw new Error('Selecione uma empresa para salvar a simulação.');
-      const { error } = await supabase.from('regimes_simulados').insert({
+      const { data: ins, error } = await supabase.from('regimes_simulados').insert({
         empresa_id: empresaId,
         ano_referencia: anoReferencia,
         rbt12: resultado.recomendado.rbt12 || parametros.faturamentoAnual,
@@ -134,7 +154,8 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
         economia_anual_estimada: resultado.economiaAnualVsAtual ?? null,
         parametros: parametros as never,
         created_by: user?.id ?? null,
-      });
+        audit_log_id: resultado.auditLogId ?? null,
+      }).select('id').maybeSingle();
       if (error) throw error;
     },
     onSuccess: () => {
@@ -146,14 +167,22 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
 
   return {
     parametros,
-    setParametros,
+    setParametros: (p: ParametrosSimulacao | ((prev: ParametrosSimulacao) => ParametrosSimulacao)) => {
+      setParametros(p);
+      setServerResult(null); // Invalida resultado do server ao mudar parâmetros
+    },
     regimeAtual,
-    setRegimeAtual,
+    setRegimeAtual: (r: RegimeTributario | undefined) => {
+      setRegimeAtual(r);
+      setServerResult(null);
+    },
     resultado,
     faturamentoMensal,
     folhaMensal,
     historicoSimulacoes,
     salvarSimulacao,
+    sincronizarComServer,
+    isSincronizando: decidirRegimeServer.isPending,
     temHistoricoSuficiente: faturamentoMensal.length >= 12,
   };
 }
