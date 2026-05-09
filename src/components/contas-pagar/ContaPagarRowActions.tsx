@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Eye,
   Edit,
@@ -6,6 +7,8 @@ import {
   ShieldAlert,
   MoreHorizontal,
   Banknote,
+  History,
+  Copy,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,6 +18,9 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import { VersionHistory } from '@/components/common/VersionHistory';
+import { DuplicateButton } from '@/components/common/DuplicateButton';
+import { useContasPagarLogic } from '@/hooks/useContasPagarLogic';
 
 interface ContaPagarRowActionsProps {
   status: string;
