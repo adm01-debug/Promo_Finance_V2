@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
 import { useContasBancarias, useContasPagar, useContasReceber } from '@/hooks/useFinancialData';
+import { useGlobalFinancialFilter } from '@/hooks/useGlobalFinancialFilter';
 import { useConciliacao } from '@/hooks/useConciliacao';
 import { supabase } from '@/integrations/supabase/client';
 import { ConciliacaoFilterState, INITIAL_FILTERS } from '@/components/conciliacao/ConciliacaoFilters';
