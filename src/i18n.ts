@@ -15,7 +15,13 @@ const resources = {
       sair: 'Sair',
       perfil: 'Meu Perfil',
       bem_vindo: 'Bem-vindo ao Quantum',
+      visao_geral: 'Visão Geral',
+      relatorios: 'Relatórios & BI',
+      clientes: 'Clientes',
+      fornecedores: 'Fornecedores',
+      seguranca: 'Segurança',
     }
+
   },
   en: {
     common: {
