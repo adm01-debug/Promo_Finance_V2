@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useEmpresas, useCentrosCusto, useContasBancarias, useContasPagar, useContasReceber, useClientes } from '@/hooks/useFinancialData';
 import { useAprovacoesPendentesCount } from '@/hooks/useAprovacoesPendentesCount';
+import { useDivergenciasConciliacao } from '@/hooks/useDivergenciasConciliacao';
 import { useAuth } from '@/hooks/useAuth';
 
 
@@ -23,8 +24,16 @@ export function useDashboardMetrics(filters: DashboardFilters) {
   const { data: contasReceber = [], isLoading: loadingReceber } = useContasReceber();
   const { data: clientes = [], isLoading: loadingClientes } = useClientes();
   const { count: aprovacoesPendentes } = useAprovacoesPendentesCount();
+  const { divergencias } = useDivergenciasConciliacao();
 
   const isLoading = loadingEmpresas || loadingCC || loadingBancos || loadingPagar || loadingReceber || loadingClientes;
+
+  const totalDivergencias = useMemo(() => {
+    return (divergencias || []).filter(d => {
+      const matchEmpresa = (empresaFilter === 'all' ? true : d.conta_bancaria_id === empresaFilter); // Simplified mapping
+      return d.status === 'pendente';
+    }).length;
+  }, [divergencias, empresaFilter]);
 
   // Filtrar dados por empresa e centro de custo
   const contasPagarFiltradas = useMemo(() => {
@@ -264,5 +273,6 @@ export function useDashboardMetrics(filters: DashboardFilters) {
     dadosPorCentroCusto,
     topClientesReceita,
     fluxoCaixaProjetado,
+    totalDivergencias,
   };
 }
