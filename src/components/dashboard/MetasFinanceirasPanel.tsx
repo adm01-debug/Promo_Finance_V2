@@ -16,7 +16,7 @@ import { motion as m, AnimatePresence } from 'framer-motion';
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
 
-export function MetasFinanceirasPanel() {
+export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpanded?: boolean }) {
   const { data: metas, isLoading } = useMetasFinanceiras(currentYear);
   const { data: scoreHistory } = useHistoricoScoreSaude();
   const { data: recomendacoes } = useRecomendacoesIA();

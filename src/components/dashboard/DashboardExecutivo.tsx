@@ -154,7 +154,7 @@ export const DashboardExecutivo = () => {
           />
         );
       case 'metas':
-        return <MetasFinanceirasPanel />;
+        return <MetasFinanceirasPanel defaultExpanded={true} />;
       case 'bling-nfe':
         return <BlingNFeTab />;
       case 'bling-financeiro':
