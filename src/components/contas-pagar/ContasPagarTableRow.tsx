@@ -16,7 +16,8 @@ import {
   QrCode,
   CreditCard,
   DollarSign,
-  TrendingUp
+  TrendingUp,
+  History
 } from 'lucide-react';
 import { TableRow, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
