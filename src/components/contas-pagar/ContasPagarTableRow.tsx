@@ -266,6 +266,12 @@ export const ContasPagarTableRow = memo(({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <VersionHistory 
+          open={historyOpen} 
+          onOpenChange={setHistoryOpen} 
+          recordId={conta.id} 
+          tableName="contas_pagar" 
+        />
       </TableCell>
     </>
   );
