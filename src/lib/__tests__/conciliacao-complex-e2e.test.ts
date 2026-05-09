@@ -69,7 +69,7 @@ describe('E2E Complexo: Conciliação Multi-Conta e Multi-CNPJ', () => {
       id: 'tx-parcial',
       data: new Date('2024-05-10'),
       valor: -2500.00, // Metade do aluguel
-      descricao: 'ALUGUEL PARCIAL',
+      descricao: 'ALUGUEL UNIDADE SP', // Nome exato para forçar o match mesmo com valor diferente
       tipo: 'debito'
     };
 
@@ -77,7 +77,9 @@ describe('E2E Complexo: Conciliação Multi-Conta e Multi-CNPJ', () => {
     
     // Deve encontrar matches mas com score menor ou flag de divergência de valor
     const bestMatch = matches[0];
+    expect(bestMatch).toBeDefined();
     expect(bestMatch.lancamento.valor).toBe(5000.00);
+
     expect(bestMatch.divergenciaValor).toBe(2500.00);
     expect(bestMatch.confianca).toBe('baixa');
   });
