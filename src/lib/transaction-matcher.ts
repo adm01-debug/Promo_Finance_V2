@@ -341,7 +341,7 @@ export function encontrarMatchesParaTransacao(
         score: Math.round(scoreFinal),
         motivos,
         lancamento,
-        confianca: scoreFinal >= 80 ? 'alta' : scoreFinal >= 60 ? 'media' : 'baixa',
+        confianca: diffValor > (lancamento.valor * 0.1) ? 'baixa' : (scoreFinal >= 80 ? 'alta' : scoreFinal >= 60 ? 'media' : 'baixa'),
         divergenciaValor: diffValor > 0.01 ? diffValor : undefined,
       });
     }
