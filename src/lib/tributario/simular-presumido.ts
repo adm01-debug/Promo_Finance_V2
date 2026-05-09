@@ -119,7 +119,7 @@ export function simularPresumido(params: ParametrosSimulacao): ResultadoCenario 
     icms, iss,
     cbs: 0, ibs: 0,
     totalTributos,
-    cargaEfetiva: (totalTributos / faturamentoAnual) * 100,
+    cargaEfetiva: faturamentoAnual > 0 ? (totalTributos / faturamentoAnual) * 100 : 0,
     observacoes,
   };
 }
