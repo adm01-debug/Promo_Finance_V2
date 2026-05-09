@@ -133,6 +133,42 @@ export default function BloqueiosDuplicidade() {
     toast.success("Relatório de auditoria exportado com sucesso!");
   };
 
+  const exportPDF = () => {
+    if (!bloqueios || bloqueios.length === 0) return;
+
+    const doc = new jsPDF();
+    
+    // Header
+    doc.setFontSize(20);
+    doc.text("Relatório de Auditoria de Duplicidade", 14, 22);
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Gerado em: ${format(new Date(), "dd/MM/yyyy HH:mm")}`, 14, 30);
+    doc.text(`Total de Bloqueios: ${stats.totalCount}`, 14, 35);
+    doc.text(`Total Economizado: ${formatCurrency(stats.totalValue)}`, 14, 40);
+
+    const tableData = bloqueios.map(b => [
+      format(new Date(b.created_at), "dd/MM/yy HH:mm"),
+      (b as any).perfil?.display_name || "Sistema",
+      b.motivo_bloqueio,
+      formatCurrency(b.valor_bloqueado || 0),
+      (b.dados_tentativa as any)?.numero_documento || "N/D"
+    ]);
+
+    autoTable(doc, {
+      startY: 50,
+      head: [["Data", "Usuário", "Motivo", "Valor", "Doc"]],
+      body: tableData,
+      theme: 'grid',
+      headStyles: { fillStyle: 'solid', fillColor: [24, 95, 46], textColor: [255, 255, 255], fontStyle: 'bold' },
+      styles: { fontSize: 8 },
+    });
+
+    doc.save(`auditoria_duplicidade_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+    toast.success("Relatório PDF exportado com sucesso!");
+  };
+
+
   return (
     <MainLayout>
       <div className="relative min-h-screen">
