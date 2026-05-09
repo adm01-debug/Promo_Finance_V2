@@ -70,8 +70,11 @@ export default function BloqueiosDuplicidade() {
     valor: "",
     periodo: "all",
   });
+  const [selectedBlock, setSelectedBlock] = useState<any>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
-  const { data: bloqueios, isLoading } = useQuery({
+  const { data: bloqueios, isLoading, refetch } = useQuery({
+
     queryKey: ["bloqueios-duplicidade", filters],
     queryFn: async () => {
       let query = supabase
