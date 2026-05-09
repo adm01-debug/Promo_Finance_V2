@@ -151,6 +151,7 @@ export const DashboardExecutivo = () => {
               clienteId: c.cliente_id || 'unknown',
               diasAtraso: Math.floor((new Date().getTime() - new Date(c.data_vencimento).getTime()) / (1000 * 60 * 60 * 24)),
             }))}
+            defaultExpanded={true}
           />
         );
       case 'metas':
