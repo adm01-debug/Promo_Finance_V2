@@ -249,6 +249,7 @@ export function encontrarMatchesParaTransacao(
         peso: config.pesoNomeExato,
       });
       scoreTotal += config.pesoNomeExato;
+      pesoTotal += config.pesoNomeExato;
     } else if (similaridadeTexto.tipo === 'parcial' && similaridadeTexto.score > 0.2) {
       const peso = config.pesoNomeParcial * similaridadeTexto.score;
       motivos.push({
@@ -257,8 +258,10 @@ export function encontrarMatchesParaTransacao(
         peso,
       });
       scoreTotal += peso;
+      pesoTotal += config.pesoNomeParcial;
+    } else {
+      pesoTotal += config.pesoNomeExato;
     }
-    pesoTotal += config.pesoNomeExato;
     
     // 3. Compare dates
     const similaridadeData = calcularSimilaridadeData(
