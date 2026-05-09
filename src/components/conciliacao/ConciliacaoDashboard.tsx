@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { 
   Target, TrendingUp, Brain, Zap, ArrowUpRight, ArrowDownRight,
+  AlertCircle, Bell
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
@@ -125,7 +126,41 @@ export function ConciliacaoDashboard() {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {stats.pendentes > 0 && (
+          <Card className="border-destructive/20 bg-destructive/5">
+            <CardContent className="p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-destructive/10 flex items-center justify-center">
+                  <Bell className="h-5 w-5 text-destructive animate-pulse" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-destructive">Alerta de Divergência Real-time</p>
+                  <p className="text-xs text-muted-foreground">{stats.pendentes} transações pendentes de matching crítico.</p>
+                </div>
+              </div>
+              <Badge variant="destructive" className="animate-bounce">Urgente</Badge>
+            </CardContent>
+          </Card>
+        )}
+        <Card className="border-accent/20 bg-accent/5">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center">
+                <AlertCircle className="h-5 w-5 text-accent" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-accent">Auditoria Alpha Ativa</p>
+                <p className="text-xs text-muted-foreground">Monitorando reclassificações e juros/descontos em tempo real.</p>
+              </div>
+            </div>
+            <Badge variant="secondary">Ativo</Badge>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {cards.map((card) => (
         <Card key={card.label} className="card-base group hover:shadow-md transition-shadow">
           <CardContent className="p-4">
@@ -146,7 +181,7 @@ export function ConciliacaoDashboard() {
             </div>
           </CardContent>
         </Card>
-      ))}
+      </div>
     </div>
   );
 }
