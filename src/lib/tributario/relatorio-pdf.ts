@@ -393,7 +393,7 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
     }
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text('5. Oportunidades de Elisão Fiscal', 14, y);
+    doc.text('6. Oportunidades de Elisão Fiscal', 14, y);
     y += 6;
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
