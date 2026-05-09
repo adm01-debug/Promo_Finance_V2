@@ -149,35 +149,35 @@ export default function Relatorios() {
             <h1 className="text-4xl font-black tracking-tight text-white mb-2">Relatórios & BI</h1>
             <p className="text-white/60 font-medium">Ecossistema Central de Inteligência e Exportação Avançada</p>
           </div>
-        <div className="flex gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button disabled={isGenerating}>
-                {isGenerating ? <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
-                Exportar
-                <ChevronDown className="h-4 w-4 ml-2" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-popover">
-              <DropdownMenuItem onClick={() => handleExport('pdf')} className="cursor-pointer gap-2">
-                <FileText className="h-4 w-4 text-destructive" />Exportar PDF
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleExport('excel')} className="cursor-pointer gap-2">
-                <FileSpreadsheet className="h-4 w-4 text-success" />Exportar Excel
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <ExportRelatorioAvancadoPDF
-            tipo="fluxo"
-            empresa={empresaNome}
-            periodo={`${periodoInicio} a ${periodoFim}`}
-            fluxoCaixa={(fluxoMensal || []).map(f => ({ data: f.mes, receitas: f.receitas, despesas: f.despesas, saldo: f.saldo }))}
-          />
-          <ExportRelatorioAvancadoPDF tipo="dre" empresa={empresaNome} periodo={`${periodoInicio} a ${periodoFim}`} />
-          <Button variant="outline" onClick={handlePrint}><Printer className="h-4 w-4 mr-2" />Imprimir</Button>
-          <Button variant="outline" onClick={handleEmail} className="h-11 rounded-xl bg-background/40"><Mail className="h-4 w-4 mr-2" />Enviar</Button>
+          <div className="flex gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button disabled={isGenerating}>
+                  {isGenerating ? <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+                  Exportar
+                  <ChevronDown className="h-4 w-4 ml-2" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-popover">
+                <DropdownMenuItem onClick={() => handleExport('pdf')} className="cursor-pointer gap-2">
+                  <FileText className="h-4 w-4 text-destructive" />Exportar PDF
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExport('excel')} className="cursor-pointer gap-2">
+                  <FileSpreadsheet className="h-4 w-4 text-success" />Exportar Excel
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <ExportRelatorioAvancadoPDF
+              tipo="fluxo"
+              empresa={empresaNome}
+              periodo={`${periodoInicio} a ${periodoFim}`}
+              fluxoCaixa={(fluxoMensal || []).map(f => ({ data: f.mes, receitas: f.receitas, despesas: f.despesas, saldo: f.saldo }))}
+            />
+            <ExportRelatorioAvancadoPDF tipo="dre" empresa={empresaNome} periodo={`${periodoInicio} a ${periodoFim}`} />
+            <Button variant="outline" onClick={handlePrint}><Printer className="h-4 w-4 mr-2" />Imprimir</Button>
+            <Button variant="outline" onClick={handleEmail} className="h-11 rounded-xl bg-background/40"><Mail className="h-4 w-4 mr-2" />Enviar</Button>
+          </div>
         </motion.div>
-      </div>
 
       <RelatoriosFilters
         periodoInicio={periodoInicio}
