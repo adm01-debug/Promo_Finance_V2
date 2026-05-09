@@ -181,7 +181,8 @@ export function ConciliacaoDashboard() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      ))}
+    </div>
     </div>
   );
 }
