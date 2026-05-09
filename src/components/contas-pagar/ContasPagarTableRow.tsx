@@ -37,6 +37,7 @@ import { ContaPagarRowAprovacaoBadge } from './ContaPagarRowAprovacaoBadge';
 import { CategorizacaoIABadge } from './CategorizacaoIABadge';
 import { VersionHistory } from '@/components/common/VersionHistory';
 import { supabase } from '@/integrations/supabase/client';
+import { DuplicateButton } from '@/components/common/DuplicateButton';
 import { toast } from 'sonner';
 
 type StatusPagamento = 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
