@@ -69,7 +69,10 @@ export default function BloqueiosDuplicidade() {
     documento: "",
     valor: "",
     periodo: "all",
+    empresa_id: "all",
+    competencia: "",
   });
+
   const [selectedBlock, setSelectedBlock] = useState<any>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
