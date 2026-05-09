@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import { Search, Link2, Calendar, DollarSign, ArrowRight } from 'lucide-react';
+import { Search, Link2, Calendar, DollarSign, ArrowRight, AlertTriangle, RefreshCw } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -164,6 +165,17 @@ export function ConciliacaoManualDialog({
               />
             </div>
 
+            {/* Exception Handling Header */}
+            {lancamentosFiltrados.length === 0 && (
+              <div className="p-3 bg-warning/10 border border-warning/20 rounded-lg flex items-center gap-3">
+                <AlertTriangle className="h-5 w-5 text-warning shrink-0" />
+                <div className="text-xs">
+                  <p className="font-bold">Nenhuma correspondência encontrada!</p>
+                  <p className="text-muted-foreground">Reprocesse a busca ou crie uma reclassificação de contingência abaixo.</p>
+                </div>
+              </div>
+            )}
+
             {/* Lancamentos list */}
             <ScrollArea className="h-[300px] rounded-md border">
               <RadioGroup
@@ -253,6 +265,18 @@ export function ConciliacaoManualDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
+          {lancamentosFiltrados.length === 0 && (
+            <Button 
+              variant="secondary" 
+              onClick={() => {
+                toast.info('Abrindo reprocessamento manual...');
+                setSearch('');
+              }}
+              className="gap-2"
+            >
+              <RefreshCw className="h-4 w-4" /> Reprocessar Busca
+            </Button>
+          )}
           <Button
             onClick={handleConfirmar}
             disabled={!selectedLancamento || isLoading}

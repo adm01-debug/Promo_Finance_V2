@@ -300,13 +300,28 @@ export function useConciliacaoPage() {
     setTransacoesImportadas(prev => prev.filter(t => t.id !== transacaoId));
   }, [confirmarConciliacao]);
 
-  const handleConciliar = (id: string) => {
-    setTransacoes(prev => prev.map(t => t.id === id ? { ...t, conciliada: true } : t));
-  };
+  const handleConciliar = useCallback((id: string) => {
+    const transacao = transacoes.find(t => t.id === id);
+    if (transacao) {
+      setSelectedTransacaoManual(transacao);
+      setShowManualDialog(true);
+    }
+  }, [transacoes]);
 
-  const handleIgnorar = (id: string) => {
-    setTransacoes(prev => prev.filter(t => t.id !== id));
-  };
+  const handleIgnorar = useCallback(async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('transacoes_bancarias')
+        .update({ conciliada: true, compensacao_motivo: 'Ignorado pelo usuário' })
+        .eq('id', id);
+
+      if (error) throw error;
+      setTransacoes(prev => prev.filter(t => t.id !== id));
+      toast.info('Transação marcada como ignorada');
+    } catch (err) {
+      toast.error('Erro ao ignorar transação');
+    }
+  }, []);
 
   const handleDesfazerConciliacao = useCallback(async (transacaoId: string) => {
     try {
