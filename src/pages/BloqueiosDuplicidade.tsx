@@ -25,17 +25,32 @@ import {
   Coins,
   ShieldCheck,
   Calendar,
-  FileDown
+  FileDown,
+  RefreshCcw,
+  Zap,
+  Lock,
+  Unlock,
+  Copy
 } from "lucide-react";
 import { formatCurrency } from "@/lib/formatters";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import { saveAs } from 'file-saver';
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { PageHeader, PageBackground } from "@/components/layout/PageHeader";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
 
 
 const containerVariants = {
