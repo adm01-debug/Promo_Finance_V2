@@ -94,7 +94,7 @@ interface ContasPagarTableRowProps {
   index: number;
   isSelected: boolean;
   onToggleSelect: () => void;
-  onEdit: () => void;
+  onEdit: (data?: any) => void;
   onDelete: () => void;
   onRegistrarPagamento: () => void;
   onSolicitarAprovacao: () => void;
