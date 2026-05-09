@@ -6,9 +6,13 @@ const corsHeaders = {
 }
 
 Deno.serve(async (req) => {
+  const startTime = Date.now()
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
+
+  const correlation_id = crypto.randomUUID()
+  const ip_origem = req.headers.get('x-forwarded-for') || 'desconhecido'
 
   try {
     const WEBHOOK_TOKEN = Deno.env.get('ASAAS_WEBHOOK_TOKEN')
@@ -119,11 +123,43 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Logar recepção do webhook com sucesso
+    await supabase.from('webhooks_log').insert({
+      event_type: event,
+      payload: body,
+      processado: true,
+      correlation_id,
+      ip_origem,
+      duration_ms: Date.now() - startTime,
+      provider: 'asaas',
+      asaas_event_id: body.id
+    })
+
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (error) {
     console.error('Erro webhook:', error)
+    
+    // Logar falha no webhook
+    try {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+      const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+      const supabase = createClient(supabaseUrl, serviceRoleKey)
+      
+      await supabase.from('webhooks_log').insert({
+        event_type: 'ERROR',
+        payload: { error: error.message },
+        processado: false,
+        erro_mensagem: error.message,
+        correlation_id: (req as any).correlation_id || 'N/A',
+        ip_origem: req.headers.get('x-forwarded-for') || 'desconhecido',
+        duration_ms: Date.now() - startTime
+      })
+    } catch (logErr) {
+      console.error('Erro ao logar falha:', logErr)
+    }
+
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
