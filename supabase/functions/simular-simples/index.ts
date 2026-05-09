@@ -77,7 +77,7 @@ serve(async (req) => {
     }
 
     const faixa = ANEXOS[anexo].find(f => rbt12 <= f.ate) || ANEXOS[anexo][5];
-    const aliqEfetiva = Math.max(0, ((rbt12 * faixa.aliq) - faixa.pd) / rbt12);
+    const aliqEfetiva = rbt12 > 0 ? Math.max(0, ((rbt12 * faixa.aliq) - faixa.pd) / rbt12) : faixa.aliq;
     const dasTotal = faturamentoAnual * aliqEfetiva;
 
     const dist = DISTRIBUICAO[anexo];
@@ -94,7 +94,7 @@ serve(async (req) => {
       icms: dasTotal * dist.icms,
       iss: dasTotal * dist.iss,
       totalTributos: dasTotal,
-      cargaEfetiva: (dasTotal / faturamentoAnual) * 100,
+      cargaEfetiva: faturamentoAnual > 0 ? (dasTotal / faturamentoAnual) * 100 : 0,
       fatorR,
       anexoAplicavel: anexo,
       faixaAplicavel: faixa.faixa,

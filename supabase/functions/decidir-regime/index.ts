@@ -145,7 +145,7 @@ function simularSimples(p: ParametrosSimulacao, ano: number, mes: number): Resul
       totalTributos: 0, cargaEfetiva: 0, observacoes: obs,
     };
   }
-  const aliqEfet = Math.max(0, ((rbt12 * faixa.aliq) - faixa.pd) / rbt12);
+  const aliqEfet = rbt12 > 0 ? Math.max(0, ((rbt12 * faixa.aliq) - faixa.pd) / rbt12) : faixa.aliq;
   const das = p.faturamentoAnual * aliqEfet;
   obs.push(`Faixa ${faixa.faixa}, alíq nominal ${(faixa.aliq * 100).toFixed(2)}%, efetiva ${(aliqEfet * 100).toFixed(2)}%.`);
   return {
@@ -154,7 +154,7 @@ function simularSimples(p: ParametrosSimulacao, ano: number, mes: number): Resul
     cpp: das * 0.4, icms: anexo === 'I' || anexo === 'II' ? das * 0.3 : 0,
     iss: anexo === 'III' || anexo === 'IV' || anexo === 'V' ? das * 0.3 : 0,
     cbs: 0, ibs: 0,
-    totalTributos: das, cargaEfetiva: (das / p.faturamentoAnual) * 100,
+    totalTributos: das, cargaEfetiva: p.faturamentoAnual > 0 ? (das / p.faturamentoAnual) * 100 : 0,
     rbt12, fatorR, anexoAplicavel: anexo, faixaAplicavel: faixa.faixa,
     aliquotaNominal: faixa.aliq * 100, observacoes: obs,
   };
@@ -185,7 +185,7 @@ function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   return {
     regime: 'lucro_presumido', nome: 'Lucro Presumido', elegivel: true,
     irpj, csll, pis, cofins, cpp, icms, iss, cbs: 0, ibs: 0,
-    totalTributos: total, cargaEfetiva: (total / p.faturamentoAnual) * 100,
+    totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
     observacoes: ['Presunção 8% comércio / 32% serviços.', 'PIS/COFINS cumulativo.'],
   };
 }
@@ -207,7 +207,7 @@ function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   return {
     regime: 'lucro_real', nome: 'Lucro Real', elegivel: true,
     irpj, csll, pis, cofins, cpp, icms, iss, cbs: 0, ibs: 0,
-    totalTributos: total, cargaEfetiva: (total / p.faturamentoAnual) * 100,
+    totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
     observacoes: [`Lucro estimado: ${p.margemLucro}% do faturamento.`, 'PIS/COFINS não-cumulativo.'],
   };
 }

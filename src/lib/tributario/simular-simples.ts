@@ -88,7 +88,7 @@ export function simularSimples(
   }
 
   // Alíquota efetiva = ((RBT12 × aliq) − PD) / RBT12
-  const aliquotaEfetiva = ((rbt12 * faixa.aliquota) - faixa.pd) / rbt12;
+  const aliquotaEfetiva = rbt12 > 0 ? ((rbt12 * faixa.aliquota) - faixa.pd) / rbt12 : faixa.aliquota;
   const aliquotaFinal = Math.max(0, aliquotaEfetiva);
 
   // DAS total estimado sobre faturamento anual
@@ -117,7 +117,7 @@ export function simularSimples(
     icms, iss,
     cbs: 0, ibs: 0,
     totalTributos: dasTotal,
-    cargaEfetiva: (dasTotal / faturamentoAnual) * 100,
+    cargaEfetiva: faturamentoAnual > 0 ? (dasTotal / faturamentoAnual) * 100 : 0,
     aliquotaNominal: faixa.aliquota * 100,
     rbt12,
     fatorR: percentualServicos > 50 ? fatorR : undefined,
