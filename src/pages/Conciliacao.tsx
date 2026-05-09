@@ -402,11 +402,15 @@ export default function Conciliacao() {
         open={showManualDialog} 
         onOpenChange={setShowManualDialog} 
         transacao={selectedTransacaoManual as any} 
+        lancamentos={lancamentosSistema}
+        onSuccess={handleManualSuccess}
       />
       <ConciliacaoSplitDialog 
         open={showSplitDialog} 
         onOpenChange={setShowSplitDialog} 
         transacao={selectedTransacaoSplit as any} 
+        lancamentos={lancamentosSistema}
+        onSuccess={handleManualSuccess}
       />
       <RelatorioImportacaoDialog 
         open={showReportDialog} 
