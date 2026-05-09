@@ -316,6 +316,9 @@ export function encontrarMatchesParaTransacao(
     const scoreFinal = pesoTotal > 0 ? Math.min(100, (scoreTotal / pesoTotal) * 100) : 0;
     
     if (scoreFinal >= config.scoreMinimo) {
+      // Bonus for high similarity or document match
+      const isHighConfidence = scoreFinal >= 80 || motivos.some(m => m.tipo === 'documento' || m.tipo === 'valor_exato');
+      
       sugestoes.push({
         transacaoId: transacao.id,
         lancamentoId: lancamento.id,
