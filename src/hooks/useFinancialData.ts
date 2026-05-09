@@ -262,7 +262,7 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
   const to = from + pageSize - 1;
 
   return useQuery({
-    queryKey: ['contas-pagar', 'paginated', page, pageSize, search, status, centroCustoId, empresaId],
+    queryKey: ['contas-pagar', 'paginated', page, pageSize, search, status, centroCustoId, empresaId, contaBancariaId],
     queryFn: async () => {
       let countQuery = supabase
         .from('contas_pagar')
