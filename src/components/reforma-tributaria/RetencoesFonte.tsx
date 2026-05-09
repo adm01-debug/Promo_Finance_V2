@@ -21,8 +21,12 @@ const TIPO_LABELS: Record<TipoRetencao, string> = {
   inss: 'INSS', iss: 'ISS', cbs: 'CBS', ibs: 'IBS',
 };
 
-export function RetencoesFonte() {
-  const [empresaId, setEmpresaId] = useState<string>('');
+interface Props {
+  empresaId?: string;
+}
+
+export function RetencoesFonte({ empresaId: initialEmpresaId }: Props) {
+  const [empresaId, setEmpresaId] = useState<string>(initialEmpresaId || '');
   const [competencia, setCompetencia] = useState(format(new Date(), 'yyyy-MM'));
   const [activeTab, setActiveTab] = useState('retencoes');
   const [selectedRetencoes, setSelectedRetencoes] = useState<string[]>([]);
