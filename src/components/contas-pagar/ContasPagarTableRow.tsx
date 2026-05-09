@@ -97,6 +97,7 @@ export const ContasPagarTableRow = memo(({
   getRowAnimation,
   isVirtual = false
 }: ContasPagarTableRowProps) => {
+  const [historyOpen, setHistoryOpen] = useState(false);
   const status = statusConfig[conta.status as StatusPagamento];
   const StatusIcon = status?.icon || Clock;
   const TipoIcon = tipoCobrancaIcons[conta.tipo_cobranca as TipoCobranca] || Banknote;
