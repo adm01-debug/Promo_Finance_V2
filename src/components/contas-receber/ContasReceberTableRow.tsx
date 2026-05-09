@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
+
 import {
   Building2, FileText, Calendar, MoreHorizontal, Eye, Edit, Trash2, Send,
   CheckCircle2, Clock, AlertTriangle, MessageCircle, DollarSign,
-  Banknote, QrCode, CreditCard, Wallet, Shield, Scale, Gavel, Tag,
+  Banknote, QrCode, CreditCard, Wallet, Shield, Scale, Gavel, Tag, History,
 } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -16,7 +19,12 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { TableCell } from '@/components/ui/table';
 import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime, getEtapaCobrancaLabel } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 import type { Database } from '@/integrations/supabase/types';
+
+import { VersionHistory } from '@/components/common/VersionHistory';
+import { DuplicateButton } from '@/components/common/DuplicateButton';
+
 
 type ContaReceberRow = Database['public']['Tables']['contas_receber']['Row'];
 
@@ -94,7 +102,9 @@ export function ContasReceberTableRow({
   onRegistrarRecebimento, onView, onEnviarCobranca, onAplicarDesconto,
   showEmpresa = false, showDiasAtraso = true, animate = false,
 }: ContasReceberTableRowProps) {
+  const [historyOpen, setHistoryOpen] = useState(false);
   const status = statusConfig[conta.status as StatusPagamento];
+
   const StatusIcon = status?.icon || Clock;
   const overdueDays = calculateOverdueDays(new Date(conta.data_vencimento));
   const saldo = conta.valor - (conta.valor_recebido || 0);
@@ -283,7 +293,22 @@ export function ContasReceberTableRow({
               <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 px-3 py-2">Entity Operations</DropdownMenuLabel>
               <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => onView?.(conta)}><Eye className="h-4 w-4 text-primary" /> Analysis Detail</DropdownMenuItem>
               <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => onEdit(conta)}><Edit className="h-4 w-4" /> Configuration</DropdownMenuItem>
+              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => setHistoryOpen(true)}>
+                <History className="h-4 w-4" /> Audit History
+              </DropdownMenuItem>
+              <DuplicateButton 
+                data={conta} 
+                onDuplicate={(duplicated) => {
+                  onEdit(duplicated as any);
+                  toast.success('Registro clonado. Revise os dados e salve.');
+                }}
+                label="Duplicate Record"
+                className="w-full justify-start px-2 py-1.5 h-auto font-normal text-sm gap-3 rounded-xl focus:bg-white/10"
+                variant="ghost"
+                size="default"
+              />
               <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => onEnviarCobranca?.(conta)}><Send className="h-4 w-4 text-blue-400" /> Command Comms</DropdownMenuItem>
+
               {conta.status !== 'pago' && conta.status !== 'cancelado' && (
                 <DropdownMenuItem className="gap-3 rounded-xl focus:bg-white/10" onClick={() => window.location.href = `/boletos?novo=true&receber_id=${conta.id}`}>
                   <Banknote className="h-4 w-4 text-primary" /> Gerar Boleto
@@ -305,7 +330,14 @@ export function ContasReceberTableRow({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+        <VersionHistory 
+          open={historyOpen} 
+          onOpenChange={setHistoryOpen} 
+          recordId={conta.id} 
+          tableName="contas_receber" 
+        />
       </TableCell>
+
     </RowComponent>
   );
 }

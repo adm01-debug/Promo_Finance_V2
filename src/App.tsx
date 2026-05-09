@@ -110,7 +110,9 @@ const ScoringClientesPage = lazy(() => import('./pages/clientes/ScoringClientes'
 
 const Orcamentos = lazy(() => import('./pages/Orcamentos'));
 const Categorias = lazy(() => import('./pages/Categorias'));
+
 const NotFound = lazy(() => import('./pages/NotFound'));
+
 
 // Inner app component that can use routing hooks
 function AppRoutes() {
