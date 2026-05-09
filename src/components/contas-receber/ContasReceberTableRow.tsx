@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
+
 import {
   Building2, FileText, Calendar, MoreHorizontal, Eye, Edit, Trash2, Send,
   CheckCircle2, Clock, AlertTriangle, MessageCircle, DollarSign,
@@ -17,7 +19,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { TableCell } from '@/components/ui/table';
 import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime, getEtapaCobrancaLabel } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 import type { Database } from '@/integrations/supabase/types';
+
 import { VersionHistory } from '@/components/common/VersionHistory';
 import { DuplicateButton } from '@/components/common/DuplicateButton';
 
