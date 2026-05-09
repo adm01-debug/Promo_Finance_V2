@@ -329,9 +329,9 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
       doc.addPage();
       y = 20;
     }
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('2. Comparativo Visual', 14, y);
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text('3. Comparativo Visual', 14, y);
     y += 6;
     const imgW = pageWidth - 28;
     const imgH = (imgW * 400) / 800;
@@ -346,7 +346,7 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
   }
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
-  doc.text('3. Detalhamento por Regime', 14, y);
+  doc.text('4. Detalhamento por Regime', 14, y);
   y += 4;
 
   autoTable(doc, {
@@ -373,7 +373,7 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
     }
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text('4. Alertas Tributários', 14, y);
+    doc.text('5. Alertas Tributários', 14, y);
     y += 6;
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
@@ -426,7 +426,7 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
       y = 20;
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
-      doc.text('6. Reforma Tributária 2026-2033', 14, y);
+      doc.text('7. Reforma Tributária 2026-2033', 14, y);
       y += 6;
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
