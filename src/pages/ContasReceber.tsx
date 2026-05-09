@@ -120,11 +120,14 @@ export default function ContasReceber() {
                   filename="contas_receber" 
                   title="Relatório de Contas a Receber" 
                   empresa={empresas.find(e => e.id === empresaFilter)}
-                  kpis={kpis}
-                />
-                <Button variant="outline" size="lg" className="h-12 px-6 rounded-xl border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary font-black gap-2 transition-all" onClick={() => setBaixaDialogOpen(true)}>
-                  <Zap className="h-5 w-5" /> Baixa Automática
-                </Button>
+                    kpis={kpis}
+                  />
+                  <Button variant="outline" size="lg" className="h-12 px-6 rounded-xl border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10 text-blue-500 font-black gap-2 transition-all" onClick={handleSyncStages}>
+                    <RefreshCcw className="h-5 w-5" /> Sincronizar Régua
+                  </Button>
+                  <Button variant="outline" size="lg" className="h-12 px-6 rounded-xl border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary font-black gap-2 transition-all" onClick={() => setBaixaDialogOpen(true)}>
+                    <Zap className="h-5 w-5" /> Baixa Automática
+                  </Button>
                 <Button size="lg" className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]" onClick={() => setFormOpen(true)}>
                   <Plus className="h-5 w-5" /> Novo Comando
                 </Button>
