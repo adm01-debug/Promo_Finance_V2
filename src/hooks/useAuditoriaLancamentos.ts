@@ -55,7 +55,7 @@ export function useAuditoriaLancamentos(params: UseAuditoriaLancamentosParams) {
     queryFn: async (): Promise<AuditoriaLancamentoRow[]> => {
       let query = supabase
         .from('auditoria_financeira')
-        .select('*')
+        .select('*, usuario:profiles!user_id(full_name, email)')
         .order('created_at', { ascending: false })
         .limit(limit);
 
@@ -75,12 +75,18 @@ export function useAuditoriaLancamentos(params: UseAuditoriaLancamentosParams) {
       const rows = (data || []) as unknown as AuditoriaLancamentoRow[];
 
       // Enriquecer com numero_lancamento/historico/data
-      const enriched = rows.map((r) => {
+      const enriched = rows.map((r: any) => {
         const novos = (r.dados_novos || {}) as Record<string, unknown>;
         const antigos = (r.dados_antigos || {}) as Record<string, unknown>;
         const src = Object.keys(novos).length ? novos : antigos;
+        
+        // Resolve o nome do usuário a partir da join
+        const userProfile = r.usuario as { full_name: string | null; email: string | null } | null;
+        const usuarioNome = userProfile ? (userProfile.full_name || userProfile.email || 'Sistema') : 'Sistema';
+
         return {
           ...r,
+          usuario: usuarioNome,
           numero_lancamento: (src.numero_lancamento as number) ?? null,
           historico: (src.historico as string) ?? null,
           data_lancamento: (src.data_lancamento as string) ?? null,
@@ -109,13 +115,7 @@ export function useAuditoriaLancamentos(params: UseAuditoriaLancamentosParams) {
         );
       }
 
-      // Resolve emails dos usuários
-      const userIds = Array.from(new Set(filtered.map((r) => r.user_id).filter(Boolean) as string[]));
-      const emails = await resolveUserEmails(userIds);
-      return filtered.map((r) => ({
-        ...r,
-        usuario: r.user_id ? emails[r.user_id] || r.usuario : r.usuario,
-      }));
+      return filtered;
     },
     enabled: true,
   });
