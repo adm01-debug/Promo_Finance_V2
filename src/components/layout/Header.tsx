@@ -82,8 +82,15 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
   const { theme, setTheme, isDark } = useTheme();
   const { user, profile, role, roleAtual, currentEmpresaId, signOut } = useAuth();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const { data: alertas = [] } = useAlertas();
   const { data: vinculos = [] } = useUserEmpresas();
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+    toast.success(`Idioma alterado para ${lng === 'pt' ? 'Português' : lng === 'en' ? 'English' : 'Español'}`);
+  };
+
 
   const unreadAlerts = useMemo(() => alertas.filter((a) => !a.lido).length, [alertas]);
 
