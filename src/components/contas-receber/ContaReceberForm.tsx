@@ -18,6 +18,7 @@ import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ContaReceberFormFields } from './ContaReceberFormFields';
+import { AnexoList } from '@/components/financeiro/AnexoList';
 
 const contaReceberSchema = z.object({
   cliente_id: z.string().optional(),
