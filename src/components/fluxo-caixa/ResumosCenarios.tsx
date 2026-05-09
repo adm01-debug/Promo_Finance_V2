@@ -109,8 +109,8 @@ export function ResumosCenarios({ metricas, saldoAtual, cenarioAtivo, onCenarioC
                   <div className="flex items-center justify-between mb-0.5 sm:mb-1">
                     <span className="text-xs sm:text-sm text-muted-foreground">Saldo Projetado</span>
                     <span className={cn(
-                      "text-[10px] sm:text-xs font-medium flex items-center gap-0.5 sm:gap-1",
-                      variacao >= 0 ? "text-success" : "text-destructive"
+                      "text-[10px] sm:text-xs font-bold flex items-center gap-0.5 sm:gap-1 px-1.5 py-0.5 rounded-full",
+                      variacao >= 0 ? "text-success bg-success/10" : "text-destructive bg-destructive/10"
                     )}>
                       {variacao >= 0 ? <TrendingUp className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> : <TrendingDown className="h-2.5 w-2.5 sm:h-3 sm:w-3" />}
                       {variacao >= 0 ? '+' : ''}{variacao.toFixed(1)}%
