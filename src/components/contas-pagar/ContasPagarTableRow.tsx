@@ -98,7 +98,6 @@ interface ContasPagarTableRowProps {
   onDelete: () => void;
   onRegistrarPagamento: () => void;
   onSolicitarAprovacao: () => void;
-  precisaAprovacao: boolean;
   estaAprovado: boolean;
   temSolicitacaoPendente: boolean;
   foiRejeitado: boolean;
@@ -289,6 +288,7 @@ export function ContasPagarTableRow({
             onRegistrarPagamento={onRegistrarPagamento}
             onSolicitarAprovacao={onSolicitarAprovacao}
             id={conta.id}
+            conta={conta}
           />
         </div>
       </TableCell>
