@@ -35,6 +35,7 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
   const [progress, setProgress] = useState(0);
   const [resultado, setResultado] = useState<ResultadoImportacao | null>(null);
   const [matches, setMatches] = useState<MatchResult[]>([]);
+  const [unmatched, setUnmatched] = useState<any[]>([]);
   const [processing, setProcessing] = useState(false);
   const [summary, setSuccessSummary] = useState({ processados: 0, valor: 0 });
   
