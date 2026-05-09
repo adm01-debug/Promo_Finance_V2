@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Award, TrendingDown, AlertTriangle, FileText, ArrowRight, CheckCircle2, Scale, Send, Loader2 } from 'lucide-react';
+import { Award, TrendingDown, AlertTriangle, FileText, ArrowRight, CheckCircle2, Scale, Send, Loader2, Sparkles } from 'lucide-react';
 import { useSimulacaoRegimes } from '@/hooks/useSimulacaoRegimes';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { useGerarPdfTributario, useEnviarBitrix24Tributario } from '@/hooks/usePdfTributario';
@@ -34,7 +34,7 @@ export default function RecomendacaoExecutiva() {
   const navigate = useNavigate();
   const { data: empresas = [] } = useAllEmpresas();
   const [empresaId, setEmpresaId] = useState<string | undefined>();
-  const { resultado, regimeAtual, setRegimeAtual, parametros, salvarSimulacao } =
+  const { resultado, regimeAtual, setRegimeAtual, parametros, salvarSimulacao, isRecomendacaoIA } =
     useSimulacaoRegimes({ empresaId });
   const gerarPdf = useGerarPdfTributario();
   const enviarBitrix = useEnviarBitrix24Tributario();
@@ -134,9 +134,21 @@ export default function RecomendacaoExecutiva() {
         <CardHeader>
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
-              <Badge variant="default" className="mb-2">Regime recomendado</Badge>
+              <div className="flex items-center gap-2 mb-2">
+                <Badge variant="default">Regime recomendado</Badge>
+                {isRecomendacaoIA && (
+                  <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 animate-pulse">
+                    <Sparkles className="h-3 w-3 mr-1" /> IA
+                  </Badge>
+                )}
+                {resultado.fromCache && (
+                  <Badge variant="outline" className="text-muted-foreground border-muted-foreground/20">
+                    Cached
+                  </Badge>
+                )}
+              </div>
               <CardTitle className="text-3xl">{resultado.recomendado.nome}</CardTitle>
-              <CardDescription className="mt-2 text-base">{resultado.justificativa}</CardDescription>
+              <CardDescription className="mt-2 text-base">{resultado.justificativaIA || resultado.justificativa}</CardDescription>
             </div>
             <div className="text-right">
               <p className="text-sm text-muted-foreground">Carga tributária estimada</p>

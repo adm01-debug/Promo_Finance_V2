@@ -41,6 +41,7 @@ export default function SimulacaoRegimes() {
     folhaMensal,
     sincronizarComServer,
     isSincronizando,
+    isRecomendacaoIA,
   } = useSimulacaoRegimes({ empresaId });
 
   const { relatorio: relatorioElisao, persistirOportunidades } = useOportunidadesElisao({
@@ -182,7 +183,19 @@ export default function SimulacaoRegimes() {
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-muted-foreground">Regime Recomendado</p>
-                  <h2 className="text-2xl md:text-3xl font-bold text-success">{resultado.recomendado.nome}</h2>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-2xl md:text-3xl font-bold text-success">{resultado.recomendado.nome}</h2>
+                    {isRecomendacaoIA && (
+                      <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 animate-pulse">
+                        <Sparkles className="h-3 w-3 mr-1" /> IA
+                      </Badge>
+                    )}
+                    {resultado.fromCache && (
+                      <Badge variant="outline" className="text-muted-foreground border-muted-foreground/20">
+                        Cached
+                      </Badge>
+                    )}
+                  </div>
                   <p className="text-sm text-muted-foreground mt-1">{resultado.justificativaIA || resultado.justificativa}</p>
                   {resultado.economiaAnualVsAtual !== undefined && resultado.economiaAnualVsAtual > 0 && (
                     <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-success/10 text-success">

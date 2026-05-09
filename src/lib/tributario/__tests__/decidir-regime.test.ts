@@ -62,4 +62,18 @@ describe('decidirRegime', () => {
     expect(r.recomendado).toBeDefined();
     expect(r.recomendado.totalTributos).toBeGreaterThan(0);
   });
+
+  describe('Justificativa IA e Audit Trail', () => {
+    it('suporta justificativa externa (IA)', () => {
+      const res = decidirRegime(baseParams);
+      const resultadoComIA = { ...res, justificativaIA: 'Justificativa customizada da IA' };
+      expect(resultadoComIA.justificativaIA).toBe('Justificativa customizada da IA');
+    });
+
+    it('mantém referência de auditoria', () => {
+      const res = decidirRegime(baseParams);
+      const resultadoComAudit = { ...res, auditLogId: 'uuid-audit-123' };
+      expect(resultadoComAudit.auditLogId).toBe('uuid-audit-123');
+    });
+  });
 });

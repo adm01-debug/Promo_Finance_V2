@@ -39,7 +39,7 @@ export function useDecidirRegimeServer() {
     },
     onSuccess: (data) => {
       toast.success(`Regime recomendado: ${data.recomendado.nome}`, {
-        description: `Carga efetiva: ${data.recomendado.cargaEfetiva.toFixed(2)}%`,
+        description: `Carga efetiva: ${data.recomendado.cargaEfetiva?.toFixed(2)}%`,
       });
     },
   });
