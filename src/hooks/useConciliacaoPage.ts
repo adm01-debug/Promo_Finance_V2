@@ -29,6 +29,7 @@ interface TransacaoExtrato {
 }
 
 export function useConciliacaoPage() {
+  const { currentBankAccountId } = useGlobalFinancialFilter();
   const [mainTab, setMainTab] = useState('conciliacao');
   const [statusTab, setStatusTab] = useState('pendentes');
   const [selectedBanco, setSelectedBanco] = useState<string>('');
