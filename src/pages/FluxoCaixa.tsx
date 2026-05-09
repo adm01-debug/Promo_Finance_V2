@@ -147,10 +147,10 @@ export default function FluxoCaixa() {
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
-          <motion.div variants={itemVariants}>
+          <motion.div variants={itemVariants} className="lg:col-span-1">
             <IndicadorCobertura 
               saldoAtual={kpis?.saldoTotal || 0}
-              despesaMediaDiaria={totalDespesas / dias}
+              despesaMediaDiaria={totalDespesas / (dias || 1)}
               isLoading={loadingKpis}
             />
           </motion.div>
