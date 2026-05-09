@@ -12,6 +12,8 @@ import { RegistrarPagamentoDialog } from '@/components/contas-pagar/RegistrarPag
 import { ContasPagarKPIs } from '@/components/contas-pagar/ContasPagarKPIs';
 import { ContasPagarList } from './ContasPagar/components/List';
 import { ContasPagarFilters } from './ContasPagar/components/Filters';
+import { TablePagination } from '@/components/ui/table-pagination';
+
 import { SolicitarAprovacaoDialog } from '@/components/contas-pagar/SolicitarAprovacaoDialog';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { BulkActionsBar } from '@/components/ui/bulk-actions-bar';
