@@ -6,8 +6,16 @@ import { useConciliacaoAudit } from '@/hooks/useConciliacaoAudit';
 import { AlertTriangle, CheckCircle, Clock, ShieldCheck, Loader2 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 
-export function DivergenciasConciliacaoPanel() {
+export function DivergenciasConciliacaoPanel({ empresaId }: { empresaId?: string }) {
   const { divergencias, isLoading, resolverDivergencia } = useDivergenciasConciliacao();
+  const { runAudit } = useConciliacaoAudit(empresaId);
+  const [isAuditing, setIsAuditing] = useState(false);
+
+  const handleRunAudit = async () => {
+    setIsAuditing(true);
+    await runAudit.mutateAsync();
+    setIsAuditing(false);
+  };
 
   if (isLoading) return <div className="p-8 text-center">Carregando divergências...</div>;
 
