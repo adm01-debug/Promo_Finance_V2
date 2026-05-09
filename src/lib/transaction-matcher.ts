@@ -320,12 +320,20 @@ export function encontrarMatchesParaTransacao(
     }
     
     // Calculate final score (normalized to 0-100)
-    const scoreFinal = pesoTotal > 0 ? Math.min(100, (scoreTotal / pesoTotal) * 100) : 0;
+    let scoreFinal = pesoTotal > 0 ? Math.max(0, (scoreTotal / pesoTotal) * 100) : 0;
     
+    // Se houve divergência de valor mas o nome é exato, mantemos um score mínimo
+    const matchesNomeExato = motivos.some(m => m.tipo === 'nome_exato');
+    if (matchesNomeExato && scoreFinal < config.scoreMinimo) {
+      scoreFinal = config.scoreMinimo; // Força score mínimo para revisão manual
+    }
+
     if (scoreFinal >= config.scoreMinimo) {
       // Bonus for high similarity or document match
       const isHighConfidence = scoreFinal >= 80 || motivos.some(m => m.tipo === 'documento' || m.tipo === 'valor_exato');
       
+      const diffValor = Math.abs(valorTransacao - lancamento.valor);
+
       sugestoes.push({
         transacaoId: transacao.id,
         lancamentoId: lancamento.id,
@@ -334,8 +342,10 @@ export function encontrarMatchesParaTransacao(
         motivos,
         lancamento,
         confianca: scoreFinal >= 80 ? 'alta' : scoreFinal >= 60 ? 'media' : 'baixa',
+        divergenciaValor: diffValor > 0.01 ? diffValor : undefined,
       });
     }
+
   }
   
   // Sort by score descending
