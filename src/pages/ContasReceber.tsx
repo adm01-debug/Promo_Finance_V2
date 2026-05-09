@@ -249,6 +249,7 @@ export default function ContasReceber() {
             description={`Confirmar a remoção definitiva do título "${deletingConta?.descricao}" (${deletingConta?.valor ? formatCurrency(deletingConta.valor) : ''}) do repositório?`}
             confirmLabel="Confirmar Exclusão" variant="danger" isLoading={isDeleting} onConfirm={handleDeleteConta} />
           <BaixaAutomaticaDialog open={baixaDialogOpen} onOpenChange={setBaixaDialogOpen} empresaId={empresaFilter !== 'all' ? empresaFilter : ''} />
+          <WebhookConfigDialog open={webhookDialogOpen} onOpenChange={setWebhookDialogOpen} />
           <BulkActionsBar selectedCount={selectedCount} isProcessing={isProcessing} progress={progress} actions={bulkActions} onClear={clearSelection} />
         </motion.div>
       </div>
