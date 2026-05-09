@@ -134,10 +134,6 @@ export default function BloqueiosDuplicidade() {
   });
 
 
-      if (error) throw error;
-      return data;
-    },
-  });
 
   const stats = {
     totalValue: bloqueios?.reduce((acc, b) => acc + (Number(b.valor_bloqueado) || 0), 0) || 0,
