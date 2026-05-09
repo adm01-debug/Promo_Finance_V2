@@ -160,15 +160,21 @@ export function useCentrosCusto() {
   });
 }
 
-export function useContasBancarias() {
+export function useContasBancarias(empresaId?: string) {
   return useQuery({
-    queryKey: ['contas-bancarias'],
+    queryKey: ['contas-bancarias', empresaId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('contas_bancarias')
         .select('*, empresas(razao_social, nome_fantasia)')
         .eq('ativo', true)
         .order('banco');
+      
+      if (empresaId && empresaId !== 'all') {
+        query = query.eq('empresa_id', empresaId);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       
       // Enhance with routing rules if they exist
