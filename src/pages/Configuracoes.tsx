@@ -26,7 +26,8 @@ import {
   ToggleLeft,
   Timer,
   Link2,
-  FileText
+  FileText,
+  Brain
 } from 'lucide-react';
 import { OpenFinancePanel } from '@/components/integracoes/OpenFinancePanel';
 import { WhatsAppConfigPanel } from '@/components/integracoes/WhatsAppConfigPanel';
