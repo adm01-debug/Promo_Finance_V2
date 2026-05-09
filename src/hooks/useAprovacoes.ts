@@ -23,6 +23,9 @@ export interface SolicitacaoAprovacao {
   motivo_rejeicao: string | null;
   observacoes: string | null;
   created_at: string;
+  nivel_atual: number;
+  total_niveis: number;
+  assinaturas: any[];
   conta_pagar?: {
     id: string;
     descricao: string;
@@ -35,7 +38,25 @@ export interface SolicitacaoAprovacao {
     full_name: string | null;
     email: string;
   };
-  aprovador?: {
+}
+
+export interface FluxoNivel {
+  id: string;
+  empresa_id: string;
+  ordem: number;
+  nome: string;
+  descricao: string;
+  valor_minimo: number;
+  aprovadores_obrigatorios: number;
+}
+
+export interface ComentarioAprovacao {
+  id: string;
+  solicitacao_id: string;
+  usuario_id: string;
+  texto: string;
+  created_at: string;
+  usuario?: {
     full_name: string | null;
     email: string;
   };
@@ -90,6 +111,91 @@ export const useUpdateConfiguracaoAprovacao = () => {
         description: error.message,
         variant: 'destructive',
       });
+    },
+  });
+};
+
+export const useFluxosNiveis = () => {
+  return useQuery({
+    queryKey: ['fluxos-aprovacao-niveis'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('fluxos_aprovacao_niveis')
+        .select('*')
+        .order('ordem', { ascending: true });
+
+      if (error) throw error;
+      return data as FluxoNivel[];
+    },
+  });
+};
+
+export const useUpdateFluxoNivel = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (nivel: Partial<FluxoNivel> & { id: string }) => {
+      const { data, error } = await supabase
+        .from('fluxos_aprovacao_niveis')
+        .update(nivel)
+        .eq('id', nivel.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fluxos-aprovacao-niveis'] });
+      toast({ title: 'Fluxo atualizado' });
+    },
+  });
+};
+
+export const useComentariosAprovacao = (solicitacaoId: string) => {
+  return useQuery({
+    queryKey: ['aprovacao-comentarios', solicitacaoId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('aprovacao_comentarios')
+        .select(`
+          *,
+          usuario:profiles(full_name, email)
+        `)
+        .eq('solicitacao_id', solicitacaoId)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      return data as unknown as ComentarioAprovacao[];
+    },
+    enabled: !!solicitacaoId,
+  });
+};
+
+export const useAdicionarComentario = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ solicitacaoId, texto }: { solicitacaoId: string; texto: string }) => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) throw new Error('Usuário não autenticado');
+
+      const { data, error } = await supabase
+        .from('aprovacao_comentarios')
+        .insert({
+          solicitacao_id: solicitacaoId,
+          usuario_id: userData.user.id,
+          texto,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['aprovacao-comentarios', variables.solicitacaoId] });
     },
   });
 };
