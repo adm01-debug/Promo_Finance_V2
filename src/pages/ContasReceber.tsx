@@ -63,7 +63,7 @@ export default function ContasReceber() {
     setDetailDrawerOpen, setCobrancaDialogOpen, setDescontoDialogOpen,
     selectedIds, selectedCount, isProcessing, progress, isSelected, isAllSelected,
     selectAll, toggleSelect, clearSelection,
-    baixaDialogOpen, setBaixaDialogOpen,
+    baixaDialogOpen, setBaixaDialogOpen, webhookDialogOpen, setWebhookDialogOpen,
   } = useContasReceberLogic();
 
 
