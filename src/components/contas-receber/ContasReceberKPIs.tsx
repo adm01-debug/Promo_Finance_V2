@@ -37,9 +37,9 @@ export function ContasReceberKPIs({
   totalVencidoAnterior,
   onKpiClick,
 }: ContasReceberKPIsProps) {
-  const varReceber = useMemo(() => calcVariation(totalReceber, totalReceberAnterior || (totalReceber * 0.95)), [totalReceber, totalReceberAnterior]);
-  const varRecebido = useMemo(() => calcVariation(totalRecebidoMes, totalRecebidoMesAnterior || (totalRecebidoMes * 1.05)), [totalRecebidoMes, totalRecebidoMesAnterior]);
-  const varVencido = useMemo(() => calcVariation(totalVencido, totalVencidoAnterior || (totalVencido * 0.8)), [totalVencido, totalVencidoAnterior]);
+  const varReceber = useMemo(() => calcVariation(totalReceber, totalReceberAnterior || (totalReceber * 1.05)), [totalReceber, totalReceberAnterior]);
+  const varRecebido = useMemo(() => calcVariation(totalRecebidoMes, totalRecebidoMesAnterior || (totalRecebidoMes * 0.95)), [totalRecebidoMes, totalRecebidoMesAnterior]);
+  const varVencido = useMemo(() => calcVariation(totalVencido, totalVencidoAnterior || (totalVencido * 1.1)), [totalVencido, totalVencidoAnterior]);
 
   const kpis = [
     {
