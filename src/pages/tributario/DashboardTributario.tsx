@@ -71,8 +71,8 @@ export default function DashboardTributario() {
         
         <div className="container mx-auto p-4 sm:p-6 space-y-6 relative z-10">
           <PageHeader 
-            title="Dashboard Tributário" 
-            subtitle="Visão consolidada · Reforma Tributária · Elisão fiscal"
+            title="Dashboard Tributário: Quantum-Sentinel" 
+            subtitle="Inteligência Neural · Reforma Tributária 2026-2033 · Elisão Preditiva"
             badge="Fiscal Control"
             icon={Scale}
             gradientFrom="from-blue-600"
