@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatCurrency, formatDate } from '@/lib/formatters';
-import { Shield, User, Clock, Zap, Link2, CheckCircle2, Search, X, Download, Filter } from 'lucide-react';
+import { Shield, User, Clock, Zap, Link2, CheckCircle2, Search, X, Download, Filter, AlertTriangle } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -295,6 +295,18 @@ export function ConciliacaoAuditPanel() {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{filteredItems.length}</p>
+          </CardContent>
+        </Card>
+        <Card className="border-accent/20 bg-accent/5">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-accent flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4" /> Divergências Pendentes
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold">
+              {auditData?.divergencias.filter((d: any) => d.status === 'pendente').length || 0}
+            </p>
           </CardContent>
         </Card>
       </div>
