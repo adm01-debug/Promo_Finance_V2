@@ -52,7 +52,7 @@ serve(async (req) => {
       icms,
       iss,
       totalTributos: total,
-      cargaEfetiva: (total / faturamentoAnual) * 100,
+      cargaEfetiva: faturamentoAnual > 0 ? (total / faturamentoAnual) * 100 : 0,
       observacoes: [
         'Cálculo baseado no lucro líquido real da operação.',
         'PIS/COFINS pelo regime não-cumulativo (créditos sobre compras/despesas).',
