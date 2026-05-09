@@ -226,9 +226,44 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
               {isEditing ? 'Editar Conta a Pagar' : 'Nova Conta a Pagar'}
             </DialogTitle>
             {!isEditing && (
-              <Button type="button" variant="outline" size="sm" onClick={() => setShowLeitorCodigoBarras(true)} className="gap-2">
-                <Scan className="h-4 w-4" />Ler Código de Barras
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setShowLeitorCodigoBarras(true)} 
+                  className="gap-2"
+                >
+                  <Scan className="h-4 w-4" />Ler Código de Barras
+                </Button>
+                
+                <div className="relative">
+                  <Input
+                    type="file"
+                    accept="application/pdf,image/*"
+                    className="hidden"
+                    id="ocr-upload"
+                    onChange={handleFileUpload}
+                    disabled={isOcrProcessing}
+                  />
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm" 
+                    className="gap-2 border-primary/30 bg-primary/5 text-primary hover:bg-primary/10"
+                    asChild
+                  >
+                    <label htmlFor="ocr-upload" className="cursor-pointer">
+                      {isOcrProcessing ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Building2 className="h-4 w-4" />
+                      )}
+                      {isOcrProcessing ? 'Processando IA...' : 'Scan NF (IA)'}
+                    </label>
+                  </Button>
+                </div>
+              </div>
             )}
           </DialogHeader>
 
