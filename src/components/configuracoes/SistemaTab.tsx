@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Palette, Globe, Database, Zap, CreditCard, Save } from 'lucide-react';
+import { Palette, Globe, Database, Zap, CreditCard, Save, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -48,6 +48,29 @@ export function SistemaTab({ preferencias, onPreferenciasChange, onSave }: Siste
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between"><div><p className="font-medium">Backup Automático</p><p className="text-sm text-muted-foreground">Criar backups automaticamente</p></div><Switch checked={preferencias.backupAutomatico} onCheckedChange={(v) => set('backupAutomatico', v)} /></div>
             <div className="grid gap-2"><Label>Frequência</Label><Select value={preferencias.frequenciaBackup} onValueChange={(v) => set('frequenciaBackup', v)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="diario">Diário</SelectItem><SelectItem value="semanal">Semanal</SelectItem><SelectItem value="mensal">Mensal</SelectItem></SelectContent></Select></div>
+          </CardContent>
+        </Card>
+        <Card className="premium-card">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-primary">
+              <Sparkles className="h-5 w-5" /> Inteligência Preditiva
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Motor Quantum-Sentinel</p>
+                <p className="text-sm text-muted-foreground">Ativar análise preditiva de riscos e elisão fiscal IA</p>
+              </div>
+              <Switch checked={true} />
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Sugestões em Tempo Real</p>
+                <p className="text-sm text-muted-foreground">Exibir insights do Expert IA durante a navegação</p>
+              </div>
+              <Switch checked={true} />
+            </div>
           </CardContent>
         </Card>
         <Card>

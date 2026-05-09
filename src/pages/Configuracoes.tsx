@@ -294,7 +294,7 @@ export default function Configuracoes() {
       </div>
 
       <Tabs defaultValue="regua" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-11 lg:w-[1400px]">
+        <TabsList className="grid w-full grid-cols-12 lg:w-[1500px]">
           <TabsTrigger value="regua" className="gap-2">
             <Clock className="h-4 w-4" />
             <span className="hidden sm:inline">Régua</span>
@@ -338,6 +338,10 @@ export default function Configuracoes() {
           <TabsTrigger value="asaas" className="gap-2">
             <CreditCard className="h-4 w-4" />
             <span className="hidden sm:inline">Asaas</span>
+          </TabsTrigger>
+          <TabsTrigger value="sistema" className="gap-2">
+            <Settings className="h-4 w-4" />
+            <span className="hidden sm:inline">Sistema</span>
           </TabsTrigger>
         </TabsList>
 
