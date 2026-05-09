@@ -403,14 +403,16 @@ export default function Conciliacao() {
         onOpenChange={setShowManualDialog} 
         transacao={selectedTransacaoManual as any} 
         lancamentos={lancamentosSistema}
-        onSuccess={handleManualSuccess}
+        onSuccess={handleManualSuccess as any}
       />
       <ConciliacaoSplitDialog 
         open={showSplitDialog} 
         onOpenChange={setShowSplitDialog} 
         transacao={selectedTransacaoSplit as any} 
         lancamentos={lancamentosSistema}
-        onSuccess={handleManualSuccess}
+        onSuccess={() => {
+          if (selectedTransacaoSplit) handleManualSuccess(selectedTransacaoSplit.id, '', 'pagar');
+        }}
       />
       <RelatorioImportacaoDialog 
         open={showReportDialog} 
