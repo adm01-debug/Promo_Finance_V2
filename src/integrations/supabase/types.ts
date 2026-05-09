@@ -11927,7 +11927,9 @@ export type Database = {
           asaas_payment_id: string | null
           asaas_subscription_id: string | null
           asaas_transfer_id: string | null
+          correlation_id: string | null
           created_at: string
+          duration_ms: number | null
           erro_detalhe: string | null
           erro_mensagem: string | null
           event_type: string
@@ -11940,6 +11942,7 @@ export type Database = {
           processado: boolean | null
           processado_em: string | null
           provider: string
+          retry_count: number | null
           status: string | null
           status_processamento: string | null
           updated_at: string
@@ -11949,7 +11952,9 @@ export type Database = {
           asaas_payment_id?: string | null
           asaas_subscription_id?: string | null
           asaas_transfer_id?: string | null
+          correlation_id?: string | null
           created_at?: string
+          duration_ms?: number | null
           erro_detalhe?: string | null
           erro_mensagem?: string | null
           event_type: string
@@ -11962,6 +11967,7 @@ export type Database = {
           processado?: boolean | null
           processado_em?: string | null
           provider: string
+          retry_count?: number | null
           status?: string | null
           status_processamento?: string | null
           updated_at?: string
@@ -11971,7 +11977,9 @@ export type Database = {
           asaas_payment_id?: string | null
           asaas_subscription_id?: string | null
           asaas_transfer_id?: string | null
+          correlation_id?: string | null
           created_at?: string
+          duration_ms?: number | null
           erro_detalhe?: string | null
           erro_mensagem?: string | null
           event_type?: string
@@ -11984,6 +11992,7 @@ export type Database = {
           processado?: boolean | null
           processado_em?: string | null
           provider?: string
+          retry_count?: number | null
           status?: string | null
           status_processamento?: string | null
           updated_at?: string
