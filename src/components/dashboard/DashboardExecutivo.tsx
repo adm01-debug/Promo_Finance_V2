@@ -26,12 +26,14 @@ import { BlingFinanceiroPanel } from '@/components/bling/BlingFinanceiroPanel';
 import { InadimplenciaSegmentada } from '@/components/analytics/InadimplenciaSegmentada';
 import { BenchmarkingSetorial } from '@/components/analytics/BenchmarkingSetorial';
 import { RelatoriosModelos } from '@/components/relatorios/RelatoriosModelos';
-import { ShieldAlert, FileText, Download, TrendingUp, Target as TargetIcon } from 'lucide-react';
+import { ShieldAlert, FileText, Download, TrendingUp, Target as TargetIcon, History } from 'lucide-react';
 import { AlertasOrcamento } from './AlertasOrcamento';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { exportToCSV, exportToPDF } from '@/lib/export-utils';
+import { toast } from 'sonner';
 
 
 const containerVariants = {
@@ -96,6 +98,19 @@ export const DashboardExecutivo = () => {
         count: data?.length || 0,
         totalValue: data?.reduce((acc, curr) => acc + (Number(curr.valor_bloqueado) || 0), 0) || 0
       };
+    }
+  });
+
+  const { data: auditLogs } = useQuery({
+    queryKey: ['dashboard-audit-logs'],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('audit_logs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(100);
+      if (error) throw error;
+      return data;
     }
   });
 
@@ -347,6 +362,27 @@ export const DashboardExecutivo = () => {
                     <div className="flex items-center gap-3 pt-2">
                       <Button asChild size="sm" variant="secondary" className="rounded-xl font-bold">
                         <Link to="/relatorios">Painel de Relatórios</Link>
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="rounded-xl font-bold gap-2"
+                        onClick={() => {
+                          if (!auditLogs?.length) {
+                            toast.error('Nenhum log para exportar');
+                            return;
+                          }
+                          exportToCSV(auditLogs, [
+                            { key: 'created_at', header: 'Data' },
+                            { key: 'user_email', header: 'Usuário' },
+                            { key: 'action', header: 'Ação' },
+                            { key: 'table_name', header: 'Tabela' },
+                            { key: 'details', header: 'Detalhes' }
+                          ], 'audit_logs_executivo');
+                          toast.success('Logs exportados com sucesso');
+                        }}
+                      >
+                        <History className="h-3.5 w-3.5" /> Export Audit Logs
                       </Button>
                     </div>
                   </div>
