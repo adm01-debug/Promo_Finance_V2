@@ -119,8 +119,8 @@ const navGroups: NavGroup[] = [
     label: 'Fiscal & Documentos',
     icon: FileText,
     items: [
-      { label: 'Dashboard Tributário', icon: Scale, href: '/tributario', highlight: true, badgeKey: 'tributario' },
-      { label: 'Reforma Tributária', icon: Scale, href: '/reforma-tributaria' },
+      { label: 'Dashboard Tributário', icon: Scale, href: '/tributario/dashboard', highlight: true, badgeKey: 'tributario' },
+      { label: 'Reforma Tributária', icon: Scale, href: '/reforma-tributaria/visao-geral' },
       { label: 'Simulação de Regimes', icon: Calculator, href: '/tributario/simulacao-regimes', highlight: true },
       { label: 'Oportunidades de Elisão', icon: Sparkles, href: '/tributario/oportunidades-elisao', highlight: true },
       { label: 'Projeção 2026-2033', icon: BarChart3, href: '/tributario/projecao-reforma', highlight: true },
