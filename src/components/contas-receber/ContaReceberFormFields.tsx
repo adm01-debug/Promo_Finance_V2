@@ -46,7 +46,7 @@ interface Props {
 
 export function ContaReceberFormFields({
   form, isEditing, clientes, empresas, centrosCusto, contasBancarias, vendedores,
-  showClienteSelect, setShowClienteSelect, onClienteSelect,
+  showClienteSelect, setShowClienteSelect, onClienteSelect, categorias = [],
 }: Props) {
   const [clienteSearch, setClienteSearch] = useState('');
 

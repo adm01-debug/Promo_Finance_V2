@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useClientes, useCentrosCusto, useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
 import { useVendedoresAtivos } from '@/hooks/useVendedores';
+import { useCategorias } from '@/hooks/useCategorias';
 import { toast } from '@/hooks/use-toast';
 import { useConfetti } from '@/hooks/useConfetti';
 import { sounds } from '@/lib/sound-feedback';
@@ -29,6 +30,7 @@ const contaReceberSchema = z.object({
   data_emissao: z.string().optional(),
   empresa_id: z.string().min(1, 'Empresa é obrigatória'),
   centro_custo_id: z.string().optional(),
+  categoria_id: z.string().optional(),
   conta_bancaria_id: z.string().optional(),
   vendedor_id: z.string().optional(),
   tipo_cobranca: z.enum(['boleto', 'pix', 'cartao', 'transferencia', 'dinheiro']),
@@ -88,6 +90,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
         descricao: conta.descricao, valor: conta.valor, data_vencimento: conta.data_vencimento,
         data_emissao: conta.data_emissao, empresa_id: conta.empresa_id,
         centro_custo_id: conta.centro_custo_id || undefined,
+        categoria_id: conta.categoria_id || undefined,
         conta_bancaria_id: conta.conta_bancaria_id || undefined,
         tipo_cobranca: conta.tipo_cobranca as any,
       });
@@ -113,6 +116,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
         valor: data.valor, data_vencimento: data.data_vencimento,
         data_emissao: data.data_emissao || new Date().toISOString().split('T')[0],
         empresa_id: data.empresa_id, centro_custo_id: data.centro_custo_id || null,
+        categoria_id: data.categoria_id || null,
         conta_bancaria_id: finalContaId, vendedor_id: data.vendedor_id || null,
         tipo_cobranca: data.tipo_cobranca, numero_documento: data.numero_documento || null,
         codigo_barras: data.codigo_barras || null, chave_pix: data.chave_pix || null,
@@ -135,6 +139,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
         valor: data.valor, data_vencimento: data.data_vencimento,
         data_emissao: data.data_emissao || new Date().toISOString().split('T')[0],
         empresa_id: data.empresa_id, centro_custo_id: data.centro_custo_id || null,
+        categoria_id: data.categoria_id || null,
         conta_bancaria_id: data.conta_bancaria_id || null, tipo_cobranca: data.tipo_cobranca,
         numero_documento: data.numero_documento || null, codigo_barras: data.codigo_barras || null,
         chave_pix: data.chave_pix || null, link_boleto: data.link_boleto || null,
