@@ -154,6 +154,16 @@ export function useConciliacaoPage() {
     
     if (selectedBanco) {
       try {
+        // Registrar importação do extrato para evitar duplicidade futura
+        const fileHash = btoa(extrato.nomeArquivo + extrato.conta.agencia + extrato.conta.numero);
+        await supabase.from('extratos_bancarios_importados').insert({
+          conta_bancaria_id: selectedBanco,
+          nome_arquivo: extrato.nomeArquivo,
+          hash_arquivo: fileHash,
+          total_transacoes: extrato.transacoes.length,
+          metadados: { saldoFinal: extrato.conta.saldoFinal }
+        });
+
         const result = await salvarExtratoBanco.mutateAsync({ extrato, contaBancariaId: selectedBanco });
         savedCount = result.saved;
         duplicateCount = result.duplicates;
