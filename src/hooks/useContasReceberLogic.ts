@@ -209,7 +209,7 @@ export function useContasReceberLogic() {
 
       return match;
     });
-  }, [contas, advancedFilters, filterByDate, empresaFilter, formaFilter]);
+  }, [contas, advancedFilters, filterByDate, empresaFilter, formaFilter, contaBancariaFilter]);
 
   const { sortedData: sortedContas, sortKey, sortDirection, handleSort } = useSorting(filteredContas, 'data_vencimento');
   const { getRowAnimation } = useTableOptimization(sortedContas.length);

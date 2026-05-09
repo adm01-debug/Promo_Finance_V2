@@ -5042,6 +5042,60 @@ export type Database = {
           },
         ]
       }
+      extratos_bancarios_importados: {
+        Row: {
+          conta_bancaria_id: string
+          created_at: string | null
+          created_by: string | null
+          data_fim: string | null
+          data_inicio: string | null
+          hash_arquivo: string | null
+          id: string
+          metadados: Json | null
+          nome_arquivo: string
+          total_transacoes: number | null
+        }
+        Insert: {
+          conta_bancaria_id: string
+          created_at?: string | null
+          created_by?: string | null
+          data_fim?: string | null
+          data_inicio?: string | null
+          hash_arquivo?: string | null
+          id?: string
+          metadados?: Json | null
+          nome_arquivo: string
+          total_transacoes?: number | null
+        }
+        Update: {
+          conta_bancaria_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          data_fim?: string | null
+          data_inicio?: string | null
+          hash_arquivo?: string | null
+          id?: string
+          metadados?: Json | null
+          nome_arquivo?: string
+          total_transacoes?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "extratos_bancarios_importados_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extratos_bancarios_importados_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       faturamento_mensal: {
         Row: {
           ano: number
@@ -5857,6 +5911,44 @@ export type Database = {
             columns: ["regua_id"]
             isOneToOne: false
             referencedRelation: "regua_cobranca"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      historico_cobrancas_boletos: {
+        Row: {
+          boleto_id: string
+          created_at: string | null
+          descricao: string | null
+          id: string
+          ip_origem: string | null
+          metadados: Json | null
+          tipo_evento: string
+        }
+        Insert: {
+          boleto_id: string
+          created_at?: string | null
+          descricao?: string | null
+          id?: string
+          ip_origem?: string | null
+          metadados?: Json | null
+          tipo_evento: string
+        }
+        Update: {
+          boleto_id?: string
+          created_at?: string | null
+          descricao?: string | null
+          id?: string
+          ip_origem?: string | null
+          metadados?: Json | null
+          tipo_evento?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historico_cobrancas_boletos_boleto_id_fkey"
+            columns: ["boleto_id"]
+            isOneToOne: false
+            referencedRelation: "boletos"
             referencedColumns: ["id"]
           },
         ]
@@ -8974,6 +9066,74 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "plano_contas"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      regras_roteamento_financeiro: {
+        Row: {
+          ativo: boolean | null
+          condicoes: Json
+          conta_bancaria_id: string
+          created_at: string | null
+          descricao: string | null
+          empresa_id: string
+          id: string
+          nome: string
+          prioridade: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          condicoes?: Json
+          conta_bancaria_id: string
+          created_at?: string | null
+          descricao?: string | null
+          empresa_id: string
+          id?: string
+          nome: string
+          prioridade?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          ativo?: boolean | null
+          condicoes?: Json
+          conta_bancaria_id?: string
+          created_at?: string | null
+          descricao?: string | null
+          empresa_id?: string
+          id?: string
+          nome?: string
+          prioridade?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regras_roteamento_financeiro_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "regras_roteamento_financeiro_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "regras_roteamento_financeiro_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "regras_roteamento_financeiro_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
           },
         ]
       }

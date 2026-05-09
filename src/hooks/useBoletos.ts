@@ -267,6 +267,14 @@ export function useBoletos() {
         .eq('id', id);
 
       if (error) throw error;
+
+      // Registrar no novo histórico de cobranças
+      await supabase.from('historico_cobrancas_boletos').insert({
+        boleto_id: id,
+        tipo_evento: `status_${status}`,
+        descricao: `Status do boleto atualizado para ${status}`,
+        metadados: { bitrix_status, progress: newRastreio.length }
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['boletos'] });

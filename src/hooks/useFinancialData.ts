@@ -167,7 +167,17 @@ export function useContasBancarias() {
         .eq('ativo', true)
         .order('banco');
       if (error) throw error;
-      return data as ContaBancaria[];
+      
+      // Enhance with routing rules if they exist
+      const { data: rules } = await supabase
+        .from('regras_roteamento_financeiro')
+        .select('*')
+        .eq('ativo', true);
+
+      return (data || []).map(conta => ({
+        ...conta,
+        regras: rules?.filter(r => r.conta_bancaria_id === conta.id) || []
+      })) as ContaBancaria[];
     },
     staleTime: STALE_TIMES.config,
   });
