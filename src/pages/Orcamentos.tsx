@@ -7,10 +7,8 @@ import {
   TrendingDown, 
   DollarSign, 
   Plus, 
-  MoreVertical, 
   Pencil, 
   Trash2,
-  Calendar,
   AlertTriangle
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -22,7 +20,6 @@ import {
   DialogContent, 
   DialogHeader, 
   DialogTitle, 
-  DialogTrigger,
   DialogFooter,
   DialogDescription
 } from '@/components/ui/dialog';
@@ -43,14 +40,11 @@ import {
   CartesianGrid, 
   Tooltip as RechartsTooltip, 
   ResponsiveContainer, 
-  Legend,
-  Cell
 } from 'recharts';
 import { useBudgetsWithSpent, useCreateBudget, useUpdateBudget, useDeleteBudget } from '@/hooks/useBudget';
 import { useCategorias } from '@/hooks/useCategorias';
 import { formatCurrency } from '@/lib/formatters';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { useZodForm } from '@/hooks/useZodForm';
 import { z } from 'zod';
 import { getCurrentEmpresaId } from '@/hooks/useUserEmpresas';
@@ -60,6 +54,8 @@ const budgetSchema = z.object({
   budgeted_amount: z.number().min(0.01, 'Valor deve ser maior que zero'),
   period: z.string().min(7, 'Selecione o período'),
 });
+
+type BudgetFormData = z.infer<typeof budgetSchema>;
 
 const Orcamentos = () => {
   const currentPeriod = format(new Date(), 'yyyy-MM');
@@ -75,21 +71,27 @@ const Orcamentos = () => {
   const companyId = getCurrentEmpresaId();
 
   const form = useZodForm({
-    schema: budgetSchema,
+    schema: budgetSchema as any,
     initialValues: {
       category: '',
       budgeted_amount: 0,
       period: selectedPeriod,
     },
-    onSubmit: async (data) => {
+    onSubmit: async (data: BudgetFormData) => {
       if (editingBudget) {
         await updateBudget.mutateAsync({ 
           id: editingBudget.id, 
-          data: { ...data } 
+          data: {
+            category: data.category,
+            budgeted_amount: data.budgeted_amount,
+            period: data.period
+          } 
         });
       } else {
         await createBudget.mutateAsync({ 
-          ...data,
+          category: data.category,
+          budgeted_amount: data.budgeted_amount,
+          period: data.period,
           company_id: companyId || undefined
         });
       }
@@ -223,7 +225,6 @@ const Orcamentos = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Lista de Orçamentos */}
             <div className="lg:col-span-2 space-y-6">
               <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
                 <CardHeader>
@@ -237,7 +238,7 @@ const Orcamentos = () => {
                         Nenhum orçamento definido para este período.
                       </div>
                     ) : (
-                      budgets.map((budget) => {
+                      budgets.map((budget: any) => {
                         const statusColor = budget.percent_used > 100 ? 'bg-red-500' : budget.percent_used > 85 ? 'bg-yellow-500' : 'bg-green-500';
                         const textColor = budget.percent_used > 100 ? 'text-red-500' : budget.percent_used > 85 ? 'text-yellow-500' : 'text-green-500';
 
@@ -288,7 +289,6 @@ const Orcamentos = () => {
               </Card>
             </div>
 
-            {/* Gráficos / Insights */}
             <div className="space-y-6">
               <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
                 <CardHeader>
@@ -338,7 +338,6 @@ const Orcamentos = () => {
         </div>
       </div>
 
-      {/* CRUD Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="bg-[#0a0a0a] border-white/10 text-white max-w-md">
           <DialogHeader>
