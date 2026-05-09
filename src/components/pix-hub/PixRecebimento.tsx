@@ -127,8 +127,15 @@ export function PixRecebimento() {
                   
                   <div className="flex items-center gap-6">
                     <div className="text-right">
-                      <p className="text-lg font-black tabular-nums">{formatCurrency(payment.valor)}</p>
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-tighter">Valor Nominal</p>
+                      <p className="text-lg font-black tabular-nums text-success">{formatCurrency(payment.valor)}</p>
+                      {payment.valor_liquido && payment.valor_liquido < payment.valor && (
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-tighter">
+                          Líquido: {formatCurrency(payment.valor_liquido)} (Split Retido)
+                        </p>
+                      )}
+                      {!payment.valor_liquido && (
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-tighter">Valor Nominal</p>
+                      )}
                     </div>
                     
                     <div className="flex items-center gap-2">
