@@ -159,6 +159,7 @@ function AppRoutes() {
             <Route path="/pagamentos-recorrentes" element={<ProtectedRoute><PagamentosRecorrentes /></ProtectedRoute>} />
             <Route path="/bitrix24" element={<ProtectedRoute><Bitrix24 /></ProtectedRoute>} />
             <Route path="/reforma-tributaria" element={<ProtectedRoute><ReformaTributaria /></ProtectedRoute>} />
+            <Route path="/reforma-tributaria/:tab" element={<ProtectedRoute><ReformaTributaria /></ProtectedRoute>} />
             <Route path="/tributario/simulacao-regimes" element={<ProtectedRoute><SimulacaoRegimes /></ProtectedRoute>} />
             <Route path="/tributario/historico-financeiro" element={<ProtectedRoute><HistoricoFinanceiroTributario /></ProtectedRoute>} />
             <Route path="/tributario/oportunidades-elisao" element={<ProtectedRoute><OportunidadesElisao /></ProtectedRoute>} />
