@@ -52,14 +52,17 @@ export function useCreatePlanoAcao() {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error('Usuário não autenticado');
       
+      const insertData: any = { ...plano, user_id: userData.user.id };
+      
       const { data, error } = await supabase
         .from('planos_acao')
-        .insert([{ ...plano, user_id: userData.user.id }])
+        .insert([insertData])
         .select()
         .single();
       if (error) throw error;
       return data;
     },
+
 
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['planos-acao'] });
