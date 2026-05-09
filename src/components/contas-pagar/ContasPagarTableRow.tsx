@@ -37,6 +37,7 @@ import { ContaPagarRowAprovacaoBadge } from './ContaPagarRowAprovacaoBadge';
 import { CategorizacaoIABadge } from './CategorizacaoIABadge';
 import { VersionHistory } from '@/components/common/VersionHistory';
 import { supabase } from '@/integrations/supabase/client';
+import { DuplicateButton } from '@/components/common/DuplicateButton';
 import { toast } from 'sonner';
 
 type StatusPagamento = 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
@@ -247,6 +248,18 @@ export const ContasPagarTableRow = memo(({
             <DropdownMenuItem onClick={() => setHistoryOpen(true)} className="gap-2 focus:bg-primary/10">
               <History className="h-4 w-4" /> Version History
             </DropdownMenuItem>
+            
+            <DuplicateButton 
+              data={conta} 
+              onDuplicate={(duplicated) => {
+                onEdit(duplicated);
+                toast.success('Registro clonado. Revise os dados e salve.');
+              }}
+              label="Clone Record"
+              className="w-full justify-start px-2 py-1.5 h-auto font-normal text-sm gap-2 rounded-lg focus:bg-primary/10"
+              variant="ghost"
+              size="default"
+            />
             
             {(conta.status === 'pendente' || conta.status === 'vencido' || conta.status === 'parcial') && (
               <DropdownMenuItem onClick={onRegistrarPagamento} className="gap-2 text-success focus:text-success focus:bg-success/10">

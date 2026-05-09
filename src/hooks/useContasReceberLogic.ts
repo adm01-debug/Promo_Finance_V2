@@ -14,6 +14,7 @@ import { useAuth } from '@/hooks/useAuth';
 import type { Database } from '@/integrations/supabase/types';
 import type { ContaReceberWithRelations } from '@/components/contas-receber/ContasReceberTableRow';
 import { differenceInDays, subMonths, isSameDay, addDays, startOfMonth, endOfMonth, parseISO, isWithinInterval } from 'date-fns';
+import { calculateCollectionStage } from '@/lib/collection-engine';
 
 
 export function useContasReceberLogic() {
@@ -43,6 +44,7 @@ export function useContasReceberLogic() {
   const [descontoDialogOpen, setDescontoDialogOpen] = useState(false);
   const [descontoConta, setDescontoConta] = useState<ContaReceberWithRelations | null>(null);
   const [baixaDialogOpen, setBaixaDialogOpen] = useState(false);
+  const [webhookDialogOpen, setWebhookDialogOpen] = useState(false);
 
   // Sincroniza com empresa ativa do sistema
   useEffect(() => {
@@ -125,6 +127,39 @@ export function useContasReceberLogic() {
     setDescontoConta(conta);
     setDescontoDialogOpen(true);
   }, []);
+
+  // Sincronizar etapas de cobrança (Régua de Cobrança Automática)
+  const handleSyncStages = useCallback(async () => {
+    const contasToUpdate = allContas.filter(c => c.status !== 'pago' && c.status !== 'cancelado');
+    
+    if (contasToUpdate.length === 0) {
+      toast.info('Nenhuma conta pendente para sincronizar.');
+      return;
+    }
+
+    const promise = async () => {
+      let updatedCount = 0;
+      for (const conta of contasToUpdate) {
+        const newStage = calculateCollectionStage(conta.data_vencimento, conta.status);
+        if (newStage && newStage !== conta.etapa_cobranca) {
+          const { error } = await supabase
+            .from('contas_receber')
+            .update({ etapa_cobranca: newStage })
+            .eq('id', conta.id);
+          
+          if (!error) updatedCount++;
+        }
+      }
+      queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
+      return updatedCount;
+    };
+
+    toast.promise(promise(), {
+      loading: 'Processando régua de cobrança...',
+      success: (count) => `${count} títulos atualizados na régua.`,
+      error: 'Erro ao sincronizar régua.',
+    });
+  }, [allContas, queryClient]);
 
   // KPI drill-down (#28)
   const handleKpiClick = useCallback((filter: string) => {
@@ -267,11 +302,11 @@ export function useContasReceberLogic() {
     handleSearchChange, handleStatusChange, handleCentroCustoChange, handleEmpresaChange,
     handleFormaChange, handlePageSizeChange, handleSort, handleOpenDeleteDialog, handleDeleteConta,
     handleFilterChange, handleBulkMarkAsReceived, handleBulkCancel, handleViewConta,
-    handleEnviarCobranca, handleKpiClick, handleAplicarDesconto,
+    handleEnviarCobranca, handleKpiClick, handleAplicarDesconto, handleSyncStages,
     setFormOpen, setRecebimentoDialogOpen, setSelectedConta, setEditingConta,
     setAdvancedFilters, setCurrentPage, setDeleteDialogOpen, setViewMode,
     setDetailDrawerOpen, setCobrancaDialogOpen, setDescontoDialogOpen,
-    baixaDialogOpen, setBaixaDialogOpen,
+    baixaDialogOpen, setBaixaDialogOpen, webhookDialogOpen, setWebhookDialogOpen,
     ...bulkActionsHook, getRowAnimation,
   };
 }

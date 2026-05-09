@@ -28,7 +28,8 @@ import { contasReceberColumns } from '@/lib/export-utils';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { BaixaAutomaticaDialog } from '@/components/contas-receber/BaixaAutomaticaDialog';
-import { History, Zap, Settings, BarChart3, FileSpreadsheet } from 'lucide-react';
+import { WebhookConfigDialog } from '@/components/contas-receber/WebhookConfigDialog';
+import { History, Zap, Settings, BarChart3, FileSpreadsheet, RefreshCcw } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { exportToCSV, exportToPDF } from '@/lib/export-utils';
@@ -56,13 +57,13 @@ export default function ContasReceber() {
     handleSearchChange, handleStatusChange, handleCentroCustoChange, handleEmpresaChange,
     handleFormaChange, handlePageSizeChange, handleSort, handleOpenDeleteDialog, handleDeleteConta,
     handleFilterChange, handleBulkMarkAsReceived, handleBulkCancel, handleViewConta,
-    handleEnviarCobranca, handleKpiClick, handleAplicarDesconto,
+    handleEnviarCobranca, handleKpiClick, handleAplicarDesconto, handleSyncStages,
     setFormOpen, setRecebimentoDialogOpen, setSelectedConta, setEditingConta,
     setAdvancedFilters, setCurrentPage, setDeleteDialogOpen, setViewMode,
     setDetailDrawerOpen, setCobrancaDialogOpen, setDescontoDialogOpen,
     selectedIds, selectedCount, isProcessing, progress, isSelected, isAllSelected,
     selectAll, toggleSelect, clearSelection,
-    baixaDialogOpen, setBaixaDialogOpen,
+    baixaDialogOpen, setBaixaDialogOpen, webhookDialogOpen, setWebhookDialogOpen,
   } = useContasReceberLogic();
 
 
@@ -120,11 +121,17 @@ export default function ContasReceber() {
                   filename="contas_receber" 
                   title="Relatório de Contas a Receber" 
                   empresa={empresas.find(e => e.id === empresaFilter)}
-                  kpis={kpis}
-                />
-                <Button variant="outline" size="lg" className="h-12 px-6 rounded-xl border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary font-black gap-2 transition-all" onClick={() => setBaixaDialogOpen(true)}>
-                  <Zap className="h-5 w-5" /> Baixa Automática
-                </Button>
+                    kpis={kpis}
+                  />
+                  <Button variant="outline" size="lg" className="h-12 px-6 rounded-xl border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10 text-blue-500 font-black gap-2 transition-all" onClick={handleSyncStages}>
+                    <RefreshCcw className="h-5 w-5" /> Sincronizar Régua
+                  </Button>
+                  <Button variant="outline" size="lg" className="h-12 px-6 rounded-xl border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary font-black gap-2 transition-all" onClick={() => setBaixaDialogOpen(true)}>
+                    <Zap className="h-5 w-5" /> Baixa Automática
+                  </Button>
+                  <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl border-white/5 bg-white/5 hover:bg-white/10 text-muted-foreground transition-all" onClick={() => setWebhookDialogOpen(true)}>
+                    <Settings className="h-5 w-5" />
+                  </Button>
                 <Button size="lg" className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]" onClick={() => setFormOpen(true)}>
                   <Plus className="h-5 w-5" /> Novo Comando
                 </Button>
@@ -242,6 +249,7 @@ export default function ContasReceber() {
             description={`Confirmar a remoção definitiva do título "${deletingConta?.descricao}" (${deletingConta?.valor ? formatCurrency(deletingConta.valor) : ''}) do repositório?`}
             confirmLabel="Confirmar Exclusão" variant="danger" isLoading={isDeleting} onConfirm={handleDeleteConta} />
           <BaixaAutomaticaDialog open={baixaDialogOpen} onOpenChange={setBaixaDialogOpen} empresaId={empresaFilter !== 'all' ? empresaFilter : ''} />
+          <WebhookConfigDialog open={webhookDialogOpen} onOpenChange={setWebhookDialogOpen} />
           <BulkActionsBar selectedCount={selectedCount} isProcessing={isProcessing} progress={progress} actions={bulkActions} onClear={clearSelection} />
         </motion.div>
       </div>
