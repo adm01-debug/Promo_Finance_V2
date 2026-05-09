@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Download, Printer, Mail, CheckCircle2, Copy, Check, History, Clock, Share2, RefreshCw, Barcode } from 'lucide-react';
+import { Download, Printer, Mail, CheckCircle2, Copy, Check, History, Clock, Share2, RefreshCw, Barcode, AlertTriangle, FileText, TrendingUp, TrendingDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/formatters';
@@ -145,6 +145,32 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
             </div>
             
             <BoletoHistorico boletoId={boleto.id} />
+
+            {/* Eventos de Pagamento/Baixa vinculados */}
+            {boleto.eventos_pagamento && boleto.eventos_pagamento.length > 0 && (
+              <div className="mt-4 p-4 rounded-xl bg-success/5 border border-success/10">
+                <h4 className="text-sm font-bold flex items-center gap-2 mb-3 text-success">
+                  <CheckCircle2 className="h-4 w-4" /> Confirmações de Liquidação
+                </h4>
+                <div className="space-y-3">
+                  {boleto.eventos_pagamento.map((evento: any, i: number) => (
+                    <div key={i} className="flex items-center justify-between text-xs bg-white/40 p-2 rounded-lg border border-success/5">
+                      <div className="flex items-center gap-2">
+                        <TrendingUp className="h-3 w-3 text-success" />
+                        <div>
+                          <p className="font-bold">{evento.tipo || 'Liquidação'}</p>
+                          <p className="text-muted-foreground">{formatDate(evento.data || new Date())}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-success">{formatCurrency(evento.valor || boleto.valor)}</p>
+                        {evento.metodo && <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{evento.metodo}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

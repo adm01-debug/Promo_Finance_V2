@@ -303,6 +303,10 @@ export function useConciliacaoPage() {
   const handleConciliar = useCallback((id: string) => {
     const transacao = transacoes.find(t => t.id === id);
     if (transacao) {
+      if (transacao.conciliada) {
+        toast.warning('Esta transação já foi conciliada. Desfaça a conciliação primeiro.');
+        return;
+      }
       setSelectedTransacaoManual(transacao);
       setShowManualDialog(true);
     }
