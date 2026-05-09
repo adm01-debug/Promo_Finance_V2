@@ -52,7 +52,7 @@ serve(async (req) => {
       icms,
       iss,
       totalTributos: total,
-      cargaEfetiva: (total / faturamentoAnual) * 100,
+      cargaEfetiva: faturamentoAnual > 0 ? (total / faturamentoAnual) * 100 : 0,
       observacoes: [
         'Presunção de 32% para serviços e 8% para comércio (IRPJ).',
         'Alíquota de 15% IRPJ + 10% adicional sobre base > R$ 240k.',
