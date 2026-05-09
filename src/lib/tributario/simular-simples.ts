@@ -88,7 +88,7 @@ export function simularSimples(
   }
 
   // Alíquota efetiva = ((RBT12 × aliq) − PD) / RBT12
-  const aliquotaEfetiva = ((rbt12 * faixa.aliquota) - faixa.pd) / rbt12;
+  const aliquotaEfetiva = rbt12 > 0 ? ((rbt12 * faixa.aliquota) - faixa.pd) / rbt12 : faixa.aliquota;
   const aliquotaFinal = Math.max(0, aliquotaEfetiva);
 
   // DAS total estimado sobre faturamento anual
