@@ -498,3 +498,31 @@ export function useDeleteContaPagar() {
     },
   });
 }
+
+export function useDashboardKPIs(empresaId?: string) {
+  return useQuery({
+    queryKey: ['dashboard-kpis', empresaId],
+    queryFn: async () => {
+      let queryBoletos = supabase.from('boletos').select('*', { count: 'exact', head: true }).eq('status', 'PENDING');
+      let queryDivergencias = supabase.from('divergencias_conciliacao').select('*', { count: 'exact', head: true }).eq('resolvido', false);
+
+      if (empresaId && empresaId !== 'all') {
+        // Assume boletos and divergencias have empresa_id or can be linked via account
+        // For simplicity in this implementation, we filter by account if possible or just company
+        queryBoletos = queryBoletos.eq('empresa_id', empresaId);
+        queryDivergencias = queryDivergencias.eq('empresa_id', empresaId);
+      }
+
+      const [boletosCount, divergenciasCount] = await Promise.all([
+        queryBoletos,
+        queryDivergencias
+      ]);
+
+      return {
+        boletosAbertos: boletosCount.count || 0,
+        divergenciasPendentes: divergenciasCount.count || 0,
+      };
+    },
+    staleTime: STALE_TIMES.financial,
+  });
+}
