@@ -6030,6 +6030,9 @@ export type Database = {
           entregue_em: string | null
           enviado_em: string | null
           erro_mensagem: string | null
+          ia_proxima_acao: string | null
+          ia_resumo: string | null
+          ia_sentimento: string | null
           id: string
           lido_em: string | null
           mensagem: string
@@ -6045,6 +6048,9 @@ export type Database = {
           entregue_em?: string | null
           enviado_em?: string | null
           erro_mensagem?: string | null
+          ia_proxima_acao?: string | null
+          ia_resumo?: string | null
+          ia_sentimento?: string | null
           id?: string
           lido_em?: string | null
           mensagem: string
@@ -6060,6 +6066,9 @@ export type Database = {
           entregue_em?: string | null
           enviado_em?: string | null
           erro_mensagem?: string | null
+          ia_proxima_acao?: string | null
+          ia_resumo?: string | null
+          ia_sentimento?: string | null
           id?: string
           lido_em?: string | null
           mensagem?: string
