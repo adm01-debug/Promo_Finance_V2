@@ -40,30 +40,44 @@ export default function PixHub() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid grid-cols-3 w-full max-w-lg">
-            <TabsTrigger value="dashboard" className="gap-2">
+          <TabsList className="grid grid-cols-4 w-full max-w-xl bg-muted/50 p-1">
+            <TabsTrigger value="dashboard" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
               <LayoutDashboard className="h-4 w-4" />
               <span className="hidden sm:inline">Dashboard</span>
             </TabsTrigger>
-            <TabsTrigger value="templates" className="gap-2">
+            <TabsTrigger value="receber" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">Recebimento</span>
+            </TabsTrigger>
+            <TabsTrigger value="templates" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
               <FileStack className="h-4 w-4" />
               <span className="hidden sm:inline">Templates</span>
             </TabsTrigger>
-            <TabsTrigger value="aprovacao" className="gap-2">
+            <TabsTrigger value="aprovacao" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
               <ShieldCheck className="h-4 w-4" />
               <span className="hidden sm:inline">Aprovação</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="dashboard">
+          <TabsContent value="dashboard" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
             <PixDashboardRealtime />
           </TabsContent>
-          <TabsContent value="templates">
+          <TabsContent value="receber" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <PixRecebimento />
+          </TabsContent>
+          <TabsContent value="templates" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
             <PixTemplates />
           </TabsContent>
-          <TabsContent value="aprovacao">
+          <TabsContent value="aprovacao" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
             <AprovacaoRapidaMobile />
           </TabsContent>
+        </Tabs>
+
+        <NovaCobrancaDialog 
+          open={receiveDialogOpen} 
+          onOpenChange={setReceiveDialogOpen} 
+          empresaId={firstEmpresaId} 
+        />
         </Tabs>
       </div>
     </MainLayout>
