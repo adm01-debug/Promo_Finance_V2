@@ -63,9 +63,10 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
       .neq('status', 'pago')
       .neq('status', 'cancelado');
 
-    if (!contas) return [];
+    if (!contas) return { matched: [], unmatched: [] };
 
     const matched: MatchResult[] = [];
+    const notMatched: any[] = [];
     
     for (const t of extrato.transacoes) {
       if (t.tipo !== 'credito') continue;
@@ -88,9 +89,11 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
           valor: match.valor,
           confianca: 'alta'
         });
+      } else {
+        notMatched.push(t);
       }
     }
-    return matched;
+    return { matched, unmatched: notMatched };
   };
 
   const processFile = async (file: File) => {
