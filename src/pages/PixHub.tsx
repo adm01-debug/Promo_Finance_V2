@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { QrCode, LayoutDashboard, FileStack, ShieldCheck } from 'lucide-react';
+import { QrCode, LayoutDashboard, FileStack, ShieldCheck, Download, Plus } from 'lucide-react';
 import { PixDashboardRealtime } from '@/components/pix-hub/PixDashboardRealtime';
 import { PixTemplates } from '@/components/pix-hub/PixTemplates';
 import { AprovacaoRapidaMobile } from '@/components/pix-hub/AprovacaoRapidaMobile';
+import { PixRecebimento } from '@/components/pix-hub/PixRecebimento';
+import { Button } from '@/components/ui/button';
+import { NovaCobrancaDialog } from '@/components/asaas/NovaCobrancaDialog';
+import { useEmpresas } from '@/hooks/useFinancialData';
 
 export default function PixHub() {
   const [activeTab, setActiveTab] = useState('dashboard');
