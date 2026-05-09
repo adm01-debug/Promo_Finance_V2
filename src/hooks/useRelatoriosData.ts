@@ -33,14 +33,15 @@ export interface InadimplenciaMes {
   valor: number;
 }
 
-export function useComparativoPeriodos(meses: number = 6) {
+export function useComparativoPeriodos(meses: number = 6, empresaId?: string) {
   return useQuery({
-    queryKey: ['comparativo-periodos', meses],
-    queryFn: async (): Promise<ComparativoPeriodo[]> => {
+    queryKey: ['comparativo-periodos', meses, empresaId],
+    queryFn: async ({ queryKey }): Promise<ComparativoPeriodo[]> => {
+      const [_, mesesParam, empresaIdParam] = queryKey as [string, number, string | undefined];
       const hoje = new Date();
       const resultados: ComparativoPeriodo[] = [];
 
-      for (let i = meses - 1; i >= 0; i--) {
+      for (let i = mesesParam - 1; i >= 0; i--) {
         const mesAtual = subMonths(hoje, i);
         const mesAnterior = subMonths(mesAtual, 12); // Mesmo mês do ano anterior
         
@@ -49,17 +50,26 @@ export function useComparativoPeriodos(meses: number = 6) {
         const inicioAnterior = startOfMonth(mesAnterior);
         const fimAnterior = endOfMonth(mesAnterior);
 
-        const [receitasAtuais, receitasAnteriores] = await Promise.all([
-          supabase.from('contas_receber')
+        let queryAtual = supabase.from('contas_receber')
             .select('valor_recebido')
             .gte('data_recebimento', inicioAtual.toISOString())
             .lte('data_recebimento', fimAtual.toISOString())
-            .eq('status', 'pago'),
-          supabase.from('contas_receber')
+            .eq('status', 'pago');
+
+        let queryAnterior = supabase.from('contas_receber')
             .select('valor_recebido')
             .gte('data_recebimento', inicioAnterior.toISOString())
             .lte('data_recebimento', fimAnterior.toISOString())
-            .eq('status', 'pago'),
+            .eq('status', 'pago');
+
+        if (empresaIdParam && empresaIdParam !== 'all') {
+          queryAtual = queryAtual.eq('empresa_id', empresaIdParam);
+          queryAnterior = queryAnterior.eq('empresa_id', empresaIdParam);
+        }
+
+        const [receitasAtuais, receitasAnteriores] = await Promise.all([
+          queryAtual,
+          queryAnterior,
         ]);
 
         resultados.push({
@@ -74,30 +84,40 @@ export function useComparativoPeriodos(meses: number = 6) {
   });
 }
 
-export function useFluxoMensal(meses: number = 6) {
+export function useFluxoMensal(meses: number = 6, empresaId?: string) {
   return useQuery({
-    queryKey: ['fluxo-mensal', meses],
-    queryFn: async (): Promise<FluxoMensal[]> => {
+    queryKey: ['fluxo-mensal', meses, empresaId],
+    queryFn: async ({ queryKey }): Promise<FluxoMensal[]> => {
+      const [_, mesesParam, empresaIdParam] = queryKey as [string, number, string | undefined];
       const hoje = new Date();
       const resultados: FluxoMensal[] = [];
 
-      for (let i = meses - 1; i >= 0; i--) {
+      for (let i = mesesParam - 1; i >= 0; i--) {
         const data = subMonths(hoje, i);
         const inicio = startOfMonth(data);
         const fim = endOfMonth(data);
         const mesNome = format(data, 'MMM');
 
-        const [receitas, despesas] = await Promise.all([
-          supabase.from('contas_receber')
+        let queryReceitas = supabase.from('contas_receber')
             .select('valor_recebido')
             .gte('data_recebimento', inicio.toISOString())
             .lte('data_recebimento', fim.toISOString())
-            .eq('status', 'pago'),
-          supabase.from('contas_pagar')
+            .eq('status', 'pago');
+
+        let queryDespesas = supabase.from('contas_pagar')
             .select('valor_pago')
             .gte('data_pagamento', inicio.toISOString())
             .lte('data_pagamento', fim.toISOString())
-            .eq('status', 'pago'),
+            .eq('status', 'pago');
+
+        if (empresaIdParam && empresaIdParam !== 'all') {
+          queryReceitas = queryReceitas.eq('empresa_id', empresaIdParam);
+          queryDespesas = queryDespesas.eq('empresa_id', empresaIdParam);
+        }
+
+        const [receitas, despesas] = await Promise.all([
+          queryReceitas,
+          queryDespesas,
         ]);
 
         const totalReceitas = receitas.data?.reduce((sum, c) => sum + (c.valor_recebido || 0), 0) || 0;
@@ -116,16 +136,22 @@ export function useFluxoMensal(meses: number = 6) {
   });
 }
 
-export function useDespesasPorCategoria() {
+export function useDespesasPorCategoria(empresaId?: string) {
   return useQuery({
-    queryKey: ['despesas-por-categoria'],
-    queryFn: async (): Promise<DespesaCategoria[]> => {
-      const { data, error } = await supabase
+    queryKey: ['despesas-por-categoria', empresaId],
+    queryFn: async ({ queryKey }): Promise<DespesaCategoria[]> => {
+      const [_, empresaIdParam] = queryKey as [string, string | undefined];
+      let query = supabase
         .from('contas_pagar')
         .select('valor_pago, centros_custo(nome)')
         .eq('status', 'pago')
         .not('centro_custo_id', 'is', null);
 
+      if (empresaIdParam && empresaIdParam !== 'all') {
+        query = query.eq('empresa_id', empresaIdParam);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
 
       // Aggregate by category
@@ -149,15 +175,21 @@ export function useDespesasPorCategoria() {
   });
 }
 
-export function useReceitasPorCliente(limit: number = 6) {
+export function useReceitasPorCliente(limit: number = 6, empresaId?: string) {
   return useQuery({
-    queryKey: ['receitas-por-cliente', limit],
-    queryFn: async (): Promise<ReceitaCliente[]> => {
-      const { data, error } = await supabase
+    queryKey: ['receitas-por-cliente', limit, empresaId],
+    queryFn: async ({ queryKey }): Promise<ReceitaCliente[]> => {
+      const [_, limitParam, empresaIdParam] = queryKey as [string, number, string | undefined];
+      let query = supabase
         .from('contas_receber')
         .select('cliente_nome, valor_recebido')
         .eq('status', 'pago');
 
+      if (empresaIdParam && empresaIdParam !== 'all') {
+        query = query.eq('empresa_id', empresaIdParam);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
 
       // Aggregate by client
@@ -177,10 +209,10 @@ export function useReceitasPorCliente(limit: number = 6) {
         .sort((a, b) => b.valor - a.valor);
 
       // Take top N and group rest as "Outros"
-      if (sorted.length <= limit) return sorted;
+      if (sorted.length <= limitParam) return sorted;
 
-      const topClientes = sorted.slice(0, limit - 1);
-      const outros = sorted.slice(limit - 1).reduce(
+      const topClientes = sorted.slice(0, limitParam - 1);
+      const outros = sorted.slice(limitParam - 1).reduce(
         (acc, c) => ({ cliente: 'Outros', valor: acc.valor + c.valor, percentual: 0 }),
         { cliente: 'Outros', valor: 0, percentual: 0 }
       );
@@ -191,29 +223,39 @@ export function useReceitasPorCliente(limit: number = 6) {
   });
 }
 
-export function useInadimplenciaPorMes(meses: number = 6) {
+export function useInadimplenciaPorMes(meses: number = 6, empresaId?: string) {
   return useQuery({
-    queryKey: ['inadimplencia-por-mes', meses],
-    queryFn: async (): Promise<InadimplenciaMes[]> => {
+    queryKey: ['inadimplencia-por-mes', meses, empresaId],
+    queryFn: async ({ queryKey }): Promise<InadimplenciaMes[]> => {
+      const [_, mesesParam, empresaIdParam] = queryKey as [string, number, string | undefined];
       const hoje = new Date();
       const resultados: InadimplenciaMes[] = [];
 
-      for (let i = meses - 1; i >= 0; i--) {
+      for (let i = mesesParam - 1; i >= 0; i--) {
         const data = subMonths(hoje, i);
         const inicio = startOfMonth(data);
         const fim = endOfMonth(data);
         const mesNome = format(data, 'MMM');
 
-        const [total, vencidos] = await Promise.all([
-          supabase.from('contas_receber')
+        let queryTotal = supabase.from('contas_receber')
             .select('valor')
             .gte('data_vencimento', inicio.toISOString())
-            .lte('data_vencimento', fim.toISOString()),
-          supabase.from('contas_receber')
+            .lte('data_vencimento', fim.toISOString());
+
+        let queryVencidos = supabase.from('contas_receber')
             .select('valor')
             .gte('data_vencimento', inicio.toISOString())
             .lte('data_vencimento', fim.toISOString())
-            .eq('status', 'vencido'),
+            .eq('status', 'vencido');
+
+        if (empresaIdParam && empresaIdParam !== 'all') {
+          queryTotal = queryTotal.eq('empresa_id', empresaIdParam);
+          queryVencidos = queryVencidos.eq('empresa_id', empresaIdParam);
+        }
+
+        const [total, vencidos] = await Promise.all([
+          queryTotal,
+          queryVencidos,
         ]);
 
         const totalValor = total.data?.reduce((sum, c) => sum + c.valor, 0) || 0;
@@ -232,21 +274,32 @@ export function useInadimplenciaPorMes(meses: number = 6) {
   });
 }
 
-export function useRelatorioKPIs(periodoInicio: string, periodoFim: string) {
+export function useRelatorioKPIs(periodoInicio: string, periodoFim: string, empresaId?: string) {
   return useQuery({
-    queryKey: ['relatorio-kpis', periodoInicio, periodoFim],
-    queryFn: async () => {
+    queryKey: ['relatorio-kpis', periodoInicio, periodoFim, empresaId],
+    queryFn: async ({ queryKey }) => {
+      const [_, periodoInicioParam, periodoFimParam, empresaIdParam] = queryKey as [string, string, string, string | undefined];
+      
+      let queryReceitas = supabase.from('contas_receber')
+        .select('valor_recebido')
+        .gte('data_recebimento', periodoInicioParam)
+        .lte('data_recebimento', periodoFimParam)
+        .eq('status', 'pago');
+
+      let queryDespesas = supabase.from('contas_pagar')
+        .select('valor_pago')
+        .gte('data_pagamento', periodoInicioParam)
+        .lte('data_pagamento', periodoFimParam)
+        .eq('status', 'pago');
+
+      if (empresaIdParam && empresaIdParam !== 'all') {
+        queryReceitas = queryReceitas.eq('empresa_id', empresaIdParam);
+        queryDespesas = queryDespesas.eq('empresa_id', empresaIdParam);
+      }
+
       const [receitas, despesas] = await Promise.all([
-        supabase.from('contas_receber')
-          .select('valor_recebido')
-          .gte('data_recebimento', periodoInicio)
-          .lte('data_recebimento', periodoFim)
-          .eq('status', 'pago'),
-        supabase.from('contas_pagar')
-          .select('valor_pago')
-          .gte('data_pagamento', periodoInicio)
-          .lte('data_pagamento', periodoFim)
-          .eq('status', 'pago'),
+        queryReceitas,
+        queryDespesas,
       ]);
 
       const totalReceitas = receitas.data?.reduce((sum, c) => sum + (c.valor_recebido || 0), 0) || 0;
