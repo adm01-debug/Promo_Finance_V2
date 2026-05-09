@@ -3,7 +3,8 @@
 // Visão executiva para empresas Lucro Real
 // ============================================
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -60,8 +61,20 @@ const itemVariants = {
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--muted-foreground))'];
 
-export function DashboardReformaTributaria() {
-  const [activeTab, setActiveTab] = useState('visao-geral');
+export function DashboardReformaTributaria({ initialTab }: { initialTab?: string }) {
+  const [activeTab, setActiveTab] = useState(initialTab || 'visao-geral');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (initialTab && initialTab !== activeTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
+
+  const handleTabChange = useCallback((tabId: string) => {
+    setActiveTab(tabId);
+    navigate(`/reforma-tributaria/${tabId}`);
+  }, [navigate]);
   const [empresaId, setEmpresaId] = useState<string>('all');
   const empresaIdFiltro = normalizarEmpresaId(empresaId);
 
@@ -363,7 +376,7 @@ export function DashboardReformaTributaria() {
       </div>
 
       {/* Navegação com badge de alertas */}
-      <NavigationTributaria activeTab={activeTab} onTabChange={setActiveTab} alertasCriticos={alertasCriticos} />
+      <NavigationTributaria activeTab={activeTab} onTabChange={handleTabChange} alertasCriticos={alertasCriticos} />
 
       {/* Hero KPIs com deep-linking e alertas reais */}
       {activeTab === 'visao-geral' && !isFirstAccess && (
