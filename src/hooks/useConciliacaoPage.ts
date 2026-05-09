@@ -257,11 +257,11 @@ export function useConciliacaoPage() {
             // Registrar log de erro de conciliação no banco
             if (selectedBanco) {
               await supabase.from('webhooks_log').insert({
-                evento: 'reconciliation.failed',
+                event_type: 'reconciliation.failed',
                 status: 'error',
                 payload: { transacao, match: melhorMatch, error: err },
                 erro_mensagem: `Falha na conciliação automática: ${err.message}`,
-                origem: 'Internal System'
+                provider: 'Internal System'
               });
             }
           }
