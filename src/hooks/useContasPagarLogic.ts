@@ -26,7 +26,7 @@ import { differenceInDays, subMonths, isSameDay, addDays, startOfMonth, endOfMon
 type ContaPagarType = ContaPagar;
 
 export function useContasPagarLogic() {
-  const { currentEmpresaId } = useAuth();
+  const { currentEmpresaId, currentBankAccountId } = useGlobalFinancialFilter();
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [statusFilter, setStatusFilter] = useState<string>('all');
