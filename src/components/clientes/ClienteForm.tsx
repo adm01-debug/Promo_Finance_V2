@@ -62,6 +62,7 @@ interface Cliente {
   estado: string | null;
   contato: string | null;
   limite_credito: number | null;
+  ramo_atividade: string | null;
   observacoes: string | null;
   ativo: boolean;
 }
