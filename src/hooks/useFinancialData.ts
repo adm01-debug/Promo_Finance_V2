@@ -426,18 +426,30 @@ export function useFornecedoresPaginated(params: PaginatedFornecedoresParams) {
         search,
       });
 
+      return {
+        data: (result.data || []) as Fornecedor[],
+        totalCount: result.total || 0,
+        totalPages: result.total_pages || 0,
+      };
+    },
+    staleTime: STALE_TIMES.config,
+  });
+}
+
 export function useCreateContaPagar() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: Partial<ContaPagar> & { idempotency_key?: string }) => {
+    mutationFn: async (data: any) => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('Não autenticado');
 
-      const { error } = await supabase.from('contas_pagar').insert({
+      const { error } = await supabase.from('contas_pagar').insert([{
         ...data,
         created_by: session.user.id,
         status: data.status || 'pendente',
-      });
+      }]);
+      if (error) throw error;
+    },
       if (error) throw error;
     },
     onSuccess: () => {
