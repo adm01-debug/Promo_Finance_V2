@@ -32,6 +32,7 @@ import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import { saveAs } from 'file-saver';
 import { motion } from "framer-motion";
+import { PageHeader, PageBackground } from "@/components/layout/PageHeader";
 
 const containerVariants = {
   hidden: { opacity: 0 },
