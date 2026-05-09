@@ -299,11 +299,10 @@ export function useContasPagarLogic() {
       item: contaBackup,
       itemName: `Conta "${contaBackup.descricao}"`,
       onDelete: async () => {
-        const { error } = await supabase.from('contas_pagar').delete().eq('id', contaBackup.id);
-        if (error) throw error;
-        queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
+        await deleteMutation.mutateAsync(contaBackup.id);
       },
       onRestore: async () => {
+        // No specific restore logic needed as undo is handled by the component
         queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
       },
     });
