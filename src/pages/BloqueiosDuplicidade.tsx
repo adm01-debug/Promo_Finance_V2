@@ -131,12 +131,14 @@ export default function BloqueiosDuplicidade() {
 
   return (
     <MainLayout>
-      <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="space-y-8 pb-20"
-      >
+      <div className="relative min-h-screen">
+        <PageBackground />
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="container mx-auto p-6 relative z-10 space-y-8 pb-20"
+        >
         <PageHeader 
           title="Cofre de Integridade" 
           subtitle="Monitoramento cyber-neural de duplicidades e tentativas de pagamento redundantes bloqueadas pelo sistema."
