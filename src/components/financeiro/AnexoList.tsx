@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Paperclip, X, Download, FileText, Loader2, Trash2, Eye } from 'lucide-react';
+import { Paperclip, X, Download, FileText, Loader2, Trash2, Eye, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -62,8 +62,8 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
           .getPublicUrl(filePath);
 
         // 3. Save to Database
-        const { error: dbError } = await supabase
-          .from('anexos_financeiros')
+        const { error: dbError } = await (supabase
+          .from('anexos_financeiros') as any)
           .insert({
             entidade_id: entidadeId,
             entidade_tipo: entidadeTipo,
