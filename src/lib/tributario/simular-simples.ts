@@ -117,7 +117,7 @@ export function simularSimples(
     icms, iss,
     cbs: 0, ibs: 0,
     totalTributos: dasTotal,
-    cargaEfetiva: (dasTotal / faturamentoAnual) * 100,
+    cargaEfetiva: faturamentoAnual > 0 ? (dasTotal / faturamentoAnual) * 100 : 0,
     aliquotaNominal: faixa.aliquota * 100,
     rbt12,
     fatorR: percentualServicos > 50 ? fatorR : undefined,
