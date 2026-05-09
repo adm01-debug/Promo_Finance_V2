@@ -43,6 +43,7 @@ const clienteSchema = z.object({
   estado: z.string().max(2, 'Use a sigla do estado').optional(),
   contato: z.string().max(100, 'Nome muito longo').optional(),
   limite_credito: z.number().min(0, 'Limite não pode ser negativo').optional(),
+  ramo_atividade: z.string().optional(),
   observacoes: z.string().max(1000, 'Observações muito longas').optional(),
   ativo: z.boolean().default(true),
 });
