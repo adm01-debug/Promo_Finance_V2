@@ -20,6 +20,7 @@ import { useSwipeBack } from '@/hooks/useSwipeBack';
 import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
 import { CopilotGlobalFloat } from '@/components/copilot/CopilotGlobalFloat';
 import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
+import { useFinancialAlerts } from '@/hooks/useFinancialAlerts';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -34,6 +35,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   // Navigation enhancements
   useSwipeBack({ enabled: isMobile });
   useKeyboardNavigation();
+  useFinancialAlerts();
 
   // Show onboarding checklist only on dashboard
   const showOnboarding = location.pathname === '/';
