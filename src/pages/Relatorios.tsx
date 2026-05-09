@@ -245,6 +245,11 @@ export default function Relatorios() {
         <TabsContent value="agendados">
           <RelatoriosAgendados />
         </TabsContent>
+
+        <TabsContent value="resumos">
+          <RelatoriosResumosSemanais />
+        </TabsContent>
+
       </Tabs>
       </div>
     </div>
