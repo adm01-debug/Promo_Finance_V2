@@ -30,8 +30,10 @@ import {
   Zap,
   Lock,
   Unlock,
-  Copy
+  Copy,
+  Building2
 } from "lucide-react";
+
 import { formatCurrency } from "@/lib/formatters";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
