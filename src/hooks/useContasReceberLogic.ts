@@ -47,19 +47,22 @@ export function useContasReceberLogic() {
   const [baixaDialogOpen, setBaixaDialogOpen] = useState(false);
   const [webhookDialogOpen, setWebhookDialogOpen] = useState(false);
 
-  // Sincroniza com empresa ativa do sistema
+  // Sincroniza com filtros globais via eventos
   useEffect(() => {
-    if (currentEmpresaId && empresaFilter !== currentEmpresaId && empresaFilter === 'all') {
-      setEmpresaFilter(currentEmpresaId);
-    }
-  }, [currentEmpresaId, empresaFilter]);
-
-  // Sincroniza com conta bancária ativa do sistema
-  useEffect(() => {
-    if (currentBankAccountId && contaBancariaFilter !== currentBankAccountId && contaBancariaFilter === 'all') {
-      setContaBancariaFilter(currentBankAccountId);
-    }
-  }, [currentBankAccountId, contaBancariaFilter]);
+    const handleSync = (e: Event) => {
+      const { empresaId, bankAccountId } = (e as CustomEvent).detail;
+      if (empresaId && empresaId !== 'all') {
+        setEmpresaFilter(empresaId);
+        setCurrentPage(1);
+      }
+      if (bankAccountId !== undefined) {
+        setContaBancariaFilter(bankAccountId || 'all');
+        setCurrentPage(1);
+      }
+    };
+    window.addEventListener('sync-financial-filters', handleSync);
+    return () => window.removeEventListener('sync-financial-filters', handleSync);
+  }, []);
 
   const queryClient = useQueryClient();
 

@@ -55,6 +55,12 @@ export function BankAccountSwitcher() {
     setCurrentBankAccountId(id);
     setCurrentId(id);
     setOpen(false);
+    
+    // Sincronizar também o filtro de conta bancária nas páginas que usam estados locais
+    window.dispatchEvent(new CustomEvent('sync-financial-filters', { 
+      detail: { bankAccountId: id } 
+    }));
+
     toast.success('Conta bancária selecionada', {
       description: id ? `Filtrando dados para a conta ${accounts.find(a => a.id === id)?.banco}` : 'Mostrando todas as contas',
     });

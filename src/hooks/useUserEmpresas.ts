@@ -112,6 +112,12 @@ export async function setCurrentEmpresaId(id: string) {
     bubbles: true,
     composed: true
   }));
+
+  window.dispatchEvent(new CustomEvent('sync-financial-filters', { 
+    detail: { empresaId: id },
+    bubbles: true,
+    composed: true
+  }));
 }
 
 export function useDefinirEmpresaPadrao() {

@@ -47,12 +47,22 @@ export function useContasPagarLogic() {
   const [deletingConta, setDeletingConta] = useState<ContaPagarType | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Sincroniza com empresa ativa do sistema
+  // Sincroniza com empresa ativa do sistema via evento global
   useEffect(() => {
-    if (currentEmpresaId && advancedFilters.empresaId !== currentEmpresaId && (!advancedFilters.empresaId || advancedFilters.empresaId === 'all')) {
-      setAdvancedFilters(prev => ({ ...prev, empresaId: currentEmpresaId }));
-    }
-  }, [currentEmpresaId, advancedFilters.empresaId]);
+    const handleSync = (e: Event) => {
+      const { empresaId, bankAccountId } = (e as CustomEvent).detail;
+      if (empresaId && empresaId !== 'all') {
+        setAdvancedFilters(prev => ({ ...prev, empresaId }));
+        setCurrentPage(1);
+      }
+      if (bankAccountId !== undefined) {
+        // bankAccountId pode ser null para "Todas as Contas"
+        // mas aqui tratamos se vier algo
+      }
+    };
+    window.addEventListener('sync-financial-filters', handleSync);
+    return () => window.removeEventListener('sync-financial-filters', handleSync);
+  }, []);
 
   const { filterType, handleFilterChange, filterByDate } = useQuickDateFilter();
   const queryClient = useQueryClient();

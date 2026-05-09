@@ -242,8 +242,28 @@ export function useConciliacaoPage() {
               classificacao: valorDiff > 0 ? 'Juros' : 'Desconto',
               regra: `Aceite automático dentro da tolerância de R$ ${config.tolerancia_centavos}`,
             });
-          } catch (err) {
+          } catch (err: any) {
             console.error('Erro na conciliação automática:', err);
+            
+            // Alertar falha de conciliação automática
+            toast.error(`Falha na Conciliação Automática`, {
+              description: `A transação "${transacao.descricao}" não pôde ser conciliada automaticamente. Erro: ${err.message || 'Erro no servidor'}`,
+              action: {
+                label: 'Resolver Manualmente',
+                onClick: () => handleConciliarManual(transacao.id)
+              }
+            });
+
+            // Registrar log de erro de conciliação no banco
+            if (selectedBanco) {
+              await supabase.from('webhooks_log').insert({
+                event_type: 'reconciliation.failed',
+                status: 'error',
+                payload: { transacao, match: melhorMatch, error: err } as any,
+                erro_mensagem: `Falha na conciliação automática: ${err.message}`,
+                provider: 'Internal System'
+              });
+            }
           }
         }
       }
