@@ -135,7 +135,18 @@ export default function DashboardEmpresa() {
           </motion.div>
         )}
 
-        <EmpresaKpiCards saldoTotal={saldoTotal} saldoDisponivel={saldoDisponivel} totalReceber={totalReceber} totalPagar={totalPagar} totalVencidasReceber={totalVencidasReceber} totalVencidasPagar={totalVencidasPagar} saldoProjetado={saldoProjetado} />
+        <EmpresaKpiCards 
+          saldoTotal={saldoTotal} 
+          saldoDisponivel={saldoDisponivel} 
+          totalReceber={totalReceber} 
+          totalPagar={totalPagar} 
+          totalVencidasReceber={totalVencidasReceber} 
+          totalVencidasPagar={totalVencidasPagar} 
+          saldoProjetado={saldoProjetado}
+          boletosAbertos={kpis?.boletosAbertos}
+          divergenciasPendentes={kpis?.divergenciasPendentes}
+        />
+
         <EmpresaChartsSection fluxoCaixaProjetado={fluxoCaixaProjetado} statusReceberData={statusReceberData} statusPagarData={statusPagarData} periodoAnalise={periodoAnalise} />
         <EmpresaDrillDownSection contasBancarias={contasBancariasEmpresa} topClientesReceber={topClientesReceber} topFornecedoresPagar={topFornecedoresPagar} transacoesRecentes={transacoesRecentes} totalReceber={totalReceber} totalPagar={totalPagar} />
       </motion.div>
