@@ -244,6 +244,10 @@ export const ContasPagarTableRow = memo(({
               <Edit className="h-4 w-4" /> Edit Record
             </DropdownMenuItem>
             
+            <DropdownMenuItem onClick={() => setHistoryOpen(true)} className="gap-2 focus:bg-primary/10">
+              <History className="h-4 w-4" /> Version History
+            </DropdownMenuItem>
+            
             {(conta.status === 'pendente' || conta.status === 'vencido' || conta.status === 'parcial') && (
               <DropdownMenuItem onClick={onRegistrarPagamento} className="gap-2 text-success focus:text-success focus:bg-success/10">
                 <CheckCircle2 className="h-4 w-4" /> Register Payment
