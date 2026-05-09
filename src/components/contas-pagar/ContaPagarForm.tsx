@@ -80,8 +80,10 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
   const { celebrateSuccess } = useCelebrations();
   const [showFornecedorSelect, setShowFornecedorSelect] = useState(false);
   const [showLeitorCodigoBarras, setShowLeitorCodigoBarras] = useState(false);
+  const [isOcrProcessing, setIsOcrProcessing] = useState(false);
   const isEditing = !!conta;
 
+  const { processar: processarNF } = useProcessarNFOCR();
   const { data: fornecedores = [] } = useFornecedores();
   const { data: centrosCusto = [] } = useCentrosCusto();
   const { data: contasBancarias = [] } = useContasBancarias();
