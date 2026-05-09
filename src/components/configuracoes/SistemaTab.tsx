@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Palette, Globe, Database, Zap, CreditCard, Save } from 'lucide-react';
+import { Palette, Globe, Database, Zap, CreditCard, Save, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
