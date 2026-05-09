@@ -208,7 +208,15 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
                 </AnimatePresence>
               </div>
 
-              <ContaPagarFormFields form={form} empresas={empresas} centrosCusto={centrosCusto} contasBancarias={contasBancarias} />
+              <div className="space-y-6 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
+                <ContaPagarFormFields form={form} empresas={empresas} centrosCusto={centrosCusto} contasBancarias={contasBancarias} />
+                
+                {isEditing && conta?.id && (
+                  <div className="pt-6 border-t border-white/5">
+                    <AnexoList entidadeId={conta.id} entidadeTipo="contas_pagar" />
+                  </div>
+                )}
+              </div>
 
               {/* Actions */}
               <div className="flex justify-end gap-3 pt-4 border-t">
