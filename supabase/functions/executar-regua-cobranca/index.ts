@@ -108,16 +108,25 @@ Deno.serve(async (req) => {
             success = true
           }
 
-          // 4. Logar execução
+          // 4. Logar execução e disparar alerta em caso de falha
           await supabase.from('execucoes_regua_cobranca').insert({
             empresa_id: regra.empresa_id,
             conta_receber_id: conta.id,
             etapa: regra.etapa || regra.nome,
             canal: regra.canal,
             status: success ? 'sucesso' : 'falha',
-            mensagem_erro: errorMsg,
-            metadata: { regra_id: regra.id }
+            mensagem_erro: errorMsg || (!success ? 'Falha no envio da mensagem' : null),
+            metadata: { 
+              regra_id: regra.id,
+              correlation_id: crypto.randomUUID(),
+              timestamp: new Date().toISOString()
+            }
           })
+
+          if (!success) {
+            console.error(`Falha na régua para conta ${conta.id}: ${errorMsg || 'Erro no envio'}`)
+            // O trigger no banco cuidará de criar o alerta na tabela 'alertas'
+          }
 
           results.push({ conta_id: conta.id, regra: regra.nome, success })
         } catch (e) {
