@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { useEmpresas, useCentrosCusto, useContasBancarias, useContasPagar, useContasReceber, useClientes } from '@/hooks/useFinancialData';
 import { useAprovacoesPendentesCount } from '@/hooks/useAprovacoesPendentesCount';
 import { useDivergenciasConciliacao } from '@/hooks/useDivergenciasConciliacao';
+import { useBoletos } from '@/hooks/useBoletos';
+import { useCobrancaKPIs } from '@/hooks/useCobrancas';
 import { useAuth } from '@/hooks/useAuth';
 
 
@@ -25,8 +27,10 @@ export function useDashboardMetrics(filters: DashboardFilters) {
   const { data: clientes = [], isLoading: loadingClientes } = useClientes();
   const { count: aprovacoesPendentes } = useAprovacoesPendentesCount();
   const { divergencias } = useDivergenciasConciliacao();
+  const { stats: boletosStats, isLoading: loadingBoletos } = useBoletos();
+  const { data: cobrancaKpis, isLoading: loadingCobranca } = useCobrancaKPIs();
 
-  const isLoading = loadingEmpresas || loadingCC || loadingBancos || loadingPagar || loadingReceber || loadingClientes;
+  const isLoading = loadingEmpresas || loadingCC || loadingBancos || loadingPagar || loadingReceber || loadingClientes || loadingBoletos || loadingCobranca;
 
   const totalDivergencias = useMemo(() => {
     return (divergencias || []).filter(d => {
@@ -274,5 +278,7 @@ export function useDashboardMetrics(filters: DashboardFilters) {
     topClientesReceita,
     fluxoCaixaProjetado,
     totalDivergencias,
+    boletosStats,
+    cobrancaKpis,
   };
 }
