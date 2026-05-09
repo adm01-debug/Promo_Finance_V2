@@ -2,11 +2,8 @@ import { RelatoriosContabeisTributarios } from '@/components/reforma-tributaria/
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
 import { FileBarChart } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
 
 export default function RelatoriosContabeisPage() {
-  const { currentEmpresaId } = useAuth();
-
   return (
     <MainLayout>
       <div className="relative min-h-screen">
@@ -23,7 +20,7 @@ export default function RelatoriosContabeisPage() {
             gradientTo="to-blue-500"
           />
           
-          <RelatoriosContabeisTributarios empresaId={currentEmpresaId || ''} />
+          <RelatoriosContabeisTributarios />
         </div>
       </div>
     </MainLayout>
