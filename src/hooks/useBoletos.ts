@@ -190,8 +190,9 @@ export function useBoletos() {
           ...boletoData,
           asaas_id: asaasResult.id,
           external_provider: 'asaas',
-          linha_digitavel: asaasResult.boletoData?.identificationField || generateLinhaDigitavel(data.valor, data.vencimento),
-          codigo_barras: asaasResult.boletoData?.barCode || generateCodigoBarras(data.valor)
+          linha_digitavel: asaasResult.identificationField || generateLinhaDigitavel(data.valor, data.vencimento),
+          codigo_barras: asaasResult.barCode || generateCodigoBarras(data.valor)
+
         };
       } else {
         boletoData.linha_digitavel = generateLinhaDigitavel(data.valor, data.vencimento);
