@@ -19,7 +19,7 @@ export function EvolucaoCargaChart({ serie, mediaIdeal }: Props) {
   }));
 
   return (
-    <Card className="col-span-full lg:col-span-2 backdrop-blur-sm bg-card/60 border-border/50">
+    <Card className="col-span-full lg:col-span-2 border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem] overflow-hidden">
       <CardHeader>
         <CardTitle className="text-lg">Evolução da Carga Tributária</CardTitle>
         <CardDescription>Tributos pagos mês a mês — CBS + IBS + residuais</CardDescription>

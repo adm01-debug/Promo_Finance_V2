@@ -20,7 +20,7 @@ export function ComparativoRegimes({ resultado }: Props) {
   const melhor = resultado?.recomendado?.regime;
 
   return (
-    <Card className="backdrop-blur-sm bg-card/60 border-border/50">
+    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem] overflow-hidden">
       <CardHeader>
         <CardTitle className="text-lg">Comparativo de Regimes</CardTitle>
         <CardDescription>Carga tributária estimada por regime</CardDescription>
