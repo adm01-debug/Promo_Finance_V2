@@ -24,6 +24,8 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { RelatoriosAgendados } from '@/components/relatorios/RelatoriosAgendados';
+import { RelatoriosResumosSemanais } from '@/components/relatorios/RelatoriosResumosSemanais';
+
 import { RelatorioDrillDown } from '@/components/relatorios/RelatorioDrillDown';
 import { ExportRelatorioAvancadoPDF } from '@/components/relatorios/ExportRelatorioAvancadoPDF';
 import { Button } from '@/components/ui/button';
