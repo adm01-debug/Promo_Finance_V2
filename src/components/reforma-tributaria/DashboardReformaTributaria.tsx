@@ -376,7 +376,7 @@ export function DashboardReformaTributaria({ initialTab }: { initialTab?: string
       </div>
 
       {/* Navegação com badge de alertas */}
-      <NavigationTributaria activeTab={activeTab} onTabChange={setActiveTab} alertasCriticos={alertasCriticos} />
+      <NavigationTributaria activeTab={activeTab} onTabChange={handleTabChange} alertasCriticos={alertasCriticos} />
 
       {/* Hero KPIs com deep-linking e alertas reais */}
       {activeTab === 'visao-geral' && !isFirstAccess && (
