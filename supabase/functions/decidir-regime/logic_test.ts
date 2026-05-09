@@ -1,6 +1,6 @@
 
 import { assertEquals, assert } from "https://deno.land/std@0.168.0/testing/asserts.ts";
-import { simularSimples, simularPresumido, simularReal, LIMITE_SIMPLES } from "./tributario-logic.ts";
+import { simularSimples, simularPresumido, simularReal, LIMITE_SIMPLES } from "../_shared/tributario-logic.ts";
 
 Deno.test("Simular Simples - Caso Básico", () => {
   const params = {
