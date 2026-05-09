@@ -246,6 +246,7 @@ export interface PaginatedContasPagarParams {
   search?: string;
   status?: string;
   centroCustoId?: string;
+  empresaId?: string;
 }
 
 export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
