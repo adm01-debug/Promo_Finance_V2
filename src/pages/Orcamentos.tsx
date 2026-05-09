@@ -63,7 +63,7 @@ const Orcamentos = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState<any>(null);
 
-  const { data: budgets = [], isLoading } = useBudgetsWithSpent(selectedPeriod);
+  const { data: budgets = [], isLoading } = useBudgetsWithSpent(selectedPeriod, currentEmpresaId || undefined);
   const { categoriasDespesa } = useCategorias('despesa');
   const createBudget = useCreateBudget();
   const updateBudget = useUpdateBudget();
