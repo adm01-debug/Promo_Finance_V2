@@ -140,7 +140,7 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
   const salvarSimulacao = useMutation({
     mutationFn: async () => {
       if (!empresaId) throw new Error('Selecione uma empresa para salvar a simulação.');
-      const { error } = await supabase.from('regimes_simulados').insert({
+      const { data: ins, error } = await supabase.from('regimes_simulados').insert({
         empresa_id: empresaId,
         ano_referencia: anoReferencia,
         rbt12: resultado.recomendado.rbt12 || parametros.faturamentoAnual,
@@ -154,7 +154,8 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
         economia_anual_estimada: resultado.economiaAnualVsAtual ?? null,
         parametros: parametros as never,
         created_by: user?.id ?? null,
-      });
+        audit_log_id: resultado.auditLogId ?? null,
+      }).select('id').maybeSingle();
       if (error) throw error;
     },
     onSuccess: () => {
