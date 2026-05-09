@@ -210,7 +210,7 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
           </DialogTitle>
           <DialogDescription>
             {step === 'upload' && 'Importe o arquivo OFX ou CSV do seu banco para liquidar títulos automaticamente.'}
-            {step === 'preview' && `Encontramos ${matches.length} correspondências de alta confiança.`}
+            {step === 'preview' && `Encontramos ${matches.length} correspondências e ${unmatched.length} divergências que requerem atenção.`}
           </DialogDescription>
         </DialogHeader>
 
