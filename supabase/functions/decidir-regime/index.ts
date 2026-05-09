@@ -185,7 +185,7 @@ function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   return {
     regime: 'lucro_presumido', nome: 'Lucro Presumido', elegivel: true,
     irpj, csll, pis, cofins, cpp, icms, iss, cbs: 0, ibs: 0,
-    totalTributos: total, cargaEfetiva: (total / p.faturamentoAnual) * 100,
+    totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
     observacoes: ['Presunção 8% comércio / 32% serviços.', 'PIS/COFINS cumulativo.'],
   };
 }
