@@ -4,7 +4,7 @@ import confetti from 'canvas-confetti';
 import {
   Sparkles, CheckCircle2, AlertCircle, ArrowRight, TrendingUp, TrendingDown,
   Link2, X, ChevronDown, ChevronUp, Zap, Target, HelpCircle, Brain,
-  RefreshCw, Loader2, CheckCheck, History, FileText,
+  RefreshCw, Loader2, CheckCheck, History, FileText, ThumbsUp, ThumbsDown
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
