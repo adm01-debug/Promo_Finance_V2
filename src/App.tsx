@@ -112,6 +112,8 @@ const Orcamentos = lazy(() => import('./pages/Orcamentos'));
 const Categorias = lazy(() => import('./pages/Categorias'));
 const ApiManagement = lazy(() => import('./pages/admin/ApiManagement'));
 const CustomFieldsAdmin = lazy(() => import('./pages/admin/CustomFieldsAdmin'));
+const StatusPage = lazy(() => import('./pages/StatusPage'));
+
 
 
 
