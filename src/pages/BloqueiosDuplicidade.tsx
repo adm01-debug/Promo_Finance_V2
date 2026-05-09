@@ -160,13 +160,14 @@ export default function BloqueiosDuplicidade() {
       head: [["Data", "Usuário", "Motivo", "Valor", "Doc"]],
       body: tableData,
       theme: 'grid',
-      headStyles: { fillStyle: 'solid', fillColor: [24, 95, 46], textColor: [255, 255, 255], fontStyle: 'bold' },
+      headStyles: { fillColor: [24, 95, 46], textColor: [255, 255, 255], fontStyle: 'bold' },
       styles: { fontSize: 8 },
     });
 
     doc.save(`auditoria_duplicidade_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
     toast.success("Relatório PDF exportado com sucesso!");
   };
+
 
 
   return (
