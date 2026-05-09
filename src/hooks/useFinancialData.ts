@@ -281,6 +281,10 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
         countQuery = countQuery.eq('centro_custo_id', centroCustoId);
         dataQuery = dataQuery.eq('centro_custo_id', centroCustoId);
       }
+      if (empresaId && empresaId !== 'all') {
+        countQuery = countQuery.eq('empresa_id', empresaId);
+        dataQuery = dataQuery.eq('empresa_id', empresaId);
+      }
 
       const [countResult, dataResult] = await Promise.all([countQuery, dataQuery]);
 
