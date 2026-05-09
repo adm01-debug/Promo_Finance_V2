@@ -171,9 +171,13 @@ export function BaixaAutomaticaDialog({ open, onOpenChange, empresaId }: BaixaAu
           tipo: 'divergencia_baixa',
           prioridade: 'alta',
           titulo: 'Divergência na Baixa Automática',
-          mensagem: `Entrada bancária de ${formatCurrency(t.valor)} (${t.descricao}) não encontrou par correspondente no financeiro.`,
+          mensagem: `Entrada bancária de ${formatCurrency(t.valor)} (${t.descricao}) não encontrou par correspondente no financeiro. Recomendação: Verifique se o título já foi liquidado manualmente ou se o valor está divergente.`,
           status: 'pendente',
-          metadata: { transacao: t, arquivo: resultado?.extrato?.nomeArquivo }
+          metadata: { 
+            transacao: t, 
+            arquivo: resultado?.extrato?.nomeArquivo,
+            recomendacao: 'Acessar Conciliação Bancária para vinculação manual.'
+          }
         } as any);
       }
 
