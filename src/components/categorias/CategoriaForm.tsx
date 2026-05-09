@@ -61,9 +61,9 @@ export function CategoriaForm({ open, onOpenChange, categoria, defaultType = 'de
 
   const onSubmit = async (data: CategoriaFormData) => {
     if (categoria) {
-      await updateMutation.mutateAsync({ id: categoria.id, data });
+      await updateMutation.mutateAsync({ id: categoria.id, data: data as any });
     } else {
-      await createMutation.mutateAsync(data);
+      await createMutation.mutateAsync(data as any);
     }
     onOpenChange(false);
   };
