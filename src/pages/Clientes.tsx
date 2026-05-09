@@ -163,7 +163,7 @@ export default function Clientes() {
 
   return (
     <MainLayout>
-      <Tabs defaultValue="lista" className="w-full">
+      <Tabs defaultValue={window.location.hash === '#scoring' ? 'scoring' : 'lista'} className="w-full">
         <div className="relative min-h-screen">
           <PageBackground />
           
@@ -179,8 +179,8 @@ export default function Clientes() {
             >
               <div className="flex items-center gap-3">
                 <TabsList className="bg-primary/10 border-primary/20 h-10 px-1 rounded-xl">
-                  <TabsTrigger value="lista" className="rounded-lg font-bold px-4">Lista Geral</TabsTrigger>
-                  <TabsTrigger value="scoring" className="rounded-lg font-bold px-4">Scoring & Risco</TabsTrigger>
+                  <TabsTrigger value="lista" className="rounded-lg font-bold px-4" onClick={() => window.history.replaceState(null, '', '/clientes')}>Lista Geral</TabsTrigger>
+                  <TabsTrigger value="scoring" className="rounded-lg font-bold px-4" onClick={() => window.history.replaceState(null, '', '/clientes#scoring')}>Scoring & Risco</TabsTrigger>
                 </TabsList>
                 <div className="h-8 w-px bg-white/10 mx-1" />
                 <ExportMenu

@@ -32,6 +32,7 @@ interface AlertasPreditivosPanelProps {
   receitasPrevistas: Array<{ valor: number; dataVencimento: Date; entidade: string }>;
   despesasPrevistas: Array<{ valor: number; dataVencimento: Date; entidade: string }>;
   historicoInadimplencia?: Array<{ clienteId: string; diasAtraso: number }>;
+  defaultExpanded?: boolean;
 }
 
 const ALERTA_ICONS = {
@@ -52,6 +53,7 @@ export function AlertasPreditivosPanel({
   receitasPrevistas,
   despesasPrevistas,
   historicoInadimplencia = [],
+  defaultExpanded = false,
 }: AlertasPreditivosPanelProps) {
   const { isAnalyzing, alertas, lastAnalysis, analisarFluxoCaixa } = useAlertasPreditivos();
 
@@ -158,7 +160,7 @@ export function AlertasPreditivosPanel({
             </p>
           </div>
         ) : (
-          <ScrollArea className="h-[300px] pr-2">
+          <ScrollArea className={cn("pr-2", defaultExpanded ? "h-[500px]" : "h-[300px]")}>
             <div className="space-y-3">
               <AnimatePresence>
                 {alertasOrdenados.map((alerta, index) => {

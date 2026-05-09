@@ -45,6 +45,7 @@ import {
   History,
   Target,
   Brain,
+  BrainCircuit,
   ShieldAlert,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -56,6 +57,7 @@ import { useAlertasTributariosCount } from '@/hooks/useAlertasTributariosCount';
 import { useRealtimeAlertas } from '@/hooks/useRealtimeAlertas';
 import { useRealtimeAnomalias } from '@/hooks/useRealtimeAnomalias';
 import { useWhatsAppUnreadCount } from '@/hooks/useWhatsAppUnreadCount';
+import { useAuth } from '@/hooks/useAuth';
 
 interface NavItem {
   label: string;
@@ -84,7 +86,7 @@ const navGroups: NavGroup[] = [
     items: [
       { label: 'Dashboard', icon: LayoutDashboard, href: '/' },
       { label: 'BI Gestão', icon: BarChart3, href: '/bi', highlight: true },
-      { label: 'Inteligência Operacional', icon: Brain, href: '/inteligencia', highlight: true },
+      { label: 'Inteligência Operacional', icon: BrainCircuit, href: '/inteligencia', highlight: true },
       { label: 'Dashboard Empresa', icon: Building2, href: '/dashboard-empresa' },
       { label: 'Benchmarking', icon: Scale, href: '/benchmarking', highlight: true },
       { label: 'EXPERT (IA)', icon: Bot, href: '/expert', highlight: true },
@@ -107,7 +109,8 @@ const navGroups: NavGroup[] = [
       { label: 'Simulador Antecipação', icon: Calculator, href: '/simulador-antecipacao' },
       { label: 'Asaas Pagamentos', icon: CreditCard, href: '/asaas', highlight: true },
       { label: 'Auditoria de Duplicidade', icon: ShieldAlert, href: '/contas-pagar/bloqueios', highlight: true },
-      { label: 'Metas Financeiras', icon: Target, href: '/metas' },
+      { label: 'Metas Financeiras', icon: Target, href: '/metas', highlight: true },
+      { label: 'Alertas Preditivos', icon: Brain, href: '/#alertas-preditivos', highlight: true },
     ],
   },
   {
@@ -143,7 +146,7 @@ const navGroups: NavGroup[] = [
     icon: Users,
     items: [
       { label: 'Clientes', icon: User, href: '/clientes', badgeKey: 'whatsapp' },
-      { label: 'Scoring & Risco', icon: Target, href: '/clientes/scoring', highlight: true },
+      { label: 'Scoring & Risco', icon: Target, href: '/clientes#scoring', highlight: true },
       { label: 'Portal de Tokens', icon: Key, href: '/clientes/portal-tokens' },
       { label: 'Fornecedores', icon: Truck, href: '/fornecedores' },
       { label: 'Vendedores', icon: UserCog, href: '/vendedores' },
@@ -184,6 +187,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
   const { data: alertasNaoLidos = 0 } = useAlertasNaoLidos();
   const { data: alertasTributarios = 0 } = useAlertasTributariosCount();
   const { data: whatsappUnread = 0 } = useWhatsAppUnreadCount();
+  const { user } = useAuth();
   const [syncStatus, setSyncStatus] = useState<Record<string, boolean>>({});
   
   useRealtimeAlertas();
@@ -240,8 +244,8 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
     if (badgeKey === 'tributario' && alertasTributarios > 0) {
       return alertasTributarios;
     }
-    if (badgeKey === 'whatsapp' && whatsappUnread > 0) {
-      return whatsappUnread;
+    if (badgeKey === 'whatsapp' && (whatsappUnread > 0 || localStorage.getItem(`whatsapp-unread-manual-${user?.id}`) === 'true')) {
+      return whatsappUnread || 1;
     }
     return undefined;
   };

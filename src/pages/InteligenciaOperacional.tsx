@@ -1,5 +1,7 @@
 import { HealthScoreCard } from '@/components/dashboard/HealthScoreCard';
 import { CentroAcoesInteligentes } from '@/components/dashboard/CentroAcoesInteligentes';
+import { AlertasPreditivosPanel } from '@/components/dashboard/AlertasPreditivosPanel';
+import { MetasFinanceirasPanel } from '@/components/dashboard/MetasFinanceirasPanel';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Sparkles, BrainCircuit } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -34,6 +36,28 @@ export default function InteligenciaOperacionalPage() {
             className="lg:col-span-2"
           >
             <CentroAcoesInteligentes />
+          </motion.div>
+        </div>
+
+        <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <AlertasPreditivosPanel 
+              saldoAtual={100000} // Placeholder, hooks handle internal data mostly
+              receitasPrevistas={[]} 
+              despesasPrevistas={[]} 
+              defaultExpanded={true}
+            />
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <MetasFinanceirasPanel defaultExpanded={true} />
           </motion.div>
         </div>
       </div>

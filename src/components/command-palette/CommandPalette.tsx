@@ -119,7 +119,8 @@ export function CommandPalette() {
         { id: 'bi', title: 'BI & Analytics', subtitle: 'Dashboards avançados', icon: BarChart3, action: () => navigate('/bi'), keywords: ['bi', 'analytics', 'graficos'], shortcut: ['⌥', 'B'] },
         { id: 'inteligencia', title: 'Inteligência Operacional', subtitle: 'Monitoramento neural & IA', icon: Brain, action: () => navigate('/inteligencia'), keywords: ['ia', 'inteligencia', 'saude', 'score'], shortcut: ['⌥', 'I'], badge: 'Neural', badgeVariant: 'secondary' },
         { id: 'fluxo', title: 'Fluxo de Caixa', subtitle: 'Projeções e cenários', icon: TrendingUp, action: () => navigate('/fluxo-caixa'), keywords: ['fluxo', 'caixa', 'projecao'], shortcut: ['⌥', 'F'] },
-        { id: 'metas', title: 'Metas Financeiras', subtitle: 'Gestão de objetivos', icon: Target, action: () => navigate('/metas'), keywords: ['metas', 'objetivos', 'performance'] },
+        { id: 'metas', title: 'Metas Financeiras', subtitle: 'Gestão de objetivos estrategicos', icon: Target, action: () => navigate('/metas'), keywords: ['metas', 'objetivos', 'performance', 'ia', 'saude'] },
+        { id: 'alertas-preditivos', title: 'Alertas Preditivos', subtitle: 'Gestão proativa de riscos', icon: Brain, action: () => navigate('/#alertas-preditivos'), keywords: ['risco', 'alerta', 'preditivo', 'ia'] },
       ],
     },
     {
@@ -164,7 +165,7 @@ export function CommandPalette() {
       heading: 'Cadastros & CRM',
       items: [
         { id: 'clientes', title: 'Clientes', subtitle: 'Base de clientes & WhatsApp', icon: Users, action: () => navigate('/clientes'), keywords: ['cliente', 'cadastro'], shortcut: ['⌥', 'C'] },
-        { id: 'scoring', title: 'Scoring & Risco', subtitle: 'Análise de crédito neural', icon: Target, action: () => navigate('/clientes/scoring'), keywords: ['scoring', 'risco', 'credito'], badge: 'IA' },
+        { id: 'scoring', title: 'Scoring & Risco', subtitle: 'Análise de crédito neural', icon: Target, action: () => navigate('/clientes#scoring'), keywords: ['scoring', 'risco', 'credito'], badge: 'IA' },
         { id: 'portal-tokens', title: 'Portal de Tokens', subtitle: 'Gestão de acesso cliente', icon: Key, action: () => navigate('/clientes/portal-tokens'), keywords: ['portal', 'token', 'acesso'] },
         { id: 'fornecedores', title: 'Fornecedores', subtitle: 'Parceiros comerciais', icon: Building2, action: () => navigate('/fornecedores'), keywords: ['fornecedor', 'parceiro'], shortcut: ['⌥', 'U'] },
         { id: 'vendedores', title: 'Vendedores', subtitle: 'Equipe comercial', icon: UserCog, action: () => navigate('/vendedores'), keywords: ['vendedor', 'comercial'] },

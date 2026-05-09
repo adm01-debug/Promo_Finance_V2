@@ -16,7 +16,7 @@ import { motion as m, AnimatePresence } from 'framer-motion';
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
 
-export function MetasFinanceirasPanel() {
+export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpanded?: boolean }) {
   const { data: metas, isLoading } = useMetasFinanceiras(currentYear);
   const { data: scoreHistory } = useHistoricoScoreSaude();
   const { data: recomendacoes } = useRecomendacoesIA();
@@ -39,6 +39,34 @@ export function MetasFinanceirasPanel() {
 
   return (
     <div className="space-y-8">
+      {/* Overview Cards if expanded */}
+      {defaultExpanded && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card className="bg-background/40 backdrop-blur-xl border-white/10">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-widest text-muted-foreground/50">Total em Metas</p>
+                  <p className="text-2xl font-black tabular-nums">{formatCurrency(metas?.reduce((acc, m) => acc + m.valor_meta, 0) || 0)}</p>
+                </div>
+                <Target className="h-8 w-8 text-primary/40" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-background/40 backdrop-blur-xl border-white/10">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-widest text-muted-foreground/50">Objetivos Ativos</p>
+                  <p className="text-2xl font-black tabular-nums">{metas?.length || 0}</p>
+                </div>
+                <CheckCircle2 className="h-8 w-8 text-success/40" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Executive Score Matrix */}
       {latestScore && (
         <Card className="border-none bg-gradient-to-br from-primary/10 via-background to-purple-500/5 shadow-2xl rounded-[2rem] overflow-hidden ring-1 ring-white/10 group">
