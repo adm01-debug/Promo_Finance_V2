@@ -36,27 +36,37 @@ export function useBudgets(period?: string) {
   });
 }
 
-export function useBudgetsWithSpent(period: string) {
+export function useBudgetsWithSpent(period: string, companyId?: string) {
   return useQuery({
-    queryKey: ['budgets-with-spent', period],
+    queryKey: ['budgets-with-spent', period, companyId],
     queryFn: async () => {
-      // 1. Fetch budgets for the period
-      const { data: budgets, error: budgetError } = await supabase
+      // 1. Fetch budgets for the period and company
+      let query = supabase
         .from('budgets')
         .select('*')
         .eq('period', period);
       
+      if (companyId) {
+        query = query.eq('company_id', companyId);
+      }
+      
+      const { data: budgets, error: budgetError } = await query;
+      
       if (budgetError) throw budgetError;
 
-      // 2. Fetch actual spent from contas_pagar for this period
-      // Note: This is a simplified calculation. In a real app, you'd filter by category and date.
-      const { data: spentData, error: spentError } = await supabase
+      // 2. Fetch actual spent from contas_pagar for this period and company
+      let spentQuery = supabase
         .from('contas_pagar')
         .select('valor_pago, categoria:categorias(nome)')
         .eq('status', 'pago')
-        // Simplified period filtering (assuming period is YYYY-MM)
         .gte('data_pagamento', `${period}-01`)
         .lt('data_pagamento', period === '2026-12' ? '2027-01-01' : `${period.split('-')[0]}-${String(Number(period.split('-')[1]) + 1).padStart(2, '0')}-01`);
+
+      if (companyId) {
+        spentQuery = spentQuery.eq('empresa_id', companyId);
+      }
+
+      const { data: spentData, error: spentError } = await spentQuery;
 
       if (spentError) throw spentError;
 
@@ -72,7 +82,9 @@ export function useBudgetsWithSpent(period: string) {
         ...budget,
         actual_spent: spentByCategory[budget.category] || 0,
         remaining: budget.budgeted_amount - (spentByCategory[budget.category] || 0),
-        percent_used: (spentByCategory[budget.category] || 0) / budget.budgeted_amount * 100
+        percent_used: budget.budgeted_amount > 0 
+          ? (spentByCategory[budget.category] || 0) / budget.budgeted_amount * 100 
+          : 0
       }));
     }
   });
