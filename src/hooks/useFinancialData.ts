@@ -450,8 +450,6 @@ export function useCreateContaPagar() {
       }]);
       if (error) throw error;
     },
-      if (error) throw error;
-    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
       sounds.success();
@@ -466,7 +464,7 @@ export function useCreateContaPagar() {
 export function useUpdateContaPagar() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, ...data }: Partial<ContaPagar> & { id: string }) => {
+    mutationFn: async ({ id, ...data }: any) => {
       const { error } = await supabase.from('contas_pagar').update(data).eq('id', id);
       if (error) throw error;
     },
@@ -498,15 +496,5 @@ export function useDeleteContaPagar() {
       toast.error('Erro ao excluir conta');
       sounds.error();
     },
-  });
-}
-
-      return {
-        data: (result.data || []) as Fornecedor[],
-        totalCount: result.total || 0,
-        totalPages: result.total_pages || 0,
-      };
-    },
-    staleTime: STALE_TIMES.config,
   });
 }
