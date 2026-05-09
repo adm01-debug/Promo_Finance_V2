@@ -263,19 +263,26 @@ export default function Clientes() {
   return (
     <MainLayout>
       <Tabs defaultValue="lista" className="w-full">
-        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
-          {/* Page Header */}
-          <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-display-md text-foreground">Clientes</h1>
-              <p className="text-muted-foreground mt-1">Gerencie sua base de clientes</p>
-            </div>
-            <div className="flex items-center gap-4">
-              <TabsList className="bg-primary/10 border-primary/20">
-                <TabsTrigger value="lista">Lista Geral</TabsTrigger>
-                <TabsTrigger value="scoring">Scoring & Risco</TabsTrigger>
-              </TabsList>
+        <div className="relative min-h-screen">
+          <PageBackground />
+          
+          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="container mx-auto p-6 relative z-10 space-y-8">
+            {/* Page Header */}
+            <PageHeader 
+              title="Gestão de Clientes" 
+              subtitle="Análise de perfil, scoring de crédito e automação de cobranças neurais."
+              badge="Customer Intelligence"
+              icon={Users}
+              gradientFrom="from-blue-600"
+              gradientVia="via-primary"
+              gradientTo="to-indigo-500"
+            >
               <div className="flex items-center gap-3">
+                <TabsList className="bg-primary/10 border-primary/20 h-10 px-1 rounded-xl">
+                  <TabsTrigger value="lista" className="rounded-lg font-bold px-4">Lista Geral</TabsTrigger>
+                  <TabsTrigger value="scoring" className="rounded-lg font-bold px-4">Scoring & Risco</TabsTrigger>
+                </TabsList>
+                <div className="h-8 w-px bg-white/10 mx-1" />
                 <ExportMenu
                   data={filteredClientes}
                   columns={clientesColumns}
@@ -283,19 +290,17 @@ export default function Clientes() {
                   title="Relatório de Clientes"
                 />
                 <Button 
-                  size="sm" 
-                  className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
+                  size="lg" 
+                  className="h-10 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]"
                   onClick={() => {
                     setEditingCliente(null);
                     setFormOpen(true);
                   }}
                 >
-                  <Plus className="h-4 w-4" />
-                  Novo Cliente
+                  <Plus className="h-5 w-5" /> Novo Cliente
                 </Button>
               </div>
-            </div>
-          </motion.div>
+            </PageHeader>
 
           <TabsContent value="lista" className="space-y-6 m-0 border-none p-0">
             {/* KPI Cards */}
