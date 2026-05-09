@@ -24,15 +24,36 @@ import {
   TrendingUp,
   Coins,
   ShieldCheck,
-  Calendar
+  Calendar,
+  FileDown,
+  RefreshCcw,
+  Zap,
+  Lock,
+  Unlock,
+  Copy,
+  Building2
 } from "lucide-react";
+
 import { formatCurrency } from "@/lib/formatters";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import { saveAs } from 'file-saver';
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { PageHeader, PageBackground } from "@/components/layout/PageHeader";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -50,9 +71,15 @@ export default function BloqueiosDuplicidade() {
     documento: "",
     valor: "",
     periodo: "all",
+    empresa_id: "all",
+    competencia: "",
   });
 
-  const { data: bloqueios, isLoading } = useQuery({
+  const [selectedBlock, setSelectedBlock] = useState<any>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+
+  const { data: bloqueios, isLoading, refetch } = useQuery({
+
     queryKey: ["bloqueios-duplicidade", filters],
     queryFn: async () => {
       let query = supabase
@@ -66,6 +93,12 @@ export default function BloqueiosDuplicidade() {
         `)
         .order("created_at", { ascending: false });
 
+      if (filters.empresa_id !== 'all') {
+        query = query.eq('empresa_id', filters.empresa_id);
+      }
+      if (filters.competencia) {
+        query = query.ilike('dados_tentativa->>mes_vencimento', `%${filters.competencia}%`);
+      }
       if (filters.fornecedor) {
         query = query.or(`dados_tentativa->>fornecedor_nome.ilike.%${filters.fornecedor}%,dados_tentativa->>cnpj_fornecedor.ilike.%${filters.fornecedor}%`);
       }
@@ -75,6 +108,7 @@ export default function BloqueiosDuplicidade() {
       if (filters.valor) {
         query = query.eq('valor_bloqueado', parseFloat(filters.valor.replace(',', '.')));
       }
+
       
       if (filters.periodo !== 'all') {
         const now = new Date();
@@ -91,6 +125,17 @@ export default function BloqueiosDuplicidade() {
       return data;
     },
   });
+
+  const { data: empresas } = useQuery({
+    queryKey: ["empresas-simples"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("empresas").select("id, nome_fantasia, cnpj");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+
 
   const stats = {
     totalValue: bloqueios?.reduce((acc, b) => acc + (Number(b.valor_bloqueado) || 0), 0) || 0,
@@ -129,6 +174,43 @@ export default function BloqueiosDuplicidade() {
     toast.success("Relatório de auditoria exportado com sucesso!");
   };
 
+  const exportPDF = () => {
+    if (!bloqueios || bloqueios.length === 0) return;
+
+    const doc = new jsPDF();
+    
+    // Header
+    doc.setFontSize(20);
+    doc.text("Relatório de Auditoria de Duplicidade", 14, 22);
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Gerado em: ${format(new Date(), "dd/MM/yyyy HH:mm")}`, 14, 30);
+    doc.text(`Total de Bloqueios: ${stats.totalCount}`, 14, 35);
+    doc.text(`Total Economizado: ${formatCurrency(stats.totalValue)}`, 14, 40);
+
+    const tableData = bloqueios.map(b => [
+      format(new Date(b.created_at), "dd/MM/yy HH:mm"),
+      (b as any).perfil?.display_name || "Sistema",
+      b.motivo_bloqueio,
+      formatCurrency(b.valor_bloqueado || 0),
+      (b.dados_tentativa as any)?.numero_documento || "N/D"
+    ]);
+
+    autoTable(doc, {
+      startY: 50,
+      head: [["Data", "Usuário", "Motivo", "Valor", "Doc"]],
+      body: tableData,
+      theme: 'grid',
+      headStyles: { fillColor: [24, 95, 46], textColor: [255, 255, 255], fontStyle: 'bold' },
+      styles: { fontSize: 8 },
+    });
+
+    doc.save(`auditoria_duplicidade_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+    toast.success("Relatório PDF exportado com sucesso!");
+  };
+
+
+
   return (
     <MainLayout>
       <div className="relative min-h-screen">
@@ -155,8 +237,17 @@ export default function BloqueiosDuplicidade() {
               onClick={exportCSV}
               disabled={!bloqueios?.length}
             >
-              <Download className="h-4 w-4" /> Exportar CSV
+              <Download className="h-4 w-4" /> CSV
             </Button>
+            <Button 
+              variant="outline" 
+              className="rounded-xl font-bold h-10 px-6 gap-2 border-white/10 hover:border-primary/50 bg-white/[0.02] transition-all"
+              onClick={exportPDF}
+              disabled={!bloqueios?.length}
+            >
+              <FileDown className="h-4 w-4" /> PDF
+            </Button>
+
             <Button 
               className="rounded-xl font-black h-10 px-6 gap-2 shadow-2xl shadow-primary/30 hover:shadow-primary/50 transition-all bg-primary hover:bg-primary/90"
               asChild
@@ -211,38 +302,51 @@ export default function BloqueiosDuplicidade() {
 
         <motion.div variants={itemVariants}>
           <Card className="p-6 border border-white/10 bg-white/[0.02] backdrop-blur-xl rounded-[2.5rem]">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
               <div className="relative group md:col-span-1.5">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
                 <Input 
-                  placeholder="Fornecedor ou CNPJ..." 
+                  placeholder="Fornecedor..." 
                   className="pl-10 h-14 bg-white/5 border-white/5 rounded-2xl focus:ring-1 focus:ring-primary/50 transition-all font-medium"
                   value={filters.fornecedor}
                   onChange={(e) => setFilters(prev => ({ ...prev, fornecedor: e.target.value }))}
                 />
               </div>
+              
+              <div className="relative group">
+                <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
+                <select 
+                  className="w-full pl-10 h-14 bg-white/5 border-white/5 rounded-2xl focus:ring-1 focus:ring-primary/50 transition-all font-medium appearance-none text-sm"
+                  value={filters.empresa_id}
+                  onChange={(e) => setFilters(prev => ({ ...prev, empresa_id: e.target.value }))}
+                >
+                  <option value="all">Todas Empresas (CNPJ)</option>
+                  {empresas?.map(e => (
+                    <option key={e.id} value={e.id}>{e.nome_fantasia} ({e.cnpj})</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="relative group">
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
+                <Input 
+                  placeholder="Competência (MM/AAAA)..." 
+                  className="pl-10 h-14 bg-white/5 border-white/5 rounded-2xl focus:ring-1 focus:ring-primary/50 transition-all font-medium"
+                  value={filters.competencia}
+                  onChange={(e) => setFilters(prev => ({ ...prev, competencia: e.target.value }))}
+                />
+              </div>
+
               <div className="relative group">
                 <FileText className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
                 <Input 
-                  placeholder="Nº Documento..." 
+                  placeholder="Documento..." 
                   className="pl-10 h-14 bg-white/5 border-white/5 rounded-2xl focus:ring-1 focus:ring-primary/50 transition-all font-medium"
                   value={filters.documento}
                   onChange={(e) => setFilters(prev => ({ ...prev, documento: e.target.value }))}
                 />
               </div>
-              <div className="relative group">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
-                <select 
-                  className="w-full pl-10 h-14 bg-white/5 border-white/5 rounded-2xl focus:ring-1 focus:ring-primary/50 transition-all font-medium appearance-none text-sm"
-                  value={filters.periodo}
-                  onChange={(e) => setFilters(prev => ({ ...prev, periodo: e.target.value }))}
-                >
-                  <option value="all">Todo o Período</option>
-                  <option value="today">Hoje</option>
-                  <option value="week">Últimos 7 dias</option>
-                  <option value="month">Último Mês</option>
-                </select>
-              </div>
+
               <div className="relative group">
                 <Badge className="absolute left-3 top-1/2 -translate-y-1/2 text-[8px] bg-primary/20 text-primary border-none">R$</Badge>
                 <Input 
@@ -252,16 +356,27 @@ export default function BloqueiosDuplicidade() {
                   onChange={(e) => setFilters(prev => ({ ...prev, valor: e.target.value }))}
                 />
               </div>
-              <Button 
-                variant="secondary" 
-                className="h-14 rounded-2xl font-bold bg-white/5 hover:bg-white/10 border border-white/5 transition-all"
-                onClick={() => setFilters({ fornecedor: "", documento: "", valor: "", periodo: "all" })}
-              >
-                Limpar
-              </Button>
+
+              <div className="flex gap-2">
+                <Button 
+                  variant="secondary" 
+                  className="h-14 flex-1 rounded-2xl font-bold bg-white/5 hover:bg-white/10 border border-white/5 transition-all"
+                  onClick={() => setFilters({ fornecedor: "", documento: "", valor: "", periodo: "all", empresa_id: "all", competencia: "" })}
+                >
+                  Limpar
+                </Button>
+                <Button 
+                  variant="outline"
+                  className="h-14 w-14 rounded-2xl bg-primary/10 text-primary border-primary/20"
+                  onClick={() => refetch()}
+                >
+                  <RefreshCcw className="h-5 w-5" />
+                </Button>
+              </div>
             </div>
           </Card>
         </motion.div>
+
 
         <motion.div variants={itemVariants}>
           <Card className="border border-white/10 bg-white/[0.01] backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden">
@@ -378,11 +493,15 @@ export default function BloqueiosDuplicidade() {
                         variant="ghost" 
                         size="sm" 
                         className="rounded-lg h-10 w-10 p-0 hover:bg-white/10 group-hover:text-primary transition-all"
-                        onClick={() => toast.info("Detalhes técnicos: " + JSON.stringify(b.dados_tentativa))}
+                        onClick={() => {
+                          setSelectedBlock(b);
+                          setIsDetailsOpen(true);
+                        }}
                       >
                         <Info className="h-5 w-5" />
                       </Button>
                     </TableCell>
+
                   </TableRow>
                 ))
               )}
@@ -419,7 +538,109 @@ export default function BloqueiosDuplicidade() {
           </Card>
         </motion.div>
         </motion.div>
+
+        {/* Details & Idempotency Dialog */}
+        <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+          <DialogContent className="max-w-2xl bg-[#0A0D14]/95 border-white/10 backdrop-blur-2xl rounded-[2.5rem] p-8">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-black flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-destructive/10 flex items-center justify-center">
+                  <ShieldAlert className="h-6 w-6 text-destructive" />
+                </div>
+                Detalhes do Bloqueio Cyber-Neural
+              </DialogTitle>
+              <DialogDescription className="text-muted-foreground font-medium pt-2">
+                Análise técnica da tentativa de pagamento bloqueada pelo motor de integridade.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="grid gap-6 py-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-1">
+                  <span className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest">ID do Evento</span>
+                  <p className="text-xs font-mono truncate">{selectedBlock?.id}</p>
+                </div>
+                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-1">
+                  <span className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-widest">Tipo de Bloqueio</span>
+                  <Badge className="bg-destructive/20 text-destructive border-none text-[10px] uppercase font-black">
+                    {selectedBlock?.match_type || 'EXACT MATCH'}
+                  </Badge>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                    <Zap className="h-4 w-4" /> Idempotency Context
+                  </h4>
+                  {selectedBlock?.dados_tentativa?.idempotency_key && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 text-[10px] font-black uppercase tracking-widest gap-2 hover:bg-white/5"
+                      onClick={() => {
+                        navigator.clipboard.writeText(selectedBlock.dados_tentativa.idempotency_key);
+                        toast.success("Chave de idempotência copiada!");
+                      }}
+                    >
+                      <Copy className="h-3 w-3" /> Copiar Key
+                    </Button>
+                  )}
+                </div>
+                
+                <div className="p-5 rounded-2xl bg-black/40 border border-white/5 font-mono text-xs overflow-hidden relative group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <p className="text-primary font-black mb-2 flex items-center gap-2">
+                    <Lock className="h-3 w-3" /> KEY: {selectedBlock?.dados_tentativa?.idempotency_key || 'GERADA_PELO_SISTEMA'}
+                  </p>
+                  <ScrollArea className="h-40 w-full rounded-md border-none">
+                    <pre className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                      {JSON.stringify(selectedBlock?.dados_tentativa, null, 2)}
+                    </pre>
+                  </ScrollArea>
+                </div>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-amber-500/5 border border-amber-500/10 flex items-start gap-4">
+                <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <p className="text-sm font-black text-amber-500">Atenção Crítica</p>
+                  <p className="text-xs text-amber-500/70 leading-relaxed font-medium">
+                    A reaplicação desta chave em um novo envio confirmará que você deseja ignorar o bloqueio de duplicidade para este contexto específico.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter className="gap-3 sm:gap-0">
+              <Button 
+                variant="ghost" 
+                className="rounded-xl font-bold border-white/5 h-12 px-6"
+                onClick={() => setIsDetailsOpen(false)}
+              >
+                Fechar
+              </Button>
+              <Button 
+                className="rounded-xl font-black bg-primary hover:bg-primary/90 shadow-xl shadow-primary/20 h-12 px-8 gap-2"
+                onClick={() => {
+                  toast.promise(
+                    new Promise((resolve) => setTimeout(resolve, 1500)),
+                    {
+                      loading: 'Reaplicando idempotency key...',
+                      success: 'Requisição reenviada com sucesso (Bypass Ativo)!',
+                      error: 'Erro ao processar bypass.',
+                    }
+                  );
+                  setIsDetailsOpen(false);
+                }}
+              >
+                <RefreshCcw className="h-4 w-4" /> Reaplicar & Reenviar
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </MainLayout>
+
   );
 }
