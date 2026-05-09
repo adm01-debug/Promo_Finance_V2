@@ -31,7 +31,7 @@ export function PrevisaoTributariaIA({ empresaId, serieReal = [] }: Props) {
   ];
 
   return (
-    <Card className="backdrop-blur-sm bg-card/60 border-border/50 h-full">
+    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem] overflow-hidden h-full">
       <CardHeader className="flex flex-row items-center justify-between pb-3">
         <CardTitle className="text-base flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-primary" />

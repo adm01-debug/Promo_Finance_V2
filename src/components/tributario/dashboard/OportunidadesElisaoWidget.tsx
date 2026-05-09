@@ -14,7 +14,7 @@ export function OportunidadesElisaoWidget({ oportunidades }: Props) {
   const top3 = oportunidades.filter((o) => o.aplicavel).slice(0, 3);
 
   return (
-    <Card className="backdrop-blur-sm bg-card/60 border-border/50">
+    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem] overflow-hidden h-full">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle className="text-lg flex items-center gap-2">

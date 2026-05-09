@@ -46,7 +46,7 @@ export function HeatmapTributarioAnual({ empresaId }: Props) {
   };
 
   return (
-    <Card className="backdrop-blur-sm bg-card/60 border-border/50">
+    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem] overflow-hidden">
       <CardHeader>
         <div className="flex items-center justify-between flex-wrap gap-2">
           <CardTitle className="flex items-center gap-2 text-base">

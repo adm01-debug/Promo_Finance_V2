@@ -69,10 +69,10 @@ export default function DashboardTributario() {
       <div className="relative min-h-screen">
         <PageBackground />
         
-        <div className="container mx-auto p-4 sm:p-6 space-y-6 relative z-10">
+        <div className="container mx-auto p-4 sm:p-8 space-y-10 relative z-10">
           <PageHeader 
-            title="Dashboard Tributário" 
-            subtitle="Visão consolidada · Reforma Tributária · Elisão fiscal"
+            title="Dashboard Tributário: Quantum-Sentinel" 
+            subtitle="Inteligência Neural · Reforma Tributária 2026-2033 · Elisão Preditiva"
             badge="Fiscal Control"
             icon={Scale}
             gradientFrom="from-blue-600"
@@ -178,7 +178,7 @@ export default function DashboardTributario() {
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
               >
                 <motion.div variants={itemVariants}>
                   <KpiCard icon={<TrendingDown className="h-4 w-4" />} label="Carga Tributária Efetiva" value={`${kpis.cargaEfetiva.toFixed(2)}%`} hint="Sobre faturamento" accent="primary" />
@@ -206,7 +206,7 @@ export default function DashboardTributario() {
                 </motion.div>
               </motion.div>
 
-              <motion.div variants={containerVariants} initial="hidden" animate="show" className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <motion.div variants={containerVariants} initial="hidden" animate="show" className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <motion.div variants={itemVariants} className="lg:col-span-2">
                   <EvolucaoCargaChart serie={serie} />
                 </motion.div>

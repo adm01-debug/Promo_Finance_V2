@@ -52,7 +52,7 @@ export function AssistenteFechamentoMensal({ empresaId, ano, mes, isAdmin }: Pro
   };
 
   return (
-    <Card className="border-primary/20">
+    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem] overflow-hidden">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           {isFechado ? <Lock className="h-5 w-5 text-success" /> : <ShieldAlert className="h-5 w-5 text-primary" />}

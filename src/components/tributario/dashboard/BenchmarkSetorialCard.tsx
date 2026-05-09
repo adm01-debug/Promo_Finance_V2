@@ -66,7 +66,7 @@ export function BenchmarkSetorialCard({ empresaId }: Props) {
         : 'Na mediana do setor';
 
   return (
-    <Card className="backdrop-blur-sm bg-card/60 border-border/50">
+    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem] overflow-hidden">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base flex items-center gap-2">
