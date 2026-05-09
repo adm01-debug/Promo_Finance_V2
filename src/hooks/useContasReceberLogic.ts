@@ -14,6 +14,7 @@ import { useAuth } from '@/hooks/useAuth';
 import type { Database } from '@/integrations/supabase/types';
 import type { ContaReceberWithRelations } from '@/components/contas-receber/ContasReceberTableRow';
 import { differenceInDays, subMonths, isSameDay, addDays, startOfMonth, endOfMonth, parseISO, isWithinInterval } from 'date-fns';
+import { calculateCollectionStage } from '@/lib/collection-engine';
 
 
 export function useContasReceberLogic() {
