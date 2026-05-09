@@ -164,6 +164,37 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
             {/* Keyboard Shortcuts */}
             <KeyboardShortcutsDialog />
 
+            {/* Language Switcher */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Tooltip delayDuration={300}>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl bg-white/5 hover:bg-primary/20 hover:text-primary border border-white/10 transition-all duration-500 shadow-lg ring-1 ring-white/5">
+                      <Languages className="h-5 w-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Alterar idioma / Change language</TooltipContent>
+                </Tooltip>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-popover">
+                <DropdownMenuLabel>Idioma / Language</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => changeLanguage('pt')} className={cn("cursor-pointer gap-2", i18n.language === 'pt' && "bg-primary/10")}>
+                  <span className="text-lg">🇧🇷</span> Português
+                  {i18n.language === 'pt' && <Badge variant="secondary" className="ml-auto">Ativo</Badge>}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => changeLanguage('en')} className={cn("cursor-pointer gap-2", i18n.language === 'en' && "bg-primary/10")}>
+                  <span className="text-lg">🇺🇸</span> English
+                  {i18n.language === 'en' && <Badge variant="secondary" className="ml-auto">Active</Badge>}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => changeLanguage('es')} className={cn("cursor-pointer gap-2", i18n.language === 'es' && "bg-primary/10")}>
+                  <span className="text-lg">🇪🇸</span> Español
+                  {i18n.language === 'es' && <Badge variant="secondary" className="ml-auto">Activo</Badge>}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+
             {/* Theme Toggle */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild data-tour="theme">
