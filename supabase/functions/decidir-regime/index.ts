@@ -207,7 +207,7 @@ function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   return {
     regime: 'lucro_real', nome: 'Lucro Real', elegivel: true,
     irpj, csll, pis, cofins, cpp, icms, iss, cbs: 0, ibs: 0,
-    totalTributos: total, cargaEfetiva: (total / p.faturamentoAnual) * 100,
+    totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
     observacoes: [`Lucro estimado: ${p.margemLucro}% do faturamento.`, 'PIS/COFINS não-cumulativo.'],
   };
 }
