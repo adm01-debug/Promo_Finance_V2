@@ -176,8 +176,8 @@ export function DashboardReformaTributaria({ initialTab }: { initialTab?: string
           return (
             <EmptyStateTributario
               type="onboarding"
-              onPrimaryAction={() => setActiveTab('importacao-xml')}
-              onSecondaryAction={() => setActiveTab('calculadora')}
+              onPrimaryAction={() => handleTabChange('importacao-xml')}
+              onSecondaryAction={() => handleTabChange('calculadora')}
             />
           );
         }
