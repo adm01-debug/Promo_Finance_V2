@@ -15,9 +15,9 @@ export default function InteligenciaOperacionalPage() {
             <div className="p-2 bg-primary/10 rounded-xl">
               <BrainCircuit className="h-6 w-6 text-primary" />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight">Inteligência Operacional</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Inteligência Operacional 360°</h1>
           </div>
-          <p className="text-muted-foreground">Monitoramento neural e ações automáticas baseadas em IA</p>
+          <p className="text-muted-foreground">Monitoramento neural, Health Score e ações automáticas baseadas em IA</p>
         </div>
 
         <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
@@ -41,12 +41,14 @@ export default function InteligenciaOperacionalPage() {
 
         <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
           <motion.div 
+            id="alertas-preditivos"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
+            className="scroll-mt-24"
           >
             <AlertasPreditivosPanel 
-              saldoAtual={100000} // Placeholder, hooks handle internal data mostly
+              saldoAtual={100000} 
               receitasPrevistas={[]} 
               despesasPrevistas={[]} 
               defaultExpanded={true}
