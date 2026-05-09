@@ -63,6 +63,18 @@ const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--muted-f
 
 export function DashboardReformaTributaria({ initialTab }: { initialTab?: string }) {
   const [activeTab, setActiveTab] = useState(initialTab || 'visao-geral');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (initialTab && initialTab !== activeTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
+
+  const handleTabChange = useCallback((tabId: string) => {
+    setActiveTab(tabId);
+    navigate(`/reforma-tributaria/${tabId}`);
+  }, [navigate]);
   const [empresaId, setEmpresaId] = useState<string>('all');
   const empresaIdFiltro = normalizarEmpresaId(empresaId);
 
