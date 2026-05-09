@@ -129,7 +129,8 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-bold uppercase">{step.status}</span>
                       <span className="text-[10px] text-muted-foreground">{formatDateTime(step.data)}</span>
-                    </div>
+      <BoletoHistorico boletoId={boleto.id} />
+    </div>
                     <span className="text-xs text-muted-foreground">{step.detalhe}</span>
                   </div>
                 </div>
