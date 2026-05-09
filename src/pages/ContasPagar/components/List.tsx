@@ -71,7 +71,10 @@ export const ContasPagarList: React.FC<ContasPagarListProps> = ({
               onDelete={() => onDelete(conta)}
               onRegistrarPagamento={() => onRegistrarPagamento(conta)}
               onSolicitarAprovacao={() => onSolicitarAprovacao(conta)}
-              {...approvalStatus}
+              estaAprovado={approvalStatus.estaAprovado}
+              temSolicitacaoPendente={approvalStatus.temSolicitacaoPendente}
+              foiRejeitado={approvalStatus.foiRejeitado}
+              aguardandoSolicitacao={approvalStatus.aguardandoSolicitacao}
               historico={historico}
               profilesMap={profilesMap}
               valorMinimoAprovacao={valorMinimoAprovacao}
@@ -92,7 +95,7 @@ export const ContasPagarList: React.FC<ContasPagarListProps> = ({
             <th className="w-16 p-6 text-center">
               <Checkbox 
                 checked={isAllSelected}
-                onCheckedChange={selectAll}
+                onChange={() => selectAll(!isAllSelected)}
                 aria-label="Selecionar todos"
               />
             </th>
@@ -110,7 +113,7 @@ export const ContasPagarList: React.FC<ContasPagarListProps> = ({
       <List
         height={600}
         itemCount={contas.length}
-        itemSize={100} // Altura aproximada de cada linha
+        itemSize={100} 
         width="100%"
         className="min-w-[1200px] custom-scrollbar"
       >
