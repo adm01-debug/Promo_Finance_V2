@@ -2510,6 +2510,7 @@ export type Database = {
           bitrix_company_id: string | null
           bitrix_contact_id: string | null
           bitrix_id: string | null
+          boa_vista_score: number | null
           cep: string | null
           cidade: string | null
           cnpj_cpf: string | null
@@ -2519,10 +2520,12 @@ export type Database = {
           cpf_cnpj: string | null
           created_at: string
           custom_fields: Json | null
+          data_ultima_consulta_externa: string | null
           email: string | null
           empresa_id: string | null
           endereco: string | null
           estado: string | null
+          ia_risco_comportamental: string | null
           id: string
           limite_credito: number | null
           nome: string | null
@@ -2532,6 +2535,7 @@ export type Database = {
           ramo_atividade: string | null
           razao_social: string
           score: number | null
+          serasa_score: number | null
           telefone: string | null
           tipo: string | null
           updated_at: string
@@ -2545,6 +2549,7 @@ export type Database = {
           bitrix_company_id?: string | null
           bitrix_contact_id?: string | null
           bitrix_id?: string | null
+          boa_vista_score?: number | null
           cep?: string | null
           cidade?: string | null
           cnpj_cpf?: string | null
@@ -2554,10 +2559,12 @@ export type Database = {
           cpf_cnpj?: string | null
           created_at?: string
           custom_fields?: Json | null
+          data_ultima_consulta_externa?: string | null
           email?: string | null
           empresa_id?: string | null
           endereco?: string | null
           estado?: string | null
+          ia_risco_comportamental?: string | null
           id?: string
           limite_credito?: number | null
           nome?: string | null
@@ -2567,6 +2574,7 @@ export type Database = {
           ramo_atividade?: string | null
           razao_social: string
           score?: number | null
+          serasa_score?: number | null
           telefone?: string | null
           tipo?: string | null
           updated_at?: string
@@ -2580,6 +2588,7 @@ export type Database = {
           bitrix_company_id?: string | null
           bitrix_contact_id?: string | null
           bitrix_id?: string | null
+          boa_vista_score?: number | null
           cep?: string | null
           cidade?: string | null
           cnpj_cpf?: string | null
@@ -2589,10 +2598,12 @@ export type Database = {
           cpf_cnpj?: string | null
           created_at?: string
           custom_fields?: Json | null
+          data_ultima_consulta_externa?: string | null
           email?: string | null
           empresa_id?: string | null
           endereco?: string | null
           estado?: string | null
+          ia_risco_comportamental?: string | null
           id?: string
           limite_credito?: number | null
           nome?: string | null
@@ -2602,6 +2613,7 @@ export type Database = {
           ramo_atividade?: string | null
           razao_social?: string
           score?: number | null
+          serasa_score?: number | null
           telefone?: string | null
           tipo?: string | null
           updated_at?: string
