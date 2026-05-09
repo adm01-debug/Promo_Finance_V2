@@ -38,6 +38,10 @@ export interface SolicitacaoAprovacao {
     full_name: string | null;
     email: string;
   };
+  aprovador?: {
+    full_name: string | null;
+    email: string;
+  };
 }
 
 export interface FluxoNivel {
