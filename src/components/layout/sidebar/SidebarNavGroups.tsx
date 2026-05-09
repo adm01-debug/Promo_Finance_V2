@@ -119,7 +119,7 @@ const navGroups: NavGroup[] = [
     label: 'Fiscal & Documentos',
     icon: FileText,
     items: [
-      { label: 'Dashboard Tributário', icon: Scale, href: '/tributario/dashboard', highlight: true, badgeKey: 'tributario' },
+      { label: 'Quantum-Sentinel: Tributário', icon: Scale, href: '/tributario/dashboard', highlight: true, badgeKey: 'tributario' },
       { label: 'Reforma Tributária', icon: Scale, href: '/reforma-tributaria/visao-geral' },
       { label: 'Split Payment', icon: ArrowLeftRight, href: '/reforma-tributaria/split-payment' },
       { label: 'Conciliação Tributária', icon: RefreshCcw, href: '/reforma-tributaria/conciliacao' },

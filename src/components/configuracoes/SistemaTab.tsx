@@ -50,6 +50,29 @@ export function SistemaTab({ preferencias, onPreferenciasChange, onSave }: Siste
             <div className="grid gap-2"><Label>Frequência</Label><Select value={preferencias.frequenciaBackup} onValueChange={(v) => set('frequenciaBackup', v)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="diario">Diário</SelectItem><SelectItem value="semanal">Semanal</SelectItem><SelectItem value="mensal">Mensal</SelectItem></SelectContent></Select></div>
           </CardContent>
         </Card>
+        <Card className="premium-card">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-primary">
+              <Sparkles className="h-5 w-5" /> Inteligência Preditiva
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Motor Quantum-Sentinel</p>
+                <p className="text-sm text-muted-foreground">Ativar análise preditiva de riscos e elisão fiscal IA</p>
+              </div>
+              <Switch checked={true} />
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Sugestões em Tempo Real</p>
+                <p className="text-sm text-muted-foreground">Exibir insights do Expert IA durante a navegação</p>
+              </div>
+              <Switch checked={true} />
+            </div>
+          </CardContent>
+        </Card>
         <Card>
           <CardHeader><CardTitle className="flex items-center gap-2"><Zap className="h-5 w-5" />Integrações</CardTitle></CardHeader>
           <CardContent className="space-y-4">
