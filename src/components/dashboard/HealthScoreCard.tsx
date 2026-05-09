@@ -69,10 +69,10 @@ export function HealthScoreCard({ empresaId }: Props) {
   const total = Number(data.score_total);
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="flex items-center gap-2">
-          <Activity className="h-5 w-5" /> Health Score Operacional
+    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem] overflow-hidden">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-lg font-black tracking-tight flex items-center gap-2">
+          <Activity className="h-5 w-5 text-primary" /> Health Score: Quantum 10/10
         </CardTitle>
         <Button
           size="sm"
