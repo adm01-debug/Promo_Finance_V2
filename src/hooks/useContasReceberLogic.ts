@@ -152,8 +152,11 @@ export function useContasReceberLogic() {
       c.status !== 'pago' && c.status !== 'cancelado' ? sum + c.valor - (c.valor_recebido || 0) : sum, 0);
     const totalVencido = allContas.filter(c => c.status === 'vencido')
       .reduce((sum, c) => sum + c.valor - (c.valor_recebido || 0), 0);
-    const totalRecebidoMes = allContas.filter(c => c.status === 'pago')
-      .reduce((sum, c) => sum + (c.valor_recebido || 0), 0);
+    const totalRecebidoMes = allContas.filter(c => {
+      if (c.status !== 'pago' || !c.data_recebimento) return false;
+      const dataRec = new Date(c.data_recebimento);
+      return dataRec.getMonth() === today.getMonth() && dataRec.getFullYear() === today.getFullYear();
+    }).reduce((sum, c) => sum + (c.valor_recebido || 0), 0);
     const taxaInadimplencia = totalReceber > 0 ? (totalVencido / totalReceber) * 100 : 0;
 
     // Vence Hoje (#5)
