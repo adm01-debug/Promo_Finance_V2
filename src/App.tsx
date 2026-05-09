@@ -14,7 +14,6 @@ import { PageLoading } from '@/components/ui/loading-skeleton';
 import { SkipLinks } from '@/components/accessibility/SkipLinks';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { CommandPalette } from '@/components/command-palette/CommandPalette';
-import { TenantProvider } from '@/contexts/TenantContext';
 
 
 // Lazy load pages for better performance
@@ -257,11 +256,9 @@ function App() {
         <ThemeProvider>
           <TooltipProvider>
             <AuthProvider>
-              <TenantProvider>
-                <BrowserRouter>
-                  <AppRoutes />
-                </BrowserRouter>
-              </TenantProvider>
+              <BrowserRouter>
+                <AppRoutes />
+              </BrowserRouter>
             </AuthProvider>
           </TooltipProvider>
         </ThemeProvider>
