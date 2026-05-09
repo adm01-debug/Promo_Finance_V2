@@ -84,12 +84,13 @@ export default function Relatorios() {
 
   const { data: empresas } = useEmpresas();
   const { data: contasBancarias } = useContasBancarias();
-  const { data: comparativoPeriodos, isLoading: loadingComparativo } = useComparativoPeriodos();
-  const { data: fluxoMensal, isLoading: loadingFluxo } = useFluxoMensal();
-  const { data: despesasPorCategoria, isLoading: loadingDespesas } = useDespesasPorCategoria();
-  const { data: receitasPorCliente, isLoading: loadingReceitas } = useReceitasPorCliente();
-  const { data: inadimplenciaPorMes, isLoading: loadingInadimplencia } = useInadimplenciaPorMes();
-  const { data: kpis, isLoading: loadingKpis, refetch: refetchKpis } = useRelatorioKPIs(periodoInicio, periodoFim);
+  const { data: comparativoPeriodos, isLoading: loadingComparativo } = useComparativoPeriodos(6, empresaSelecionada);
+  const { data: fluxoMensal, isLoading: loadingFluxo } = useFluxoMensal(6, empresaSelecionada);
+  const { data: despesasPorCategoria, isLoading: loadingDespesas } = useDespesasPorCategoria(empresaSelecionada);
+  const { data: receitasPorCliente, isLoading: loadingReceitas } = useReceitasPorCliente(6, empresaSelecionada);
+  const { data: inadimplenciaPorMes, isLoading: loadingInadimplencia } = useInadimplenciaPorMes(6, empresaSelecionada);
+  const { data: kpis, isLoading: loadingKpis, refetch: refetchKpis } = useRelatorioKPIs(periodoInicio, periodoFim, empresaSelecionada);
+
 
   const isLoading = loadingComparativo || loadingFluxo || loadingDespesas || loadingReceitas || loadingInadimplencia || loadingKpis;
 
