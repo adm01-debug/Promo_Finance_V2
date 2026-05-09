@@ -12060,40 +12060,46 @@ export type Database = {
           aprovado_por: string | null
           asaas_bill_id: string | null
           asaas_status: string | null
+          asaas_transfer_id: string | null
+          banco_nome: string | null
+          bitrix_activity_id: string | null
           bitrix_deal_id: string | null
           categoria: string | null
-          centro_custo: string | null
           centro_custo_id: string | null
+          centro_custo_nome: string | null
           codigo_barras: string | null
-          conta_bancaria: string | null
           conta_bancaria_id: string | null
           contato_id: string | null
-          contato_nome: string | null
           created_at: string | null
           created_by: string | null
+          custom_fields: Json | null
+          data_competencia: string | null
           data_emissao: string | null
           data_pagamento: string | null
           data_vencimento: string | null
           descricao: string | null
-          dias_para_vencer: number | null
+          empresa_cnpj: string | null
           empresa_id: string | null
+          empresa_nome_fantasia: string | null
+          empresa_razao_social: string | null
           forma_pagamento: string | null
           forma_pagamento_id: string | null
-          fornecedor: string | null
-          fornecedor_cnpj: string | null
           fornecedor_id: string | null
           fornecedor_nome: string | null
+          fornecedor_nome_fantasia: string | null
+          fornecedor_razao_social: string | null
           frequencia_recorrencia: string | null
           id: string | null
+          idempotency_key: string | null
+          is_frete: boolean | null
           numero_documento: string | null
           numero_parcela_atual: number | null
           observacoes: string | null
+          origem: string | null
           parcela_atual: number | null
-          plano_conta_codigo: string | null
           plano_conta_id: string | null
-          plano_conta_nome: string | null
+          recorrencia_parent_id: string | null
           recorrente: boolean | null
-          saldo_devedor: number | null
           status: Database["public"]["Enums"]["status_pagamento"] | null
           tags: string[] | null
           tipo_cobranca: Database["public"]["Enums"]["tipo_cobranca"] | null
@@ -12185,53 +12191,59 @@ export type Database = {
       vw_contas_receber_painel: {
         Row: {
           asaas_billing_type: string | null
+          asaas_installment_id: string | null
+          asaas_invoice_url: string | null
           asaas_payment_id: string | null
           asaas_status: string | null
+          asaas_subscription_id: string | null
+          banco_nome: string | null
+          bitrix_activity_id: string | null
           bitrix_deal_id: string | null
           categoria: string | null
-          centro_custo: string | null
           centro_custo_id: string | null
           centro_custo_nome: string | null
           chave_pix: string | null
-          cliente: string | null
-          cliente_cpf_cnpj: string | null
           cliente_id: string | null
           cliente_nome: string | null
-          cliente_score: number | null
+          cliente_nome_fantasia: string | null
+          cliente_razao_social: string | null
           codigo_barras: string | null
           conta_bancaria_id: string | null
-          conta_banco: string | null
           contato_id: string | null
-          contato_nome: string | null
           created_at: string | null
           created_by: string | null
+          custom_fields: Json | null
+          data_competencia: string | null
           data_credito: string | null
           data_emissao: string | null
           data_recebimento: string | null
           data_vencimento: string | null
           descricao: string | null
-          dias_para_vencer: number | null
+          empresa_cnpj: string | null
           empresa_id: string | null
+          empresa_nome_fantasia: string | null
+          empresa_razao_social: string | null
           etapa_cobranca: Database["public"]["Enums"]["etapa_cobranca"] | null
           forma_pagamento_id: string | null
           forma_recebimento: string | null
           frequencia_recorrencia: string | null
           id: string | null
           link_boleto: string | null
+          metadata: Json | null
           numero_documento: string | null
           numero_nf: string | null
           numero_parcela_atual: number | null
           observacoes: string | null
+          origem: string | null
           parcela_atual: number | null
           plano_conta_id: string | null
-          plano_conta_nome: string | null
           recorrente: boolean | null
-          saldo_a_receber: number | null
           status: Database["public"]["Enums"]["status_pagamento"] | null
           tags: string[] | null
           taxa_gateway: number | null
           tipo_cobranca: Database["public"]["Enums"]["tipo_cobranca"] | null
           total_parcelas: number | null
+          transacao_conciliada_id: string | null
           updated_at: string | null
           user_id: string | null
           valor: number | null
@@ -12315,6 +12327,13 @@ export type Database = {
             columns: ["plano_conta_id"]
             isOneToOne: false
             referencedRelation: "plano_contas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contas_receber_transacao_conciliada_id_fkey"
+            columns: ["transacao_conciliada_id"]
+            isOneToOne: false
+            referencedRelation: "transacoes_bancarias"
             referencedColumns: ["id"]
           },
           {
