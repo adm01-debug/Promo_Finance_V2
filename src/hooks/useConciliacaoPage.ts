@@ -32,7 +32,14 @@ export function useConciliacaoPage() {
   const { currentBankAccountId } = useGlobalFinancialFilter();
   const [mainTab, setMainTab] = useState('conciliacao');
   const [statusTab, setStatusTab] = useState('pendentes');
-  const [selectedBanco, setSelectedBanco] = useState<string>('');
+  const [selectedBanco, setSelectedBanco] = useState<string>(currentBankAccountId || '');
+
+  useEffect(() => {
+    if (currentBankAccountId && selectedBanco !== currentBankAccountId) {
+      setSelectedBanco(currentBankAccountId);
+    }
+  }, [currentBankAccountId, selectedBanco]);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [showSugestoesFila, setShowSugestoesFila] = useState(false);
   const debouncedSearch = useDebounce(searchTerm, 300);
