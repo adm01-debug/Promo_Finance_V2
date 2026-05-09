@@ -188,6 +188,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
           estado: data.estado || null,
           contato: data.contato || null,
           limite_credito: data.limite_credito || 0,
+          ramo_atividade: data.ramo_atividade || null,
           observacoes: data.observacoes || null,
           ativo: data.ativo,
         })
