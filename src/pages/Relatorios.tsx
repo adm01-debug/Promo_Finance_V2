@@ -45,6 +45,7 @@ import {
   useReceitasPorCliente,
   useInadimplenciaPorMes,
   useRelatorioKPIs,
+  useRelatorioDetalhado,
 } from '@/hooks/useRelatoriosData';
 import { generateFluxoCaixaPDF, generateFluxoCaixaCSV } from '@/lib/pdf-generator';
 import { RelatoriosKpiCards } from '@/components/relatorios/RelatoriosKpis';
@@ -90,9 +91,10 @@ export default function Relatorios() {
   const { data: receitasPorCliente, isLoading: loadingReceitas } = useReceitasPorCliente(6, empresaSelecionada);
   const { data: inadimplenciaPorMes, isLoading: loadingInadimplencia } = useInadimplenciaPorMes(6, empresaSelecionada);
   const { data: kpis, isLoading: loadingKpis, refetch: refetchKpis } = useRelatorioKPIs(periodoInicio, periodoFim, empresaSelecionada);
+  const { data: transacoesDetalhadas, isLoading: loadingDetalhado } = useRelatorioDetalhado(periodoInicio, periodoFim, empresaSelecionada);
 
 
-  const isLoading = loadingComparativo || loadingFluxo || loadingDespesas || loadingReceitas || loadingInadimplencia || loadingKpis;
+  const isLoading = loadingComparativo || loadingFluxo || loadingDespesas || loadingReceitas || loadingInadimplencia || loadingKpis || loadingDetalhado;
 
   const handleExport = async (format: 'pdf' | 'excel') => {
     setIsGenerating(true);
@@ -236,7 +238,7 @@ export default function Relatorios() {
         </TabsContent>
 
         <TabsContent value="detalhado">
-          <RelatoriosDetalhado />
+          <RelatoriosDetalhado transacoes={transacoesDetalhadas || []} isLoading={loadingDetalhado} />
         </TabsContent>
 
         <TabsContent value="modelos">
