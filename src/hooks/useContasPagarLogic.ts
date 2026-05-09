@@ -3,7 +3,16 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
-import { useContasPagar, useContasPagarPaginated, useCentrosCusto, useEmpresas, useContasBancarias, ContaPagar } from '@/hooks/useFinancialData';
+import { 
+  useContasPagar, 
+  useContasPagarPaginated, 
+  useCentrosCusto, 
+  useEmpresas, 
+  useContasBancarias, 
+  useDeleteContaPagar,
+  useUpdateContaPagar,
+  ContaPagar 
+} from '@/hooks/useFinancialData';
 import { useConfiguracaoAprovacao, useCriarSolicitacaoAprovacao } from '@/hooks/useAprovacoes';
 import { useAuth } from '@/hooks/useAuth';
 import { useTableOptimization } from '@/hooks/useTableOptimization';
