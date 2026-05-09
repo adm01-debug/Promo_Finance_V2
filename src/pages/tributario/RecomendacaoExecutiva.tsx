@@ -134,9 +134,21 @@ export default function RecomendacaoExecutiva() {
         <CardHeader>
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
-              <Badge variant="default" className="mb-2">Regime recomendado</Badge>
+              <div className="flex items-center gap-2 mb-2">
+                <Badge variant="default">Regime recomendado</Badge>
+                {isRecomendacaoIA && (
+                  <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 animate-pulse">
+                    <Sparkles className="h-3 w-3 mr-1" /> IA
+                  </Badge>
+                )}
+                {resultado.fromCache && (
+                  <Badge variant="outline" className="text-muted-foreground border-muted-foreground/20">
+                    Cached
+                  </Badge>
+                )}
+              </div>
               <CardTitle className="text-3xl">{resultado.recomendado.nome}</CardTitle>
-              <CardDescription className="mt-2 text-base">{resultado.justificativa}</CardDescription>
+              <CardDescription className="mt-2 text-base">{resultado.justificativaIA || resultado.justificativa}</CardDescription>
             </div>
             <div className="text-right">
               <p className="text-sm text-muted-foreground">Carga tributária estimada</p>
