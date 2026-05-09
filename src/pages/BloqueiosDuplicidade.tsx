@@ -196,8 +196,17 @@ export default function BloqueiosDuplicidade() {
               onClick={exportCSV}
               disabled={!bloqueios?.length}
             >
-              <Download className="h-4 w-4" /> Exportar CSV
+              <Download className="h-4 w-4" /> CSV
             </Button>
+            <Button 
+              variant="outline" 
+              className="rounded-xl font-bold h-10 px-6 gap-2 border-white/10 hover:border-primary/50 bg-white/[0.02] transition-all"
+              onClick={exportPDF}
+              disabled={!bloqueios?.length}
+            >
+              <FileDown className="h-4 w-4" /> PDF
+            </Button>
+
             <Button 
               className="rounded-xl font-black h-10 px-6 gap-2 shadow-2xl shadow-primary/30 hover:shadow-primary/50 transition-all bg-primary hover:bg-primary/90"
               asChild
