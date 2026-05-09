@@ -35,6 +35,7 @@ import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime } fro
 import { cn } from '@/lib/utils';
 import { ContaPagarRowAprovacaoBadge } from './ContaPagarRowAprovacaoBadge';
 import { CategorizacaoIABadge } from './CategorizacaoIABadge';
+import { VersionHistory } from '@/components/common/VersionHistory';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
