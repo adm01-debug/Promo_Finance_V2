@@ -336,25 +336,18 @@ export function useContasPagarLogic() {
 
   const handleBulkMarkAsPaid = () => {
     bulkActionsHook.executeBulkAction(async (id) => {
-      const { error } = await supabase
-        .from('contas_pagar')
-        .update({
-          status: 'pago',
-          data_pagamento: new Date().toISOString().split('T')[0],
-          valor_pago: sortedContas.find(c => c.id === id)?.valor || 0
-        })
-        .eq('id', id);
-      if (error) throw error;
+      await updateMutation.mutateAsync({
+        id,
+        status: 'pago',
+        data_pagamento: new Date().toISOString().split('T')[0],
+        valor_pago: sortedContas.find(c => c.id === id)?.valor || 0
+      });
     }, { showProgress: true });
   };
 
   const handleBulkCancel = () => {
     bulkActionsHook.executeBulkAction(async (id) => {
-      const { error } = await supabase
-        .from('contas_pagar')
-        .update({ status: 'cancelado' })
-        .eq('id', id);
-      if (error) throw error;
+      await updateMutation.mutateAsync({ id, status: 'cancelado' });
     }, { showProgress: true });
   };
 
