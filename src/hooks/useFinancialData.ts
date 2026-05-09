@@ -253,6 +253,7 @@ export interface PaginatedContasPagarParams {
   status?: string;
   centroCustoId?: string;
   empresaId?: string;
+  contaBancariaId?: string;
 }
 
 export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
