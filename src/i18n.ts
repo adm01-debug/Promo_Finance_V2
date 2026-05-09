@@ -34,7 +34,13 @@ const resources = {
       sair: 'Sign Out',
       perfil: 'My Profile',
       bem_vindo: 'Welcome to Quantum',
+      visao_geral: 'Overview',
+      relatorios: 'Reports & BI',
+      clientes: 'Clients',
+      fornecedores: 'Suppliers',
+      seguranca: 'Security',
     }
+
   },
   es: {
     common: {
