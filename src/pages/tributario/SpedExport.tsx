@@ -2,11 +2,8 @@ import { ExportacaoSPED } from '@/components/reforma-tributaria/ExportacaoSPED';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
 import { BookOpen } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
 
 export default function SpedExportPage() {
-  const { currentEmpresaId } = useAuth();
-
   return (
     <MainLayout>
       <div className="relative min-h-screen">
@@ -23,7 +20,7 @@ export default function SpedExportPage() {
             gradientTo="to-indigo-600"
           />
           
-          <ExportacaoSPED empresaId={currentEmpresaId || ''} />
+          <ExportacaoSPED />
         </div>
       </div>
     </MainLayout>
