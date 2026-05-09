@@ -7,9 +7,12 @@ import { formatCurrency } from '@/lib/formatters';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
+import { useAuth } from '@/hooks/useAuth';
+
 export const AlertasOrcamento = () => {
+  const { currentEmpresaId } = useAuth();
   const currentPeriod = format(new Date(), 'yyyy-MM');
-  const { data: budgets = [], isLoading } = useBudgetsWithSpent(currentPeriod);
+  const { data: budgets = [], isLoading } = useBudgetsWithSpent(currentPeriod, currentEmpresaId || undefined);
 
   const criticalBudgets = budgets
     .filter(b => b.percent_used >= 80)
