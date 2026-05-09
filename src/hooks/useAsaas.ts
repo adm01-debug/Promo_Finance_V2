@@ -152,6 +152,7 @@ export function useAsaas(empresaId?: string) {
       parcelas?: number; valor_parcela?: number;
       cartao?: { holder_name: string; number: string; expiry_month: string; expiry_year: string; ccv: string };
       email?: string; cpf_cnpj?: string; cep?: string; telefone?: string;
+      split?: Array<{ walletId: string; percentualValue?: number; fixedValue?: number }>;
     }) => invokeAsaas('criar_cobranca', payload),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['asaas-payments'] });
