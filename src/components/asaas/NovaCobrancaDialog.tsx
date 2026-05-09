@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { QrCode, Banknote, CreditCard, Loader2, UserPlus, Settings2 } from 'lucide-react';
+import { QrCode, Banknote, CreditCard, Loader2, UserPlus, Settings2, RefreshCw } from 'lucide-react';
 import { useAsaas, type AsaasBillingType } from '@/hooks/useAsaas';
 import { toast } from 'sonner';
 import { CobrancaCardForm } from './CobrancaCardForm';
@@ -46,6 +46,9 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
   const [descontoValor, setDescontoValor] = useState('');
   const [descontoDias, setDescontoDias] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showSplit, setShowSplit] = useState(false);
+  const [splitWalletId, setSplitWalletId] = useState('');
+  const [splitPercent, setSplitPercent] = useState('');
   
   // Cartão de crédito
   const [cardHolderName, setCardHolderName] = useState('');
@@ -191,6 +194,10 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
         desconto_valor: descontoValor ? parseFloat(descontoValor) : undefined,
         desconto_dias: descontoDias ? parseInt(descontoDias) : undefined,
         desconto_tipo: descontoValor ? 'FIXED' : undefined,
+        split: showSplit && splitWalletId && splitPercent ? [{
+          walletId: splitWalletId,
+          percentualValue: parseFloat(splitPercent)
+        }] : undefined,
         ...(tipo === 'credit_card' ? {
           cartao: {
             holder_name: cardHolderName,
@@ -421,6 +428,50 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
                       />
                     </div>
                   </div>
+                </div>
+              )}
+            </div>
+
+            {/* Split Settings */}
+            <div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="text-xs text-muted-foreground gap-1"
+                onClick={() => setShowSplit(!showSplit)}
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                {showSplit ? 'Remover' : 'Configurar'} Split (Divisão)
+              </Button>
+              {showSplit && (
+                <div className="mt-3 space-y-3 p-3 rounded-lg border border-primary/20 bg-primary/5">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <Label className="text-xs">Wallet ID Destino</Label>
+                      <Input
+                        value={splitWalletId}
+                        onChange={e => setSplitWalletId(e.target.value)}
+                        placeholder="Ex: d7a1..."
+                        className="h-8 text-sm"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Percentual (%)</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={splitPercent}
+                        onChange={e => setSplitPercent(e.target.value)}
+                        placeholder="10"
+                        className="h-8 text-sm"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground italic">
+                    O valor será dividido automaticamente na liquidação.
+                  </p>
                 </div>
               )}
             </div>
