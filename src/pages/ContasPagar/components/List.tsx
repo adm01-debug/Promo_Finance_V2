@@ -1,9 +1,12 @@
 import React from 'react';
-import { FixedSizeList as List } from 'react-window';
+import * as ReactWindow from 'react-window';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ContasPagarTableRow } from '@/components/contas-pagar/ContasPagarTableRow';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Sparkles } from 'lucide-react';
+
+// Forçando o uso como any se o import nomeado falhar no build
+const FixedSizeList = (ReactWindow as any).FixedSizeList;
 
 interface ContasPagarListProps {
   contas: any[];
@@ -110,7 +113,7 @@ export const ContasPagarList: React.FC<ContasPagarListProps> = ({
           </tr>
         </TableHeader>
       </Table>
-      <List
+      <FixedSizeList
         height={600}
         itemCount={contas.length}
         itemSize={100} 
@@ -118,7 +121,7 @@ export const ContasPagarList: React.FC<ContasPagarListProps> = ({
         className="min-w-[1200px] custom-scrollbar"
       >
         {Row}
-      </List>
+      </FixedSizeList>
     </div>
   );
 };
