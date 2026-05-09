@@ -13,7 +13,7 @@ export function ProximosVencimentosTimeline({ vencimentos }: Props) {
   const hoje = new Date();
 
   return (
-    <Card className="backdrop-blur-sm bg-card/60 border-border/50">
+    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem] overflow-hidden">
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
           <Calendar className="h-4 w-4 text-primary" />
