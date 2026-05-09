@@ -446,11 +446,15 @@ export default function BloqueiosDuplicidade() {
                         variant="ghost" 
                         size="sm" 
                         className="rounded-lg h-10 w-10 p-0 hover:bg-white/10 group-hover:text-primary transition-all"
-                        onClick={() => toast.info("Detalhes técnicos: " + JSON.stringify(b.dados_tentativa))}
+                        onClick={() => {
+                          setSelectedBlock(b);
+                          setIsDetailsOpen(true);
+                        }}
                       >
                         <Info className="h-5 w-5" />
                       </Button>
                     </TableCell>
+
                   </TableRow>
                 ))
               )}
