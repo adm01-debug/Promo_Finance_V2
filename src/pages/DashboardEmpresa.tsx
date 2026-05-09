@@ -35,6 +35,8 @@ export default function DashboardEmpresa() {
   const { data: contasBancarias = [] } = useContasBancarias();
   const { data: contasPagar = [] } = useContasPagar();
   const { data: contasReceber = [] } = useContasReceber();
+  const { data: kpis } = useDashboardKPIs(selectedEmpresa || (empresas.length > 0 ? empresas[0].id : ''));
+
 
   const empresaId = selectedEmpresa || (empresas.length > 0 ? empresas[0].id : '');
   const empresa = empresas.find((e) => e.id === empresaId);
