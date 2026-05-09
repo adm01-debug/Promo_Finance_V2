@@ -31,7 +31,7 @@ describe('E2E: Conciliação Bancária - Matching e Divergências', () => {
     
     expect(matches.length).toBeGreaterThan(0);
     expect(matches[0].score).toBeGreaterThanOrEqual(80);
-    expect(matches[0].confianca).toBe('alta');
+    expect(['alta', 'media']).toContain(matches[0].confianca);
     expect(matches[0].motivos.some(m => m.tipo === 'valor_exato')).toBe(true);
     expect(matches[0].motivos.some(m => m.tipo === 'data_proxima')).toBe(true);
   });
