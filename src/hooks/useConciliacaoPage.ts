@@ -141,6 +141,17 @@ export function useConciliacaoPage() {
             recomendacao: 'Revisar lançamentos faltantes no período ou saldo inicial informado.',
             resolvido_por: userData.user?.id
           });
+
+          // Adicionar alerta automático no sistema
+          await supabase.from('alertas').insert({
+            empresa_id: (contasBancarias?.find(c => c.id === selectedBanco) as any)?.empresa_id,
+            tipo: 'divergencia_conciliacao',
+            prioridade: 'critica',
+            titulo: 'Divergência de Saldo Bancário',
+            mensagem: `O saldo final do extrato ${extrato.nomeArquivo} (R$ ${extrato.conta.saldoFinal.toFixed(2)}) não confere com o cálculo dos lançamentos. Diferença de R$ ${(extrato.conta.saldoFinal - saldoCalculado).toFixed(2)}.`,
+            status: 'pendente',
+            metadata: { conta_bancaria_id: selectedBanco, extrato: extrato.nomeArquivo }
+          } as any);
         }
       }
     }
