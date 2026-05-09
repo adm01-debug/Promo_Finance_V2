@@ -300,6 +300,28 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
   doc.text(justText, 14, y);
   y += justText.length * 5 + 8;
 
+  // ===== DETALHAMENTO PARÂMETROS =====
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text('2. Parâmetros Analisados', 14, y);
+  y += 6;
+  
+  const col1 = 18;
+  const col2 = 110;
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  
+  const p = opts.parametros;
+  doc.text(`Faturamento Anual: ${fmt(p.faturamentoAnual)}`, col1, y);
+  doc.text(`Folha de Pagamento: ${fmt(p.folhaAnual || 0)}`, col2, y);
+  y += 5;
+  doc.text(`Margem de Lucro: ${p.margemLucro}%`, col1, y);
+  doc.text(`Mix de Serviços: ${p.percentualServicos}%`, col2, y);
+  y += 5;
+  doc.text(`Compras com Crédito: ${fmt(p.comprasComCredito || 0)}`, col1, y);
+  doc.text(`Despesas Operacionais: ${fmt(p.despesasOperacionais || 0)}`, col2, y);
+  y += 10;
+
   // ===== GRÁFICO COMPARATIVO =====
   const graficoBar = gerarGraficoComparativoBase64(opts.decisao);
   if (graficoBar) {
