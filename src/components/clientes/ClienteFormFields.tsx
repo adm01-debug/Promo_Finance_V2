@@ -109,19 +109,26 @@ export function ClienteFormFields({ form }: Props) {
         </FormItem>
       )} />
 
-      {/* Cidade e Estado */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Cidade, Estado e Ramo de Atividade */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <FormField control={form.control} name="cidade" render={({ field }) => (
-          <FormItem className="md:col-span-2">
+          <FormItem className="md:col-span-1">
             <FormLabel>Cidade</FormLabel>
             <FormControl><Input {...field} placeholder="Cidade" /></FormControl>
             <FormMessage />
           </FormItem>
         )} />
         <FormField control={form.control} name="estado" render={({ field }) => (
-          <FormItem>
+          <FormItem className="md:col-span-1">
             <FormLabel>UF</FormLabel>
             <FormControl><Input {...field} placeholder="SP" maxLength={2} className="uppercase" /></FormControl>
+            <FormMessage />
+          </FormItem>
+        )} />
+        <FormField control={form.control} name="ramo_atividade" render={({ field }) => (
+          <FormItem className="md:col-span-2">
+            <FormLabel>Ramo de Atividade</FormLabel>
+            <FormControl><Input {...field} placeholder="Ex: Varejo, Tecnologia, Serviços" /></FormControl>
             <FormMessage />
           </FormItem>
         )} />
