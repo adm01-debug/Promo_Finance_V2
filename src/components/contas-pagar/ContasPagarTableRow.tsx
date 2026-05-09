@@ -259,7 +259,6 @@ export const ContasPagarTableRow = memo(({
               className="w-full justify-start px-2 py-1.5 h-auto font-normal text-sm gap-2 rounded-lg focus:bg-primary/10"
               variant="ghost"
               size="default"
-              iconClassName="h-4 w-4"
             />
             
             {(conta.status === 'pendente' || conta.status === 'vencido' || conta.status === 'parcial') && (
