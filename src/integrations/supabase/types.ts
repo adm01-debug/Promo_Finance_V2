@@ -11990,6 +11990,53 @@ export type Database = {
         }
         Relationships: []
       }
+      whatsapp_conversas: {
+        Row: {
+          cliente_id: string | null
+          created_at: string | null
+          direcao: string | null
+          id: string
+          intencao_pagamento: boolean | null
+          mensagem: string
+          resumo_ia: string | null
+          sentimento: string | null
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          cliente_id?: string | null
+          created_at?: string | null
+          direcao?: string | null
+          id?: string
+          intencao_pagamento?: boolean | null
+          mensagem: string
+          resumo_ia?: string | null
+          sentimento?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          cliente_id?: string | null
+          created_at?: string | null
+          direcao?: string | null
+          id?: string
+          intencao_pagamento?: boolean | null
+          mensagem?: string
+          resumo_ia?: string | null
+          sentimento?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_conversas_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workflow_aprovacoes: {
         Row: {
           aprovacoes: Json
