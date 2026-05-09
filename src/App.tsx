@@ -118,6 +118,8 @@ const StatusPage = lazy(() => import('./pages/StatusPage'));
 
 
 const Compras = lazy(() => import('./pages/Compras'));
+const Integracoes = lazy(() => import('./pages/Integracoes'));
+const PortalCliente = lazy(() => import('./pages/PortalCliente'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 
@@ -138,6 +140,7 @@ function AppRoutes() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/contador/:token" element={<ContadorReadonly />} />
             <Route path="/status" element={<StatusPage />} />
+            <Route path="/portal-cliente" element={<PortalCliente />} />
 
             
             {/* Protected Routes */}
@@ -167,6 +170,7 @@ function AppRoutes() {
             <Route path="/usuarios" element={<ProtectedRoute><Usuarios /></ProtectedRoute>} />
             <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
             <Route path="/seguranca" element={<ProtectedRoute><Seguranca /></ProtectedRoute>} />
+            <Route path="/integracoes" element={<ProtectedRoute><Integracoes /></ProtectedRoute>} />
             <Route path="/demonstrativos" element={<ProtectedRoute><Demonstrativos /></ProtectedRoute>} />
             <Route path="/contabilidade" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><Contabilidade /></ProtectedRoute>} />
             <Route path="/pagamentos-recorrentes" element={<ProtectedRoute><PagamentosRecorrentes /></ProtectedRoute>} />
