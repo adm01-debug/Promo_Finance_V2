@@ -77,7 +77,7 @@ serve(async (req) => {
     }
 
     const faixa = ANEXOS[anexo].find(f => rbt12 <= f.ate) || ANEXOS[anexo][5];
-    const aliqEfetiva = Math.max(0, ((rbt12 * faixa.aliq) - faixa.pd) / rbt12);
+    const aliqEfetiva = rbt12 > 0 ? Math.max(0, ((rbt12 * faixa.aliq) - faixa.pd) / rbt12) : faixa.aliq;
     const dasTotal = faturamentoAnual * aliqEfetiva;
 
     const dist = DISTRIBUICAO[anexo];
