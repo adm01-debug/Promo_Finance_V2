@@ -72,7 +72,7 @@ describe('useSimulacaoRegimes Integration', () => {
   });
 
   it('deve invalidar o resultado do servidor ao alterar parâmetros', async () => {
-    mockInvoke.mockResolvedValue({ data: { recomendado: { nome: 'IA' }, cenarios: [] }, error: null });
+    mockInvoke.mockResolvedValue({ data: { recomendado: { nome: 'IA', cargaEfetiva: 10 }, cenarios: [] }, error: null });
 
     const { result } = renderHook(() => useSimulacaoRegimes({ empresaId: 'empresa-123' }), { wrapper });
 
