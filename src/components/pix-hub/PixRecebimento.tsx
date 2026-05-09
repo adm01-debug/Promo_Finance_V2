@@ -118,6 +118,20 @@ export function PixRecebimento() {
                         )}>
                           {payment.status}
                         </Badge>
+                        {payment.valor_liquido && payment.valor_liquido < payment.valor && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Badge variant="secondary" className="h-5 px-1.5 bg-success/10 text-success border-none">
+                                  <RefreshCw className="h-3 w-3" />
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-xs">Split Real-time Ativo: Tributos retidos na fonte.</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">
                         Vencimento: {formatDate(payment.data_vencimento)} • Ref: {payment.asaas_id}
