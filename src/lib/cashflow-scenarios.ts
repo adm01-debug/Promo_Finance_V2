@@ -115,59 +115,46 @@ export function detectarAlertasRuptura(
 ): AlertaRuptura[] {
   const alertas: AlertaRuptura[] = [];
   const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
 
   Object.entries(projecoes).forEach(([cenario, dados]) => {
-    dados.forEach((dia) => {
+    // Buscar o primeiro dia de ruptura ou risco alto para cada cenário
+    const diaRuptura = dados.find(d => d.saldo <= limiteRupturaTotal);
+    const diaRiscoAlto = dados.find(d => d.saldo <= limiteRiscoAlto && d.saldo > limiteRupturaTotal);
+    
+    [diaRuptura, diaRiscoAlto].filter(Boolean).forEach((dia) => {
+      if (!dia) return;
+      
       const dataEvento = new Date(dia.data);
+      dataEvento.setHours(0, 0, 0, 0);
       const diasAteEvento = Math.ceil((dataEvento.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+      const tipo = dia.saldo <= limiteRupturaTotal ? 'ruptura' : 'risco_alto';
 
-      if (dia.saldo <= limiteRupturaTotal) {
-        alertas.push({
-          id: `ruptura-${cenario}-${dia.data}`,
-          tipo: 'ruptura',
-          data: dia.data,
-          saldoProjetado: dia.saldo,
-          cenario: cenario as CenarioTipo,
-          mensagem: `Ruptura de caixa projetada no cenário ${CENARIOS_CONFIG[cenario as CenarioTipo].nome}`,
-          diasAteEvento,
-          acaoSugerida: 'Antecipar recebíveis ou renegociar pagamentos',
-        });
-      } else if (dia.saldo <= limiteRiscoAlto) {
-        alertas.push({
-          id: `risco-alto-${cenario}-${dia.data}`,
-          tipo: 'risco_alto',
-          data: dia.data,
-          saldoProjetado: dia.saldo,
-          cenario: cenario as CenarioTipo,
-          mensagem: `Saldo crítico projetado no cenário ${CENARIOS_CONFIG[cenario as CenarioTipo].nome}`,
-          diasAteEvento,
-          acaoSugerida: 'Revisar fluxo de pagamentos da semana',
-        });
-      } else if (dia.saldo <= limiteRiscoMedio) {
-        alertas.push({
-          id: `risco-medio-${cenario}-${dia.data}`,
-          tipo: 'risco_medio',
-          data: dia.data,
-          saldoProjetado: dia.saldo,
-          cenario: cenario as CenarioTipo,
-          mensagem: `Atenção ao saldo no cenário ${CENARIOS_CONFIG[cenario as CenarioTipo].nome}`,
-          diasAteEvento,
-          acaoSugerida: 'Monitorar recebimentos previstos',
-        });
-      }
+      alertas.push({
+        id: `${tipo}-${cenario}-${dia.data}`,
+        tipo,
+        data: dia.data,
+        saldoProjetado: dia.saldo,
+        cenario: cenario as CenarioTipo,
+        mensagem: tipo === 'ruptura' 
+          ? `Ruptura de caixa projetada no cenário ${CENARIOS_CONFIG[cenario as CenarioTipo].nome}`
+          : `Saldo crítico projetado no cenário ${CENARIOS_CONFIG[cenario as CenarioTipo].nome}`,
+        diasAteEvento,
+        acaoSugerida: tipo === 'ruptura'
+          ? 'Antecipar recebíveis ou renegociar pagamentos urgentes'
+          : 'Revisar fluxo de pagamentos e priorizar despesas essenciais',
+      });
     });
   });
 
-  // Ordenar por proximidade e severidade
-  return alertas
-    .sort((a, b) => {
-      const severidade = { ruptura: 0, risco_alto: 1, risco_medio: 2, recuperacao: 3 };
-      if (severidade[a.tipo] !== severidade[b.tipo]) {
-        return severidade[a.tipo] - severidade[b.tipo];
-      }
-      return a.diasAteEvento - b.diasAteEvento;
-    })
-    .slice(0, 10); // Limitar a 10 alertas mais relevantes
+  // Ordenar por severidade (ruptura > risco_alto) e depois por proximidade
+  return alertas.sort((a, b) => {
+    const severidade = { ruptura: 0, risco_alto: 1, risco_medio: 2, recuperacao: 3 };
+    if (severidade[a.tipo] !== severidade[b.tipo]) {
+      return severidade[a.tipo] - severidade[b.tipo];
+    }
+    return a.diasAteEvento - b.diasAteEvento;
+  });
 }
 
 // Calcular métricas resumidas dos cenários
