@@ -110,6 +110,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
         estado: cliente.estado || '',
         contato: cliente.contato || '',
         limite_credito: cliente.limite_credito || 0,
+        ramo_atividade: cliente.ramo_atividade || '',
         observacoes: cliente.observacoes || '',
         ativo: cliente.ativo,
       });
