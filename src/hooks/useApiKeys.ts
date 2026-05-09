@@ -24,7 +24,8 @@ export function useApiKeys(empresaId?: string) {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as ApiKey[];
+      return (data as any) as ApiKey[];
+
     },
     enabled: !!empresaId,
   });
