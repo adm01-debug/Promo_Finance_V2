@@ -117,7 +117,7 @@ export function MetasFinanceirasPanel({ defaultExpanded = false }: { defaultExpa
                 <Target className="h-6 w-6" />
               </div>
               <div>
-                <CardTitle className="text-2xl font-black tracking-tight">Strategy Objectives 10/10 — {currentYear}</CardTitle>
+                <CardTitle className="text-2xl font-black tracking-tight">Strategy Objectives — Quantum 10/10 — {currentYear}</CardTitle>
                 <CardDescription className="text-xs font-bold uppercase tracking-widest text-muted-foreground/50">Goal synchronization & attainment matrix</CardDescription>
               </div>
             </div>
