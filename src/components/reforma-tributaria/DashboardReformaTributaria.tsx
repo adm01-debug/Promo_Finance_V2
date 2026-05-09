@@ -60,8 +60,8 @@ const itemVariants = {
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--muted-foreground))'];
 
-export function DashboardReformaTributaria() {
-  const [activeTab, setActiveTab] = useState('visao-geral');
+export function DashboardReformaTributaria({ initialTab }: { initialTab?: string }) {
+  const [activeTab, setActiveTab] = useState(initialTab || 'visao-geral');
   const [empresaId, setEmpresaId] = useState<string>('all');
   const empresaIdFiltro = normalizarEmpresaId(empresaId);
 
