@@ -24,7 +24,8 @@ import {
   TrendingUp,
   Coins,
   ShieldCheck,
-  Calendar
+  Calendar,
+  FileDown
 } from "lucide-react";
 import { formatCurrency } from "@/lib/formatters";
 import { format } from "date-fns";
@@ -33,6 +34,9 @@ import { toast } from "sonner";
 import { saveAs } from 'file-saver';
 import { motion } from "framer-motion";
 import { PageHeader, PageBackground } from "@/components/layout/PageHeader";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+
 
 const containerVariants = {
   hidden: { opacity: 0 },
