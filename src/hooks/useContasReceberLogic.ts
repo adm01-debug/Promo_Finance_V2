@@ -306,7 +306,7 @@ export function useContasReceberLogic() {
     setFormOpen, setRecebimentoDialogOpen, setSelectedConta, setEditingConta,
     setAdvancedFilters, setCurrentPage, setDeleteDialogOpen, setViewMode,
     setDetailDrawerOpen, setCobrancaDialogOpen, setDescontoDialogOpen,
-    baixaDialogOpen, setBaixaDialogOpen,
+    baixaDialogOpen, setBaixaDialogOpen, webhookDialogOpen, setWebhookDialogOpen,
     ...bulkActionsHook, getRowAnimation,
   };
 }
