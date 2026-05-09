@@ -1,42 +1,41 @@
-import { useState } from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
-import { CategorizacaoIABadge } from './CategorizacaoIABadge';
-import { CategoriaDetectada } from '@/hooks/useCategorizacaoIA';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-
-import {
-  CheckCircle2,
+import { 
+  MoreVertical, 
+  Edit, 
+  Trash2, 
+  CheckCircle2, 
+  Clock, 
   AlertTriangle,
-  Clock,
-  TrendingUp,
-  DollarSign,
-  Calendar,
+  ShieldCheck,
   Building2,
-  FileText,
-  CreditCard,
+  Calendar,
+  Repeat,
+  Tag,
   Banknote,
   QrCode,
-  Tag,
-  Trash2,
-  Sparkles,
-  Repeat,
-  MoreHorizontal,
-  History,
-  Eye,
-  Edit,
+  CreditCard,
+  DollarSign,
+  TrendingUp
 } from 'lucide-react';
+import { TableRow, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { TableCell } from '@/components/ui/table';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel
+} from '@/components/ui/dropdown-menu';
 import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { ContaPagarRowAprovacaoBadge } from './ContaPagarRowAprovacaoBadge';
-import { ContaPagarRowActions } from './ContaPagarRowActions';
-import { VersionHistory } from '@/components/common/VersionHistory';
-import { DuplicateButton } from '@/components/common/DuplicateButton';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
+import { CategorizacaoIABadge } from './CategorizacaoIABadge';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 type StatusPagamento = 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
 type TipoCobranca = 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';
@@ -57,49 +56,8 @@ const tipoCobrancaIcons: Record<TipoCobranca, typeof CreditCard> = {
   dinheiro: DollarSign,
 };
 
-interface SolicitacaoAprovacao {
-  id: string;
-  status: string;
-  solicitado_em: string;
-  solicitado_por: string;
-  aprovado_em?: string | null;
-  aprovado_por?: string | null;
-  observacoes?: string | null;
-  motivo_rejeicao?: string | null;
-}
-
-interface Profile {
-  id: string;
-  full_name: string | null;
-  email: string | null;
-}
-
-interface CentroCustoInfo {
-  nome: string;
-}
-
-interface ContaPagarRow {
-  id: string;
-  fornecedor_nome: string;
-  descricao: string;
-  valor: number;
-  valor_pago: number | null;
-  data_vencimento: string;
-  status: string;
-  tipo_cobranca: string;
-  numero_documento: string | null;
-  recorrente: boolean;
-  categoria: string | null;
-  tags: string[] | null;
-  aprovado_por?: string | null;
-  aprovado_em?: string | null;
-  centros_custo?: CentroCustoInfo | null;
-  empresa_id: string;
-  conta_bancaria_id: string | null;
-}
-
 interface ContasPagarTableRowProps {
-  conta: ContaPagarRow;
+  conta: any;
   index: number;
   isSelected: boolean;
   onToggleSelect: () => void;
@@ -111,13 +69,14 @@ interface ContasPagarTableRowProps {
   temSolicitacaoPendente: boolean;
   foiRejeitado: boolean;
   aguardandoSolicitacao: boolean;
-  historico: SolicitacaoAprovacao[];
-  profilesMap: Map<string, Profile>;
+  historico: any[];
+  profilesMap: Map<string, any>;
   valorMinimoAprovacao: number;
-  getRowAnimation: (index: number) => Record<string, unknown>;
+  getRowAnimation: (index: number) => any;
+  isVirtual?: boolean;
 }
 
-export function ContasPagarTableRow({
+export const ContasPagarTableRow = memo(({
   conta,
   index,
   isSelected,
@@ -134,24 +93,15 @@ export function ContasPagarTableRow({
   profilesMap,
   valorMinimoAprovacao,
   getRowAnimation,
-}: ContasPagarTableRowProps) {
+  isVirtual = false
+}: ContasPagarTableRowProps) => {
   const status = statusConfig[conta.status as StatusPagamento];
   const StatusIcon = status?.icon || Clock;
   const TipoIcon = tipoCobrancaIcons[conta.tipo_cobranca as TipoCobranca] || Banknote;
   const overdueDays = calculateOverdueDays(new Date(conta.data_vencimento));
 
-  const RowComponent = getRowAnimation(index).transition ? motion.tr : 'tr';
-
-  return (
-    <RowComponent
-      key={conta.id}
-      data-highlight-id={conta.id}
-      {...(getRowAnimation(index).transition ? getRowAnimation(index) : {})}
-      className={cn(
-        "group transition-all duration-300 border-white/5 relative", 
-        isSelected ? "bg-primary/5" : "hover:bg-white/[0.03]"
-      )}
-    >
+  const Content = (
+    <>
       <TableCell className="p-6 text-center">
         <Checkbox
           checked={isSelected}
@@ -189,7 +139,7 @@ export function ContasPagarTableRow({
                 data_vencimento: conta.data_vencimento,
               }}
               categoriaAtual={conta.categoria || undefined}
-              onAplicar={async (cat: CategoriaDetectada) => {
+              onAplicar={async (cat) => {
                 const { error } = await supabase
                   .from('contas_pagar')
                   .update({ categoria: cat.categoria, tags: cat.tags || [] })
@@ -212,10 +162,6 @@ export function ContasPagarTableRow({
             {conta.numero_documento && (
               <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-white/5 bg-white/5 text-muted-foreground/60 tracking-wider">REF: {conta.numero_documento}</Badge>
             )}
-            {conta.status === 'pendente' && (
-              <Badge variant="outline" className="text-[8px] font-black uppercase px-1.5 py-0 rounded-md border-emerald-500/30 bg-emerald-500/10 text-emerald-400 tracking-widest">Anti-Duplicidade Ativo</Badge>
-            )}
-
           </div>
         </div>
       </TableCell>
@@ -252,55 +198,98 @@ export function ContasPagarTableRow({
       </TableCell>
 
       <TableCell className="p-6">
-        {conta.centros_custo?.nome ? (
+        {conta.centro_custo_nome || conta.centros_custo?.nome ? (
           <Badge variant="outline" className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground/60 border-white/5 bg-white/5 px-2 py-0.5">
-            {conta.centros_custo.nome}
+            {conta.centro_custo_nome || conta.centros_custo?.nome}
           </Badge>
         ) : (
           <span className="text-[10px] font-black text-muted-foreground/20 tracking-widest uppercase">—</span>
         )}
       </TableCell>
 
-      <TableCell className="p-6">
-        <div className="flex justify-center">
-          <ContaPagarRowAprovacaoBadge
-            estaAprovado={estaAprovado}
-            temSolicitacaoPendente={temSolicitacaoPendente}
-            foiRejeitado={foiRejeitado}
-            aguardandoSolicitacao={aguardandoSolicitacao}
-            historico={historico}
-            profilesMap={profilesMap}
-            valorMinimoAprovacao={valorMinimoAprovacao}
-            aprovado_por={conta.aprovado_por}
-            aprovado_em={conta.aprovado_em}
-          />
-        </div>
+      <TableCell className="p-6 text-center">
+        <ContaPagarRowAprovacaoBadge
+          estaAprovado={estaAprovado}
+          temSolicitacaoPendente={temSolicitacaoPendente}
+          foiRejeitado={foiRejeitado}
+          aguardandoSolicitacao={aguardandoSolicitacao}
+          historico={historico}
+          profilesMap={profilesMap}
+          valorMinimoAprovacao={valorMinimoAprovacao}
+          aprovado_por={conta.aprovado_por}
+          aprovado_em={conta.aprovado_em}
+        />
       </TableCell>
 
-      <TableCell className="p-6">
-        <div className="flex justify-center">
-          <Badge variant="outline" className={cn("gap-1.5 px-3 py-1 rounded-lg border-none font-black text-[10px] uppercase tracking-widest shadow-sm", status?.color)}>
-            <StatusIcon className="h-3.5 w-3.5" />
-            {status?.label || conta.status}
-          </Badge>
-        </div>
+      <TableCell className="p-6 text-center">
+        <Badge variant="outline" className={cn("gap-1.5 px-3 py-1 rounded-lg border-none font-black text-[10px] uppercase tracking-widest shadow-sm", status?.color)}>
+          <StatusIcon className="h-3.5 w-3.5" />
+          {status?.label || conta.status}
+        </Badge>
       </TableCell>
 
-      <TableCell className="p-6">
-        <div className="flex justify-end">
-          <ContaPagarRowActions
-            status={conta.status}
-            aguardandoSolicitacao={aguardandoSolicitacao}
-            temSolicitacaoPendente={temSolicitacaoPendente}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            onRegistrarPagamento={onRegistrarPagamento}
-            onSolicitarAprovacao={onSolicitarAprovacao}
-            id={conta.id}
-            conta={conta}
-          />
-        </div>
+      <TableCell className="p-6 text-right">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-white/5">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56 bg-background/95 backdrop-blur-xl border-white/10 rounded-xl">
+            <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest opacity-40">Actions</DropdownMenuLabel>
+            <DropdownMenuItem onClick={() => onEdit(conta)} className="gap-2 focus:bg-primary/10">
+              <Edit className="h-4 w-4" /> Edit Record
+            </DropdownMenuItem>
+            
+            {(conta.status === 'pendente' || conta.status === 'vencido' || conta.status === 'parcial') && (
+              <DropdownMenuItem onClick={onRegistrarPagamento} className="gap-2 text-success focus:text-success focus:bg-success/10">
+                <CheckCircle2 className="h-4 w-4" /> Register Payment
+              </DropdownMenuItem>
+            )}
+
+            {aguardandoSolicitacao && (
+              <DropdownMenuItem onClick={onSolicitarAprovacao} className="gap-2 text-warning focus:text-warning focus:bg-warning/10">
+                <ShieldCheck className="h-4 w-4" /> Request Approval
+              </DropdownMenuItem>
+            )}
+
+            <DropdownMenuSeparator className="bg-white/5" />
+            <DropdownMenuItem onClick={onDelete} className="gap-2 text-destructive focus:text-destructive focus:bg-destructive/10">
+              <Trash2 className="h-4 w-4" /> Purge Record
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </TableCell>
-    </RowComponent>
+    </>
   );
-}
+
+  if (isVirtual) {
+    return (
+      <tr className="group hover:bg-white/[0.03] transition-all duration-300 border-none">
+        {Content}
+      </tr>
+    );
+  }
+
+  const animation = getRowAnimation(index);
+  const isMotion = !!animation.transition;
+
+  if (isMotion) {
+    return (
+      <motion.tr 
+        {...animation}
+        className="group hover:bg-white/[0.03] transition-all duration-300 border-none"
+      >
+        {Content}
+      </motion.tr>
+    );
+  }
+
+  return (
+    <tr className="group hover:bg-white/[0.03] transition-all duration-300 border-none">
+      {Content}
+    </tr>
+  );
+});
+
+ContasPagarTableRow.displayName = 'ContasPagarTableRow';
