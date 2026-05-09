@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   AlertTriangle,
@@ -7,12 +8,14 @@ import {
   Calendar,
   TrendingDown,
   ChevronRight,
+  MessageSquare,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
+import { WhatsAppHistoryIA } from '@/components/financeiro/cobranca/WhatsAppHistoryIA';
 
 export interface ClienteRisco {
   id: string;
