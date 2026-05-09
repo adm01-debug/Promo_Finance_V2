@@ -48,7 +48,7 @@ import {
 } from 'recharts';
 import { useBudgetsWithSpent, useCreateBudget, useUpdateBudget, useDeleteBudget } from '@/hooks/useBudget';
 import { useCategorias } from '@/hooks/useCategorias';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency } from '@/lib/formatters';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useZodForm } from '@/hooks/useZodForm';
