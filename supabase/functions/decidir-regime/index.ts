@@ -117,6 +117,15 @@ Deno.serve(async (req) => {
         .gt('expires_at', new Date().toISOString())
         .maybeSingle();
       if (cached?.decisao) {
+        // Log cache hit in audit trail
+        await sb.from('tax_audit_trail').insert({
+          user_id: claims.claims.sub,
+          empresa_id: empresaId,
+          ano, mes,
+          action: 'cache_hit',
+          parameters: params
+        });
+
         return new Response(JSON.stringify({ ...(cached.decisao as object), params, fromCache: true }), {
           status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
