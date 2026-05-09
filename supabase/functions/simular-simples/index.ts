@@ -94,7 +94,7 @@ serve(async (req) => {
       icms: dasTotal * dist.icms,
       iss: dasTotal * dist.iss,
       totalTributos: dasTotal,
-      cargaEfetiva: (dasTotal / faturamentoAnual) * 100,
+      cargaEfetiva: faturamentoAnual > 0 ? (dasTotal / faturamentoAnual) * 100 : 0,
       fatorR,
       anexoAplicavel: anexo,
       faixaAplicavel: faixa.faixa,
