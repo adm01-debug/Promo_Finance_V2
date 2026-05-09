@@ -145,7 +145,7 @@ function simularSimples(p: ParametrosSimulacao, ano: number, mes: number): Resul
       totalTributos: 0, cargaEfetiva: 0, observacoes: obs,
     };
   }
-  const aliqEfet = Math.max(0, ((rbt12 * faixa.aliq) - faixa.pd) / rbt12);
+  const aliqEfet = rbt12 > 0 ? Math.max(0, ((rbt12 * faixa.aliq) - faixa.pd) / rbt12) : faixa.aliq;
   const das = p.faturamentoAnual * aliqEfet;
   obs.push(`Faixa ${faixa.faixa}, alíq nominal ${(faixa.aliq * 100).toFixed(2)}%, efetiva ${(aliqEfet * 100).toFixed(2)}%.`);
   return {
