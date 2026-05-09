@@ -5,7 +5,14 @@ import { FileCheck, Sparkles } from 'lucide-react';
 import { AssistenteFechamentoMensal } from '@/components/tributario/dashboard/AssistenteFechamentoMensal';
 import { motion } from 'framer-motion';
 
+import { useAuth } from '@/hooks/useAuth';
+
 export default function FechamentoMensalPage() {
+  const { currentEmpresaId } = useAuth();
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
+
   return (
     <MainLayout>
       <div className="relative min-h-screen">
@@ -32,10 +39,15 @@ export default function FechamentoMensalPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <AssistenteFechamentoMensal />
+            <AssistenteFechamentoMensal 
+              empresaId={currentEmpresaId || ''} 
+              ano={currentYear} 
+              mes={currentMonth} 
+            />
           </motion.div>
         </div>
       </div>
     </MainLayout>
   );
 }
+
