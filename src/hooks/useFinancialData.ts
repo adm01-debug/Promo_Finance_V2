@@ -292,6 +292,10 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
         countQuery = countQuery.eq('empresa_id', empresaId);
         dataQuery = dataQuery.eq('empresa_id', empresaId);
       }
+      if (contaBancariaId && contaBancariaId !== 'all') {
+        countQuery = countQuery.eq('conta_bancaria_id', contaBancariaId);
+        dataQuery = dataQuery.eq('conta_bancaria_id', contaBancariaId);
+      }
 
       const [countResult, dataResult] = await Promise.all([countQuery, dataQuery]);
 
