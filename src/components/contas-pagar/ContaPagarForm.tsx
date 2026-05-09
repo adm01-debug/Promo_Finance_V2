@@ -11,6 +11,7 @@ import { DadosBoleto } from '@/lib/barcode-parser';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useFornecedores, useCentrosCusto, useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
+import { useCategorias } from '@/hooks/useCategorias';
 import { toast } from '@/hooks/use-toast';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 import { sounds } from '@/lib/sound-feedback';
