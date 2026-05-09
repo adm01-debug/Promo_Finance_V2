@@ -3,7 +3,8 @@
 // Visão executiva para empresas Lucro Real
 // ============================================
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, lazy, Suspense } from 'react';
+import { AssistenteFechamentoMensal } from '@/components/tributario/dashboard/AssistenteFechamentoMensal';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -86,7 +87,8 @@ export function DashboardReformaTributaria({ initialTab }: { initialTab?: string
       'exportacao': '/tributario/sped',
       'relatorios': '/tributario/relatorios-contabeis',
       'per-dcomp': '/tributario/per-dcomp',
-      'retencoes': '/tributario/retencoes'
+      'retencoes': '/tributario/retencoes',
+      'fechamento-mensal': '/tributario/fechamento-mensal'
     };
 
     if (routeMap[tabId]) {
@@ -340,6 +342,7 @@ export function DashboardReformaTributaria({ initialTab }: { initialTab?: string
       case 'comparativo': return <ComparativoRegimesPanel />;
       case 'cashback': return <CashbackSimuladorPanel />;
       case 'importacao-xml': return <ImportacaoXMLPanel empresaId={empresaIdFiltro || 'default'} />;
+      case 'fechamento-mensal': return <AssistenteFechamentoMensal empresaId={empresaIdFiltro || 'default'} ano={new Date().getFullYear()} mes={new Date().getMonth() + 1} isAdmin={true} />;
       default: return null;
     }
   };

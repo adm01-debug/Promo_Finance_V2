@@ -134,7 +134,7 @@ const navGroups: NavGroup[] = [
       { label: 'Relatórios Contábeis', icon: FileSpreadsheet, href: '/tributario/relatorios-contabeis' },
       { label: 'PER/DCOMP', icon: FileText, href: '/tributario/per-dcomp' },
       { label: 'Retenções na Fonte', icon: Receipt, href: '/tributario/retencoes' },
-      { label: 'Fechamento Mensal', icon: FileCheck, href: '/reforma-tributaria/fechamento-mensal', highlight: true },
+      { label: 'Fechamento Mensal', icon: FileCheck, href: '/tributario/fechamento-mensal', highlight: true },
       { label: 'Relatórios & BI', icon: FileText, href: '/relatorios', highlight: true },
       { label: 'Simulação de Regimes', icon: Calculator, href: '/tributario/simulacao-regimes', highlight: true },
       { label: 'Oportunidades de Elisão', icon: Sparkles, href: '/tributario/oportunidades-elisao', highlight: true },

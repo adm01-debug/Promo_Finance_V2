@@ -64,6 +64,7 @@ const getNavGroups = (alertasCriticos: number): NavGroup[] => [
       { id: 'obrigacoes', label: 'Obrigações', icon: Clock },
       { id: 'auditoria', label: 'Auditoria', icon: Shield },
       { id: 'conciliacao', label: 'Conciliação', icon: CheckCircle },
+      { id: 'fechamento-mensal', label: 'Fechamento Mensal', icon: Clock },
       { id: 'alertas', label: 'Alertas', icon: AlertTriangle, badge: alertasCriticos > 0 ? String(alertasCriticos) : undefined, badgeVariant: 'destructive' as const },
     ]
   },
