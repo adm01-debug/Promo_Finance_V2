@@ -83,6 +83,7 @@ const BarcodeVisual = ({ code }: { code: string }) => {
 };
 import { BoletoPreviewPanel } from '@/components/boletos/BoletoPreviewPanel';
 import { NovoBoletoForm } from '@/components/boletos/NovoBoletoForm';
+import { BoletoGlobalHistory } from '@/components/boletos/BoletoGlobalHistory';
 
 export default function Boletos() {
   const [searchTerm, setSearchTerm] = useState('');
