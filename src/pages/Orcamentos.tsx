@@ -69,7 +69,6 @@ const Orcamentos = () => {
   const createBudget = useCreateBudget();
   const updateBudget = useUpdateBudget();
   const deleteBudget = useDeleteBudget();
-  const companyId = getCurrentEmpresaId();
 
   const form = useZodForm({
     schema: budgetSchema as any,
