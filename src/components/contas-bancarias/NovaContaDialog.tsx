@@ -8,7 +8,6 @@ import { Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
-import { Plus } from 'lucide-react';
 
 interface Empresa { id: string; nome_fantasia?: string | null; razao_social: string }
 
@@ -31,7 +30,7 @@ export function NovaContaDialog({ open, onOpenChange, empresas, bancos }: Props)
 
   const handleSubmit = async () => {
     if (!empresaId || !banco || !conta) {
-      toast.error('Preencha os campos obrigatórios');
+      toast.error('Preencha os campos obrigatórios (Empresa, Banco, Conta)');
       return;
     }
 
@@ -43,20 +42,28 @@ export function NovaContaDialog({ open, onOpenChange, empresas, bancos }: Props)
         agencia,
         conta,
         tipo,
-        saldo_inicial: parseFloat(saldo),
-        saldo_atual: parseFloat(saldo)
+        saldo_inicial: parseFloat(saldo) || 0,
+        saldo_atual: parseFloat(saldo) || 0
       });
 
       if (error) throw error;
       toast.success('Conta bancária adicionada com sucesso');
       queryClient.invalidateQueries({ queryKey: ['contas-bancarias'] });
       onOpenChange(false);
+      // Reset form
+      setEmpresaId('');
+      setBanco('');
+      setAgencia('');
+      setConta('');
+      setSaldo('0');
     } catch (err: any) {
       toast.error('Erro ao adicionar conta: ' + err.message);
     } finally {
       setLoading(false);
     }
   };
+
+  return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button>
@@ -70,8 +77,8 @@ export function NovaContaDialog({ open, onOpenChange, empresas, bancos }: Props)
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label>Empresa</Label>
-            <Select onValueChange={(val) => setEmpresaId(val)}>
+            <Label>Empresa (Tenant CNPJ)</Label>
+            <Select value={empresaId} onValueChange={setEmpresaId}>
               <SelectTrigger><SelectValue placeholder="Selecione a empresa" /></SelectTrigger>
               <SelectContent>
                 {empresas.map(empresa => (
@@ -84,11 +91,11 @@ export function NovaContaDialog({ open, onOpenChange, empresas, bancos }: Props)
           </div>
           <div className="grid gap-2">
             <Label>Banco</Label>
-            <Select>
+            <Select value={banco} onValueChange={setBanco}>
               <SelectTrigger><SelectValue placeholder="Selecione o banco" /></SelectTrigger>
               <SelectContent>
-                {bancos.map(banco => (
-                  <SelectItem key={banco} value={banco}>{banco}</SelectItem>
+                {bancos.map(b => (
+                  <SelectItem key={b} value={b}>{b}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -96,16 +103,16 @@ export function NovaContaDialog({ open, onOpenChange, empresas, bancos }: Props)
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label>Agência</Label>
-              <Input placeholder="0000" />
+              <Input placeholder="0000" value={agencia} onChange={(e) => setAgencia(e.target.value)} />
             </div>
             <div className="grid gap-2">
               <Label>Conta</Label>
-              <Input placeholder="00000-0" />
+              <Input placeholder="00000-0" value={conta} onChange={(e) => setConta(e.target.value)} />
             </div>
           </div>
           <div className="grid gap-2">
             <Label>Tipo de Conta</Label>
-            <Select>
+            <Select value={tipo} onValueChange={setTipo}>
               <SelectTrigger><SelectValue placeholder="Selecione o tipo" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="corrente">Conta Corrente</SelectItem>
@@ -115,9 +122,11 @@ export function NovaContaDialog({ open, onOpenChange, empresas, bancos }: Props)
           </div>
           <div className="grid gap-2">
             <Label>Saldo Inicial</Label>
-            <Input type="number" placeholder="0,00" />
+            <Input type="number" placeholder="0,00" value={saldo} onChange={(e) => setSaldo(e.target.value)} />
           </div>
-          <Button className="w-full mt-2">Adicionar Conta</Button>
+          <Button className="w-full mt-2" onClick={handleSubmit} disabled={loading}>
+            {loading ? 'Adicionando...' : 'Adicionar Conta'}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

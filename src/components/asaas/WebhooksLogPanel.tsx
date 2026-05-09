@@ -136,8 +136,8 @@ function WebhookRow({ wh }: { wh: any }) {
           </div>
 
           <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-2 border-t border-border/50">
-            <span>Correlation ID: {wh.asaas_event_id || 'N/A'}</span>
-            <span>IP: {wh.ip_origem || 'Interno'}</span>
+            <span>Correlation ID: {wh.correlation_id || wh.asaas_event_id || 'N/A'}</span>
+            <span>Duração: {wh.duration_ms ? `${wh.duration_ms}ms` : 'N/A'} • IP: {wh.ip_origem || 'Interno'}</span>
           </div>
         </div>
       )}
