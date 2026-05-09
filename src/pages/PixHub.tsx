@@ -12,6 +12,9 @@ import { useEmpresas } from '@/hooks/useFinancialData';
 
 export default function PixHub() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [receiveDialogOpen, setReceiveDialogOpen] = useState(false);
+  const { data: empresas = [] } = useEmpresas();
+  const firstEmpresaId = empresas?.[0]?.id;
 
   return (
     <MainLayout>
