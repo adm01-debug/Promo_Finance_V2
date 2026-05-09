@@ -144,7 +144,7 @@ export function ContaReceberFormFields({
           <Select onValueChange={field.onChange} value={field.value}>
             <FormControl><SelectTrigger><SelectValue placeholder="Selecione a categoria" /></SelectTrigger></FormControl>
             <SelectContent>
-              {categorias.map((c) => (
+              {categorias.map((c: any) => (
                 <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
               ))}
             </SelectContent>

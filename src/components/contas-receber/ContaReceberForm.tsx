@@ -69,7 +69,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const { data: contasBancarias = [] } = useContasBancarias();
   const { data: empresas = [] } = useEmpresas();
   const { data: vendedores = [] } = useVendedoresAtivos();
-  const { categoriasReceita } = useCategorias();
+  const { categoriasReceita } = (require('@/hooks/useCategorias') as any).useCategorias();
 
   const form = useForm<ContaReceberFormData>({
     resolver: zodResolver(contaReceberSchema),
