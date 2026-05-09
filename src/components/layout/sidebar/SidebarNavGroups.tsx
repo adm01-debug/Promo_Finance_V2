@@ -87,7 +87,7 @@ const navGroups: NavGroup[] = [
     items: [
       { label: 'Dashboard', icon: LayoutDashboard, href: '/' },
       { label: 'BI Gestão', icon: BarChart3, href: '/bi', highlight: true },
-      { label: 'Inteligência Operacional', icon: BrainCircuit, href: '/inteligencia', highlight: true },
+      { label: 'Inteligência Operacional 360°', icon: BrainCircuit, href: '/inteligencia', highlight: true },
       { label: 'Dashboard Empresa', icon: Building2, href: '/dashboard-empresa' },
       { label: 'Benchmarking', icon: Scale, href: '/benchmarking', highlight: true },
       { label: 'EXPERT (IA)', icon: Bot, href: '/expert', highlight: true },
