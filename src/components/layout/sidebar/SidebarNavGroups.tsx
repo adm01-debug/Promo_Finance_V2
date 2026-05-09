@@ -44,6 +44,8 @@ import {
   EyeOff,
   History,
   Target,
+  Brain,
+  ShieldAlert,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
