@@ -351,6 +351,44 @@ Deno.serve(async (req) => {
 
     const resultado = decidirRegime(params, ano, mes, regimeAtual);
 
+    // ---------- IA JUSTIFICATION (P7 Premium) ----------
+    let justificativaIA = null;
+    try {
+      const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+      if (LOVABLE_API_KEY) {
+        const prompt = `Analise os cenários tributários abaixo e forneça uma recomendação executiva curta (máx 3 frases) em português:
+        ${JSON.stringify(resultado.cenarios)}
+        
+        Regime Recomendado: ${resultado.recomendado.nome}
+        Economia Estimada: R$ ${resultado.economiaAnualVsAtual || 0}
+        
+        Foque na eficiência tributária e riscos.`;
+
+        const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "google/gemini-2.0-flash-exp",
+            messages: [
+              { role: "system", content: "Você é um consultor tributário sênior." },
+              { role: "user", content: prompt },
+            ],
+          }),
+        });
+
+        if (aiResponse.ok) {
+          const aiData = await aiResponse.json();
+          justificativaIA = aiData.choices?.[0]?.message?.content;
+        }
+      }
+    } catch (e) {
+      logger.error('ai_justification_error', { error: e.message });
+    }
+
+
     // ---------- CACHE WRITE (P7) ----------
     if (cacheable) {
       await sb.from('regime_decision_cache').upsert({
