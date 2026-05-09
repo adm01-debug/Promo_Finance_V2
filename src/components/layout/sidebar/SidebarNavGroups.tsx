@@ -112,7 +112,6 @@ const navGroups: NavGroup[] = [
       { label: 'Auditoria de Duplicidade', icon: ShieldAlert, href: '/contas-pagar/bloqueios', highlight: true },
       { label: 'Metas Financeiras', icon: Target, href: '/metas', highlight: true },
       { label: 'Alertas Preditivos', icon: Brain, href: '/inteligencia#alertas-preditivos', highlight: true },
-      { label: 'Health Score Operacional', icon: BrainCircuit, href: '/inteligencia', highlight: true },
     ],
   },
   {
