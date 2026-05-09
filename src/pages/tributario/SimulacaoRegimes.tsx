@@ -39,6 +39,8 @@ export default function SimulacaoRegimes() {
     historicoSimulacoes,
     faturamentoMensal,
     folhaMensal,
+    sincronizarComServer,
+    isSincronizando,
   } = useSimulacaoRegimes({ empresaId });
 
   const { relatorio: relatorioElisao, persistirOportunidades } = useOportunidadesElisao({
@@ -121,11 +123,15 @@ export default function SimulacaoRegimes() {
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
-            <Calculator className="h-7 w-7 md:h-8 md:w-8 text-primary" aria-hidden="true" />
-            Simulação de Regimes Tributários
-          </h1>
+        <div className="flex-1">
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl md:text-3xl font-bold">
+              Simulação de Regimes Tributários
+            </h1>
+            {useSimulacaoRegimes({ empresaId }).isSincronizando && (
+              <RefreshCw className="h-5 w-5 animate-spin text-primary" />
+            )}
+          </div>
           <p className="text-muted-foreground mt-1 text-sm md:text-base">
             Compare Simples Nacional, Lucro Presumido e Lucro Real e descubra o regime mais vantajoso.
           </p>
@@ -137,8 +143,10 @@ export default function SimulacaoRegimes() {
           onAnalisarElisao={analisarElisao}
           onExportarPdf={exportarPdf}
           onSalvar={() => salvarSimulacao.mutate()}
+          onSincronizarIA={sincronizarComServer}
           isAnalisandoElisao={persistirOportunidades.isPending}
           isSalvando={salvarSimulacao.isPending}
+          isSincronizando={isSincronizando}
         />
       </div>
 
