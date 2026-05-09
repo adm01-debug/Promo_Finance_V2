@@ -1,4 +1,7 @@
-import { corsHeaders } from "@supabase/supabase-js/cors";
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
 const PROJECT_REF = "iikqosstymnnxaujzadw";
 const ACS_URL = `https://${PROJECT_REF}.supabase.co/auth/v1/sso/saml/acs`;
