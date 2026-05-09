@@ -432,6 +432,50 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
               )}
             </div>
 
+            {/* Split Settings */}
+            <div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="text-xs text-muted-foreground gap-1"
+                onClick={() => setShowSplit(!showSplit)}
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                {showSplit ? 'Remover' : 'Configurar'} Split (Divisão)
+              </Button>
+              {showSplit && (
+                <div className="mt-3 space-y-3 p-3 rounded-lg border border-primary/20 bg-primary/5">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <Label className="text-xs">Wallet ID Destino</Label>
+                      <Input
+                        value={splitWalletId}
+                        onChange={e => setSplitWalletId(e.target.value)}
+                        placeholder="Ex: d7a1..."
+                        className="h-8 text-sm"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Percentual (%)</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={splitPercent}
+                        onChange={e => setSplitPercent(e.target.value)}
+                        placeholder="10"
+                        className="h-8 text-sm"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground italic">
+                    O valor será dividido automaticamente na liquidação.
+                  </p>
+                </div>
+              )}
+            </div>
+
             <Button
               className="w-full"
               onClick={handleCriarCobranca}
