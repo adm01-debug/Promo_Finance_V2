@@ -118,6 +118,8 @@ const StatusPage = lazy(() => import('./pages/StatusPage'));
 
 
 const Compras = lazy(() => import('./pages/Compras'));
+const Integracoes = lazy(() => import('./pages/Integracoes'));
+const PortalCliente = lazy(() => import('./pages/PortalCliente'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 
