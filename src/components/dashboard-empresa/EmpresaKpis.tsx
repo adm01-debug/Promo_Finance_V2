@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { Wallet, ArrowDownCircle, ArrowUpCircle, TrendingUp, TrendingDown, AlertTriangle, FileCheck, ShieldAlert } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 
