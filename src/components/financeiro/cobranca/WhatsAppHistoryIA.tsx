@@ -101,7 +101,7 @@ export function WhatsAppHistoryIA({ clienteId, clienteNome, open, onOpenChange }
                       {format(new Date(msg.created_at), 'HH:mm')}
                     </span>
                     {msg.sentimento && (
-                      <Badge variant="ghost" className="p-0 h-4 gap-1 text-[10px]">
+                      <Badge variant="outline" className="p-0 h-4 gap-1 text-[10px] border-none">
                         {getSentimentoIcon(msg.sentimento)}
                         {msg.sentimento}
                       </Badge>
