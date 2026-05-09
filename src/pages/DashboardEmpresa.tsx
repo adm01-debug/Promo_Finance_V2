@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
-import { useEmpresas, useCentrosCusto, useContasBancarias, useContasPagar, useContasReceber, useClientes, useFornecedores } from '@/hooks/useFinancialData';
+import { useEmpresas, useCentrosCusto, useContasBancarias, useContasPagar, useContasReceber, useClientes, useFornecedores, useDashboardKPIs } from '@/hooks/useFinancialData';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { EmpresaKpiCards } from '@/components/dashboard-empresa/EmpresaKpis';
 import { EmpresaChartsSection } from '@/components/dashboard-empresa/EmpresaCharts';
