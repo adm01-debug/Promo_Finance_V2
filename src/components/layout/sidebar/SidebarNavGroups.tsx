@@ -56,6 +56,7 @@ import { useAlertasTributariosCount } from '@/hooks/useAlertasTributariosCount';
 import { useRealtimeAlertas } from '@/hooks/useRealtimeAlertas';
 import { useRealtimeAnomalias } from '@/hooks/useRealtimeAnomalias';
 import { useWhatsAppUnreadCount } from '@/hooks/useWhatsAppUnreadCount';
+import { useAuth } from '@/hooks/useAuth';
 
 interface NavItem {
   label: string;
@@ -184,6 +185,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
   const { data: alertasNaoLidos = 0 } = useAlertasNaoLidos();
   const { data: alertasTributarios = 0 } = useAlertasTributariosCount();
   const { data: whatsappUnread = 0 } = useWhatsAppUnreadCount();
+  const { user } = useAuth();
   const [syncStatus, setSyncStatus] = useState<Record<string, boolean>>({});
   
   useRealtimeAlertas();
@@ -240,8 +242,8 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
     if (badgeKey === 'tributario' && alertasTributarios > 0) {
       return alertasTributarios;
     }
-    if (badgeKey === 'whatsapp' && whatsappUnread > 0) {
-      return whatsappUnread;
+    if (badgeKey === 'whatsapp' && (whatsappUnread > 0 || localStorage.getItem(`whatsapp-unread-manual-${user?.id}`) === 'true')) {
+      return whatsappUnread || 1;
     }
     return undefined;
   };
