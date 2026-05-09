@@ -103,8 +103,8 @@ export function useConciliacaoPage() {
           id: cp.id, descricao: cp.descricao, valor: cp.valor,
           data_vencimento: cp.data_vencimento, fornecedor_nome: cp.fornecedor_nome,
           status: cp.status, numero_documento: cp.numero_documento,
-          fornecedores: cp.fornecedor ? { razao_social: cp.fornecedor, nome_fantasia: null } : null,
-          centro_custo_nome: cp.centro_custo,
+          fornecedores: cp.fornecedor_razao_social ? { razao_social: cp.fornecedor_razao_social, nome_fantasia: cp.fornecedor_nome_fantasia || null } : null,
+          centro_custo_nome: cp.centro_custo_nome,
         }))) 
       : [];
     const lancamentosReceber = contasReceber 
@@ -112,8 +112,8 @@ export function useConciliacaoPage() {
           id: cr.id, descricao: cr.descricao, valor: cr.valor,
           data_vencimento: cr.data_vencimento, cliente_nome: cr.cliente_nome,
           status: cr.status, numero_documento: cr.numero_documento,
-          clientes: cr.cliente ? { razao_social: cr.cliente, nome_fantasia: null } : null,
-          centro_custo_nome: cr.centro_custo,
+          clientes: cr.cliente_razao_social ? { razao_social: cr.cliente_razao_social, nome_fantasia: cr.cliente_nome_fantasia || null } : null,
+          centro_custo_nome: cr.centro_custo_nome,
         }))) 
       : [];
     return [...lancamentosPagar, ...lancamentosReceber];

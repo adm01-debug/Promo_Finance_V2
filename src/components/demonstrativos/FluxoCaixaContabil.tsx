@@ -68,43 +68,43 @@ export const FluxoCaixaContabil = ({ periodo, mes, ano, empresaId }: FluxoCaixaC
     );
 
     const pagamentoFornecedores = pagamentosPeriodo
-      .filter(p => p.centro_custo.toLowerCase().includes('fornecedor') || 
-                   p.centro_custo.toLowerCase().includes('mercadoria') ||
-                   p.centro_custo.toLowerCase().includes('produto'))
+      .filter(p => (p.centro_custo_nome || '').toLowerCase().includes('fornecedor') || 
+                   (p.centro_custo_nome || '').toLowerCase().includes('mercadoria') ||
+                   (p.centro_custo_nome || '').toLowerCase().includes('produto'))
       .reduce((acc, p) => acc + (p.valor_pago || p.valor), 0);
 
     const pagamentoSalarios = pagamentosPeriodo
-      .filter(p => p.centro_custo.toLowerCase().includes('pessoal') || 
-                   p.centro_custo.toLowerCase().includes('salário') ||
-                   p.centro_custo.toLowerCase().includes('folha'))
+      .filter(p => (p.centro_custo_nome || '').toLowerCase().includes('pessoal') || 
+                   (p.centro_custo_nome || '').toLowerCase().includes('salário') ||
+                   (p.centro_custo_nome || '').toLowerCase().includes('folha'))
       .reduce((acc, p) => acc + (p.valor_pago || p.valor), 0);
 
     const pagamentoImpostos = pagamentosPeriodo
-      .filter(p => p.centro_custo.toLowerCase().includes('imposto') || 
-                   p.centro_custo.toLowerCase().includes('tributo') ||
-                   p.centro_custo.toLowerCase().includes('fiscal'))
+      .filter(p => (p.centro_custo_nome || '').toLowerCase().includes('imposto') || 
+                   (p.centro_custo_nome || '').toLowerCase().includes('tributo') ||
+                   (p.centro_custo_nome || '').toLowerCase().includes('fiscal'))
       .reduce((acc, p) => acc + (p.valor_pago || p.valor), 0);
 
     const outrasDespesasOp = pagamentosPeriodo
-      .filter(p => !p.centro_custo.toLowerCase().includes('fornecedor') && 
-                   !p.centro_custo.toLowerCase().includes('mercadoria') &&
-                   !p.centro_custo.toLowerCase().includes('produto') &&
-                   !p.centro_custo.toLowerCase().includes('pessoal') &&
-                   !p.centro_custo.toLowerCase().includes('salário') &&
-                   !p.centro_custo.toLowerCase().includes('folha') &&
-                   !p.centro_custo.toLowerCase().includes('imposto') &&
-                   !p.centro_custo.toLowerCase().includes('tributo') &&
-                   !p.centro_custo.toLowerCase().includes('fiscal') &&
-                   !p.centro_custo.toLowerCase().includes('investimento') &&
-                   !p.centro_custo.toLowerCase().includes('empréstimo'))
+      .filter(p => !(p.centro_custo_nome || '').toLowerCase().includes('fornecedor') && 
+                   !(p.centro_custo_nome || '').toLowerCase().includes('mercadoria') &&
+                   !(p.centro_custo_nome || '').toLowerCase().includes('produto') &&
+                   !(p.centro_custo_nome || '').toLowerCase().includes('pessoal') &&
+                   !(p.centro_custo_nome || '').toLowerCase().includes('salário') &&
+                   !(p.centro_custo_nome || '').toLowerCase().includes('folha') &&
+                   !(p.centro_custo_nome || '').toLowerCase().includes('imposto') &&
+                   !(p.centro_custo_nome || '').toLowerCase().includes('tributo') &&
+                   !(p.centro_custo_nome || '').toLowerCase().includes('fiscal') &&
+                   !(p.centro_custo_nome || '').toLowerCase().includes('investimento') &&
+                   !(p.centro_custo_nome || '').toLowerCase().includes('empréstimo'))
       .reduce((acc, p) => acc + (p.valor_pago || p.valor), 0);
 
     const fluxoOperacional = recebimentoClientes - pagamentoFornecedores - pagamentoSalarios - pagamentoImpostos - outrasDespesasOp;
 
     // ATIVIDADES DE INVESTIMENTO
     const investimentos = pagamentosPeriodo
-      .filter(p => p.centro_custo.toLowerCase().includes('investimento') ||
-                   p.centro_custo.toLowerCase().includes('imobilizado'))
+      .filter(p => (p.centro_custo_nome || '').toLowerCase().includes('investimento') ||
+                   (p.centro_custo_nome || '').toLowerCase().includes('imobilizado'))
       .reduce((acc, p) => acc + (p.valor_pago || p.valor), 0);
 
     const fluxoInvestimento = -investimentos;
@@ -112,8 +112,8 @@ export const FluxoCaixaContabil = ({ periodo, mes, ano, empresaId }: FluxoCaixaC
     // ATIVIDADES DE FINANCIAMENTO
     const emprestimosRecebidos = 0;
     const emprestimosPagos = pagamentosPeriodo
-      .filter(p => p.centro_custo.toLowerCase().includes('empréstimo') ||
-                   p.centro_custo.toLowerCase().includes('financiamento'))
+      .filter(p => (p.centro_custo_nome || '').toLowerCase().includes('empréstimo') ||
+                   (p.centro_custo_nome || '').toLowerCase().includes('financiamento'))
       .reduce((acc, p) => acc + (p.valor_pago || p.valor), 0);
 
     const fluxoFinanciamento = emprestimosRecebidos - emprestimosPagos;
