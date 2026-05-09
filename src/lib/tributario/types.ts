@@ -77,4 +77,5 @@ export interface ResultadoDecisao {
   economiaAnualVsAtual?: number;
   alertas: string[];
   justificativa: string;
+  justificativaIA?: string | null;
 }
