@@ -40,7 +40,6 @@ interface MatchSugestaoIA {
 const SYSTEM_PROMPT = `Você é um especialista em conciliação bancária. Sua tarefa é analisar transações de extrato bancário e encontrar correspondências com lançamentos do sistema financeiro.
 
 Você deve levar em conta o histórico de decisões anteriores (Aprovados/Rejeitados) para aprender padrões específicos deste usuário. Se uma transação similar foi rejeitada antes, diminua o score. Se foi aprovada, aumente.
-`
 
 Para cada transação do extrato, você deve:
 1. Analisar o valor, descrição, data e tipo (crédito/débito)
