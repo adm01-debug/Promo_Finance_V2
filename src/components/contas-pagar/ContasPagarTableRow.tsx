@@ -21,6 +21,10 @@ import {
   Trash2,
   Sparkles,
   Repeat,
+  MoreHorizontal,
+  History,
+  Eye,
+  Edit,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -31,7 +35,6 @@ import { ContaPagarRowAprovacaoBadge } from './ContaPagarRowAprovacaoBadge';
 import { ContaPagarRowActions } from './ContaPagarRowActions';
 import { VersionHistory } from '@/components/common/VersionHistory';
 import { DuplicateButton } from '@/components/common/DuplicateButton';
-import { MoreHorizontal, History, Eye, Edit } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 
