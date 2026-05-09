@@ -74,7 +74,7 @@ export function ContaPagarRowActions({
             onEdit(duplicated);
             toast.success('Registro clonado. Revise os dados e salve.');
           }}
-          label="Duplicar"
+          label="Analisar Duplicação"
           className="w-full justify-start px-2 py-1.5 h-auto font-normal text-sm"
           variant="ghost"
           size="default"
