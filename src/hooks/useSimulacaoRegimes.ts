@@ -185,6 +185,7 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
     salvarSimulacao,
     sincronizarComServer,
     isSincronizando: decidirRegimeServer.isPending,
+    isRecomendacaoIA,
     temHistoricoSuficiente: faturamentoMensal.length >= 12,
   };
 }
