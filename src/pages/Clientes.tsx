@@ -69,6 +69,10 @@ export default function Clientes() {
   const estadoFilter = filterValues.estado as string;
   const scoreFilter = filterValues.score as string;
 
+  const setStatusFilter = (v: string) => setFilterField('status', v);
+  const setEstadoFilter = (v: string) => setFilterField('estado', v);
+  const setScoreFilter = (v: string) => setFilterField('score', v);
+
   useEffect(() => {
     setFilterField('search', searchTerm);
   }, [searchTerm, setFilterField]);
