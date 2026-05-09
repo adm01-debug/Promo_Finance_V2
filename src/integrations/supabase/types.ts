@@ -5969,6 +5969,33 @@ export type Database = {
         }
         Relationships: []
       }
+      glossario_tributario: {
+        Row: {
+          base_legal: string | null
+          categoria: string | null
+          created_at: string | null
+          id: string
+          significado: string
+          termo: string
+        }
+        Insert: {
+          base_legal?: string | null
+          categoria?: string | null
+          created_at?: string | null
+          id?: string
+          significado: string
+          termo: string
+        }
+        Update: {
+          base_legal?: string | null
+          categoria?: string | null
+          created_at?: string | null
+          id?: string
+          significado?: string
+          termo?: string
+        }
+        Relationships: []
+      }
       health_scores_operacionais: {
         Row: {
           created_at: string
@@ -7463,6 +7490,72 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      obrigacoes_acessorias: {
+        Row: {
+          codigo: string
+          competencia: string
+          created_at: string | null
+          empresa_id: string
+          esfera: string
+          id: string
+          nome: string
+          observacoes: string | null
+          periodicidade: string
+          protocolo: string | null
+          status: string
+          transmitida_em: string | null
+          updated_at: string | null
+          vencimento: string
+        }
+        Insert: {
+          codigo: string
+          competencia: string
+          created_at?: string | null
+          empresa_id: string
+          esfera: string
+          id?: string
+          nome: string
+          observacoes?: string | null
+          periodicidade: string
+          protocolo?: string | null
+          status?: string
+          transmitida_em?: string | null
+          updated_at?: string | null
+          vencimento: string
+        }
+        Update: {
+          codigo?: string
+          competencia?: string
+          created_at?: string | null
+          empresa_id?: string
+          esfera?: string
+          id?: string
+          nome?: string
+          observacoes?: string | null
+          periodicidade?: string
+          protocolo?: string | null
+          status?: string
+          transmitida_em?: string | null
+          updated_at?: string | null
+          vencimento?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "obrigacoes_acessorias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "obrigacoes_acessorias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
       }
       open_finance_consents: {
         Row: {
