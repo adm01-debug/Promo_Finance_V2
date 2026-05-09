@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   MoreVertical, 
@@ -16,7 +16,8 @@ import {
   QrCode,
   CreditCard,
   DollarSign,
-  TrendingUp
+  TrendingUp,
+  History
 } from 'lucide-react';
 import { TableRow, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -34,6 +35,7 @@ import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime } fro
 import { cn } from '@/lib/utils';
 import { ContaPagarRowAprovacaoBadge } from './ContaPagarRowAprovacaoBadge';
 import { CategorizacaoIABadge } from './CategorizacaoIABadge';
+import { VersionHistory } from '@/components/common/VersionHistory';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -95,6 +97,7 @@ export const ContasPagarTableRow = memo(({
   getRowAnimation,
   isVirtual = false
 }: ContasPagarTableRowProps) => {
+  const [historyOpen, setHistoryOpen] = useState(false);
   const status = statusConfig[conta.status as StatusPagamento];
   const StatusIcon = status?.icon || Clock;
   const TipoIcon = tipoCobrancaIcons[conta.tipo_cobranca as TipoCobranca] || Banknote;
@@ -241,6 +244,10 @@ export const ContasPagarTableRow = memo(({
               <Edit className="h-4 w-4" /> Edit Record
             </DropdownMenuItem>
             
+            <DropdownMenuItem onClick={() => setHistoryOpen(true)} className="gap-2 focus:bg-primary/10">
+              <History className="h-4 w-4" /> Version History
+            </DropdownMenuItem>
+            
             {(conta.status === 'pendente' || conta.status === 'vencido' || conta.status === 'parcial') && (
               <DropdownMenuItem onClick={onRegistrarPagamento} className="gap-2 text-success focus:text-success focus:bg-success/10">
                 <CheckCircle2 className="h-4 w-4" /> Register Payment
@@ -259,6 +266,12 @@ export const ContasPagarTableRow = memo(({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <VersionHistory 
+          open={historyOpen} 
+          onOpenChange={setHistoryOpen} 
+          recordId={conta.id} 
+          tableName="contas_pagar" 
+        />
       </TableCell>
     </>
   );

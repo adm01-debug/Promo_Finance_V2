@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Building2, DollarSign, Edit, Scan } from 'lucide-react';
+import { Building2, DollarSign, Edit, Scan, Loader2 } from 'lucide-react';
 import { ActionButton } from '@/components/ui/action-button';
 import { LeitorCodigoBarras } from './LeitorCodigoBarras';
 import { DadosBoleto } from '@/lib/barcode-parser';
@@ -17,6 +17,7 @@ import {
   useUpdateContaPagar 
 } from '@/hooks/useFinancialData';
 import { useCategorias } from '@/hooks/useCategorias';
+import { useProcessarNFOCR, type DadosExtraidosNF } from '@/hooks/useProcessarNFOCR';
 import { toast } from '@/hooks/use-toast';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 import { sounds } from '@/lib/sound-feedback';
@@ -79,8 +80,10 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
   const { celebrateSuccess } = useCelebrations();
   const [showFornecedorSelect, setShowFornecedorSelect] = useState(false);
   const [showLeitorCodigoBarras, setShowLeitorCodigoBarras] = useState(false);
+  const [isOcrProcessing, setIsOcrProcessing] = useState(false);
   const isEditing = !!conta;
 
+  const { processar: processarNF } = useProcessarNFOCR();
   const { data: fornecedores = [] } = useFornecedores();
   const { data: centrosCusto = [] } = useCentrosCusto();
   const { data: contasBancarias = [] } = useContasBancarias();
@@ -175,6 +178,39 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
     toast({ title: 'Dados preenchidos automaticamente', description: `Boleto do ${dados.banco} no valor de R$ ${dados.valor.toFixed(2)}` });
   };
 
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsOcrProcessing(true);
+    try {
+      const result = await processarNF.mutateAsync(file);
+      if (result.success && result.dados_extraidos) {
+        const dados = result.dados_extraidos;
+        if (dados.valor_total) form.setValue('valor', dados.valor_total);
+        if (dados.data_emissao) form.setValue('data_emissao', dados.data_emissao);
+        if (dados.numero_nf) form.setValue('numero_documento', dados.numero_nf);
+        if (dados.descricao) form.setValue('descricao', dados.descricao);
+        if (dados.razao_social_emissor) {
+          form.setValue('fornecedor_nome', dados.razao_social_emissor);
+          // Tenta encontrar fornecedor pelo nome ou CNPJ se disponível futuramente
+        }
+        
+        toast({ 
+          title: 'IA: Extração concluída', 
+          description: `Dados da NF #${dados.numero_nf || ''} extraídos com sucesso.` 
+        });
+        sounds.success();
+      }
+    } catch (error) {
+      console.error('Erro no OCR:', error);
+    } finally {
+      setIsOcrProcessing(false);
+      // Limpa o input para permitir selecionar o mesmo arquivo novamente
+      event.target.value = '';
+    }
+  };
+
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
@@ -190,9 +226,44 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
               {isEditing ? 'Editar Conta a Pagar' : 'Nova Conta a Pagar'}
             </DialogTitle>
             {!isEditing && (
-              <Button type="button" variant="outline" size="sm" onClick={() => setShowLeitorCodigoBarras(true)} className="gap-2">
-                <Scan className="h-4 w-4" />Ler Código de Barras
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setShowLeitorCodigoBarras(true)} 
+                  className="gap-2"
+                >
+                  <Scan className="h-4 w-4" />Ler Código de Barras
+                </Button>
+                
+                <div className="relative">
+                  <Input
+                    type="file"
+                    accept="application/pdf,image/*"
+                    className="hidden"
+                    id="ocr-upload"
+                    onChange={handleFileUpload}
+                    disabled={isOcrProcessing}
+                  />
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm" 
+                    className="gap-2 border-primary/30 bg-primary/5 text-primary hover:bg-primary/10"
+                    asChild
+                  >
+                    <label htmlFor="ocr-upload" className="cursor-pointer">
+                      {isOcrProcessing ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Building2 className="h-4 w-4" />
+                      )}
+                      {isOcrProcessing ? 'Processando IA...' : 'Scan NF (IA)'}
+                    </label>
+                  </Button>
+                </div>
+              </div>
             )}
           </DialogHeader>
 

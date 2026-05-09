@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
@@ -118,6 +119,20 @@ export function PixRecebimento() {
                         )}>
                           {payment.status}
                         </Badge>
+                        {payment.valor_liquido && payment.valor_liquido < payment.valor && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Badge variant="secondary" className="h-5 px-1.5 bg-success/10 text-success border-none">
+                                  <RefreshCw className="h-3 w-3" />
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-xs">Split Real-time Ativo: Tributos retidos na fonte.</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">
                         Vencimento: {formatDate(payment.data_vencimento)} • Ref: {payment.asaas_id}
@@ -127,8 +142,15 @@ export function PixRecebimento() {
                   
                   <div className="flex items-center gap-6">
                     <div className="text-right">
-                      <p className="text-lg font-black tabular-nums">{formatCurrency(payment.valor)}</p>
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-tighter">Valor Nominal</p>
+                      <p className="text-lg font-black tabular-nums text-success">{formatCurrency(payment.valor)}</p>
+                      {payment.valor_liquido && payment.valor_liquido < payment.valor && (
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-tighter">
+                          Líquido: {formatCurrency(payment.valor_liquido)} (Split Retido)
+                        </p>
+                      )}
+                      {!payment.valor_liquido && (
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-tighter">Valor Nominal</p>
+                      )}
                     </div>
                     
                     <div className="flex items-center gap-2">
