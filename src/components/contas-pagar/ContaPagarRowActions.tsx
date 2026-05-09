@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Eye,
   Edit,
@@ -6,6 +7,7 @@ import {
   ShieldAlert,
   MoreHorizontal,
   Banknote,
+  History,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,16 +17,20 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import { VersionHistory } from '@/components/common/VersionHistory';
+import { DuplicateButton } from '@/components/common/DuplicateButton';
+import { toast } from 'sonner';
 
 interface ContaPagarRowActionsProps {
   status: string;
   aguardandoSolicitacao: boolean;
   temSolicitacaoPendente: boolean;
-  onEdit: () => void;
+  onEdit: (data?: any) => void;
   onDelete: () => void;
   onRegistrarPagamento: () => void;
   onSolicitarAprovacao: () => void;
-  id?: string;
+  id: string;
+  conta: any;
 }
 
 export function ContaPagarRowActions({
@@ -36,7 +42,10 @@ export function ContaPagarRowActions({
   onRegistrarPagamento,
   onSolicitarAprovacao,
   id,
+  conta,
 }: ContaPagarRowActionsProps) {
+  const [historyOpen, setHistoryOpen] = useState(false);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -49,15 +58,32 @@ export function ContaPagarRowActions({
           <Eye className="h-4 w-4" />
           Visualizar
         </DropdownMenuItem>
-        <DropdownMenuItem className="gap-2" onClick={onEdit}>
+        <DropdownMenuItem className="gap-2" onClick={() => onEdit()}>
           <Edit className="h-4 w-4" />
           Editar
         </DropdownMenuItem>
         
+        <DropdownMenuItem className="gap-2" onClick={() => setHistoryOpen(true)}>
+          <History className="h-4 w-4" />
+          Histórico
+        </DropdownMenuItem>
+
+        <DuplicateButton 
+          data={conta} 
+          onDuplicate={(duplicated) => {
+            onEdit(duplicated);
+            toast.success('Registro clonado. Revise os dados e salve.');
+          }}
+          label="Duplicar"
+          className="w-full justify-start px-2 py-1.5 h-auto font-normal text-sm"
+          variant="ghost"
+          size="default"
+        />
+        
         {status !== 'pago' && status !== 'cancelado' && id && (
           <DropdownMenuItem className="gap-2" onClick={() => window.location.href = `/boletos?novo=true&pagar_id=${id}`}>
             <Banknote className="h-4 w-4" />
-            Gerar Boleto Pagamento
+            Gerar Boleto
           </DropdownMenuItem>
         )}
 
@@ -82,6 +108,13 @@ export function ContaPagarRowActions({
           Excluir
         </DropdownMenuItem>
       </DropdownMenuContent>
+
+      <VersionHistory 
+        open={historyOpen} 
+        onOpenChange={setHistoryOpen} 
+        recordId={id} 
+        tableName="contas_pagar" 
+      />
     </DropdownMenu>
   );
 }

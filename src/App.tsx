@@ -109,6 +109,7 @@ const PortalTokensPage = lazy(() => import('./pages/clientes/PortalTokens'));
 const ScoringClientesPage = lazy(() => import('./pages/clientes/ScoringClientes'));
 
 const Orcamentos = lazy(() => import('./pages/Orcamentos'));
+const Categorias = lazy(() => import('./pages/Categorias'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Inner app component that can use routing hooks
@@ -217,9 +218,10 @@ function AppRoutes() {
             <Route path="/inteligencia" element={<ProtectedRoute><InteligenciaOperacionalPage /></ProtectedRoute>} />
             <Route path="/metas" element={<ProtectedRoute><MetasFinanceirasPage /></ProtectedRoute>} />
             <Route path="/orcamentos" element={<ProtectedRoute><Orcamentos /></ProtectedRoute>} />
+            <Route path="/categorias" element={<ProtectedRoute><Categorias /></ProtectedRoute>} />
             <Route path="/clientes/portal-tokens" element={<ProtectedRoute><PortalTokensPage /></ProtectedRoute>} />
             <Route path="/clientes/scoring" element={<ProtectedRoute><Clientes /></ProtectedRoute>} />
-            
+
             <Route path="/style-guide" element={<ProtectedRoute><StyleGuide /></ProtectedRoute>} />
             
             {/* 404 */}
