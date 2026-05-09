@@ -235,10 +235,15 @@ export function encontrarMatchesParaTransacao(
       scoreTotal += peso;
       pesoTotal += config.pesoValorProximo;
     } else {
-      // Values don't match at all - skip this lancamento
-      continue;
+      // Divergência significativa de valor
+      motivos.push({
+        tipo: 'valor_proximo', // Reaproveitando tipo para indicar que valor foi considerado mas é diferente
+        descricao: `Divergência de valor (${formatCurrency(Math.abs(valorTransacao - lancamento.valor))} de diferença)`,
+        peso: -20, // Penalidade pesada para score
+      });
+      // Não damos continue aqui para permitir matching por nome/documento
     }
-    
+
     // 2. Compare description/entity name
     const textoTransacao = `${transacao.descricao} ${transacao.memo || ''}`;
     const textoLancamento = `${lancamento.descricao} ${lancamento.entidade} ${lancamento.entidadeNome || ''}`;
