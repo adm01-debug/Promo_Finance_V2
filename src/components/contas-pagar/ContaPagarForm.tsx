@@ -69,7 +69,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
   const { data: centrosCusto = [] } = useCentrosCusto();
   const { data: contasBancarias = [] } = useContasBancarias();
   const { data: empresas = [] } = useEmpresas();
-  const { categoriasDespesa } = (require('@/hooks/useCategorias') as any).useCategorias();
+  const { categoriasDespesa } = useCategorias();
 
   const form = useForm<ContaPagarFormData>({
     resolver: zodResolver(contaPagarSchema),
