@@ -110,64 +110,74 @@ export const DashboardExecutivo = () => {
     : 'secondary' as const;
 
   const renderWidget = (widget: DashboardWidget): ReactNode => {
-    switch (widget.id) {
-      case 'fluxo-caixa':
-        return (
-          <FluxoCaixaChart
-            data={metrics.fluxoCaixaProjetado}
-            periodoFluxo={periodoFluxo}
-            setPeriodoFluxo={setPeriodoFluxo}
-          />
-        );
-      case 'composicao':
-        return <SaldoPorBancoCard contasBancariasFiltradas={metrics.contasBancariasFiltradas} saldoTotal={metrics.saldoTotal} />;
-      case 'top-clientes':
-        return <TopClientesLeaderboard topClientesReceita={metrics.topClientesReceita} />;
-      case 'vencimentos':
-        return <StatusContasPieChart statusContasPagar={metrics.statusContasPagar} />;
-      case 'previsao-ia':
-        return <PrevisaoIA className="h-full" />;
-      case 'aprovacoes':
-        return <TopCentrosCustoChart dadosPorCentroCusto={metrics.dadosPorCentroCusto} />;
-      case 'alertas-preditivos':
-        return (
-          <AlertasPreditivosPanel
-            saldoAtual={metrics.saldoTotal}
-            receitasPrevistas={metrics.contasReceberFiltradas
-              .filter(c => c.status !== 'pago' && c.status !== 'cancelado')
-              .map(c => ({
-                valor: c.valor - (c.valor_recebido || 0),
-                dataVencimento: new Date(c.data_vencimento),
-                entidade: c.cliente_nome,
+    const isTarget = window.location.hash === `#${widget.id}`;
+    
+    const widgetContent = (() => {
+      switch (widget.id) {
+        case 'fluxo-caixa':
+          return (
+            <FluxoCaixaChart
+              data={metrics.fluxoCaixaProjetado}
+              periodoFluxo={periodoFluxo}
+              setPeriodoFluxo={setPeriodoFluxo}
+            />
+          );
+        case 'composicao':
+          return <SaldoPorBancoCard contasBancariasFiltradas={metrics.contasBancariasFiltradas} saldoTotal={metrics.saldoTotal} />;
+        case 'top-clientes':
+          return <TopClientesLeaderboard topClientesReceita={metrics.topClientesReceita} />;
+        case 'vencimentos':
+          return <StatusContasPieChart statusContasPagar={metrics.statusContasPagar} />;
+        case 'previsao-ia':
+          return <PrevisaoIA className="h-full" />;
+        case 'aprovacoes':
+          return <TopCentrosCustoChart dadosPorCentroCusto={metrics.dadosPorCentroCusto} />;
+        case 'alertas-preditivos':
+          return (
+            <AlertasPreditivosPanel
+              saldoAtual={metrics.saldoTotal}
+              receitasPrevistas={metrics.contasReceberFiltradas
+                .filter(c => c.status !== 'pago' && c.status !== 'cancelado')
+                .map(c => ({
+                  valor: c.valor - (c.valor_recebido || 0),
+                  dataVencimento: new Date(c.data_vencimento),
+                  entidade: c.cliente_nome,
+                }))}
+              despesasPrevistas={metrics.contasPagarFiltradas
+                .filter(c => c.status !== 'pago' && c.status !== 'cancelado')
+                .map(c => ({
+                  valor: c.valor - (c.valor_pago || 0),
+                  dataVencimento: new Date(c.data_vencimento),
+                  entidade: c.fornecedor_nome,
+                }))}
+              historicoInadimplencia={metrics.vencidasReceber.map(c => ({
+                clienteId: c.cliente_id || 'unknown',
+                diasAtraso: Math.floor((new Date().getTime() - new Date(c.data_vencimento).getTime()) / (1000 * 60 * 60 * 24)),
               }))}
-            despesasPrevistas={metrics.contasPagarFiltradas
-              .filter(c => c.status !== 'pago' && c.status !== 'cancelado')
-              .map(c => ({
-                valor: c.valor - (c.valor_pago || 0),
-                dataVencimento: new Date(c.data_vencimento),
-                entidade: c.fornecedor_nome,
-              }))}
-            historicoInadimplencia={metrics.vencidasReceber.map(c => ({
-              clienteId: c.cliente_id || 'unknown',
-              diasAtraso: Math.floor((new Date().getTime() - new Date(c.data_vencimento).getTime()) / (1000 * 60 * 60 * 24)),
-            }))}
-            defaultExpanded={true}
-          />
-        );
-      case 'metas':
-        return <MetasFinanceirasPanel defaultExpanded={true} />;
-      case 'bling-nfe':
-        return <BlingNFeTab />;
-      case 'bling-financeiro':
-        return <BlingFinanceiroPanel />;
-      case 'inadimplencia-segmentada':
-        return <InadimplenciaSegmentada />;
-      case 'benchmarking':
-        return <BenchmarkingSetorial />;
+              defaultExpanded={isTarget || true}
+            />
+          );
+        case 'metas':
+          return <MetasFinanceirasPanel defaultExpanded={isTarget || true} />;
+        case 'bling-nfe':
+          return <BlingNFeTab />;
+        case 'bling-financeiro':
+          return <BlingFinanceiroPanel />;
+        case 'inadimplencia-segmentada':
+          return <InadimplenciaSegmentada />;
+        case 'benchmarking':
+          return <BenchmarkingSetorial />;
 
-      default:
-        return <div className="p-4 text-sm text-muted-foreground">Widget: {widget.title}</div>;
-    }
+        default:
+          return <div className="p-4 text-sm text-muted-foreground">Widget: {widget.title}</div>;
+      }
+    })();
+
+    return (
+      <div id={widget.id} className={cn(isTarget && "ring-2 ring-primary ring-offset-4 ring-offset-background rounded-[2.5rem] transition-all duration-1000")}>
+        {widgetContent}
+      </div>
+    );
   };
 
   return (
