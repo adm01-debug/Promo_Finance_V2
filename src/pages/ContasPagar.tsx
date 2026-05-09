@@ -83,7 +83,13 @@ export default function ContasPagar() {
               </p>
             </div>
 
-            <div className="flex items-center gap-4 bg-background/40 p-2.5 rounded-[2rem] border border-white/10 backdrop-blur-2xl shadow-2xl ring-1 ring-white/10">
+            <div className="flex flex-col md:flex-row items-center gap-4 bg-background/40 p-2.5 rounded-[2rem] border border-white/10 backdrop-blur-2xl shadow-2xl ring-1 ring-white/10">
+              <div className="hidden lg:flex items-center gap-3 pr-3 border-r border-white/10">
+                <EmpresaSwitcher />
+              </div>
+              <div className="hidden lg:flex items-center gap-3 pr-3 border-r border-white/10">
+                <BankAccountSwitcher />
+              </div>
               <div className="flex items-center gap-3">
                 <CategorizacaoLoteButton
                   despesas={logic.sortedContas
