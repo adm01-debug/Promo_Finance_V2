@@ -128,7 +128,7 @@ function useAnaliseInadimplencia() {
         .from('contas_receber')
         .select(`
           id, valor, valor_recebido, data_vencimento, status, cliente_id, cliente_nome,
-          clientes(id, razao_social, nome_fantasia, score, limite_credito)
+          clientes(id, razao_social, nome_fantasia, score, limite_credito, ramo_atividade)
         `)
         .in('status', ['pendente', 'parcial'])
         .gte('data_vencimento', format(hoje, 'yyyy-MM-dd'))
