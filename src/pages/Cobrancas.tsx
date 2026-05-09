@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
 import {
   Send, Mail, MessageSquare, Phone, Smartphone, Target, TrendingUp,
@@ -101,6 +102,7 @@ const getMetricsCanal = () => [
 ];
 
 export default function Cobrancas() {
+  const { user } = useAuth();
   const { data: kpis, isLoading: loadingKpis } = useCobrancaKPIs();
   const { data: agingData, isLoading: loadingAging } = useAgingData();
   const { data: topDevedores, isLoading: loadingDevedores } = useTopDevedores(10);
@@ -110,7 +112,14 @@ export default function Cobrancas() {
     return etapasCount?.find(e => e.etapa === etapaId)?.count || 0;
   };
 
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState(window.location.hash === '#whatsapp' ? 'whatsapp' : 'dashboard');
+
+  useEffect(() => {
+    if (activeTab === 'whatsapp' && user?.id) {
+      localStorage.removeItem(`whatsapp-unread-manual-${user.id}`);
+      window.dispatchEvent(new Event('storage'));
+    }
+  }, [activeTab, user?.id]);
 
   return (
     <MainLayout>
@@ -124,7 +133,14 @@ export default function Cobrancas() {
         </motion.div>
 
         {/* Main Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <Tabs value={activeTab} onValueChange={(v) => {
+          setActiveTab(v);
+          if (v === 'whatsapp') {
+            window.history.replaceState(null, '', '/cobrancas#whatsapp');
+          } else {
+            window.history.replaceState(null, '', '/cobrancas');
+          }
+        }}>
           <TabsList className="mb-4">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="engine">Engine & Fila</TabsTrigger>
