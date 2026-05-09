@@ -301,15 +301,21 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
   });
 }
 
-export function useContasReceber() {
+export function useContasReceber(empresaId?: string) {
   return useQuery({
-    queryKey: ['contas-receber'],
+    queryKey: ['contas-receber', empresaId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('vw_contas_receber_painel')
         .select('*')
         .order('data_vencimento', { ascending: true })
-        .limit(500);
+        .limit(1000);
+
+      if (empresaId && empresaId !== 'all') {
+        query = query.eq('empresa_id', empresaId);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
