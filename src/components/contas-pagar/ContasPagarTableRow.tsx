@@ -28,6 +28,11 @@ import { formatCurrency, formatDate, calculateOverdueDays, getRelativeTime } fro
 import { cn } from '@/lib/utils';
 import { ContaPagarRowAprovacaoBadge } from './ContaPagarRowAprovacaoBadge';
 import { ContaPagarRowActions } from './ContaPagarRowActions';
+import { VersionHistory } from '@/components/common/VersionHistory';
+import { DuplicateButton } from '@/components/common/DuplicateButton';
+import { MoreHorizontal, History, Eye, Edit } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 
 type StatusPagamento = 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
 type TipoCobranca = 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';

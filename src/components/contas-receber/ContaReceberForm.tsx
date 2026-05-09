@@ -48,7 +48,7 @@ type ContaReceberFormData = z.infer<typeof contaReceberSchema>;
 interface ContaReceber {
   id: string; cliente_id: string | null; cliente_nome: string; descricao: string;
   valor: number; data_vencimento: string; data_emissao: string; empresa_id: string;
-  centro_custo_id: string | null; conta_bancaria_id: string | null; tipo_cobranca: string;
+  centro_custo_id: string | null; categoria_id: string | null; conta_bancaria_id: string | null; tipo_cobranca: string;
 }
 
 interface ContaReceberFormProps {
@@ -67,6 +67,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const { data: contasBancarias = [] } = useContasBancarias();
   const { data: empresas = [] } = useEmpresas();
   const { data: vendedores = [] } = useVendedoresAtivos();
+  const { categoriasReceita } = useCategorias();
 
   const form = useForm<ContaReceberFormData>({
     resolver: zodResolver(contaReceberSchema),
@@ -173,8 +174,9 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
                 centrosCusto={centrosCusto} contasBancarias={contasBancarias} vendedores={vendedores}
                 showClienteSelect={showClienteSelect} setShowClienteSelect={setShowClienteSelect}
                 onClienteSelect={handleClienteSelect}
+                categorias={categoriasReceita}
               />
-              
+
               {isEditing && conta?.id && (
                 <div className="pt-6 border-t border-white/5">
                   <AnexoList entidadeId={conta.id} entidadeTipo="contas_receber" />
