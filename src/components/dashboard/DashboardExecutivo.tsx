@@ -287,6 +287,7 @@ export const DashboardExecutivo = () => {
                 venceHojePagarCount={metrics.venceHojePagar.length}
                 aprovacoesPendentes={metrics.aprovacoesPendentes}
                 vencidasTotal={metrics.vencidasReceber.length + metrics.vencidasPagar.length}
+                totalDivergencias={metrics.totalDivergencias}
               />
             </motion.div>
 
