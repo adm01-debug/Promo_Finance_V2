@@ -66,6 +66,7 @@ export function useContasPagarLogic() {
     status: statusFilter,
     centroCustoId: centroCustoFilter,
     empresaId: currentEmpresaId || 'all',
+    contaBancariaId: currentBankAccountId || 'all',
   });
 
   const { data: allContas = [] } = useContasPagar(currentEmpresaId || 'all');
