@@ -108,7 +108,7 @@ const navGroups: NavGroup[] = [
       { label: 'Simulador Antecipação', icon: Calculator, href: '/simulador-antecipacao' },
       { label: 'Asaas Pagamentos', icon: CreditCard, href: '/asaas', highlight: true },
       { label: 'Auditoria de Duplicidade', icon: ShieldAlert, href: '/contas-pagar/bloqueios', highlight: true },
-      { label: 'Metas Financeiras', icon: Target, href: '/metas' },
+      { label: 'Metas Financeiras', icon: Target, href: '/metas', highlight: true },
     ],
   },
   {
