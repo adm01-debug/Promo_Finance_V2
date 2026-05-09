@@ -249,11 +249,6 @@ export function useConciliacaoPage() {
       }
     }
 
-    // Persistir feedback IA (se houver matches de alta confiança)
-    if (matchesAlta.length > 0 && selectedBanco) {
-      console.log('IA Learning: Persistindo aprendizado para', matchesAlta.length, 'matches');
-    }
-
     setTransacoes(prev => [...novasTransacoes, ...prev]);
     setTransacoesImportadas(prev => [
       ...extrato.transacoes.filter(t => {
@@ -277,7 +272,7 @@ export function useConciliacaoPage() {
     });
     setShowReportDialog(true);
     setIsProcessingImport(false);
-  }, [selectedBanco, lancamentosSistema, salvarExtratoBanco]);
+  }, [selectedBanco, lancamentosSistema, salvarExtratoBanco, confirmarConciliacao, contasBancarias]);
 
   const handleConfirmarMatch = useCallback(async (transacaoId: string, lancamentoId: string, tipo: 'pagar' | 'receber') => {
     try {
@@ -292,8 +287,6 @@ export function useConciliacaoPage() {
   }, [confirmarConciliacao]);
 
   const handleRejeitarMatch = useCallback((transacaoId: string, _lancamentoId: string) => {
-    // Remove a transação da fila de sugestões IA — feedback já foi gravado em
-    // historico_conciliacao_ia + feedback_conciliacao_ia pelo SugestoesMatchIA.
     setTransacoesImportadas(prev => prev.filter(t => t.id !== transacaoId));
     toast.info('Sugestão rejeitada — feedback registrado');
   }, []);
@@ -320,17 +313,14 @@ export function useConciliacaoPage() {
     setTransacoesImportadas(prev => prev.filter(t => t.id !== transacaoId));
   }, [confirmarConciliacao]);
 
-  const handleConciliar = useCallback((id: string) => {
-    const transacao = transacoes.find(t => t.id === id);
-    if (transacao) {
-      if (transacao.conciliada) {
-        toast.warning('Esta transação já foi conciliada. Desfaça a conciliação primeiro.');
-        return;
-      }
-      setSelectedTransacaoManual(transacao);
-      setShowManualDialog(true);
+  const handleConciliar = useCallback((transacao: TransacaoExtrato) => {
+    if (transacao.conciliada) {
+      toast.warning('Esta transação já foi conciliada. Desfaça a conciliação primeiro.');
+      return;
     }
-  }, [transacoes]);
+    setSelectedTransacaoManual(transacao);
+    setShowManualDialog(true);
+  }, []);
 
   const handleIgnorar = useCallback(async (id: string) => {
     try {
@@ -374,6 +364,11 @@ export function useConciliacaoPage() {
     });
   };
 
+  const toggleSelectAll = () => {
+    const pendingIds = filteredTransacoes.filter(t => !t.conciliada).map(t => t.id);
+    setSelectedIds(prev => prev.size === pendingIds.length ? new Set() : new Set(pendingIds));
+  };
+
   // KPIs
   const totalTransacoes = transacoes.length;
   const conciliadas = transacoes.filter(t => t.conciliada).length;
@@ -386,25 +381,13 @@ export function useConciliacaoPage() {
       (statusTab === 'pendentes' && !t.conciliada) ||
       (statusTab === 'conciliadas' && t.conciliada);
     if (filters.tipo !== 'todos' && t.tipo !== filters.tipo) return false;
-    if (filters.centroCustoId !== 'todos') {
-      const lancamento = lancamentosSistema.find(l => l.id === t.id);
-      if (lancamento && lancamento.centro_custo_nome) {
-         // This is a simplified check since t.id is the bank transaction id, 
-         // we'd need the link to the system entry which only happens after conciliation.
-         // For now filtering by system link if exists.
-      }
-    }
+    
     if (filters.periodoInicio) { if (t.data < new Date(filters.periodoInicio)) return false; }
     if (filters.periodoFim) { const end = new Date(filters.periodoFim); end.setHours(23, 59, 59); if (t.data > end) return false; }
     if (filters.valorMin && t.valor < parseFloat(filters.valorMin)) return false;
     if (filters.valorMax && t.valor > parseFloat(filters.valorMax)) return false;
     return matchesSearch && matchesTab;
-  }), [transacoes, debouncedSearch, statusTab, filters, lancamentosSistema]);
-
-  const toggleSelectAll = () => {
-    const pendingIds = filteredTransacoes.filter(t => !t.conciliada).map(t => t.id);
-    setSelectedIds(prev => prev.size === pendingIds.length ? new Set() : new Set(pendingIds));
-  };
+  }), [transacoes, debouncedSearch, statusTab, filters]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -448,9 +431,10 @@ export function useConciliacaoPage() {
     showImportDialog, setShowImportDialog,
     showManualDialog, setShowManualDialog,
     showSplitDialog, setShowSplitDialog,
-    selectedTransacaoManual, selectedTransacaoSplit,
+    selectedTransacaoManual, setSelectedTransacaoManual,
+    selectedTransacaoSplit, setSelectedTransacaoSplit,
     transacoes, transacoesImportadas, extratoImportado,
-    filters, setFilters, selectedIds,
+    filters, setFilters, selectedIds, setSelectedIds,
     showReportDialog, setShowReportDialog,
     importReport, isProcessingImport,
     showSugestoesFila, setShowSugestoesFila,
