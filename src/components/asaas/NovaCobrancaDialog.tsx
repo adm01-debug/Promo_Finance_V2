@@ -46,6 +46,9 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
   const [descontoValor, setDescontoValor] = useState('');
   const [descontoDias, setDescontoDias] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showSplit, setShowSplit] = useState(false);
+  const [splitWalletId, setSplitWalletId] = useState('');
+  const [splitPercent, setSplitPercent] = useState('');
   
   // Cartão de crédito
   const [cardHolderName, setCardHolderName] = useState('');
