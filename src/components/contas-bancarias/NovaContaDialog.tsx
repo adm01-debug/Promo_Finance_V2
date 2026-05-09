@@ -39,11 +39,14 @@ export function NovaContaDialog({ open, onOpenChange, empresas, bancos }: Props)
       const { error } = await supabase.from('contas_bancarias').insert({
         empresa_id: empresaId,
         banco,
+        codigo_banco: '000', // Valor padrão ou derivado
         agencia,
         conta,
-        tipo,
+        tipo_conta: tipo,
         saldo_inicial: parseFloat(saldo) || 0,
-        saldo_atual: parseFloat(saldo) || 0
+        saldo_atual: parseFloat(saldo) || 0,
+        saldo_disponivel: parseFloat(saldo) || 0,
+        ativo: true
       });
 
       if (error) throw error;
