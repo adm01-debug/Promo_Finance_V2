@@ -49,8 +49,6 @@ interface ContaReceber {
   id: string; cliente_id: string | null; cliente_nome: string; descricao: string;
   valor: number; data_vencimento: string; data_emissao: string; empresa_id: string;
   centro_custo_id: string | null; conta_bancaria_id: string | null; tipo_cobranca: string;
-  numero_documento: string | null; codigo_barras: string | null; chave_pix: string | null;
-  link_boleto: string | null; observacoes: string | null;
 }
 
 interface ContaReceberFormProps {
@@ -72,15 +70,15 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
 
   const form = useForm<ContaReceberFormData>({
     resolver: zodResolver(contaReceberSchema),
-    defaultValues: {
-      cliente_nome: '', descricao: '', valor: 0, data_vencimento: '',
-      data_emissao: new Date().toISOString().split('T')[0], empresa_id: '',
-      tipo_cobranca: 'boleto', recorrente: false, parcelado: false, numero_parcelas: 2,
+    defaultValues: { 
+      cliente_nome: '', descricao: '', valor: 0, data_vencimento: '', 
+      data_emissao: new Date().toISOString().split('T')[0], empresa_id: '', 
+      tipo_cobranca: 'boleto', recorrente: false 
     },
   });
 
   const isParcelado = form.watch('parcelado');
-  const numParcelas = form.watch('numero_parcelas') || 2;
+  const numParcelas = form.watch('numero_parcelas') || 1;
 
   useEffect(() => {
     if (conta && open) {
@@ -88,18 +86,16 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
         cliente_id: conta.cliente_id || undefined, cliente_nome: conta.cliente_nome,
         descricao: conta.descricao, valor: conta.valor, data_vencimento: conta.data_vencimento,
         data_emissao: conta.data_emissao, empresa_id: conta.empresa_id,
-        centro_custo_id: conta.centro_custo_id || undefined, conta_bancaria_id: conta.conta_bancaria_id || undefined,
-        tipo_cobranca: conta.tipo_cobranca as ContaReceberFormData['tipo_cobranca'],
-        numero_documento: conta.numero_documento || undefined, codigo_barras: conta.codigo_barras || undefined,
-        chave_pix: conta.chave_pix || undefined, link_boleto: conta.link_boleto || undefined,
-        observacoes: conta.observacoes || undefined, recorrente: false, parcelado: false, numero_parcelas: 2,
+        centro_custo_id: conta.centro_custo_id || undefined,
+        conta_bancaria_id: conta.conta_bancaria_id || undefined,
+        tipo_cobranca: conta.tipo_cobranca as any,
       });
       if (conta.cliente_id) setShowClienteSelect(true);
     } else if (!conta && open) {
-      form.reset({
-        cliente_nome: '', descricao: '', valor: 0, data_vencimento: '',
-        data_emissao: new Date().toISOString().split('T')[0], empresa_id: '',
-        tipo_cobranca: 'boleto', recorrente: false, parcelado: false, numero_parcelas: 2,
+      form.reset({ 
+        cliente_nome: '', descricao: '', valor: 0, data_vencimento: '', 
+        data_emissao: new Date().toISOString().split('T')[0], empresa_id: '', 
+        tipo_cobranca: 'boleto', recorrente: false 
       });
       setShowClienteSelect(false);
     }
@@ -109,45 +105,8 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
     mutationFn: async (data: ContaReceberFormData) => {
       if (!user?.id) throw new Error('Usuário não autenticado');
       
-      // Aplicar regra de roteamento se conta não informada
-      let finalContaId = data.conta_bancaria_id || null;
-      if (!finalContaId && data.empresa_id) {
-        const { data: rules } = await supabase
-          .from('regras_roteamento_financeiro')
-          .select('conta_bancaria_id')
-          .eq('empresa_id', data.empresa_id)
-          .eq('ativo', true)
-          .order('prioridade', { ascending: false })
-          .limit(1);
-        
-        if (rules && rules.length > 0) {
-          finalContaId = rules[0].conta_bancaria_id;
-        }
-      }
+      const finalContaId = data.conta_bancaria_id === 'none' ? null : (data.conta_bancaria_id || null);
 
-      if (data.parcelado && data.numero_parcelas && data.numero_parcelas > 1) {
-        const parcelas = [];
-        const baseDate = new Date(data.data_vencimento);
-        const valorParc = Math.round((data.valor / data.numero_parcelas) * 100) / 100;
-        for (let i = 0; i < data.numero_parcelas; i++) {
-          const venc = new Date(baseDate); venc.setMonth(venc.getMonth() + i);
-          parcelas.push({
-            cliente_id: data.cliente_id || null, cliente_nome: data.cliente_nome,
-            descricao: `${data.descricao} (${i + 1}/${data.numero_parcelas})`,
-            valor: i === data.numero_parcelas - 1 ? Math.round((data.valor - valorParc * (data.numero_parcelas - 1)) * 100) / 100 : valorParc,
-            data_vencimento: venc.toISOString().split('T')[0],
-            data_emissao: data.data_emissao || new Date().toISOString().split('T')[0],
-            empresa_id: data.empresa_id, centro_custo_id: data.centro_custo_id || null,
-            conta_bancaria_id: finalContaId, vendedor_id: data.vendedor_id || null,
-            tipo_cobranca: data.tipo_cobranca, numero_documento: data.numero_documento || null,
-            observacoes: data.observacoes || null, created_by: user.id,
-            status: 'pendente' as const, etapa_cobranca: 'preventiva' as const,
-            numero_parcela_atual: i + 1, total_parcelas: data.numero_parcelas,
-          });
-        }
-        const { error } = await supabase.from('contas_receber').insert(parcelas);
-        if (error) throw error; return;
-      }
       const { error } = await supabase.from('contas_receber').insert({
         cliente_id: data.cliente_id || null, cliente_nome: data.cliente_nome, descricao: data.descricao,
         valor: data.valor, data_vencimento: data.data_vencimento,
@@ -208,12 +167,21 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <ContaReceberFormFields
-              form={form} isEditing={isEditing} clientes={clientes} empresas={empresas}
-              centrosCusto={centrosCusto} contasBancarias={contasBancarias} vendedores={vendedores}
-              showClienteSelect={showClienteSelect} setShowClienteSelect={setShowClienteSelect}
-              onClienteSelect={handleClienteSelect}
-            />
+            <div className="space-y-6 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
+              <ContaReceberFormFields
+                form={form} isEditing={isEditing} clientes={clientes} empresas={empresas}
+                centrosCusto={centrosCusto} contasBancarias={contasBancarias} vendedores={vendedores}
+                showClienteSelect={showClienteSelect} setShowClienteSelect={setShowClienteSelect}
+                onClienteSelect={handleClienteSelect}
+              />
+              
+              {isEditing && conta?.id && (
+                <div className="pt-6 border-t border-white/5">
+                  <AnexoList entidadeId={conta.id} entidadeTipo="contas_receber" />
+                </div>
+              )}
+            </div>
+
             <div className="flex justify-end gap-3 pt-4 border-t">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
               <ActionButton type="submit" state={isPending ? 'loading' : 'idle'} loadingText="Salvando..." successText="Salvo!"
