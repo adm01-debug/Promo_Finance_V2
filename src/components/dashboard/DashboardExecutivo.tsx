@@ -155,11 +155,11 @@ export const DashboardExecutivo = () => {
                 clienteId: c.cliente_id || 'unknown',
                 diasAtraso: Math.floor((new Date().getTime() - new Date(c.data_vencimento).getTime()) / (1000 * 60 * 60 * 24)),
               }))}
-              defaultExpanded={isTarget || true}
+              defaultExpanded={isTarget}
             />
           );
         case 'metas':
-          return <MetasFinanceirasPanel defaultExpanded={isTarget || true} />;
+          return <MetasFinanceirasPanel defaultExpanded={isTarget} />;
         case 'bling-nfe':
           return <BlingNFeTab />;
         case 'bling-financeiro':
