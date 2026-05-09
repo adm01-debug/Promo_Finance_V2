@@ -8,8 +8,17 @@ import { formatCurrency, formatDate } from '@/lib/formatters';
 import { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
 import {
   Building2, Calendar, Hash, TrendingUp, TrendingDown, FileCheck,
-  AlertTriangle, CheckCircle2,
+  AlertTriangle, CheckCircle2, Zap, Settings2, Search, Table as TableIcon,
+  ChevronDown, CheckCircle
 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useState, useMemo } from 'react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface Props {
   extrato: ExtratoOFX;
