@@ -91,6 +91,12 @@ export default function BloqueiosDuplicidade() {
         `)
         .order("created_at", { ascending: false });
 
+      if (filters.empresa_id !== 'all') {
+        query = query.eq('empresa_id', filters.empresa_id);
+      }
+      if (filters.competencia) {
+        query = query.ilike('dados_tentativa->>mes_vencimento', `%${filters.competencia}%`);
+      }
       if (filters.fornecedor) {
         query = query.or(`dados_tentativa->>fornecedor_nome.ilike.%${filters.fornecedor}%,dados_tentativa->>cnpj_fornecedor.ilike.%${filters.fornecedor}%`);
       }
@@ -100,6 +106,7 @@ export default function BloqueiosDuplicidade() {
       if (filters.valor) {
         query = query.eq('valor_bloqueado', parseFloat(filters.valor.replace(',', '.')));
       }
+
       
       if (filters.periodo !== 'all') {
         const now = new Date();
