@@ -173,6 +173,11 @@ function useAnaliseInadimplencia() {
         const probabilidade = calcularProbabilidadeAtraso(cliente, contas, historico || []);
         const nivelRisco = determinarNivelRisco(probabilidade);
         const fatoresRisco = gerarFatoresRisco(cliente, contas, historico || []);
+        
+        // Refinamento por Ramo de Atividade (Engine 10/10)
+        if (cliente.ramo_atividade && ['Construção', 'Varejo'].includes(cliente.ramo_atividade)) {
+          fatoresRisco.push(`Setor de alto risco: ${cliente.ramo_atividade}`);
+        }
 
         interface ContaReceberData {
           valor: number;
