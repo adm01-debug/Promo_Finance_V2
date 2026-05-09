@@ -113,7 +113,12 @@ export function useContasPagarLogic() {
   // KPIs
   const totalPagar = allContas.reduce((sum, c) => c.status !== 'pago' && c.status !== 'cancelado' ? sum + c.valor - (c.valor_pago || 0) : sum, 0);
   const totalVencido = allContas.filter(c => c.status === 'vencido').reduce((sum, c) => sum + c.valor - (c.valor_pago || 0), 0);
-  const totalPagoMes = allContas.filter(c => c.status === 'pago').reduce((sum, c) => sum + (c.valor_pago || 0), 0);
+  const totalPagoMes = allContas.filter(c => {
+    if (c.status !== 'pago' || !c.data_pagamento) return false;
+    const today = new Date();
+    const dataPag = new Date(c.data_pagamento);
+    return dataPag.getMonth() === today.getMonth() && dataPag.getFullYear() === today.getFullYear();
+  }).reduce((sum, c) => sum + (c.valor_pago || 0), 0);
   const venceHoje = allContas.filter(c => {
     const hoje = new Date().toDateString();
     return new Date(c.data_vencimento).toDateString() === hoje && c.status === 'pendente';

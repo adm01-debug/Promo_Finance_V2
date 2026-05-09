@@ -302,7 +302,7 @@ export function ContasReceberTableRow({
                   onEdit(duplicated as any);
                   toast.success('Registro clonado. Revise os dados e salve.');
                 }}
-                label="Duplicate Record"
+                label="Analisar Duplicação"
                 className="w-full justify-start px-2 py-1.5 h-auto font-normal text-sm gap-3 rounded-xl focus:bg-white/10"
                 variant="ghost"
                 size="default"

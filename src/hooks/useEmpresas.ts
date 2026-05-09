@@ -8,14 +8,13 @@ export type Empresa = Tables<'empresas'>;
 export type EmpresaInsert = TablesInsert<'empresas'>;
 export type EmpresaUpdate = TablesUpdate<'empresas'>;
 
-export function useAllEmpresas() {
+export function useAllEmpresas(options?: { includeInactive?: boolean }) {
   return useQuery({
-    queryKey: ['empresas', 'all'],
+    queryKey: ['empresas', 'all', options?.includeInactive],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('empresas')
-        .select('*')
-        .order('razao_social');
+      let q = supabase.from('empresas').select('*').order('razao_social');
+      if (!options?.includeInactive) q = q.eq('ativo', true);
+      const { data, error } = await q;
       if (error) throw error;
       return data as Empresa[];
     },
