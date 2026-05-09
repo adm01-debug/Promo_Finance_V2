@@ -127,6 +127,39 @@ export function useContasReceberLogic() {
     setDescontoDialogOpen(true);
   }, []);
 
+  // Sincronizar etapas de cobrança (Régua de Cobrança Automática)
+  const handleSyncStages = useCallback(async () => {
+    const contasToUpdate = allContas.filter(c => c.status !== 'pago' && c.status !== 'cancelado');
+    
+    if (contasToUpdate.length === 0) {
+      toast.info('Nenhuma conta pendente para sincronizar.');
+      return;
+    }
+
+    const promise = async () => {
+      let updatedCount = 0;
+      for (const conta of contasToUpdate) {
+        const newStage = calculateCollectionStage(conta.data_vencimento, conta.status);
+        if (newStage && newStage !== conta.etapa_cobranca) {
+          const { error } = await supabase
+            .from('contas_receber')
+            .update({ etapa_cobranca: newStage })
+            .eq('id', conta.id);
+          
+          if (!error) updatedCount++;
+        }
+      }
+      queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
+      return updatedCount;
+    };
+
+    toast.promise(promise(), {
+      loading: 'Processando régua de cobrança...',
+      success: (count) => `${count} títulos atualizados na régua.`,
+      error: 'Erro ao sincronizar régua.',
+    });
+  }, [allContas, queryClient]);
+
   // KPI drill-down (#28)
   const handleKpiClick = useCallback((filter: string) => {
     if (filter === 'all') {
