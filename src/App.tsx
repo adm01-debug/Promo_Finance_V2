@@ -257,9 +257,11 @@ function App() {
         <ThemeProvider>
           <TooltipProvider>
             <AuthProvider>
-              <BrowserRouter>
-                <AppRoutes />
-              </BrowserRouter>
+              <TenantProvider>
+                <BrowserRouter>
+                  <AppRoutes />
+                </BrowserRouter>
+              </TenantProvider>
             </AuthProvider>
           </TooltipProvider>
         </ThemeProvider>
