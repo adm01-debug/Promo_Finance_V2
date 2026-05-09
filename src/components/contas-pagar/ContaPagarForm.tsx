@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, DollarSign, Edit, Scan } from 'lucide-react';
-import { ActionButton, useActionState } from '@/components/ui/action-button';
+import { ActionButton } from '@/components/ui/action-button';
 import { LeitorCodigoBarras } from './LeitorCodigoBarras';
 import { DadosBoleto } from '@/lib/barcode-parser';
 import { supabase } from '@/integrations/supabase/client';
