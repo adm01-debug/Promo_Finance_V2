@@ -3,6 +3,7 @@
 // ============================================
 
 import { TransacaoOFX } from './ofx-parser';
+import { formatCurrency } from './formatters';
 
 // Types for matching
 export interface LancamentoSistema {
