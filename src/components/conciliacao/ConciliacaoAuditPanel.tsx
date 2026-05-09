@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatCurrency, formatDate } from '@/lib/formatters';
-import { Shield, User, Clock, Zap, Link2, CheckCircle2, Search, X, Download, Filter } from 'lucide-react';
+import { Shield, User, Clock, Zap, Link2, CheckCircle2, Search, X, Download, Filter, AlertTriangle } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
