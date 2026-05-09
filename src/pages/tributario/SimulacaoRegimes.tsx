@@ -41,6 +41,7 @@ export default function SimulacaoRegimes() {
     folhaMensal,
     sincronizarComServer,
     isSincronizando,
+    isRecomendacaoIA,
   } = useSimulacaoRegimes({ empresaId });
 
   const { relatorio: relatorioElisao, persistirOportunidades } = useOportunidadesElisao({
