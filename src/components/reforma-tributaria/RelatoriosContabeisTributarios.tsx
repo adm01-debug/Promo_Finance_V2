@@ -23,8 +23,12 @@ import { CargaEfetivaTab } from './relatorios-tributarios/CargaEfetivaTab';
 const CORES_GRAFICO = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(220, 70%, 50%)', 'hsl(160, 70%, 40%)', 'hsl(280, 70%, 50%)', 'hsl(30, 80%, 50%)'];
 type TipoRelatorio = 'dre-tributario' | 'balancete' | 'comparativo' | 'creditos' | 'carga-efetiva';
 
-export function RelatoriosContabeisTributarios() {
-  const [empresaId, setEmpresaId] = useState<string>('');
+interface Props {
+  empresaId?: string;
+}
+
+export function RelatoriosContabeisTributarios({ empresaId: initialEmpresaId }: Props) {
+  const [empresaId, setEmpresaId] = useState<string>(initialEmpresaId || '');
   const [periodoInicio, setPeriodoInicio] = useState(format(new Date(new Date().getFullYear(), 0, 1), 'yyyy-MM'));
   const [periodoFim, setPeriodoFim] = useState(format(new Date(), 'yyyy-MM'));
   const [tipoRelatorio, setTipoRelatorio] = useState<TipoRelatorio>('dre-tributario');

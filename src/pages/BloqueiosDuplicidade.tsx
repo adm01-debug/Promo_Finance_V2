@@ -32,6 +32,7 @@ import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import { saveAs } from 'file-saver';
 import { motion } from "framer-motion";
+import { PageHeader, PageBackground } from "@/components/layout/PageHeader";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -130,45 +131,42 @@ export default function BloqueiosDuplicidade() {
 
   return (
     <MainLayout>
-      <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="space-y-8 pb-20"
-      >
-        <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.2em]">
-              <ShieldCheck className="h-3 w-3" />
-              Inteligência Anti-Fraude 10/10
-            </div>
-            <h1 className="text-5xl font-black tracking-tighter">
-              Cofre de <span className="text-primary italic">Integridade</span>
-            </h1>
-            <p className="text-muted-foreground max-w-2xl leading-relaxed font-medium">
-              Monitoramento cyber-neural de duplicidades e tentativas de pagamento redundantes bloqueadas pelo sistema.
-            </p>
-          </div>
-
+      <div className="relative min-h-screen">
+        <PageBackground />
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="container mx-auto p-6 relative z-10 space-y-8 pb-20"
+        >
+        <PageHeader 
+          title="Cofre de Integridade" 
+          subtitle="Monitoramento cyber-neural de duplicidades e tentativas de pagamento redundantes bloqueadas pelo sistema."
+          badge="Inteligência Anti-Fraude 10/10"
+          icon={ShieldCheck}
+          gradientFrom="from-primary"
+          gradientVia="via-primary/80"
+          gradientTo="to-indigo-500"
+        >
           <div className="flex flex-wrap items-center gap-3">
             <Button 
               variant="outline" 
-              className="rounded-xl font-bold h-12 px-6 gap-2 border-white/10 hover:border-primary/50 bg-white/[0.02] transition-all"
+              className="rounded-xl font-bold h-10 px-6 gap-2 border-white/10 hover:border-primary/50 bg-white/[0.02] transition-all"
               onClick={exportCSV}
               disabled={!bloqueios?.length}
             >
-              <Download className="h-5 w-5" /> Exportar CSV
+              <Download className="h-4 w-4" /> Exportar CSV
             </Button>
             <Button 
-              className="rounded-xl font-black h-12 px-6 gap-2 shadow-2xl shadow-primary/30 hover:shadow-primary/50 transition-all bg-primary hover:bg-primary/90"
+              className="rounded-xl font-black h-10 px-6 gap-2 shadow-2xl shadow-primary/30 hover:shadow-primary/50 transition-all bg-primary hover:bg-primary/90"
               asChild
             >
               <Link to="/configuracoes">
-                <History className="h-5 w-5" /> Ajustar Regras
+                <History className="h-4 w-4" /> Ajustar Regras
               </Link>
             </Button>
           </div>
-        </motion.div>
+        </PageHeader>
 
         {/* Real-time Insights Matrix */}
         <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -420,7 +418,8 @@ export default function BloqueiosDuplicidade() {
             </div>
           </Card>
         </motion.div>
-      </motion.div>
+        </motion.div>
+      </div>
     </MainLayout>
   );
 }

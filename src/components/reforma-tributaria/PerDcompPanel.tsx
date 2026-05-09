@@ -29,8 +29,12 @@ const INITIAL_FORM: PerDcompFormData = {
   justificativa: '',
 };
 
-export function PerDcompPanel() {
-  const [empresaId, setEmpresaId] = useState<string>('');
+interface Props {
+  empresaId?: string;
+}
+
+export function PerDcompPanel({ empresaId: initialEmpresaId }: Props) {
+  const [empresaId, setEmpresaId] = useState<string>(initialEmpresaId || '');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [formData, setFormData] = useState<PerDcompFormData>(INITIAL_FORM);
 

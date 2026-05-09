@@ -61,8 +61,12 @@ const TIPOS_ARQUIVO = [
   },
 ];
 
-export function ExportacaoSPED() {
-  const [empresaId, setEmpresaId] = useState<string>('');
+interface Props {
+  empresaId?: string;
+}
+
+export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
+  const [empresaId, setEmpresaId] = useState<string>(initialEmpresaId || '');
   const [competencia, setCompetencia] = useState(format(new Date(), 'yyyy-MM'));
   const [tipoArquivo, setTipoArquivo] = useState<TipoArquivo>('efd-ibs-cbs');
   const [gerando, setGerando] = useState(false);

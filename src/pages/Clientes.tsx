@@ -11,41 +11,11 @@ import { EmptyState } from '@/components/ui/micro-interactions';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
 import {
   Plus,
-  Search,
-  MoreHorizontal,
-  Eye,
-  Edit,
-  Trash2,
-  User,
-  Building2,
-  Mail,
-  Phone,
-  MapPin,
-  Star,
-  Filter,
-  X,
-  Trophy,
   Users,
+  Trophy,
 } from 'lucide-react';
-import { RankBadge, getRankFromScore, RankLegend } from '@/components/ui/rank-badge';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
 import {
   Table,
   TableBody,
@@ -54,25 +24,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { ExportMenu } from '@/components/ui/export-menu';
-import { SortableHeader, useSorting } from '@/components/ui/sortable-header';
-import { LoadingSkeleton, TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
+import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useClientes, useClientesPaginated, ExternalCliente } from '@/hooks/useFinancialData';
-import { formatCurrency } from '@/lib/formatters';
 import { clientesColumns } from '@/lib/export-utils';
-import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
 import { ClienteForm } from '@/components/clientes/ClienteForm';
 import { ClienteDetailDialog } from '@/components/clientes/ClienteDetailDialog';
 import { ScoringClientesPanel } from '@/components/clientes/ScoringClientesPanel';
@@ -90,22 +48,6 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
 } as const;
 
-const getScoreColor = (score: number | null) => {
-  if (!score) return 'text-muted-foreground';
-  if (score >= 800) return 'text-success';
-  if (score >= 600) return 'text-warning';
-  if (score >= 400) return 'text-streak';
-  return 'text-destructive';
-};
-
-const getScoreLabel = (score: number | null) => {
-  if (!score) return '-';
-  if (score >= 800) return 'Excelente';
-  if (score >= 600) return 'Bom';
-  if (score >= 400) return 'Regular';
-  return 'Crítico';
-};
-
 export default function Clientes() {
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm, 300);
@@ -117,7 +59,6 @@ export default function Clientes() {
   const [viewingCliente, setViewingCliente] = useState<ExternalCliente | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
-  // Advanced filters — gerenciados via useManagedFilters (persistência por conta + undo)
   const filtersController = useManagedFilters({
     entityType: 'clientes',
     defaults: { search: '', status: 'all', estado: 'all', score: 'all' },
@@ -132,26 +73,20 @@ export default function Clientes() {
   const setEstadoFilter = (v: string) => setFilterField('estado', v);
   const setScoreFilter = (v: string) => setFilterField('score', v);
 
-  // Sync busca com o controller (search é local-only para responsividade do input)
   useEffect(() => {
     setFilterField('search', searchTerm);
   }, [searchTerm, setFilterField]);
 
-  // Hidratação inicial: aplica search persistido
   useEffect(() => {
     if (filtersController.isHydrated && filterValues.search && !searchTerm) {
       setSearchTerm(filterValues.search as string);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtersController.isHydrated]);
 
-  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-
   const queryClient = useQueryClient();
   
-  // Server-side paginated query with debounced search
   const { data: paginatedResult, isLoading } = useClientesPaginated({
     page: currentPage,
     pageSize,
@@ -161,14 +96,11 @@ export default function Clientes() {
     scoreRange: scoreFilter !== 'all' ? scoreFilter : undefined,
   });
 
-  // Get all data for KPIs
   const { data: allClientes = [] } = useClientes();
-
   const clientes = paginatedResult?.data || [];
   const totalCount = paginatedResult?.totalCount || 0;
   const totalPages = paginatedResult?.totalPages || 1;
 
-  // Get unique states for filter
   const estados = useMemo(() => {
     const unique = [...new Set(clientes.map(c => c.estado).filter(Boolean))];
     return unique.sort() as string[];
@@ -176,25 +108,14 @@ export default function Clientes() {
 
   const filteredClientes = useMemo(() => {
     return clientes.filter(c => {
-      // Text search
       const matchesSearch = 
         c.razao_social.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (c.nome_fantasia?.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (c.cnpj_cpf?.includes(searchTerm)) ||
         (c.email?.toLowerCase().includes(searchTerm.toLowerCase()));
       
-      // Status filter
-      const matchesStatus = 
-        statusFilter === 'all' || 
-        (statusFilter === 'ativo' && c.ativo) ||
-        (statusFilter === 'inativo' && !c.ativo);
-      
-      // Estado filter
-      const matchesEstado = 
-        estadoFilter === 'all' || 
-        c.estado === estadoFilter;
-      
-      // Score filter
+      const matchesStatus = statusFilter === 'all' || (statusFilter === 'ativo' && c.ativo) || (statusFilter === 'inativo' && !c.ativo);
+      const matchesEstado = estadoFilter === 'all' || c.estado === estadoFilter;
       const matchesScore = (() => {
         if (scoreFilter === 'all') return true;
         const score = c.score || 0;
@@ -212,17 +133,11 @@ export default function Clientes() {
   }, [clientes, searchTerm, statusFilter, estadoFilter, scoreFilter]);
 
   const hasActiveFilters = statusFilter !== 'all' || estadoFilter !== 'all' || scoreFilter !== 'all';
-  
   const clearFilters = () => {
     setSearchTerm('');
     setCurrentPage(1);
-    // setField'd values são limpos via ClearFiltersButton (snapshot+undo).
   };
 
-  // Use server-side paginated data directly
-  const paginatedClientes = clientes;
-
-  // Reset to page 1 when filters change
   const handlePageSizeChange = (size: number) => {
     setPageSize(size);
     setCurrentPage(1);
@@ -234,48 +149,40 @@ export default function Clientes() {
 
   const handleDelete = async () => {
     if (!deletingCliente) return;
-    
-    const clienteBackup = { ...deletingCliente };
+    setIsDeleting(true);
+    const { error } = await supabase.from('clientes').update({ ativo: false }).eq('id', deletingCliente.id);
+    if (error) {
+      setIsDeleting(false);
+      return;
+    }
+    queryClient.invalidateQueries({ queryKey: ['clientes'] });
     setDeleteDialogOpen(false);
     setDeletingCliente(null);
-    
-    toastDeleteWithUndo({
-      item: clienteBackup,
-      itemName: `Cliente "${clienteBackup.razao_social}"`,
-      onDelete: async () => {
-        const { error } = await supabase
-          .from('clientes')
-          .update({ ativo: false })
-          .eq('id', clienteBackup.id);
-        
-        if (error) throw error;
-        queryClient.invalidateQueries({ queryKey: ['clientes'] });
-      },
-      onRestore: async () => {
-        await supabase
-          .from('clientes')
-          .update({ ativo: true })
-          .eq('id', clienteBackup.id);
-        queryClient.invalidateQueries({ queryKey: ['clientes'] });
-      },
-    });
+    setIsDeleting(false);
   };
+
   return (
     <MainLayout>
       <Tabs defaultValue="lista" className="w-full">
-        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
-          {/* Page Header */}
-          <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-display-md text-foreground">Clientes</h1>
-              <p className="text-muted-foreground mt-1">Gerencie sua base de clientes</p>
-            </div>
-            <div className="flex items-center gap-4">
-              <TabsList className="bg-primary/10 border-primary/20">
-                <TabsTrigger value="lista">Lista Geral</TabsTrigger>
-                <TabsTrigger value="scoring">Scoring & Risco</TabsTrigger>
-              </TabsList>
+        <div className="relative min-h-screen">
+          <PageBackground />
+          
+          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="container mx-auto p-6 relative z-10 space-y-8">
+            <PageHeader 
+              title="Gestão de Clientes" 
+              subtitle="Análise de perfil, scoring de crédito e automação de cobranças neurais."
+              badge="Customer Intelligence"
+              icon={Users}
+              gradientFrom="from-blue-600"
+              gradientVia="via-primary"
+              gradientTo="to-indigo-500"
+            >
               <div className="flex items-center gap-3">
+                <TabsList className="bg-primary/10 border-primary/20 h-10 px-1 rounded-xl">
+                  <TabsTrigger value="lista" className="rounded-lg font-bold px-4">Lista Geral</TabsTrigger>
+                  <TabsTrigger value="scoring" className="rounded-lg font-bold px-4">Scoring & Risco</TabsTrigger>
+                </TabsList>
+                <div className="h-8 w-px bg-white/10 mx-1" />
                 <ExportMenu
                   data={filteredClientes}
                   columns={clientesColumns}
@@ -283,151 +190,147 @@ export default function Clientes() {
                   title="Relatório de Clientes"
                 />
                 <Button 
-                  size="sm" 
-                  className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
+                  size="lg" 
+                  className="h-10 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]"
                   onClick={() => {
                     setEditingCliente(null);
                     setFormOpen(true);
                   }}
                 >
-                  <Plus className="h-4 w-4" />
-                  Novo Cliente
+                  <Plus className="h-5 w-5" /> Novo Cliente
                 </Button>
               </div>
-            </div>
-          </motion.div>
+            </PageHeader>
 
-          <TabsContent value="lista" className="space-y-6 m-0 border-none p-0">
-            {/* KPI Cards */}
-            <ClientesKPIs totalClientes={totalClientes} clientesAtivos={clientesAtivos} limiteTotal={limiteTotal} />
-
-        {/* Filters */}
-        <ClientesFiltersPanel
-          searchTerm={searchTerm}
-          statusFilter={statusFilter}
-          estadoFilter={estadoFilter}
-          scoreFilter={scoreFilter}
-          estados={estados}
-          filteredCount={filteredClientes.length}
-          totalCount={clientes.length}
-          hasActiveFilters={hasActiveFilters}
-          onSearchChange={setSearchTerm}
-          onStatusChange={setStatusFilter}
-          onEstadoChange={setEstadoFilter}
-          onScoreChange={setScoreFilter}
-          onClearFilters={clearFilters}
-          clearSlot={
-            <ClearFiltersButton
-              controller={filtersController}
-              entityLabel="clientes"
-              describeFilters={(v) => [
-                { label: 'Busca', value: v.search, isActive: !!v.search },
-                { label: 'Status', value: v.status, isActive: v.status !== 'all' },
-                { label: 'Estado', value: v.estado, isActive: v.estado !== 'all' },
-                { label: 'Score', value: v.score, isActive: v.score !== 'all' },
-              ]}
-              className="h-9 px-2 text-muted-foreground hover:text-foreground"
-            />
-          }
-        />
-
-        {/* Table */}
-        <motion.div variants={itemVariants}>
-          <Card className="card-elevated overflow-hidden">
-            {isLoading ? (
-              <TableShimmerSkeleton rows={pageSize} columns={6} showCheckbox={false} showAvatar />
-            ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="hover:bg-transparent">
-                      <TableHead className="w-[250px]">Cliente</TableHead>
-                      <TableHead>Contato</TableHead>
-                      <TableHead>Localização</TableHead>
-                      <TableHead>
-                        <div className="flex items-center gap-2">
-                          <Trophy className="h-4 w-4 text-coins" />
-                          Score / Rank
-                        </div>
-                      </TableHead>
-                      <TableHead>Limite</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="w-[80px]"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {paginatedClientes.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={7} className="p-0">
-                          <EmptyState 
-                            icon={<Users className="h-8 w-8 text-muted-foreground" />}
-                            title={clientes.length === 0 ? 'Nenhum cliente cadastrado' : 'Nenhum cliente encontrado'}
-                            description={clientes.length === 0 ? 'Comece adicionando seu primeiro cliente' : 'Tente ajustar os filtros de busca'}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      <ClientesTableBody
-                        clientes={paginatedClientes}
-                        onView={(c) => { setViewingCliente(c); setDetailOpen(true); }}
-                        onEdit={(c) => { setEditingCliente(c); setFormOpen(true); }}
-                        onDelete={(c) => { setDeletingCliente(c); setDeleteDialogOpen(true); }}
-                      />
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-            {filteredClientes.length > 0 && (
-              <TablePagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                pageSize={pageSize}
-                totalItems={totalCount}
-                onPageChange={setCurrentPage}
-                onPageSizeChange={handlePageSizeChange}
+            <TabsContent value="lista" className="space-y-6 m-0 border-none p-0">
+              <ClientesKPIs totalClientes={totalClientes} clientesAtivos={clientesAtivos} limiteTotal={limiteTotal} />
+              <ClientesFiltersPanel
+                searchTerm={searchTerm}
+                statusFilter={statusFilter}
+                estadoFilter={estadoFilter}
+                scoreFilter={scoreFilter}
+                estados={estados}
+                filteredCount={filteredClientes.length}
+                totalCount={clientes.length}
+                hasActiveFilters={hasActiveFilters}
+                onSearchChange={setSearchTerm}
+                onStatusChange={setStatusFilter}
+                onEstadoChange={setEstadoFilter}
+                onScoreChange={setScoreFilter}
+                onClearFilters={clearFilters}
+                clearSlot={
+                  <ClearFiltersButton
+                    controller={filtersController}
+                    entityLabel="clientes"
+                    describeFilters={(v) => [
+                      { label: 'Busca', value: v.search, isActive: !!v.search },
+                      { label: 'Status', value: v.status, isActive: v.status !== 'all' },
+                      { label: 'Estado', value: v.estado, isActive: v.estado !== 'all' },
+                      { label: 'Score', value: v.score, isActive: v.score !== 'all' },
+                    ]}
+                    className="h-9 px-2 text-muted-foreground hover:text-foreground"
+                  />
+                }
               />
-            )}
-          </Card>
-        </motion.div>
-      </TabsContent>
+              <motion.div variants={itemVariants}>
+                <Card className="card-elevated overflow-hidden bg-background/40 backdrop-blur-xl border-white/10">
+                  {isLoading ? (
+                    <TableShimmerSkeleton rows={pageSize} columns={6} showCheckbox={false} showAvatar />
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="hover:bg-transparent border-b border-white/5">
+                            <TableHead className="w-[250px] font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Cliente</TableHead>
+                            <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Contato</TableHead>
+                            <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Localização</TableHead>
+                            <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">
+                              <div className="flex items-center gap-2">
+                                <Trophy className="h-4 w-4 text-amber-500" />
+                                Score / Rank
+                              </div>
+                            </TableHead>
+                            <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Limite</TableHead>
+                            <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Status</TableHead>
+                            <TableHead className="w-[80px] p-6"></TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody className="divide-y divide-white/5">
+                          {clientes.length === 0 ? (
+                            <TableRow>
+                              <TableCell colSpan={7} className="p-0">
+                                <EmptyState 
+                                  icon={<Users className="h-8 w-8 text-muted-foreground" />}
+                                  title={clientes.length === 0 ? 'Nenhum cliente cadastrado' : 'Nenhum cliente encontrado'}
+                                  description={clientes.length === 0 ? 'Comece adicionando seu primeiro cliente' : 'Tente ajustar os filtros de busca'}
+                                />
+                              </TableCell>
+                            </TableRow>
+                          ) : (
+                            <ClientesTableBody
+                              clientes={clientes}
+                              onView={(c) => { setViewingCliente(c); setDetailOpen(true); }}
+                              onEdit={(c) => { setEditingCliente(c); setFormOpen(true); }}
+                              onDelete={(c) => { setDeletingCliente(c); setDeleteDialogOpen(true); }}
+                            />
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                  {totalCount > 0 && (
+                    <div className="p-6 border-t border-white/5 bg-black/20">
+                      <TablePagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        pageSize={pageSize}
+                        totalItems={totalCount}
+                        onPageChange={setCurrentPage}
+                        onPageSizeChange={handlePageSizeChange}
+                      />
+                    </div>
+                  )}
+                </Card>
+              </motion.div>
+            </TabsContent>
 
-          <TabsContent value="scoring" className="m-0 border-none p-0">
-            <motion.div variants={itemVariants}>
-              <ScoringClientesPanel />
-            </motion.div>
-          </TabsContent>
-
-          <ClienteForm 
-            open={formOpen} 
-            onOpenChange={(open) => {
-              setFormOpen(open);
-              if (!open) setEditingCliente(null);
-            }}
-            cliente={editingCliente as any}
-          />
-
-          <ClienteDetailDialog
-            cliente={viewingCliente as any}
-            open={detailOpen}
-            onOpenChange={(open) => {
-              setDetailOpen(open);
-              if (!open) setViewingCliente(null);
-            }}
-          />
-
-          <ConfirmDialog
-            open={deleteDialogOpen}
-            onOpenChange={setDeleteDialogOpen}
-            title="Confirmar exclusão"
-            description={`Tem certeza que deseja excluir o cliente "${deletingCliente?.razao_social}"? Esta ação não pode ser desfeita.`}
-            confirmLabel="Excluir"
-            variant="danger"
-            isLoading={isDeleting}
-            onConfirm={handleDelete}
-          />
-        </motion.div>
+            <TabsContent value="scoring" className="m-0 border-none p-0">
+              <motion.div variants={itemVariants}>
+                <ScoringClientesPanel />
+              </motion.div>
+            </TabsContent>
+          </motion.div>
+        </div>
       </Tabs>
+
+      <ClienteForm 
+        open={formOpen} 
+        onOpenChange={(open) => {
+          setFormOpen(open);
+          if (!open) setEditingCliente(null);
+        }}
+        cliente={editingCliente as any}
+      />
+
+      <ClienteDetailDialog
+        cliente={viewingCliente as any}
+        open={detailOpen}
+        onOpenChange={(open) => {
+          setDetailOpen(open);
+          if (!open) setViewingCliente(null);
+        }}
+      />
+
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title="Confirmar exclusão"
+        description={`Tem certeza que deseja excluir o cliente "${deletingCliente?.razao_social}"? Esta ação não pode ser desfeita.`}
+        confirmLabel="Excluir"
+        variant="danger"
+        isLoading={isDeleting}
+        onConfirm={handleDelete}
+      />
     </MainLayout>
   );
 }
