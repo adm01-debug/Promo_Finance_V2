@@ -79,4 +79,5 @@ export interface ResultadoDecisao {
   justificativa: string;
   justificativaIA?: string | null;
   auditLogId?: string | null;
+  fromCache?: boolean;
 }
