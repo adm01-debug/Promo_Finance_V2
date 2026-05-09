@@ -154,7 +154,7 @@ function simularSimples(p: ParametrosSimulacao, ano: number, mes: number): Resul
     cpp: das * 0.4, icms: anexo === 'I' || anexo === 'II' ? das * 0.3 : 0,
     iss: anexo === 'III' || anexo === 'IV' || anexo === 'V' ? das * 0.3 : 0,
     cbs: 0, ibs: 0,
-    totalTributos: das, cargaEfetiva: (das / p.faturamentoAnual) * 100,
+    totalTributos: das, cargaEfetiva: p.faturamentoAnual > 0 ? (das / p.faturamentoAnual) * 100 : 0,
     rbt12, fatorR, anexoAplicavel: anexo, faixaAplicavel: faixa.faixa,
     aliquotaNominal: faixa.aliq * 100, observacoes: obs,
   };
