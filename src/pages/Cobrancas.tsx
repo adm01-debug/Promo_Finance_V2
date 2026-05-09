@@ -125,10 +125,15 @@ export default function Cobrancas() {
     <MainLayout>
       <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
         {/* Page Header */}
-        <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-display-md text-foreground">Cobrança</h1>
-            <p className="text-muted-foreground mt-1">Régua de cobrança automatizada e gestão de inadimplência</p>
+        <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 p-8 rounded-[2.5rem] bg-gradient-to-br from-primary/10 via-background to-purple-500/5 border border-white/10 shadow-2xl relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+            <Target className="h-24 w-24 text-primary" />
+          </div>
+          <div className="relative z-10">
+            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-foreground flex items-center gap-3">
+              Quantum-Aging: <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600">Cobrança Elite</span>
+            </h1>
+            <p className="text-lg font-medium text-muted-foreground/70 mt-2 italic max-w-2xl">Régua de cobrança neuro-automatizada e gestão de inadimplência estratégica 10/10.</p>
           </div>
         </motion.div>
 
@@ -141,7 +146,7 @@ export default function Cobrancas() {
             window.history.replaceState(null, '', '/cobrancas');
           }
         }}>
-          <TabsList className="mb-4">
+          <TabsList className="mb-8 p-1.5 bg-background/20 backdrop-blur-xl border border-white/10 rounded-2xl h-14">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="engine">Engine & Fila</TabsTrigger>
             <TabsTrigger value="regua">Régua & Templates</TabsTrigger>
@@ -178,7 +183,7 @@ export default function Cobrancas() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Aging Chart */}
           <motion.div variants={itemVariants} className="lg:col-span-2">
-            <Card className="card-elevated h-[380px]">
+            <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem] h-[380px]">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-display flex items-center gap-2">
                   <BarChart3 className="h-5 w-5 text-primary" />
@@ -213,7 +218,7 @@ export default function Cobrancas() {
 
           {/* Top Devedores */}
           <motion.div variants={itemVariants}>
-            <Card className="card-elevated h-[380px]">
+            <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem] h-[380px]">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-display flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5 text-destructive" />
@@ -282,7 +287,7 @@ export default function Cobrancas() {
               diasAtraso: d.dias_atraso
             })) || []}
           />
-          <Card className="card-elevated">
+          <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-primary" />

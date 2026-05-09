@@ -102,7 +102,7 @@ export function AlertasPreditivosPanel({
               <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-warning to-destructive flex items-center justify-center shadow-lg shadow-destructive/20">
                 <Brain className="h-4 w-4 text-white" />
               </div>
-              Cyber-Sentinel: Risk Matrix 10/10
+              Quantum-Sentinel: Risk Matrix 10/10
             </CardTitle>
             <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">Previsões baseadas em padrões neurais</CardDescription>
           </div>

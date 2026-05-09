@@ -108,7 +108,7 @@ export function DashboardFiltersHeader({
                 
                 <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-success/10 border border-success/20">
                   <div className="h-1.5 w-1.5 rounded-full bg-success animate-ping" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.15em] text-success">Neural Governance Elite 10/10 Online</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.15em] text-success">Quantum-Governance 10/10 Online</span>
                 </div>
               </div>
 
