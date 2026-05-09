@@ -155,7 +155,7 @@ export function useConciliacaoPage() {
     if (selectedBanco) {
       try {
         // Registrar importação do extrato para evitar duplicidade futura
-        const fileHash = btoa(extrato.nomeArquivo + extrato.conta.agencia + extrato.conta.numero);
+        const fileHash = btoa(extrato.nomeArquivo + extrato.conta.agencia + extrato.conta.conta);
         await supabase.from('extratos_bancarios_importados').insert({
           conta_bancaria_id: selectedBanco,
           nome_arquivo: extrato.nomeArquivo,
