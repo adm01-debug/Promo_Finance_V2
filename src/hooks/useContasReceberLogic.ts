@@ -68,7 +68,7 @@ export function useContasReceberLogic() {
   });
 
 
-  const { data: allContas = [] } = useContasReceber();
+  const { data: allContas = [] } = useContasReceber(currentEmpresaId || 'all');
   const { data: centrosCusto = [] } = useCentrosCusto();
   const { data: empresas = [] } = useEmpresas();
   const { data: contasBancarias = [] } = useContasBancarias();
