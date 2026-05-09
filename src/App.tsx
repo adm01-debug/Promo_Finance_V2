@@ -117,6 +117,7 @@ const StatusPage = lazy(() => import('./pages/StatusPage'));
 
 
 
+const Compras = lazy(() => import('./pages/Compras'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 
@@ -236,6 +237,7 @@ function AppRoutes() {
             <Route path="/clientes/portal-tokens" element={<ProtectedRoute><PortalTokensPage /></ProtectedRoute>} />
             <Route path="/clientes/scoring" element={<ProtectedRoute><Clientes /></ProtectedRoute>} />
 
+            <Route path="/compras" element={<ProtectedRoute><Compras /></ProtectedRoute>} />
             <Route path="/style-guide" element={<ProtectedRoute><StyleGuide /></ProtectedRoute>} />
             
             {/* 404 */}

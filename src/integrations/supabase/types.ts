@@ -6342,6 +6342,44 @@ export type Database = {
           },
         ]
       }
+      itens_pedido_compra: {
+        Row: {
+          created_at: string
+          descricao: string
+          id: string
+          pedido_id: string
+          quantidade: number
+          valor_total: number
+          valor_unitario: number
+        }
+        Insert: {
+          created_at?: string
+          descricao: string
+          id?: string
+          pedido_id: string
+          quantidade?: number
+          valor_total?: number
+          valor_unitario?: number
+        }
+        Update: {
+          created_at?: string
+          descricao?: string
+          id?: string
+          pedido_id?: string
+          quantidade?: number
+          valor_total?: number
+          valor_unitario?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "itens_pedido_compra_pedido_id_fkey"
+            columns: ["pedido_id"]
+            isOneToOne: false
+            referencedRelation: "pedidos_compra"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       known_devices: {
         Row: {
           browser: string | null
@@ -7934,6 +7972,87 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      pedidos_compra: {
+        Row: {
+          centro_custo_id: string | null
+          created_at: string
+          data_entrega_prevista: string | null
+          data_pedido: string
+          empresa_id: string | null
+          fornecedor_id: string | null
+          id: string
+          observacoes: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          valor_total: number
+        }
+        Insert: {
+          centro_custo_id?: string | null
+          created_at?: string
+          data_entrega_prevista?: string | null
+          data_pedido?: string
+          empresa_id?: string | null
+          fornecedor_id?: string | null
+          id?: string
+          observacoes?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          valor_total?: number
+        }
+        Update: {
+          centro_custo_id?: string | null
+          created_at?: string
+          data_entrega_prevista?: string | null
+          data_pedido?: string
+          empresa_id?: string | null
+          fornecedor_id?: string | null
+          id?: string
+          observacoes?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          valor_total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pedidos_compra_centro_custo_id_fkey"
+            columns: ["centro_custo_id"]
+            isOneToOne: false
+            referencedRelation: "centros_custo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pedidos_compra_centro_custo_id_fkey"
+            columns: ["centro_custo_id"]
+            isOneToOne: false
+            referencedRelation: "vw_gastos_centro_custo"
+            referencedColumns: ["centro_custo_id"]
+          },
+          {
+            foreignKeyName: "pedidos_compra_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pedidos_compra_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "pedidos_compra_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            isOneToOne: false
+            referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       per_dcomp: {
         Row: {

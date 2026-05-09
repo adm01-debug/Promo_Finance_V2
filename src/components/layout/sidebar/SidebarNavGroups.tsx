@@ -14,7 +14,7 @@ import {
   Settings,
   Settings2,
   ChevronDown,
-
+  ShoppingCart,
   Key,
   Building2,
   CreditCard,
@@ -124,6 +124,7 @@ const navGroups: NavGroup[] = [
       { label: 'Metas Financeiras', icon: Target, href: '/metas', highlight: true },
       { label: 'Orçamentos', icon: Scale, href: '/orcamentos', highlight: true },
       { label: 'Quantum-Sentinel: Riscos', icon: Brain, href: '/inteligencia#alertas-preditivos', highlight: true },
+      { label: 'Gestão de Compras', icon: ShoppingCart, href: '/compras', highlight: true },
     ],
   },
   {
