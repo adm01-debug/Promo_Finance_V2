@@ -1,6 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { STALE_TIMES } from '@/lib/queryClient';
+import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
+import { sounds } from '@/lib/sound-feedback';
 import type { Tables, Database } from '@/integrations/supabase/types';
 
 export type Empresa = Tables<'empresas'>;
@@ -430,5 +433,68 @@ export function useFornecedoresPaginated(params: PaginatedFornecedoresParams) {
       };
     },
     staleTime: STALE_TIMES.config,
+  });
+}
+
+export function useCreateContaPagar() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: any) => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
+
+      const { error } = await supabase.from('contas_pagar').insert([{
+        ...data,
+        created_by: session.user.id,
+        status: data.status || 'pendente',
+      }]);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
+      sounds.success();
+    },
+    onError: (error: any) => {
+      logger.error('Error creating conta pagar:', error);
+      sounds.error();
+    },
+  });
+}
+
+export function useUpdateContaPagar() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...data }: any) => {
+      const { error } = await supabase.from('contas_pagar').update(data).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
+      sounds.success();
+    },
+    onError: (error: any) => {
+      logger.error('Error updating conta pagar:', error);
+      sounds.error();
+    },
+  });
+}
+
+export function useDeleteContaPagar() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('contas_pagar').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
+      toast.success('Conta excluída com sucesso');
+      sounds.success();
+    },
+    onError: (error: any) => {
+      logger.error('Error deleting conta pagar:', error);
+      toast.error('Erro ao excluir conta');
+      sounds.error();
+    },
   });
 }

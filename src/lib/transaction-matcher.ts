@@ -3,6 +3,7 @@
 // ============================================
 
 import { TransacaoOFX } from './ofx-parser';
+import { formatCurrency } from './formatters';
 
 // Types for matching
 export interface LancamentoSistema {
@@ -27,6 +28,7 @@ export interface MatchSugestao {
   motivos: MatchMotivo[];
   lancamento: LancamentoSistema;
   confianca: 'alta' | 'media' | 'baixa';
+  divergenciaValor?: number;
 }
 
 export interface MatchMotivo {
@@ -234,10 +236,15 @@ export function encontrarMatchesParaTransacao(
       scoreTotal += peso;
       pesoTotal += config.pesoValorProximo;
     } else {
-      // Values don't match at all - skip this lancamento
-      continue;
+      // Divergência significativa de valor
+      motivos.push({
+        tipo: 'valor_proximo', // Reaproveitando tipo para indicar que valor foi considerado mas é diferente
+        descricao: `Divergência de valor (${formatCurrency(Math.abs(valorTransacao - lancamento.valor))} de diferença)`,
+        peso: -20, // Penalidade pesada para score
+      });
+      // Não damos continue aqui para permitir matching por nome/documento
     }
-    
+
     // 2. Compare description/entity name
     const textoTransacao = `${transacao.descricao} ${transacao.memo || ''}`;
     const textoLancamento = `${lancamento.descricao} ${lancamento.entidade} ${lancamento.entidadeNome || ''}`;
@@ -313,12 +320,20 @@ export function encontrarMatchesParaTransacao(
     }
     
     // Calculate final score (normalized to 0-100)
-    const scoreFinal = pesoTotal > 0 ? Math.min(100, (scoreTotal / pesoTotal) * 100) : 0;
+    let scoreFinal = pesoTotal > 0 ? Math.max(0, (scoreTotal / pesoTotal) * 100) : 0;
     
+    // Se houve divergência de valor mas o nome é exato, mantemos um score mínimo
+    const matchesNomeExato = motivos.some(m => m.tipo === 'nome_exato');
+    if (matchesNomeExato && scoreFinal < config.scoreMinimo) {
+      scoreFinal = config.scoreMinimo; // Força score mínimo para revisão manual
+    }
+
     if (scoreFinal >= config.scoreMinimo) {
       // Bonus for high similarity or document match
       const isHighConfidence = scoreFinal >= 80 || motivos.some(m => m.tipo === 'documento' || m.tipo === 'valor_exato');
       
+      const diffValor = Math.abs(valorTransacao - lancamento.valor);
+
       sugestoes.push({
         transacaoId: transacao.id,
         lancamentoId: lancamento.id,
@@ -326,9 +341,11 @@ export function encontrarMatchesParaTransacao(
         score: Math.round(scoreFinal),
         motivos,
         lancamento,
-        confianca: scoreFinal >= 80 ? 'alta' : scoreFinal >= 60 ? 'media' : 'baixa',
+        confianca: diffValor > (lancamento.valor * 0.1) ? 'baixa' : (scoreFinal >= 80 ? 'alta' : scoreFinal >= 60 ? 'media' : 'baixa'),
+        divergenciaValor: diffValor > 0.01 ? diffValor : undefined,
       });
     }
+
   }
   
   // Sort by score descending

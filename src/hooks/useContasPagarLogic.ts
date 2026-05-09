@@ -3,7 +3,16 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
-import { useContasPagar, useContasPagarPaginated, useCentrosCusto, useEmpresas, useContasBancarias, ContaPagar } from '@/hooks/useFinancialData';
+import { 
+  useContasPagar, 
+  useContasPagarPaginated, 
+  useCentrosCusto, 
+  useEmpresas, 
+  useContasBancarias, 
+  useDeleteContaPagar,
+  useUpdateContaPagar,
+  ContaPagar 
+} from '@/hooks/useFinancialData';
 import { useConfiguracaoAprovacao, useCriarSolicitacaoAprovacao } from '@/hooks/useAprovacoes';
 import { useAuth } from '@/hooks/useAuth';
 import { useTableOptimization } from '@/hooks/useTableOptimization';
@@ -63,6 +72,8 @@ export function useContasPagarLogic() {
   const { data: contasBancarias = [] } = useContasBancarias();
   const { data: configuracao } = useConfiguracaoAprovacao();
   const criarSolicitacaoMutation = useCriarSolicitacaoAprovacao();
+  const deleteMutation = useDeleteContaPagar();
+  const updateMutation = useUpdateContaPagar();
 
   const contas = paginatedResult?.data || [];
   const totalCount = paginatedResult?.totalCount || 0;
@@ -288,11 +299,10 @@ export function useContasPagarLogic() {
       item: contaBackup,
       itemName: `Conta "${contaBackup.descricao}"`,
       onDelete: async () => {
-        const { error } = await supabase.from('contas_pagar').delete().eq('id', contaBackup.id);
-        if (error) throw error;
-        queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
+        await deleteMutation.mutateAsync(contaBackup.id);
       },
       onRestore: async () => {
+        // No specific restore logic needed as undo is handled by the component
         queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
       },
     });
@@ -326,25 +336,18 @@ export function useContasPagarLogic() {
 
   const handleBulkMarkAsPaid = () => {
     bulkActionsHook.executeBulkAction(async (id) => {
-      const { error } = await supabase
-        .from('contas_pagar')
-        .update({
-          status: 'pago',
-          data_pagamento: new Date().toISOString().split('T')[0],
-          valor_pago: sortedContas.find(c => c.id === id)?.valor || 0
-        })
-        .eq('id', id);
-      if (error) throw error;
+      await updateMutation.mutateAsync({
+        id,
+        status: 'pago',
+        data_pagamento: new Date().toISOString().split('T')[0],
+        valor_pago: sortedContas.find(c => c.id === id)?.valor || 0
+      });
     }, { showProgress: true });
   };
 
   const handleBulkCancel = () => {
     bulkActionsHook.executeBulkAction(async (id) => {
-      const { error } = await supabase
-        .from('contas_pagar')
-        .update({ status: 'cancelado' })
-        .eq('id', id);
-      if (error) throw error;
+      await updateMutation.mutateAsync({ id, status: 'cancelado' });
     }, { showProgress: true });
   };
 

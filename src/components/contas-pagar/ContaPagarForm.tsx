@@ -2,15 +2,20 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, DollarSign, Edit, Scan } from 'lucide-react';
 import { ActionButton } from '@/components/ui/action-button';
 import { LeitorCodigoBarras } from './LeitorCodigoBarras';
 import { DadosBoleto } from '@/lib/barcode-parser';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { useFornecedores, useCentrosCusto, useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
+import { 
+  useFornecedores, 
+  useCentrosCusto, 
+  useContasBancarias, 
+  useEmpresas,
+  useCreateContaPagar,
+  useUpdateContaPagar 
+} from '@/hooks/useFinancialData';
 import { useCategorias } from '@/hooks/useCategorias';
 import { toast } from '@/hooks/use-toast';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
@@ -21,7 +26,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { logger } from '@/lib/logger';
 import { ContaPagarFormFields } from './ContaPagarFormFields';
 import { AnexoList } from '@/components/financeiro/AnexoList';
 
@@ -46,20 +50,32 @@ const contaPagarSchema = z.object({
 type ContaPagarFormData = z.infer<typeof contaPagarSchema>;
 
 interface ContaPagar {
-  id: string; fornecedor_id: string | null; fornecedor_nome: string; descricao: string;
-  valor: number; data_vencimento: string; data_emissao: string; empresa_id: string;
-  centro_custo_id: string | null; categoria_id: string | null; conta_bancaria_id: string | null;
+  id: string; 
+  fornecedor_id: string | null; 
+  fornecedor_nome: string; 
+  descricao: string;
+  valor: number; 
+  data_vencimento: string; 
+  data_emissao: string; 
+  empresa_id: string;
+  centro_custo_id: string | null; 
+  categoria_id: string | null; 
+  conta_bancaria_id: string | null;
   tipo_cobranca: 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';
-  numero_documento: string | null; codigo_barras: string | null; observacoes: string | null; recorrente: boolean;
+  numero_documento: string | null; 
+  codigo_barras: string | null; 
+  observacoes: string | null; 
+  recorrente: boolean;
 }
 
 interface ContaPagarFormProps {
-  open: boolean; onOpenChange: (open: boolean) => void; conta?: ContaPagar | null;
+  open: boolean; 
+  onOpenChange: (open: boolean) => void; 
+  conta?: ContaPagar | null;
 }
 
 export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProps) {
   const { user } = useAuth();
-  const queryClient = useQueryClient();
   const { celebrateSuccess } = useCelebrations();
   const [showFornecedorSelect, setShowFornecedorSelect] = useState(false);
   const [showLeitorCodigoBarras, setShowLeitorCodigoBarras] = useState(false);
@@ -71,86 +87,83 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
   const { data: empresas = [] } = useEmpresas();
   const { categoriasDespesa } = useCategorias();
 
+  const createMutation = useCreateContaPagar();
+  const updateMutation = useUpdateContaPagar();
+
   const form = useForm<ContaPagarFormData>({
     resolver: zodResolver(contaPagarSchema),
-    defaultValues: { fornecedor_nome: '', descricao: '', valor: 0, data_vencimento: '', data_emissao: new Date().toISOString().split('T')[0], empresa_id: '', tipo_cobranca: 'boleto', recorrente: false },
+    defaultValues: { 
+      fornecedor_nome: '', 
+      descricao: '', 
+      valor: 0, 
+      data_vencimento: '', 
+      data_emissao: new Date().toISOString().split('T')[0], 
+      empresa_id: '', 
+      tipo_cobranca: 'boleto', 
+      recorrente: false 
+    },
   });
 
   useEffect(() => {
     if (conta && open) {
-      form.reset({ fornecedor_id: conta.fornecedor_id || undefined, fornecedor_nome: conta.fornecedor_nome, descricao: conta.descricao, valor: conta.valor, data_vencimento: conta.data_vencimento, data_emissao: conta.data_emissao, empresa_id: conta.empresa_id, centro_custo_id: conta.centro_custo_id || undefined, categoria_id: conta.categoria_id || undefined, conta_bancaria_id: conta.conta_bancaria_id || undefined, tipo_cobranca: conta.tipo_cobranca, numero_documento: conta.numero_documento || undefined, codigo_barras: conta.codigo_barras || undefined, observacoes: conta.observacoes || undefined, recorrente: conta.recorrente });
+      form.reset({ 
+        fornecedor_id: conta.fornecedor_id || undefined, 
+        fornecedor_nome: conta.fornecedor_nome, 
+        descricao: conta.descricao, 
+        valor: conta.valor, 
+        data_vencimento: conta.data_vencimento, 
+        data_emissao: conta.data_emissao, 
+        empresa_id: conta.empresa_id, 
+        centro_custo_id: conta.centro_custo_id || undefined, 
+        categoria_id: conta.categoria_id || undefined, 
+        conta_bancaria_id: conta.conta_bancaria_id || undefined, 
+        tipo_cobranca: conta.tipo_cobranca, 
+        numero_documento: conta.numero_documento || undefined, 
+        codigo_barras: conta.codigo_barras || undefined, 
+        observacoes: conta.observacoes || undefined, 
+        recorrente: conta.recorrente 
+      });
       if (conta.fornecedor_id) setShowFornecedorSelect(true);
     } else if (!conta && open) {
-      form.reset({ fornecedor_nome: '', descricao: '', valor: 0, data_vencimento: '', data_emissao: new Date().toISOString().split('T')[0], empresa_id: '', tipo_cobranca: 'boleto', recorrente: false });
+      form.reset({ 
+        fornecedor_nome: '', 
+        descricao: '', 
+        valor: 0, 
+        data_vencimento: '', 
+        data_emissao: new Date().toISOString().split('T')[0], 
+        empresa_id: '', 
+        tipo_cobranca: 'boleto', 
+        recorrente: false 
+      });
       setShowFornecedorSelect(false);
     }
   }, [conta, open, form]);
 
-  const createMutation = useMutation({
-    mutationFn: async (data: ContaPagarFormData) => {
-      if (!user?.id) throw new Error('Usuário não autenticado');
-      
-      // Gerar chave de idempotência para evitar duplicidade no reenvio
-      const idempotency_key = `cp_${user.id}_${Date.now()}`;
-
-      const { error } = await supabase.from('contas_pagar').insert({ 
-        fornecedor_id: data.fornecedor_id || null, 
-        fornecedor_nome: data.fornecedor_nome, 
-        descricao: data.descricao, 
-        valor: data.valor, 
-        data_vencimento: data.data_vencimento, 
-        data_emissao: data.data_emissao || new Date().toISOString().split('T')[0], 
-        empresa_id: data.empresa_id, 
-        centro_custo_id: data.centro_custo_id || null, 
-        conta_bancaria_id: data.conta_bancaria_id || null, 
-        tipo_cobranca: data.tipo_cobranca, 
-        numero_documento: data.numero_documento || null, 
-        codigo_barras: data.codigo_barras || null, 
-        observacoes: data.observacoes || null, 
-        recorrente: data.recorrente, 
-        created_by: user.id, 
-        status: 'pendente',
-        idempotency_key
+  const onSubmit = (data: ContaPagarFormData) => { 
+    if (isEditing && conta) {
+      updateMutation.mutate({ ...data, id: conta.id }, {
+        onSuccess: () => {
+          celebrateSuccess('Conta atualizada com sucesso!');
+          onOpenChange(false);
+        }
       });
-      if (error) throw error;
-    },
-    onSuccess: () => { 
-      queryClient.invalidateQueries({ queryKey: ['contas-pagar'] }); 
-      sounds.success(); 
-      celebrateSuccess('Conta criada com sucesso!'); 
-      form.reset(); 
-      onOpenChange(false); 
-    },
-    onError: (error: any) => { 
-      sounds.error(); 
-      logger.error('Error creating conta pagar:', error); 
-      const isDuplicate = error?.message?.includes('DUPLICIDADE_DETECTADA') || error?.code === '23505';
-      toast({ 
-        title: isDuplicate ? '⚠️ Bloqueio de Duplicidade' : 'Erro ao criar conta', 
-        description: isDuplicate 
-          ? `Operação barrada: ${error?.message?.split(': ')[1] || 'Já existe um pagamento idêntico para este fornecedor e valor no período.'}` 
-          : 'Não foi possível criar a conta. Tente novamente.', 
-        variant: isDuplicate ? 'default' : 'destructive' 
+    } else {
+      createMutation.mutate(data, {
+        onSuccess: () => {
+          celebrateSuccess('Conta criada com sucesso!');
+          form.reset();
+          onOpenChange(false);
+        }
       });
-    },
-
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: async (data: ContaPagarFormData) => {
-      if (!conta) throw new Error('Conta não encontrada');
-      const { error } = await supabase.from('contas_pagar').update({ fornecedor_id: data.fornecedor_id || null, fornecedor_nome: data.fornecedor_nome, descricao: data.descricao, valor: data.valor, data_vencimento: data.data_vencimento, data_emissao: data.data_emissao || new Date().toISOString().split('T')[0], empresa_id: data.empresa_id, centro_custo_id: data.centro_custo_id || null, categoria_id: data.categoria_id || null, conta_bancaria_id: data.conta_bancaria_id || null, tipo_cobranca: data.tipo_cobranca, numero_documento: data.numero_documento || null, codigo_barras: data.codigo_barras || null, observacoes: data.observacoes || null, recorrente: data.recorrente }).eq('id', conta.id);
-      if (error) throw error;
-    },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['contas-pagar'] }); sounds.success(); celebrateSuccess('Conta atualizada com sucesso!'); onOpenChange(false); },
-    onError: (error: unknown) => { sounds.error(); logger.error('Error updating conta pagar:', error); toast({ title: 'Erro ao atualizar conta', description: 'Não foi possível salvar as alterações. Tente novamente.', variant: 'destructive' }); },
-  });
-
-  const onSubmit = (data: ContaPagarFormData) => { if (isEditing) updateMutation.mutate(data); else createMutation.mutate(data); };
+    }
+  };
 
   const handleFornecedorSelect = (fornecedorId: string) => {
     const fornecedor = fornecedores.find((f) => f.id === fornecedorId);
-    if (fornecedor) { form.setValue('fornecedor_id', fornecedorId); form.setValue('fornecedor_nome', fornecedor.razao_social); }
+    if (fornecedor) { 
+      form.setValue('fornecedor_id', fornecedorId); 
+      form.setValue('fornecedor_nome', fornecedor.razao_social); 
+    }
   };
 
   const handleBoletoDetected = (dados: DadosBoleto) => {
@@ -185,7 +198,6 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Fornecedor */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <FormLabel className="text-sm font-medium">Fornecedor</FormLabel>
@@ -221,7 +233,6 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
                 )}
               </div>
 
-              {/* Actions */}
               <div className="flex justify-end gap-3 pt-4 border-t">
                 <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
                 <ActionButton type="submit" state={isPending ? 'loading' : 'idle'} loadingText="Salvando..." successText="Salvo!"
