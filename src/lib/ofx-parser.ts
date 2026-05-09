@@ -129,7 +129,7 @@ export function parseCSV(content: string, fileName: string, mapeamento?: Record<
   const avisos: string[] = [];
   
   try {
-    const lines = content.trim().split('\n');
+    const lines = content.trim().split(/\r?\n/);
     
     if (lines.length < 2) {
       return {
@@ -148,20 +148,26 @@ export function parseCSV(content: string, fileName: string, mapeamento?: Record<
     
     // Find column indexes using mapping or common names
     const getIndex = (key: string, defaults: string[]) => {
+      // If user provided a mapping for this internal key, find which CSV column (header) it points to
       if (mapeamento?.[key]) {
-        const idx = headers.indexOf(mapeamento[key].toLowerCase());
+        const mappedHeader = mapeamento[key].toLowerCase();
+        const idx = headers.indexOf(mappedHeader);
         if (idx !== -1) return idx;
+        
+        // Try fallback if the mapped header doesn't exist exactly (e.g. "Data Lançamento" vs "Data Lancamento")
+        const fallbackIdx = headers.findIndex(h => h.includes(mappedHeader) || mappedHeader.includes(h));
+        if (fallbackIdx !== -1) return fallbackIdx;
       }
       return headers.findIndex(h => defaults.some(d => h.includes(d)));
     };
 
     const dataIdx = getIndex('data', ['data', 'date', 'dt']);
-    const descricaoIdx = getIndex('descricao', ['descri', 'historic', 'memo', 'description']);
-    const valorIdx = getIndex('valor', ['valor', 'value', 'amount']);
-    const tipoIdx = getIndex('tipo', ['tipo', 'type', 'dc', 'd/c']);
+    const descricaoIdx = getIndex('descricao', ['descri', 'historic', 'memo', 'description', 'detalhe']);
+    const valorIdx = getIndex('valor', ['valor', 'value', 'amount', 'quantia', 'total']);
+    const tipoIdx = getIndex('tipo', ['tipo', 'type', 'dc', 'd/c', 'natureza']);
 
     if (dataIdx === -1 || valorIdx === -1) {
-      avisos.push('Colunas de data ou valor não identificadas claramente');
+      avisos.push('Colunas de data ou valor não identificadas claramente. Tentando colunas padrão.');
     }
 
     const transacoes: TransacaoOFX[] = [];
@@ -173,28 +179,35 @@ export function parseCSV(content: string, fileName: string, mapeamento?: Record<
       const cols = parseCSVLine(line, delimiter);
       
       try {
-        const dataStr = cols[dataIdx] || cols[0];
+        // Data extraction
+        const dataStr = dataIdx !== -1 ? cols[dataIdx] : cols[0];
+        if (!dataStr) continue;
         const data = parseData(dataStr);
         
-        let valor = parseFloat((cols[valorIdx] || cols[1] || '0')
+        // Value extraction
+        let valorRaw = valorIdx !== -1 ? cols[valorIdx] : cols[1];
+        if (!valorRaw) continue;
+        
+        let valor = parseFloat(valorRaw
           .replace(/[^\d,.-]/g, '')
           .replace(',', '.'));
         
         // Determine if credit or debit
         let tipo: 'credito' | 'debito' = valor >= 0 ? 'credito' : 'debito';
         
-        if (tipoIdx !== -1) {
-          const tipoStr = (cols[tipoIdx] || '').toLowerCase();
-          if (tipoStr.includes('d') || tipoStr.includes('deb')) {
+        if (tipoIdx !== -1 && cols[tipoIdx]) {
+          const tipoStr = cols[tipoIdx].toLowerCase();
+          // "D" for Debit, "C" for Credit is common in Brazil
+          if (tipoStr.startsWith('d') || tipoStr.includes('deb')) {
             tipo = 'debito';
             if (valor > 0) valor = -valor;
-          } else if (tipoStr.includes('c') || tipoStr.includes('cred')) {
+          } else if (tipoStr.startsWith('c') || tipoStr.includes('cred')) {
             tipo = 'credito';
             if (valor < 0) valor = Math.abs(valor);
           }
         }
         
-        const descricao = cols[descricaoIdx] || cols[2] || 'Transação sem descrição';
+        const descricao = (descricaoIdx !== -1 ? cols[descricaoIdx] : cols[2]) || 'Transação sem descrição';
         
         transacoes.push({
           id: `csv-${i}-${Date.now()}`,
@@ -204,14 +217,14 @@ export function parseCSV(content: string, fileName: string, mapeamento?: Record<
           descricao: descricao.replace(/"/g, '').trim(),
         });
       } catch (_error: unknown) {
-        avisos.push(`Linha ${i + 1} ignorada: formato inválido`);
+        avisos.push(`Linha ${i + 1} ignorada: erro ao processar dados (${_error instanceof Error ? _error.message : 'formato inválido'})`);
       }
     }
 
     if (transacoes.length === 0) {
       return {
         sucesso: false,
-        erro: 'Nenhuma transação válida encontrada no arquivo CSV',
+        erro: 'Nenhuma transação válida encontrada no arquivo CSV. Verifique o mapeamento das colunas.',
         avisos,
       };
     }

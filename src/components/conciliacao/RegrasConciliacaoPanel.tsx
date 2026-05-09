@@ -227,6 +227,7 @@ function AddRegraDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (
   const [padrao, setPadrao] = useState('');
   const [entidade, setEntidade] = useState('');
   const [tipo, setTipo] = useState<string>('pagar');
+  const { currentEmpresaId } = useAuth();
   const queryClient = useQueryClient();
 
   const addRegra = useMutation({
@@ -236,6 +237,7 @@ function AddRegraDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (
         padrao_descricao: padrao,
         entidade_nome: entidade,
         lancamento_tipo: tipo,
+        empresa_id: currentEmpresaId,
         created_by: user?.id,
       });
       if (error) throw error;
@@ -252,24 +254,39 @@ function AddRegraDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md rounded-[2rem] border-primary/10 bg-background/95 backdrop-blur-xl">
         <DialogHeader>
-          <DialogTitle>Nova Regra de Conciliação</DialogTitle>
+          <DialogTitle className="text-xl font-black">Nova Regra de Conciliação</DialogTitle>
+          <CardDescription>
+            Configure um padrão para que o sistema identifique transações automaticamente.
+          </CardDescription>
         </DialogHeader>
-        <div className="space-y-4">
-          <div>
-            <Label>Padrão de descrição (extrato)</Label>
-            <Input placeholder="Ex: PIX FORNECEDOR ABC" value={padrao} onChange={e => setPadrao(e.target.value)} />
-            <p className="text-xs text-muted-foreground mt-1">Texto que aparece no extrato bancário</p>
+        <div className="space-y-6 py-4">
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-primary/60">Padrão de descrição (extrato)</Label>
+            <Input 
+              placeholder="Ex: PIX FORNECEDOR ABC" 
+              value={padrao} 
+              onChange={e => setPadrao(e.target.value)}
+              className="h-12 rounded-xl border-primary/10 bg-primary/[0.02]"
+            />
+            <p className="text-[10px] text-muted-foreground italic">Dica: O sistema buscará este texto dentro da descrição do extrato.</p>
           </div>
-          <div>
-            <Label>Entidade (fornecedor/cliente)</Label>
-            <Input placeholder="Ex: ABC Comércio Ltda" value={entidade} onChange={e => setEntidade(e.target.value)} />
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-primary/60">Entidade (fornecedor/cliente)</Label>
+            <Input 
+              placeholder="Ex: ABC Comércio Ltda" 
+              value={entidade} 
+              onChange={e => setEntidade(e.target.value)}
+              className="h-12 rounded-xl border-primary/10 bg-primary/[0.02]"
+            />
           </div>
-          <div>
-            <Label>Tipo</Label>
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-primary/60">Tipo de Lançamento</Label>
             <Select value={tipo} onValueChange={setTipo}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-12 rounded-xl border-primary/10 bg-primary/[0.02]">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="pagar">Despesa (Contas a Pagar)</SelectItem>
                 <SelectItem value="receber">Receita (Contas a Receber)</SelectItem>
@@ -277,9 +294,15 @@ function AddRegraDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (
             </Select>
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button onClick={() => addRegra.mutate()} disabled={!padrao || !entidade}>Criar Regra</Button>
+        <DialogFooter className="gap-2">
+          <Button variant="ghost" onClick={() => onOpenChange(false)} className="rounded-xl font-bold h-12">Cancelar</Button>
+          <Button 
+            onClick={() => addRegra.mutate()} 
+            disabled={!padrao || !entidade || !currentEmpresaId}
+            className="rounded-xl font-black h-12 px-8 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20"
+          >
+            {addRegra.isPending ? 'Criando...' : 'Criar Regra Alpha'}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

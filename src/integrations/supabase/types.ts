@@ -8967,6 +8967,7 @@ export type Database = {
           categoria: string | null
           created_at: string | null
           created_by: string | null
+          empresa_id: string | null
           entidade_id: string | null
           entidade_nome: string
           id: string
@@ -8980,6 +8981,7 @@ export type Database = {
           categoria?: string | null
           created_at?: string | null
           created_by?: string | null
+          empresa_id?: string | null
           entidade_id?: string | null
           entidade_nome: string
           id?: string
@@ -8993,6 +8995,7 @@ export type Database = {
           categoria?: string | null
           created_at?: string | null
           created_by?: string | null
+          empresa_id?: string | null
           entidade_id?: string | null
           entidade_nome?: string
           id?: string
@@ -9001,7 +9004,22 @@ export type Database = {
           updated_at?: string | null
           vezes_aplicada?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "regras_conciliacao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "regras_conciliacao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_tributario_dashboard"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
       }
       regras_contabilizacao_automatica: {
         Row: {
