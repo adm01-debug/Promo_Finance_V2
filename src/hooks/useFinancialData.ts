@@ -426,6 +426,69 @@ export function useFornecedoresPaginated(params: PaginatedFornecedoresParams) {
         search,
       });
 
+export function useCreateContaPagar() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: Partial<ContaPagar> & { idempotency_key?: string }) => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
+
+      const { error } = await supabase.from('contas_pagar').insert({
+        ...data,
+        created_by: session.user.id,
+        status: data.status || 'pendente',
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
+      sounds.success();
+    },
+    onError: (error: any) => {
+      logger.error('Error creating conta pagar:', error);
+      sounds.error();
+    },
+  });
+}
+
+export function useUpdateContaPagar() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...data }: Partial<ContaPagar> & { id: string }) => {
+      const { error } = await supabase.from('contas_pagar').update(data).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
+      sounds.success();
+    },
+    onError: (error: any) => {
+      logger.error('Error updating conta pagar:', error);
+      sounds.error();
+    },
+  });
+}
+
+export function useDeleteContaPagar() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('contas_pagar').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
+      toast.success('Conta excluída com sucesso');
+      sounds.success();
+    },
+    onError: (error: any) => {
+      logger.error('Error deleting conta pagar:', error);
+      toast.error('Erro ao excluir conta');
+      sounds.error();
+    },
+  });
+}
+
       return {
         data: (result.data || []) as Fornecedor[],
         totalCount: result.total || 0,
