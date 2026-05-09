@@ -256,11 +256,12 @@ export default function ApiManagement() {
                       <Checkbox 
                         id={scope.id} 
                         checked={selectedScopes.includes(scope.id)}
-                        onCheckedChange={(checked) => {
-                          if (checked) setSelectedScopes([...selectedScopes, scope.id]);
+                        onChange={(e) => {
+                          if (e.target.checked) setSelectedScopes([...selectedScopes, scope.id]);
                           else setSelectedScopes(selectedScopes.filter(s => s !== scope.id));
                         }}
                       />
+
                       <label htmlFor={scope.id} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                         {scope.label}
                       </label>
