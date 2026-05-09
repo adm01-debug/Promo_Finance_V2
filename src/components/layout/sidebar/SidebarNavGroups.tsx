@@ -187,8 +187,10 @@ const navGroups: NavGroup[] = [
       { label: 'Configurações', icon: Settings, href: '/configuracoes' },
       { label: 'Meu Perfil', icon: User, href: '/meu-perfil' },
       { label: 'Guia de Estilo', icon: Palette, href: '/style-guide', highlight: true },
+      { label: 'API & Integrações', icon: Code2, href: '/admin/api', highlight: true },
     ],
   },
+
 ];
 
 interface SidebarNavGroupsProps {
