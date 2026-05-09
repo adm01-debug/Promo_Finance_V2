@@ -107,6 +107,23 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const createMutation = useMutation({
     mutationFn: async (data: ContaReceberFormData) => {
       if (!user?.id) throw new Error('Usuário não autenticado');
+      
+      // Aplicar regra de roteamento se conta não informada
+      let finalContaId = data.conta_bancaria_id || null;
+      if (!finalContaId && data.empresa_id) {
+        const { data: rules } = await supabase
+          .from('regras_roteamento_financeiro')
+          .select('conta_bancaria_id')
+          .eq('empresa_id', data.empresa_id)
+          .eq('ativo', true)
+          .order('prioridade', { ascending: false })
+          .limit(1);
+        
+        if (rules && rules.length > 0) {
+          finalContaId = rules[0].conta_bancaria_id;
+        }
+      }
+
       if (data.parcelado && data.numero_parcelas && data.numero_parcelas > 1) {
         const parcelas = [];
         const baseDate = new Date(data.data_vencimento);
@@ -120,7 +137,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
             data_vencimento: venc.toISOString().split('T')[0],
             data_emissao: data.data_emissao || new Date().toISOString().split('T')[0],
             empresa_id: data.empresa_id, centro_custo_id: data.centro_custo_id || null,
-            conta_bancaria_id: data.conta_bancaria_id || null, vendedor_id: data.vendedor_id || null,
+            conta_bancaria_id: finalContaId, vendedor_id: data.vendedor_id || null,
             tipo_cobranca: data.tipo_cobranca, numero_documento: data.numero_documento || null,
             observacoes: data.observacoes || null, created_by: user.id,
             status: 'pendente' as const, etapa_cobranca: 'preventiva' as const,
@@ -135,7 +152,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
         valor: data.valor, data_vencimento: data.data_vencimento,
         data_emissao: data.data_emissao || new Date().toISOString().split('T')[0],
         empresa_id: data.empresa_id, centro_custo_id: data.centro_custo_id || null,
-        conta_bancaria_id: data.conta_bancaria_id || null, vendedor_id: data.vendedor_id || null,
+        conta_bancaria_id: finalContaId, vendedor_id: data.vendedor_id || null,
         tipo_cobranca: data.tipo_cobranca, numero_documento: data.numero_documento || null,
         codigo_barras: data.codigo_barras || null, chave_pix: data.chave_pix || null,
         link_boleto: data.link_boleto || null, observacoes: data.observacoes || null,
