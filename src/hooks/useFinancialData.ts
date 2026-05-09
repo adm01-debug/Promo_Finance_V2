@@ -257,7 +257,7 @@ export interface PaginatedContasPagarParams {
 }
 
 export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
-  const { page, pageSize, search, status, centroCustoId, empresaId } = params;
+  const { page, pageSize, search, status, centroCustoId, empresaId, contaBancariaId } = params;
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
