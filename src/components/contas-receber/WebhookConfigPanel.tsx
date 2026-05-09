@@ -1,22 +1,55 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Globe, Copy, CheckCircle2, Terminal, AlertCircle, Clock } from 'lucide-react';
+import { Globe, Copy, CheckCircle2, Terminal, AlertCircle, Clock, Search, ChevronRight, Braces } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 export function WebhookConfigPanel() {
   const [webhookUrl] = useState(`https://iikqosstymnnxaujzadw.supabase.co/functions/v1/webhook-financeiro?id=project_alpha`);
   const [copied, setCopied] = useState(false);
+  const [logs, setLogs] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
 
-  const mockLogs = [
-    { id: '1', event: 'payment.received', status: 'success', time: '5min atrás', details: 'Pix R$ 250,00' },
-    { id: '2', event: 'payment.received', status: 'success', time: '1h atrás', details: 'Boleto R$ 1.200,00' },
-    { id: '3', event: 'payment.failed', status: 'error', time: '3h atrás', details: 'Erro: Token Inválido' },
-  ];
+  useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('webhooks_log')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(10);
+        
+        if (error) throw error;
+        setLogs(data || []);
+      } catch (err) {
+        console.error('Erro ao buscar logs de webhook:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLogs();
+
+    // Inscrição em tempo real para novos logs
+    const channel = supabase
+      .channel('webhook-logs-realtime')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'webhooks_log' }, (payload) => {
+        setLogs(prev => [payload.new, ...prev].slice(0, 10));
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(webhookUrl);
