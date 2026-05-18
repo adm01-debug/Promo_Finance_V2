@@ -860,10 +860,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "asaas_reconciliation_suggestions_contas_pagar_id_fkey"
+            columns: ["contas_pagar_id"]
+            isOneToOne: false
+            referencedRelation: "vw_contas_pagar_painel"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "asaas_reconciliation_suggestions_contas_receber_id_fkey"
             columns: ["contas_receber_id"]
             isOneToOne: false
             referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asaas_reconciliation_suggestions_contas_receber_id_fkey"
+            columns: ["contas_receber_id"]
+            isOneToOne: false
+            referencedRelation: "vw_contas_receber_painel"
             referencedColumns: ["id"]
           },
         ]
@@ -2832,6 +2846,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "fila_cobrancas_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "vw_contas_receber_painel"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "fila_cobrancas_etapa_id_fkey"
             columns: ["etapa_id"]
             isOneToOne: false
@@ -3052,6 +3073,13 @@ export type Database = {
             columns: ["conta_receber_id"]
             isOneToOne: false
             referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "historico_cobranca_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "vw_contas_receber_painel"
             referencedColumns: ["id"]
           },
           {
@@ -3802,6 +3830,13 @@ export type Database = {
             referencedRelation: "contas_receber"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "negativacoes_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "vw_contas_receber_painel"
+            referencedColumns: ["id"]
+          },
         ]
       }
       new_device_alerts: {
@@ -4299,6 +4334,13 @@ export type Database = {
             columns: ["conta_receber_id"]
             isOneToOne: false
             referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "protestos_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "vw_contas_receber_painel"
             referencedColumns: ["id"]
           },
         ]
@@ -5644,6 +5686,103 @@ export type Database = {
             columns: ["driver_id"]
             isOneToOne: false
             referencedRelation: "drivers_safe_view"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vw_contas_pagar_painel: {
+        Row: {
+          anexo_url: string | null
+          categoria: string | null
+          categoria_id: string | null
+          categoria_nome: string | null
+          centro_custo_id: string | null
+          centro_custo_nome: string | null
+          centro_resultado: string | null
+          conta_bancaria_id: string | null
+          conta_bancaria_nome: string | null
+          created_at: string | null
+          data_pagamento: string | null
+          data_vencimento: string | null
+          desconto: number | null
+          descricao: string | null
+          empresa_id: string | null
+          forma_pagamento: string | null
+          fornecedor_id: string | null
+          fornecedor_nome: string | null
+          fornecedor_nome_display: string | null
+          id: string | null
+          juros: number | null
+          metadata: Json | null
+          multa: number | null
+          numero_documento: string | null
+          observacoes: string | null
+          parcela_atual: number | null
+          recorrente: boolean | null
+          status: string | null
+          total_parcelas: number | null
+          updated_at: string | null
+          user_id: string | null
+          valor: number | null
+          valor_pago: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contas_pagar_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            isOneToOne: false
+            referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vw_contas_receber_painel: {
+        Row: {
+          anexo_url: string | null
+          categoria_id: string | null
+          categoria_nome: string | null
+          centro_custo_id: string | null
+          centro_custo_nome: string | null
+          chave_pix: string | null
+          cliente_id: string | null
+          cliente_nome: string | null
+          cliente_nome_display: string | null
+          conta_bancaria_id: string | null
+          conta_bancaria_nome: string | null
+          created_at: string | null
+          data_emissao: string | null
+          data_recebimento: string | null
+          data_vencimento: string | null
+          desconto: number | null
+          descricao: string | null
+          empresa_id: string | null
+          etapa_cobranca: string | null
+          forma_recebimento: string | null
+          id: string | null
+          juros: number | null
+          metadata: Json | null
+          multa: number | null
+          numero_documento: string | null
+          numero_parcela_atual: number | null
+          observacoes: string | null
+          parcela_atual: number | null
+          recorrente: boolean | null
+          score: number | null
+          status: string | null
+          tipo_cobranca: string | null
+          total_parcelas: number | null
+          updated_at: string | null
+          user_id: string | null
+          valor: number | null
+          valor_desconto: number | null
+          valor_recebido: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contas_receber_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
             referencedColumns: ["id"]
           },
         ]
