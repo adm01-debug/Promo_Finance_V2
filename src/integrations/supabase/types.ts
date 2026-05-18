@@ -334,6 +334,36 @@ export type Database = {
           },
         ]
       }
+      allowed_ips: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          created_by: string | null
+          descricao: string | null
+          id: string
+          ip_address: string
+          user_id: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          created_by?: string | null
+          descricao?: string | null
+          id?: string
+          ip_address: string
+          user_id?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          created_by?: string | null
+          descricao?: string | null
+          id?: string
+          ip_address?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       anomalia_toast_eventos: {
         Row: {
           acoes_disponiveis: string[] | null
@@ -1276,11 +1306,105 @@ export type Database = {
         }
         Relationships: []
       }
+      conciliacoes: {
+        Row: {
+          created_at: string
+          empresa_id: string | null
+          id: string
+          status: string
+          total_conciliados: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          empresa_id?: string | null
+          id?: string
+          status?: string
+          total_conciliados?: number | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          empresa_id?: string | null
+          id?: string
+          status?: string
+          total_conciliados?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      conciliacoes_parciais: {
+        Row: {
+          conta_pagar_id: string | null
+          conta_receber_id: string | null
+          created_at: string
+          created_by: string
+          id: string
+          transacao_bancaria_id: string
+          valor_parcial: number
+        }
+        Insert: {
+          conta_pagar_id?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          transacao_bancaria_id: string
+          valor_parcial: number
+        }
+        Update: {
+          conta_pagar_id?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          transacao_bancaria_id?: string
+          valor_parcial?: number
+        }
+        Relationships: []
+      }
+      configuracoes_duplicidade: {
+        Row: {
+          ativo: boolean
+          campos_validacao: Json
+          created_at: string
+          criado_por: string | null
+          empresa_id: string | null
+          fuzzy_matching: boolean
+          id: string
+          tolerancia_dias: number
+          versao: number
+        }
+        Insert: {
+          ativo?: boolean
+          campos_validacao?: Json
+          created_at?: string
+          criado_por?: string | null
+          empresa_id?: string | null
+          fuzzy_matching?: boolean
+          id?: string
+          tolerancia_dias?: number
+          versao?: number
+        }
+        Update: {
+          ativo?: boolean
+          campos_validacao?: Json
+          created_at?: string
+          criado_por?: string | null
+          empresa_id?: string | null
+          fuzzy_matching?: boolean
+          id?: string
+          tolerancia_dias?: number
+          versao?: number
+        }
+        Relationships: []
+      }
       contas_bancarias: {
         Row: {
           agencia: string | null
           ativo: boolean | null
           banco: string | null
+          configuracoes_conciliacao: Json | null
           created_at: string | null
           empresa_id: string | null
           id: string
@@ -1292,6 +1416,7 @@ export type Database = {
           agencia?: string | null
           ativo?: boolean | null
           banco?: string | null
+          configuracoes_conciliacao?: Json | null
           created_at?: string | null
           empresa_id?: string | null
           id?: string
@@ -1303,6 +1428,7 @@ export type Database = {
           agencia?: string | null
           ativo?: boolean | null
           banco?: string | null
+          configuracoes_conciliacao?: Json | null
           created_at?: string | null
           empresa_id?: string | null
           id?: string
@@ -1546,6 +1672,7 @@ export type Database = {
       }
       divergencias_conciliacao: {
         Row: {
+          conta_bancaria_id: string | null
           created_at: string | null
           descricao: string | null
           empresa_id: string | null
@@ -1555,11 +1682,13 @@ export type Database = {
           resolvida_por: string | null
           resolvido_em: string | null
           resolvido_por: string | null
+          status: string
           tipo_divergencia: string | null
           transacao_id: string | null
           valor_divergencia: number | null
         }
         Insert: {
+          conta_bancaria_id?: string | null
           created_at?: string | null
           descricao?: string | null
           empresa_id?: string | null
@@ -1569,11 +1698,13 @@ export type Database = {
           resolvida_por?: string | null
           resolvido_em?: string | null
           resolvido_por?: string | null
+          status?: string
           tipo_divergencia?: string | null
           transacao_id?: string | null
           valor_divergencia?: number | null
         }
         Update: {
+          conta_bancaria_id?: string | null
           created_at?: string | null
           descricao?: string | null
           empresa_id?: string | null
@@ -1583,11 +1714,19 @@ export type Database = {
           resolvida_por?: string | null
           resolvido_em?: string | null
           resolvido_por?: string | null
+          status?: string
           tipo_divergencia?: string | null
           transacao_id?: string | null
           valor_divergencia?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "divergencias_conciliacao_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "divergencias_conciliacao_transacao_id_fkey"
             columns: ["transacao_id"]
@@ -2055,12 +2194,86 @@ export type Database = {
         }
         Relationships: []
       }
+      extrato_bancario: {
+        Row: {
+          arquivo_origem: string | null
+          codigo_transacao: string | null
+          conciliado: boolean
+          conta_bancaria_id: string | null
+          created_at: string
+          data: string
+          descricao: string
+          hash_transacao: string | null
+          id: string
+          importado_de: string | null
+          importado_em: string | null
+          linha_arquivo: number | null
+          numero_documento: string | null
+          numero_documento_banco: string | null
+          saldo: number | null
+          tipo: string
+          user_id: string
+          valor: number
+        }
+        Insert: {
+          arquivo_origem?: string | null
+          codigo_transacao?: string | null
+          conciliado?: boolean
+          conta_bancaria_id?: string | null
+          created_at?: string
+          data: string
+          descricao: string
+          hash_transacao?: string | null
+          id?: string
+          importado_de?: string | null
+          importado_em?: string | null
+          linha_arquivo?: number | null
+          numero_documento?: string | null
+          numero_documento_banco?: string | null
+          saldo?: number | null
+          tipo: string
+          user_id?: string
+          valor: number
+        }
+        Update: {
+          arquivo_origem?: string | null
+          codigo_transacao?: string | null
+          conciliado?: boolean
+          conta_bancaria_id?: string | null
+          created_at?: string
+          data?: string
+          descricao?: string
+          hash_transacao?: string | null
+          id?: string
+          importado_de?: string | null
+          importado_em?: string | null
+          linha_arquivo?: number | null
+          numero_documento?: string | null
+          numero_documento_banco?: string | null
+          saldo?: number | null
+          tipo?: string
+          user_id?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "extrato_bancario_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feedback_conciliacao_ia: {
         Row: {
           acao: string
           created_at: string | null
           feedback_texto: string | null
           id: string
+          motivo_rejeicao: string | null
+          score_original: number | null
+          transacao_bancaria_id: string | null
           transacao_id: string | null
           user_id: string | null
         }
@@ -2069,6 +2282,9 @@ export type Database = {
           created_at?: string | null
           feedback_texto?: string | null
           id?: string
+          motivo_rejeicao?: string | null
+          score_original?: number | null
+          transacao_bancaria_id?: string | null
           transacao_id?: string | null
           user_id?: string | null
         }
@@ -2077,6 +2293,9 @@ export type Database = {
           created_at?: string | null
           feedback_texto?: string | null
           id?: string
+          motivo_rejeicao?: string | null
+          score_original?: number | null
+          transacao_bancaria_id?: string | null
           transacao_id?: string | null
           user_id?: string | null
         }
@@ -2833,6 +3052,65 @@ export type Database = {
         }
         Relationships: []
       }
+      logs_conciliacao_retroativa: {
+        Row: {
+          conta_bancaria_id: string | null
+          created_at: string
+          data_fim: string
+          data_inicio: string
+          divergencias_encontradas: number | null
+          empresa_id: string | null
+          erro_detalhe: string | null
+          id: string
+          progresso: number | null
+          status: string
+          total_conciliado: number | null
+          total_processado: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          conta_bancaria_id?: string | null
+          created_at?: string
+          data_fim: string
+          data_inicio: string
+          divergencias_encontradas?: number | null
+          empresa_id?: string | null
+          erro_detalhe?: string | null
+          id?: string
+          progresso?: number | null
+          status?: string
+          total_conciliado?: number | null
+          total_processado?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          conta_bancaria_id?: string | null
+          created_at?: string
+          data_fim?: string
+          data_inicio?: string
+          divergencias_encontradas?: number | null
+          empresa_id?: string | null
+          erro_detalhe?: string | null
+          id?: string
+          progresso?: number | null
+          status?: string
+          total_conciliado?: number | null
+          total_processado?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "logs_conciliacao_retroativa_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mfa_sessions: {
         Row: {
           created_at: string | null
@@ -3243,6 +3521,7 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           email: string | null
+          empresa_id: string | null
           full_name: string | null
           id: string
           role: string | null
@@ -3253,6 +3532,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           email?: string | null
+          empresa_id?: string | null
           full_name?: string | null
           id: string
           role?: string | null
@@ -3263,6 +3543,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           email?: string | null
+          empresa_id?: string | null
           full_name?: string | null
           id?: string
           role?: string | null
@@ -3681,6 +3962,36 @@ export type Database = {
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      security_settings: {
+        Row: {
+          allowed_global_ips: Json
+          created_at: string
+          id: string
+          require_2fa: boolean
+          restrict_by_ip: boolean
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          allowed_global_ips?: Json
+          created_at?: string
+          id?: string
+          require_2fa?: boolean
+          restrict_by_ip?: boolean
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          allowed_global_ips?: Json
+          created_at?: string
+          id?: string
+          require_2fa?: boolean
+          restrict_by_ip?: boolean
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -4623,7 +4934,20 @@ export type Database = {
           user_fid: string
         }[]
       }
-      get_cron_jobs: { Args: never; Returns: Json }
+      get_cron_jobs: {
+        Args: never
+        Returns: {
+          active: boolean
+          command: string
+          database: string
+          jobid: number
+          jobname: string
+          nodename: string
+          nodeport: number
+          schedule: string
+          username: string
+        }[]
+      }
       get_cron_run_history:
         | { Args: never; Returns: Json }
         | { Args: { p_job_name?: string; p_limit?: number }; Returns: Json }
