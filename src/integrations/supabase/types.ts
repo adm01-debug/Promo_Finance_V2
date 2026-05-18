@@ -1036,30 +1036,56 @@ export type Database = {
           ativo: boolean | null
           codigo: string | null
           created_at: string | null
+          descricao: string | null
           empresa_id: string | null
           id: string
           nome: string
+          orcamento_previsto: number | null
+          orcamento_realizado: number | null
+          parent_id: string | null
+          responsavel: string | null
+          updated_at: string | null
           user_id: string | null
         }
         Insert: {
           ativo?: boolean | null
           codigo?: string | null
           created_at?: string | null
+          descricao?: string | null
           empresa_id?: string | null
           id?: string
           nome: string
+          orcamento_previsto?: number | null
+          orcamento_realizado?: number | null
+          parent_id?: string | null
+          responsavel?: string | null
+          updated_at?: string | null
           user_id?: string | null
         }
         Update: {
           ativo?: boolean | null
           codigo?: string | null
           created_at?: string | null
+          descricao?: string | null
           empresa_id?: string | null
           id?: string
           nome?: string
+          orcamento_previsto?: number | null
+          orcamento_realizado?: number | null
+          parent_id?: string | null
+          responsavel?: string | null
+          updated_at?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "centros_custo_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "centros_custo"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       clientes: {
         Row: {
@@ -1891,6 +1917,39 @@ export type Database = {
           resumo_executivo?: string | null
           score_saude_financeira?: number | null
           tipo_analise?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      historico_cobrancas_boletos: {
+        Row: {
+          boleto_id: string | null
+          conta_receber_id: string | null
+          created_at: string
+          descricao: string | null
+          id: string
+          metadados: Json | null
+          tipo_evento: string
+          user_id: string | null
+        }
+        Insert: {
+          boleto_id?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          metadados?: Json | null
+          tipo_evento: string
+          user_id?: string | null
+        }
+        Update: {
+          boleto_id?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          metadados?: Json | null
+          tipo_evento?: string
           user_id?: string | null
         }
         Relationships: []
