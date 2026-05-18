@@ -334,6 +334,36 @@ export type Database = {
           },
         ]
       }
+      allowed_ips: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          created_by: string | null
+          descricao: string | null
+          id: string
+          ip_address: string
+          user_id: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          created_by?: string | null
+          descricao?: string | null
+          id?: string
+          ip_address: string
+          user_id?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          created_by?: string | null
+          descricao?: string | null
+          id?: string
+          ip_address?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       anomalia_toast_eventos: {
         Row: {
           acoes_disponiveis: string[] | null
@@ -1276,6 +1306,33 @@ export type Database = {
         }
         Relationships: []
       }
+      conciliacoes: {
+        Row: {
+          created_at: string
+          empresa_id: string | null
+          id: string
+          status: string
+          total_conciliados: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          empresa_id?: string | null
+          id?: string
+          status?: string
+          total_conciliados?: number | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          empresa_id?: string | null
+          id?: string
+          status?: string
+          total_conciliados?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       conciliacoes_parciais: {
         Row: {
           conta_pagar_id: string | null
@@ -1303,6 +1360,42 @@ export type Database = {
           id?: string
           transacao_bancaria_id?: string
           valor_parcial?: number
+        }
+        Relationships: []
+      }
+      configuracoes_duplicidade: {
+        Row: {
+          ativo: boolean
+          campos_validacao: Json
+          created_at: string
+          criado_por: string | null
+          empresa_id: string | null
+          fuzzy_matching: boolean
+          id: string
+          tolerancia_dias: number
+          versao: number
+        }
+        Insert: {
+          ativo?: boolean
+          campos_validacao?: Json
+          created_at?: string
+          criado_por?: string | null
+          empresa_id?: string | null
+          fuzzy_matching?: boolean
+          id?: string
+          tolerancia_dias?: number
+          versao?: number
+        }
+        Update: {
+          ativo?: boolean
+          campos_validacao?: Json
+          created_at?: string
+          criado_por?: string | null
+          empresa_id?: string | null
+          fuzzy_matching?: boolean
+          id?: string
+          tolerancia_dias?: number
+          versao?: number
         }
         Relationships: []
       }
@@ -1589,6 +1682,7 @@ export type Database = {
           resolvida_por: string | null
           resolvido_em: string | null
           resolvido_por: string | null
+          status: string
           tipo_divergencia: string | null
           transacao_id: string | null
           valor_divergencia: number | null
@@ -1604,6 +1698,7 @@ export type Database = {
           resolvida_por?: string | null
           resolvido_em?: string | null
           resolvido_por?: string | null
+          status?: string
           tipo_divergencia?: string | null
           transacao_id?: string | null
           valor_divergencia?: number | null
@@ -1619,6 +1714,7 @@ export type Database = {
           resolvida_por?: string | null
           resolvido_em?: string | null
           resolvido_por?: string | null
+          status?: string
           tipo_divergencia?: string | null
           transacao_id?: string | null
           valor_divergencia?: number | null
@@ -2097,6 +2193,77 @@ export type Database = {
           verified_at?: string | null
         }
         Relationships: []
+      }
+      extrato_bancario: {
+        Row: {
+          arquivo_origem: string | null
+          codigo_transacao: string | null
+          conciliado: boolean
+          conta_bancaria_id: string | null
+          created_at: string
+          data: string
+          descricao: string
+          hash_transacao: string | null
+          id: string
+          importado_de: string | null
+          importado_em: string | null
+          linha_arquivo: number | null
+          numero_documento: string | null
+          numero_documento_banco: string | null
+          saldo: number | null
+          tipo: string
+          user_id: string
+          valor: number
+        }
+        Insert: {
+          arquivo_origem?: string | null
+          codigo_transacao?: string | null
+          conciliado?: boolean
+          conta_bancaria_id?: string | null
+          created_at?: string
+          data: string
+          descricao: string
+          hash_transacao?: string | null
+          id?: string
+          importado_de?: string | null
+          importado_em?: string | null
+          linha_arquivo?: number | null
+          numero_documento?: string | null
+          numero_documento_banco?: string | null
+          saldo?: number | null
+          tipo: string
+          user_id?: string
+          valor: number
+        }
+        Update: {
+          arquivo_origem?: string | null
+          codigo_transacao?: string | null
+          conciliado?: boolean
+          conta_bancaria_id?: string | null
+          created_at?: string
+          data?: string
+          descricao?: string
+          hash_transacao?: string | null
+          id?: string
+          importado_de?: string | null
+          importado_em?: string | null
+          linha_arquivo?: number | null
+          numero_documento?: string | null
+          numero_documento_banco?: string | null
+          saldo?: number | null
+          tipo?: string
+          user_id?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "extrato_bancario_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       feedback_conciliacao_ia: {
         Row: {
@@ -3354,6 +3521,7 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           email: string | null
+          empresa_id: string | null
           full_name: string | null
           id: string
           role: string | null
@@ -3364,6 +3532,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           email?: string | null
+          empresa_id?: string | null
           full_name?: string | null
           id: string
           role?: string | null
@@ -3374,6 +3543,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           email?: string | null
+          empresa_id?: string | null
           full_name?: string | null
           id?: string
           role?: string | null
@@ -3792,6 +3962,36 @@ export type Database = {
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      security_settings: {
+        Row: {
+          allowed_global_ips: Json
+          created_at: string
+          id: string
+          require_2fa: boolean
+          restrict_by_ip: boolean
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          allowed_global_ips?: Json
+          created_at?: string
+          id?: string
+          require_2fa?: boolean
+          restrict_by_ip?: boolean
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          allowed_global_ips?: Json
+          created_at?: string
+          id?: string
+          require_2fa?: boolean
+          restrict_by_ip?: boolean
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
