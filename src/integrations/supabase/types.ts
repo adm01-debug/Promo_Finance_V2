@@ -1553,7 +1553,9 @@ export type Database = {
           banco: string | null
           codigo_banco: string | null
           configuracoes_conciliacao: Json | null
+          configuracoes_roteamento: Json | null
           conta: string | null
+          cor: string | null
           created_at: string | null
           empresa_id: string | null
           id: string
@@ -1570,7 +1572,9 @@ export type Database = {
           banco?: string | null
           codigo_banco?: string | null
           configuracoes_conciliacao?: Json | null
+          configuracoes_roteamento?: Json | null
           conta?: string | null
+          cor?: string | null
           created_at?: string | null
           empresa_id?: string | null
           id?: string
@@ -1587,7 +1591,9 @@ export type Database = {
           banco?: string | null
           codigo_banco?: string | null
           configuracoes_conciliacao?: Json | null
+          configuracoes_roteamento?: Json | null
           conta?: string | null
+          cor?: string | null
           created_at?: string | null
           empresa_id?: string | null
           id?: string
@@ -1851,6 +1857,7 @@ export type Database = {
           descricao: string | null
           empresa_id: string | null
           id: string
+          recomendacao: string | null
           resolvida: boolean | null
           resolvida_em: string | null
           resolvida_por: string | null
@@ -1867,6 +1874,7 @@ export type Database = {
           descricao?: string | null
           empresa_id?: string | null
           id?: string
+          recomendacao?: string | null
           resolvida?: boolean | null
           resolvida_em?: string | null
           resolvida_por?: string | null
@@ -1883,6 +1891,7 @@ export type Database = {
           descricao?: string | null
           empresa_id?: string | null
           id?: string
+          recomendacao?: string | null
           resolvida?: boolean | null
           resolvida_em?: string | null
           resolvida_por?: string | null
@@ -4360,6 +4369,7 @@ export type Database = {
       }
       sessoes_conciliacao: {
         Row: {
+          conta_bancaria_id: string | null
           created_at: string
           empresa_id: string | null
           id: string
@@ -4370,6 +4380,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          conta_bancaria_id?: string | null
           created_at?: string
           empresa_id?: string | null
           id?: string
@@ -4380,6 +4391,7 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          conta_bancaria_id?: string | null
           created_at?: string
           empresa_id?: string | null
           id?: string
@@ -4389,7 +4401,15 @@ export type Database = {
           total_conciliados?: number
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "sessoes_conciliacao_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       solicitacoes_aprovacao: {
         Row: {
