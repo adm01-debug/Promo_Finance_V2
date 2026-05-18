@@ -14,6 +14,8 @@ import { PageLoading } from '@/components/ui/loading-skeleton';
 import { SkipLinks } from '@/components/accessibility/SkipLinks';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { CommandPalette } from '@/components/command-palette/CommandPalette';
+import { StartupDiagnostic } from '@/components/common/StartupDiagnostic';
+
 
 
 // Lazy load pages for better performance
@@ -262,9 +264,11 @@ function App() {
         <ThemeProvider>
           <TooltipProvider>
             <AuthProvider>
-              <BrowserRouter>
-                <AppRoutes />
-              </BrowserRouter>
+              <StartupDiagnostic>
+                <BrowserRouter>
+                  <AppRoutes />
+                </BrowserRouter>
+              </StartupDiagnostic>
             </AuthProvider>
           </TooltipProvider>
         </ThemeProvider>
@@ -272,5 +276,6 @@ function App() {
     </ErrorBoundary>
   );
 }
+
 
 export default App;
