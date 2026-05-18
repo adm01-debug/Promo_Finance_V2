@@ -1276,6 +1276,42 @@ export type Database = {
         }
         Relationships: []
       }
+      contas_bancarias: {
+        Row: {
+          agencia: string | null
+          ativo: boolean | null
+          banco: string | null
+          created_at: string | null
+          empresa_id: string | null
+          id: string
+          nome: string
+          numero_conta: string | null
+          saldo_inicial: number | null
+        }
+        Insert: {
+          agencia?: string | null
+          ativo?: boolean | null
+          banco?: string | null
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          nome: string
+          numero_conta?: string | null
+          saldo_inicial?: number | null
+        }
+        Update: {
+          agencia?: string | null
+          ativo?: boolean | null
+          banco?: string | null
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          nome?: string
+          numero_conta?: string | null
+          saldo_inicial?: number | null
+        }
+        Relationships: []
+      }
       contas_pagar: {
         Row: {
           anexo_url: string | null
@@ -1507,6 +1543,50 @@ export type Database = {
           success?: boolean | null
         }
         Relationships: []
+      }
+      divergencias_conciliacao: {
+        Row: {
+          created_at: string | null
+          descricao: string | null
+          empresa_id: string | null
+          id: string
+          resolvida: boolean | null
+          resolvida_em: string | null
+          resolvida_por: string | null
+          transacao_id: string | null
+          valor_divergencia: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          resolvida?: boolean | null
+          resolvida_em?: string | null
+          resolvida_por?: string | null
+          transacao_id?: string | null
+          valor_divergencia?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          resolvida?: boolean | null
+          resolvida_em?: string | null
+          resolvida_por?: string | null
+          transacao_id?: string | null
+          valor_divergencia?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "divergencias_conciliacao_transacao_id_fkey"
+            columns: ["transacao_id"]
+            isOneToOne: false
+            referencedRelation: "transacoes_bancarias"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       driver_approval_queue: {
         Row: {
@@ -3653,6 +3733,11 @@ export type Database = {
       transacoes_bancarias: {
         Row: {
           categoria_id: string | null
+          compensacao_aceita_em: string | null
+          compensacao_aceita_por: string | null
+          compensacao_motivo: string | null
+          compensacao_regra: string | null
+          compensacao_valor: number | null
           conta_bancaria_id: string | null
           created_at: string | null
           data: string
@@ -3664,6 +3749,11 @@ export type Database = {
         }
         Insert: {
           categoria_id?: string | null
+          compensacao_aceita_em?: string | null
+          compensacao_aceita_por?: string | null
+          compensacao_motivo?: string | null
+          compensacao_regra?: string | null
+          compensacao_valor?: number | null
           conta_bancaria_id?: string | null
           created_at?: string | null
           data: string
@@ -3675,6 +3765,11 @@ export type Database = {
         }
         Update: {
           categoria_id?: string | null
+          compensacao_aceita_em?: string | null
+          compensacao_aceita_por?: string | null
+          compensacao_motivo?: string | null
+          compensacao_regra?: string | null
+          compensacao_valor?: number | null
           conta_bancaria_id?: string | null
           created_at?: string | null
           data?: string
