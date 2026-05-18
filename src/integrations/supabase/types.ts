@@ -334,6 +334,65 @@ export type Database = {
           },
         ]
       }
+      anomalia_toast_eventos: {
+        Row: {
+          anomalia_id: string | null
+          dispatched_at: string | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          anomalia_id?: string | null
+          dispatched_at?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          anomalia_id?: string | null
+          dispatched_at?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anomalia_toast_eventos_anomalia_id_fkey"
+            columns: ["anomalia_id"]
+            isOneToOne: false
+            referencedRelation: "anomalias_detectadas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      anomalias_detectadas: {
+        Row: {
+          created_at: string | null
+          descricao: string | null
+          id: string
+          prioridade: string | null
+          status: string | null
+          tipo: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          descricao?: string | null
+          id?: string
+          prioridade?: string | null
+          status?: string | null
+          tipo: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          descricao?: string | null
+          id?: string
+          prioridade?: string | null
+          status?: string | null
+          tipo?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       auth_logs: {
         Row: {
           created_at: string | null
@@ -575,6 +634,136 @@ export type Database = {
           reason?: string
         }
         Relationships: []
+      }
+      clientes: {
+        Row: {
+          cpf_cnpj: string | null
+          created_at: string | null
+          email: string | null
+          id: string
+          nome: string
+          telefone: string | null
+          tipo: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          cpf_cnpj?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          nome: string
+          telefone?: string | null
+          tipo?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          cpf_cnpj?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          nome?: string
+          telefone?: string | null
+          tipo?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      contas_pagar: {
+        Row: {
+          created_at: string | null
+          data_pagamento: string | null
+          data_vencimento: string
+          descricao: string
+          fornecedor_id: string | null
+          id: string
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+          valor: number
+        }
+        Insert: {
+          created_at?: string | null
+          data_pagamento?: string | null
+          data_vencimento: string
+          descricao: string
+          fornecedor_id?: string | null
+          id?: string
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          valor: number
+        }
+        Update: {
+          created_at?: string | null
+          data_pagamento?: string | null
+          data_vencimento?: string
+          descricao?: string
+          fornecedor_id?: string | null
+          id?: string
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contas_pagar_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            isOneToOne: false
+            referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contas_receber: {
+        Row: {
+          cliente_id: string | null
+          created_at: string | null
+          data_recebimento: string | null
+          data_vencimento: string
+          descricao: string
+          id: string
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+          valor: number
+        }
+        Insert: {
+          cliente_id?: string | null
+          created_at?: string | null
+          data_recebimento?: string | null
+          data_vencimento: string
+          descricao: string
+          id?: string
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          valor: number
+        }
+        Update: {
+          cliente_id?: string | null
+          created_at?: string | null
+          data_recebimento?: string | null
+          data_vencimento?: string
+          descricao?: string
+          id?: string
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contas_receber_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       cron_job_logs: {
         Row: {
@@ -1067,6 +1256,33 @@ export type Database = {
           token_hash?: string
           user_id?: string
           verified_at?: string | null
+        }
+        Relationships: []
+      }
+      fornecedores: {
+        Row: {
+          cnpj: string | null
+          created_at: string | null
+          id: string
+          razao_social: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          cnpj?: string | null
+          created_at?: string | null
+          id?: string
+          razao_social: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          cnpj?: string | null
+          created_at?: string | null
+          id?: string
+          razao_social?: string
+          updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -1671,6 +1887,33 @@ export type Database = {
           id?: string
           module?: string
           name?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          role: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          role?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          role?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
