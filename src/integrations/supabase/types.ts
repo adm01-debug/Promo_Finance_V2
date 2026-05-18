@@ -1404,37 +1404,52 @@ export type Database = {
           agencia: string | null
           ativo: boolean | null
           banco: string | null
+          codigo_banco: string | null
           configuracoes_conciliacao: Json | null
+          conta: string | null
           created_at: string | null
           empresa_id: string | null
           id: string
           nome: string
           numero_conta: string | null
+          saldo_atual: number
+          saldo_disponivel: number | null
           saldo_inicial: number | null
+          tipo_conta: string | null
         }
         Insert: {
           agencia?: string | null
           ativo?: boolean | null
           banco?: string | null
+          codigo_banco?: string | null
           configuracoes_conciliacao?: Json | null
+          conta?: string | null
           created_at?: string | null
           empresa_id?: string | null
           id?: string
           nome: string
           numero_conta?: string | null
+          saldo_atual?: number
+          saldo_disponivel?: number | null
           saldo_inicial?: number | null
+          tipo_conta?: string | null
         }
         Update: {
           agencia?: string | null
           ativo?: boolean | null
           banco?: string | null
+          codigo_banco?: string | null
           configuracoes_conciliacao?: Json | null
+          conta?: string | null
           created_at?: string | null
           empresa_id?: string | null
           id?: string
           nome?: string
           numero_conta?: string | null
+          saldo_atual?: number
+          saldo_disponivel?: number | null
           saldo_inicial?: number | null
+          tipo_conta?: string | null
         }
         Relationships: []
       }
@@ -3010,10 +3025,50 @@ export type Database = {
         }
         Relationships: []
       }
+      lancamentos_contabeis: {
+        Row: {
+          created_at: string
+          data_lancamento: string
+          empresa_id: string | null
+          historico: string | null
+          id: string
+          numero_lancamento: number | null
+          origem: string | null
+          status: string
+          user_id: string
+          valor_total: number
+        }
+        Insert: {
+          created_at?: string
+          data_lancamento?: string
+          empresa_id?: string | null
+          historico?: string | null
+          id?: string
+          numero_lancamento?: number | null
+          origem?: string | null
+          status?: string
+          user_id?: string
+          valor_total?: number
+        }
+        Update: {
+          created_at?: string
+          data_lancamento?: string
+          empresa_id?: string | null
+          historico?: string | null
+          id?: string
+          numero_lancamento?: number | null
+          origem?: string | null
+          status?: string
+          user_id?: string
+          valor_total?: number
+        }
+        Relationships: []
+      }
       login_attempts: {
         Row: {
           attempt_count: number
           block_reason: string | null
+          blocked_reason: string | null
           created_at: string
           email: string
           first_attempt_at: string
@@ -3022,11 +3077,14 @@ export type Database = {
           is_suspicious: boolean | null
           last_attempt_at: string
           locked_until: string | null
+          success: boolean | null
           user_agent: string | null
+          user_email: string | null
         }
         Insert: {
           attempt_count?: number
           block_reason?: string | null
+          blocked_reason?: string | null
           created_at?: string
           email: string
           first_attempt_at?: string
@@ -3035,11 +3093,14 @@ export type Database = {
           is_suspicious?: boolean | null
           last_attempt_at?: string
           locked_until?: string | null
+          success?: boolean | null
           user_agent?: string | null
+          user_email?: string | null
         }
         Update: {
           attempt_count?: number
           block_reason?: string | null
+          blocked_reason?: string | null
           created_at?: string
           email?: string
           first_attempt_at?: string
@@ -3048,7 +3109,9 @@ export type Database = {
           is_suspicious?: boolean | null
           last_attempt_at?: string
           locked_until?: string | null
+          success?: boolean | null
           user_agent?: string | null
+          user_email?: string | null
         }
         Relationships: []
       }
@@ -3992,6 +4055,39 @@ export type Database = {
           restrict_by_ip?: boolean
           updated_at?: string
           updated_by?: string | null
+        }
+        Relationships: []
+      }
+      sessoes_conciliacao: {
+        Row: {
+          created_at: string
+          empresa_id: string | null
+          id: string
+          periodo_fim: string | null
+          periodo_inicio: string | null
+          status: string
+          total_conciliados: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          empresa_id?: string | null
+          id?: string
+          periodo_fim?: string | null
+          periodo_inicio?: string | null
+          status?: string
+          total_conciliados?: number
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          empresa_id?: string | null
+          id?: string
+          periodo_fim?: string | null
+          periodo_inicio?: string | null
+          status?: string
+          total_conciliados?: number
+          user_id?: string
         }
         Relationships: []
       }
