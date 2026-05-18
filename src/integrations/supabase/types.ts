@@ -635,6 +635,36 @@ export type Database = {
         }
         Relationships: []
       }
+      centros_custo: {
+        Row: {
+          ativo: boolean | null
+          codigo: string | null
+          created_at: string | null
+          empresa_id: string | null
+          id: string
+          nome: string
+          user_id: string | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          codigo?: string | null
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          nome: string
+          user_id?: string | null
+        }
+        Update: {
+          ativo?: boolean | null
+          codigo?: string | null
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          nome?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       clientes: {
         Row: {
           cpf_cnpj: string | null
@@ -1894,6 +1924,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          email: string | null
           full_name: string | null
           id: string
           role: string | null
@@ -1902,6 +1933,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id: string
           role?: string | null
@@ -1910,6 +1942,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id?: string
           role?: string | null
@@ -2813,6 +2846,8 @@ export type Database = {
           user_fid: string
         }[]
       }
+      get_cron_jobs: { Args: never; Returns: Json }
+      get_cron_run_history: { Args: never; Returns: Json }
       get_user_permissions: {
         Args: { _user_id: string }
         Returns: {
@@ -2884,7 +2919,14 @@ export type Database = {
         | "LATE_DELIVERY"
         | "APPROVAL_REQUIRED"
         | "ORDER_CANCELLED"
-      app_role: "admin" | "manager" | "operator" | "viewer"
+      app_role:
+        | "admin"
+        | "manager"
+        | "operator"
+        | "viewer"
+        | "financeiro"
+        | "operacional"
+        | "visualizador"
       approval_priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT" | "CRITICAL"
       approval_status: "PENDING" | "APPROVED" | "REJECTED"
       delivery_outcome:
@@ -3055,7 +3097,15 @@ export const Constants = {
         "APPROVAL_REQUIRED",
         "ORDER_CANCELLED",
       ],
-      app_role: ["admin", "manager", "operator", "viewer"],
+      app_role: [
+        "admin",
+        "manager",
+        "operator",
+        "viewer",
+        "financeiro",
+        "operacional",
+        "visualizador",
+      ],
       approval_priority: ["LOW", "MEDIUM", "HIGH", "URGENT", "CRITICAL"],
       approval_status: ["PENDING", "APPROVED", "REJECTED"],
       delivery_outcome: [
