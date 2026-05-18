@@ -239,7 +239,8 @@ function AddRegraDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (
         lancamento_tipo: tipo,
         empresa_id: currentEmpresaId,
         created_by: user?.id,
-      });
+        nome: `Regra ${padrao}`,
+      } as any);
       if (error) throw error;
     },
     onSuccess: () => {
