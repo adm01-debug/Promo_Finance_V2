@@ -4623,7 +4623,20 @@ export type Database = {
           user_fid: string
         }[]
       }
-      get_cron_jobs: { Args: never; Returns: Json }
+      get_cron_jobs: {
+        Args: never
+        Returns: {
+          active: boolean
+          command: string
+          database: string
+          jobid: number
+          jobname: string
+          nodename: string
+          nodeport: number
+          schedule: string
+          username: string
+        }[]
+      }
       get_cron_run_history:
         | { Args: never; Returns: Json }
         | { Args: { p_job_name?: string; p_limit?: number }; Returns: Json }
