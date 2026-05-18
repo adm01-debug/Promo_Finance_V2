@@ -92,7 +92,7 @@ export function PortalClientePanel({ clienteId, clienteEmail }: Props) {
               {acessos.slice(0, 5).map((a) => (
                 <div key={a.id} className="text-xs text-muted-foreground flex justify-between p-2 rounded bg-muted/30">
                   <span>{formatDate(a.created_at)}</span>
-                  <span>{a.ip_address || 'IP desconhecido'}</span>
+                  <span>{String(a.ip_address || 'IP desconhecido')}</span>
                 </div>
               ))}
             </div>
