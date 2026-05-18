@@ -789,6 +789,45 @@ export type Database = {
         }
         Relationships: []
       }
+      auditoria_financeira: {
+        Row: {
+          created_at: string
+          dados_antigos: Json | null
+          dados_novos: Json | null
+          empresa_id: string | null
+          id: string
+          motivo: string | null
+          operacao: string
+          registro_id: string | null
+          tabela: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          dados_antigos?: Json | null
+          dados_novos?: Json | null
+          empresa_id?: string | null
+          id?: string
+          motivo?: string | null
+          operacao: string
+          registro_id?: string | null
+          tabela: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          dados_antigos?: Json | null
+          dados_novos?: Json | null
+          empresa_id?: string | null
+          id?: string
+          motivo?: string | null
+          operacao?: string
+          registro_id?: string | null
+          tabela?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       auth_logs: {
         Row: {
           created_at: string | null
@@ -1089,33 +1128,72 @@ export type Database = {
       }
       clientes: {
         Row: {
+          ativo: boolean | null
+          cidade: string | null
+          cnpj_cpf: string | null
+          contato: string | null
           cpf_cnpj: string | null
           created_at: string | null
           email: string | null
+          empresa_id: string | null
+          endereco: string | null
+          estado: string | null
           id: string
+          limite_credito: number | null
           nome: string
+          nome_fantasia: string | null
+          observacoes: string | null
+          ramo_atividade: string | null
+          razao_social: string | null
+          score: number | null
           telefone: string | null
           tipo: string | null
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
+          ativo?: boolean | null
+          cidade?: string | null
+          cnpj_cpf?: string | null
+          contato?: string | null
           cpf_cnpj?: string | null
           created_at?: string | null
           email?: string | null
+          empresa_id?: string | null
+          endereco?: string | null
+          estado?: string | null
           id?: string
+          limite_credito?: number | null
           nome: string
+          nome_fantasia?: string | null
+          observacoes?: string | null
+          ramo_atividade?: string | null
+          razao_social?: string | null
+          score?: number | null
           telefone?: string | null
           tipo?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
+          ativo?: boolean | null
+          cidade?: string | null
+          cnpj_cpf?: string | null
+          contato?: string | null
           cpf_cnpj?: string | null
           created_at?: string | null
           email?: string | null
+          empresa_id?: string | null
+          endereco?: string | null
+          estado?: string | null
           id?: string
+          limite_credito?: number | null
           nome?: string
+          nome_fantasia?: string | null
+          observacoes?: string | null
+          ramo_atividade?: string | null
+          razao_social?: string | null
+          score?: number | null
           telefone?: string | null
           tipo?: string | null
           updated_at?: string | null
@@ -2528,6 +2606,83 @@ export type Database = {
           id?: string
           module?: string
           name?: string
+        }
+        Relationships: []
+      }
+      portal_cliente_acessos: {
+        Row: {
+          acao: string | null
+          cliente_id: string | null
+          created_at: string
+          id: string
+          ip_address: unknown
+          metadata: Json | null
+          token_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          acao?: string | null
+          cliente_id?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: unknown
+          metadata?: Json | null
+          token_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          acao?: string | null
+          cliente_id?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: unknown
+          metadata?: Json | null
+          token_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_cliente_acessos_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "portal_cliente_tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portal_cliente_tokens: {
+        Row: {
+          ativo: boolean | null
+          cliente_id: string | null
+          created_at: string
+          email_cliente: string | null
+          expires_at: string | null
+          id: string
+          token: string
+          ultimo_acesso: string | null
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          cliente_id?: string | null
+          created_at?: string
+          email_cliente?: string | null
+          expires_at?: string | null
+          id?: string
+          token: string
+          ultimo_acesso?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean | null
+          cliente_id?: string | null
+          created_at?: string
+          email_cliente?: string | null
+          expires_at?: string | null
+          id?: string
+          token?: string
+          ultimo_acesso?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
