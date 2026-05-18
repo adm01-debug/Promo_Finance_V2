@@ -2401,35 +2401,55 @@ export type Database = {
       execucoes_cobranca: {
         Row: {
           canal: string | null
+          cliente_nome: string | null
           conta_receber_id: string | null
           created_at: string
+          destinatario: string | null
+          empresa_id: string | null
           etapa: string | null
           id: string
           mensagem: string | null
+          provider: string | null
           status: string | null
           user_id: string
         }
         Insert: {
           canal?: string | null
+          cliente_nome?: string | null
           conta_receber_id?: string | null
           created_at?: string
+          destinatario?: string | null
+          empresa_id?: string | null
           etapa?: string | null
           id?: string
           mensagem?: string | null
+          provider?: string | null
           status?: string | null
           user_id?: string
         }
         Update: {
           canal?: string | null
+          cliente_nome?: string | null
           conta_receber_id?: string | null
           created_at?: string
+          destinatario?: string | null
+          empresa_id?: string | null
           etapa?: string | null
           id?: string
           mensagem?: string | null
+          provider?: string | null
           status?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "execucoes_cobranca_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       extrato_bancario: {
         Row: {
@@ -2785,10 +2805,15 @@ export type Database = {
           conta_receber_id: string | null
           created_at: string | null
           destinatario: string | null
+          empresa_id: string | null
+          etapa: string | null
           evento: string | null
+          fila_id: string | null
           id: string
           mensagem: string | null
           metadata: Json | null
+          provider: string | null
+          provider_message_id: string | null
           status: string | null
         }
         Insert: {
@@ -2797,10 +2822,15 @@ export type Database = {
           conta_receber_id?: string | null
           created_at?: string | null
           destinatario?: string | null
+          empresa_id?: string | null
+          etapa?: string | null
           evento?: string | null
+          fila_id?: string | null
           id?: string
           mensagem?: string | null
           metadata?: Json | null
+          provider?: string | null
+          provider_message_id?: string | null
           status?: string | null
         }
         Update: {
@@ -2809,10 +2839,15 @@ export type Database = {
           conta_receber_id?: string | null
           created_at?: string | null
           destinatario?: string | null
+          empresa_id?: string | null
+          etapa?: string | null
           evento?: string | null
+          fila_id?: string | null
           id?: string
           mensagem?: string | null
           metadata?: Json | null
+          provider?: string | null
+          provider_message_id?: string | null
           status?: string | null
         }
         Relationships: [
@@ -2828,6 +2863,13 @@ export type Database = {
             columns: ["conta_receber_id"]
             isOneToOne: false
             referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "historico_cobranca_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
             referencedColumns: ["id"]
           },
         ]
@@ -3724,6 +3766,7 @@ export type Database = {
           created_at: string | null
           empresa_id: string | null
           id: string
+          instrucoes: string | null
           nome: string
           tipo_chave: string
         }
@@ -3735,6 +3778,7 @@ export type Database = {
           created_at?: string | null
           empresa_id?: string | null
           id?: string
+          instrucoes?: string | null
           nome: string
           tipo_chave: string
         }
@@ -3746,6 +3790,7 @@ export type Database = {
           created_at?: string | null
           empresa_id?: string | null
           id?: string
+          instrucoes?: string | null
           nome?: string
           tipo_chave?: string
         }
@@ -4068,8 +4113,10 @@ export type Database = {
           descricao: string | null
           dias_gatilho: number[] | null
           empresa_id: string | null
+          etapa: string | null
           id: string
           nome: string
+          ordem: number | null
           updated_at: string | null
         }
         Insert: {
@@ -4080,8 +4127,10 @@ export type Database = {
           descricao?: string | null
           dias_gatilho?: number[] | null
           empresa_id?: string | null
+          etapa?: string | null
           id?: string
           nome: string
+          ordem?: number | null
           updated_at?: string | null
         }
         Update: {
@@ -4092,8 +4141,10 @@ export type Database = {
           descricao?: string | null
           dias_gatilho?: number[] | null
           empresa_id?: string | null
+          etapa?: string | null
           id?: string
           nome?: string
+          ordem?: number | null
           updated_at?: string | null
         }
         Relationships: []
@@ -5249,10 +5300,12 @@ export type Database = {
       }
       vw_metricas_cobranca: {
         Row: {
-          canal: string | null
-          status: string | null
-          total: number | null
-          total_tentativas: number | null
+          empresa_id: string | null
+          etapa: string | null
+          taxa_entrega: number | null
+          total_entregues: number | null
+          total_enviados: number | null
+          total_lidos: number | null
         }
         Relationships: []
       }
@@ -5299,6 +5352,16 @@ export type Database = {
       cleanup_old_cron_logs: { Args: never; Returns: number }
       cleanup_old_login_attempts: { Args: never; Returns: number }
       clear_login_attempts: { Args: { p_email: string }; Returns: undefined }
+      confirmar_envio_cobranca: {
+        Args: {
+          p_erro?: string
+          p_fila_id: string
+          p_provider?: string
+          p_provider_message_id?: string
+          p_sucesso?: boolean
+        }
+        Returns: undefined
+      }
       get_active_uapi_token: {
         Args: never
         Returns: {
@@ -5363,6 +5426,10 @@ export type Database = {
           is_valid: boolean
           user_id: string
         }[]
+      }
+      processar_regua_cobranca: {
+        Args: { p_empresa_id?: string; p_simulate?: boolean }
+        Returns: Json
       }
       record_failed_login: {
         Args: { p_email: string; p_ip_address?: unknown }

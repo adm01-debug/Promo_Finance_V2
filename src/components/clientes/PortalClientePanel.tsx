@@ -89,10 +89,10 @@ export function PortalClientePanel({ clienteId, clienteEmail }: Props) {
           <div className="mt-4">
             <h4 className="text-sm font-medium mb-2 flex items-center gap-1"><Clock className="h-4 w-4" />Últimos Acessos</h4>
             <div className="space-y-1">
-              {acessos.slice(0, 5).map((a) => (
+              {(acessos || []).slice(0, 5).map((a: any) => (
                 <div key={a.id} className="text-xs text-muted-foreground flex justify-between p-2 rounded bg-muted/30">
                   <span>{formatDate(a.created_at)}</span>
-                  <span>{a.ip_address || 'IP desconhecido'}</span>
+                  <span>{String(a.ip_address || 'IP desconhecido')}</span>
                 </div>
               ))}
             </div>

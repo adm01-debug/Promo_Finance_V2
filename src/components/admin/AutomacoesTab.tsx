@@ -58,7 +58,8 @@ export function AutomacoesTab() {
     queryFn: async () => {
       const { data, error } = await supabase.rpc("get_cron_jobs");
       if (error) throw error;
-      return ((data ?? []) as CronJob[]).filter((j) => P13_JOB_NAMES.includes(j.jobname));
+      const jobsArray = (data || []) as unknown as CronJob[];
+      return jobsArray.filter((j) => P13_JOB_NAMES.includes(j.jobname));
     },
     refetchInterval: 60_000,
   });
@@ -67,11 +68,12 @@ export function AutomacoesTab() {
     queryKey: ["p13-cron-runs"],
     queryFn: async () => {
       const { data, error } = await supabase.rpc("get_cron_run_history", {
-        p_job_name: undefined as never,
+        p_job_name: null as any,
         p_limit: 100,
-      } as never);
+      } as any);
       if (error) throw error;
-      return ((data ?? []) as unknown as CronRun[]).filter((r) => P13_JOB_NAMES.includes(r.jobname));
+      const runsArray = (data || []) as unknown as CronRun[];
+      return runsArray.filter((r) => P13_JOB_NAMES.includes(r.jobname));
     },
     refetchInterval: 60_000,
   });

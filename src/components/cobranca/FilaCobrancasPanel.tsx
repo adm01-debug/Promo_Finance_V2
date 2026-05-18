@@ -21,8 +21,10 @@ const statusConfig: Record<string, { icon: React.ElementType; color: string; lab
 
 export function FilaCobrancasPanel() {
   const [statusFilter, setStatusFilter] = useState<string | undefined>();
-  const { data: fila, isLoading: loadingFila } = useFilaCobrancas(statusFilter);
-  const { data: execucoes, isLoading: loadingExec } = useExecucoesCobranca();
+  const { data: filaData, isLoading: loadingFila } = useFilaCobrancas(statusFilter);
+  const { data: execucoesData, isLoading: loadingExec } = useExecucoesCobranca();
+  const fila = (filaData || []) as any[];
+  const execucoes = (execucoesData || []) as any[];
   const { data: metricas } = useMetricasCobranca();
   const processarRegua = useProcessarRegua();
   const processarFila = useProcessarFila();
