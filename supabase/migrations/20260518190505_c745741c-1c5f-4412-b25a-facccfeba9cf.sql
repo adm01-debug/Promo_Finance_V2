@@ -1,0 +1,10 @@
+-- Update empresas table with missing contact and registration fields
+ALTER TABLE public.empresas ADD COLUMN IF NOT EXISTS inscricao_estadual TEXT;
+ALTER TABLE public.empresas ADD COLUMN IF NOT EXISTS telefone TEXT;
+ALTER TABLE public.empresas ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE public.empresas ADD COLUMN IF NOT EXISTS endereco TEXT;
+ALTER TABLE public.empresas ADD COLUMN IF NOT EXISTS cidade TEXT;
+ALTER TABLE public.empresas ADD COLUMN IF NOT EXISTS estado TEXT;
+ALTER TABLE public.empresas ADD COLUMN IF NOT EXISTS cep TEXT;
+ALTER TABLE public.empresas ADD COLUMN IF NOT EXISTS bairro TEXT;
+ALTER TABLE public.empresas ADD COLUMN IF NOT EXISTS logo_url TEXT;
