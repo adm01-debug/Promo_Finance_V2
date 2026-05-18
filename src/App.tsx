@@ -264,9 +264,11 @@ function App() {
         <ThemeProvider>
           <TooltipProvider>
             <AuthProvider>
-              <BrowserRouter>
-                <AppRoutes />
-              </BrowserRouter>
+              <StartupDiagnostic>
+                <BrowserRouter>
+                  <AppRoutes />
+                </BrowserRouter>
+              </StartupDiagnostic>
             </AuthProvider>
           </TooltipProvider>
         </ThemeProvider>
@@ -274,5 +276,6 @@ function App() {
     </ErrorBoundary>
   );
 }
+
 
 export default App;
