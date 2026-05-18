@@ -443,6 +443,7 @@ export type Database = {
           nome_arquivo: string
           tamanho_bytes: number | null
           url: string
+          url_publica: string | null
           user_id: string
         }
         Insert: {
@@ -454,6 +455,7 @@ export type Database = {
           nome_arquivo: string
           tamanho_bytes?: number | null
           url: string
+          url_publica?: string | null
           user_id?: string
         }
         Update: {
@@ -465,6 +467,7 @@ export type Database = {
           nome_arquivo?: string
           tamanho_bytes?: number | null
           url?: string
+          url_publica?: string | null
           user_id?: string
         }
         Relationships: []
@@ -3571,6 +3574,7 @@ export type Database = {
           created_at: string
           detalhes: Json | null
           id: string
+          mensagem: string | null
           resultado: string | null
           user_id: string
         }
@@ -3579,6 +3583,7 @@ export type Database = {
           created_at?: string
           detalhes?: Json | null
           id?: string
+          mensagem?: string | null
           resultado?: string | null
           user_id?: string
         }
@@ -3587,6 +3592,7 @@ export type Database = {
           created_at?: string
           detalhes?: Json | null
           id?: string
+          mensagem?: string | null
           resultado?: string | null
           user_id?: string
         }
@@ -4392,6 +4398,7 @@ export type Database = {
           ativo: boolean | null
           categoria_id: string | null
           created_at: string | null
+          created_by: string | null
           descricao: string | null
           empresa_id: string | null
           entidade_nome: string | null
@@ -4407,6 +4414,7 @@ export type Database = {
           ativo?: boolean | null
           categoria_id?: string | null
           created_at?: string | null
+          created_by?: string | null
           descricao?: string | null
           empresa_id?: string | null
           entidade_nome?: string | null
@@ -4422,6 +4430,7 @@ export type Database = {
           ativo?: boolean | null
           categoria_id?: string | null
           created_at?: string | null
+          created_by?: string | null
           descricao?: string | null
           empresa_id?: string | null
           entidade_nome?: string | null
