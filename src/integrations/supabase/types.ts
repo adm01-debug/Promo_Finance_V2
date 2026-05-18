@@ -20,27 +20,39 @@ export type Database = {
           descricao: string | null
           empresa_id: string | null
           id: string
+          impacto_estimado: number | null
+          impacto_tipo: string | null
+          link_resolucao: string | null
           prioridade: string | null
           status: string | null
           titulo: string
+          urgencia: string | null
         }
         Insert: {
           created_at?: string | null
           descricao?: string | null
           empresa_id?: string | null
           id?: string
+          impacto_estimado?: number | null
+          impacto_tipo?: string | null
+          link_resolucao?: string | null
           prioridade?: string | null
           status?: string | null
           titulo: string
+          urgencia?: string | null
         }
         Update: {
           created_at?: string | null
           descricao?: string | null
           empresa_id?: string | null
           id?: string
+          impacto_estimado?: number | null
+          impacto_tipo?: string | null
+          link_resolucao?: string | null
           prioridade?: string | null
           status?: string | null
           titulo?: string
+          urgencia?: string | null
         }
         Relationships: [
           {
@@ -54,8 +66,10 @@ export type Database = {
       }
       acordos_parcelamento: {
         Row: {
+          cliente_email: string | null
           cliente_id: string | null
           cliente_nome: string | null
+          cliente_telefone: string | null
           conta_receber_id: string | null
           created_at: string
           id: string
@@ -63,11 +77,15 @@ export type Database = {
           status: string | null
           total_parcelas: number
           user_id: string
+          valor_original: number | null
           valor_total: number
+          valor_total_acordo: number | null
         }
         Insert: {
+          cliente_email?: string | null
           cliente_id?: string | null
           cliente_nome?: string | null
+          cliente_telefone?: string | null
           conta_receber_id?: string | null
           created_at?: string
           id?: string
@@ -75,11 +93,15 @@ export type Database = {
           status?: string | null
           total_parcelas?: number
           user_id?: string
+          valor_original?: number | null
           valor_total?: number
+          valor_total_acordo?: number | null
         }
         Update: {
+          cliente_email?: string | null
           cliente_id?: string | null
           cliente_nome?: string | null
+          cliente_telefone?: string | null
           conta_receber_id?: string | null
           created_at?: string
           id?: string
@@ -87,7 +109,9 @@ export type Database = {
           status?: string | null
           total_parcelas?: number
           user_id?: string
+          valor_original?: number | null
           valor_total?: number
+          valor_total_acordo?: number | null
         }
         Relationships: [
           {
@@ -293,6 +317,7 @@ export type Database = {
       }
       alertas: {
         Row: {
+          acao_url: string | null
           created_at: string
           entidade_id: string | null
           entidade_tipo: string | null
@@ -305,6 +330,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          acao_url?: string | null
           created_at?: string
           entidade_id?: string | null
           entidade_tipo?: string | null
@@ -317,6 +343,7 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          acao_url?: string | null
           created_at?: string
           entidade_id?: string | null
           entidade_tipo?: string | null
@@ -329,6 +356,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      alertas_tributarios: {
+        Row: {
+          created_at: string | null
+          data_vencimento: string | null
+          descricao: string | null
+          empresa_id: string | null
+          id: string
+          status: string | null
+          titulo: string
+          valor: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          data_vencimento?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          status?: string | null
+          titulo: string
+          valor?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          data_vencimento?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          status?: string | null
+          titulo?: string
+          valor?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alertas_tributarios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       alerts: {
         Row: {
@@ -2106,6 +2174,74 @@ export type Database = {
           job_name?: string
           result?: Json | null
           success?: boolean | null
+        }
+        Relationships: []
+      }
+      darfs: {
+        Row: {
+          alerta_id: string | null
+          codigo_receita: string | null
+          created_at: string | null
+          data_vencimento: string | null
+          id: string
+          periodo_apuracao: string | null
+          valor_principal: number | null
+          valor_total: number | null
+        }
+        Insert: {
+          alerta_id?: string | null
+          codigo_receita?: string | null
+          created_at?: string | null
+          data_vencimento?: string | null
+          id?: string
+          periodo_apuracao?: string | null
+          valor_principal?: number | null
+          valor_total?: number | null
+        }
+        Update: {
+          alerta_id?: string | null
+          codigo_receita?: string | null
+          created_at?: string | null
+          data_vencimento?: string | null
+          id?: string
+          periodo_apuracao?: string | null
+          valor_principal?: number | null
+          valor_total?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "darfs_alerta_id_fkey"
+            columns: ["alerta_id"]
+            isOneToOne: false
+            referencedRelation: "alertas_tributarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dispositivos_conhecidos: {
+        Row: {
+          browser: string | null
+          device_name: string | null
+          id: string
+          is_trusted: boolean | null
+          last_login: string | null
+          user_id: string | null
+        }
+        Insert: {
+          browser?: string | null
+          device_name?: string | null
+          id?: string
+          is_trusted?: boolean | null
+          last_login?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          browser?: string | null
+          device_name?: string | null
+          id?: string
+          is_trusted?: boolean | null
+          last_login?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
