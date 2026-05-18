@@ -2523,29 +2523,56 @@ export type Database = {
       empresas: {
         Row: {
           ativo: boolean
+          bairro: string | null
+          cep: string | null
+          cidade: string | null
           cnpj: string | null
           created_at: string
+          email: string | null
+          endereco: string | null
+          estado: string | null
           id: string
+          inscricao_estadual: string | null
+          logo_url: string | null
           nome_fantasia: string | null
           razao_social: string
+          telefone: string | null
           user_id: string
         }
         Insert: {
           ativo?: boolean
+          bairro?: string | null
+          cep?: string | null
+          cidade?: string | null
           cnpj?: string | null
           created_at?: string
+          email?: string | null
+          endereco?: string | null
+          estado?: string | null
           id?: string
+          inscricao_estadual?: string | null
+          logo_url?: string | null
           nome_fantasia?: string | null
           razao_social: string
+          telefone?: string | null
           user_id?: string
         }
         Update: {
           ativo?: boolean
+          bairro?: string | null
+          cep?: string | null
+          cidade?: string | null
           cnpj?: string | null
           created_at?: string
+          email?: string | null
+          endereco?: string | null
+          estado?: string | null
           id?: string
+          inscricao_estadual?: string | null
+          logo_url?: string | null
           nome_fantasia?: string | null
           razao_social?: string
+          telefone?: string | null
           user_id?: string
         }
         Relationships: []
