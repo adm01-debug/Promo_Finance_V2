@@ -1276,11 +1276,42 @@ export type Database = {
         }
         Relationships: []
       }
+      conciliacoes_parciais: {
+        Row: {
+          conta_pagar_id: string | null
+          conta_receber_id: string | null
+          created_at: string
+          created_by: string
+          id: string
+          transacao_bancaria_id: string
+          valor_parcial: number
+        }
+        Insert: {
+          conta_pagar_id?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          transacao_bancaria_id: string
+          valor_parcial: number
+        }
+        Update: {
+          conta_pagar_id?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          transacao_bancaria_id?: string
+          valor_parcial?: number
+        }
+        Relationships: []
+      }
       contas_bancarias: {
         Row: {
           agencia: string | null
           ativo: boolean | null
           banco: string | null
+          configuracoes_conciliacao: Json | null
           created_at: string | null
           empresa_id: string | null
           id: string
@@ -1292,6 +1323,7 @@ export type Database = {
           agencia?: string | null
           ativo?: boolean | null
           banco?: string | null
+          configuracoes_conciliacao?: Json | null
           created_at?: string | null
           empresa_id?: string | null
           id?: string
@@ -1303,6 +1335,7 @@ export type Database = {
           agencia?: string | null
           ativo?: boolean | null
           banco?: string | null
+          configuracoes_conciliacao?: Json | null
           created_at?: string | null
           empresa_id?: string | null
           id?: string
@@ -1546,6 +1579,7 @@ export type Database = {
       }
       divergencias_conciliacao: {
         Row: {
+          conta_bancaria_id: string | null
           created_at: string | null
           descricao: string | null
           empresa_id: string | null
@@ -1560,6 +1594,7 @@ export type Database = {
           valor_divergencia: number | null
         }
         Insert: {
+          conta_bancaria_id?: string | null
           created_at?: string | null
           descricao?: string | null
           empresa_id?: string | null
@@ -1574,6 +1609,7 @@ export type Database = {
           valor_divergencia?: number | null
         }
         Update: {
+          conta_bancaria_id?: string | null
           created_at?: string | null
           descricao?: string | null
           empresa_id?: string | null
@@ -1588,6 +1624,13 @@ export type Database = {
           valor_divergencia?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "divergencias_conciliacao_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "divergencias_conciliacao_transacao_id_fkey"
             columns: ["transacao_id"]
@@ -2061,6 +2104,9 @@ export type Database = {
           created_at: string | null
           feedback_texto: string | null
           id: string
+          motivo_rejeicao: string | null
+          score_original: number | null
+          transacao_bancaria_id: string | null
           transacao_id: string | null
           user_id: string | null
         }
@@ -2069,6 +2115,9 @@ export type Database = {
           created_at?: string | null
           feedback_texto?: string | null
           id?: string
+          motivo_rejeicao?: string | null
+          score_original?: number | null
+          transacao_bancaria_id?: string | null
           transacao_id?: string | null
           user_id?: string | null
         }
@@ -2077,6 +2126,9 @@ export type Database = {
           created_at?: string | null
           feedback_texto?: string | null
           id?: string
+          motivo_rejeicao?: string | null
+          score_original?: number | null
+          transacao_bancaria_id?: string | null
           transacao_id?: string | null
           user_id?: string | null
         }
@@ -2832,6 +2884,65 @@ export type Database = {
           user_agent?: string | null
         }
         Relationships: []
+      }
+      logs_conciliacao_retroativa: {
+        Row: {
+          conta_bancaria_id: string | null
+          created_at: string
+          data_fim: string
+          data_inicio: string
+          divergencias_encontradas: number | null
+          empresa_id: string | null
+          erro_detalhe: string | null
+          id: string
+          progresso: number | null
+          status: string
+          total_conciliado: number | null
+          total_processado: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          conta_bancaria_id?: string | null
+          created_at?: string
+          data_fim: string
+          data_inicio: string
+          divergencias_encontradas?: number | null
+          empresa_id?: string | null
+          erro_detalhe?: string | null
+          id?: string
+          progresso?: number | null
+          status?: string
+          total_conciliado?: number | null
+          total_processado?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          conta_bancaria_id?: string | null
+          created_at?: string
+          data_fim?: string
+          data_inicio?: string
+          divergencias_encontradas?: number | null
+          empresa_id?: string | null
+          erro_detalhe?: string | null
+          id?: string
+          progresso?: number | null
+          status?: string
+          total_conciliado?: number | null
+          total_processado?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "logs_conciliacao_retroativa_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       mfa_sessions: {
         Row: {
