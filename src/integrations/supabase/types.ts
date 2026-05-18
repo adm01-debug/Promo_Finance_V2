@@ -14,35 +14,90 @@ export type Database = {
   }
   public: {
     Tables: {
+      acoes_recomendadas: {
+        Row: {
+          created_at: string | null
+          descricao: string | null
+          empresa_id: string | null
+          id: string
+          prioridade: string | null
+          status: string | null
+          titulo: string
+        }
+        Insert: {
+          created_at?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          prioridade?: string | null
+          status?: string | null
+          titulo: string
+        }
+        Update: {
+          created_at?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          prioridade?: string | null
+          status?: string | null
+          titulo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "acoes_recomendadas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       acordos_parcelamento: {
         Row: {
+          cliente_id: string | null
+          cliente_nome: string | null
           conta_receber_id: string | null
           created_at: string
           id: string
+          numero_acordo: string | null
           status: string | null
           total_parcelas: number
           user_id: string
           valor_total: number
         }
         Insert: {
+          cliente_id?: string | null
+          cliente_nome?: string | null
           conta_receber_id?: string | null
           created_at?: string
           id?: string
+          numero_acordo?: string | null
           status?: string | null
           total_parcelas?: number
           user_id?: string
           valor_total?: number
         }
         Update: {
+          cliente_id?: string | null
+          cliente_nome?: string | null
           conta_receber_id?: string | null
           created_at?: string
           id?: string
+          numero_acordo?: string | null
           status?: string | null
           total_parcelas?: number
           user_id?: string
           valor_total?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "acordos_parcelamento_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       active_tracking: {
         Row: {
@@ -3931,6 +3986,44 @@ export type Database = {
           },
         ]
       }
+      parcelas_acordo: {
+        Row: {
+          acordo_id: string | null
+          created_at: string | null
+          data_vencimento: string
+          id: string
+          numero_parcela: number
+          status: string | null
+          valor: number
+        }
+        Insert: {
+          acordo_id?: string | null
+          created_at?: string | null
+          data_vencimento: string
+          id?: string
+          numero_parcela: number
+          status?: string | null
+          valor: number
+        }
+        Update: {
+          acordo_id?: string | null
+          created_at?: string | null
+          data_vencimento?: string
+          id?: string
+          numero_parcela?: number
+          status?: string | null
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parcelas_acordo_acordo_id_fkey"
+            columns: ["acordo_id"]
+            isOneToOne: false
+            referencedRelation: "acordos_parcelamento"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       partidas_contabeis: {
         Row: {
           conta_contabil_id: string | null
@@ -4888,6 +4981,8 @@ export type Database = {
       }
       solicitacoes_aprovacao: {
         Row: {
+          aprovado_por: string | null
+          conta_pagar_id: string | null
           created_at: string
           entidade_id: string | null
           entidade_tipo: string
@@ -4897,6 +4992,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          aprovado_por?: string | null
+          conta_pagar_id?: string | null
           created_at?: string
           entidade_id?: string | null
           entidade_tipo: string
@@ -4906,6 +5003,8 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          aprovado_por?: string | null
+          conta_pagar_id?: string | null
           created_at?: string
           entidade_id?: string | null
           entidade_tipo?: string
@@ -4914,7 +5013,22 @@ export type Database = {
           status?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "solicitacoes_aprovacao_conta_pagar_id_fkey"
+            columns: ["conta_pagar_id"]
+            isOneToOne: false
+            referencedRelation: "contas_pagar"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "solicitacoes_aprovacao_conta_pagar_id_fkey"
+            columns: ["conta_pagar_id"]
+            isOneToOne: false
+            referencedRelation: "vw_contas_pagar_painel"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       templates_cobranca: {
         Row: {
@@ -5368,6 +5482,44 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      vendedores: {
+        Row: {
+          ativo: boolean | null
+          created_at: string | null
+          email: string | null
+          empresa_id: string | null
+          id: string
+          meta_mensal: number | null
+          nome: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          created_at?: string | null
+          email?: string | null
+          empresa_id?: string | null
+          id?: string
+          meta_mensal?: number | null
+          nome: string
+        }
+        Update: {
+          ativo?: boolean | null
+          created_at?: string | null
+          email?: string | null
+          empresa_id?: string | null
+          id?: string
+          meta_mensal?: number | null
+          nome?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendedores_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       webauthn_challenges: {
         Row: {
