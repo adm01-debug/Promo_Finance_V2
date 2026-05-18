@@ -1530,6 +1530,13 @@ export type Database = {
             referencedRelation: "contas_bancarias"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "conciliacoes_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["conta_id"]
+          },
         ]
       }
       conciliacoes_parciais: {
@@ -1663,7 +1670,9 @@ export type Database = {
           anexo_url: string | null
           categoria: string | null
           categoria_id: string | null
+          categoria_nome: string | null
           centro_custo_id: string | null
+          centro_resultado: string | null
           conta_bancaria_id: string | null
           created_at: string | null
           data_pagamento: string | null
@@ -1673,6 +1682,7 @@ export type Database = {
           empresa_id: string | null
           forma_pagamento: string | null
           fornecedor_id: string | null
+          fornecedor_nome: string | null
           id: string
           juros: number | null
           metadata: Json | null
@@ -1692,7 +1702,9 @@ export type Database = {
           anexo_url?: string | null
           categoria?: string | null
           categoria_id?: string | null
+          categoria_nome?: string | null
           centro_custo_id?: string | null
+          centro_resultado?: string | null
           conta_bancaria_id?: string | null
           created_at?: string | null
           data_pagamento?: string | null
@@ -1702,6 +1714,7 @@ export type Database = {
           empresa_id?: string | null
           forma_pagamento?: string | null
           fornecedor_id?: string | null
+          fornecedor_nome?: string | null
           id?: string
           juros?: number | null
           metadata?: Json | null
@@ -1721,7 +1734,9 @@ export type Database = {
           anexo_url?: string | null
           categoria?: string | null
           categoria_id?: string | null
+          categoria_nome?: string | null
           centro_custo_id?: string | null
+          centro_resultado?: string | null
           conta_bancaria_id?: string | null
           created_at?: string | null
           data_pagamento?: string | null
@@ -1731,6 +1746,7 @@ export type Database = {
           empresa_id?: string | null
           forma_pagamento?: string | null
           fornecedor_id?: string | null
+          fornecedor_nome?: string | null
           id?: string
           juros?: number | null
           metadata?: Json | null
@@ -1760,6 +1776,7 @@ export type Database = {
         Row: {
           anexo_url: string | null
           categoria_id: string | null
+          categoria_nome: string | null
           centro_custo_id: string | null
           chave_pix: string | null
           cliente_id: string | null
@@ -1796,6 +1813,7 @@ export type Database = {
         Insert: {
           anexo_url?: string | null
           categoria_id?: string | null
+          categoria_nome?: string | null
           centro_custo_id?: string | null
           chave_pix?: string | null
           cliente_id?: string | null
@@ -1832,6 +1850,7 @@ export type Database = {
         Update: {
           anexo_url?: string | null
           categoria_id?: string | null
+          categoria_nome?: string | null
           centro_custo_id?: string | null
           chave_pix?: string | null
           cliente_id?: string | null
@@ -2026,6 +2045,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "contas_bancarias"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "divergencias_conciliacao_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["conta_id"]
           },
           {
             foreignKeyName: "divergencias_conciliacao_transacao_id_fkey"
@@ -2645,6 +2671,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "contas_bancarias"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extrato_bancario_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["conta_id"]
           },
         ]
       }
@@ -3589,6 +3622,13 @@ export type Database = {
             referencedRelation: "contas_bancarias"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "logs_conciliacao_retroativa_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["conta_id"]
+          },
         ]
       }
       metas_financeiras: {
@@ -4000,6 +4040,56 @@ export type Database = {
           tipo_chave?: string
         }
         Relationships: []
+      }
+      plano_contas: {
+        Row: {
+          ativo: boolean | null
+          centro_resultado: string | null
+          codigo: string
+          created_at: string | null
+          descricao: string | null
+          empresa_id: string | null
+          id: string
+          natureza: string | null
+          nome: string
+          tipo: string | null
+          user_id: string | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          centro_resultado?: string | null
+          codigo: string
+          created_at?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          natureza?: string | null
+          nome: string
+          tipo?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          ativo?: boolean | null
+          centro_resultado?: string | null
+          codigo?: string
+          created_at?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          natureza?: string | null
+          nome?: string
+          tipo?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plano_contas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       portal_cliente_acessos: {
         Row: {
@@ -4613,6 +4703,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "contas_bancarias"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sessoes_conciliacao_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["conta_id"]
           },
         ]
       }
@@ -5518,38 +5615,55 @@ export type Database = {
       vw_fluxo_caixa_diario: {
         Row: {
           data: string | null
-          tipo: string | null
-          total_previsto: number | null
+          despesas: number | null
+          empresa_id: string | null
+          receitas: number | null
         }
         Relationships: []
       }
       vw_metricas_cobranca: {
         Row: {
           empresa_id: string | null
-          etapa: string | null
-          taxa_entrega: number | null
-          total_entregues: number | null
-          total_enviados: number | null
-          total_lidos: number | null
+          total_cobrancas: number | null
+          total_pagas: number | null
+          total_vencidas: number | null
         }
         Relationships: []
       }
       vw_saldos_contas: {
         Row: {
-          agencia: string | null
           banco: string | null
-          conta: string | null
+          conta_id: string | null
+          empresa_id: string | null
           saldo_atual: number | null
-          ultima_atualizacao: string | null
+          saldo_disponivel: number | null
+        }
+        Insert: {
+          banco?: string | null
+          conta_id?: string | null
+          empresa_id?: string | null
+          saldo_atual?: number | null
+          saldo_disponivel?: number | null
+        }
+        Update: {
+          banco?: string | null
+          conta_id?: string | null
+          empresa_id?: string | null
+          saldo_atual?: number | null
+          saldo_disponivel?: number | null
         }
         Relationships: []
       }
       vw_webhooks_recentes: {
         Row: {
+          created_at: string | null
+          error_message: string | null
           event_type: string | null
-          last_seen: string | null
+          id: string | null
+          payload: Json | null
+          response: Json | null
+          source: string | null
           status: string | null
-          total: number | null
         }
         Relationships: []
       }
@@ -5674,6 +5788,17 @@ export type Database = {
         }[]
       }
       registrar_evento_receber:
+        | {
+            Args: {
+              p_conta_id: string
+              p_detalhes?: Json
+              p_evento?: string
+              p_mensagem?: string
+              p_metadata?: Json
+              p_tipo?: string
+            }
+            Returns: undefined
+          }
         | {
             Args: { p_conta_id: string; p_detalhes?: Json; p_evento: string }
             Returns: string
