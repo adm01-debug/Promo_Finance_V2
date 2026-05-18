@@ -386,17 +386,23 @@ export type Database = {
       }
       anomalias_detectadas: {
         Row: {
+          bitrix_task_id: string | null
           centro_custo_id: string | null
           centro_custo_nome: string | null
           created_at: string | null
+          dados: Json | null
           descricao: string | null
+          detectada_em: string | null
           empresa_id: string | null
           entidade_id: string | null
           entidade_tipo: string | null
           id: string
           metadata: Json | null
+          observacoes: string | null
           prioridade: string | null
           resolucao: string | null
+          resolvida_em: string | null
+          resolvida_por: string | null
           revisado_em: string | null
           revisado_por: string | null
           score_confianca: number | null
@@ -410,17 +416,23 @@ export type Database = {
           valor_envolvido: number | null
         }
         Insert: {
+          bitrix_task_id?: string | null
           centro_custo_id?: string | null
           centro_custo_nome?: string | null
           created_at?: string | null
+          dados?: Json | null
           descricao?: string | null
+          detectada_em?: string | null
           empresa_id?: string | null
           entidade_id?: string | null
           entidade_tipo?: string | null
           id?: string
           metadata?: Json | null
+          observacoes?: string | null
           prioridade?: string | null
           resolucao?: string | null
+          resolvida_em?: string | null
+          resolvida_por?: string | null
           revisado_em?: string | null
           revisado_por?: string | null
           score_confianca?: number | null
@@ -434,17 +446,23 @@ export type Database = {
           valor_envolvido?: number | null
         }
         Update: {
+          bitrix_task_id?: string | null
           centro_custo_id?: string | null
           centro_custo_nome?: string | null
           created_at?: string | null
+          dados?: Json | null
           descricao?: string | null
+          detectada_em?: string | null
           empresa_id?: string | null
           entidade_id?: string | null
           entidade_tipo?: string | null
           id?: string
           metadata?: Json | null
+          observacoes?: string | null
           prioridade?: string | null
           resolucao?: string | null
+          resolvida_em?: string | null
+          resolvida_por?: string | null
           revisado_em?: string | null
           revisado_por?: string | null
           score_confianca?: number | null
@@ -456,6 +474,318 @@ export type Database = {
           updated_at?: string | null
           user_id?: string | null
           valor_envolvido?: number | null
+        }
+        Relationships: []
+      }
+      asaas_audit_trail: {
+        Row: {
+          action: string | null
+          actor: string | null
+          asaas_payment_id: string | null
+          created_at: string
+          details: Json | null
+          id: string
+        }
+        Insert: {
+          action?: string | null
+          actor?: string | null
+          asaas_payment_id?: string | null
+          created_at?: string
+          details?: Json | null
+          id?: string
+        }
+        Update: {
+          action?: string | null
+          actor?: string | null
+          asaas_payment_id?: string | null
+          created_at?: string
+          details?: Json | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asaas_audit_trail_asaas_payment_id_fkey"
+            columns: ["asaas_payment_id"]
+            isOneToOne: false
+            referencedRelation: "asaas_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      asaas_config: {
+        Row: {
+          ambiente: string | null
+          api_key_encrypted: string | null
+          ativo: boolean | null
+          configuracoes: Json | null
+          created_at: string
+          empresa_id: string | null
+          id: string
+          updated_at: string
+          webhook_secret: string | null
+        }
+        Insert: {
+          ambiente?: string | null
+          api_key_encrypted?: string | null
+          ativo?: boolean | null
+          configuracoes?: Json | null
+          created_at?: string
+          empresa_id?: string | null
+          id?: string
+          updated_at?: string
+          webhook_secret?: string | null
+        }
+        Update: {
+          ambiente?: string | null
+          api_key_encrypted?: string | null
+          ativo?: boolean | null
+          configuracoes?: Json | null
+          created_at?: string
+          empresa_id?: string | null
+          id?: string
+          updated_at?: string
+          webhook_secret?: string | null
+        }
+        Relationships: []
+      }
+      asaas_customers: {
+        Row: {
+          asaas_id: string | null
+          cliente_id: string | null
+          cpf_cnpj: string | null
+          created_at: string
+          email: string | null
+          empresa_id: string | null
+          endereco: Json | null
+          id: string
+          metadata: Json | null
+          nome: string | null
+          razao_social: string | null
+          telefone: string | null
+          updated_at: string
+        }
+        Insert: {
+          asaas_id?: string | null
+          cliente_id?: string | null
+          cpf_cnpj?: string | null
+          created_at?: string
+          email?: string | null
+          empresa_id?: string | null
+          endereco?: Json | null
+          id?: string
+          metadata?: Json | null
+          nome?: string | null
+          razao_social?: string | null
+          telefone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          asaas_id?: string | null
+          cliente_id?: string | null
+          cpf_cnpj?: string | null
+          created_at?: string
+          email?: string | null
+          empresa_id?: string | null
+          endereco?: Json | null
+          id?: string
+          metadata?: Json | null
+          nome?: string | null
+          razao_social?: string | null
+          telefone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      asaas_payments: {
+        Row: {
+          asaas_customer_id: string | null
+          asaas_id: string | null
+          bank_slip_url: string | null
+          conta_receber_id: string | null
+          created_at: string
+          data_pagamento: string | null
+          data_vencimento: string | null
+          descricao: string | null
+          empresa_id: string | null
+          id: string
+          invoice_url: string | null
+          metadata: Json | null
+          status: string | null
+          tipo: string | null
+          updated_at: string
+          valor: number | null
+          valor_liquido: number | null
+        }
+        Insert: {
+          asaas_customer_id?: string | null
+          asaas_id?: string | null
+          bank_slip_url?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          data_pagamento?: string | null
+          data_vencimento?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          invoice_url?: string | null
+          metadata?: Json | null
+          status?: string | null
+          tipo?: string | null
+          updated_at?: string
+          valor?: number | null
+          valor_liquido?: number | null
+        }
+        Update: {
+          asaas_customer_id?: string | null
+          asaas_id?: string | null
+          bank_slip_url?: string | null
+          conta_receber_id?: string | null
+          created_at?: string
+          data_pagamento?: string | null
+          data_vencimento?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          invoice_url?: string | null
+          metadata?: Json | null
+          status?: string | null
+          tipo?: string | null
+          updated_at?: string
+          valor?: number | null
+          valor_liquido?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asaas_payments_asaas_customer_id_fkey"
+            columns: ["asaas_customer_id"]
+            isOneToOne: false
+            referencedRelation: "asaas_customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      asaas_reconciliation_suggestions: {
+        Row: {
+          conta_receber_id: string | null
+          created_at: string
+          empresa_id: string | null
+          id: string
+          metadata: Json | null
+          score: number | null
+          status: string | null
+          transaction_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          conta_receber_id?: string | null
+          created_at?: string
+          empresa_id?: string | null
+          id?: string
+          metadata?: Json | null
+          score?: number | null
+          status?: string | null
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          conta_receber_id?: string | null
+          created_at?: string
+          empresa_id?: string | null
+          id?: string
+          metadata?: Json | null
+          score?: number | null
+          status?: string | null
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      asaas_sync_queue: {
+        Row: {
+          asaas_payment_id: string | null
+          attempts: number | null
+          created_at: string
+          id: string
+          last_error: string | null
+          next_retry_at: string | null
+          payload: Json | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          asaas_payment_id?: string | null
+          attempts?: number | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          next_retry_at?: string | null
+          payload?: Json | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          asaas_payment_id?: string | null
+          attempts?: number | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          next_retry_at?: string | null
+          payload?: Json | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asaas_sync_queue_asaas_payment_id_fkey"
+            columns: ["asaas_payment_id"]
+            isOneToOne: false
+            referencedRelation: "asaas_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      asaas_transfers: {
+        Row: {
+          asaas_id: string | null
+          chave_pix: string | null
+          created_at: string
+          descricao: string | null
+          empresa_id: string | null
+          id: string
+          idempotency_key: string | null
+          metadata: Json | null
+          status: string | null
+          tipo_chave: string | null
+          updated_at: string
+          valor: number | null
+        }
+        Insert: {
+          asaas_id?: string | null
+          chave_pix?: string | null
+          created_at?: string
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          idempotency_key?: string | null
+          metadata?: Json | null
+          status?: string | null
+          tipo_chave?: string | null
+          updated_at?: string
+          valor?: number | null
+        }
+        Update: {
+          asaas_id?: string | null
+          chave_pix?: string | null
+          created_at?: string
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          idempotency_key?: string | null
+          metadata?: Json | null
+          status?: string | null
+          tipo_chave?: string | null
+          updated_at?: string
+          valor?: number | null
         }
         Relationships: []
       }
@@ -2630,6 +2960,42 @@ export type Database = {
         }
         Relationships: []
       }
+      webauthn_credentials: {
+        Row: {
+          counter: number | null
+          created_at: string
+          credential_id: string
+          device_name: string | null
+          id: string
+          last_used_at: string | null
+          public_key: string | null
+          transports: string[] | null
+          user_id: string
+        }
+        Insert: {
+          counter?: number | null
+          created_at?: string
+          credential_id: string
+          device_name?: string | null
+          id?: string
+          last_used_at?: string | null
+          public_key?: string | null
+          transports?: string[] | null
+          user_id: string
+        }
+        Update: {
+          counter?: number | null
+          created_at?: string
+          credential_id?: string
+          device_name?: string | null
+          id?: string
+          last_used_at?: string | null
+          public_key?: string | null
+          transports?: string[] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       webhook_events: {
         Row: {
           error_message: string | null
@@ -2660,6 +3026,39 @@ export type Database = {
           processed_at?: string | null
           raw_payload?: Json
           received_at?: string
+        }
+        Relationships: []
+      }
+      webhooks_log: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          event_type: string | null
+          id: string
+          payload: Json | null
+          response: Json | null
+          source: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          event_type?: string | null
+          id?: string
+          payload?: Json | null
+          response?: Json | null
+          source?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          event_type?: string | null
+          id?: string
+          payload?: Json | null
+          response?: Json | null
+          source?: string | null
+          status?: string | null
         }
         Relationships: []
       }
