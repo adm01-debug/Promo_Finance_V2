@@ -1553,6 +1553,9 @@ export type Database = {
           resolvida: boolean | null
           resolvida_em: string | null
           resolvida_por: string | null
+          resolvido_em: string | null
+          resolvido_por: string | null
+          tipo_divergencia: string | null
           transacao_id: string | null
           valor_divergencia: number | null
         }
@@ -1564,6 +1567,9 @@ export type Database = {
           resolvida?: boolean | null
           resolvida_em?: string | null
           resolvida_por?: string | null
+          resolvido_em?: string | null
+          resolvido_por?: string | null
+          tipo_divergencia?: string | null
           transacao_id?: string | null
           valor_divergencia?: number | null
         }
@@ -1575,6 +1581,9 @@ export type Database = {
           resolvida?: boolean | null
           resolvida_em?: string | null
           resolvida_por?: string | null
+          resolvido_em?: string | null
+          resolvido_por?: string | null
+          tipo_divergencia?: string | null
           transacao_id?: string | null
           valor_divergencia?: number | null
         }
@@ -2045,6 +2054,41 @@ export type Database = {
           verified_at?: string | null
         }
         Relationships: []
+      }
+      feedback_conciliacao_ia: {
+        Row: {
+          acao: string
+          created_at: string | null
+          feedback_texto: string | null
+          id: string
+          transacao_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          acao: string
+          created_at?: string | null
+          feedback_texto?: string | null
+          id?: string
+          transacao_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          acao?: string
+          created_at?: string | null
+          feedback_texto?: string | null
+          id?: string
+          transacao_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_conciliacao_ia_transacao_id_fkey"
+            columns: ["transacao_id"]
+            isOneToOne: false
+            referencedRelation: "transacoes_bancarias"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       fila_cobrancas: {
         Row: {
@@ -3383,6 +3427,45 @@ export type Database = {
         }
         Relationships: []
       }
+      regras_conciliacao: {
+        Row: {
+          ativo: boolean | null
+          categoria_id: string | null
+          created_at: string | null
+          descricao: string | null
+          empresa_id: string | null
+          id: string
+          nome: string
+          padrao_descricao: string | null
+          valor_exato: number | null
+          vezes_aplicada: number | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          categoria_id?: string | null
+          created_at?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          nome: string
+          padrao_descricao?: string | null
+          valor_exato?: number | null
+          vezes_aplicada?: number | null
+        }
+        Update: {
+          ativo?: boolean | null
+          categoria_id?: string | null
+          created_at?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          nome?: string
+          padrao_descricao?: string | null
+          valor_exato?: number | null
+          vezes_aplicada?: number | null
+        }
+        Relationships: []
+      }
       regua_cobranca: {
         Row: {
           ativo: boolean
@@ -3735,9 +3818,12 @@ export type Database = {
           categoria_id: string | null
           compensacao_aceita_em: string | null
           compensacao_aceita_por: string | null
+          compensacao_classificacao: string | null
+          compensacao_evidencia_url: string | null
           compensacao_motivo: string | null
           compensacao_regra: string | null
           compensacao_valor: number | null
+          conciliada: boolean | null
           conta_bancaria_id: string | null
           created_at: string | null
           data: string
@@ -3751,9 +3837,12 @@ export type Database = {
           categoria_id?: string | null
           compensacao_aceita_em?: string | null
           compensacao_aceita_por?: string | null
+          compensacao_classificacao?: string | null
+          compensacao_evidencia_url?: string | null
           compensacao_motivo?: string | null
           compensacao_regra?: string | null
           compensacao_valor?: number | null
+          conciliada?: boolean | null
           conta_bancaria_id?: string | null
           created_at?: string | null
           data: string
@@ -3767,9 +3856,12 @@ export type Database = {
           categoria_id?: string | null
           compensacao_aceita_em?: string | null
           compensacao_aceita_por?: string | null
+          compensacao_classificacao?: string | null
+          compensacao_evidencia_url?: string | null
           compensacao_motivo?: string | null
           compensacao_regra?: string | null
           compensacao_valor?: number | null
+          conciliada?: boolean | null
           conta_bancaria_id?: string | null
           created_at?: string | null
           data?: string
