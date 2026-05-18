@@ -19,10 +19,14 @@ export type Database = {
           created_at: string | null
           descricao: string | null
           empresa_id: string | null
+          expires_at: string | null
+          fonte: string | null
+          gerado_em: string | null
           id: string
           impacto_estimado: number | null
           impacto_tipo: string | null
           link_resolucao: string | null
+          ordem: number | null
           prioridade: string | null
           status: string | null
           titulo: string
@@ -32,10 +36,14 @@ export type Database = {
           created_at?: string | null
           descricao?: string | null
           empresa_id?: string | null
+          expires_at?: string | null
+          fonte?: string | null
+          gerado_em?: string | null
           id?: string
           impacto_estimado?: number | null
           impacto_tipo?: string | null
           link_resolucao?: string | null
+          ordem?: number | null
           prioridade?: string | null
           status?: string | null
           titulo: string
@@ -45,10 +53,14 @@ export type Database = {
           created_at?: string | null
           descricao?: string | null
           empresa_id?: string | null
+          expires_at?: string | null
+          fonte?: string | null
+          gerado_em?: string | null
           id?: string
           impacto_estimado?: number | null
           impacto_tipo?: string | null
           link_resolucao?: string | null
+          ordem?: number | null
           prioridade?: string | null
           status?: string | null
           titulo?: string
@@ -72,12 +84,16 @@ export type Database = {
           cliente_telefone: string | null
           conta_receber_id: string | null
           created_at: string
+          desconto_aplicado: number | null
           id: string
+          juros_aplicado: number | null
           numero_acordo: string | null
+          numero_parcelas: number | null
           status: string | null
           total_parcelas: number
           user_id: string
           valor_original: number | null
+          valor_parcela: number | null
           valor_total: number
           valor_total_acordo: number | null
         }
@@ -88,12 +104,16 @@ export type Database = {
           cliente_telefone?: string | null
           conta_receber_id?: string | null
           created_at?: string
+          desconto_aplicado?: number | null
           id?: string
+          juros_aplicado?: number | null
           numero_acordo?: string | null
+          numero_parcelas?: number | null
           status?: string | null
           total_parcelas?: number
           user_id?: string
           valor_original?: number | null
+          valor_parcela?: number | null
           valor_total?: number
           valor_total_acordo?: number | null
         }
@@ -104,12 +124,16 @@ export type Database = {
           cliente_telefone?: string | null
           conta_receber_id?: string | null
           created_at?: string
+          desconto_aplicado?: number | null
           id?: string
+          juros_aplicado?: number | null
           numero_acordo?: string | null
+          numero_parcelas?: number | null
           status?: string | null
           total_parcelas?: number
           user_id?: string
           valor_original?: number | null
+          valor_parcela?: number | null
           valor_total?: number
           valor_total_acordo?: number | null
         }
@@ -364,7 +388,12 @@ export type Database = {
           descricao: string | null
           empresa_id: string | null
           id: string
+          lido: boolean | null
+          mensagem: string | null
+          prioridade: string | null
+          resolvido: boolean | null
           status: string | null
+          tipo: string | null
           titulo: string
           valor: number | null
         }
@@ -374,7 +403,12 @@ export type Database = {
           descricao?: string | null
           empresa_id?: string | null
           id?: string
+          lido?: boolean | null
+          mensagem?: string | null
+          prioridade?: string | null
+          resolvido?: boolean | null
           status?: string | null
+          tipo?: string | null
           titulo: string
           valor?: number | null
         }
@@ -384,7 +418,12 @@ export type Database = {
           descricao?: string | null
           empresa_id?: string | null
           id?: string
+          lido?: boolean | null
+          mensagem?: string | null
+          prioridade?: string | null
+          resolvido?: boolean | null
           status?: string | null
+          tipo?: string | null
           titulo?: string
           valor?: number | null
         }
@@ -528,6 +567,7 @@ export type Database = {
       }
       allowed_countries: {
         Row: {
+          ativo: boolean | null
           country_code: string
           country_name: string | null
           created_at: string | null
@@ -535,6 +575,7 @@ export type Database = {
           id: string
         }
         Insert: {
+          ativo?: boolean | null
           country_code: string
           country_name?: string | null
           created_at?: string | null
@@ -542,6 +583,7 @@ export type Database = {
           id?: string
         }
         Update: {
+          ativo?: boolean | null
           country_code?: string
           country_name?: string | null
           created_at?: string | null
@@ -2183,6 +2225,7 @@ export type Database = {
           codigo_receita: string | null
           created_at: string | null
           data_vencimento: string | null
+          descricao_receita: string | null
           id: string
           periodo_apuracao: string | null
           valor_principal: number | null
@@ -2193,6 +2236,7 @@ export type Database = {
           codigo_receita?: string | null
           created_at?: string | null
           data_vencimento?: string | null
+          descricao_receita?: string | null
           id?: string
           periodo_apuracao?: string | null
           valor_principal?: number | null
@@ -2203,6 +2247,7 @@ export type Database = {
           codigo_receita?: string | null
           created_at?: string | null
           data_vencimento?: string | null
+          descricao_receita?: string | null
           id?: string
           periodo_apuracao?: string | null
           valor_principal?: number | null
@@ -4897,6 +4942,41 @@ export type Database = {
           },
         ]
       }
+      retencoes_fonte: {
+        Row: {
+          created_at: string | null
+          data_fato_gerador: string | null
+          empresa_id: string | null
+          id: string
+          tipo_imposto: string | null
+          valor: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          data_fato_gerador?: string | null
+          empresa_id?: string | null
+          id?: string
+          tipo_imposto?: string | null
+          valor?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          data_fato_gerador?: string | null
+          empresa_id?: string | null
+          id?: string
+          tipo_imposto?: string | null
+          valor?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "retencoes_fonte_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       risk_rules: {
         Row: {
           condition: Json
@@ -6343,6 +6423,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      gerar_numero_acordo: { Args: never; Returns: string }
       get_active_uapi_token: {
         Args: never
         Returns: {
