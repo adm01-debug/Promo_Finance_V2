@@ -336,21 +336,42 @@ export type Database = {
       }
       anomalia_toast_eventos: {
         Row: {
+          acoes_disponiveis: string[] | null
           anomalia_id: string | null
+          centro_custo_nome: string | null
+          descricao: string | null
           dispatched_at: string | null
+          duracao_segundos: number | null
           id: string
+          severidade: string | null
+          tipo_anomalia: string | null
+          titulo: string | null
           user_id: string | null
         }
         Insert: {
+          acoes_disponiveis?: string[] | null
           anomalia_id?: string | null
+          centro_custo_nome?: string | null
+          descricao?: string | null
           dispatched_at?: string | null
+          duracao_segundos?: number | null
           id?: string
+          severidade?: string | null
+          tipo_anomalia?: string | null
+          titulo?: string | null
           user_id?: string | null
         }
         Update: {
+          acoes_disponiveis?: string[] | null
           anomalia_id?: string | null
+          centro_custo_nome?: string | null
+          descricao?: string | null
           dispatched_at?: string | null
+          duracao_segundos?: number | null
           id?: string
+          severidade?: string | null
+          tipo_anomalia?: string | null
+          titulo?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -365,31 +386,76 @@ export type Database = {
       }
       anomalias_detectadas: {
         Row: {
+          centro_custo_id: string | null
+          centro_custo_nome: string | null
           created_at: string | null
           descricao: string | null
+          empresa_id: string | null
+          entidade_id: string | null
+          entidade_tipo: string | null
           id: string
+          metadata: Json | null
           prioridade: string | null
+          resolucao: string | null
+          revisado_em: string | null
+          revisado_por: string | null
+          score_confianca: number | null
+          severidade: string | null
           status: string | null
           tipo: string
+          tipo_anomalia: string | null
+          titulo: string | null
+          updated_at: string | null
           user_id: string | null
+          valor_envolvido: number | null
         }
         Insert: {
+          centro_custo_id?: string | null
+          centro_custo_nome?: string | null
           created_at?: string | null
           descricao?: string | null
+          empresa_id?: string | null
+          entidade_id?: string | null
+          entidade_tipo?: string | null
           id?: string
+          metadata?: Json | null
           prioridade?: string | null
+          resolucao?: string | null
+          revisado_em?: string | null
+          revisado_por?: string | null
+          score_confianca?: number | null
+          severidade?: string | null
           status?: string | null
           tipo: string
+          tipo_anomalia?: string | null
+          titulo?: string | null
+          updated_at?: string | null
           user_id?: string | null
+          valor_envolvido?: number | null
         }
         Update: {
+          centro_custo_id?: string | null
+          centro_custo_nome?: string | null
           created_at?: string | null
           descricao?: string | null
+          empresa_id?: string | null
+          entidade_id?: string | null
+          entidade_tipo?: string | null
           id?: string
+          metadata?: Json | null
           prioridade?: string | null
+          resolucao?: string | null
+          revisado_em?: string | null
+          revisado_por?: string | null
+          score_confianca?: number | null
+          severidade?: string | null
           status?: string | null
           tipo?: string
+          tipo_anomalia?: string | null
+          titulo?: string | null
+          updated_at?: string | null
           user_id?: string | null
+          valor_envolvido?: number | null
         }
         Relationships: []
       }
@@ -703,40 +769,88 @@ export type Database = {
       }
       contas_pagar: {
         Row: {
+          anexo_url: string | null
+          categoria_id: string | null
+          centro_custo_id: string | null
+          conta_bancaria_id: string | null
           created_at: string | null
           data_pagamento: string | null
           data_vencimento: string
+          desconto: number | null
           descricao: string
+          empresa_id: string | null
+          forma_pagamento: string | null
           fornecedor_id: string | null
           id: string
+          juros: number | null
+          metadata: Json | null
+          multa: number | null
+          numero_documento: string | null
+          observacoes: string | null
+          parcela_atual: number | null
+          recorrente: boolean | null
           status: string | null
+          total_parcelas: number | null
           updated_at: string | null
           user_id: string | null
           valor: number
+          valor_pago: number | null
         }
         Insert: {
+          anexo_url?: string | null
+          categoria_id?: string | null
+          centro_custo_id?: string | null
+          conta_bancaria_id?: string | null
           created_at?: string | null
           data_pagamento?: string | null
           data_vencimento: string
+          desconto?: number | null
           descricao: string
+          empresa_id?: string | null
+          forma_pagamento?: string | null
           fornecedor_id?: string | null
           id?: string
+          juros?: number | null
+          metadata?: Json | null
+          multa?: number | null
+          numero_documento?: string | null
+          observacoes?: string | null
+          parcela_atual?: number | null
+          recorrente?: boolean | null
           status?: string | null
+          total_parcelas?: number | null
           updated_at?: string | null
           user_id?: string | null
           valor: number
+          valor_pago?: number | null
         }
         Update: {
+          anexo_url?: string | null
+          categoria_id?: string | null
+          centro_custo_id?: string | null
+          conta_bancaria_id?: string | null
           created_at?: string | null
           data_pagamento?: string | null
           data_vencimento?: string
+          desconto?: number | null
           descricao?: string
+          empresa_id?: string | null
+          forma_pagamento?: string | null
           fornecedor_id?: string | null
           id?: string
+          juros?: number | null
+          metadata?: Json | null
+          multa?: number | null
+          numero_documento?: string | null
+          observacoes?: string | null
+          parcela_atual?: number | null
+          recorrente?: boolean | null
           status?: string | null
+          total_parcelas?: number | null
           updated_at?: string | null
           user_id?: string | null
           valor?: number
+          valor_pago?: number | null
         }
         Relationships: [
           {
@@ -750,40 +864,91 @@ export type Database = {
       }
       contas_receber: {
         Row: {
+          anexo_url: string | null
+          categoria_id: string | null
+          centro_custo_id: string | null
           cliente_id: string | null
+          conta_bancaria_id: string | null
           created_at: string | null
           data_recebimento: string | null
           data_vencimento: string
+          desconto: number | null
           descricao: string
+          empresa_id: string | null
+          forma_recebimento: string | null
           id: string
+          juros: number | null
+          metadata: Json | null
+          multa: number | null
+          numero_documento: string | null
+          observacoes: string | null
+          parcela_atual: number | null
+          recorrente: boolean | null
+          score: number | null
           status: string | null
+          total_parcelas: number | null
           updated_at: string | null
           user_id: string | null
           valor: number
+          valor_recebido: number | null
         }
         Insert: {
+          anexo_url?: string | null
+          categoria_id?: string | null
+          centro_custo_id?: string | null
           cliente_id?: string | null
+          conta_bancaria_id?: string | null
           created_at?: string | null
           data_recebimento?: string | null
           data_vencimento: string
+          desconto?: number | null
           descricao: string
+          empresa_id?: string | null
+          forma_recebimento?: string | null
           id?: string
+          juros?: number | null
+          metadata?: Json | null
+          multa?: number | null
+          numero_documento?: string | null
+          observacoes?: string | null
+          parcela_atual?: number | null
+          recorrente?: boolean | null
+          score?: number | null
           status?: string | null
+          total_parcelas?: number | null
           updated_at?: string | null
           user_id?: string | null
           valor: number
+          valor_recebido?: number | null
         }
         Update: {
+          anexo_url?: string | null
+          categoria_id?: string | null
+          centro_custo_id?: string | null
           cliente_id?: string | null
+          conta_bancaria_id?: string | null
           created_at?: string | null
           data_recebimento?: string | null
           data_vencimento?: string
+          desconto?: number | null
           descricao?: string
+          empresa_id?: string | null
+          forma_recebimento?: string | null
           id?: string
+          juros?: number | null
+          metadata?: Json | null
+          multa?: number | null
+          numero_documento?: string | null
+          observacoes?: string | null
+          parcela_atual?: number | null
+          recorrente?: boolean | null
+          score?: number | null
           status?: string | null
+          total_parcelas?: number | null
           updated_at?: string | null
           user_id?: string | null
           valor?: number
+          valor_recebido?: number | null
         }
         Relationships: [
           {
@@ -1355,6 +1520,51 @@ export type Database = {
         }
         Relationships: []
       }
+      historico_analises_preditivas: {
+        Row: {
+          alertas_gerados: number | null
+          created_at: string | null
+          duracao_ms: number | null
+          empresa_id: string | null
+          id: string
+          insights: Json | null
+          modelo_usado: string | null
+          recomendacoes: Json | null
+          resumo_executivo: string | null
+          score_saude_financeira: number | null
+          tipo_analise: string | null
+          user_id: string | null
+        }
+        Insert: {
+          alertas_gerados?: number | null
+          created_at?: string | null
+          duracao_ms?: number | null
+          empresa_id?: string | null
+          id?: string
+          insights?: Json | null
+          modelo_usado?: string | null
+          recomendacoes?: Json | null
+          resumo_executivo?: string | null
+          score_saude_financeira?: number | null
+          tipo_analise?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          alertas_gerados?: number | null
+          created_at?: string | null
+          duracao_ms?: number | null
+          empresa_id?: string | null
+          id?: string
+          insights?: Json | null
+          modelo_usado?: string | null
+          recomendacoes?: Json | null
+          resumo_executivo?: string | null
+          score_saude_financeira?: number | null
+          tipo_analise?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       ip_whitelist: {
         Row: {
           added_by: string | null
@@ -1823,40 +2033,52 @@ export type Database = {
       }
       password_reset_requests: {
         Row: {
+          aprovado_em: string | null
+          aprovado_por: string | null
           created_at: string | null
           expires_at: string | null
           id: string
           ip_address: unknown
+          motivo_rejeicao: string | null
           rejection_reason: string | null
           requested_at: string | null
           reviewed_at: string | null
           reviewed_by: string | null
+          solicitado_em: string | null
           status: string
           user_agent: string | null
           user_email: string
         }
         Insert: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
           created_at?: string | null
           expires_at?: string | null
           id?: string
           ip_address?: unknown
+          motivo_rejeicao?: string | null
           rejection_reason?: string | null
           requested_at?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          solicitado_em?: string | null
           status?: string
           user_agent?: string | null
           user_email: string
         }
         Update: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
           created_at?: string | null
           expires_at?: string | null
           id?: string
           ip_address?: unknown
+          motivo_rejeicao?: string | null
           rejection_reason?: string | null
           requested_at?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          solicitado_em?: string | null
           status?: string
           user_agent?: string | null
           user_email?: string
@@ -2927,6 +3149,7 @@ export type Database = {
         | "financeiro"
         | "operacional"
         | "visualizador"
+        | "contador"
       approval_priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT" | "CRITICAL"
       approval_status: "PENDING" | "APPROVED" | "REJECTED"
       delivery_outcome:
@@ -3105,6 +3328,7 @@ export const Constants = {
         "financeiro",
         "operacional",
         "visualizador",
+        "contador",
       ],
       approval_priority: ["LOW", "MEDIUM", "HIGH", "URGENT", "CRITICAL"],
       approval_status: ["PENDING", "APPROVED", "REJECTED"],
