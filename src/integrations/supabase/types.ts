@@ -403,6 +403,30 @@ export type Database = {
           },
         ]
       }
+      allowed_countries: {
+        Row: {
+          country_code: string
+          country_name: string | null
+          created_at: string | null
+          enabled: boolean | null
+          id: string
+        }
+        Insert: {
+          country_code: string
+          country_name?: string | null
+          created_at?: string | null
+          enabled?: boolean | null
+          id?: string
+        }
+        Update: {
+          country_code?: string
+          country_name?: string | null
+          created_at?: string | null
+          enabled?: boolean | null
+          id?: string
+        }
+        Relationships: []
+      }
       allowed_ips: {
         Row: {
           ativo: boolean
@@ -1088,6 +1112,33 @@ export type Database = {
           success?: boolean | null
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      bitrix_webhook_events: {
+        Row: {
+          created_at: string | null
+          event_type: string
+          id: string
+          payload: Json | null
+          processed: boolean | null
+          received_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_type: string
+          id?: string
+          payload?: Json | null
+          processed?: boolean | null
+          received_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          payload?: Json | null
+          processed?: boolean | null
+          received_at?: string | null
         }
         Relationships: []
       }
@@ -4435,6 +4486,47 @@ export type Database = {
         }
         Relationships: []
       }
+      regimes_tributarios: {
+        Row: {
+          ativo: boolean | null
+          created_at: string | null
+          data_inicio: string | null
+          empresa_id: string | null
+          id: string
+          reducao_cbs: number | null
+          reducao_ibs: number | null
+          regime_nome: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          created_at?: string | null
+          data_inicio?: string | null
+          empresa_id?: string | null
+          id?: string
+          reducao_cbs?: number | null
+          reducao_ibs?: number | null
+          regime_nome: string
+        }
+        Update: {
+          ativo?: boolean | null
+          created_at?: string | null
+          data_inicio?: string | null
+          empresa_id?: string | null
+          id?: string
+          reducao_cbs?: number | null
+          reducao_ibs?: number | null
+          regime_nome?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regimes_tributarios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       regras_conciliacao: {
         Row: {
           ativo: boolean | null
@@ -4714,6 +4806,7 @@ export type Database = {
         Row: {
           allowed_global_ips: Json
           created_at: string
+          enable_geo_restriction: boolean | null
           id: string
           require_2fa: boolean
           restrict_by_ip: boolean
@@ -4723,6 +4816,7 @@ export type Database = {
         Insert: {
           allowed_global_ips?: Json
           created_at?: string
+          enable_geo_restriction?: boolean | null
           id?: string
           require_2fa?: boolean
           restrict_by_ip?: boolean
@@ -4732,6 +4826,7 @@ export type Database = {
         Update: {
           allowed_global_ips?: Json
           created_at?: string
+          enable_geo_restriction?: boolean | null
           id?: string
           require_2fa?: boolean
           restrict_by_ip?: boolean
@@ -5009,6 +5104,90 @@ export type Database = {
           valor?: number
         }
         Relationships: []
+      }
+      transferencias: {
+        Row: {
+          chave_pix: string | null
+          conta_destino_id: string | null
+          conta_origem_id: string | null
+          created_at: string | null
+          data_transferencia: string | null
+          descricao: string | null
+          empresa_id: string | null
+          favorecido_nome: string | null
+          id: string
+          pix_chave_destino: string | null
+          status: string | null
+          user_id: string | null
+          valor: number
+        }
+        Insert: {
+          chave_pix?: string | null
+          conta_destino_id?: string | null
+          conta_origem_id?: string | null
+          created_at?: string | null
+          data_transferencia?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          favorecido_nome?: string | null
+          id?: string
+          pix_chave_destino?: string | null
+          status?: string | null
+          user_id?: string | null
+          valor: number
+        }
+        Update: {
+          chave_pix?: string | null
+          conta_destino_id?: string | null
+          conta_origem_id?: string | null
+          created_at?: string | null
+          data_transferencia?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          favorecido_nome?: string | null
+          id?: string
+          pix_chave_destino?: string | null
+          status?: string | null
+          user_id?: string | null
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transferencias_conta_destino_id_fkey"
+            columns: ["conta_destino_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transferencias_conta_destino_id_fkey"
+            columns: ["conta_destino_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["conta_id"]
+          },
+          {
+            foreignKeyName: "transferencias_conta_origem_id_fkey"
+            columns: ["conta_origem_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transferencias_conta_origem_id_fkey"
+            columns: ["conta_origem_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["conta_id"]
+          },
+          {
+            foreignKeyName: "transferencias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_anomalia_preferences: {
         Row: {
