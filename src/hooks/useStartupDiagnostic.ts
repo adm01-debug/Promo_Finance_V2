@@ -75,16 +75,26 @@ export const useStartupDiagnostic = () => {
     // 3. RPCs Check
     updateStatus('rpcs', 'loading');
     try {
-      // Test has_role RPC
-      const { error: rpcError } = await supabase.rpc('has_role', { _role: 'user' } as any);
-      // We expect a "permission denied" or "null" if not logged in, but not a "function does not exist"
-      if (rpcError && rpcError.message.includes('function') && rpcError.message.includes('does not exist')) {
-        updateStatus('rpcs', 'error', 'Função has_role não encontrada.');
+      const essentialRPCs = ['has_role', 'get_user_roles', 'get_user_permissions'];
+      const missingRPCs = [];
+
+      for (const rpc of essentialRPCs) {
+        const { error: rpcError } = await supabase.rpc(rpc as any, { _role: 'user', _user_id: '00000000-0000-0000-0000-000000000000' } as any);
+        // If it's a "function does not exist" error, it's missing. 
+        // Note: has_role might return error because of argument mismatch, but we check the message.
+        if (rpcError && (rpcError.message.includes('function') && rpcError.message.includes('does not exist'))) {
+          missingRPCs.push(rpc);
+        }
+      }
+
+      if (missingRPCs.length > 0) {
+        updateStatus('rpcs', 'error', `Funções ausentes: ${missingRPCs.join(', ')}`);
         setHasError(true);
       } else {
         updateStatus('rpcs', 'success');
       }
     } catch (error) {
+
       logger.error('Diagnostic Error (rpcs):', error);
       updateStatus('rpcs', 'error', 'Erro ao validar funções de sistema.');
       setHasError(true);
