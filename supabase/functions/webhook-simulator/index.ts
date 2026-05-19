@@ -1,4 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { ConcurrencyLimiter } from '../_shared/concurrency-limiter.ts'
+
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -29,21 +31,34 @@ Deno.serve(async (req) => {
       total_scenarios: scenarios_count
     }).eq('id', run_id)
 
-    const scenarios = [
-      { name: 'Pagamento Recebido', type: 'PAYMENT_RECEIVED' },
-      { name: 'Pagamento Confirmado', type: 'PAYMENT_CONFIRMED' },
-      { name: 'Pagamento Vencido', type: 'PAYMENT_OVERDUE' },
-      { name: 'Pagamento Estornado', type: 'PAYMENT_REFUNDED' },
-      { name: 'Transferência Concluída', type: 'TRANSFER_DONE' },
-      { name: 'Transferência Falhou', type: 'TRANSFER_FAILED' }
-    ]
+    const scenarios = {
+      'asaas-webhook': [
+        { name: 'Pagamento Recebido', type: 'PAYMENT_RECEIVED' },
+        { name: 'Pagamento Confirmado', type: 'PAYMENT_CONFIRMED' },
+        { name: 'Pagamento Vencido', type: 'PAYMENT_OVERDUE' },
+        { name: 'Pagamento Estornado', type: 'PAYMENT_REFUNDED' },
+        { name: 'Transferência Concluída', type: 'TRANSFER_DONE' },
+        { name: 'Transferência Falhou', type: 'TRANSFER_FAILED' }
+      ],
+      'bling-webhook': [
+        { name: 'Pedido Criado', type: 'pedido.criado' },
+        { name: 'Pedido Alterado', type: 'pedido.alterado' },
+        { name: 'Estoque Alterado', type: 'estoque.alterado' }
+      ],
+      'bitrix24-webhook': [
+        { name: 'Novo Negócio', type: 'ONCRMDEALADD' },
+        { name: 'Negócio Atualizado', type: 'ONCRMDEALUPDATE' }
+      ]
+    };
 
     const fuzzingScenarios = [
       { name: 'Payload Malformado', type: 'MALFORMED', payload: '{ invalid json }' },
-      { name: 'Campos Ausentes', type: 'MISSING_FIELDS', payload: { event: 'PAYMENT_RECEIVED' } },
-      { name: 'UUID Inválido', type: 'INVALID_UUID', payload: { id: 'not-a-uuid', event: 'PAYMENT_RECEIVED' } },
-      { name: 'Valor Negativo', type: 'NEGATIVE_VALUE', payload: { event: 'PAYMENT_RECEIVED', payment: { value: -100 } } }
-    ]
+      { name: 'Campos Ausentes', type: 'MISSING_FIELDS', payload: { event: 'UNKNOWN' } },
+      { name: 'UUID Inválido', type: 'INVALID_UUID', payload: { id: 'not-a-uuid', event: 'TEST' } },
+      { name: 'Injeção SQL', type: 'SQL_INJECTION', payload: { event: "' OR '1'='1" } },
+      { name: 'XSS Attempt', type: 'XSS', payload: { event: "<script>alert(1)</script>" } }
+    ];
+
 
     let successCount = 0
     let failureCount = 0
@@ -60,21 +75,36 @@ Deno.serve(async (req) => {
         scenario = fuzzingScenarios[i % fuzzingScenarios.length]
         payload = scenario.payload
       } else {
-        scenario = scenarios[i % scenarios.length]
-        payload = {
-          id: `evt_${crypto.randomUUID()}`,
-          event: scenario.type,
-          payment: scenario.type.startsWith('PAYMENT') ? {
-            id: `pay_${crypto.randomUUID()}`,
-            status: 'RECEIVED',
-            value: Math.random() * 1000
-          } : null,
-          transfer: scenario.type.startsWith('TRANSFER') ? {
-            id: `tra_${crypto.randomUUID()}`,
-            status: 'PENDING',
-            value: Math.random() * 5000
-          } : null
+        const targetScenarios = scenarios[target_function as keyof typeof scenarios] || scenarios['asaas-webhook']
+        scenario = targetScenarios[i % targetScenarios.length]
+        
+        if (target_function === 'asaas-webhook') {
+          payload = {
+            id: `evt_${crypto.randomUUID()}`,
+            event: scenario.type,
+            payment: scenario.type.startsWith('PAYMENT') ? {
+              id: `pay_${crypto.randomUUID()}`,
+              status: 'RECEIVED',
+              value: Math.random() * 1000
+            } : null,
+            transfer: scenario.type.startsWith('TRANSFER') ? {
+              id: `tra_${crypto.randomUUID()}`,
+              status: 'PENDING',
+              value: Math.random() * 5000
+            } : null
+          }
+        } else if (target_function === 'bling-webhook') {
+          payload = {
+            event: scenario.type,
+            data: { id: Math.floor(Math.random() * 100000), status: 'ok' }
+          }
+        } else {
+          payload = {
+            event: scenario.type,
+            data: { FIELDS: { ID: Math.floor(Math.random() * 1000) } }
+          }
         }
+
       }
 
       const start = Date.now()
@@ -121,15 +151,16 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Se scenarios_count for muito alto, executamos em lotes para não estourar tempo da Edge Function
-    const batchSize = mode === 'stress' ? 50 : 10;
-    for (let i = 0; i < scenarios_count; i += batchSize) {
-      const promises = [];
-      for (let j = 0; j < batchSize && (i + j) < scenarios_count; j++) {
-        promises.push(runScenario(i + j));
-      }
-      await Promise.all(promises);
+    // Usar limitador de concorrência para rodar milhares de simulações com segurança
+    const limiter = new ConcurrencyLimiter(mode === 'stress' ? 50 : 20);
+    const simulationPromises = [];
+
+    for (let i = 0; i < scenarios_count; i++) {
+      simulationPromises.push(limiter.run(() => runScenario(i)));
     }
+
+    await Promise.all(simulationPromises);
+
 
     await supabase.from('webhook_simulation_runs').update({ 
       status: 'completed',
