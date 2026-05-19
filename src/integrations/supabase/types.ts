@@ -28,6 +28,7 @@ export type Database = {
           link_resolucao: string | null
           ordem: number | null
           prioridade: string | null
+          score: number | null
           status: string | null
           titulo: string
           urgencia: string | null
@@ -45,6 +46,7 @@ export type Database = {
           link_resolucao?: string | null
           ordem?: number | null
           prioridade?: string | null
+          score?: number | null
           status?: string | null
           titulo: string
           urgencia?: string | null
@@ -62,6 +64,7 @@ export type Database = {
           link_resolucao?: string | null
           ordem?: number | null
           prioridade?: string | null
+          score?: number | null
           status?: string | null
           titulo?: string
           urgencia?: string | null
@@ -2524,6 +2527,7 @@ export type Database = {
           recorrente: boolean | null
           status: string | null
           total_parcelas: number | null
+          transacao_conciliada_id: string | null
           updated_at: string | null
           user_id: string | null
           valor: number
@@ -2557,6 +2561,7 @@ export type Database = {
           recorrente?: boolean | null
           status?: string | null
           total_parcelas?: number | null
+          transacao_conciliada_id?: string | null
           updated_at?: string | null
           user_id?: string | null
           valor: number
@@ -2590,6 +2595,7 @@ export type Database = {
           recorrente?: boolean | null
           status?: string | null
           total_parcelas?: number | null
+          transacao_conciliada_id?: string | null
           updated_at?: string | null
           user_id?: string | null
           valor?: number
@@ -2637,6 +2643,7 @@ export type Database = {
           status: string | null
           tipo_cobranca: string | null
           total_parcelas: number | null
+          transacao_conciliada_id: string | null
           updated_at: string | null
           user_id: string | null
           valor: number
@@ -2674,6 +2681,7 @@ export type Database = {
           status?: string | null
           tipo_cobranca?: string | null
           total_parcelas?: number | null
+          transacao_conciliada_id?: string | null
           updated_at?: string | null
           user_id?: string | null
           valor: number
@@ -2711,6 +2719,7 @@ export type Database = {
           status?: string | null
           tipo_cobranca?: string | null
           total_parcelas?: number | null
+          transacao_conciliada_id?: string | null
           updated_at?: string | null
           user_id?: string | null
           valor?: number
@@ -3531,6 +3540,35 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      evidencias_pacotes: {
+        Row: {
+          created_at: string | null
+          id: string
+          url: string | null
+          verificacao_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          url?: string | null
+          verificacao_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          url?: string | null
+          verificacao_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evidencias_pacotes_verificacao_id_fkey"
+            columns: ["verificacao_id"]
+            isOneToOne: false
+            referencedRelation: "verificacoes_conformidade"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       execucoes_cobranca: {
         Row: {
@@ -6828,6 +6866,38 @@ export type Database = {
           },
         ]
       }
+      verificacoes_conformidade: {
+        Row: {
+          created_at: string | null
+          empresa_id: string | null
+          id: string
+          status: string | null
+          titulo: string
+        }
+        Insert: {
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          status?: string | null
+          titulo: string
+        }
+        Update: {
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          status?: string | null
+          titulo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verificacoes_conformidade_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       webauthn_challenges: {
         Row: {
           challenge: string
@@ -7518,10 +7588,19 @@ export type Database = {
       cleanup_old_cron_logs: { Args: never; Returns: number }
       cleanup_old_login_attempts: { Args: never; Returns: number }
       clear_login_attempts: { Args: { p_email: string }; Returns: undefined }
-      confirmar_conciliacao: {
-        Args: { p_conciliacao_id: string; p_user_id: string }
-        Returns: undefined
-      }
+      confirmar_conciliacao:
+        | {
+            Args: { p_conciliacao_id: string; p_user_id: string }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              p_conciliacao_id: string
+              p_transacao_id?: string
+              p_user_id: string
+            }
+            Returns: undefined
+          }
       confirmar_envio_cobranca: {
         Args: {
           p_erro?: string
@@ -7532,10 +7611,12 @@ export type Database = {
         }
         Returns: undefined
       }
-      desfazer_conciliacao: {
-        Args: { p_conciliacao_id: string }
-        Returns: undefined
-      }
+      desfazer_conciliacao:
+        | { Args: { p_conciliacao_id: string }; Returns: undefined }
+        | {
+            Args: { p_conciliacao_id: string; p_transacao_id?: string }
+            Returns: undefined
+          }
       export_asaas_audit_csv: {
         Args: { p_empresa_id: string }
         Returns: string
