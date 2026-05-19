@@ -2023,6 +2023,50 @@ export type Database = {
           },
         ]
       }
+      categorias: {
+        Row: {
+          ativo: boolean | null
+          cor: string | null
+          created_at: string | null
+          empresa_id: string | null
+          icone: string | null
+          id: string
+          nome: string
+          tipo: string
+          updated_at: string | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          cor?: string | null
+          created_at?: string | null
+          empresa_id?: string | null
+          icone?: string | null
+          id?: string
+          nome: string
+          tipo: string
+          updated_at?: string | null
+        }
+        Update: {
+          ativo?: boolean | null
+          cor?: string | null
+          created_at?: string | null
+          empresa_id?: string | null
+          icone?: string | null
+          id?: string
+          nome?: string
+          tipo?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "categorias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       centros_custo: {
         Row: {
           ativo: boolean | null
