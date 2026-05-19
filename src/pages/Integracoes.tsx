@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { 
   Link2, Zap, Phone, Globe, Package, CreditCard, 
   RefreshCw, CheckCircle2, AlertTriangle, ShieldCheck,
-  ExternalLink, Code2, Database, Key
+  ExternalLink, Code2, Database, Key, Beaker
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { OpenFinancePanel } from '@/components/integracoes/OpenFinancePanel';
 import { WhatsAppConfigPanel } from '@/components/integracoes/WhatsAppConfigPanel';
 import { DocumentacaoAPI } from '@/components/api/DocumentacaoAPI';
+import { WebhookSimulator } from '@/components/admin/WebhookSimulator';
 import { Separator } from '@/components/ui/separator';
 
 const containerVariants = {
@@ -141,6 +142,9 @@ export default function Integracoes() {
               <TabsTrigger value="credentials" className="gap-2 rounded-lg">
                 <Key className="h-4 w-4" /> Credenciais
               </TabsTrigger>
+              <TabsTrigger value="simulation" className="gap-2 rounded-lg">
+                <Beaker className="h-4 w-4" /> Simulação em Massa
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="open-finance" className="space-y-6">
@@ -174,6 +178,9 @@ export default function Integracoes() {
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
+            <TabsContent value="simulation" className="space-y-6">
+              <WebhookSimulator />
             </TabsContent>
           </Tabs>
         </motion.div>
