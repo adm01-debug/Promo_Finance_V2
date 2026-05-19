@@ -121,6 +121,26 @@ export const OptionalEmpresaIdSchema = z.object({
   empresa_id: z.string().uuid().optional().nullable(),
 });
 
+export const BenchmarkingSetorialSchema = z.object({
+  metricas: z.record(z.any()),
+  setor: z.string().optional(),
+});
+
+export const Bitrix24SyncSchema = z.object({
+  action: z.enum([
+    "sync_deals", 
+    "sync_contacts", 
+    "sync_companies", 
+    "export_payment_status", 
+    "test_connection", 
+    "refresh_token", 
+    "sync_elisao_task", 
+    "sync_boleto"
+  ]),
+  params: z.record(z.any()).optional(),
+});
+
+
 
 
 
