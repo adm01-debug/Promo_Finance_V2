@@ -75,21 +75,36 @@ Deno.serve(async (req) => {
         scenario = fuzzingScenarios[i % fuzzingScenarios.length]
         payload = scenario.payload
       } else {
-        scenario = scenarios[i % scenarios.length]
-        payload = {
-          id: `evt_${crypto.randomUUID()}`,
-          event: scenario.type,
-          payment: scenario.type.startsWith('PAYMENT') ? {
-            id: `pay_${crypto.randomUUID()}`,
-            status: 'RECEIVED',
-            value: Math.random() * 1000
-          } : null,
-          transfer: scenario.type.startsWith('TRANSFER') ? {
-            id: `tra_${crypto.randomUUID()}`,
-            status: 'PENDING',
-            value: Math.random() * 5000
-          } : null
+        const targetScenarios = scenarios[target_function as keyof typeof scenarios] || scenarios['asaas-webhook']
+        scenario = targetScenarios[i % targetScenarios.length]
+        
+        if (target_function === 'asaas-webhook') {
+          payload = {
+            id: `evt_${crypto.randomUUID()}`,
+            event: scenario.type,
+            payment: scenario.type.startsWith('PAYMENT') ? {
+              id: `pay_${crypto.randomUUID()}`,
+              status: 'RECEIVED',
+              value: Math.random() * 1000
+            } : null,
+            transfer: scenario.type.startsWith('TRANSFER') ? {
+              id: `tra_${crypto.randomUUID()}`,
+              status: 'PENDING',
+              value: Math.random() * 5000
+            } : null
+          }
+        } else if (target_function === 'bling-webhook') {
+          payload = {
+            event: scenario.type,
+            data: { id: Math.floor(Math.random() * 100000), status: 'ok' }
+          }
+        } else {
+          payload = {
+            event: scenario.type,
+            data: { FIELDS: { ID: Math.floor(Math.random() * 1000) } }
+          }
         }
+
       }
 
       const start = Date.now()
