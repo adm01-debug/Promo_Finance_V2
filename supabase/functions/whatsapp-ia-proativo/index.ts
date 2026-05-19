@@ -25,7 +25,13 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseKey);
     
-    const { action, data } = await req.json();
+    const rawBody = await req.json();
+    const validation = validatePayload(WhatsappIaProativoSchema, rawBody, "whatsapp-ia-proativo");
+    if (!validation.success) {
+      return createErrorResponse(validation.error, 400, validation.details);
+    }
+    const { action, data } = validation.data;
+
     console.log('[whatsapp-ia-proativo] Ação:', action);
 
     if (action === 'analisar-alertas') {
