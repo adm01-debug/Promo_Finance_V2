@@ -95,12 +95,13 @@ export const AnalyzeDocumentSchema = z.object({
 });
 
 export const WhatsappWebhookSchema = z.object({
-  event: z.string().optional(),
+  event: z.string(),
   messageId: z.string().optional(),
   status: z.string().optional(),
-  from: z.string().optional(),
+  from: z.string(),
   text: z.string().optional(),
 });
+
 
 export const CnpjaLookupSchema = z.object({
   cnpj: z.string().min(14),
