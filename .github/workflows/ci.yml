@@ -32,10 +32,7 @@ jobs:
         run: bun run test:run
 
       - name: Coverage check
-        run: |
-          bun run test:coverage
-          # O vitest.config.ts já define os thresholds (70%)
-          # Se não atingir, o comando falhará.
+        run: bun run test:coverage
 
       - name: Build check
         run: bun run build
@@ -50,6 +47,14 @@ jobs:
           E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+      - name: Trigger Simulation Audit
+        if: github.ref == 'refs/heads/main'
+        run: |
+          curl -X POST "${{ secrets.SUPABASE_URL }}/functions/v1/webhook-simulator" \
+          -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{"target_function": "asaas-webhook", "scenarios_count": 100, "mode": "stress"}'
 
       - name: Notify Failure
         if: failure()

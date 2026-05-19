@@ -10224,9 +10224,11 @@ export type Database = {
           failure_count: number | null
           finished_at: string | null
           id: string
+          mode: string | null
           started_at: string | null
           status: string
           success_count: number | null
+          target_function: string | null
           total_scenarios: number | null
         }
         Insert: {
@@ -10236,9 +10238,11 @@ export type Database = {
           failure_count?: number | null
           finished_at?: string | null
           id?: string
+          mode?: string | null
           started_at?: string | null
           status?: string
           success_count?: number | null
+          target_function?: string | null
           total_scenarios?: number | null
         }
         Update: {
@@ -10248,9 +10252,11 @@ export type Database = {
           failure_count?: number | null
           finished_at?: string | null
           id?: string
+          mode?: string | null
           started_at?: string | null
           status?: string
           success_count?: number | null
+          target_function?: string | null
           total_scenarios?: number | null
         }
         Relationships: []
