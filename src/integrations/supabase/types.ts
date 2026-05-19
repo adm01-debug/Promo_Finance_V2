@@ -10169,6 +10169,92 @@ export type Database = {
         }
         Relationships: []
       }
+      webhook_simulation_results: {
+        Row: {
+          created_at: string | null
+          duration_ms: number | null
+          error_message: string | null
+          id: string
+          payload: Json
+          response_body: Json | null
+          response_status: number | null
+          run_id: string | null
+          scenario_name: string
+          success: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          payload: Json
+          response_body?: Json | null
+          response_status?: number | null
+          run_id?: string | null
+          scenario_name: string
+          success?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          payload?: Json
+          response_body?: Json | null
+          response_status?: number | null
+          run_id?: string | null
+          scenario_name?: string
+          success?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_simulation_results_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "webhook_simulation_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webhook_simulation_runs: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          error_summary: Json | null
+          failure_count: number | null
+          finished_at: string | null
+          id: string
+          started_at: string | null
+          status: string
+          success_count: number | null
+          total_scenarios: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          error_summary?: Json | null
+          failure_count?: number | null
+          finished_at?: string | null
+          id?: string
+          started_at?: string | null
+          status?: string
+          success_count?: number | null
+          total_scenarios?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          error_summary?: Json | null
+          failure_count?: number | null
+          finished_at?: string | null
+          id?: string
+          started_at?: string | null
+          status?: string
+          success_count?: number | null
+          total_scenarios?: number | null
+        }
+        Relationships: []
+      }
       webhooks_log: {
         Row: {
           created_at: string
