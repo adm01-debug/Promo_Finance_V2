@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -7,16 +7,19 @@ export function useWhatsAppCobrancaHistory(contaReceberId?: string) {
   return useQuery({
     queryKey: ['historico-cobranca-whatsapp', contaReceberId],
     queryFn: async () => {
-      let query = supabase
-        .from('historico_cobranca_whatsapp')
-        .select('*')
-        .order('created_at', { ascending: false });
+      // @ts-ignore - Type instantiation deep
+      const baseQuery = supabase.from('historico_cobranca_whatsapp').select('*');
+      
+      let query = baseQuery.order('created_at', { ascending: false });
 
-      if (contaReceberId) query = query.eq('conta_receber_id', contaReceberId);
+      if (contaReceberId) {
+        // @ts-ignore - Type instantiation deep
+        query = query.eq('conta_receber_id', contaReceberId);
+      }
 
       const { data, error } = await query.limit(200);
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
   });
 }
@@ -31,6 +34,7 @@ export function useCreateWhatsAppCobranca() {
       mensagem: string;
       regua_id?: string;
     }) => {
+      // @ts-ignore - Type instantiation deep
       const { data, error } = await supabase
         .from('historico_cobranca_whatsapp')
         .insert({
@@ -38,7 +42,7 @@ export function useCreateWhatsAppCobranca() {
           status: 'enviado',
           enviado_em: new Date().toISOString(),
           created_by: (await supabase.auth.getUser()).data.user?.id,
-        })
+        } as any)
         .select()
         .single();
       if (error) throw error;
