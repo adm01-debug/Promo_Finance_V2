@@ -24,8 +24,13 @@ Deno.test("Fuzzing: All Contract Schemas should reject invalid data", () => {
       if (payload === null || payload === undefined) continue;
       
       if (result.success) {
+        // Skip schemas that are explicitly allowed to be empty
+        if (["OptionalEmpresaIdSchema", "BlingProxySchema"].includes(name) && Object.keys(payload as object || {}).length === 0) {
+          continue;
+        }
         throw new Error(`Schema ${name} should have rejected general invalid payload: ${JSON.stringify(payload)}`);
       }
+
     }
 
     // 2. Test schema-specific invalid payloads (only for objects)
