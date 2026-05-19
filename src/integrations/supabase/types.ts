@@ -8953,6 +8953,10 @@ export type Database = {
           lockout_seconds: number
         }[]
       }
+      registrar_auditoria_config: {
+        Args: { _detalhes?: Json; _empresa_id?: string; _tipo_acao: string }
+        Returns: undefined
+      }
       registrar_evento_pagar:
         | {
             Args: { p_conta_id: string; p_detalhes?: Json; p_evento: string }
