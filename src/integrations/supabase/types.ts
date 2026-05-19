@@ -891,37 +891,46 @@ export type Database = {
       }
       apuracoes_irpj_csll: {
         Row: {
+          ano: number | null
           created_at: string | null
           csll_valor: number | null
           empresa_id: string
           id: string
           irpj_valor: number | null
           lucro_antes_impostos: number | null
+          lucro_contabil: number | null
           periodo_fim: string
           periodo_inicio: string
           status: string | null
+          tipo_apuracao: string | null
         }
         Insert: {
+          ano?: number | null
           created_at?: string | null
           csll_valor?: number | null
           empresa_id: string
           id?: string
           irpj_valor?: number | null
           lucro_antes_impostos?: number | null
+          lucro_contabil?: number | null
           periodo_fim: string
           periodo_inicio: string
           status?: string | null
+          tipo_apuracao?: string | null
         }
         Update: {
+          ano?: number | null
           created_at?: string | null
           csll_valor?: number | null
           empresa_id?: string
           id?: string
           irpj_valor?: number | null
           lucro_antes_impostos?: number | null
+          lucro_contabil?: number | null
           periodo_fim?: string
           periodo_inicio?: string
           status?: string | null
+          tipo_apuracao?: string | null
         }
         Relationships: [
           {
@@ -3926,6 +3935,9 @@ export type Database = {
           mes: number | null
           mes_referencia: string
           receita_bruta: number | null
+          receita_exportacao: number | null
+          receita_industria: number | null
+          receita_revenda: number | null
           receita_servicos: number | null
           receita_vendas: number | null
           valor_faturamento: number | null
@@ -3942,6 +3954,9 @@ export type Database = {
           mes?: number | null
           mes_referencia: string
           receita_bruta?: number | null
+          receita_exportacao?: number | null
+          receita_industria?: number | null
+          receita_revenda?: number | null
           receita_servicos?: number | null
           receita_vendas?: number | null
           valor_faturamento?: number | null
@@ -3958,6 +3973,9 @@ export type Database = {
           mes?: number | null
           mes_referencia?: string
           receita_bruta?: number | null
+          receita_exportacao?: number | null
+          receita_industria?: number | null
+          receita_revenda?: number | null
           receita_servicos?: number | null
           receita_vendas?: number | null
           valor_faturamento?: number | null
@@ -4195,6 +4213,7 @@ export type Database = {
           pro_labore: number | null
           qtd_funcionarios: number | null
           salarios: number | null
+          total_folha: number | null
           valor_total: number | null
         }
         Insert: {
@@ -4210,6 +4229,7 @@ export type Database = {
           pro_labore?: number | null
           qtd_funcionarios?: number | null
           salarios?: number | null
+          total_folha?: number | null
           valor_total?: number | null
         }
         Update: {
@@ -4225,6 +4245,7 @@ export type Database = {
           pro_labore?: number | null
           qtd_funcionarios?: number | null
           salarios?: number | null
+          total_folha?: number | null
           valor_total?: number | null
         }
         Relationships: [
@@ -4381,7 +4402,7 @@ export type Database = {
           id: string
           insights_md: string | null
           metadata: Json | null
-          recomendacoes: string[] | null
+          recomendacoes: Json | null
           score: number | null
           score_cadastros: number | null
           score_engajamento: number | null
@@ -4399,7 +4420,7 @@ export type Database = {
           id?: string
           insights_md?: string | null
           metadata?: Json | null
-          recomendacoes?: string[] | null
+          recomendacoes?: Json | null
           score?: number | null
           score_cadastros?: number | null
           score_engajamento?: number | null
@@ -4417,7 +4438,7 @@ export type Database = {
           id?: string
           insights_md?: string | null
           metadata?: Json | null
-          recomendacoes?: string[] | null
+          recomendacoes?: Json | null
           score?: number | null
           score_cadastros?: number | null
           score_engajamento?: number | null
@@ -4611,7 +4632,7 @@ export type Database = {
           created_at: string | null
           created_by: string | null
           id: string
-          motivos: string[] | null
+          motivos: Json | null
           resultado: Json | null
           score: number | null
           score_ia: number | null
@@ -4630,7 +4651,7 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           id?: string
-          motivos?: string[] | null
+          motivos?: Json | null
           resultado?: Json | null
           score?: number | null
           score_ia?: number | null
@@ -4649,7 +4670,7 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           id?: string
-          motivos?: string[] | null
+          motivos?: Json | null
           resultado?: Json | null
           score?: number | null
           score_ia?: number | null
