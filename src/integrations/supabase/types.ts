@@ -3870,37 +3870,87 @@ export type Database = {
           },
         ]
       }
+      faturamento_mensal: {
+        Row: {
+          created_at: string | null
+          empresa_id: string
+          id: string
+          mes_referencia: string
+          valor_faturamento: number | null
+          valor_impostos: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          empresa_id: string
+          id?: string
+          mes_referencia: string
+          valor_faturamento?: number | null
+          valor_impostos?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          empresa_id?: string
+          id?: string
+          mes_referencia?: string
+          valor_faturamento?: number | null
+          valor_impostos?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "faturamento_mensal_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feedback_conciliacao_ia: {
         Row: {
           acao: string
           created_at: string | null
+          created_by: string | null
           feedback_texto: string | null
           id: string
+          lancamento_descricao: string | null
+          lancamento_entidade: string | null
           motivo_rejeicao: string | null
           score_original: number | null
+          tipo_lancamento: string | null
           transacao_bancaria_id: string | null
+          transacao_descricao: string | null
           transacao_id: string | null
           user_id: string | null
         }
         Insert: {
           acao: string
           created_at?: string | null
+          created_by?: string | null
           feedback_texto?: string | null
           id?: string
+          lancamento_descricao?: string | null
+          lancamento_entidade?: string | null
           motivo_rejeicao?: string | null
           score_original?: number | null
+          tipo_lancamento?: string | null
           transacao_bancaria_id?: string | null
+          transacao_descricao?: string | null
           transacao_id?: string | null
           user_id?: string | null
         }
         Update: {
           acao?: string
           created_at?: string | null
+          created_by?: string | null
           feedback_texto?: string | null
           id?: string
+          lancamento_descricao?: string | null
+          lancamento_entidade?: string | null
           motivo_rejeicao?: string | null
           score_original?: number | null
+          tipo_lancamento?: string | null
           transacao_bancaria_id?: string | null
+          transacao_descricao?: string | null
           transacao_id?: string | null
           user_id?: string | null
         }
@@ -4063,6 +4113,41 @@ export type Database = {
           },
         ]
       }
+      folha_pagamento: {
+        Row: {
+          created_at: string | null
+          empresa_id: string
+          id: string
+          mes_referencia: string
+          qtd_funcionarios: number | null
+          valor_total: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          empresa_id: string
+          id?: string
+          mes_referencia: string
+          qtd_funcionarios?: number | null
+          valor_total?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          empresa_id?: string
+          id?: string
+          mes_referencia?: string
+          qtd_funcionarios?: number | null
+          valor_total?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "folha_pagamento_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       formas_pagamento: {
         Row: {
           ativa: boolean | null
@@ -4206,21 +4291,39 @@ export type Database = {
           empresa_id: string
           id: string
           metadata: Json | null
+          recomendacoes: string[] | null
           score: number | null
+          score_financeiro: number | null
+          score_operacional: number | null
+          score_total: number | null
+          score_tributario: number | null
+          snapshot_data: Json | null
         }
         Insert: {
           created_at?: string | null
           empresa_id: string
           id?: string
           metadata?: Json | null
+          recomendacoes?: string[] | null
           score?: number | null
+          score_financeiro?: number | null
+          score_operacional?: number | null
+          score_total?: number | null
+          score_tributario?: number | null
+          snapshot_data?: Json | null
         }
         Update: {
           created_at?: string | null
           empresa_id?: string
           id?: string
           metadata?: Json | null
+          recomendacoes?: string[] | null
           score?: number | null
+          score_financeiro?: number | null
+          score_operacional?: number | null
+          score_total?: number | null
+          score_tributario?: number | null
+          snapshot_data?: Json | null
         }
         Relationships: [
           {
@@ -4398,7 +4501,7 @@ export type Database = {
           acao: string | null
           analise_ia: string | null
           aprovado_por: string | null
-          confianca: number | null
+          confianca: string | null
           conta_pagar_id: string | null
           conta_receber_id: string | null
           created_at: string | null
@@ -4416,7 +4519,7 @@ export type Database = {
           acao?: string | null
           analise_ia?: string | null
           aprovado_por?: string | null
-          confianca?: number | null
+          confianca?: string | null
           conta_pagar_id?: string | null
           conta_receber_id?: string | null
           created_at?: string | null
@@ -4434,7 +4537,7 @@ export type Database = {
           acao?: string | null
           analise_ia?: string | null
           aprovado_por?: string | null
-          confianca?: number | null
+          confianca?: string | null
           conta_pagar_id?: string | null
           conta_receber_id?: string | null
           created_at?: string | null
