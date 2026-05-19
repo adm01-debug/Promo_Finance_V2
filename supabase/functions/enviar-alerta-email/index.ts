@@ -14,7 +14,13 @@ const handler = async (req: Request): Promise<Response> => {
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     
     const supabase = createClient(supabaseUrl, supabaseKey);
-    const { tipo, destinatario, dados }: AlertaEmailRequest = await req.json();
+    const rawBody = await req.json();
+    const validation = validatePayload(EnviarAlertaEmailSchema, rawBody, "enviar-alerta-email");
+    if (!validation.success) {
+      return createErrorResponse(validation.error, 400, validation.details);
+    }
+    const { tipo, destinatario, dados } = validation.data;
+
 
     console.log(`Processando alerta do tipo: ${tipo} para ${destinatario}`);
 
