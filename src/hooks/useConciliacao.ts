@@ -30,12 +30,12 @@ export function useConciliacao() {
       
       const { data: { user } } = await supabase.auth.getUser();
       
-      const { error } = await supabase.rpc('confirmar_conciliacao', {
+      const { error } = await (supabase.rpc('confirmar_conciliacao', {
         p_transacao_id: transacaoId,
         p_conta_pagar_id: contaPagarId || null,
         p_conta_receber_id: contaReceberId || null,
         p_ajuste_centavos: ajusteCentavos || 0,
-      });
+      }) as any);
 
       if (error) throw error;
 
@@ -222,10 +222,10 @@ export function useConciliacao() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado');
 
-      const { error } = await supabase.rpc('desfazer_conciliacao', {
+      const { error } = await (supabase.rpc('desfazer_conciliacao', {
         p_transacao_id: transacaoId,
         p_user_id: user.id
-      });
+      }) as any);
 
       if (error) throw error;
     },
