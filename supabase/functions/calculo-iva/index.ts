@@ -19,7 +19,13 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
-    const { faturamentoAnual, ano, setor = 'geral' } = await req.json();
+    const rawBody = await req.json();
+    const validation = validatePayload(CalculoIvaSchema, rawBody, "calculo-iva");
+    if (!validation.success) {
+      return createErrorResponse(validation.error, 400, validation.details);
+    }
+    const { faturamentoAnual, ano, setor = 'geral' } = validation.data;
+
 
     const config = CRONOGRAMA.find(c => c.ano === (ano || 2026)) || CRONOGRAMA[0];
     
