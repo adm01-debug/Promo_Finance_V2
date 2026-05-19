@@ -1,22 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { EnviarAlertaEmailSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
-interface AlertaEmailRequest {
-  tipo: 'vencimento' | 'inadimplencia' | 'aprovacao' | 'ruptura' | 'asaas_failure';
-  destinatario: string;
-  dados: {
-    titulo: string;
-    mensagem: string;
-    valor?: number;
-    dataVencimento?: string;
-    urlAcao?: string;
-  };
-}
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
