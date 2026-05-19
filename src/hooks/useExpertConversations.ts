@@ -94,14 +94,14 @@ export function useUpdateConversation() {
 
   return useMutation({
     mutationFn: async ({ id, titulo, resumo }: { id: string; titulo?: string; resumo?: string }) => {
-      const { error } = await supabase
+      const { error } = await (supabase
         .from('expert_conversations')
         .update({ 
           titulo: titulo,
           resumo: resumo,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', id);
+        .eq('id', id) as any);
 
       if (error) throw error;
     },
