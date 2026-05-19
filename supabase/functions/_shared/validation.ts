@@ -47,19 +47,23 @@ export const AsaasWebhookSchema = z.object({
 });
 
 export const BlingWebhookSchema = z.object({
-  retorno: z.object({
-    pedidos: z.array(z.object({
-      pedido: z.object({
-        id: z.string(),
-        numero: z.string().optional(),
-        situacao: z.string().optional(),
-      })
-    })).optional()
-  }).optional()
+  event: z.string().optional(),
+  module: z.string().optional(),
+  data: z.record(z.any()).optional(),
+  retries: z.number().optional()
 });
 
 export const Bitrix24WebhookSchema = z.object({
   event: z.string(),
-  data: z.record(z.any()).optional(),
+  data: z.object({
+    FIELDS: z.record(z.any())
+  }),
   ts: z.string().optional(),
+  auth: z.object({
+    domain: z.string().optional(),
+    client_endpoint: z.string().optional(),
+    server_endpoint: z.string().optional(),
+    member_id: z.string().optional(),
+    application_token: z.string().optional(),
+  }).optional()
 });
