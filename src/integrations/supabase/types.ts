@@ -920,6 +920,10 @@ export type Database = {
           pis_residual: number | null
           status: string | null
           tipo_tributo: string | null
+          total_geral: number | null
+          total_tributos_novos: number | null
+          total_tributos_residuais: number | null
+          updated_at: string | null
           valor_total: number | null
         }
         Insert: {
@@ -955,6 +959,10 @@ export type Database = {
           pis_residual?: number | null
           status?: string | null
           tipo_tributo?: string | null
+          total_geral?: number | null
+          total_tributos_novos?: number | null
+          total_tributos_residuais?: number | null
+          updated_at?: string | null
           valor_total?: number | null
         }
         Update: {
@@ -990,6 +998,10 @@ export type Database = {
           pis_residual?: number | null
           status?: string | null
           tipo_tributo?: string | null
+          total_geral?: number | null
+          total_tributos_novos?: number | null
+          total_tributos_residuais?: number | null
+          updated_at?: string | null
           valor_total?: number | null
         }
         Relationships: [
@@ -2435,6 +2447,7 @@ export type Database = {
           data_origem: string
           empresa_id: string | null
           id: string
+          nota_fiscal_id: string | null
           saldo_disponivel: number
           status: string | null
           tipo_tributo: string
@@ -2445,6 +2458,7 @@ export type Database = {
           data_origem?: string
           empresa_id?: string | null
           id?: string
+          nota_fiscal_id?: string | null
           saldo_disponivel?: number
           status?: string | null
           tipo_tributo: string
@@ -2455,6 +2469,7 @@ export type Database = {
           data_origem?: string
           empresa_id?: string | null
           id?: string
+          nota_fiscal_id?: string | null
           saldo_disponivel?: number
           status?: string | null
           tipo_tributo?: string
@@ -2465,6 +2480,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creditos_tributarios_nota_fiscal_id_fkey"
+            columns: ["nota_fiscal_id"]
+            isOneToOne: false
+            referencedRelation: "notas_fiscais"
             referencedColumns: ["id"]
           },
         ]
@@ -3753,6 +3775,41 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      historico_conciliacao_ia: {
+        Row: {
+          created_at: string | null
+          id: string
+          resultado: Json | null
+          score: number | null
+          sessao_id: string | null
+          transacao_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          resultado?: Json | null
+          score?: number | null
+          sessao_id?: string | null
+          transacao_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          resultado?: Json | null
+          score?: number | null
+          sessao_id?: string | null
+          transacao_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historico_conciliacao_ia_sessao_id_fkey"
+            columns: ["sessao_id"]
+            isOneToOne: false
+            referencedRelation: "sessoes_conciliacao"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ip_whitelist: {
         Row: {
@@ -6269,6 +6326,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_sessions: {
+        Row: {
+          created_at: string | null
+          id: string
+          ip_address: unknown
+          last_active: string | null
+          revoked: boolean | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown
+          last_active?: string | null
+          revoked?: boolean | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown
+          last_active?: string | null
+          revoked?: boolean | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       vendedores: {
         Row: {
           ativo: boolean | null
@@ -7017,6 +7104,14 @@ export type Database = {
             Args: { p_empresa_id?: string; p_sessao_id: string }
             Returns: undefined
           }
+        | {
+            Args: {
+              p_empresa_id?: string
+              p_sessao_id: string
+              p_transaction_date?: string
+            }
+            Returns: undefined
+          }
       gerar_numero_acordo: { Args: never; Returns: string }
       get_active_uapi_token: {
         Args: never
@@ -7069,7 +7164,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_country_allowed_for_login: {
+        Args: { p_country_code: string }
+        Returns: boolean
+      }
       is_country_blocked: { Args: { _country_code: string }; Returns: boolean }
+      is_ip_allowed_for_login: {
+        Args: { p_ip_address: unknown }
+        Returns: boolean
+      }
       is_ip_blocked: { Args: { p_ip_address: unknown }; Returns: boolean }
       is_ip_whitelisted: { Args: { _ip_address: unknown }; Returns: boolean }
       is_known_device: {
