@@ -1884,6 +1884,7 @@ export type Database = {
           data_pagamento: string | null
           desconto: number | null
           descricao: string | null
+          empresa_id: string | null
           eventos_pagamento: Json | null
           id: string
           juros_multa: number | null
@@ -1895,6 +1896,7 @@ export type Database = {
           sacado_cpf_cnpj: string | null
           sacado_nome: string | null
           status: string | null
+          updated_at: string | null
           url_pdf: string | null
           user_id: string
           valor: number
@@ -1920,6 +1922,7 @@ export type Database = {
           data_pagamento?: string | null
           desconto?: number | null
           descricao?: string | null
+          empresa_id?: string | null
           eventos_pagamento?: Json | null
           id?: string
           juros_multa?: number | null
@@ -1931,6 +1934,7 @@ export type Database = {
           sacado_cpf_cnpj?: string | null
           sacado_nome?: string | null
           status?: string | null
+          updated_at?: string | null
           url_pdf?: string | null
           user_id?: string
           valor?: number
@@ -1956,6 +1960,7 @@ export type Database = {
           data_pagamento?: string | null
           desconto?: number | null
           descricao?: string | null
+          empresa_id?: string | null
           eventos_pagamento?: Json | null
           id?: string
           juros_multa?: number | null
@@ -1967,6 +1972,7 @@ export type Database = {
           sacado_cpf_cnpj?: string | null
           sacado_nome?: string | null
           status?: string | null
+          updated_at?: string | null
           url_pdf?: string | null
           user_id?: string
           valor?: number
@@ -2000,6 +2006,13 @@ export type Database = {
             columns: ["conta_pagar_id"]
             isOneToOne: false
             referencedRelation: "vw_contas_pagar_painel"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "boletos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
             referencedColumns: ["id"]
           },
         ]
@@ -7505,6 +7518,10 @@ export type Database = {
       cleanup_old_cron_logs: { Args: never; Returns: number }
       cleanup_old_login_attempts: { Args: never; Returns: number }
       clear_login_attempts: { Args: { p_email: string }; Returns: undefined }
+      confirmar_conciliacao: {
+        Args: { p_conciliacao_id: string; p_user_id: string }
+        Returns: undefined
+      }
       confirmar_envio_cobranca: {
         Args: {
           p_erro?: string
@@ -7513,6 +7530,10 @@ export type Database = {
           p_provider_message_id?: string
           p_sucesso?: boolean
         }
+        Returns: undefined
+      }
+      desfazer_conciliacao: {
+        Args: { p_conciliacao_id: string }
         Returns: undefined
       }
       export_asaas_audit_csv: {
@@ -7637,10 +7658,20 @@ export type Database = {
           lockout_seconds: number
         }[]
       }
-      registrar_evento_pagar: {
-        Args: { p_conta_id: string; p_detalhes?: Json; p_evento: string }
-        Returns: string
-      }
+      registrar_evento_pagar:
+        | {
+            Args: { p_conta_id: string; p_detalhes?: Json; p_evento: string }
+            Returns: string
+          }
+        | {
+            Args: {
+              p_conta_id: string
+              p_mensagem: string
+              p_metadata?: Json
+              p_tipo: string
+            }
+            Returns: undefined
+          }
       registrar_evento_receber:
         | {
             Args: {
@@ -7663,6 +7694,15 @@ export type Database = {
               p_detalhes?: Json
               p_evento: string
               p_tipo?: string
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              p_conta_id: string
+              p_mensagem: string
+              p_metadata?: Json
+              p_tipo: string
             }
             Returns: undefined
           }
