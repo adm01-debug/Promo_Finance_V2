@@ -132,18 +132,18 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const body = await req.json().catch(() => ({}));
-    const cnpj = sanitizeCnpj(String(body?.cnpj ?? ""));
+    const rawBody = await req.json().catch(() => ({}));
+    const validation = validatePayload(CnpjaLookupSchema, rawBody, "cnpja-lookup");
+    if (!validation.success) {
+      return createErrorResponse(validation.error, 400, validation.details);
+    }
+
+    const cnpj = sanitizeCnpj(String(validation.data.cnpj));
 
     if (!isValidCnpj(cnpj)) {
-      return new Response(
-        JSON.stringify({ error: "CNPJ inválido. Informe 14 dígitos." }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
+      return createErrorResponse("CNPJ inválido. Informe 14 dígitos.");
     }
+
 
     // Cliente admin para cache e rate limit
     const admin = createClient(supabaseUrl, serviceRoleKey);
