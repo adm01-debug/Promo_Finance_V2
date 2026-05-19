@@ -116,10 +116,10 @@ export function useDeleteConversation() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase
         .from('expert_conversations')
         .delete()
-        .eq('id', id);
+        .eq('id', id) as any);
 
       if (error) throw error;
     },
