@@ -678,7 +678,7 @@ export const handler = async (req: Request) => {
             }).eq('id', item.id)
             
             results.push({ id: item.id, status: 'COMPLETED' })
-          } catch (e) {
+          } catch (e: any) {
             const nextRetry = new Date()
             // Cálculo com Backoff configurado: intervalo_base * (multiplicador ^ tentativas)
             const minutesToAdd = baseInterval * Math.pow(multiplier, item.attempts);
