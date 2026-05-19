@@ -661,6 +661,36 @@ export type Database = {
         }
         Relationships: []
       }
+      anomalia_detection_runs: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          id: string
+          inseridas: number | null
+          status: string | null
+          trigger_source: string | null
+          triggered_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          inseridas?: number | null
+          status?: string | null
+          trigger_source?: string | null
+          triggered_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          inseridas?: number | null
+          status?: string | null
+          trigger_source?: string | null
+          triggered_by?: string | null
+        }
+        Relationships: []
+      }
       anomalia_toast_eventos: {
         Row: {
           acoes_disponiveis: string[] | null
@@ -803,6 +833,68 @@ export type Database = {
           valor_envolvido?: number | null
         }
         Relationships: []
+      }
+      aprovacao_comentarios: {
+        Row: {
+          comentario: string | null
+          created_at: string | null
+          id: string
+          solicitacao_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          comentario?: string | null
+          created_at?: string | null
+          id?: string
+          solicitacao_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          comentario?: string | null
+          created_at?: string | null
+          id?: string
+          solicitacao_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      apuracoes_tributarias: {
+        Row: {
+          competencia: string | null
+          created_at: string | null
+          empresa_id: string | null
+          id: string
+          status: string | null
+          tipo_tributo: string | null
+          valor_total: number | null
+        }
+        Insert: {
+          competencia?: string | null
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          status?: string | null
+          tipo_tributo?: string | null
+          valor_total?: number | null
+        }
+        Update: {
+          competencia?: string | null
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          status?: string | null
+          tipo_tributo?: string | null
+          valor_total?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "apuracoes_tributarias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       asaas_audit_trail: {
         Row: {
@@ -1801,6 +1893,41 @@ export type Database = {
           valor_parcial?: number
         }
         Relationships: []
+      }
+      configuracoes_aprovacao: {
+        Row: {
+          ativo: boolean | null
+          created_at: string | null
+          empresa_id: string | null
+          id: string
+          modulo: string | null
+          valor_minimo: number | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          modulo?: string | null
+          valor_minimo?: number | null
+        }
+        Update: {
+          ativo?: boolean | null
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          modulo?: string | null
+          valor_minimo?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "configuracoes_aprovacao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       configuracoes_duplicidade: {
         Row: {
@@ -3188,6 +3315,38 @@ export type Database = {
             columns: ["etapa_id"]
             isOneToOne: false
             referencedRelation: "regua_cobranca_etapas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fluxos_aprovacao_niveis: {
+        Row: {
+          configuracao_id: string | null
+          created_at: string | null
+          id: string
+          nivel: number | null
+          role_responsavel: string | null
+        }
+        Insert: {
+          configuracao_id?: string | null
+          created_at?: string | null
+          id?: string
+          nivel?: number | null
+          role_responsavel?: string | null
+        }
+        Update: {
+          configuracao_id?: string | null
+          created_at?: string | null
+          id?: string
+          nivel?: number | null
+          role_responsavel?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fluxos_aprovacao_niveis_configuracao_id_fkey"
+            columns: ["configuracao_id"]
+            isOneToOne: false
+            referencedRelation: "configuracoes_aprovacao"
             referencedColumns: ["id"]
           },
         ]
