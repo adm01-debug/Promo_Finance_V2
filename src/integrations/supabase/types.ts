@@ -2759,6 +2759,7 @@ export type Database = {
           valor: number
           valor_desconto: number | null
           valor_recebido: number | null
+          vendedor_id: string | null
         }
         Insert: {
           anexo_url?: string | null
@@ -2798,6 +2799,7 @@ export type Database = {
           valor: number
           valor_desconto?: number | null
           valor_recebido?: number | null
+          vendedor_id?: string | null
         }
         Update: {
           anexo_url?: string | null
@@ -2837,6 +2839,7 @@ export type Database = {
           valor?: number
           valor_desconto?: number | null
           valor_recebido?: number | null
+          vendedor_id?: string | null
         }
         Relationships: [
           {
