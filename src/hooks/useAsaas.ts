@@ -62,7 +62,7 @@ async function invokeAsaas(action: string, data: any) {
 export function useAsaas(empresaId?: string) {
   const queryClient = useQueryClient();
 
-  const { data: customers = [] } = useQuery({
+  const { data: customers = [], isLoading: loadingCustomers } = useQuery({
     queryKey: ['asaas-customers', empresaId],
     queryFn: async () => {
       if (!empresaId) return [];
@@ -86,7 +86,25 @@ export function useAsaas(empresaId?: string) {
     onError: (e: any) => toast.error('Erro ao criar cliente: ' + e.message),
   });
 
-  const { data: payments = [] } = useQuery({
+  const editarCliente = useMutation({
+    mutationFn: (payload: any) => invokeAsaas('editar_cliente', payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-customers'] });
+      toast.success('Cliente atualizado');
+    },
+    onError: (e: any) => toast.error('Erro ao editar cliente: ' + e.message),
+  });
+
+  const excluirCliente = useMutation({
+    mutationFn: (asaasId: string) => invokeAsaas('excluir_cliente', { asaas_id: asaasId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-customers'] });
+      toast.success('Cliente removido');
+    },
+    onError: (e: any) => toast.error('Erro ao excluir cliente: ' + e.message),
+  });
+
+  const { data: payments = [], isLoading: loadingPayments } = useQuery({
     queryKey: ['asaas-payments', empresaId],
     queryFn: async () => {
       if (!empresaId) return [];
@@ -111,15 +129,126 @@ export function useAsaas(empresaId?: string) {
 
   const criarCobranca = useMutation({
     mutationFn: (payload: any) => invokeAsaas('criar_cobranca', payload),
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['asaas-payments'] });
       toast.success('Cobrança criada com sucesso!');
     },
     onError: (e: any) => toast.error('Erro ao criar cobrança: ' + e.message),
   });
 
+  const cancelarCobranca = useMutation({
+    mutationFn: (asaasId: string) => invokeAsaas('cancelar_cobranca', { asaas_id: asaasId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-payments'] });
+      toast.success('Cobrança cancelada');
+    },
+    onError: (e: any) => toast.error('Erro ao cancelar: ' + e.message),
+  });
+
+  const estornarCobranca = useMutation({
+    mutationFn: (payload: any) => invokeAsaas('estornar_cobranca', payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-payments'] });
+      toast.success('Estorno realizado com sucesso');
+    },
+    onError: (e: any) => toast.error('Erro ao estornar: ' + e.message),
+  });
+
+  const segundaViaBoleto = useMutation({
+    mutationFn: (payload: any) => invokeAsaas('segunda_via_boleto', payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-payments'] });
+      toast.success('Segunda via gerada com novo vencimento');
+    },
+    onError: (e: any) => toast.error('Erro ao gerar segunda via: ' + e.message),
+  });
+
+  const buscarPixQrCode = useMutation({
+    mutationFn: (asaasId: string) => invokeAsaas('pix_qrcode', { asaas_id: asaasId }),
+    onError: (e: any) => toast.error('Erro ao buscar QR Code: ' + e.message),
+  });
+
+  const criarAssinatura = useMutation({
+    mutationFn: (payload: any) => invokeAsaas('criar_assinatura', payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-subscriptions'] });
+      toast.success('Assinatura criada com sucesso');
+    },
+    onError: (e: any) => toast.error('Erro ao criar assinatura: ' + e.message),
+  });
+
+  const cancelarAssinatura = useMutation({
+    mutationFn: (asaasId: string) => invokeAsaas('cancelar_assinatura', { asaas_id: asaasId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-subscriptions'] });
+      toast.success('Assinatura cancelada');
+    },
+    onError: (e: any) => toast.error('Erro ao cancelar assinatura: ' + e.message),
+  });
+
   const consultarSaldo = useMutation({
     mutationFn: () => invokeAsaas('consultar_saldo', {}),
+  });
+
+  const transferirPix = useMutation({
+    mutationFn: (payload: any) => invokeAsaas('transferir_pix', payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-transfers'] });
+      toast.success('Transferência Pix realizada!');
+    },
+    onError: (e: any) => toast.error('Erro na transferência: ' + e.message),
+  });
+
+  const { data: transfers = [], isLoading: loadingTransfers } = useQuery({
+    queryKey: ['asaas-transfers', empresaId],
+    queryFn: async () => {
+      if (!empresaId) return [];
+      const { data, error } = await supabase
+        .from('asaas_transfers')
+        .select('*')
+        .eq('empresa_id', empresaId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!empresaId,
+  });
+
+  const sincronizarTransferencia = useMutation({
+    mutationFn: (asaasId: string) => invokeAsaas('sincronizar_transferencia', { asaas_id: asaasId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-transfers'] });
+      toast.success('Status da transferência atualizado');
+    },
+  });
+
+  const consultarExtrato = useMutation({
+    mutationFn: (payload: any) => invokeAsaas('extrato', payload),
+    onError: (e: any) => toast.error('Erro ao consultar extrato: ' + e.message),
+  });
+
+  const criarLinkPagamento = useMutation({
+    mutationFn: (payload: any) => invokeAsaas('criar_link_pagamento', payload),
+    onSuccess: () => {
+      toast.success('Link de pagamento criado!');
+    },
+    onError: (e: any) => toast.error('Erro ao criar link: ' + e.message),
+  });
+
+  const excluirLinkPagamento = useMutation({
+    mutationFn: (id: string) => invokeAsaas('excluir_link_pagamento', { id }),
+    onSuccess: () => toast.success('Link removido'),
+    onError: (e: any) => toast.error('Erro ao remover link: ' + e.message),
+  });
+
+  const simularAntecipacao = useMutation({
+    mutationFn: (payload: any) => invokeAsaas('simular_antecipacao', payload),
+  });
+
+  const solicitarAntecipacao = useMutation({
+    mutationFn: (payload: any) => invokeAsaas('solicitar_antecipacao', payload),
+    onSuccess: () => toast.success('Antecipação solicitada com sucesso'),
+    onError: (e: any) => toast.error('Erro na antecipação: ' + e.message),
   });
 
   const { data: config } = useQuery({
@@ -137,13 +266,75 @@ export function useAsaas(empresaId?: string) {
     enabled: !!empresaId,
   });
 
+  const { data: suggestions = [] } = useQuery({
+    queryKey: ['asaas-reconciliation-suggestions', empresaId],
+    queryFn: async () => {
+      if (!empresaId) return [];
+      const { data, error } = await supabase
+        .from('asaas_reconciliation_suggestions')
+        .select('*, contas_receber(descricao, valor, data_vencimento)')
+        .eq('empresa_id', empresaId)
+        .eq('status', 'PENDING');
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!empresaId,
+  });
+
+  const gerarSugestoes = useMutation({
+    mutationFn: async (payload: any) => {
+      if (!empresaId) throw new Error('Empresa não identificada');
+      const { error } = await supabase.rpc('generate_reconciliation_suggestions', {
+        p_empresa_id: empresaId,
+        p_transaction_date: payload.date,
+        p_transaction_value: payload.value,
+        p_transaction_id: payload.transaction_id
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['asaas-reconciliation-suggestions'] }),
+  });
+
+  const aceitarSugestao = useMutation({
+    mutationFn: async ({ suggestionId, contaId }: { suggestionId: string, contaId: string }) => {
+      await supabase.from('asaas_reconciliation_suggestions').update({ status: 'ACCEPTED' }).eq('id', suggestionId);
+      await supabase.from('contas_receber').update({ status: 'pago', data_recebimento: new Date().toISOString().split('T')[0] }).eq('id', contaId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-reconciliation-suggestions'] });
+      toast.success('Conciliação realizada com sucesso');
+    }
+  });
+
   return {
     customers,
+    loadingCustomers,
     criarCliente,
+    editarCliente,
+    excluirCliente,
     payments,
+    loadingPayments,
     criarCobranca,
+    cancelarCobranca,
+    estornarCobranca,
+    segundaViaBoleto,
+    buscarPixQrCode,
+    criarAssinatura,
+    cancelarAssinatura,
     consultarSaldo,
+    transferirPix,
+    transfers,
+    loadingTransfers,
+    sincronizarTransferencia,
+    consultarExtrato,
+    criarLinkPagamento,
+    excluirLinkPagamento,
+    simularAntecipacao,
+    solicitarAntecipacao,
     config,
+    suggestions,
+    aceitarSugestao,
+    gerarSugestoes,
     stats: {
       total: payments.length,
       pendentes: payments.filter(p => p.status === 'PENDING').length,
