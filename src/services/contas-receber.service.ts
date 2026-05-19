@@ -93,7 +93,7 @@ export const contasReceberService = {
         data_vencimento: input.data_vencimento,
         cliente_id: input.cliente_id,
         cliente_nome: input.cliente_nome,
-        categoria: input.categoria,
+        categoria_nome: input.categoria,
         observacoes: input.observacoes,
         numero_documento: input.numero_documento,
         forma_recebimento: input.forma_recebimento,
