@@ -4,11 +4,8 @@
 // ============================================
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { validatePayload, createErrorResponse, AsaasProxySchema, corsHeaders } from '../_shared/validation.ts'
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-}
 
 const ASAAS_BASE_URL = 'https://api.asaas.com/v3'
 
@@ -85,14 +82,14 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json()
-    const { action, data } = body
-
-    if (!action) {
-      return new Response(JSON.stringify({ error: 'Ação não especificada' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
+    const validation = validatePayload(AsaasProxySchema, body)
+    
+    if (!validation.success) {
+      return createErrorResponse(validation.error, 400, validation.details)
     }
+
+    const { action, data } = validation.data
+
 
     const ok = (result: any) => new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

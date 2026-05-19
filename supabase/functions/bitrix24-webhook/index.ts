@@ -1,32 +1,12 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
-interface BitrixWebhookEvent {
-  event: string;
-  data: {
-    FIELDS: Record<string, any>;
-  };
-  ts: string;
-  auth: {
-    domain: string;
-    client_endpoint: string;
-    server_endpoint: string;
-    member_id: string;
-    application_token: string;
-  };
-}
+import { validatePayload, createErrorResponse, Bitrix24WebhookSchema, corsHeaders } from '../_shared/validation.ts';
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const BITRIX_APPLICATION_TOKEN = Deno.env.get("BITRIX24_APPLICATION_TOKEN");
 
 serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -34,19 +14,18 @@ serve(async (req) => {
   try {
     console.log("[bitrix24-webhook] Received webhook request");
 
-    // Parse the webhook payload
     const contentType = req.headers.get("content-type") || "";
-    let payload: BitrixWebhookEvent | null = null;
+    let body: any = null;
 
     if (contentType.includes("application/json")) {
-      payload = await req.json();
+      body = await req.json();
     } else if (contentType.includes("application/x-www-form-urlencoded")) {
       const formData = await req.formData();
       const data: Record<string, any> = {};
       formData.forEach((value, key) => {
         data[key] = value;
       });
-      payload = {
+      body = {
         event: data.event || "",
         data: { FIELDS: data.data || {} },
         ts: data.ts || "",
@@ -60,15 +39,18 @@ serve(async (req) => {
       };
     }
 
-    if (!payload) {
-      console.error("[bitrix24-webhook] Invalid payload format");
-      return new Response(JSON.stringify({ error: "Invalid payload" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (!body) {
+      return createErrorResponse("Invalid payload format", 400);
     }
 
+    const validation = validatePayload(Bitrix24WebhookSchema, body);
+    if (!validation.success) {
+      return createErrorResponse(validation.error, 400, validation.details);
+    }
+
+    const payload = validation.data;
     console.log(`[bitrix24-webhook] Event: ${payload.event}`, JSON.stringify(payload.data));
+
 
     // Validate application token if configured
     if (BITRIX_APPLICATION_TOKEN && payload.auth?.application_token !== BITRIX_APPLICATION_TOKEN) {

@@ -1,9 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { validatePayload, createErrorResponse, AnalyzeDocumentSchema, corsHeaders } from '../_shared/validation.ts';
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -11,7 +7,15 @@ serve(async (req) => {
   }
 
   try {
-    const { fileName, fileType, fileContent } = await req.json();
+    const body = await req.json();
+    const validation = validatePayload(AnalyzeDocumentSchema, body);
+    
+    if (!validation.success) {
+      return createErrorResponse(validation.error, 400, validation.details);
+    }
+
+    const { fileName, fileType, fileContent } = validation.data;
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
