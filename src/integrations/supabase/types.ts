@@ -412,6 +412,51 @@ export type Database = {
         }
         Relationships: []
       }
+      alertas_preditivos: {
+        Row: {
+          created_at: string | null
+          data_prevista: string | null
+          descricao: string | null
+          empresa_id: string | null
+          id: string
+          metadata: Json | null
+          probabilidade: number | null
+          status: string | null
+          tipo: string
+          titulo: string
+          updated_at: string | null
+          valor_estimado: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          data_prevista?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          metadata?: Json | null
+          probabilidade?: number | null
+          status?: string | null
+          tipo: string
+          titulo: string
+          updated_at?: string | null
+          valor_estimado?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          data_prevista?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          metadata?: Json | null
+          probabilidade?: number | null
+          status?: string | null
+          tipo?: string
+          titulo?: string
+          updated_at?: string | null
+          valor_estimado?: number | null
+        }
+        Relationships: []
+      }
       alertas_tributarios: {
         Row: {
           created_at: string | null
