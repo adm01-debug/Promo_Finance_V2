@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { supabase } from '@/integrations/supabase/client'; // dashboard service
 
 export interface DashboardStats {
@@ -120,12 +120,12 @@ export const dashboardService = {
     const [receitas, despesas] = await Promise.all([
       supabase
         .from('contas_receber')
-        .select('id, descricao, valor, data_recebimento, status, categoria')
+        .select('id, descricao, valor, data_recebimento, status, categoria_nome')
         .order('data_recebimento', { ascending: false })
         .limit(limit),
       supabase
         .from('contas_pagar')
-        .select('id, descricao, valor, data_pagamento, status, categoria')
+        .select('id, descricao, valor, data_pagamento, status, categoria_nome')
         .order('data_pagamento', { ascending: false })
         .limit(limit),
     ]);
@@ -137,7 +137,7 @@ export const dashboardService = {
         valor: r.valor,
         tipo: 'receita' as const,
         data: r.data_recebimento,
-        categoria: r.categoria,
+        categoria: r.categoria_nome,
         status: r.status,
       })) || []),
       ...(despesas.data?.map(d => ({
@@ -146,7 +146,7 @@ export const dashboardService = {
         valor: d.valor,
         tipo: 'despesa' as const,
         data: d.data_pagamento,
-        categoria: d.categoria,
+        categoria: d.categoria_nome,
         status: d.status,
       })) || []),
     ];

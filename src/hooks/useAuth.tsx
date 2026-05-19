@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { toast } from 'sonner';
@@ -229,12 +229,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Best-effort: marca a sessão atual como revogada no banco antes do signOut.
     if (user) {
       try {
-        await (supabase
-          .from('user_sessions')
+        await (supabase.from('user_sessions') as any)
           .update({ revoked: true, revoked_at: new Date().toISOString() })
           .eq('user_id', user.id)
           .eq('is_current', true)
-          .eq('revoked', false) as any);
+          .eq('revoked', false);
       } catch (e) {
         logger.warn('[useAuth] Falha ao revogar user_session — seguindo', e);
       }

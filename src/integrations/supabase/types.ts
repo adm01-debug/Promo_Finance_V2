@@ -7208,6 +7208,42 @@ export type Database = {
           },
         ]
       }
+      sso_login_attempts: {
+        Row: {
+          context: Json | null
+          created_at: string | null
+          email: string | null
+          error_code: string | null
+          error_message: string | null
+          event_type: string
+          id: string
+          provider_id: string | null
+          success: boolean | null
+        }
+        Insert: {
+          context?: Json | null
+          created_at?: string | null
+          email?: string | null
+          error_code?: string | null
+          error_message?: string | null
+          event_type: string
+          id?: string
+          provider_id?: string | null
+          success?: boolean | null
+        }
+        Update: {
+          context?: Json | null
+          created_at?: string | null
+          email?: string | null
+          error_code?: string | null
+          error_message?: string | null
+          event_type?: string
+          id?: string
+          provider_id?: string | null
+          success?: boolean | null
+        }
+        Relationships: []
+      }
       sso_providers: {
         Row: {
           ativo: boolean | null
@@ -7516,6 +7552,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_action_audit: {
+        Row: {
+          action_type: string
+          created_at: string | null
+          entity_type: string | null
+          id: string
+          metadata: Json | null
+          new_value: Json | null
+          old_value: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          action_type: string
+          created_at?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json | null
+          new_value?: Json | null
+          old_value?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          action_type?: string
+          created_at?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json | null
+          new_value?: Json | null
+          old_value?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       user_anomalia_preferences: {
         Row: {
@@ -8851,6 +8920,18 @@ export type Database = {
         }
         Returns: string
       }
+      log_sso_onboarding_event: {
+        Args: {
+          _context?: Json
+          _email: string
+          _error_code?: string
+          _error_message?: string
+          _event_type: string
+          _provider_id?: string
+          _success?: boolean
+        }
+        Returns: undefined
+      }
       processar_regua_cobranca: {
         Args: { p_empresa_id?: string; p_simulate?: boolean }
         Returns: Json
@@ -8871,6 +8952,10 @@ export type Database = {
           is_suspicious: boolean
           lockout_seconds: number
         }[]
+      }
+      registrar_auditoria_config: {
+        Args: { _detalhes?: Json; _empresa_id?: string; _tipo_acao: string }
+        Returns: undefined
       }
       registrar_evento_pagar:
         | {

@@ -1,9 +1,9 @@
-// @ts-nocheck
+
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
 
-type StatusPagamento = Database['public']['Enums']['status_pagamento'];
-type TipoCobranca = Database['public']['Enums']['tipo_cobranca'];
+type StatusPagamento = 'pendente' | 'pago' | 'cancelado' | 'atrasado' | 'vencido' | string;
+type TipoCobranca = 'boleto' | 'pix' | 'cartao' | 'transferencia' | string;
 
 export interface ContaReceberFilters {
   status?: StatusPagamento;
@@ -38,7 +38,7 @@ export interface ContaReceberInput {
 
 export const contasReceberService = {
   async getAll(filters?: ContaReceberFilters) {
-    let query = supabase
+    let query: any = supabase
       .from('vw_contas_receber_painel')
       .select('*')
       .order('vencimento', { ascending: true });
@@ -50,7 +50,7 @@ export const contasReceberService = {
       query = query.eq('cliente_id', filters.cliente_id);
     }
     if (filters?.categoria) {
-      query = query.eq('categoria', filters.categoria);
+      query = query.eq('categoria_nome', filters.categoria);
     }
     if (filters?.startDate) {
       query = query.gte('vencimento', filters.startDate);
@@ -93,7 +93,7 @@ export const contasReceberService = {
         data_vencimento: input.data_vencimento,
         cliente_id: input.cliente_id,
         cliente_nome: input.cliente_nome,
-        categoria: input.categoria,
+        categoria_nome: input.categoria,
         observacoes: input.observacoes,
         numero_documento: input.numero_documento,
         forma_recebimento: input.forma_recebimento,
@@ -267,11 +267,11 @@ export const contasReceberService = {
   async getCategorias(): Promise<string[]> {
     const { data, error } = await supabase
       .from('contas_receber')
-      .select('categoria')
-      .not('categoria', 'is', null);
-
+      .select('categoria_nome')
+      .not('categoria_nome', 'is', null);
+    
     if (error) throw error;
-    return [...new Set((data || []).map(d => d.categoria).filter(Boolean) as string[])];
+    return [...new Set((data || []).map(d => d.categoria_nome).filter(Boolean) as string[])];
   },
 
   async getSummary(filters?: ContaReceberFilters) {

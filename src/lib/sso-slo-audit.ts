@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Auditoria de retries do SLO (Single Logout) feitos a partir do banner em /auth.
  *
