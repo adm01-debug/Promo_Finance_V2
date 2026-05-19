@@ -1308,6 +1308,7 @@ export type Database = {
           asaas_customer_id: string | null
           asaas_id: string | null
           bank_slip_url: string | null
+          codigo_barras: string | null
           conta_receber_id: string | null
           created_at: string
           data_pagamento: string | null
@@ -1316,7 +1317,13 @@ export type Database = {
           empresa_id: string | null
           id: string
           invoice_url: string | null
+          linha_digitavel: string | null
+          link_boleto: string | null
+          link_fatura: string | null
           metadata: Json | null
+          nosso_numero: string | null
+          pix_copia_cola: string | null
+          pix_qrcode: string | null
           status: string | null
           tipo: string | null
           updated_at: string
@@ -1327,6 +1334,7 @@ export type Database = {
           asaas_customer_id?: string | null
           asaas_id?: string | null
           bank_slip_url?: string | null
+          codigo_barras?: string | null
           conta_receber_id?: string | null
           created_at?: string
           data_pagamento?: string | null
@@ -1335,7 +1343,13 @@ export type Database = {
           empresa_id?: string | null
           id?: string
           invoice_url?: string | null
+          linha_digitavel?: string | null
+          link_boleto?: string | null
+          link_fatura?: string | null
           metadata?: Json | null
+          nosso_numero?: string | null
+          pix_copia_cola?: string | null
+          pix_qrcode?: string | null
           status?: string | null
           tipo?: string | null
           updated_at?: string
@@ -1346,6 +1360,7 @@ export type Database = {
           asaas_customer_id?: string | null
           asaas_id?: string | null
           bank_slip_url?: string | null
+          codigo_barras?: string | null
           conta_receber_id?: string | null
           created_at?: string
           data_pagamento?: string | null
@@ -1354,7 +1369,13 @@ export type Database = {
           empresa_id?: string | null
           id?: string
           invoice_url?: string | null
+          linha_digitavel?: string | null
+          link_boleto?: string | null
+          link_fatura?: string | null
           metadata?: Json | null
+          nosso_numero?: string | null
+          pix_copia_cola?: string | null
+          pix_qrcode?: string | null
           status?: string | null
           tipo?: string | null
           updated_at?: string
