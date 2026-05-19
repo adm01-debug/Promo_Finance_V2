@@ -1,0 +1,56 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  quality-gate:
+    name: Quality Gate & Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Lint check
+        run: bun run lint
+
+      - name: Type check
+        run: bun run type-check
+
+      - name: Unit & Integration Tests
+        run: bun run test:run
+
+      - name: Coverage check
+        run: |
+          bun run test:coverage
+          # O vitest.config.ts já define os thresholds (70%)
+          # Se não atingir, o comando falhará.
+
+      - name: Build check
+        run: bun run build
+
+      - name: Install Playwright Browsers
+        run: bunx playwright install --with-deps
+
+      - name: E2E Tests
+        run: bun run test:e2e
+        env:
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+      - name: Notify Failure
+        if: failure()
+        run: echo "CI Pipeline failed. Check the logs for details."
