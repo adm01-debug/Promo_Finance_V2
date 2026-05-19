@@ -412,6 +412,51 @@ export type Database = {
         }
         Relationships: []
       }
+      alertas_preditivos: {
+        Row: {
+          created_at: string | null
+          data_prevista: string | null
+          descricao: string | null
+          empresa_id: string | null
+          id: string
+          metadata: Json | null
+          probabilidade: number | null
+          status: string | null
+          tipo: string
+          titulo: string
+          updated_at: string | null
+          valor_estimado: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          data_prevista?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          metadata?: Json | null
+          probabilidade?: number | null
+          status?: string | null
+          tipo: string
+          titulo: string
+          updated_at?: string | null
+          valor_estimado?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          data_prevista?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          metadata?: Json | null
+          probabilidade?: number | null
+          status?: string | null
+          tipo?: string
+          titulo?: string
+          updated_at?: string | null
+          valor_estimado?: number | null
+        }
+        Relationships: []
+      }
       alertas_tributarios: {
         Row: {
           created_at: string | null
@@ -2759,6 +2804,7 @@ export type Database = {
           valor: number
           valor_desconto: number | null
           valor_recebido: number | null
+          vendedor_id: string | null
         }
         Insert: {
           anexo_url?: string | null
@@ -2798,6 +2844,7 @@ export type Database = {
           valor: number
           valor_desconto?: number | null
           valor_recebido?: number | null
+          vendedor_id?: string | null
         }
         Update: {
           anexo_url?: string | null
@@ -2837,6 +2884,7 @@ export type Database = {
           valor?: number
           valor_desconto?: number | null
           valor_recebido?: number | null
+          vendedor_id?: string | null
         }
         Relationships: [
           {
@@ -8602,6 +8650,10 @@ export type Database = {
       get_cron_run_history:
         | { Args: never; Returns: Json }
         | { Args: { p_job_name?: string; p_limit?: number }; Returns: Json }
+      get_retencoes_pendentes_count: {
+        Args: { p_empresa_id: string }
+        Returns: number
+      }
       get_user_permissions: {
         Args: { _user_id: string }
         Returns: {

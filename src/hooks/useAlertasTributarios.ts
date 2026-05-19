@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // ============================================
 // HOOK: ALERTAS TRIBUTÁRIOS EM TEMPO REAL
 // Monitoramento de prazos e compliance
@@ -197,7 +197,7 @@ export function useAlertasTributarios(empresaId?: string) {
     // Verificar DARFs pendentes
     const { data: darfsPendentes } = await (supabase
       .from('darfs')
-      .select('*') as any)
+      .select('id, data_vencimento, codigo_receita, descricao_receita, valor_total') as any)
       .eq('empresa_id', empresaId)
       .eq('status', 'gerado');
 
@@ -221,19 +221,15 @@ export function useAlertasTributarios(empresaId?: string) {
     });
 
     // Verificar retenções pendentes
-    const { data: retencoesPendentes } = await supabase
-      .from('retencoes_fonte')
-      .select('*')
-      .eq('empresa_id', empresaId)
-      .eq('status', 'pendente')
-      .eq('darf_gerado', false) as { data: any[] | null };
+    const { data: retencoesPendentes, error: errorRet } = await supabase.rpc('get_retencoes_pendentes_count', { p_empresa_id: empresaId });
+    const countRetencoes = (retencoesPendentes as number) || 0;
 
-    if (retencoesPendentes && retencoesPendentes.length > 5) {
+    if (countRetencoes > 5) {
       alertasParaCriar.push({
         empresa_id: empresaId,
         tipo: 'retencao_pendente',
-        titulo: `${retencoesPendentes.length} retenções aguardando DARF`,
-        mensagem: `Existem ${retencoesPendentes.length} retenções pendentes sem DARF gerado. Consolide e gere os DARFs.`,
+        titulo: `${countRetencoes} retenções aguardando DARF`,
+        mensagem: `Existem ${countRetencoes} retenções pendentes sem DARF gerado. Consolide e gere os DARFs.`,
         prioridade: 'media',
         acao_url: '/reforma-tributaria?tab=retencoes',
         acao_label: 'Gerenciar Retenções',
@@ -241,11 +237,11 @@ export function useAlertasTributarios(empresaId?: string) {
     }
 
     // Verificar créditos próximos de expirar
-    const { data: creditos } = await supabase
+    const { data: creditos } = await (supabase
       .from('creditos_tributarios')
-      .select('*')
+      .select('id, data_vencimento, valor') as any)
       .eq('empresa_id', empresaId)
-      .eq('status', 'disponivel') as { data: any[] | null };
+      .eq('status', 'disponivel');
 
     // Créditos com mais de 5 anos podem expirar
     creditos?.forEach(credito => {
