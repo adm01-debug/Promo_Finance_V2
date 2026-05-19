@@ -54,7 +54,9 @@ jobs:
             --no-check \
             supabase/functions/sso-test-login/pipeline.test.ts \
             supabase/functions/sso-callback/build-profile-sync-delta.test.ts \
-            supabase/functions/sso-callback/claims.test.ts
+            supabase/functions/sso-callback/claims.test.ts \
+            supabase/functions/fuzz_test.ts
+
 
   integration-tests:
     name: Integration tests (edge functions live)

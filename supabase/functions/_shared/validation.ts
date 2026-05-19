@@ -53,14 +53,14 @@ export const AsaasWebhookSchema = z.object({
     transactionReceiptUrl: z.string().optional(),
   }).optional(),
   id: z.string().optional(),
-});
+}).strict();
 
 export const BlingWebhookSchema = z.object({
-  event: z.string().optional(),
+  event: z.string(),
   module: z.string().optional(),
-  data: z.record(z.any()).optional(),
+  data: z.record(z.any()),
   retries: z.number().optional()
-});
+}).strict();
 
 export const Bitrix24WebhookSchema = z.object({
   event: z.string(),
@@ -75,12 +75,12 @@ export const Bitrix24WebhookSchema = z.object({
     member_id: z.string().optional(),
     application_token: z.string().optional(),
   }).optional()
-});
+}).strict();
 
 export const AsaasProxySchema = z.object({
   action: z.string(),
   data: z.record(z.any()).optional()
-});
+}).strict();
 
 export const BlingProxySchema = z.object({
   action: z.string(),
@@ -91,19 +91,19 @@ export const AnalyzeDocumentSchema = z.object({
   fileName: z.string(),
   fileType: z.string(),
   fileContent: z.string(), // base64
-});
+}).strict();
 
 export const WhatsappWebhookSchema = z.object({
-  event: z.string().optional(),
+  event: z.string(),
   messageId: z.string().optional(),
   status: z.string().optional(),
-  from: z.string().optional(),
+  from: z.string(),
   text: z.string().optional(),
-});
+}).strict();
 
 export const CnpjaLookupSchema = z.object({
   cnpj: z.string().min(14),
-});
+}).strict();
 
 export const EnviarAlertaEmailSchema = z.object({
   tipo: z.enum(['vencimento', 'inadimplencia', 'aprovacao', 'ruptura', 'asaas_failure']),
@@ -115,20 +115,21 @@ export const EnviarAlertaEmailSchema = z.object({
     dataVencimento: z.string().optional(),
     urlAcao: z.string().optional(),
   }),
-});
+}).strict();
 
 export const OptionalEmpresaIdSchema = z.object({
   empresa_id: z.string().uuid().optional().nullable(),
-});
+}).strict();
 
 export const BenchmarkingSetorialSchema = z.object({
   metricas: z.record(z.any()),
   setor: z.string().optional(),
-});
+}).strict();
 
 export const Bitrix24SyncSchema = z.object({
   action: z.enum([
     "sync_deals", 
+    "sync_deals_all",
     "sync_contacts", 
     "sync_companies", 
     "export_payment_status", 
@@ -138,7 +139,7 @@ export const Bitrix24SyncSchema = z.object({
     "sync_boleto"
   ]),
   params: z.record(z.any()).optional(),
-});
+}).strict();
 
 export const ContabilizarEventoSchema = z.object({
   empresa_id: z.string().uuid(),
@@ -150,16 +151,16 @@ export const ContabilizarEventoSchema = z.object({
   categoria_id: z.string().uuid().optional().nullable(),
   dry_run: z.boolean().optional(),
   ignore_rules: z.boolean().optional(),
-});
+}).strict();
 
 export const ExecutarRelatoriosSchema = z.object({
   relatorio_id: z.string().uuid().optional().nullable(),
-});
+}).strict();
 
 export const WhatsappIaProativoSchema = z.object({
   action: z.enum(['analisar-alertas', 'enviar-mensagem', 'gerar-resposta-ia']),
   data: z.record(z.any()).optional(),
-});
+}).strict();
 
 export const ExpertAgentSchema = z.object({
   messages: z.array(z.object({
@@ -168,15 +169,13 @@ export const ExpertAgentSchema = z.object({
   })),
   context: z.string().optional().nullable(),
   conversationSummary: z.string().optional().nullable(),
-});
-
-
+}).strict();
 
 export const CalculoIvaSchema = z.object({
   faturamentoAnual: z.number(),
   ano: z.number().optional(),
   setor: z.string().optional(),
-});
+}).strict();
 
 export const CategorizarDespesaSchema = z.object({
   despesas: z.array(z.object({
@@ -186,10 +185,4 @@ export const CategorizarDespesaSchema = z.object({
     fornecedor_nome: z.string().optional(),
     data_vencimento: z.string().optional(),
   })),
-});
-
-
-
-
-
-
+}).strict();
