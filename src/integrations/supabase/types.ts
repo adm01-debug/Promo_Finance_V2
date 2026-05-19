@@ -1505,6 +1505,8 @@ export type Database = {
           entity_type: string
           id: string
           internal_field_name: string
+          obrigatorio: boolean | null
+          transformacao: string | null
         }
         Insert: {
           ativo?: boolean | null
@@ -1517,6 +1519,8 @@ export type Database = {
           entity_type: string
           id?: string
           internal_field_name: string
+          obrigatorio?: boolean | null
+          transformacao?: string | null
         }
         Update: {
           ativo?: boolean | null
@@ -1529,6 +1533,8 @@ export type Database = {
           entity_type?: string
           id?: string
           internal_field_name?: string
+          obrigatorio?: boolean | null
+          transformacao?: string | null
         }
         Relationships: [
           {
@@ -6871,6 +6877,7 @@ export type Database = {
           created_at: string | null
           empresa_id: string | null
           id: string
+          score: number | null
           status: string | null
           titulo: string
         }
@@ -6878,6 +6885,7 @@ export type Database = {
           created_at?: string | null
           empresa_id?: string | null
           id?: string
+          score?: number | null
           status?: string | null
           titulo: string
         }
@@ -6885,6 +6893,7 @@ export type Database = {
           created_at?: string | null
           empresa_id?: string | null
           id?: string
+          score?: number | null
           status?: string | null
           titulo?: string
         }
@@ -7601,6 +7610,16 @@ export type Database = {
             }
             Returns: undefined
           }
+        | {
+            Args: {
+              p_conciliacao_id: string
+              p_conta_pagar_id?: string
+              p_conta_receber_id?: string
+              p_transacao_id?: string
+              p_user_id: string
+            }
+            Returns: undefined
+          }
       confirmar_envio_cobranca: {
         Args: {
           p_erro?: string
@@ -7615,6 +7634,14 @@ export type Database = {
         | { Args: { p_conciliacao_id: string }; Returns: undefined }
         | {
             Args: { p_conciliacao_id: string; p_transacao_id?: string }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              p_conciliacao_id: string
+              p_transacao_id?: string
+              p_user_id?: string
+            }
             Returns: undefined
           }
       export_asaas_audit_csv: {
