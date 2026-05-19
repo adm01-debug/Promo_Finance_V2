@@ -898,17 +898,27 @@ export type Database = {
           base_calculo_csll: number | null
           base_calculo_irpj: number | null
           compensacao_prejuizo: number | null
+          compensacao_prejuizos: number | null
           created_at: string | null
+          created_by: string | null
+          csll_aliquota: number | null
           csll_valor: number | null
           csrf_retido: number | null
           empresa_id: string
+          estimativas_pagas: number | null
           exclusoes_permanentes: number | null
           exclusoes_temporarias: number | null
           id: string
+          irpj_aliquota_adicional: number | null
+          irpj_aliquota_normal: number | null
           irpj_valor: number | null
           irrf_retido: number | null
           lucro_antes_impostos: number | null
           lucro_contabil: number | null
+          lucro_real: number | null
+          lucro_real_antes_compensacao: number | null
+          outros_incentivos: number | null
+          pat_deducao: number | null
           periodo_fim: string
           periodo_inicio: string
           saldo_negativo_anterior: number | null
@@ -925,17 +935,27 @@ export type Database = {
           base_calculo_csll?: number | null
           base_calculo_irpj?: number | null
           compensacao_prejuizo?: number | null
+          compensacao_prejuizos?: number | null
           created_at?: string | null
+          created_by?: string | null
+          csll_aliquota?: number | null
           csll_valor?: number | null
           csrf_retido?: number | null
           empresa_id: string
+          estimativas_pagas?: number | null
           exclusoes_permanentes?: number | null
           exclusoes_temporarias?: number | null
           id?: string
+          irpj_aliquota_adicional?: number | null
+          irpj_aliquota_normal?: number | null
           irpj_valor?: number | null
           irrf_retido?: number | null
           lucro_antes_impostos?: number | null
           lucro_contabil?: number | null
+          lucro_real?: number | null
+          lucro_real_antes_compensacao?: number | null
+          outros_incentivos?: number | null
+          pat_deducao?: number | null
           periodo_fim: string
           periodo_inicio: string
           saldo_negativo_anterior?: number | null
@@ -952,17 +972,27 @@ export type Database = {
           base_calculo_csll?: number | null
           base_calculo_irpj?: number | null
           compensacao_prejuizo?: number | null
+          compensacao_prejuizos?: number | null
           created_at?: string | null
+          created_by?: string | null
+          csll_aliquota?: number | null
           csll_valor?: number | null
           csrf_retido?: number | null
           empresa_id?: string
+          estimativas_pagas?: number | null
           exclusoes_permanentes?: number | null
           exclusoes_temporarias?: number | null
           id?: string
+          irpj_aliquota_adicional?: number | null
+          irpj_aliquota_normal?: number | null
           irpj_valor?: number | null
           irrf_retido?: number | null
           lucro_antes_impostos?: number | null
           lucro_contabil?: number | null
+          lucro_real?: number | null
+          lucro_real_antes_compensacao?: number | null
+          outros_incentivos?: number | null
+          pat_deducao?: number | null
           periodo_fim?: string
           periodo_inicio?: string
           saldo_negativo_anterior?: number | null
@@ -6061,10 +6091,13 @@ export type Database = {
         Row: {
           ano_origem: number | null
           created_at: string | null
+          created_by: string | null
           empresa_id: string
           id: string
           periodo: string
           saldo_atual: number | null
+          saldo_disponivel: number | null
+          status: string | null
           tipo: string | null
           valor_acumulado: number | null
           valor_compensado: number | null
@@ -6074,10 +6107,13 @@ export type Database = {
         Insert: {
           ano_origem?: number | null
           created_at?: string | null
+          created_by?: string | null
           empresa_id: string
           id?: string
           periodo: string
           saldo_atual?: number | null
+          saldo_disponivel?: number | null
+          status?: string | null
           tipo?: string | null
           valor_acumulado?: number | null
           valor_compensado?: number | null
@@ -6087,10 +6123,13 @@ export type Database = {
         Update: {
           ano_origem?: number | null
           created_at?: string | null
+          created_by?: string | null
           empresa_id?: string
           id?: string
           periodo?: string
           saldo_atual?: number | null
+          saldo_disponivel?: number | null
+          status?: string | null
           tipo?: string | null
           valor_acumulado?: number | null
           valor_compensado?: number | null
