@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';

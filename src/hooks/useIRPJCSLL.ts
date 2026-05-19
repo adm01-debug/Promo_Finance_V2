@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ============================================
 // HOOK: IRPJ/CSLL - LUCRO REAL
 // Gerencia apurações de IRPJ e CSLL

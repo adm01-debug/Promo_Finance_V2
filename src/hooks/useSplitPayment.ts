@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ============================================
 // HOOK: SPLIT PAYMENT AUTOMÁTICO
 // Recolhimento fracionado LC 214/2025

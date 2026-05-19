@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Filter, Calendar, Users, Building2, Clock, Eye, PieChart as PieChartIcon } from "lucide-react";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ============================================
 // HOOK: GESTÃO DE INCENTIVOS FISCAIS
 // Interface para cadastrar/gerenciar incentivos

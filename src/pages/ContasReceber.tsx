@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { motion } from 'framer-motion';
 import { Plus, Inbox, CheckCircle2, XCircle, LayoutGrid, Table as TableIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';

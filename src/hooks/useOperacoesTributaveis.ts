@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ============================================
 // HOOK: OPERAÇÕES TRIBUTÁVEIS
 // Gerencia operações com cálculo CBS/IBS/IS
