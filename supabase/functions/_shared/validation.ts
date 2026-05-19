@@ -140,6 +140,23 @@ export const Bitrix24SyncSchema = z.object({
   params: z.record(z.any()).optional(),
 });
 
+export const CalculoIvaSchema = z.object({
+  faturamentoAnual: z.number(),
+  ano: z.number().optional(),
+  setor: z.string().optional(),
+});
+
+export const CategorizarDespesaSchema = z.object({
+  despesas: z.array(z.object({
+    id: z.string().optional(),
+    descricao: z.string(),
+    valor: z.number(),
+    fornecedor_nome: z.string().optional(),
+    data_vencimento: z.string().optional(),
+  })),
+});
+
+
 
 
 
