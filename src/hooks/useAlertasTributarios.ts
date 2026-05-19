@@ -75,13 +75,13 @@ export function useAlertasTributarios(empresaId?: string) {
   const { data: alertas = [], isLoading, refetch } = useQuery({
     queryKey: ['alertas-tributarios', empresaId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase
         .from('alertas_tributarios')
         .select('*')
         .eq('resolvido', false)
         .eq('empresa_id', empresaId || '')
         .order('prioridade', { ascending: false })
-        .order('data_vencimento', { ascending: true });
+        .order('data_vencimento', { ascending: true }) as any);
 
       if (error) throw error;
       return (data || []) as AlertaTributario[];
