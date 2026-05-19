@@ -13,7 +13,7 @@ export type Cliente = Tables<'clientes'>;
 export type Fornecedor = Tables<'fornecedores'>;
 export type ContaPagar = Tables<'contas_pagar'>;
 export type ContaReceber = Tables<'contas_receber'>;
-export type StatusPagamento = Database['public']['Enums']['status_pagamento'];
+export type StatusPagamento = 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
 
 // Type for external data coming from the edge function proxy
 export interface ExternalCliente {
@@ -166,7 +166,10 @@ export function useContasBancarias(empresaId?: string) {
     queryFn: async () => {
       let query = supabase
         .from('contas_bancarias')
-        .select('*, empresas(razao_social, nome_fantasia)')
+        .select(`
+          *,
+          empresas:empresa_id (razao_social, nome_fantasia)
+        `)
         .eq('ativo', true)
         .order('banco');
       
@@ -269,7 +272,12 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
 
       let dataQuery = supabase
         .from('contas_pagar')
-        .select('*, centros_custo(nome, codigo), contas_bancarias(banco), fornecedores(razao_social, nome_fantasia)')
+        .select(`
+          *,
+          centros_custo:centro_custo_id (nome, codigo),
+          contas_bancarias:conta_bancaria_id (banco),
+          fornecedores:fornecedor_id (razao_social, nome_fantasia)
+        `)
         .order('data_vencimento', { ascending: true })
         .range(from, to);
 
@@ -357,7 +365,12 @@ export function useContasReceberPaginated(params: PaginatedContasReceberParams) 
 
       let dataQuery = supabase
         .from('contas_receber')
-        .select('*, centros_custo(nome, codigo), contas_bancarias(banco), clientes(razao_social, nome_fantasia, score)')
+        .select(`
+          *,
+          centros_custo:centro_custo_id (nome, codigo),
+          contas_bancarias:conta_bancaria_id (banco),
+          clientes:cliente_id (razao_social, nome_fantasia, score)
+        `)
         .order('data_vencimento', { ascending: true })
         .range(from, to);
 
