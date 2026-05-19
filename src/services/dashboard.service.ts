@@ -120,12 +120,12 @@ export const dashboardService = {
     const [receitas, despesas] = await Promise.all([
       supabase
         .from('contas_receber')
-        .select('id, descricao, valor, data_recebimento, status, categoria')
+        .select('id, descricao, valor, data_recebimento, status, categoria_nome')
         .order('data_recebimento', { ascending: false })
         .limit(limit),
       supabase
         .from('contas_pagar')
-        .select('id, descricao, valor, data_pagamento, status, categoria')
+        .select('id, descricao, valor, data_pagamento, status, categoria_nome')
         .order('data_pagamento', { ascending: false })
         .limit(limit),
     ]);
