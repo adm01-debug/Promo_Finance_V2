@@ -661,6 +661,36 @@ export type Database = {
         }
         Relationships: []
       }
+      anomalia_detection_runs: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          id: string
+          inseridas: number | null
+          status: string | null
+          trigger_source: string | null
+          triggered_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          inseridas?: number | null
+          status?: string | null
+          trigger_source?: string | null
+          triggered_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          inseridas?: number | null
+          status?: string | null
+          trigger_source?: string | null
+          triggered_by?: string | null
+        }
+        Relationships: []
+      }
       anomalia_toast_eventos: {
         Row: {
           acoes_disponiveis: string[] | null
@@ -803,6 +833,98 @@ export type Database = {
           valor_envolvido?: number | null
         }
         Relationships: []
+      }
+      aprovacao_comentarios: {
+        Row: {
+          comentario: string | null
+          created_at: string | null
+          id: string
+          solicitacao_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          comentario?: string | null
+          created_at?: string | null
+          id?: string
+          solicitacao_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          comentario?: string | null
+          created_at?: string | null
+          id?: string
+          solicitacao_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      apuracoes_tributarias: {
+        Row: {
+          ano: number | null
+          cbs_a_compensar: number | null
+          cbs_a_pagar: number | null
+          cbs_creditos: number | null
+          cbs_debitos: number | null
+          competencia: string | null
+          created_at: string | null
+          empresa_id: string | null
+          ibs_a_compensar: number | null
+          ibs_a_pagar: number | null
+          ibs_creditos: number | null
+          ibs_debitos: number | null
+          id: string
+          mes: number | null
+          status: string | null
+          tipo_tributo: string | null
+          valor_total: number | null
+        }
+        Insert: {
+          ano?: number | null
+          cbs_a_compensar?: number | null
+          cbs_a_pagar?: number | null
+          cbs_creditos?: number | null
+          cbs_debitos?: number | null
+          competencia?: string | null
+          created_at?: string | null
+          empresa_id?: string | null
+          ibs_a_compensar?: number | null
+          ibs_a_pagar?: number | null
+          ibs_creditos?: number | null
+          ibs_debitos?: number | null
+          id?: string
+          mes?: number | null
+          status?: string | null
+          tipo_tributo?: string | null
+          valor_total?: number | null
+        }
+        Update: {
+          ano?: number | null
+          cbs_a_compensar?: number | null
+          cbs_a_pagar?: number | null
+          cbs_creditos?: number | null
+          cbs_debitos?: number | null
+          competencia?: string | null
+          created_at?: string | null
+          empresa_id?: string | null
+          ibs_a_compensar?: number | null
+          ibs_a_pagar?: number | null
+          ibs_creditos?: number | null
+          ibs_debitos?: number | null
+          id?: string
+          mes?: number | null
+          status?: string | null
+          tipo_tributo?: string | null
+          valor_total?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "apuracoes_tributarias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       asaas_audit_trail: {
         Row: {
@@ -1802,6 +1924,50 @@ export type Database = {
         }
         Relationships: []
       }
+      configuracoes_aprovacao: {
+        Row: {
+          aprovadores_obrigatorios: number | null
+          ativo: boolean | null
+          created_at: string | null
+          empresa_id: string | null
+          id: string
+          modulo: string | null
+          updated_at: string | null
+          valor_minimo: number | null
+          valor_minimo_aprovacao: number | null
+        }
+        Insert: {
+          aprovadores_obrigatorios?: number | null
+          ativo?: boolean | null
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          modulo?: string | null
+          updated_at?: string | null
+          valor_minimo?: number | null
+          valor_minimo_aprovacao?: number | null
+        }
+        Update: {
+          aprovadores_obrigatorios?: number | null
+          ativo?: boolean | null
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          modulo?: string | null
+          updated_at?: string | null
+          valor_minimo?: number | null
+          valor_minimo_aprovacao?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "configuracoes_aprovacao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       configuracoes_duplicidade: {
         Row: {
           ativo: boolean
@@ -1901,6 +2067,7 @@ export type Database = {
       contas_pagar: {
         Row: {
           anexo_url: string | null
+          aprovado_por: string | null
           categoria: string | null
           categoria_id: string | null
           categoria_nome: string | null
@@ -1933,6 +2100,7 @@ export type Database = {
         }
         Insert: {
           anexo_url?: string | null
+          aprovado_por?: string | null
           categoria?: string | null
           categoria_id?: string | null
           categoria_nome?: string | null
@@ -1965,6 +2133,7 @@ export type Database = {
         }
         Update: {
           anexo_url?: string | null
+          aprovado_por?: string | null
           categoria?: string | null
           categoria_id?: string | null
           categoria_nome?: string | null
@@ -2176,6 +2345,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "contratos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creditos_tributarios: {
+        Row: {
+          competencia_origem: string | null
+          created_at: string | null
+          data_origem: string
+          empresa_id: string | null
+          id: string
+          saldo_disponivel: number
+          status: string | null
+          tipo_tributo: string
+        }
+        Insert: {
+          competencia_origem?: string | null
+          created_at?: string | null
+          data_origem?: string
+          empresa_id?: string | null
+          id?: string
+          saldo_disponivel?: number
+          status?: string | null
+          tipo_tributo: string
+        }
+        Update: {
+          competencia_origem?: string | null
+          created_at?: string | null
+          data_origem?: string
+          empresa_id?: string | null
+          id?: string
+          saldo_disponivel?: number
+          status?: string | null
+          tipo_tributo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creditos_tributarios_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
@@ -3148,6 +3358,57 @@ export type Database = {
           },
         ]
       }
+      fluxos_aprovacao_niveis: {
+        Row: {
+          configuracao_id: string | null
+          created_at: string | null
+          descricao: string | null
+          empresa_id: string | null
+          id: string
+          nivel: number | null
+          nome: string | null
+          ordem: number | null
+          role_responsavel: string | null
+        }
+        Insert: {
+          configuracao_id?: string | null
+          created_at?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          nivel?: number | null
+          nome?: string | null
+          ordem?: number | null
+          role_responsavel?: string | null
+        }
+        Update: {
+          configuracao_id?: string | null
+          created_at?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          nivel?: number | null
+          nome?: string | null
+          ordem?: number | null
+          role_responsavel?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fluxos_aprovacao_niveis_configuracao_id_fkey"
+            columns: ["configuracao_id"]
+            isOneToOne: false
+            referencedRelation: "configuracoes_aprovacao"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fluxos_aprovacao_niveis_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fornecedores: {
         Row: {
           cnpj: string | null
@@ -4059,6 +4320,44 @@ export type Database = {
         }
         Relationships: []
       }
+      movimentacoes: {
+        Row: {
+          created_at: string | null
+          data_movimentacao: string | null
+          descricao: string | null
+          empresa_id: string | null
+          id: string
+          tipo: string | null
+          valor: number
+        }
+        Insert: {
+          created_at?: string | null
+          data_movimentacao?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          tipo?: string | null
+          valor?: number
+        }
+        Update: {
+          created_at?: string | null
+          data_movimentacao?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          tipo?: string | null
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "movimentacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       negativacoes: {
         Row: {
           bureau: string | null
@@ -4163,6 +4462,56 @@ export type Database = {
             columns: ["device_id"]
             isOneToOne: false
             referencedRelation: "user_devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      operacoes_tributaveis: {
+        Row: {
+          cbs_aliquota: number | null
+          cbs_valor: number | null
+          created_at: string | null
+          data_operacao: string | null
+          empresa_id: string | null
+          ibs_aliquota: number | null
+          ibs_valor: number | null
+          id: string
+          status: string | null
+          tipo_operacao: string | null
+          valor_total: number | null
+        }
+        Insert: {
+          cbs_aliquota?: number | null
+          cbs_valor?: number | null
+          created_at?: string | null
+          data_operacao?: string | null
+          empresa_id?: string | null
+          ibs_aliquota?: number | null
+          ibs_valor?: number | null
+          id?: string
+          status?: string | null
+          tipo_operacao?: string | null
+          valor_total?: number | null
+        }
+        Update: {
+          cbs_aliquota?: number | null
+          cbs_valor?: number | null
+          created_at?: string | null
+          data_operacao?: string | null
+          empresa_id?: string | null
+          ibs_aliquota?: number | null
+          ibs_valor?: number | null
+          id?: string
+          status?: string | null
+          tipo_operacao?: string | null
+          valor_total?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "operacoes_tributaveis_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
             referencedColumns: ["id"]
           },
         ]
@@ -4759,6 +5108,47 @@ export type Database = {
           window_start?: string | null
         }
         Relationships: []
+      }
+      regimes_especiais_empresa: {
+        Row: {
+          ativo: boolean | null
+          created_at: string | null
+          data_inicio: string | null
+          empresa_id: string | null
+          id: string
+          reducao_cbs: number | null
+          reducao_ibs: number | null
+          regime_nome: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          created_at?: string | null
+          data_inicio?: string | null
+          empresa_id?: string | null
+          id?: string
+          reducao_cbs?: number | null
+          reducao_ibs?: number | null
+          regime_nome: string
+        }
+        Update: {
+          ativo?: boolean | null
+          created_at?: string | null
+          data_inicio?: string | null
+          empresa_id?: string | null
+          id?: string
+          reducao_cbs?: number | null
+          reducao_ibs?: number | null
+          regime_nome?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regimes_especiais_empresa_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       regimes_tributarios: {
         Row: {
@@ -6334,6 +6724,23 @@ export type Database = {
           },
         ]
       }
+      vw_dre_mensal: {
+        Row: {
+          despesa: number | null
+          empresa_id: string | null
+          mes: string | null
+          receita: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "movimentacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vw_fluxo_caixa_diario: {
         Row: {
           data: string | null
@@ -6354,23 +6761,20 @@ export type Database = {
       }
       vw_saldos_contas: {
         Row: {
-          banco: string | null
           conta_id: string | null
-          empresa_id: string | null
+          nome: string | null
           saldo_atual: number | null
           saldo_disponivel: number | null
         }
         Insert: {
-          banco?: string | null
           conta_id?: string | null
-          empresa_id?: string | null
+          nome?: string | null
           saldo_atual?: number | null
           saldo_disponivel?: number | null
         }
         Update: {
-          banco?: string | null
           conta_id?: string | null
-          empresa_id?: string | null
+          nome?: string | null
           saldo_atual?: number | null
           saldo_disponivel?: number | null
         }
@@ -6593,6 +6997,20 @@ export type Database = {
         | "CANCELLED"
         | "REJECTED"
         | "EXPIRED"
+      prioridade_alerta: "baixa" | "media" | "alta" | "critica"
+      tipo_alerta_tributario:
+        | "vencimento_apuracao"
+        | "vencimento_darf"
+        | "vencimento_obrigacao"
+        | "prazo_credito"
+        | "limite_compensacao"
+        | "pendencia_conciliacao"
+        | "inconsistencia_fiscal"
+        | "atualizacao_legislacao"
+        | "split_payment"
+        | "retencao_pendente"
+        | "nfe_rejeitada"
+        | "saldo_negativo"
       vehicle_type: "MOTORCYCLE" | "CAR" | "VAN" | "TRUCK"
     }
     CompositeTypes: {
@@ -6776,6 +7194,21 @@ export const Constants = {
         "CANCELLED",
         "REJECTED",
         "EXPIRED",
+      ],
+      prioridade_alerta: ["baixa", "media", "alta", "critica"],
+      tipo_alerta_tributario: [
+        "vencimento_apuracao",
+        "vencimento_darf",
+        "vencimento_obrigacao",
+        "prazo_credito",
+        "limite_compensacao",
+        "pendencia_conciliacao",
+        "inconsistencia_fiscal",
+        "atualizacao_legislacao",
+        "split_payment",
+        "retencao_pendente",
+        "nfe_rejeitada",
+        "saldo_negativo",
       ],
       vehicle_type: ["MOTORCYCLE", "CAR", "VAN", "TRUCK"],
     },
