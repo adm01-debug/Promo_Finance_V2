@@ -1901,6 +1901,7 @@ export type Database = {
       contas_pagar: {
         Row: {
           anexo_url: string | null
+          aprovado_por: string | null
           categoria: string | null
           categoria_id: string | null
           categoria_nome: string | null
@@ -1933,6 +1934,7 @@ export type Database = {
         }
         Insert: {
           anexo_url?: string | null
+          aprovado_por?: string | null
           categoria?: string | null
           categoria_id?: string | null
           categoria_nome?: string | null
@@ -1965,6 +1967,7 @@ export type Database = {
         }
         Update: {
           anexo_url?: string | null
+          aprovado_por?: string | null
           categoria?: string | null
           categoria_id?: string | null
           categoria_nome?: string | null
@@ -2176,6 +2179,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "contratos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creditos_tributarios: {
+        Row: {
+          competencia_origem: string | null
+          created_at: string | null
+          data_origem: string
+          empresa_id: string | null
+          id: string
+          saldo_disponivel: number
+          status: string | null
+          tipo_tributo: string
+        }
+        Insert: {
+          competencia_origem?: string | null
+          created_at?: string | null
+          data_origem?: string
+          empresa_id?: string | null
+          id?: string
+          saldo_disponivel?: number
+          status?: string | null
+          tipo_tributo: string
+        }
+        Update: {
+          competencia_origem?: string | null
+          created_at?: string | null
+          data_origem?: string
+          empresa_id?: string | null
+          id?: string
+          saldo_disponivel?: number
+          status?: string | null
+          tipo_tributo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creditos_tributarios_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
@@ -4059,6 +4103,44 @@ export type Database = {
         }
         Relationships: []
       }
+      movimentacoes: {
+        Row: {
+          created_at: string | null
+          data_movimentacao: string | null
+          descricao: string | null
+          empresa_id: string | null
+          id: string
+          tipo: string | null
+          valor: number
+        }
+        Insert: {
+          created_at?: string | null
+          data_movimentacao?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          tipo?: string | null
+          valor?: number
+        }
+        Update: {
+          created_at?: string | null
+          data_movimentacao?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          tipo?: string | null
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "movimentacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       negativacoes: {
         Row: {
           bureau: string | null
@@ -4759,6 +4841,47 @@ export type Database = {
           window_start?: string | null
         }
         Relationships: []
+      }
+      regimes_especiais_empresa: {
+        Row: {
+          ativo: boolean | null
+          created_at: string | null
+          data_inicio: string | null
+          empresa_id: string | null
+          id: string
+          reducao_cbs: number | null
+          reducao_ibs: number | null
+          regime_nome: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          created_at?: string | null
+          data_inicio?: string | null
+          empresa_id?: string | null
+          id?: string
+          reducao_cbs?: number | null
+          reducao_ibs?: number | null
+          regime_nome: string
+        }
+        Update: {
+          ativo?: boolean | null
+          created_at?: string | null
+          data_inicio?: string | null
+          empresa_id?: string | null
+          id?: string
+          reducao_cbs?: number | null
+          reducao_ibs?: number | null
+          regime_nome?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regimes_especiais_empresa_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       regimes_tributarios: {
         Row: {
@@ -6334,6 +6457,23 @@ export type Database = {
           },
         ]
       }
+      vw_dre_mensal: {
+        Row: {
+          despesa: number | null
+          empresa_id: string | null
+          mes: string | null
+          receita: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "movimentacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vw_fluxo_caixa_diario: {
         Row: {
           data: string | null
@@ -6354,23 +6494,20 @@ export type Database = {
       }
       vw_saldos_contas: {
         Row: {
-          banco: string | null
           conta_id: string | null
-          empresa_id: string | null
+          nome: string | null
           saldo_atual: number | null
           saldo_disponivel: number | null
         }
         Insert: {
-          banco?: string | null
           conta_id?: string | null
-          empresa_id?: string | null
+          nome?: string | null
           saldo_atual?: number | null
           saldo_disponivel?: number | null
         }
         Update: {
-          banco?: string | null
           conta_id?: string | null
-          empresa_id?: string | null
+          nome?: string | null
           saldo_atual?: number | null
           saldo_disponivel?: number | null
         }
@@ -6593,6 +6730,20 @@ export type Database = {
         | "CANCELLED"
         | "REJECTED"
         | "EXPIRED"
+      prioridade_alerta: "baixa" | "media" | "alta" | "critica"
+      tipo_alerta_tributario:
+        | "vencimento_apuracao"
+        | "vencimento_darf"
+        | "vencimento_obrigacao"
+        | "prazo_credito"
+        | "limite_compensacao"
+        | "pendencia_conciliacao"
+        | "inconsistencia_fiscal"
+        | "atualizacao_legislacao"
+        | "split_payment"
+        | "retencao_pendente"
+        | "nfe_rejeitada"
+        | "saldo_negativo"
       vehicle_type: "MOTORCYCLE" | "CAR" | "VAN" | "TRUCK"
     }
     CompositeTypes: {
@@ -6776,6 +6927,21 @@ export const Constants = {
         "CANCELLED",
         "REJECTED",
         "EXPIRED",
+      ],
+      prioridade_alerta: ["baixa", "media", "alta", "critica"],
+      tipo_alerta_tributario: [
+        "vencimento_apuracao",
+        "vencimento_darf",
+        "vencimento_obrigacao",
+        "prazo_credito",
+        "limite_compensacao",
+        "pendencia_conciliacao",
+        "inconsistencia_fiscal",
+        "atualizacao_legislacao",
+        "split_payment",
+        "retencao_pendente",
+        "nfe_rejeitada",
+        "saldo_negativo",
       ],
       vehicle_type: ["MOTORCYCLE", "CAR", "VAN", "TRUCK"],
     },
