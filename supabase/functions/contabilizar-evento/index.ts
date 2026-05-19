@@ -4,13 +4,8 @@
 // contábil em partidas dobradas.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { ContabilizarEventoSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
 
 interface Body {
   empresa_id: string;
