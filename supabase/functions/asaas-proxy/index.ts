@@ -81,14 +81,15 @@ Deno.serve(async (req) => {
       })
     }
 
-    const body = await req.json()
-    const validation = validatePayload(AsaasProxySchema, body)
+    const rawBody = await req.json()
+    const validation = validatePayload(AsaasProxySchema, rawBody, "asaas-proxy")
     
     if (!validation.success) {
       return createErrorResponse(validation.error, 400, validation.details)
     }
 
     const { action, data } = validation.data
+
 
 
     const ok = (result: any) => new Response(JSON.stringify(result), {
