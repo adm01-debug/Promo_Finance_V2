@@ -167,26 +167,32 @@ export function useContasBancarias(empresaId?: string) {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('Não autenticado');
 
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      const url = `https://${projectId}.supabase.co/rest/v1/contas_bancarias?select=*,empresas:empresa_id(razao_social,nome_fantasia)&ativo=eq.true&order=banco`;
+      const query = supabase
+        .from('contas_bancarias')
+        .select('id, banco, agencia, numero_conta, ativo, empresa_id, tipo_conta, pix_chave, created_at, updated_at')
+        .eq('ativo', true)
+        .order('banco');
       
-      const response = await fetch(empresaId && empresaId !== 'all' ? `${url}&empresa_id=eq.${empresaId}` : url, {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
-      });
+      if (empresaId && empresaId !== 'all') {
+        query.eq('empresa_id', empresaId);
+      }
 
-      if (!response.ok) throw new Error('Erro ao buscar contas bancárias');
-      const data = await response.json();
+      const { data, error } = await query;
+      if (error) throw error;
       
+      // Get companies separately to avoid deep type nesting
+      const { data: companies } = await supabase
+        .from('empresas')
+        .select('id, razao_social, nome_fantasia');
+
       const { data: rules } = await supabase
         .from('regras_roteamento_financeiro')
         .select('*')
         .eq('ativo', true);
 
-      return (data || []).map((conta: any) => ({
+      return (data || []).map((conta) => ({
         ...conta,
+        empresas: companies?.find(e => e.id === conta.empresa_id) || null,
         regras: rules?.filter(r => r.conta_bancaria_id === conta.id) || []
       })) as any[];
     },
