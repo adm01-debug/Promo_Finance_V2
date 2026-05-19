@@ -146,8 +146,8 @@ export function useAuthValidation() {
     blockedReason?: string
   ) => {
     try {
-      await supabase.from('login_attempts').insert({
-        user_email: email,
+      await (supabase.from('login_attempts') as any).insert({
+        email: email,
         ip_address: geoData.ip,
         user_agent: navigator.userAgent,
         success,

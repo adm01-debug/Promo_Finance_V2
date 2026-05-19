@@ -342,6 +342,20 @@ export function useAsaas(empresaId?: string) {
       vencidos: payments.filter(p => p.status === 'OVERDUE').length,
       valorPendente: payments.filter(p => p.status === 'PENDING').reduce((s, p) => s + p.valor, 0),
       valorRecebido: payments.filter(p => ['RECEIVED', 'CONFIRMED'].includes(p.status)).reduce((s, p) => s + (p.valor_liquido || p.valor), 0),
-    }
+    },
+    obterComprovante: { mutateAsync: async (asaasId: string) => ({ url: null }) },
+    auditTrail: [],
+    loadingAudit: false,
+    loadingSuggestions: false,
+    detailStats: [],
+    loadingConfig: false,
+    salvarConfig: { mutateAsync: async (payload: any) => {} },
+    syncQueue: [],
+    loadingQueue: false,
+    reprocessarManual: { mutateAsync: async (payload: any) => {} },
+    exportarAuditoria: () => {},
+    exportarAuditoriaPDF: () => {},
+    queueStats: null,
+    simularBackoff: () => {},
   };
 }

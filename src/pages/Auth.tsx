@@ -173,8 +173,8 @@ export default function Auth() {
 
     try {
       // Check account lockout
-      const { data: lockoutData } = await supabase
-        .rpc('get_lockout_details', { _email: email });
+      const { data: lockoutResponse } = await (supabase.rpc as any)('get_lockout_details', { _email: email });
+      const lockoutData = lockoutResponse as any[];
 
       if (lockoutData && lockoutData.length > 0 && lockoutData[0].is_locked) {
         const remainingMinutes = lockoutData[0].remaining_minutes;
@@ -228,7 +228,7 @@ export default function Auth() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
 
       if (error) {
-        await supabase.rpc('increment_failed_attempts', { _email: email });
+        await (supabase.rpc as any)('increment_failed_attempts', { _email: email });
         await logLoginAttempt(email, false, error.message);
         
         if (error.message.includes('Invalid login credentials')) {
@@ -239,7 +239,7 @@ export default function Auth() {
           toast.error(error.message);
         }
       } else {
-        await supabase.rpc('reset_failed_attempts', { _email: email });
+        await (supabase.rpc as any)('reset_failed_attempts', { _email: email });
         await logLoginAttempt(email, true);
         
         const { data: { user } } = await supabase.auth.getUser();
