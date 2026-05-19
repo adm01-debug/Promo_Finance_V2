@@ -7,16 +7,20 @@ export function useWhatsAppCobrancaHistory(contaReceberId?: string) {
   return useQuery({
     queryKey: ['historico-cobranca-whatsapp', contaReceberId],
     queryFn: async () => {
-      let query = supabase
+      const query = supabase
         .from('historico_cobranca_whatsapp')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (contaReceberId) query = query.eq('conta_receber_id', contaReceberId);
+      if (contaReceberId) {
+        const { data, error } = await query.eq('conta_receber_id', contaReceberId).limit(200);
+        if (error) throw error;
+        return (data || []) as any[];
+      }
 
       const { data, error } = await query.limit(200);
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
   });
 }
