@@ -101,7 +101,7 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
     queryFn: async () => {
       if (!empresaId) return [];
       const { data, error } = await supabase
-        .from('regimes_simulados')
+        .from('regimes_simulados' as any)
         .select('*')
         .eq('empresa_id', empresaId)
         .order('data_simulacao', { ascending: false })
@@ -156,7 +156,7 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
   const salvarSimulacao = useMutation({
     mutationFn: async () => {
       if (!empresaId) throw new Error('Selecione uma empresa para salvar a simulação.');
-      const { error } = await supabase.from('regimes_simulados').insert({
+      const { error } = await supabase.from('regimes_simulados' as any).insert({
         empresa_id: empresaId,
         ano_referencia: anoReferencia,
         rbt12: resultado.recomendado.rbt12 || parametros.faturamentoAnual,
