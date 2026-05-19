@@ -92,11 +92,15 @@ serve(async (req) => {
   }
 
   try {
-    const { transacoes, lancamentos, historicoFeedback } = await req.json() as {
-      transacoes: TransacaoExtrato[];
-      lancamentos: LancamentoSistema[];
-      historicoFeedback?: any[];
-    };
+    const body = await req.json();
+    const validation = await validateContract(ConciliacaoInputSchema, body);
+    
+    if (!validation.success) {
+      return validation.response;
+    }
+
+    const { transacoes, lancamentos, historicoFeedback } = validation.data;
+
 
     if (!transacoes?.length || !lancamentos?.length) {
       return new Response(
