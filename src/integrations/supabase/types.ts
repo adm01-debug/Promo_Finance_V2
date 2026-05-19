@@ -4868,6 +4868,41 @@ export type Database = {
           },
         ]
       }
+      historico_score_saude: {
+        Row: {
+          created_at: string | null
+          data_calculo: string | null
+          detalhes: Json | null
+          empresa_id: string | null
+          id: string
+          score: number
+        }
+        Insert: {
+          created_at?: string | null
+          data_calculo?: string | null
+          detalhes?: Json | null
+          empresa_id?: string | null
+          id?: string
+          score: number
+        }
+        Update: {
+          created_at?: string | null
+          data_calculo?: string | null
+          detalhes?: Json | null
+          empresa_id?: string | null
+          id?: string
+          score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historico_score_saude_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ip_whitelist: {
         Row: {
           added_by: string | null
@@ -5718,6 +5753,39 @@ export type Database = {
           },
         ]
       }
+      open_finance_consents: {
+        Row: {
+          authorization_url: string | null
+          created_at: string | null
+          id: string
+          institution_id: string
+          permissions: string[] | null
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          authorization_url?: string | null
+          created_at?: string | null
+          id?: string
+          institution_id: string
+          permissions?: string[] | null
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          authorization_url?: string | null
+          created_at?: string | null
+          id?: string
+          institution_id?: string
+          permissions?: string[] | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       operacoes_tributaveis: {
         Row: {
           cbs_aliquota: number | null
@@ -6440,6 +6508,47 @@ export type Database = {
           window_start?: string | null
         }
         Relationships: []
+      }
+      recomendacoes_metas_ia: {
+        Row: {
+          aplicada: boolean | null
+          created_at: string | null
+          descricao: string | null
+          empresa_id: string | null
+          id: string
+          impacto_estimado: number | null
+          tipo: string
+          titulo: string
+        }
+        Insert: {
+          aplicada?: boolean | null
+          created_at?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          impacto_estimado?: number | null
+          tipo: string
+          titulo: string
+        }
+        Update: {
+          aplicada?: boolean | null
+          created_at?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          impacto_estimado?: number | null
+          tipo?: string
+          titulo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recomendacoes_metas_ia_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       regimes_especiais_empresa: {
         Row: {
