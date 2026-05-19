@@ -1,23 +1,27 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { validateContract } from "../_shared/contract-validator.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface DadosFluxo {
-  saldo_atual: number;
-  saldo_final: number;
-  total_receitas: number;
-  total_despesas: number;
-  dias_projecao: number;
-  dias_cobertura: number;
-  dias_negativos: number;
-  probabilidade_ruptura: number;
-  cenario: string;
-  variacao_saldo: number;
-  margem_operacional: number;
-}
+const DadosFluxoSchema = z.object({
+  saldo_atual: z.number(),
+  saldo_final: z.number(),
+  total_receitas: z.number(),
+  total_despesas: z.number(),
+  dias_projecao: z.number().int(),
+  dias_cobertura: z.number(),
+  dias_negativos: z.number().int(),
+  probabilidade_ruptura: z.number().min(0).max(100),
+  cenario: z.string(),
+  variacao_saldo: z.number(),
+  margem_operacional: z.number(),
+});
+
+type DadosFluxo = z.infer<typeof DadosFluxoSchema>;
 
 interface Insight {
   tipo: 'alerta' | 'oportunidade' | 'recomendacao';
@@ -33,8 +37,16 @@ serve(async (req) => {
   }
 
   try {
-    const dados: DadosFluxo = await req.json();
-    console.log('Dados recebidos para análise:', dados);
+    const body = await req.json();
+    const validation = await validateContract(DadosFluxoSchema, body);
+    
+    if (!validation.success) {
+      return validation.response;
+    }
+
+    const dados = validation.data;
+    console.log('Dados validados para análise:', dados);
+
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
