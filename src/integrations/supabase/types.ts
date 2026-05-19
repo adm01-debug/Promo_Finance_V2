@@ -889,6 +889,50 @@ export type Database = {
         }
         Relationships: []
       }
+      apuracoes_irpj_csll: {
+        Row: {
+          created_at: string | null
+          csll_valor: number | null
+          empresa_id: string
+          id: string
+          irpj_valor: number | null
+          lucro_antes_impostos: number | null
+          periodo_fim: string
+          periodo_inicio: string
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          csll_valor?: number | null
+          empresa_id: string
+          id?: string
+          irpj_valor?: number | null
+          lucro_antes_impostos?: number | null
+          periodo_fim: string
+          periodo_inicio: string
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          csll_valor?: number | null
+          empresa_id?: string
+          id?: string
+          irpj_valor?: number | null
+          lucro_antes_impostos?: number | null
+          periodo_fim?: string
+          periodo_inicio?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "apuracoes_irpj_csll_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       apuracoes_tributarias: {
         Row: {
           ano: number | null
@@ -3872,26 +3916,50 @@ export type Database = {
       }
       faturamento_mensal: {
         Row: {
+          ano: number | null
           created_at: string | null
+          created_by: string | null
           empresa_id: string
           id: string
+          impostos_federais: number | null
+          impostos_municipais: number | null
+          mes: number | null
           mes_referencia: string
+          receita_bruta: number | null
+          receita_servicos: number | null
+          receita_vendas: number | null
           valor_faturamento: number | null
           valor_impostos: number | null
         }
         Insert: {
+          ano?: number | null
           created_at?: string | null
+          created_by?: string | null
           empresa_id: string
           id?: string
+          impostos_federais?: number | null
+          impostos_municipais?: number | null
+          mes?: number | null
           mes_referencia: string
+          receita_bruta?: number | null
+          receita_servicos?: number | null
+          receita_vendas?: number | null
           valor_faturamento?: number | null
           valor_impostos?: number | null
         }
         Update: {
+          ano?: number | null
           created_at?: string | null
+          created_by?: string | null
           empresa_id?: string
           id?: string
+          impostos_federais?: number | null
+          impostos_municipais?: number | null
+          mes?: number | null
           mes_referencia?: string
+          receita_bruta?: number | null
+          receita_servicos?: number | null
+          receita_vendas?: number | null
           valor_faturamento?: number | null
           valor_impostos?: number | null
         }
@@ -4115,27 +4183,48 @@ export type Database = {
       }
       folha_pagamento: {
         Row: {
+          ano: number | null
+          beneficios: number | null
           created_at: string | null
+          created_by: string | null
           empresa_id: string
+          encargos: number | null
           id: string
+          mes: number | null
           mes_referencia: string
+          pro_labore: number | null
           qtd_funcionarios: number | null
+          salarios: number | null
           valor_total: number | null
         }
         Insert: {
+          ano?: number | null
+          beneficios?: number | null
           created_at?: string | null
+          created_by?: string | null
           empresa_id: string
+          encargos?: number | null
           id?: string
+          mes?: number | null
           mes_referencia: string
+          pro_labore?: number | null
           qtd_funcionarios?: number | null
+          salarios?: number | null
           valor_total?: number | null
         }
         Update: {
+          ano?: number | null
+          beneficios?: number | null
           created_at?: string | null
+          created_by?: string | null
           empresa_id?: string
+          encargos?: number | null
           id?: string
+          mes?: number | null
           mes_referencia?: string
+          pro_labore?: number | null
           qtd_funcionarios?: number | null
+          salarios?: number | null
           valor_total?: number | null
         }
         Relationships: [
@@ -4290,40 +4379,55 @@ export type Database = {
           created_at: string | null
           empresa_id: string
           id: string
+          insights_md: string | null
           metadata: Json | null
           recomendacoes: string[] | null
           score: number | null
+          score_cadastros: number | null
+          score_engajamento: number | null
           score_financeiro: number | null
+          score_lgpd: number | null
           score_operacional: number | null
           score_total: number | null
           score_tributario: number | null
           snapshot_data: Json | null
+          tendencia_pct: number | null
         }
         Insert: {
           created_at?: string | null
           empresa_id: string
           id?: string
+          insights_md?: string | null
           metadata?: Json | null
           recomendacoes?: string[] | null
           score?: number | null
+          score_cadastros?: number | null
+          score_engajamento?: number | null
           score_financeiro?: number | null
+          score_lgpd?: number | null
           score_operacional?: number | null
           score_total?: number | null
           score_tributario?: number | null
           snapshot_data?: Json | null
+          tendencia_pct?: number | null
         }
         Update: {
           created_at?: string | null
           empresa_id?: string
           id?: string
+          insights_md?: string | null
           metadata?: Json | null
           recomendacoes?: string[] | null
           score?: number | null
+          score_cadastros?: number | null
+          score_engajamento?: number | null
           score_financeiro?: number | null
+          score_lgpd?: number | null
           score_operacional?: number | null
           score_total?: number | null
           score_tributario?: number | null
           snapshot_data?: Json | null
+          tendencia_pct?: number | null
         }
         Relationships: [
           {
@@ -4505,6 +4609,7 @@ export type Database = {
           conta_pagar_id: string | null
           conta_receber_id: string | null
           created_at: string | null
+          created_by: string | null
           id: string
           motivos: string[] | null
           resultado: Json | null
@@ -4523,6 +4628,7 @@ export type Database = {
           conta_pagar_id?: string | null
           conta_receber_id?: string | null
           created_at?: string | null
+          created_by?: string | null
           id?: string
           motivos?: string[] | null
           resultado?: Json | null
@@ -4541,6 +4647,7 @@ export type Database = {
           conta_pagar_id?: string | null
           conta_receber_id?: string | null
           created_at?: string | null
+          created_by?: string | null
           id?: string
           motivos?: string[] | null
           resultado?: Json | null
@@ -5889,6 +5996,41 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      prejuizos_fiscais: {
+        Row: {
+          created_at: string | null
+          empresa_id: string
+          id: string
+          periodo: string
+          valor_acumulado: number | null
+          valor_utilizado: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          empresa_id: string
+          id?: string
+          periodo: string
+          valor_acumulado?: number | null
+          valor_utilizado?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          empresa_id?: string
+          id?: string
+          periodo?: string
+          valor_acumulado?: number | null
+          valor_utilizado?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prejuizos_fiscais_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
