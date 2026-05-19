@@ -137,7 +137,7 @@ export const dashboardService = {
         valor: r.valor,
         tipo: 'receita' as const,
         data: r.data_recebimento,
-        categoria: r.categoria,
+        categoria: r.categoria_nome,
         status: r.status,
       })) || []),
       ...(despesas.data?.map(d => ({
@@ -146,7 +146,7 @@ export const dashboardService = {
         valor: d.valor,
         tipo: 'despesa' as const,
         data: d.data_pagamento,
-        categoria: d.categoria,
+        categoria: d.categoria_nome,
         status: d.status,
       })) || []),
     ];
