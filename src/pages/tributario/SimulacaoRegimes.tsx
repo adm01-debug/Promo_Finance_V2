@@ -1,16 +1,10 @@
-// @ts-nocheck
-// ============================================
-// PÁGINA: Simulação Comparativa de Regimes Tributários
-// Modularizada — sub-componentes em components/tributario/simulacao/
-// ============================================
-
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Award, AlertTriangle, TrendingDown, Sparkles, Calculator, RefreshCw } from 'lucide-react';
+import { Award, AlertTriangle, TrendingDown, Sparkles, RefreshCw } from 'lucide-react';
 import { useSimulacaoRegimes } from '@/hooks/useSimulacaoRegimes';
 import { useOportunidadesElisao } from '@/hooks/useOportunidadesElisao';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
@@ -53,7 +47,7 @@ export default function SimulacaoRegimes() {
     },
   });
 
-  const empresaSelecionada = empresas.find((e) => e.id === empresaId);
+  const empresaSelecionada = useMemo(() => empresas.find((e) => e.id === empresaId), [empresas, empresaId]);
 
   const popularDoHistorico = () => {
     if (faturamentoMensal.length === 0) {
@@ -96,7 +90,7 @@ export default function SimulacaoRegimes() {
       cnpj: empresaSelecionada?.cnpj ?? undefined,
       parametros,
       decisao: resultado,
-      elisao: relatorioElisao,
+      elisao: relatorioElisao || undefined,
       regimeAtual,
       projetarReformaTimeline: true,
     });
@@ -118,9 +112,12 @@ export default function SimulacaoRegimes() {
   const corPorRegime = (r: RegimeTributario) =>
     r === 'simples_nacional' ? 'hsl(160 84% 39%)' : r === 'lucro_presumido' ? 'hsl(258 90% 66%)' : 'hsl(217 91% 60%)';
 
-  const dadosGrafico = resultado.cenarios
-    .filter((c) => c.elegivel)
-    .map((c) => ({ name: c.nome, valor: c.totalTributos, regime: c.regime }));
+  const dadosGrafico = useMemo(() => 
+    resultado.cenarios
+      .filter((c) => c.elegivel)
+      .map((c) => ({ name: c.nome, valor: c.totalTributos, regime: c.regime })),
+    [resultado.cenarios]
+  );
 
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-6">
@@ -130,7 +127,7 @@ export default function SimulacaoRegimes() {
             <h1 className="text-2xl md:text-3xl font-bold">
               Simulação de Regimes Tributários
             </h1>
-            {useSimulacaoRegimes({ empresaId }).isSincronizando && (
+            {isSincronizando && (
               <RefreshCw className="h-5 w-5 animate-spin text-primary" />
             )}
           </div>
