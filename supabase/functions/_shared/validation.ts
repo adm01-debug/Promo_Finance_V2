@@ -88,4 +88,29 @@ export const AnalyzeDocumentSchema = z.object({
   fileContent: z.string(), // base64
 });
 
+export const WhatsappWebhookSchema = z.object({
+  event: z.string().optional(),
+  messageId: z.string().optional(),
+  status: z.string().optional(),
+  from: z.string().optional(),
+  text: z.string().optional(),
+});
+
+export const CnpjaLookupSchema = z.object({
+  cnpj: z.string().min(14),
+});
+
+export const EnviarAlertaEmailSchema = z.object({
+  tipo: z.enum(['vencimento', 'inadimplencia', 'aprovacao', 'ruptura', 'asaas_failure']),
+  destinatario: z.string().email(),
+  dados: z.object({
+    titulo: z.string(),
+    mensagem: z.string(),
+    valor: z.number().optional(),
+    dataVencimento: z.string().optional(),
+    urlAcao: z.string().optional(),
+  }),
+});
+
+
 
