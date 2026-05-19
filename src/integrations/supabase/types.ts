@@ -1490,33 +1490,80 @@ export type Database = {
         }
         Relationships: []
       }
+      bitrix_field_mappings: {
+        Row: {
+          bitrix_field_name: string
+          created_at: string | null
+          empresa_id: string | null
+          entity_type: string
+          id: string
+          internal_field_name: string
+        }
+        Insert: {
+          bitrix_field_name: string
+          created_at?: string | null
+          empresa_id?: string | null
+          entity_type: string
+          id?: string
+          internal_field_name: string
+        }
+        Update: {
+          bitrix_field_name?: string
+          created_at?: string | null
+          empresa_id?: string | null
+          entity_type?: string
+          id?: string
+          internal_field_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bitrix_field_mappings_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bitrix_sync_logs: {
         Row: {
           created_at: string | null
           detalhes: string | null
           empresa_id: string | null
+          entidade: string | null
           entidade_id: string | null
           entidade_tipo: string | null
           id: string
+          registros_com_erro: number | null
+          registros_processados: number | null
           status: string | null
+          tipo: string | null
         }
         Insert: {
           created_at?: string | null
           detalhes?: string | null
           empresa_id?: string | null
+          entidade?: string | null
           entidade_id?: string | null
           entidade_tipo?: string | null
           id?: string
+          registros_com_erro?: number | null
+          registros_processados?: number | null
           status?: string | null
+          tipo?: string | null
         }
         Update: {
           created_at?: string | null
           detalhes?: string | null
           empresa_id?: string | null
+          entidade?: string | null
           entidade_id?: string | null
           entidade_tipo?: string | null
           id?: string
+          registros_com_erro?: number | null
+          registros_processados?: number | null
           status?: string | null
+          tipo?: string | null
         }
         Relationships: [
           {
@@ -1798,45 +1845,122 @@ export type Database = {
       }
       boletos: {
         Row: {
+          banco_nome: string | null
+          cedente_nome: string | null
           codigo_barras: string | null
           conta_receber_id: string | null
           created_at: string
+          data_emissao: string | null
+          data_pagamento: string | null
+          desconto: number | null
+          eventos_pagamento: Json | null
           id: string
+          juros_multa: number | null
           linha_digitavel: string | null
           nosso_numero: string | null
+          numero: string | null
+          rastreio_status: string | null
+          sacado_cpf_cnpj: string | null
+          sacado_nome: string | null
           status: string | null
           url_pdf: string | null
           user_id: string
           valor: number
+          valor_pago: number | null
           vencimento: string | null
         }
         Insert: {
+          banco_nome?: string | null
+          cedente_nome?: string | null
           codigo_barras?: string | null
           conta_receber_id?: string | null
           created_at?: string
+          data_emissao?: string | null
+          data_pagamento?: string | null
+          desconto?: number | null
+          eventos_pagamento?: Json | null
           id?: string
+          juros_multa?: number | null
           linha_digitavel?: string | null
           nosso_numero?: string | null
+          numero?: string | null
+          rastreio_status?: string | null
+          sacado_cpf_cnpj?: string | null
+          sacado_nome?: string | null
           status?: string | null
           url_pdf?: string | null
           user_id?: string
           valor?: number
+          valor_pago?: number | null
           vencimento?: string | null
         }
         Update: {
+          banco_nome?: string | null
+          cedente_nome?: string | null
           codigo_barras?: string | null
           conta_receber_id?: string | null
           created_at?: string
+          data_emissao?: string | null
+          data_pagamento?: string | null
+          desconto?: number | null
+          eventos_pagamento?: Json | null
           id?: string
+          juros_multa?: number | null
           linha_digitavel?: string | null
           nosso_numero?: string | null
+          numero?: string | null
+          rastreio_status?: string | null
+          sacado_cpf_cnpj?: string | null
+          sacado_nome?: string | null
           status?: string | null
           url_pdf?: string | null
           user_id?: string
           valor?: number
+          valor_pago?: number | null
           vencimento?: string | null
         }
         Relationships: []
+      }
+      budgets: {
+        Row: {
+          created_at: string | null
+          empresa_id: string | null
+          id: string
+          nome: string
+          periodo_fim: string
+          periodo_inicio: string
+          status: string | null
+          valor_total: number
+        }
+        Insert: {
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          nome: string
+          periodo_fim: string
+          periodo_inicio: string
+          status?: string | null
+          valor_total: number
+        }
+        Update: {
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          nome?: string
+          periodo_fim?: string
+          periodo_inicio?: string
+          status?: string | null
+          valor_total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budgets_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       centros_custo: {
         Row: {
@@ -3820,38 +3944,50 @@ export type Database = {
       historico_conciliacao_ia: {
         Row: {
           acao: string | null
+          analise_ia: string | null
           confianca: number | null
+          conta_pagar_id: string | null
           created_at: string | null
           id: string
+          motivos: string[] | null
           resultado: Json | null
           score: number | null
           score_ia: number | null
           sessao_id: string | null
           tipo_lancamento: string | null
+          transacao_bancaria_id: string | null
           transacao_id: string | null
         }
         Insert: {
           acao?: string | null
+          analise_ia?: string | null
           confianca?: number | null
+          conta_pagar_id?: string | null
           created_at?: string | null
           id?: string
+          motivos?: string[] | null
           resultado?: Json | null
           score?: number | null
           score_ia?: number | null
           sessao_id?: string | null
           tipo_lancamento?: string | null
+          transacao_bancaria_id?: string | null
           transacao_id?: string | null
         }
         Update: {
           acao?: string | null
+          analise_ia?: string | null
           confianca?: number | null
+          conta_pagar_id?: string | null
           created_at?: string | null
           id?: string
+          motivos?: string[] | null
           resultado?: Json | null
           score?: number | null
           score_ia?: number | null
           sessao_id?: string | null
           tipo_lancamento?: string | null
+          transacao_bancaria_id?: string | null
           transacao_id?: string | null
         }
         Relationships: [
@@ -7268,6 +7404,10 @@ export type Database = {
           is_suspicious: boolean
           lockout_seconds: number
         }[]
+      }
+      registrar_evento_pagar: {
+        Args: { p_conta_id: string; p_detalhes?: Json; p_evento: string }
+        Returns: string
       }
       registrar_evento_receber:
         | {
