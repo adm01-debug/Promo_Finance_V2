@@ -30,7 +30,8 @@ export function useConciliacao() {
       
       const { data: { user } } = await supabase.auth.getUser();
       
-      const { error } = await supabase.rpc('confirmar_conciliacao', {
+      // Usando a nova RPC manual para conciliação direta
+      const { error } = await (supabase.rpc as any)('confirmar_conciliacao_manual', {
         p_transacao_id: transacaoId,
         p_conta_pagar_id: contaPagarId || null,
         p_conta_receber_id: contaReceberId || null,
@@ -227,9 +228,8 @@ export function useConciliacao() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado');
 
-      const { error } = await supabase.rpc('desfazer_conciliacao', {
-        p_transacao_id: transacaoId,
-        p_user_id: user.id
+      const { error } = await (supabase.rpc as any)('desfazer_conciliacao_manual', {
+        p_transacao_id: transacaoId
       });
 
       if (error) throw error;
