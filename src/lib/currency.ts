@@ -285,28 +285,32 @@ export function calculateInstallments(
     totalWithInterest = installmentValue * installments;
   }
 
-  const interestAmount = totalWithInterest - totalValue;
+  // Round values for final output
+  const roundedInstallmentValue = Math.round(installmentValue * 100) / 100;
+  const roundedTotalWithInterest = Math.round(totalWithInterest * 100) / 100;
+  const interestAmount = roundedTotalWithInterest - totalValue;
 
   // Generate installment details
   const installmentDetails: Array<{ number: number; value: number; balance: number }> = [];
-  let balance = totalWithInterest;
+  let remainingTotal = roundedTotalWithInterest;
 
   for (let i = 1; i <= installments; i++) {
-    const value = i === installments ? balance : installmentValue;
-    balance -= value;
+    const value = i === installments ? remainingTotal : roundedInstallmentValue;
+    remainingTotal = Math.round((remainingTotal - value) * 100) / 100;
     installmentDetails.push({
       number: i,
-      value: Math.round(value * 100) / 100,
-      balance: Math.max(0, Math.round(balance * 100) / 100),
+      value: value,
+      balance: Math.max(0, remainingTotal),
     });
   }
 
   return {
-    installmentValue: Math.round(installmentValue * 100) / 100,
-    totalWithInterest: Math.round(totalWithInterest * 100) / 100,
+    installmentValue: roundedInstallmentValue,
+    totalWithInterest: roundedTotalWithInterest,
     interestAmount: Math.round(interestAmount * 100) / 100,
     installmentDetails,
   };
+
 }
 
 /**
