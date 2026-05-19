@@ -2,7 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { BlingWebhookSchema, corsHeaders, validatePayload, createErrorResponse } from '../_shared/validation.ts';
 
 
-Deno.serve(async (req) => {
+export const handler = async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -10,6 +10,7 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") {
     return createErrorResponse("Method not allowed", 405);
   }
+
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
