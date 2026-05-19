@@ -814,4 +814,9 @@ export const handler = async (req: Request) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
-})
+}
+
+if (import.meta.main) {
+  Deno.serve(handler)
+}
+
