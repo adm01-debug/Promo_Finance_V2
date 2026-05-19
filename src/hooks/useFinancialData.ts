@@ -310,7 +310,7 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
       if (dataResult.error) throw dataResult.error;
 
       return {
-        data: dataResult.data || [],
+        data: (dataResult.data || []) as any[],
         totalCount: countResult.count || 0,
         totalPages: Math.ceil((countResult.count || 0) / pageSize),
       };
@@ -403,7 +403,7 @@ export function useContasReceberPaginated(params: PaginatedContasReceberParams) 
       if (dataResult.error) throw dataResult.error;
 
       return {
-        data: dataResult.data || [],
+        data: (dataResult.data || []) as any[],
         totalCount: countResult.count || 0,
         totalPages: Math.ceil((countResult.count || 0) / pageSize),
       };
