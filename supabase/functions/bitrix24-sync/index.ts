@@ -699,8 +699,14 @@ serve(async (req) => {
       throw new Error("Invalid authentication token");
     }
 
-    const { action, params }: SyncRequest = await req.json();
+    const rawBody = await req.json();
+    const validation = validatePayload(Bitrix24SyncSchema, rawBody, "bitrix24-sync");
+    if (!validation.success) {
+      return createErrorResponse(validation.error, 400, validation.details);
+    }
+    const { action, params } = validation.data;
     console.log(`[bitrix24-sync] Action: ${action}, User: ${user.id}`);
+
 
     // Get valid Bitrix token
     const accessToken = await getValidToken(supabase);
