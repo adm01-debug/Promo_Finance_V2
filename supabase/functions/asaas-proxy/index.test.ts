@@ -84,3 +84,49 @@ Deno.test({
     }
   }
 });
+
+Deno.test({
+  name: "Asaas Proxy: successfully calls consultar_saldo",
+  sanitizeOps: false,
+  sanitizeResources: false,
+  async fn() {
+    setupMockEnv();
+    
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async (url) => {
+      const urlStr = url.toString();
+      if (urlStr.includes("/auth/v1/user")) {
+        return new Response(JSON.stringify({ user: { id: "test-user" } }), { status: 200 });
+      }
+      if (urlStr.includes("/rest/v1/user_roles")) {
+        return new Response(JSON.stringify([{ role: "admin" }]), { status: 200 });
+      }
+      if (urlStr.includes("/finance/balance")) {
+        return new Response(JSON.stringify({ balance: 1500.50 }), { 
+          status: 200, 
+          headers: { "Content-Type": "application/json" } 
+        });
+      }
+      return new Response(JSON.stringify({ error: "Not found" }), { status: 404 });
+    };
+
+    try {
+      const req = new Request("http://localhost/asaas-proxy", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": "Bearer some-token"
+        },
+        body: JSON.stringify({ action: "consultar_saldo", data: {} }),
+      });
+
+      const response = await handler(req);
+      assertEquals(response.status, 200);
+      const body = await response.json();
+      assertEquals(body.balance, 1500.50);
+    } finally {
+      globalThis.fetch = originalFetch;
+      restoreEnv();
+    }
+  }
+});
