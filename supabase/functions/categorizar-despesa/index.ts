@@ -25,7 +25,13 @@ serve(async (req) => {
   }
 
   try {
-    const { despesas } = await req.json() as { despesas: Despesa[] };
+    const rawBody = await req.json();
+    const validation = validatePayload(CategorizarDespesaSchema, rawBody, "categorizar-despesa");
+    if (!validation.success) {
+      return createErrorResponse(validation.error, 400, validation.details);
+    }
+    const { despesas } = validation.data;
+
 
     if (!despesas || despesas.length === 0) {
       return new Response(
