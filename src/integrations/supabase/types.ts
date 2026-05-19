@@ -4705,6 +4705,54 @@ export type Database = {
           },
         ]
       }
+      historico_cobranca_whatsapp: {
+        Row: {
+          cliente_id: string | null
+          created_at: string | null
+          empresa_id: string | null
+          id: string
+          lido_em: string | null
+          mensagem: string
+          metadata: Json | null
+          status: string | null
+        }
+        Insert: {
+          cliente_id?: string | null
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          lido_em?: string | null
+          mensagem: string
+          metadata?: Json | null
+          status?: string | null
+        }
+        Update: {
+          cliente_id?: string | null
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          lido_em?: string | null
+          mensagem?: string
+          metadata?: Json | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historico_cobranca_whatsapp_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "historico_cobranca_whatsapp_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       historico_cobrancas_boletos: {
         Row: {
           boleto_id: string | null
@@ -7890,6 +7938,60 @@ export type Database = {
           status?: string | null
         }
         Relationships: []
+      }
+      whatsapp_conversas: {
+        Row: {
+          cliente_id: string | null
+          created_at: string | null
+          direcao: string | null
+          empresa_id: string | null
+          id: string
+          intencao_pagamento: boolean | null
+          mensagem: string
+          resumo_ia: string | null
+          sentimento: string | null
+          status: string | null
+        }
+        Insert: {
+          cliente_id?: string | null
+          created_at?: string | null
+          direcao?: string | null
+          empresa_id?: string | null
+          id?: string
+          intencao_pagamento?: boolean | null
+          mensagem: string
+          resumo_ia?: string | null
+          sentimento?: string | null
+          status?: string | null
+        }
+        Update: {
+          cliente_id?: string | null
+          created_at?: string | null
+          direcao?: string | null
+          empresa_id?: string | null
+          id?: string
+          intencao_pagamento?: boolean | null
+          mensagem?: string
+          resumo_ia?: string | null
+          sentimento?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_conversas_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_conversas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
