@@ -251,7 +251,7 @@ export function useAsaas(empresaId?: string) {
     onError: (e: any) => toast.error('Erro na antecipação: ' + e.message),
   });
 
-  const { data: config } = useQuery({
+  const { data: config, isLoading: loadingConfig } = useQuery({
     queryKey: ['asaas-config', empresaId],
     queryFn: async () => {
       if (!empresaId) return null;
@@ -261,9 +261,64 @@ export function useAsaas(empresaId?: string) {
         .eq('empresa_id', empresaId)
         .single();
       if (error && error.code !== 'PGRST116') throw error;
-      return data;
+      
+      // Ensure we return an object with expected properties for the UI
+      const baseConfig = data || { 
+        empresa_id: empresaId,
+        configuracoes: {} 
+      };
+      
+      const conf = (baseConfig.configuracoes as any) || {};
+      
+      return {
+        ...baseConfig,
+        retry_limit: conf.retry_limit || 5,
+        retry_interval_minutes: conf.retry_interval_minutes || 30,
+        backoff_multiplier: conf.backoff_multiplier || 2.0,
+        default_fine_percent: conf.default_fine_percent || 2.0,
+        default_interest_percent: conf.default_interest_percent || 1.0,
+        alert_email_enabled: conf.alert_email_enabled || false,
+        alert_whatsapp_enabled: conf.alert_whatsapp_enabled || false,
+        alert_email_address: conf.alert_email_address || '',
+        alert_whatsapp_number: conf.alert_whatsapp_number || '',
+        failure_threshold: conf.failure_threshold || 5,
+        bitrix_trigger_stage: conf.bitrix_trigger_stage || 'WON'
+      };
     },
     enabled: !!empresaId,
+  });
+
+  const salvarConfig = useMutation({
+    mutationFn: async (payload: any) => {
+      if (!empresaId) return;
+      
+      // Fetch current config to merge
+      const { data: current } = await supabase
+        .from('asaas_config')
+        .select('configuracoes')
+        .eq('empresa_id', empresaId)
+        .maybeSingle();
+        
+      const mergedConfig = {
+        ...(current?.configuracoes as any || {}),
+        ...payload
+      };
+
+      const { error } = await supabase
+        .from('asaas_config')
+        .upsert({
+          empresa_id: empresaId,
+          configuracoes: mergedConfig,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'empresa_id' });
+        
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-config'] });
+      toast.success('Configurações salvas');
+    },
+    onError: (e: any) => toast.error('Erro ao salvar: ' + e.message)
   });
 
   const { data: suggestions = [] } = useQuery({
