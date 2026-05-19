@@ -164,6 +164,9 @@ export function useContasBancarias(empresaId?: string) {
   return useQuery({
     queryKey: ['contas-bancarias', empresaId],
     queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
+
       let query = supabase
         .from('contas_bancarias')
         .select(`
