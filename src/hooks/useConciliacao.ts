@@ -1,11 +1,10 @@
-// @ts-nocheck
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { toastReconciliationSuccess, toastImportSuccess } from '@/lib/toast-confetti';
 import { logger } from '@/lib/logger';
-import type { TransacaoOFX, ExtratoOFX } from '@/lib/ofx-parser';
-import type { TablesInsert } from '@/integrations/supabase/types';
+import type { ExtratoOFX } from '@/lib/ofx-parser';
+import type { TablesInsert, Tables } from '@/integrations/supabase/types';
 
 interface ConfirmarConciliacaoParams {
   transacaoId: string;
@@ -31,29 +30,35 @@ export function useConciliacao() {
       
       const { data: { user } } = await supabase.auth.getUser();
       
-      const { error } = await (supabase.rpc('confirmar_conciliacao', {
+      // Usando a nova RPC manual para conciliação direta
+      const { error } = await (supabase.rpc as any)('confirmar_conciliacao_manual', {
         p_transacao_id: transacaoId,
         p_conta_pagar_id: contaPagarId || null,
         p_conta_receber_id: contaReceberId || null,
         p_ajuste_centavos: ajusteCentavos || 0,
-      }) as any);
+      });
 
       if (error) throw error;
 
       // Atualiza metadados extras na transação bancária
-      await supabase.from('transacoes_bancarias').update({
+      const updateData: any = {
         status: 'confirmado',
         data_confirmacao: new Date().toISOString(),
         confirmado_por: user?.id,
         regra_id: regraId || null,
-        ...(ajusteCentavos && ajusteCentavos !== 0 ? {
-          compensacao_valor: ajusteCentavos,
-          compensacao_motivo: motivo || 'Tolerância configurada',
-          compensacao_classificacao: classificacao || (ajusteCentavos > 0 ? 'Juros' : 'Desconto'),
-          compensacao_regra: regra || 'Ajuste automático de centavos',
-          compensacao_evidencia_url: evidenciaUrl
-        } : {})
-      } as any).eq('id', transacaoId);
+      };
+
+      if (ajusteCentavos && ajusteCentavos !== 0) {
+        updateData.compensacao_valor = ajusteCentavos;
+        updateData.compensacao_motivo = motivo || 'Tolerância configurada';
+        updateData.compensacao_classificacao = classificacao || (ajusteCentavos > 0 ? 'Juros' : 'Desconto');
+        updateData.compensacao_regra = regra || 'Ajuste automático de centavos';
+        updateData.compensacao_evidencia_url = evidenciaUrl;
+      }
+
+      await supabase.from('transacoes_bancarias')
+        .update(updateData)
+        .eq('id', transacaoId);
 
       const regraAplicada = ajusteCentavos && ajusteCentavos !== 0 
         ? (classificacao || (ajusteCentavos > 0 ? 'Compensação automática: Juros' : 'Compensação automática: Desconto'))
@@ -63,7 +68,7 @@ export function useConciliacao() {
       if (contaReceberId && transacao) {
         let mensagem = `Conciliado manualmente com transação bancária em ${new Date(transacao.data).toLocaleDateString('pt-BR')}`;
         if (regraAplicada) {
-          mensagem += ` (${regraAplicada}: R$ ${Math.abs(ajusteCentavos).toFixed(2)})`;
+          mensagem += ` (${regraAplicada}: R$ ${Math.abs(ajusteCentavos || 0).toFixed(2)})`;
         } else if (ajusteCentavos && ajusteCentavos !== 0) {
           mensagem += ` (Ajuste de centavos: R$ ${ajusteCentavos.toFixed(2)})`;
         }
@@ -87,7 +92,7 @@ export function useConciliacao() {
       if (contaPagarId && transacao) {
         let mensagem = `Conciliado manualmente com transação bancária em ${new Date(transacao.data).toLocaleDateString('pt-BR')}`;
         if (regraAplicada) {
-          mensagem += ` (${regraAplicada}: R$ ${Math.abs(ajusteCentavos).toFixed(2)})`;
+          mensagem += ` (${regraAplicada}: R$ ${Math.abs(ajusteCentavos || 0).toFixed(2)})`;
         }
 
         await supabase.rpc('registrar_evento_pagar', {
@@ -125,7 +130,7 @@ export function useConciliacao() {
     }) => {
       const { data, error } = await supabase
         .from('transacoes_bancarias')
-        .insert(transacao)
+        .insert(transacao as any)
         .select()
         .single();
 
@@ -152,7 +157,7 @@ export function useConciliacao() {
     }>) => {
       const { data, error } = await supabase
         .from('transacoes_bancarias')
-        .insert(transacoes)
+        .insert(transacoes as any)
         .select();
 
       if (error) throw error;
@@ -160,7 +165,7 @@ export function useConciliacao() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['transacoes-bancarias'] });
-      toastImportSuccess(data.length, 'transações');
+      toastImportSuccess(data?.length || 0, 'transações');
     },
     onError: (error) => {
       logger.error('[useConciliacao] Erro ao importar transações:', error);
@@ -223,10 +228,9 @@ export function useConciliacao() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado');
 
-      const { error } = await (supabase.rpc('desfazer_conciliacao', {
-        p_transacao_id: transacaoId,
-        p_user_id: user.id
-      }) as any);
+      const { error } = await (supabase.rpc as any)('desfazer_conciliacao_manual', {
+        p_transacao_id: transacaoId
+      });
 
       if (error) throw error;
     },
@@ -266,7 +270,7 @@ export function useTransacoesBancarias(contaBancariaId?: string) {
 
     const { data, error } = await query;
     if (error) throw error;
-    return data;
+    return data as Tables<'transacoes_bancarias'>[];
   };
 
   return {
