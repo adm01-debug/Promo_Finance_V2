@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { differenceInDays, parseISO, subDays } from 'date-fns';
@@ -76,19 +75,7 @@ export function useContasVencidas() {
 
       if (error) throw error;
 
-      interface ContaVencidaData {
-        id: string;
-        cliente_nome: string;
-        cliente_id: string | null;
-        valor: number;
-        valor_recebido: number | null;
-        data_vencimento: string;
-        etapa_cobranca: 'preventiva' | 'lembrete' | 'cobranca' | 'negociacao' | 'juridico' | null;
-        status: 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado' | 'atrasado';
-        clientes?: { score: number | null } | null;
-      }
-
-      return (data || []).map((conta: ContaVencidaData) => ({
+      return (data || []).map((conta: any) => ({
         id: conta.id,
         cliente_nome: conta.cliente_nome,
         cliente_id: conta.cliente_id,
@@ -129,18 +116,22 @@ export function useCobrancaKPIs() {
       // Buscar contas recuperadas (pagas nos últimos 30 dias que estavam vencidas)
       let recuperadasQuery = supabase
         .from('contas_receber')
-        .select('id, valor, valor_recebido, data_recebimento')
+        .select('id, valor, valor_recebido, data_recebimento, data_vencimento')
         .eq('status', 'pago')
-        .gte('data_recebimento', trintaDiasAtras)
-        .lt('data_vencimento', 'data_recebimento');
+        .gte('data_recebimento', trintaDiasAtras);
 
       if (currentEmpresaId) {
         recuperadasQuery = recuperadasQuery.eq('empresa_id', currentEmpresaId);
       }
 
-      const { data: recuperadas, error: errorRecuperadas } = await recuperadasQuery;
+      const { data: recuperadasAll, error: errorRecuperadas } = await recuperadasQuery;
 
       if (errorRecuperadas) throw errorRecuperadas;
+
+      // Filtrar as que foram pagas após o vencimento
+      const recuperadas = (recuperadasAll || []).filter(c => 
+        c.data_recebimento && c.data_vencimento && c.data_recebimento > c.data_vencimento
+      );
 
       const totalVencido = (vencidas || []).reduce((sum, c) => sum + (c.valor - (c.valor_recebido || 0)), 0);
       const totalRecuperado = (recuperadas || []).reduce((sum, c) => sum + (c.valor_recebido || c.valor), 0);
@@ -235,17 +226,7 @@ export function useTopDevedores(limit: number = 10) {
 
       if (error) throw error;
 
-      // Agrupar por cliente
-      interface ContaDevedorData {
-        cliente_id: string | null;
-        cliente_nome: string;
-        valor: number;
-        valor_recebido: number | null;
-        data_vencimento: string;
-        clientes?: { score: number | null } | null;
-      }
-
-      const devedoresPorCliente = (data || []).reduce((acc: Record<string, TopDevedor>, conta: ContaDevedorData) => {
+      const devedoresPorCliente = (data || []).reduce((acc: Record<string, TopDevedor>, conta: any) => {
         const key = conta.cliente_id || conta.cliente_nome;
         if (!acc[key]) {
           acc[key] = {
@@ -257,7 +238,7 @@ export function useTopDevedores(limit: number = 10) {
             qtd_titulos: 0,
           };
         }
-        acc[key].valor_total += conta.valor - (conta.valor_recebido || 0);
+        acc[key].valor_total += (conta.valor || 0) - (conta.valor_recebido || 0);
         acc[key].qtd_titulos += 1;
         const diasAtraso = differenceInDays(new Date(), parseISO(conta.data_vencimento));
         if (diasAtraso > acc[key].dias_atraso) {
@@ -293,7 +274,7 @@ export function useEtapasCobranca() {
 
       if (error) throw error;
 
-      const etapas = ['preventiva', 'lembrete', 'cobranca', 'negociacao', 'juridico'];
+      const etapas: Array<'preventiva' | 'lembrete' | 'cobranca' | 'negociacao' | 'juridico'> = ['preventiva', 'lembrete', 'cobranca', 'negociacao', 'juridico'];
       
       return etapas.map(etapa => {
         const contasEtapa = (data || []).filter(c => c.etapa_cobranca === etapa);
@@ -309,8 +290,16 @@ export function useEtapasCobranca() {
 
 export function useUpdateEtapaCobranca() {
   const queryClient = useQueryClient();
+  const { currentEmpresaId } = useAuth();
+
   const updateEtapaMutation = useMutation({
     mutationFn: async ({ id, etapa }: { id: string; etapa: ContaVencida['etapa_cobranca'] }) => {
+      const { data: conta } = await supabase
+        .from('contas_receber')
+        .select('cliente_id, empresa_id')
+        .eq('id', id)
+        .single();
+
       const { error } = await supabase
         .from('contas_receber')
         .update({ etapa_cobranca: etapa })
@@ -318,15 +307,15 @@ export function useUpdateEtapaCobranca() {
 
       if (error) throw error;
       
-      // Registrar no status da régua se existir
+      // Registrar no status da régua
       await supabase.from('regua_cobranca_status').upsert({
-        titulo_id: id,
-        cliente_id: '00000000-0000-0000-0000-000000000000', // Placeholder
-        empresa_id: '00000000-0000-0000-0000-000000000000', // Placeholder
+        conta_receber_id: id,
+        cliente_id: conta?.cliente_id,
+        empresa_id: conta?.empresa_id || currentEmpresaId,
         etapa_atual: etapa || 'preventiva',
-        status: 'pendente',
+        status_cobranca: 'pendente',
         updated_at: new Date().toISOString()
-      } as any, { onConflict: 'titulo_id' });
+      } as any, { onConflict: 'conta_receber_id' });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contas-vencidas'] });
