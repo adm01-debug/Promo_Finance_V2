@@ -240,9 +240,9 @@ export function useContasPagar(empresaId?: string) {
         query = query.eq('empresa_id', empresaId);
       }
 
-      const { data, error } = await query;
+      const { data, error } = await (query as any);
       if (error) throw error;
-      return data as any[];
+      return (data || []) as any[];
     },
     staleTime: STALE_TIMES.financial,
   });
@@ -333,9 +333,9 @@ export function useContasReceber(empresaId?: string) {
         query = query.eq('empresa_id', empresaId);
       }
 
-      const { data, error } = await query;
+      const { data, error } = await (query as any);
       if (error) throw error;
-      return data as any[];
+      return (data || []) as any[];
     },
     staleTime: STALE_TIMES.financial,
   });
