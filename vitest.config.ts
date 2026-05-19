@@ -29,11 +29,12 @@ export default defineConfig({
         'src/vite-env.d.ts',
       ],
       thresholds: {
-        lines: 70,
-        functions: 70,
-        branches: 65,
-        statements: 70,
+        lines: 85,
+        functions: 85,
+        branches: 80,
+        statements: 85,
       },
+
     },
     testTimeout: 10000,
     hookTimeout: 10000,
