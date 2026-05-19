@@ -6815,6 +6815,47 @@ export type Database = {
           },
         ]
       }
+      resumos_executivos_semanais: {
+        Row: {
+          created_at: string | null
+          empresa_id: string | null
+          enviado_em: string | null
+          id: string
+          kpis: Json | null
+          resumo_md: string
+          semana_fim: string
+          semana_inicio: string
+        }
+        Insert: {
+          created_at?: string | null
+          empresa_id?: string | null
+          enviado_em?: string | null
+          id?: string
+          kpis?: Json | null
+          resumo_md: string
+          semana_fim: string
+          semana_inicio: string
+        }
+        Update: {
+          created_at?: string | null
+          empresa_id?: string | null
+          enviado_em?: string | null
+          id?: string
+          kpis?: Json | null
+          resumo_md?: string
+          semana_fim?: string
+          semana_inicio?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resumos_executivos_semanais_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       retencoes_fonte: {
         Row: {
           created_at: string | null
