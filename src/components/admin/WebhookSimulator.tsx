@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -10,7 +10,6 @@ import { toast } from 'sonner';
 
 export function WebhookSimulator() {
   const [isRunning, setIsRunning] = useState(false);
-  const [currentRun, setCurrentRun] = useState<any>(null);
   const [results, setResults] = useState<any[]>([]);
   const [stats, setStats] = useState({ total: 0, success: 0, fail: 0 });
 
@@ -24,25 +23,24 @@ export function WebhookSimulator() {
       if (!user) throw new Error('Usuário não autenticado');
 
       // 1. Criar a rodada
-      const { data: run, error: runError } = await supabase
+      const { data: run, error: runError } = await (supabase
         .from('webhook_simulation_runs' as any)
         .insert({
           status: 'pending',
           created_by: user.id
         } as any)
         .select()
-        .single();
+        .single() as any);
 
       if (runError || !run) throw runError || new Error('Falha ao criar rodada');
       const runData = run as any;
-      setCurrentRun(runData);
 
       // 2. Chamar a Edge Function
-      const { data, error: funcError } = await supabase.functions.invoke('webhook-simulator', {
+      const { error: funcError } = await supabase.functions.invoke('webhook-simulator', {
         body: { 
           run_id: runData.id, 
           target_function: 'asaas-webhook',
-          scenarios_count: 50 // Testando 50 cenários inicialmente
+          scenarios_count: 50
         }
       });
 
@@ -62,17 +60,19 @@ export function WebhookSimulator() {
 
   const pollResults = async (runId: string) => {
     const interval = setInterval(async () => {
-      const { data: run } = await supabase
+      const { data: run } = await (supabase
         .from('webhook_simulation_runs' as any)
         .select('*')
         .eq('id', runId)
-        .single();
+        .single() as any);
 
-      const { data: resultsData } = await supabase
+      const runData = run as any;
+
+      const { data: resultsData } = await (supabase
         .from('webhook_simulation_results' as any)
         .select('*')
         .eq('run_id', runId)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }) as any);
 
       if (resultsData) {
         setResults(resultsData);
@@ -84,11 +84,10 @@ export function WebhookSimulator() {
         });
       }
 
-      if (run && (run.status === 'completed' || run.status === 'failed')) {
+      if (runData && (runData.status === 'completed' || runData.status === 'failed')) {
         clearInterval(interval);
         setIsRunning(false);
-        setCurrentRun(run);
-        if (run.status === 'completed') {
+        if (runData.status === 'completed') {
           toast.success('Simulação finalizada!');
         } else {
           toast.error('Simulação falhou no processamento.');
@@ -119,7 +118,7 @@ export function WebhookSimulator() {
               {isRunning ? (
                 <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processando...</>
               ) : (
-                <><Play className="mr-2 h-4 w-4" /> Iniciar Teste de Milhares de Cenários</>
+                <><Play className="mr-2 h-4 w-4" /> Iniciar Teste em Massa</>
               )}
             </Button>
           </div>
@@ -155,7 +154,7 @@ export function WebhookSimulator() {
               {results.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full py-10 text-muted-foreground">
                   <AlertTriangle className="h-8 w-8 mb-2 opacity-20" />
-                  <p>Nenhum dado de simulação disponível.</p>
+                  <p>Aguardando início da simulação em massa...</p>
                 </div>
               ) : (
                 results.map((res: any) => (
