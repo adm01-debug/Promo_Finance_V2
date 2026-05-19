@@ -29,17 +29,18 @@ export function WebhookSimulator() {
         .insert({
           status: 'pending',
           created_by: user.id
-        })
+        } as any)
         .select()
         .single();
 
-      if (runError) throw runError;
-      setCurrentRun(run);
+      if (runError || !run) throw runError || new Error('Falha ao criar rodada');
+      const runData = run as any;
+      setCurrentRun(runData);
 
       // 2. Chamar a Edge Function
       const { data, error: funcError } = await supabase.functions.invoke('webhook-simulator', {
         body: { 
-          run_id: run.id, 
+          run_id: runData.id, 
           target_function: 'asaas-webhook',
           scenarios_count: 50 // Testando 50 cenários inicialmente
         }
@@ -50,7 +51,7 @@ export function WebhookSimulator() {
       toast.success('Simulação iniciada com sucesso!');
       
       // 3. Monitorar resultados
-      pollResults(run.id);
+      pollResults(runData.id);
 
     } catch (error: any) {
       console.error('Erro na simulação:', error);
