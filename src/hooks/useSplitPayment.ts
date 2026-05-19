@@ -1,9 +1,3 @@
-// @ts-nocheck
-// ============================================
-// HOOK: SPLIT PAYMENT AUTOMÁTICO
-// Recolhimento fracionado LC 214/2025
-// ============================================
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -131,12 +125,12 @@ export function useSplitPayment(empresaId?: string) {
         ibs_retido: calculo.ibsRetido,
         is_retido: calculo.isRetido,
         total_retido: calculo.totalRetido,
-        status: 'pendente',
+        status: 'pendente' as StatusSplitPayment,
       };
 
       const { data, error } = await supabase
         .from('split_payment_transacoes')
-        .insert(insertData as never)
+        .insert(insertData)
         .select()
         .single();
 
@@ -150,7 +144,7 @@ export function useSplitPayment(empresaId?: string) {
       });
     },
     onError: (error) => {
-      toast.error('Erro ao registrar split payment: ' + error.message);
+      toast.error('Erro ao registrar split payment: ' + (error instanceof Error ? error.message : 'Erro desconhecido'));
     },
   });
 
@@ -180,12 +174,12 @@ export function useSplitPayment(empresaId?: string) {
   // Estatísticas
   const estatisticas = {
     totalTransacoes: transacoes.length,
-    valorTotalOperacoes: transacoes.reduce((sum, t) => sum + (t.valor_operacao || 0), 0),
-    totalTributosRetidos: transacoes.reduce((sum, t) => sum + (t.total_retido || 0), 0),
+    valorTotalOperacoes: transacoes.reduce((sum, t) => sum + (Number(t.valor_operacao) || 0), 0),
+    totalTributosRetidos: transacoes.reduce((sum, t) => sum + (Number(t.total_retido) || 0), 0),
     pendentes: transacoes.filter(t => t.status === 'pendente').length,
     processados: transacoes.filter(t => t.status === 'processado').length,
-    cbsTotal: transacoes.reduce((sum, t) => sum + (t.cbs_retido || 0), 0),
-    ibsTotal: transacoes.reduce((sum, t) => sum + (t.ibs_retido || 0), 0),
+    cbsTotal: transacoes.reduce((sum, t) => sum + (Number(t.cbs_retido) || 0), 0),
+    ibsTotal: transacoes.reduce((sum, t) => sum + (Number(t.ibs_retido) || 0), 0),
   };
 
   return {
