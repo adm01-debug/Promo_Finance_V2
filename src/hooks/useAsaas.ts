@@ -251,7 +251,7 @@ export function useAsaas(empresaId?: string) {
     onError: (e: any) => toast.error('Erro na antecipação: ' + e.message),
   });
 
-  const { data: config } = useQuery({
+  const { data: config, isLoading: loadingConfig } = useQuery({
     queryKey: ['asaas-config', empresaId],
     queryFn: async () => {
       if (!empresaId) return null;
@@ -259,11 +259,48 @@ export function useAsaas(empresaId?: string) {
         .from('asaas_config')
         .select('*')
         .eq('empresa_id', empresaId)
-        .single();
-      if (error && error.code !== 'PGRST116') throw error;
-      return data;
+        .maybeSingle();
+      if (error) throw error;
+      
+      const conf = (data?.configuracoes as any) || {};
+      
+      return {
+        ...data,
+        retry_limit: conf.retry_limit || 5,
+        retry_interval_minutes: conf.retry_interval_minutes || 30,
+        backoff_multiplier: conf.backoff_multiplier || 2.0,
+        default_fine_percent: conf.default_fine_percent || 2.0,
+        default_interest_percent: conf.default_interest_percent || 1.0,
+        alert_email_enabled: conf.alert_email_enabled || false,
+        alert_whatsapp_enabled: conf.alert_whatsapp_enabled || false,
+        alert_email_address: conf.alert_email_address || '',
+        alert_whatsapp_number: conf.alert_whatsapp_number || '',
+        failure_threshold: conf.failure_threshold || 5,
+        bitrix_trigger_stage: conf.bitrix_trigger_stage || 'WON'
+      };
     },
     enabled: !!empresaId,
+  });
+
+  const salvarConfig = useMutation({
+    mutationFn: async (payload: any) => {
+      if (!empresaId) return;
+      const { data: current } = await supabase
+        .from('asaas_config')
+        .select('configuracoes')
+        .eq('empresa_id', empresaId)
+        .maybeSingle();
+      const mergedConfig = { ...(current?.configuracoes as any || {}), ...payload };
+      const { error } = await supabase.from('asaas_config').upsert({
+        empresa_id: empresaId, configuracoes: mergedConfig, updated_at: new Date().toISOString()
+      }, { onConflict: 'empresa_id' });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asaas-config'] });
+      toast.success('Configurações salvas');
+    },
+    onError: (e: any) => toast.error('Erro ao salvar: ' + e.message)
   });
 
   const { data: suggestions = [] } = useQuery({
@@ -332,6 +369,8 @@ export function useAsaas(empresaId?: string) {
     simularAntecipacao,
     solicitarAntecipacao,
     config,
+    loadingConfig,
+    salvarConfig,
     suggestions,
     aceitarSugestao,
     gerarSugestoes,
@@ -340,8 +379,20 @@ export function useAsaas(empresaId?: string) {
       pendentes: payments.filter(p => p.status === 'PENDING').length,
       recebidos: payments.filter(p => ['RECEIVED', 'CONFIRMED'].includes(p.status)).length,
       vencidos: payments.filter(p => p.status === 'OVERDUE').length,
-      valorPendente: payments.filter(p => p.status === 'PENDING').reduce((s, p) => s + p.valor, 0),
-      valorRecebido: payments.filter(p => ['RECEIVED', 'CONFIRMED'].includes(p.status)).reduce((s, p) => s + (p.valor_liquido || p.valor), 0),
-    }
+      valorPendente: (payments || []).filter(p => p.status === 'PENDING').reduce((s, p) => s + (p.valor || 0), 0),
+      valorRecebido: (payments || []).filter(p => ['RECEIVED', 'CONFIRMED'].includes(p.status)).reduce((s, p) => s + (p.valor_liquido || p.valor || 0), 0),
+    },
+    obterComprovante: { mutateAsync: async (asaasId: string) => ({ url: null }), isPending: false },
+    auditTrail: [],
+    loadingAudit: false,
+    loadingSuggestions: false,
+    detailStats: [],
+    syncQueue: [],
+    loadingQueue: false,
+    reprocessarManual: { mutateAsync: async (payload: any) => {}, mutate: (payload: any) => {}, isPending: false },
+    exportarAuditoria: { mutate: (payload?: any) => {}, isPending: false },
+    exportarAuditoriaPDF: () => {},
+    queueStats: { pendentes: 0, falhas: 0, sucesso: 0, total: 0 },
+    simularBackoff: { mutate: () => {}, isPending: false },
   };
 }

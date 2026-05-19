@@ -10952,6 +10952,14 @@ export type Database = {
       get_cron_run_history:
         | { Args: never; Returns: Json }
         | { Args: { p_job_name?: string; p_limit?: number }; Returns: Json }
+      get_lockout_details: {
+        Args: { _email: string }
+        Returns: {
+          is_locked: boolean
+          lockout_count: number
+          remaining_minutes: number
+        }[]
+      }
       get_retencoes_pendentes_count: {
         Args: { p_empresa_id: string }
         Returns: number
@@ -10978,6 +10986,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_failed_attempts: {
+        Args: { _email: string }
+        Returns: undefined
       }
       is_country_allowed_for_login: {
         Args: { _country: string }
@@ -11095,6 +11107,7 @@ export type Database = {
             }
             Returns: undefined
           }
+      reset_failed_attempts: { Args: { _email: string }; Returns: undefined }
       run_daily_cleanup: { Args: never; Returns: Json }
       run_daily_cleanup_with_logging: { Args: never; Returns: undefined }
       use_reset_token: {
