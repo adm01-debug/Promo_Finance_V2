@@ -1,9 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, asaas-access-token, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-platform-runtime, x-supabase-client-platform-runtime-version',
-}
+import { validatePayload, createErrorResponse, AsaasWebhookSchema, corsHeaders } from '../_shared/validation.ts'
 
 Deno.serve(async (req) => {
   const startTime = Date.now()
@@ -18,25 +14,20 @@ Deno.serve(async (req) => {
     const WEBHOOK_TOKEN = Deno.env.get('ASAAS_WEBHOOK_TOKEN')
     const receivedToken = req.headers.get('asaas-access-token')
 
-    // Permitir simulação sem token apenas se o token de ambiente não estiver configurado
-    // Em produção, o token DEVE existir.
     if (WEBHOOK_TOKEN && receivedToken !== WEBHOOK_TOKEN) {
       console.error('Token de webhook inválido')
-      return new Response(JSON.stringify({ error: 'Token inválido' }), {
-        status: 403,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
+      return createErrorResponse('Token inválido', 403)
     }
 
     const body = await req.json()
-    const { event, payment, transfer } = body
-
-    if (!event) {
-      return new Response(JSON.stringify({ error: 'Payload inválido' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
+    const validation = validatePayload(AsaasWebhookSchema, body)
+    
+    if (!validation.success) {
+      return createErrorResponse(validation.error, 400, validation.details)
     }
+
+    const { event, payment, transfer } = validation.data
+
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
