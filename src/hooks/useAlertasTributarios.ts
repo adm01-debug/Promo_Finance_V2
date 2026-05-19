@@ -194,11 +194,11 @@ export function useAlertasTributarios(empresaId?: string) {
     const alertasParaCriar: Omit<AlertaTributario, 'id' | 'created_at' | 'lido' | 'resolvido'>[] = [];
 
     // Verificar DARFs pendentes
-    const { data: darfsPendentes } = await supabase
+    const { data: darfsPendentes } = await (supabase
       .from('darfs')
-      .select('*')
+      .select('*') as any)
       .eq('empresa_id', empresaId)
-      .eq('status', 'gerado') as { data: any[] | null };
+      .eq('status', 'gerado');
 
     darfsPendentes?.forEach(darf => {
       const diasParaVencer = differenceInDays(parseISO(darf.data_vencimento), hoje);
