@@ -3,8 +3,11 @@ import {
   AsaasWebhookSchema, 
   BlingWebhookSchema, 
   Bitrix24WebhookSchema,
+  AsaasProxySchema,
+  AnalyzeDocumentSchema,
   validatePayload 
 } from "../_shared/validation.ts";
+
 
 Deno.test("Contract Test: Asaas Webhook Schema", () => {
   // Valid payload
