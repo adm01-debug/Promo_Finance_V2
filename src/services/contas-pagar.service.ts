@@ -37,7 +37,7 @@ export interface ContaPagarInput {
 
 export const contasPagarService = {
   async getAll(filters?: ContaPagarFilters) {
-    let query = supabase
+    let query: any = supabase
       .from('vw_contas_pagar_painel')
       .select('*')
       .order('vencimento', { ascending: true });
