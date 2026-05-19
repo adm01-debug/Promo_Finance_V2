@@ -29,7 +29,7 @@ async function asaasFetch(path: string, apiKey: string, options: RequestInit = {
   return response.json()
 }
 
-Deno.serve(async (req) => {
+export const handler = async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -38,6 +38,7 @@ Deno.serve(async (req) => {
     const ASAAS_API_KEY = Deno.env.get('ASAAS_API_KEY')
     if (!ASAAS_API_KEY) {
       throw new Error('ASAAS_API_KEY não configurada')
+
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
@@ -677,7 +678,7 @@ Deno.serve(async (req) => {
             }).eq('id', item.id)
             
             results.push({ id: item.id, status: 'COMPLETED' })
-          } catch (e) {
+          } catch (e: any) {
             const nextRetry = new Date()
             // Cálculo com Backoff configurado: intervalo_base * (multiplicador ^ tentativas)
             const minutesToAdd = baseInterval * Math.pow(multiplier, item.attempts);
@@ -806,11 +807,17 @@ Deno.serve(async (req) => {
     }
 
     return ok(result)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Erro asaas-proxy:', error)
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
-})
+
+}
+
+if (import.meta.main) {
+  Deno.serve(handler)
+}
+
