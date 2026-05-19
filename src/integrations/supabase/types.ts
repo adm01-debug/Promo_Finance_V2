@@ -7970,6 +7970,116 @@ export type Database = {
           },
         ]
       }
+      regimes_simulados: {
+        Row: {
+          alertas: Json
+          ano_referencia: number
+          audit_log_id: string | null
+          cenarios: Json
+          created_by: string | null
+          data_simulacao: string
+          economia_anual_estimada: number | null
+          empresa_id: string
+          fator_r: number | null
+          folha_12m: number | null
+          id: string
+          justificativa: string | null
+          parametros: Json
+          rbt12: number | null
+          regime_atual: string | null
+          regime_recomendado: string
+          updated_at: string
+        }
+        Insert: {
+          alertas?: Json
+          ano_referencia: number
+          audit_log_id?: string | null
+          cenarios?: Json
+          created_by?: string | null
+          data_simulacao?: string
+          economia_anual_estimada?: number | null
+          empresa_id: string
+          fator_r?: number | null
+          folha_12m?: number | null
+          id?: string
+          justificativa?: string | null
+          parametros?: Json
+          rbt12?: number | null
+          regime_atual?: string | null
+          regime_recomendado: string
+          updated_at?: string
+        }
+        Update: {
+          alertas?: Json
+          ano_referencia?: number
+          audit_log_id?: string | null
+          cenarios?: Json
+          created_by?: string | null
+          data_simulacao?: string
+          economia_anual_estimada?: number | null
+          empresa_id?: string
+          fator_r?: number | null
+          folha_12m?: number | null
+          id?: string
+          justificativa?: string | null
+          parametros?: Json
+          rbt12?: number | null
+          regime_atual?: string | null
+          regime_recomendado?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regimes_simulados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "regimes_simulados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "regimes_simulados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "regimes_simulados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "regimes_simulados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "regimes_simulados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "regimes_simulados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       regimes_tributarios: {
         Row: {
           ativo: boolean | null
