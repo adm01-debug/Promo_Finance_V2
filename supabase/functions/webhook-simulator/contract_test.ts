@@ -72,3 +72,40 @@ Deno.test("Contract Test: Bitrix24 Webhook Schema", () => {
   const resultInvalid = validatePayload(Bitrix24WebhookSchema, invalidPayload);
   assertEquals(resultInvalid.success, false);
 });
+
+Deno.test("Contract Test: Asaas Proxy Schema", () => {
+  // Valid payload
+  const validPayload = {
+    action: "criar_cliente",
+    data: { nome: "John Doe", cpf_cnpj: "12345678901" }
+  };
+  const result = validatePayload(AsaasProxySchema, validPayload);
+  assertEquals(result.success, true);
+
+  // Invalid payload (missing action)
+  const invalidPayload = {
+    data: { nome: "John Doe" }
+  };
+  const resultInvalid = validatePayload(AsaasProxySchema, invalidPayload);
+  assertEquals(resultInvalid.success, false);
+});
+
+Deno.test("Contract Test: Analyze Document Schema", () => {
+  // Valid payload
+  const validPayload = {
+    fileName: "invoice.pdf",
+    fileType: "application/pdf",
+    fileContent: "SGVsbG8="
+  };
+  const result = validatePayload(AnalyzeDocumentSchema, validPayload);
+  assertEquals(result.success, true);
+
+  // Invalid payload (missing fileContent)
+  const invalidPayload = {
+    fileName: "invoice.pdf",
+    fileType: "application/pdf"
+  };
+  const resultInvalid = validatePayload(AnalyzeDocumentSchema, invalidPayload);
+  assertEquals(resultInvalid.success, false);
+});
+
