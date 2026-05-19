@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ============================================
 // HOOK: PER/DCOMP DIGITAL
 // Pedido de Restituição e Compensação

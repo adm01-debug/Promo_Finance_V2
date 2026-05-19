@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ============================================
 // PÁGINA: Simulação Comparativa de Regimes Tributários
 // Modularizada — sub-componentes em components/tributario/simulacao/

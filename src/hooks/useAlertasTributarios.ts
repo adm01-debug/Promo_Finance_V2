@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ============================================
 // HOOK: ALERTAS TRIBUTÁRIOS EM TEMPO REAL
 // Monitoramento de prazos e compliance

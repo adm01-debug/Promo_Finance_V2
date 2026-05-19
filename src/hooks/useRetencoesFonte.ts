@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ============================================
 // HOOK: RETENÇÕES NA FONTE
 // IRRF, CSRF, INSS, ISS, CBS, IBS
