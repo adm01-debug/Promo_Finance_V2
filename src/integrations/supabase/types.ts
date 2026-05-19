@@ -8938,6 +8938,15 @@ export type Database = {
             }
             Returns: undefined
           }
+      confirmar_conciliacao_manual: {
+        Args: {
+          p_ajuste_centavos?: number
+          p_conta_pagar_id?: string
+          p_conta_receber_id?: string
+          p_transacao_id: string
+        }
+        Returns: undefined
+      }
       confirmar_envio_cobranca: {
         Args: {
           p_erro?: string
@@ -8962,6 +8971,10 @@ export type Database = {
             }
             Returns: undefined
           }
+      desfazer_conciliacao_manual: {
+        Args: { p_transacao_id: string }
+        Returns: undefined
+      }
       export_asaas_audit_csv: {
         Args: { p_empresa_id: string }
         Returns: string
