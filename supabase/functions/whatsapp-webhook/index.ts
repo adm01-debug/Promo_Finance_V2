@@ -1,9 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+import { WhatsappWebhookSchema, corsHeaders, validatePayload, createErrorResponse } from '../_shared/validation.ts'
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
@@ -13,9 +9,15 @@ Deno.serve(async (req) => {
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, serviceRoleKey)
 
-    const body = await req.json()
-    console.log("[whatsapp-webhook] Event received:", JSON.stringify(body))
+    const rawBody = await req.json()
+    console.log("[whatsapp-webhook] Event received:", JSON.stringify(rawBody))
 
+    const validation = validatePayload(WhatsappWebhookSchema, rawBody, "whatsapp-webhook")
+    if (!validation.success) {
+      return createErrorResponse(validation.error, 400, validation.details)
+    }
+
+    const body = validation.data
     // Payload variation depending on provider (WPPConnect, Meta, etc)
     const { event, messageId, status, from } = body
 
@@ -25,7 +27,7 @@ Deno.serve(async (req) => {
         .from('execucoes_cobranca')
         .update({ 
           status: status === 'read' ? 'lido' : status === 'delivered' ? 'entregue' : 'enviado',
-          metadata: { ...body, updated_at: new Date().toISOString() }
+          metadata: { ...rawBody, updated_at: new Date().toISOString() }
         })
         .eq('provider_message_id', messageId)
 
@@ -35,6 +37,7 @@ Deno.serve(async (req) => {
           .from('execucoes_cobranca')
           .select('empresa_id, conta_receber_id')
           .eq('destinatario', from)
+
           .order('created_at', { ascending: false })
           .limit(1)
           .maybeSingle()
