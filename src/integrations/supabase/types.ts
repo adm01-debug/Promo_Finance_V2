@@ -1540,7 +1540,7 @@ export type Database = {
       bitrix_sync_logs: {
         Row: {
           created_at: string | null
-          detalhes: string | null
+          detalhes: Json | null
           empresa_id: string | null
           entidade: string | null
           entidade_id: string | null
@@ -1556,7 +1556,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
-          detalhes?: string | null
+          detalhes?: Json | null
           empresa_id?: string | null
           entidade?: string | null
           entidade_id?: string | null
@@ -1572,7 +1572,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
-          detalhes?: string | null
+          detalhes?: Json | null
           empresa_id?: string | null
           entidade?: string | null
           entidade_id?: string | null
@@ -1869,22 +1869,29 @@ export type Database = {
           agencia: string | null
           banco: string | null
           banco_nome: string | null
+          bitrix_id: string | null
+          bitrix_status: string | null
           cedente_cnpj: string | null
           cedente_nome: string | null
           codigo_barras: string | null
           conta: string | null
+          conta_bancaria_id: string | null
+          conta_pagar_id: string | null
           conta_receber_id: string | null
           created_at: string
+          created_by: string | null
           data_emissao: string | null
           data_pagamento: string | null
           desconto: number | null
+          descricao: string | null
           eventos_pagamento: Json | null
           id: string
           juros_multa: number | null
           linha_digitavel: string | null
           nosso_numero: string | null
           numero: string | null
-          rastreio_status: string | null
+          observacoes: string | null
+          rastreio_status: Json | null
           sacado_cpf_cnpj: string | null
           sacado_nome: string | null
           status: string | null
@@ -1898,22 +1905,29 @@ export type Database = {
           agencia?: string | null
           banco?: string | null
           banco_nome?: string | null
+          bitrix_id?: string | null
+          bitrix_status?: string | null
           cedente_cnpj?: string | null
           cedente_nome?: string | null
           codigo_barras?: string | null
           conta?: string | null
+          conta_bancaria_id?: string | null
+          conta_pagar_id?: string | null
           conta_receber_id?: string | null
           created_at?: string
+          created_by?: string | null
           data_emissao?: string | null
           data_pagamento?: string | null
           desconto?: number | null
+          descricao?: string | null
           eventos_pagamento?: Json | null
           id?: string
           juros_multa?: number | null
           linha_digitavel?: string | null
           nosso_numero?: string | null
           numero?: string | null
-          rastreio_status?: string | null
+          observacoes?: string | null
+          rastreio_status?: Json | null
           sacado_cpf_cnpj?: string | null
           sacado_nome?: string | null
           status?: string | null
@@ -1927,22 +1941,29 @@ export type Database = {
           agencia?: string | null
           banco?: string | null
           banco_nome?: string | null
+          bitrix_id?: string | null
+          bitrix_status?: string | null
           cedente_cnpj?: string | null
           cedente_nome?: string | null
           codigo_barras?: string | null
           conta?: string | null
+          conta_bancaria_id?: string | null
+          conta_pagar_id?: string | null
           conta_receber_id?: string | null
           created_at?: string
+          created_by?: string | null
           data_emissao?: string | null
           data_pagamento?: string | null
           desconto?: number | null
+          descricao?: string | null
           eventos_pagamento?: Json | null
           id?: string
           juros_multa?: number | null
           linha_digitavel?: string | null
           nosso_numero?: string | null
           numero?: string | null
-          rastreio_status?: string | null
+          observacoes?: string | null
+          rastreio_status?: Json | null
           sacado_cpf_cnpj?: string | null
           sacado_nome?: string | null
           status?: string | null
@@ -1952,7 +1973,36 @@ export type Database = {
           valor_pago?: number | null
           vencimento?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "boletos_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "boletos_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["conta_id"]
+          },
+          {
+            foreignKeyName: "boletos_conta_pagar_id_fkey"
+            columns: ["conta_pagar_id"]
+            isOneToOne: false
+            referencedRelation: "contas_pagar"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "boletos_conta_pagar_id_fkey"
+            columns: ["conta_pagar_id"]
+            isOneToOne: false
+            referencedRelation: "vw_contas_pagar_painel"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       budgets: {
         Row: {
@@ -2032,6 +2082,7 @@ export type Database = {
           icone: string | null
           id: string
           nome: string
+          plano_conta_id: string | null
           tipo: string
           updated_at: string | null
         }
@@ -2043,6 +2094,7 @@ export type Database = {
           icone?: string | null
           id?: string
           nome: string
+          plano_conta_id?: string | null
           tipo: string
           updated_at?: string | null
         }
@@ -2054,6 +2106,7 @@ export type Database = {
           icone?: string | null
           id?: string
           nome?: string
+          plano_conta_id?: string | null
           tipo?: string
           updated_at?: string | null
         }
@@ -2063,6 +2116,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "categorias_plano_conta_id_fkey"
+            columns: ["plano_conta_id"]
+            isOneToOne: false
+            referencedRelation: "plano_contas"
             referencedColumns: ["id"]
           },
         ]
@@ -5832,6 +5892,64 @@ export type Database = {
             columns: ["template_id"]
             isOneToOne: false
             referencedRelation: "templates_cobranca"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      regua_cobranca_status: {
+        Row: {
+          conta_receber_id: string | null
+          created_at: string | null
+          data_ultima_acao: string | null
+          empresa_id: string | null
+          etapa_atual: string | null
+          id: string
+          proxima_acao_data: string | null
+          status_cobranca: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          conta_receber_id?: string | null
+          created_at?: string | null
+          data_ultima_acao?: string | null
+          empresa_id?: string | null
+          etapa_atual?: string | null
+          id?: string
+          proxima_acao_data?: string | null
+          status_cobranca?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          conta_receber_id?: string | null
+          created_at?: string | null
+          data_ultima_acao?: string | null
+          empresa_id?: string | null
+          etapa_atual?: string | null
+          id?: string
+          proxima_acao_data?: string | null
+          status_cobranca?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regua_cobranca_status_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "regua_cobranca_status_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "vw_contas_receber_painel"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "regua_cobranca_status_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
             referencedColumns: ["id"]
           },
         ]
