@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { validateContract } from "../_shared/contract-validator.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -7,8 +9,13 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-trigger-source",
 };
 
+const AnomaliaRunInputSchema = z.object({
+  run_id: z.string().uuid().optional(),
+});
+
 // Lock key estável (int4) — derivado a partir de string fixa
 const LOCK_KEY = 738291045;
+
 
 interface AnomaliaInsert {
   empresa_id: string | null;
