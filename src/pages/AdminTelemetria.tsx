@@ -281,8 +281,12 @@ export default function AdminTelemetriaPage() {
           formatDuration={formatDuration}
         />
 
+        {/* Performance Metrics */}
+        <PerformanceMetrics />
+
         {/* Top Offenders */}
         <TelemetriaTopOffenders topOffenders={topOffenders} formatDuration={formatDuration} />
+
 
         {/* Charts */}
         <TelemetryCharts rows={rows} timeFilter={timeFilter} />
