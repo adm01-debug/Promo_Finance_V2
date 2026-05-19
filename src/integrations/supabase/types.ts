@@ -6868,6 +6868,7 @@ export type Database = {
       }
       regua_cobranca_status: {
         Row: {
+          cliente_id: string | null
           conta_receber_id: string | null
           created_at: string | null
           data_ultima_acao: string | null
@@ -6875,10 +6876,13 @@ export type Database = {
           etapa_atual: string | null
           id: string
           proxima_acao_data: string | null
+          status: string | null
           status_cobranca: string | null
+          titulo_id: string | null
           updated_at: string | null
         }
         Insert: {
+          cliente_id?: string | null
           conta_receber_id?: string | null
           created_at?: string | null
           data_ultima_acao?: string | null
@@ -6886,10 +6890,13 @@ export type Database = {
           etapa_atual?: string | null
           id?: string
           proxima_acao_data?: string | null
+          status?: string | null
           status_cobranca?: string | null
+          titulo_id?: string | null
           updated_at?: string | null
         }
         Update: {
+          cliente_id?: string | null
           conta_receber_id?: string | null
           created_at?: string | null
           data_ultima_acao?: string | null
@@ -6897,10 +6904,19 @@ export type Database = {
           etapa_atual?: string | null
           id?: string
           proxima_acao_data?: string | null
+          status?: string | null
           status_cobranca?: string | null
+          titulo_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "regua_cobranca_status_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "regua_cobranca_status_conta_receber_id_fkey"
             columns: ["conta_receber_id"]
@@ -6920,6 +6936,20 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "regua_cobranca_status_titulo_id_fkey"
+            columns: ["titulo_id"]
+            isOneToOne: false
+            referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "regua_cobranca_status_titulo_id_fkey"
+            columns: ["titulo_id"]
+            isOneToOne: false
+            referencedRelation: "vw_contas_receber_painel"
             referencedColumns: ["id"]
           },
         ]
@@ -7520,12 +7550,15 @@ export type Database = {
           compensacao_regra: string | null
           compensacao_valor: number | null
           conciliada: boolean | null
+          confirmado_por: string | null
           conta_bancaria_id: string | null
           created_at: string | null
           data: string
+          data_confirmacao: string | null
           deleted_at: string | null
           descricao: string
           id: string
+          regra_id: string | null
           saldo: number | null
           status: string
           tipo: string
@@ -7541,12 +7574,15 @@ export type Database = {
           compensacao_regra?: string | null
           compensacao_valor?: number | null
           conciliada?: boolean | null
+          confirmado_por?: string | null
           conta_bancaria_id?: string | null
           created_at?: string | null
           data: string
+          data_confirmacao?: string | null
           deleted_at?: string | null
           descricao: string
           id?: string
+          regra_id?: string | null
           saldo?: number | null
           status?: string
           tipo: string
@@ -7562,18 +7598,29 @@ export type Database = {
           compensacao_regra?: string | null
           compensacao_valor?: number | null
           conciliada?: boolean | null
+          confirmado_por?: string | null
           conta_bancaria_id?: string | null
           created_at?: string | null
           data?: string
+          data_confirmacao?: string | null
           deleted_at?: string | null
           descricao?: string
           id?: string
+          regra_id?: string | null
           saldo?: number | null
           status?: string
           tipo?: string
           valor?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "transacoes_bancarias_regra_id_fkey"
+            columns: ["regra_id"]
+            isOneToOne: false
+            referencedRelation: "regras_conciliacao"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       transferencias: {
         Row: {
