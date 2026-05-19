@@ -156,7 +156,10 @@ export const ContabilizarEventoSchema = z.object({
 
 export const ExecutarRelatoriosSchema = z.object({
   relatorio_id: z.string().uuid().optional().nullable(),
+}).refine(data => Object.keys(data).length > 0, {
+  message: "At least one parameter is required"
 });
+
 
 export const WhatsappIaProativoSchema = z.object({
   action: z.enum(['analisar-alertas', 'enviar-mensagem', 'gerar-resposta-ia']),
