@@ -67,7 +67,7 @@ export function useHistoricoScoreSaude() {
         .order('data_calculo', { ascending: false })
         .limit(30);
       if (error) throw error;
-      return (data || []) as Array<{ id: string; score: number; data_calculo: string; detalhes: unknown; created_at: string }>;
+      return (data || []) as any[];
     },
   });
 }
@@ -83,7 +83,7 @@ export function useRecomendacoesIA() {
         .order('created_at', { ascending: false })
         .limit(20);
       if (error) throw error;
-      return (data || []) as Array<{ id: string; tipo: string; titulo: string; descricao: string; impacto_estimado: number; aplicada: boolean; created_at: string }>;
+      return (data || []) as any[];
     },
   });
 }
