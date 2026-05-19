@@ -197,7 +197,7 @@ export function useAlertasTributarios(empresaId?: string) {
     // Verificar DARFs pendentes
     const { data: darfsPendentes } = await (supabase
       .from('darfs')
-      .select('*') as any)
+      .select('id, data_vencimento, codigo_receita, descricao_receita, valor_total') as any)
       .eq('empresa_id', empresaId)
       .eq('status', 'gerado');
 
@@ -237,11 +237,11 @@ export function useAlertasTributarios(empresaId?: string) {
     }
 
     // Verificar créditos próximos de expirar
-    const { data: creditos } = await supabase
+    const { data: creditos } = await (supabase
       .from('creditos_tributarios')
-      .select('*')
+      .select('id, data_vencimento, valor') as any)
       .eq('empresa_id', empresaId)
-      .eq('status', 'disponivel') as { data: any[] | null };
+      .eq('status', 'disponivel');
 
     // Créditos com mais de 5 anos podem expirar
     creditos?.forEach(credito => {
