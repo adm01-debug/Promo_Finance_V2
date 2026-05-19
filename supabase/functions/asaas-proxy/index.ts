@@ -29,7 +29,7 @@ async function asaasFetch(path: string, apiKey: string, options: RequestInit = {
   return response.json()
 }
 
-Deno.serve(async (req) => {
+export const handler = async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -38,6 +38,7 @@ Deno.serve(async (req) => {
     const ASAAS_API_KEY = Deno.env.get('ASAAS_API_KEY')
     if (!ASAAS_API_KEY) {
       throw new Error('ASAAS_API_KEY não configurada')
+
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
