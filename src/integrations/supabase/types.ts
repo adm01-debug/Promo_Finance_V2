@@ -860,28 +860,58 @@ export type Database = {
       }
       apuracoes_tributarias: {
         Row: {
+          ano: number | null
+          cbs_a_compensar: number | null
+          cbs_a_pagar: number | null
+          cbs_creditos: number | null
+          cbs_debitos: number | null
           competencia: string | null
           created_at: string | null
           empresa_id: string | null
+          ibs_a_compensar: number | null
+          ibs_a_pagar: number | null
+          ibs_creditos: number | null
+          ibs_debitos: number | null
           id: string
+          mes: number | null
           status: string | null
           tipo_tributo: string | null
           valor_total: number | null
         }
         Insert: {
+          ano?: number | null
+          cbs_a_compensar?: number | null
+          cbs_a_pagar?: number | null
+          cbs_creditos?: number | null
+          cbs_debitos?: number | null
           competencia?: string | null
           created_at?: string | null
           empresa_id?: string | null
+          ibs_a_compensar?: number | null
+          ibs_a_pagar?: number | null
+          ibs_creditos?: number | null
+          ibs_debitos?: number | null
           id?: string
+          mes?: number | null
           status?: string | null
           tipo_tributo?: string | null
           valor_total?: number | null
         }
         Update: {
+          ano?: number | null
+          cbs_a_compensar?: number | null
+          cbs_a_pagar?: number | null
+          cbs_creditos?: number | null
+          cbs_debitos?: number | null
           competencia?: string | null
           created_at?: string | null
           empresa_id?: string | null
+          ibs_a_compensar?: number | null
+          ibs_a_pagar?: number | null
+          ibs_creditos?: number | null
+          ibs_debitos?: number | null
           id?: string
+          mes?: number | null
           status?: string | null
           tipo_tributo?: string | null
           valor_total?: number | null
@@ -1896,28 +1926,37 @@ export type Database = {
       }
       configuracoes_aprovacao: {
         Row: {
+          aprovadores_obrigatorios: number | null
           ativo: boolean | null
           created_at: string | null
           empresa_id: string | null
           id: string
           modulo: string | null
+          updated_at: string | null
           valor_minimo: number | null
+          valor_minimo_aprovacao: number | null
         }
         Insert: {
+          aprovadores_obrigatorios?: number | null
           ativo?: boolean | null
           created_at?: string | null
           empresa_id?: string | null
           id?: string
           modulo?: string | null
+          updated_at?: string | null
           valor_minimo?: number | null
+          valor_minimo_aprovacao?: number | null
         }
         Update: {
+          aprovadores_obrigatorios?: number | null
           ativo?: boolean | null
           created_at?: string | null
           empresa_id?: string | null
           id?: string
           modulo?: string | null
+          updated_at?: string | null
           valor_minimo?: number | null
+          valor_minimo_aprovacao?: number | null
         }
         Relationships: [
           {
@@ -3323,22 +3362,34 @@ export type Database = {
         Row: {
           configuracao_id: string | null
           created_at: string | null
+          descricao: string | null
+          empresa_id: string | null
           id: string
           nivel: number | null
+          nome: string | null
+          ordem: number | null
           role_responsavel: string | null
         }
         Insert: {
           configuracao_id?: string | null
           created_at?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
           id?: string
           nivel?: number | null
+          nome?: string | null
+          ordem?: number | null
           role_responsavel?: string | null
         }
         Update: {
           configuracao_id?: string | null
           created_at?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
           id?: string
           nivel?: number | null
+          nome?: string | null
+          ordem?: number | null
           role_responsavel?: string | null
         }
         Relationships: [
@@ -3347,6 +3398,13 @@ export type Database = {
             columns: ["configuracao_id"]
             isOneToOne: false
             referencedRelation: "configuracoes_aprovacao"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fluxos_aprovacao_niveis_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
             referencedColumns: ["id"]
           },
         ]
@@ -4404,6 +4462,56 @@ export type Database = {
             columns: ["device_id"]
             isOneToOne: false
             referencedRelation: "user_devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      operacoes_tributaveis: {
+        Row: {
+          cbs_aliquota: number | null
+          cbs_valor: number | null
+          created_at: string | null
+          data_operacao: string | null
+          empresa_id: string | null
+          ibs_aliquota: number | null
+          ibs_valor: number | null
+          id: string
+          status: string | null
+          tipo_operacao: string | null
+          valor_total: number | null
+        }
+        Insert: {
+          cbs_aliquota?: number | null
+          cbs_valor?: number | null
+          created_at?: string | null
+          data_operacao?: string | null
+          empresa_id?: string | null
+          ibs_aliquota?: number | null
+          ibs_valor?: number | null
+          id?: string
+          status?: string | null
+          tipo_operacao?: string | null
+          valor_total?: number | null
+        }
+        Update: {
+          cbs_aliquota?: number | null
+          cbs_valor?: number | null
+          created_at?: string | null
+          data_operacao?: string | null
+          empresa_id?: string | null
+          ibs_aliquota?: number | null
+          ibs_valor?: number | null
+          id?: string
+          status?: string | null
+          tipo_operacao?: string | null
+          valor_total?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "operacoes_tributaveis_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
             referencedColumns: ["id"]
           },
         ]
