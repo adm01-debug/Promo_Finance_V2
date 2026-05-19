@@ -14,7 +14,7 @@ export type Cliente = Tables<'clientes'>;
 export type Fornecedor = Tables<'fornecedores'>;
 export type ContaPagar = Tables<'contas_pagar'>;
 export type ContaReceber = Tables<'contas_receber'>;
-export type StatusPagamento = Database['public']['Enums']['status_pagamento'];
+export type StatusPagamento = 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
 
 // Type for external data coming from the edge function proxy
 export interface ExternalCliente {
@@ -165,29 +165,39 @@ export function useContasBancarias(empresaId?: string) {
   return useQuery({
     queryKey: ['contas-bancarias', empresaId],
     queryFn: async () => {
-      let query = supabase
-        .from('contas_bancarias')
-        .select('*, empresas(razao_social, nome_fantasia)')
-        .eq('ativo', true)
-        .order('banco');
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
+
+      const queryParams = new URLSearchParams({
+        select: '*,empresas:empresa_id(razao_social,nome_fantasia)',
+        ativo: 'eq.true',
+        order: 'banco'
+      });
       
       if (empresaId && empresaId !== 'all') {
-        query = query.eq('empresa_id', empresaId);
+        queryParams.append('empresa_id', `eq.${empresaId}`);
       }
 
-      const { data, error } = await query;
-      if (error) throw error;
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const response = await fetch(`https://${projectId}.supabase.co/rest/v1/contas_bancarias?${queryParams}`, {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      });
+
+      if (!response.ok) throw new Error('Erro ao buscar contas bancárias');
+      const data = await response.json();
       
-      // Enhance with routing rules if they exist
-      const { data: rules } = await supabase
+      const { data: rules } = await (supabase
         .from('regras_roteamento_financeiro')
         .select('*')
-        .eq('ativo', true);
+        .eq('ativo', true) as any);
 
-      return (data || []).map(conta => ({
+      return (data || []).map((conta: any) => ({
         ...conta,
-        regras: rules?.filter(r => r.conta_bancaria_id === conta.id) || []
-      })) as ContaBancaria[];
+        regras: rules?.filter((r: any) => r.conta_bancaria_id === conta.id) || []
+      })) as any[];
     },
     staleTime: STALE_TIMES.config,
   });
@@ -239,9 +249,9 @@ export function useContasPagar(empresaId?: string) {
         query = query.eq('empresa_id', empresaId);
       }
 
-      const { data, error } = await query;
+      const { data, error } = await (query as any);
       if (error) throw error;
-      return data;
+      return (data || []) as any[];
     },
     staleTime: STALE_TIMES.financial,
   });
@@ -271,7 +281,12 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
 
       let dataQuery = supabase
         .from('contas_pagar')
-        .select('*, centros_custo(nome, codigo), contas_bancarias(banco), fornecedores(razao_social, nome_fantasia)')
+        .select(`
+          *,
+          centros_custo:centro_custo_id (nome, codigo),
+          contas_bancarias:conta_bancaria_id (banco),
+          fornecedores:fornecedor_id (razao_social, nome_fantasia)
+        `)
         .order('data_vencimento', { ascending: true })
         .range(from, to);
 
@@ -298,13 +313,13 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
         dataQuery = dataQuery.eq('conta_bancaria_id', contaBancariaId);
       }
 
-      const [countResult, dataResult] = await Promise.all([countQuery, dataQuery]);
+      const [countResult, dataResult] = await Promise.all([countQuery, dataQuery as any]);
 
       if (countResult.error) throw countResult.error;
       if (dataResult.error) throw dataResult.error;
 
       return {
-        data: dataResult.data || [],
+        data: (dataResult.data || []) as any[],
         totalCount: countResult.count || 0,
         totalPages: Math.ceil((countResult.count || 0) / pageSize),
       };
@@ -327,9 +342,9 @@ export function useContasReceber(empresaId?: string) {
         query = query.eq('empresa_id', empresaId);
       }
 
-      const { data, error } = await query;
+      const { data, error } = await (query as any);
       if (error) throw error;
-      return data;
+      return (data || []) as any[];
     },
     staleTime: STALE_TIMES.financial,
   });
@@ -359,7 +374,12 @@ export function useContasReceberPaginated(params: PaginatedContasReceberParams) 
 
       let dataQuery = supabase
         .from('contas_receber')
-        .select('*, centros_custo(nome, codigo), contas_bancarias(banco), clientes(razao_social, nome_fantasia, score)')
+        .select(`
+          *,
+          centros_custo:centro_custo_id (nome, codigo),
+          contas_bancarias:conta_bancaria_id (banco),
+          clientes:cliente_id (razao_social, nome_fantasia, score)
+        `)
         .order('data_vencimento', { ascending: true })
         .range(from, to);
 
@@ -386,13 +406,13 @@ export function useContasReceberPaginated(params: PaginatedContasReceberParams) 
         dataQuery = dataQuery.eq('conta_bancaria_id', contaBancariaId);
       }
 
-      const [countResult, dataResult] = await Promise.all([countQuery, dataQuery]);
+      const [countResult, dataResult] = await Promise.all([countQuery, dataQuery as any]);
 
       if (countResult.error) throw countResult.error;
       if (dataResult.error) throw dataResult.error;
 
       return {
-        data: dataResult.data || [],
+        data: (dataResult.data || []) as any[],
         totalCount: countResult.count || 0,
         totalPages: Math.ceil((countResult.count || 0) / pageSize),
       };
