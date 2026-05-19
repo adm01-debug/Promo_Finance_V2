@@ -164,21 +164,29 @@ export function useContasBancarias(empresaId?: string) {
   return useQuery({
     queryKey: ['contas-bancarias', empresaId],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_contas_bancarias_with_relations', {
-        p_empresa_id: empresaId && empresaId !== 'all' ? empresaId : null
-      });
+      // Use any to bypass deep type instantiation issues in this specific query
+      const query = supabase
+        .from('contas_bancarias')
+        .select('*, empresas:empresa_id(razao_social, nome_fantasia)')
+        .eq('ativo', true)
+        .order('banco');
       
-      if (error) {
-        // Fallback for missing RPC
-        const { data: simpleData, error: simpleError } = await (supabase
-          .from('contas_bancarias')
-          .select('*')
-          .eq('ativo', true) as any);
-        if (simpleError) throw simpleError;
-        return simpleData as any[];
+      if (empresaId && empresaId !== 'all') {
+        query.eq('empresa_id', empresaId);
       }
+
+      const { data, error } = await (query as any);
+      if (error) throw error;
       
-      return data as any[];
+      const { data: rules } = await supabase
+        .from('regras_roteamento_financeiro')
+        .select('*')
+        .eq('ativo', true);
+
+      return (data || []).map((conta: any) => ({
+        ...conta,
+        regras: rules?.filter((r: any) => r.conta_bancaria_id === conta.id) || []
+      })) as any[];
     },
     staleTime: STALE_TIMES.config,
   });
