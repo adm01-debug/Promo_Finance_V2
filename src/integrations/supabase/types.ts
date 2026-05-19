@@ -3753,6 +3753,7 @@ export type Database = {
       }
       expert_messages: {
         Row: {
+          actions: Json | null
           actions_executed: boolean | null
           content: string
           conversation_id: string
@@ -3762,6 +3763,7 @@ export type Database = {
           role: string
         }
         Insert: {
+          actions?: Json | null
           actions_executed?: boolean | null
           content: string
           conversation_id: string
@@ -3771,6 +3773,7 @@ export type Database = {
           role: string
         }
         Update: {
+          actions?: Json | null
           actions_executed?: boolean | null
           content?: string
           conversation_id?: string
@@ -4197,6 +4200,38 @@ export type Database = {
         }
         Relationships: []
       }
+      health_scores_operacionais: {
+        Row: {
+          created_at: string | null
+          empresa_id: string
+          id: string
+          metadata: Json | null
+          score: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          empresa_id: string
+          id?: string
+          metadata?: Json | null
+          score?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          empresa_id?: string
+          id?: string
+          metadata?: Json | null
+          score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "health_scores_operacionais_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       historico_analises_preditivas: {
         Row: {
           alertas_gerados: number | null
@@ -4362,8 +4397,10 @@ export type Database = {
         Row: {
           acao: string | null
           analise_ia: string | null
+          aprovado_por: string | null
           confianca: number | null
           conta_pagar_id: string | null
+          conta_receber_id: string | null
           created_at: string | null
           id: string
           motivos: string[] | null
@@ -4378,8 +4415,10 @@ export type Database = {
         Insert: {
           acao?: string | null
           analise_ia?: string | null
+          aprovado_por?: string | null
           confianca?: number | null
           conta_pagar_id?: string | null
+          conta_receber_id?: string | null
           created_at?: string | null
           id?: string
           motivos?: string[] | null
@@ -4394,8 +4433,10 @@ export type Database = {
         Update: {
           acao?: string | null
           analise_ia?: string | null
+          aprovado_por?: string | null
           confianca?: number | null
           conta_pagar_id?: string | null
+          conta_receber_id?: string | null
           created_at?: string | null
           id?: string
           motivos?: string[] | null
@@ -4408,6 +4449,20 @@ export type Database = {
           transacao_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "historico_conciliacao_ia_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "contas_receber"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "historico_conciliacao_ia_conta_receber_id_fkey"
+            columns: ["conta_receber_id"]
+            isOneToOne: false
+            referencedRelation: "vw_contas_receber_painel"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "historico_conciliacao_ia_sessao_id_fkey"
             columns: ["sessao_id"]
@@ -5069,6 +5124,7 @@ export type Database = {
         Row: {
           created_at: string | null
           data_movimentacao: string | null
+          deleted_at: string | null
           descricao: string | null
           empresa_id: string | null
           id: string
@@ -5078,6 +5134,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           data_movimentacao?: string | null
+          deleted_at?: string | null
           descricao?: string | null
           empresa_id?: string | null
           id?: string
@@ -5087,6 +5144,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           data_movimentacao?: string | null
+          deleted_at?: string | null
           descricao?: string | null
           empresa_id?: string | null
           id?: string
@@ -6100,6 +6158,7 @@ export type Database = {
         Row: {
           ativa: boolean | null
           condicoes: Json | null
+          conta_bancaria_id: string | null
           created_at: string | null
           empresa_id: string
           id: string
@@ -6110,6 +6169,7 @@ export type Database = {
         Insert: {
           ativa?: boolean | null
           condicoes?: Json | null
+          conta_bancaria_id?: string | null
           created_at?: string | null
           empresa_id: string
           id?: string
@@ -6120,6 +6180,7 @@ export type Database = {
         Update: {
           ativa?: boolean | null
           condicoes?: Json | null
+          conta_bancaria_id?: string | null
           created_at?: string | null
           empresa_id?: string
           id?: string
@@ -6128,6 +6189,20 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "regras_roteamento_financeiro_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "regras_roteamento_financeiro_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["conta_id"]
+          },
           {
             foreignKeyName: "regras_roteamento_financeiro_empresa_id_fkey"
             columns: ["empresa_id"]
@@ -6807,8 +6882,10 @@ export type Database = {
           conta_bancaria_id: string | null
           created_at: string | null
           data: string
+          deleted_at: string | null
           descricao: string
           id: string
+          saldo: number | null
           status: string
           tipo: string
           valor: number
@@ -6826,8 +6903,10 @@ export type Database = {
           conta_bancaria_id?: string | null
           created_at?: string | null
           data: string
+          deleted_at?: string | null
           descricao: string
           id?: string
+          saldo?: number | null
           status?: string
           tipo: string
           valor: number
@@ -6845,8 +6924,10 @@ export type Database = {
           conta_bancaria_id?: string | null
           created_at?: string | null
           data?: string
+          deleted_at?: string | null
           descricao?: string
           id?: string
+          saldo?: number | null
           status?: string
           tipo?: string
           valor?: number
@@ -7042,6 +7123,7 @@ export type Database = {
       user_filter_presets: {
         Row: {
           created_at: string | null
+          entity_type: string | null
           filters: Json
           id: string
           is_default: boolean | null
@@ -7052,6 +7134,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          entity_type?: string | null
           filters?: Json
           id?: string
           is_default?: boolean | null
@@ -7062,6 +7145,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          entity_type?: string | null
           filters?: Json
           id?: string
           is_default?: boolean | null
