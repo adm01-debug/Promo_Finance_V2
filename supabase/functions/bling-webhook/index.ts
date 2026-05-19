@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { validatePayload, createErrorResponse, BlingWebhookSchema, corsHeaders } from '../_shared/validation.ts';
+import { BlingWebhookSchema, corsHeaders, validatePayload, createErrorResponse } from '../_shared/validation.ts';
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
