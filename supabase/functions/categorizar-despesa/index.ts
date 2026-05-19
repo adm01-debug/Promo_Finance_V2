@@ -1,9 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { CategorizarDespesaSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
 
 interface Despesa {
   id?: string;
@@ -28,7 +25,13 @@ serve(async (req) => {
   }
 
   try {
-    const { despesas } = await req.json() as { despesas: Despesa[] };
+    const rawBody = await req.json();
+    const validation = validatePayload(CategorizarDespesaSchema, rawBody, "categorizar-despesa");
+    if (!validation.success) {
+      return createErrorResponse(validation.error, 400, validation.details);
+    }
+    const { despesas } = validation.data;
+
 
     if (!despesas || despesas.length === 0) {
       return new Response(

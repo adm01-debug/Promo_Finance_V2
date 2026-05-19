@@ -1,10 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { WhatsappIaProativoSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
 
 interface AlertaProativo {
   tipo: 'vencimento' | 'inadimplencia' | 'meta' | 'fluxo' | 'oportunidade';
@@ -28,7 +25,13 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseKey);
     
-    const { action, data } = await req.json();
+    const rawBody = await req.json();
+    const validation = validatePayload(WhatsappIaProativoSchema, rawBody, "whatsapp-ia-proativo");
+    if (!validation.success) {
+      return createErrorResponse(validation.error, 400, validation.details);
+    }
+    const { action, data } = validation.data;
+
     console.log('[whatsapp-ia-proativo] Ação:', action);
 
     if (action === 'analisar-alertas') {

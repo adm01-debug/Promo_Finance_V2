@@ -4,25 +4,11 @@
 // contábil em partidas dobradas.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { ContabilizarEventoSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
 
-interface Body {
-  empresa_id: string;
-  tipo_evento: 'conta_pagar' | 'conta_receber' | 'movimentacao';
-  evento_id: string;
-  valor: number;
-  data: string; // ISO yyyy-mm-dd
-  descricao?: string;
-  categoria_id?: string | null;
-  dry_run?: boolean;
-  ignore_rules?: boolean;
-}
+// Body interface removed in favor of Zod schema
+
 
 function renderTemplate(tpl: string, data: Record<string, unknown>): string {
   return tpl.replace(/\{(\w+)\}/g, (_, k) => String(data[k] ?? ''));
@@ -58,31 +44,13 @@ Deno.serve(async (req) => {
   }
   const userId = userData.user.id;
 
-  let body: Body;
-  try {
-    body = await req.json();
-  } catch {
-    return new Response(JSON.stringify({ error: 'invalid json' }), {
-      status: 400,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+  const rawBody = await req.json().catch(() => ({}));
+  const validation = validatePayload(ContabilizarEventoSchema, rawBody, "contabilizar-evento");
+  if (!validation.success) {
+    return createErrorResponse(validation.error, 400, validation.details);
   }
+  const body = validation.data;
 
-  if (
-    !body.empresa_id ||
-    !body.tipo_evento ||
-    !body.evento_id ||
-    !body.valor ||
-    body.valor <= 0
-  ) {
-    return new Response(
-      JSON.stringify({ error: 'campos obrigatórios ausentes' }),
-      {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      },
-    );
-  }
 
   const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 

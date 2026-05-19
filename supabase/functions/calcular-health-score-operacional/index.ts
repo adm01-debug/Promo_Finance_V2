@@ -1,11 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { OptionalEmpresaIdSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
 
 const PESOS = {
   tributario: 0.25,
@@ -186,8 +182,13 @@ serve(async (req) => {
     const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const client = createClient(url, key);
 
-    const body = req.method === "POST" ? await req.json().catch(() => ({})) : {};
-    const empresaIdFiltro = body?.empresa_id ?? null;
+    const rawBody = req.method === "POST" ? await req.json().catch(() => ({})) : {};
+    const validation = validatePayload(OptionalEmpresaIdSchema, rawBody, "calcular-health-score-operacional");
+    if (!validation.success) {
+      return createErrorResponse(validation.error, 400, validation.details);
+    }
+    const empresaIdFiltro = validation.data.empresa_id ?? null;
+
 
     const { data: empresas } = await client
       .from("empresas")

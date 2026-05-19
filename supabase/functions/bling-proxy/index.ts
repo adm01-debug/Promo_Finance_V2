@@ -1,10 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { BlingProxySchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
 
 const BLING_API_BASE = "https://api.bling.com.br/Api/v3";
 const BLING_AUTH_BASE = "https://www.bling.com.br/Api/v3/oauth";
@@ -32,8 +28,13 @@ Deno.serve(async (req) => {
     }
 
     const userId = user.id;
-    const body = await req.json();
-    const { action, ...params } = body;
+    const rawBody = await req.json();
+    const validation = validatePayload(BlingProxySchema, rawBody, "bling-proxy");
+    if (!validation.success) {
+      return createErrorResponse(validation.error, 400, validation.details);
+    }
+    const { action, ...params } = validation.data;
+
 
     // --- OAuth Actions ---
     if (action === "oauth_callback") {

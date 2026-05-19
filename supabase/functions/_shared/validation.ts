@@ -82,10 +82,114 @@ export const AsaasProxySchema = z.object({
   data: z.record(z.any()).optional()
 });
 
+export const BlingProxySchema = z.object({
+  action: z.string(),
+}).passthrough();
+
+
 export const AnalyzeDocumentSchema = z.object({
   fileName: z.string(),
   fileType: z.string(),
   fileContent: z.string(), // base64
 });
+
+export const WhatsappWebhookSchema = z.object({
+  event: z.string().optional(),
+  messageId: z.string().optional(),
+  status: z.string().optional(),
+  from: z.string().optional(),
+  text: z.string().optional(),
+});
+
+export const CnpjaLookupSchema = z.object({
+  cnpj: z.string().min(14),
+});
+
+export const EnviarAlertaEmailSchema = z.object({
+  tipo: z.enum(['vencimento', 'inadimplencia', 'aprovacao', 'ruptura', 'asaas_failure']),
+  destinatario: z.string().email(),
+  dados: z.object({
+    titulo: z.string(),
+    mensagem: z.string(),
+    valor: z.number().optional(),
+    dataVencimento: z.string().optional(),
+    urlAcao: z.string().optional(),
+  }),
+});
+
+export const OptionalEmpresaIdSchema = z.object({
+  empresa_id: z.string().uuid().optional().nullable(),
+});
+
+export const BenchmarkingSetorialSchema = z.object({
+  metricas: z.record(z.any()),
+  setor: z.string().optional(),
+});
+
+export const Bitrix24SyncSchema = z.object({
+  action: z.enum([
+    "sync_deals", 
+    "sync_contacts", 
+    "sync_companies", 
+    "export_payment_status", 
+    "test_connection", 
+    "refresh_token", 
+    "sync_elisao_task", 
+    "sync_boleto"
+  ]),
+  params: z.record(z.any()).optional(),
+});
+
+export const ContabilizarEventoSchema = z.object({
+  empresa_id: z.string().uuid(),
+  tipo_evento: z.enum(['conta_pagar', 'conta_receber', 'movimentacao']),
+  evento_id: z.string().uuid(),
+  valor: z.number().positive(),
+  data: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  descricao: z.string().optional(),
+  categoria_id: z.string().uuid().optional().nullable(),
+  dry_run: z.boolean().optional(),
+  ignore_rules: z.boolean().optional(),
+});
+
+export const ExecutarRelatoriosSchema = z.object({
+  relatorio_id: z.string().uuid().optional().nullable(),
+});
+
+export const WhatsappIaProativoSchema = z.object({
+  action: z.enum(['analisar-alertas', 'enviar-mensagem', 'gerar-resposta-ia']),
+  data: z.record(z.any()).optional(),
+});
+
+export const ExpertAgentSchema = z.object({
+  messages: z.array(z.object({
+    role: z.string(),
+    content: z.string(),
+  })),
+  context: z.string().optional().nullable(),
+  conversationSummary: z.string().optional().nullable(),
+});
+
+
+
+export const CalculoIvaSchema = z.object({
+  faturamentoAnual: z.number(),
+  ano: z.number().optional(),
+  setor: z.string().optional(),
+});
+
+export const CategorizarDespesaSchema = z.object({
+  despesas: z.array(z.object({
+    id: z.string().optional(),
+    descricao: z.string(),
+    valor: z.number(),
+    fornecedor_nome: z.string().optional(),
+    data_vencimento: z.string().optional(),
+  })),
+});
+
+
+
+
 
 
