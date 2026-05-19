@@ -31,21 +31,34 @@ Deno.serve(async (req) => {
       total_scenarios: scenarios_count
     }).eq('id', run_id)
 
-    const scenarios = [
-      { name: 'Pagamento Recebido', type: 'PAYMENT_RECEIVED' },
-      { name: 'Pagamento Confirmado', type: 'PAYMENT_CONFIRMED' },
-      { name: 'Pagamento Vencido', type: 'PAYMENT_OVERDUE' },
-      { name: 'Pagamento Estornado', type: 'PAYMENT_REFUNDED' },
-      { name: 'Transferência Concluída', type: 'TRANSFER_DONE' },
-      { name: 'Transferência Falhou', type: 'TRANSFER_FAILED' }
-    ]
+    const scenarios = {
+      'asaas-webhook': [
+        { name: 'Pagamento Recebido', type: 'PAYMENT_RECEIVED' },
+        { name: 'Pagamento Confirmado', type: 'PAYMENT_CONFIRMED' },
+        { name: 'Pagamento Vencido', type: 'PAYMENT_OVERDUE' },
+        { name: 'Pagamento Estornado', type: 'PAYMENT_REFUNDED' },
+        { name: 'Transferência Concluída', type: 'TRANSFER_DONE' },
+        { name: 'Transferência Falhou', type: 'TRANSFER_FAILED' }
+      ],
+      'bling-webhook': [
+        { name: 'Pedido Criado', type: 'pedido.criado' },
+        { name: 'Pedido Alterado', type: 'pedido.alterado' },
+        { name: 'Estoque Alterado', type: 'estoque.alterado' }
+      ],
+      'bitrix24-webhook': [
+        { name: 'Novo Negócio', type: 'ONCRMDEALADD' },
+        { name: 'Negócio Atualizado', type: 'ONCRMDEALUPDATE' }
+      ]
+    };
 
     const fuzzingScenarios = [
       { name: 'Payload Malformado', type: 'MALFORMED', payload: '{ invalid json }' },
-      { name: 'Campos Ausentes', type: 'MISSING_FIELDS', payload: { event: 'PAYMENT_RECEIVED' } },
-      { name: 'UUID Inválido', type: 'INVALID_UUID', payload: { id: 'not-a-uuid', event: 'PAYMENT_RECEIVED' } },
-      { name: 'Valor Negativo', type: 'NEGATIVE_VALUE', payload: { event: 'PAYMENT_RECEIVED', payment: { value: -100 } } }
-    ]
+      { name: 'Campos Ausentes', type: 'MISSING_FIELDS', payload: { event: 'UNKNOWN' } },
+      { name: 'UUID Inválido', type: 'INVALID_UUID', payload: { id: 'not-a-uuid', event: 'TEST' } },
+      { name: 'Injeção SQL', type: 'SQL_INJECTION', payload: { event: "' OR '1'='1" } },
+      { name: 'XSS Attempt', type: 'XSS', payload: { event: "<script>alert(1)</script>" } }
+    ];
+
 
     let successCount = 0
     let failureCount = 0
