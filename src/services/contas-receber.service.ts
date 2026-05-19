@@ -38,7 +38,7 @@ export interface ContaReceberInput {
 
 export const contasReceberService = {
   async getAll(filters?: ContaReceberFilters) {
-    let query = supabase
+    let query: any = supabase
       .from('vw_contas_receber_painel')
       .select('*')
       .order('vencimento', { ascending: true });
