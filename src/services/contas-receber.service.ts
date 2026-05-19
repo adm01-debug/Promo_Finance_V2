@@ -267,11 +267,11 @@ export const contasReceberService = {
   async getCategorias(): Promise<string[]> {
     const { data, error } = await supabase
       .from('contas_receber')
-      .select('categoria')
-      .not('categoria', 'is', null);
-
+      .select('categoria_nome')
+      .not('categoria_nome', 'is', null);
+    
     if (error) throw error;
-    return [...new Set((data || []).map(d => d.categoria).filter(Boolean) as string[])];
+    return [...new Set((data || []).map(d => d.categoria_nome).filter(Boolean) as string[])];
   },
 
   async getSummary(filters?: ContaReceberFilters) {
