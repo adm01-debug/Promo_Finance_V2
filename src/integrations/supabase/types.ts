@@ -83,12 +83,16 @@ export type Database = {
           cliente_nome: string | null
           cliente_telefone: string | null
           conta_receber_id: string | null
+          contas_receber_ids: string[] | null
           created_at: string
+          data_primeiro_vencimento: string | null
           desconto_aplicado: number | null
+          dia_vencimento: number | null
           id: string
           juros_aplicado: number | null
           numero_acordo: string | null
           numero_parcelas: number | null
+          observacoes: string | null
           status: string | null
           total_parcelas: number
           user_id: string
@@ -103,12 +107,16 @@ export type Database = {
           cliente_nome?: string | null
           cliente_telefone?: string | null
           conta_receber_id?: string | null
+          contas_receber_ids?: string[] | null
           created_at?: string
+          data_primeiro_vencimento?: string | null
           desconto_aplicado?: number | null
+          dia_vencimento?: number | null
           id?: string
           juros_aplicado?: number | null
           numero_acordo?: string | null
           numero_parcelas?: number | null
+          observacoes?: string | null
           status?: string | null
           total_parcelas?: number
           user_id?: string
@@ -123,12 +131,16 @@ export type Database = {
           cliente_nome?: string | null
           cliente_telefone?: string | null
           conta_receber_id?: string | null
+          contas_receber_ids?: string[] | null
           created_at?: string
+          data_primeiro_vencimento?: string | null
           desconto_aplicado?: number | null
+          dia_vencimento?: number | null
           id?: string
           juros_aplicado?: number | null
           numero_acordo?: string | null
           numero_parcelas?: number | null
+          observacoes?: string | null
           status?: string | null
           total_parcelas?: number
           user_id?: string
@@ -865,6 +877,7 @@ export type Database = {
           cbs_a_pagar: number | null
           cbs_creditos: number | null
           cbs_debitos: number | null
+          cbs_saldo_anterior: number | null
           competencia: string | null
           created_at: string | null
           empresa_id: string | null
@@ -872,7 +885,18 @@ export type Database = {
           ibs_a_pagar: number | null
           ibs_creditos: number | null
           ibs_debitos: number | null
+          ibs_saldo_anterior: number | null
+          icms_a_pagar: number | null
+          icms_creditos: number | null
+          icms_debitos: number | null
           id: string
+          is_a_compensar: number | null
+          is_a_pagar: number | null
+          is_creditos: number | null
+          is_debitos: number | null
+          iss_a_pagar: number | null
+          iss_creditos: number | null
+          iss_debitos: number | null
           mes: number | null
           status: string | null
           tipo_tributo: string | null
@@ -884,6 +908,7 @@ export type Database = {
           cbs_a_pagar?: number | null
           cbs_creditos?: number | null
           cbs_debitos?: number | null
+          cbs_saldo_anterior?: number | null
           competencia?: string | null
           created_at?: string | null
           empresa_id?: string | null
@@ -891,7 +916,18 @@ export type Database = {
           ibs_a_pagar?: number | null
           ibs_creditos?: number | null
           ibs_debitos?: number | null
+          ibs_saldo_anterior?: number | null
+          icms_a_pagar?: number | null
+          icms_creditos?: number | null
+          icms_debitos?: number | null
           id?: string
+          is_a_compensar?: number | null
+          is_a_pagar?: number | null
+          is_creditos?: number | null
+          is_debitos?: number | null
+          iss_a_pagar?: number | null
+          iss_creditos?: number | null
+          iss_debitos?: number | null
           mes?: number | null
           status?: string | null
           tipo_tributo?: string | null
@@ -903,6 +939,7 @@ export type Database = {
           cbs_a_pagar?: number | null
           cbs_creditos?: number | null
           cbs_debitos?: number | null
+          cbs_saldo_anterior?: number | null
           competencia?: string | null
           created_at?: string | null
           empresa_id?: string | null
@@ -910,7 +947,18 @@ export type Database = {
           ibs_a_pagar?: number | null
           ibs_creditos?: number | null
           ibs_debitos?: number | null
+          ibs_saldo_anterior?: number | null
+          icms_a_pagar?: number | null
+          icms_creditos?: number | null
+          icms_debitos?: number | null
           id?: string
+          is_a_compensar?: number | null
+          is_a_pagar?: number | null
+          is_creditos?: number | null
+          is_debitos?: number | null
+          iss_a_pagar?: number | null
+          iss_creditos?: number | null
+          iss_debitos?: number | null
           mes?: number | null
           status?: string | null
           tipo_tributo?: string | null
@@ -3360,6 +3408,7 @@ export type Database = {
       }
       fluxos_aprovacao_niveis: {
         Row: {
+          aprovadores_obrigatorios: number | null
           configuracao_id: string | null
           created_at: string | null
           descricao: string | null
@@ -3369,8 +3418,10 @@ export type Database = {
           nome: string | null
           ordem: number | null
           role_responsavel: string | null
+          valor_minimo: number | null
         }
         Insert: {
+          aprovadores_obrigatorios?: number | null
           configuracao_id?: string | null
           created_at?: string | null
           descricao?: string | null
@@ -3380,8 +3431,10 @@ export type Database = {
           nome?: string | null
           ordem?: number | null
           role_responsavel?: string | null
+          valor_minimo?: number | null
         }
         Update: {
+          aprovadores_obrigatorios?: number | null
           configuracao_id?: string | null
           created_at?: string | null
           descricao?: string | null
@@ -3391,6 +3444,7 @@ export type Database = {
           nome?: string | null
           ordem?: number | null
           role_responsavel?: string | null
+          valor_minimo?: number | null
         }
         Relationships: [
           {
@@ -4469,39 +4523,54 @@ export type Database = {
       operacoes_tributaveis: {
         Row: {
           cbs_aliquota: number | null
+          cbs_credito: number | null
           cbs_valor: number | null
           created_at: string | null
           data_operacao: string | null
           empresa_id: string | null
           ibs_aliquota: number | null
+          ibs_credito: number | null
           ibs_valor: number | null
+          icms_valor: number | null
           id: string
+          is_valor: number | null
+          iss_valor: number | null
           status: string | null
           tipo_operacao: string | null
           valor_total: number | null
         }
         Insert: {
           cbs_aliquota?: number | null
+          cbs_credito?: number | null
           cbs_valor?: number | null
           created_at?: string | null
           data_operacao?: string | null
           empresa_id?: string | null
           ibs_aliquota?: number | null
+          ibs_credito?: number | null
           ibs_valor?: number | null
+          icms_valor?: number | null
           id?: string
+          is_valor?: number | null
+          iss_valor?: number | null
           status?: string | null
           tipo_operacao?: string | null
           valor_total?: number | null
         }
         Update: {
           cbs_aliquota?: number | null
+          cbs_credito?: number | null
           cbs_valor?: number | null
           created_at?: string | null
           data_operacao?: string | null
           empresa_id?: string | null
           ibs_aliquota?: number | null
+          ibs_credito?: number | null
           ibs_valor?: number | null
+          icms_valor?: number | null
           id?: string
+          is_valor?: number | null
+          iss_valor?: number | null
           status?: string | null
           tipo_operacao?: string | null
           valor_total?: number | null
@@ -5635,6 +5704,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      sso_providers: {
+        Row: {
+          ativo: boolean | null
+          configuracoes: Json | null
+          created_at: string | null
+          id: string
+          nome: string
+          tipo: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          configuracoes?: Json | null
+          created_at?: string | null
+          id?: string
+          nome: string
+          tipo: string
+        }
+        Update: {
+          ativo?: boolean | null
+          configuracoes?: Json | null
+          created_at?: string | null
+          id?: string
+          nome?: string
+          tipo?: string
+        }
+        Relationships: []
       }
       templates_cobranca: {
         Row: {
@@ -6827,6 +6923,14 @@ export type Database = {
         }
         Returns: undefined
       }
+      export_asaas_audit_csv: {
+        Args: { p_empresa_id: string }
+        Returns: string
+      }
+      generate_reconciliation_suggestions: {
+        Args: { p_sessao_id: string }
+        Returns: undefined
+      }
       gerar_numero_acordo: { Args: never; Returns: string }
       get_active_uapi_token: {
         Args: never
@@ -6838,6 +6942,7 @@ export type Database = {
           user_fid: string
         }[]
       }
+      get_asaas_payment_stats: { Args: { p_empresa_id: string }; Returns: Json }
       get_cron_jobs: {
         Args: never
         Returns: {
