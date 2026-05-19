@@ -891,46 +891,85 @@ export type Database = {
       }
       apuracoes_irpj_csll: {
         Row: {
+          adicional_irpj: number | null
+          adicoes_permanentes: number | null
+          adicoes_temporarias: number | null
           ano: number | null
+          base_calculo_csll: number | null
+          base_calculo_irpj: number | null
+          compensacao_prejuizo: number | null
           created_at: string | null
           csll_valor: number | null
+          csrf_retido: number | null
           empresa_id: string
+          exclusoes_permanentes: number | null
+          exclusoes_temporarias: number | null
           id: string
           irpj_valor: number | null
+          irrf_retido: number | null
           lucro_antes_impostos: number | null
           lucro_contabil: number | null
           periodo_fim: string
           periodo_inicio: string
+          saldo_negativo_anterior: number | null
           status: string | null
           tipo_apuracao: string | null
+          total_adicoes: number | null
+          total_exclusoes: number | null
         }
         Insert: {
+          adicional_irpj?: number | null
+          adicoes_permanentes?: number | null
+          adicoes_temporarias?: number | null
           ano?: number | null
+          base_calculo_csll?: number | null
+          base_calculo_irpj?: number | null
+          compensacao_prejuizo?: number | null
           created_at?: string | null
           csll_valor?: number | null
+          csrf_retido?: number | null
           empresa_id: string
+          exclusoes_permanentes?: number | null
+          exclusoes_temporarias?: number | null
           id?: string
           irpj_valor?: number | null
+          irrf_retido?: number | null
           lucro_antes_impostos?: number | null
           lucro_contabil?: number | null
           periodo_fim: string
           periodo_inicio: string
+          saldo_negativo_anterior?: number | null
           status?: string | null
           tipo_apuracao?: string | null
+          total_adicoes?: number | null
+          total_exclusoes?: number | null
         }
         Update: {
+          adicional_irpj?: number | null
+          adicoes_permanentes?: number | null
+          adicoes_temporarias?: number | null
           ano?: number | null
+          base_calculo_csll?: number | null
+          base_calculo_irpj?: number | null
+          compensacao_prejuizo?: number | null
           created_at?: string | null
           csll_valor?: number | null
+          csrf_retido?: number | null
           empresa_id?: string
+          exclusoes_permanentes?: number | null
+          exclusoes_temporarias?: number | null
           id?: string
           irpj_valor?: number | null
+          irrf_retido?: number | null
           lucro_antes_impostos?: number | null
           lucro_contabil?: number | null
           periodo_fim?: string
           periodo_inicio?: string
+          saldo_negativo_anterior?: number | null
           status?: string | null
           tipo_apuracao?: string | null
+          total_adicoes?: number | null
+          total_exclusoes?: number | null
         }
         Relationships: [
           {
@@ -6020,27 +6059,42 @@ export type Database = {
       }
       prejuizos_fiscais: {
         Row: {
+          ano_origem: number | null
           created_at: string | null
           empresa_id: string
           id: string
           periodo: string
+          saldo_atual: number | null
+          tipo: string | null
           valor_acumulado: number | null
+          valor_compensado: number | null
+          valor_original: number | null
           valor_utilizado: number | null
         }
         Insert: {
+          ano_origem?: number | null
           created_at?: string | null
           empresa_id: string
           id?: string
           periodo: string
+          saldo_atual?: number | null
+          tipo?: string | null
           valor_acumulado?: number | null
+          valor_compensado?: number | null
+          valor_original?: number | null
           valor_utilizado?: number | null
         }
         Update: {
+          ano_origem?: number | null
           created_at?: string | null
           empresa_id?: string
           id?: string
           periodo?: string
+          saldo_atual?: number | null
+          tipo?: string | null
           valor_acumulado?: number | null
+          valor_compensado?: number | null
+          valor_original?: number | null
           valor_utilizado?: number | null
         }
         Relationships: [
