@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -25,7 +24,7 @@ export function useMovimentacoes(contaBancariaId?: string, filters?: { startDate
     queryKey: ['movimentacoes', contaBancariaId, filters],
     queryFn: async () => {
       let query = supabase
-        .from('movimentacoes')
+        .from('movimentacoes' as any)
         .select('*')
         .is('deleted_at', null)
         .order('data_movimentacao', { ascending: false });
@@ -36,7 +35,7 @@ export function useMovimentacoes(contaBancariaId?: string, filters?: { startDate
 
       const { data, error } = await query.limit(500);
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
     staleTime: 2 * 60 * 1000,
   });
@@ -48,7 +47,7 @@ export function useCreateMovimentacao() {
   return useMutation({
     mutationFn: async (input: MovimentacaoInput) => {
       const { data, error } = await supabase
-        .from('movimentacoes')
+        .from('movimentacoes' as any)
         .insert(input)
         .select()
         .single();
@@ -73,7 +72,7 @@ export function useDeleteMovimentacao() {
   return useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from('movimentacoes')
+        .from('movimentacoes' as any)
         .update({ deleted_at: new Date().toISOString() })
         .eq('id', id);
       if (error) throw error;
@@ -88,10 +87,6 @@ export function useDeleteMovimentacao() {
     },
   });
 }
-
-// ============================================
-// TRANSFERÊNCIAS
-// ============================================
 
 export interface TransferenciaInput {
   empresa_id: string;
@@ -109,7 +104,7 @@ export function useTransferencias(empresaId?: string) {
     queryKey: ['transferencias', empresaId],
     queryFn: async () => {
       let query = supabase
-        .from('transferencias')
+        .from('transferencias' as any)
         .select('*')
         .order('data_transferencia', { ascending: false });
 
@@ -117,7 +112,7 @@ export function useTransferencias(empresaId?: string) {
 
       const { data, error } = await query.limit(200);
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
     staleTime: 2 * 60 * 1000,
   });
@@ -129,7 +124,7 @@ export function useCreateTransferencia() {
   return useMutation({
     mutationFn: async (input: TransferenciaInput) => {
       const { data, error } = await supabase
-        .from('transferencias')
+        .from('transferencias' as any)
         .insert({ ...input, status: 'realizado' })
         .select()
         .single();
@@ -155,7 +150,7 @@ export function useCancelTransferencia() {
   return useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from('transferencias')
+        .from('transferencias' as any)
         .update({ status: 'cancelado', cancelado_em: new Date().toISOString() })
         .eq('id', id);
       if (error) throw error;
@@ -172,16 +167,12 @@ export function useCancelTransferencia() {
   });
 }
 
-// ============================================
-// FORMAS DE PAGAMENTO
-// ============================================
-
 export function useFormasPagamento(tipo?: 'entrada' | 'saida' | 'ambos') {
   return useQuery({
     queryKey: ['formas-pagamento', tipo],
     queryFn: async () => {
       let query = supabase
-        .from('formas_pagamento')
+        .from('formas_pagamento' as any)
         .select('*')
         .eq('ativo', true)
         .order('nome');
@@ -192,28 +183,24 @@ export function useFormasPagamento(tipo?: 'entrada' | 'saida' | 'ambos') {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
-    staleTime: 10 * 60 * 1000, // 10 min - static data
+    staleTime: 10 * 60 * 1000,
   });
 }
-
-// ============================================
-// PLANO DE CONTAS
-// ============================================
 
 export function usePlanoContas() {
   return useQuery({
     queryKey: ['plano-contas'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('plano_contas')
+        .from('plano_contas' as any)
         .select('*')
         .eq('ativo', true)
         .order('codigo');
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
     staleTime: 10 * 60 * 1000,
   });
