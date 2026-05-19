@@ -1,8 +1,3 @@
-// @ts-nocheck
-// ============================================
-// HOOK: Simulação Comparativa de Regimes
-// ============================================
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -22,6 +17,25 @@ interface UseSimulacaoOptions {
   empresaId?: string;
   anoReferencia?: number;
   mesReferencia?: number;
+}
+
+export interface SimulaoHistoricoItem {
+  id: string;
+  empresa_id: string;
+  ano_referencia: number;
+  rbt12: number;
+  folha_12m: number;
+  fator_r: number | null;
+  regime_atual: string | null;
+  regime_recomendado: string;
+  cenarios: any;
+  alertas: string[];
+  justificativa: string;
+  economia_anual_estimada: number | null;
+  parametros: any;
+  created_by: string | null;
+  audit_log_id: string | null;
+  data_simulacao: string;
 }
 
 const DEFAULT_PARAMS: ParametrosSimulacao = {
@@ -87,13 +101,13 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
     queryFn: async () => {
       if (!empresaId) return [];
       const { data, error } = await supabase
-        .from('regimes_simulados')
+        .from('regimes_simulados' as any)
         .select('*')
         .eq('empresa_id', empresaId)
         .order('data_simulacao', { ascending: false })
         .limit(10);
       if (error) throw error;
-      return data || [];
+      return (data as any || []) as SimulaoHistoricoItem[];
     },
     enabled: !!empresaId,
     staleTime: 60_000,
@@ -134,7 +148,6 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
       });
       setServerResult(res);
     } catch (e) {
-      // Fallback para memória já acontece via useMemo
       console.error('Erro ao sincronizar com servidor:', e);
     }
   };
@@ -143,7 +156,7 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
   const salvarSimulacao = useMutation({
     mutationFn: async () => {
       if (!empresaId) throw new Error('Selecione uma empresa para salvar a simulação.');
-      const { data: ins, error } = await supabase.from('regimes_simulados').insert({
+      const { error } = await supabase.from('regimes_simulados' as any).insert({
         empresa_id: empresaId,
         ano_referencia: anoReferencia,
         rbt12: resultado.recomendado.rbt12 || parametros.faturamentoAnual,
@@ -151,14 +164,14 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
         fator_r: resultado.recomendado.fatorR ?? null,
         regime_atual: regimeAtual ?? null,
         regime_recomendado: resultado.recomendado.regime,
-        cenarios: resultado.cenarios as never,
-        alertas: resultado.alertas as never,
+        cenarios: resultado.cenarios as any,
+        alertas: resultado.alertas as any,
         justificativa: resultado.justificativa,
         economia_anual_estimada: resultado.economiaAnualVsAtual ?? null,
-        parametros: parametros as never,
+        parametros: parametros as any,
         created_by: user?.id ?? null,
         audit_log_id: resultado.auditLogId ?? null,
-      }).select('id').maybeSingle();
+      });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -172,7 +185,7 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
     parametros,
     setParametros: (p: ParametrosSimulacao | ((prev: ParametrosSimulacao) => ParametrosSimulacao)) => {
       setParametros(p);
-      setServerResult(null); // Invalida resultado do server ao mudar parâmetros
+      setServerResult(null);
     },
     regimeAtual,
     setRegimeAtual: (r: RegimeTributario | undefined) => {
@@ -190,3 +203,5 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
     temHistoricoSuficiente: faturamentoMensal.length >= 12,
   };
 }
+
+export default useSimulacaoRegimes;

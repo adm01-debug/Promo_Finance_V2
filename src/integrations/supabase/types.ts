@@ -7970,6 +7970,116 @@ export type Database = {
           },
         ]
       }
+      regimes_simulados: {
+        Row: {
+          alertas: Json
+          ano_referencia: number
+          audit_log_id: string | null
+          cenarios: Json
+          created_by: string | null
+          data_simulacao: string
+          economia_anual_estimada: number | null
+          empresa_id: string
+          fator_r: number | null
+          folha_12m: number | null
+          id: string
+          justificativa: string | null
+          parametros: Json
+          rbt12: number | null
+          regime_atual: string | null
+          regime_recomendado: string
+          updated_at: string
+        }
+        Insert: {
+          alertas?: Json
+          ano_referencia: number
+          audit_log_id?: string | null
+          cenarios?: Json
+          created_by?: string | null
+          data_simulacao?: string
+          economia_anual_estimada?: number | null
+          empresa_id: string
+          fator_r?: number | null
+          folha_12m?: number | null
+          id?: string
+          justificativa?: string | null
+          parametros?: Json
+          rbt12?: number | null
+          regime_atual?: string | null
+          regime_recomendado: string
+          updated_at?: string
+        }
+        Update: {
+          alertas?: Json
+          ano_referencia?: number
+          audit_log_id?: string | null
+          cenarios?: Json
+          created_by?: string | null
+          data_simulacao?: string
+          economia_anual_estimada?: number | null
+          empresa_id?: string
+          fator_r?: number | null
+          folha_12m?: number | null
+          id?: string
+          justificativa?: string | null
+          parametros?: Json
+          rbt12?: number | null
+          regime_atual?: string | null
+          regime_recomendado?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regimes_simulados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "regimes_simulados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "regimes_simulados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "regimes_simulados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "regimes_simulados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "regimes_simulados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "regimes_simulados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
+          },
+        ]
+      }
       regimes_tributarios: {
         Row: {
           ativo: boolean | null
@@ -8961,6 +9071,131 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_contas_pagar_painel"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      split_payment_transacoes: {
+        Row: {
+          cbs_retido: number
+          conta_cbs: string | null
+          conta_fornecedor: string | null
+          conta_ibs: string | null
+          conta_is: string | null
+          created_at: string
+          data_processamento: string | null
+          documento_chave: string | null
+          documento_numero: string | null
+          documento_tipo: string | null
+          empresa_id: string
+          erro_mensagem: string | null
+          ibs_retido: number
+          id: string
+          is_retido: number
+          operacao_id: string | null
+          protocolo: string | null
+          status: string
+          total_retido: number
+          updated_at: string
+          valor_liquido: number
+          valor_operacao: number
+        }
+        Insert: {
+          cbs_retido?: number
+          conta_cbs?: string | null
+          conta_fornecedor?: string | null
+          conta_ibs?: string | null
+          conta_is?: string | null
+          created_at?: string
+          data_processamento?: string | null
+          documento_chave?: string | null
+          documento_numero?: string | null
+          documento_tipo?: string | null
+          empresa_id: string
+          erro_mensagem?: string | null
+          ibs_retido?: number
+          id?: string
+          is_retido?: number
+          operacao_id?: string | null
+          protocolo?: string | null
+          status?: string
+          total_retido?: number
+          updated_at?: string
+          valor_liquido?: number
+          valor_operacao?: number
+        }
+        Update: {
+          cbs_retido?: number
+          conta_cbs?: string | null
+          conta_fornecedor?: string | null
+          conta_ibs?: string | null
+          conta_is?: string | null
+          created_at?: string
+          data_processamento?: string | null
+          documento_chave?: string | null
+          documento_numero?: string | null
+          documento_tipo?: string | null
+          empresa_id?: string
+          erro_mensagem?: string | null
+          ibs_retido?: number
+          id?: string
+          is_retido?: number
+          operacao_id?: string | null
+          protocolo?: string | null
+          status?: string
+          total_retido?: number
+          updated_at?: string
+          valor_liquido?: number
+          valor_operacao?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "split_payment_transacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "split_payment_transacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dre_mensal"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "split_payment_transacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dso_aging"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "split_payment_transacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "split_payment_transacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fluxo_caixa_diario"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "split_payment_transacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_metricas_cobranca"
+            referencedColumns: ["empresa_id"]
+          },
+          {
+            foreignKeyName: "split_payment_transacoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["empresa_id"]
           },
         ]
       }
