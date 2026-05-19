@@ -140,6 +140,23 @@ export const Bitrix24SyncSchema = z.object({
   params: z.record(z.any()).optional(),
 });
 
+export const ContabilizarEventoSchema = z.object({
+  empresa_id: z.string().uuid(),
+  tipo_evento: z.enum(['conta_pagar', 'conta_receber', 'movimentacao']),
+  evento_id: z.string().uuid(),
+  valor: z.number().positive(),
+  data: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  descricao: z.string().optional(),
+  categoria_id: z.string().uuid().optional().nullable(),
+  dry_run: z.boolean().optional(),
+  ignore_rules: z.boolean().optional(),
+});
+
+export const ExecutarRelatoriosSchema = z.object({
+  relatorio_id: z.string().uuid().optional().nullable(),
+});
+
+
 export const CalculoIvaSchema = z.object({
   faturamentoAnual: z.number(),
   ano: z.number().optional(),
