@@ -41,10 +41,8 @@ function generateDeviceFingerprint(): DeviceInfo {
   const language = navigator.language;
   const platform = navigator.platform;
   
-  // Simple fingerprint based on available browser data
   const fingerprintData = `${userAgent}|${screenResolution}|${timezone}|${language}|${platform}`;
   
-  // Simple hash function
   let hash = 0;
   for (let i = 0; i < fingerprintData.length; i++) {
     const char = fingerprintData.charCodeAt(i);
@@ -53,7 +51,6 @@ function generateDeviceFingerprint(): DeviceInfo {
   }
   const fingerprint = Math.abs(hash).toString(36);
   
-  // Detect browser
   let browser = 'Unknown';
   if (userAgent.includes('Firefox')) browser = 'Firefox';
   else if (userAgent.includes('Edg')) browser = 'Edge';
@@ -61,7 +58,6 @@ function generateDeviceFingerprint(): DeviceInfo {
   else if (userAgent.includes('Safari')) browser = 'Safari';
   else if (userAgent.includes('Opera') || userAgent.includes('OPR')) browser = 'Opera';
   
-  // Detect OS
   let os = 'Unknown';
   if (userAgent.includes('Windows')) os = 'Windows';
   else if (userAgent.includes('Mac')) os = 'macOS';
@@ -69,7 +65,6 @@ function generateDeviceFingerprint(): DeviceInfo {
   else if (userAgent.includes('Android')) os = 'Android';
   else if (userAgent.includes('iOS') || userAgent.includes('iPhone') || userAgent.includes('iPad')) os = 'iOS';
   
-  // Detect device type
   let deviceType = 'Desktop';
   if (/Mobile|Android|iPhone|iPad|iPod/i.test(userAgent)) {
     deviceType = /iPad|Tablet/i.test(userAgent) ? 'Tablet' : 'Mobile';
@@ -93,9 +88,8 @@ export function useDeviceDetection() {
     try {
       const deviceInfo = generateDeviceFingerprint();
       
-      // Check if device is known
       const { data: existingDevice, error: checkError } = await (supabase
-        .from('known_devices')
+        .from('dispositivos_conhecidos' as any)
         .select('id, last_seen_at')
         .eq('user_id', userId)
         .eq('device_fingerprint', deviceInfo.fingerprint)
@@ -107,19 +101,17 @@ export function useDeviceDetection() {
       }
       
       if (existingDevice) {
-        // Update last seen
-        await supabase
-          .from('known_devices')
+        await (supabase
+          .from('dispositivos_conhecidos' as any)
           .update({ last_seen_at: new Date().toISOString() })
-          .eq('id', existingDevice.id);
+          .eq('id', existingDevice.id) as any);
         
         setIsNewDevice(false);
         return false;
       }
       
-      // New device detected - register it
       const { data: newDevice, error: insertError } = await (supabase
-        .from('known_devices')
+        .from('dispositivos_conhecidos' as any)
         .insert({
           user_id: userId,
           device_fingerprint: deviceInfo.fingerprint,
@@ -136,30 +128,26 @@ export function useDeviceDetection() {
         return false;
       }
       
-      // Create alert for new device
-      await supabase
-        .from('new_device_alerts')
+      await (supabase
+        .from('new_device_alerts' as any)
         .insert({
           user_id: userId,
           device_id: newDevice.id,
           user_agent: deviceInfo.userAgent
-        });
+        }) as any);
       
       setIsNewDevice(true);
       
-      // Get user email to send alert
       const { data: profile } = await supabase
         .from('profiles')
         .select('email')
         .eq('id', userId)
         .maybeSingle();
       
-      // Send email notification in background
       if (profile?.email) {
         sendDeviceAlertEmail(userId, profile.email, deviceInfo);
       }
       
-      // Show toast notification
       toast.warning('Novo dispositivo detectado', {
         description: `Login de ${deviceInfo.browser} no ${deviceInfo.os}. Se não foi você, altere sua senha imediatamente.`,
         duration: 10000,
@@ -180,7 +168,7 @@ export function useDeviceDetection() {
 
   const getKnownDevices = useCallback(async (userId: string) => {
     const { data, error } = await (supabase
-      .from('known_devices')
+      .from('dispositivos_conhecidos' as any)
       .select('*')
       .eq('user_id', userId)
       .order('last_seen_at', { ascending: false }) as any);
@@ -190,14 +178,14 @@ export function useDeviceDetection() {
       return [];
     }
     
-    return (data || []) as any[];
+    return data || [];
   }, []);
 
   const removeDevice = useCallback(async (deviceId: string) => {
-    const { error } = await supabase
-      .from('known_devices')
+    const { error } = await (supabase
+      .from('dispositivos_conhecidos' as any)
       .delete()
-      .eq('id', deviceId);
+      .eq('id', deviceId) as any);
     
     if (error) {
       toast.error('Erro ao remover dispositivo');
@@ -209,10 +197,10 @@ export function useDeviceDetection() {
   }, []);
 
   const trustDevice = useCallback(async (deviceId: string, trusted: boolean) => {
-    const { error } = await supabase
-      .from('known_devices')
+    const { error } = await (supabase
+      .from('dispositivos_conhecidos' as any)
       .update({ is_trusted: trusted })
-      .eq('id', deviceId);
+      .eq('id', deviceId) as any);
     
     if (error) {
       toast.error('Erro ao atualizar dispositivo');
