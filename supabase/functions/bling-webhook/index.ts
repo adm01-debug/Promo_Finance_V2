@@ -1,10 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import { validatePayload, createErrorResponse, BlingWebhookSchema, corsHeaders } from '../_shared/validation.ts';
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -12,10 +7,7 @@ Deno.serve(async (req) => {
   }
 
   if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createErrorResponse("Method not allowed", 405);
   }
 
   try {
@@ -23,13 +15,20 @@ Deno.serve(async (req) => {
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    const payload = await req.json();
-    console.log("Bling webhook received:", JSON.stringify(payload));
+    const body = await req.json();
+    console.log("Bling webhook received:", JSON.stringify(body));
 
+    const validation = validatePayload(BlingWebhookSchema, body);
+    if (!validation.success) {
+      return createErrorResponse(validation.error, 400, validation.details);
+    }
+
+    const payload = validation.data;
     const eventType = payload.event || "unknown";
     const module = payload.module || "unknown";
     const resourceId = payload.data?.id?.toString() || null;
     const retries = payload.retries || 0;
+
 
     // Idempotency check
     if (resourceId) {
