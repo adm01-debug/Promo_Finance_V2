@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // ============================================
 // HOOK: ALERTAS TRIBUTÁRIOS EM TEMPO REAL
 // Monitoramento de prazos e compliance
@@ -221,12 +221,12 @@ export function useAlertasTributarios(empresaId?: string) {
     });
 
     // Verificar retenções pendentes
-    const { data: retencoesPendentes } = await supabase
+    const { data: retencoesPendentes } = await (supabase
       .from('retencoes_fonte')
       .select('*')
       .eq('empresa_id', empresaId)
       .eq('status', 'pendente')
-      .eq('darf_gerado', false) as { data: any[] | null };
+      .eq('darf_gerado', false) as any);
 
     if (retencoesPendentes && retencoesPendentes.length > 5) {
       alertasParaCriar.push({
