@@ -75,20 +75,16 @@ export function useAlertasTributarios(empresaId?: string) {
   const { data: alertas = [], isLoading, refetch } = useQuery({
     queryKey: ['alertas-tributarios', empresaId],
     queryFn: async () => {
-      let query = supabase
+      const { data, error } = await supabase
         .from('alertas_tributarios')
         .select('*')
         .eq('resolvido', false)
+        .eq('empresa_id', empresaId || '')
         .order('prioridade', { ascending: false })
         .order('data_vencimento', { ascending: true });
 
-      if (empresaId) {
-        query = query.eq('empresa_id', empresaId);
-      }
-
-      const { data, error } = await query;
       if (error) throw error;
-      return data as AlertaTributario[];
+      return (data || []) as AlertaTributario[];
     },
   });
 
@@ -202,7 +198,7 @@ export function useAlertasTributarios(empresaId?: string) {
       .from('darfs')
       .select('*')
       .eq('empresa_id', empresaId)
-      .eq('status', 'gerado');
+      .eq('status', 'gerado') as { data: any[] | null };
 
     darfsPendentes?.forEach(darf => {
       const diasParaVencer = differenceInDays(parseISO(darf.data_vencimento), hoje);
@@ -229,7 +225,7 @@ export function useAlertasTributarios(empresaId?: string) {
       .select('*')
       .eq('empresa_id', empresaId)
       .eq('status', 'pendente')
-      .eq('darf_gerado', false);
+      .eq('darf_gerado', false) as { data: any[] | null };
 
     if (retencoesPendentes && retencoesPendentes.length > 5) {
       alertasParaCriar.push({
@@ -248,7 +244,7 @@ export function useAlertasTributarios(empresaId?: string) {
       .from('creditos_tributarios')
       .select('*')
       .eq('empresa_id', empresaId)
-      .eq('status', 'disponivel');
+      .eq('status', 'disponivel') as { data: any[] | null };
 
     // Créditos com mais de 5 anos podem expirar
     creditos?.forEach(credito => {

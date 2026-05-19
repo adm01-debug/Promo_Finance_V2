@@ -54,9 +54,9 @@ export interface AsaasPayment {
 }
 
 async function invokeAsaas(action: string, data: any) {
-  const { data: result, error } = await supabase.functions.invoke('asaas-proxy', {
+  const { data: result, error } = await (supabase.functions.invoke('asaas-proxy', {
     body: { action, data },
-  });
+  }) as any);
   if (error) throw new Error(error.message);
   if (result?.errors) {
     throw new Error(result.errors.map((e: any) => e.description).join(', '));

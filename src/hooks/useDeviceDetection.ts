@@ -94,12 +94,12 @@ export function useDeviceDetection() {
       const deviceInfo = generateDeviceFingerprint();
       
       // Check if device is known
-      const { data: existingDevice, error: checkError } = await supabase
+      const { data: existingDevice, error: checkError } = await (supabase
         .from('known_devices')
         .select('id, last_seen_at')
         .eq('user_id', userId)
         .eq('device_fingerprint', deviceInfo.fingerprint)
-        .maybeSingle();
+        .maybeSingle() as any);
       
       if (checkError) {
         logger.error('[useDeviceDetection] Error checking device:', checkError);
@@ -118,7 +118,7 @@ export function useDeviceDetection() {
       }
       
       // New device detected - register it
-      const { data: newDevice, error: insertError } = await supabase
+      const { data: newDevice, error: insertError } = await (supabase
         .from('known_devices')
         .insert({
           user_id: userId,
@@ -129,7 +129,7 @@ export function useDeviceDetection() {
           device_type: deviceInfo.deviceType
         })
         .select('id')
-        .single();
+        .single() as any);
       
       if (insertError) {
         logger.error('[useDeviceDetection] Error registering device:', insertError);
@@ -179,18 +179,18 @@ export function useDeviceDetection() {
   }, []);
 
   const getKnownDevices = useCallback(async (userId: string) => {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase
       .from('known_devices')
       .select('*')
       .eq('user_id', userId)
-      .order('last_seen_at', { ascending: false });
+      .order('last_seen_at', { ascending: false }) as any);
     
     if (error) {
       logger.error('[useDeviceDetection] Error fetching devices:', error);
       return [];
     }
     
-    return data;
+    return (data || []) as any[];
   }, []);
 
   const removeDevice = useCallback(async (deviceId: string) => {

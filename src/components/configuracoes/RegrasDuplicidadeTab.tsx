@@ -34,7 +34,8 @@ export function RegrasDuplicidadeTab() {
       
       if (error) throw error;
       if (data) {
-        setSelectedFields((data.campos_validacao as string[]) || []);
+        const campos = Array.isArray(data.campos_validacao) ? (data.campos_validacao as string[]) : [];
+        setSelectedFields(campos);
         setFuzzyMatching(data.fuzzy_matching || false);
         setToleranciaDias(data.tolerancia_dias || 0);
       }
