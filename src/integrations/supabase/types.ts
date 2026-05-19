@@ -2507,6 +2507,7 @@ export type Database = {
           parcela_atual: number | null
           recorrente: boolean | null
           status: string | null
+          tipo_cobranca: string | null
           total_parcelas: number | null
           transacao_conciliada_id: string | null
           updated_at: string | null
@@ -2541,6 +2542,7 @@ export type Database = {
           parcela_atual?: number | null
           recorrente?: boolean | null
           status?: string | null
+          tipo_cobranca?: string | null
           total_parcelas?: number | null
           transacao_conciliada_id?: string | null
           updated_at?: string | null
@@ -2575,6 +2577,7 @@ export type Database = {
           parcela_atual?: number | null
           recorrente?: boolean | null
           status?: string | null
+          tipo_cobranca?: string | null
           total_parcelas?: number | null
           transacao_conciliada_id?: string | null
           updated_at?: string | null
@@ -3694,6 +3697,88 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expert_conversations: {
+        Row: {
+          context_summary: string | null
+          created_at: string | null
+          empresa_id: string | null
+          id: string
+          last_message_at: string | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          context_summary?: string | null
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          last_message_at?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          context_summary?: string | null
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          last_message_at?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expert_conversations_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expert_messages: {
+        Row: {
+          actions_executed: Json | null
+          content: string
+          conversation_id: string
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          role: string
+        }
+        Insert: {
+          actions_executed?: Json | null
+          content: string
+          conversation_id: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          role: string
+        }
+        Update: {
+          actions_executed?: Json | null
+          content?: string
+          conversation_id?: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expert_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "expert_conversations"
             referencedColumns: ["id"]
           },
         ]
@@ -6252,6 +6337,42 @@ export type Database = {
         }
         Relationships: []
       }
+      security_audit_logs: {
+        Row: {
+          created_at: string | null
+          event_type: string
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          severity: string | null
+          user_agent: string | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          severity?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          severity?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       security_settings: {
         Row: {
           allowed_global_ips: Json
@@ -7581,6 +7702,7 @@ export type Database = {
       vw_contas_pagar_painel: {
         Row: {
           anexo_url: string | null
+          aprovado_por: string | null
           categoria: string | null
           categoria_id: string | null
           categoria_nome: string | null
@@ -7599,6 +7721,8 @@ export type Database = {
           fornecedor_id: string | null
           fornecedor_nome: string | null
           fornecedor_nome_display: string | null
+          fornecedor_nome_fantasia: string | null
+          fornecedor_razao_social: string | null
           id: string | null
           juros: number | null
           metadata: Json | null
@@ -7608,6 +7732,7 @@ export type Database = {
           parcela_atual: number | null
           recorrente: boolean | null
           status: string | null
+          tipo_cobranca: string | null
           total_parcelas: number | null
           updated_at: string | null
           user_id: string | null
@@ -7635,6 +7760,8 @@ export type Database = {
           cliente_id: string | null
           cliente_nome: string | null
           cliente_nome_display: string | null
+          cliente_nome_fantasia: string | null
+          cliente_razao_social: string | null
           conta_bancaria_id: string | null
           conta_bancaria_nome: string | null
           created_at: string | null
