@@ -223,7 +223,7 @@ export function useAlertasTributarios(empresaId?: string) {
     // Verificar retenções pendentes
     const { data: retencoesPendentes } = await (supabase
       .from('retencoes_fonte')
-      .select('*')
+      .select('id')
       .eq('empresa_id', empresaId)
       .eq('status', 'pendente')
       .eq('darf_gerado', false) as any);
