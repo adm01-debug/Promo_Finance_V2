@@ -82,6 +82,11 @@ export const AsaasProxySchema = z.object({
   data: z.record(z.any()).optional()
 });
 
+export const BlingProxySchema = z.object({
+  action: z.string(),
+}).passthrough();
+
+
 export const AnalyzeDocumentSchema = z.object({
   fileName: z.string(),
   fileType: z.string(),
