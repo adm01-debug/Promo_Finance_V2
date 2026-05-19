@@ -1,18 +1,27 @@
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { createLogger, LogLevel } from "./logger.ts";
 
 export const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, asaas-access-token, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-platform-runtime, x-supabase-client-platform-runtime-version',
 };
 
-export function validatePayload<T>(schema: z.ZodSchema<T>, payload: unknown): { success: true; data: T } | { success: false; error: string; details: any } {
+const logger = createLogger("Validation");
+
+export function validatePayload<T>(schema: z.ZodSchema<T>, payload: unknown, functionName = "unknown"): { success: true; data: T } | { success: false; error: string; details: any } {
   const result = schema.safeParse(payload);
   if (result.success) {
     return { success: true, data: result.data };
   }
+  
+  logger.warn(`Contract Violation in ${functionName}`, {
+    errors: result.error.errors,
+    payload_preview: typeof payload === 'object' ? JSON.stringify(payload).slice(0, 500) : payload
+  });
+
   return {
     success: false,
-    error: "Invalid payload schema",
+    error: "Invalid payload schema (Contract Violation)",
     details: result.error.format(),
   };
 }
@@ -78,4 +87,5 @@ export const AnalyzeDocumentSchema = z.object({
   fileType: z.string(),
   fileContent: z.string(), // base64
 });
+
 
