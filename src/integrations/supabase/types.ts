@@ -2809,6 +2809,7 @@ export type Database = {
           saldo_disponivel: number
           status: string | null
           tipo_tributo: string
+          valor_credito: number | null
         }
         Insert: {
           competencia_origem?: string | null
@@ -2820,6 +2821,7 @@ export type Database = {
           saldo_disponivel?: number
           status?: string | null
           tipo_tributo: string
+          valor_credito?: number | null
         }
         Update: {
           competencia_origem?: string | null
@@ -2831,6 +2833,7 @@ export type Database = {
           saldo_disponivel?: number
           status?: string | null
           tipo_tributo?: string
+          valor_credito?: number | null
         }
         Relationships: [
           {
@@ -7143,6 +7146,84 @@ export type Database = {
         }
         Relationships: []
       }
+      extratos_bancarios_importados: {
+        Row: {
+          arquivo_origem: string | null
+          codigo_transacao: string | null
+          conciliado: boolean | null
+          conta_bancaria_id: string | null
+          created_at: string | null
+          data: string | null
+          descricao: string | null
+          hash_transacao: string | null
+          id: string | null
+          importado_de: string | null
+          importado_em: string | null
+          linha_arquivo: number | null
+          numero_documento: string | null
+          numero_documento_banco: string | null
+          saldo: number | null
+          tipo: string | null
+          user_id: string | null
+          valor: number | null
+        }
+        Insert: {
+          arquivo_origem?: string | null
+          codigo_transacao?: string | null
+          conciliado?: boolean | null
+          conta_bancaria_id?: string | null
+          created_at?: string | null
+          data?: string | null
+          descricao?: string | null
+          hash_transacao?: string | null
+          id?: string | null
+          importado_de?: string | null
+          importado_em?: string | null
+          linha_arquivo?: number | null
+          numero_documento?: string | null
+          numero_documento_banco?: string | null
+          saldo?: number | null
+          tipo?: string | null
+          user_id?: string | null
+          valor?: number | null
+        }
+        Update: {
+          arquivo_origem?: string | null
+          codigo_transacao?: string | null
+          conciliado?: boolean | null
+          conta_bancaria_id?: string | null
+          created_at?: string | null
+          data?: string | null
+          descricao?: string | null
+          hash_transacao?: string | null
+          id?: string | null
+          importado_de?: string | null
+          importado_em?: string | null
+          linha_arquivo?: number | null
+          numero_documento?: string | null
+          numero_documento_banco?: string | null
+          saldo?: number | null
+          tipo?: string | null
+          user_id?: string | null
+          valor?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "extrato_bancario_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "contas_bancarias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extrato_bancario_conta_bancaria_id_fkey"
+            columns: ["conta_bancaria_id"]
+            isOneToOne: false
+            referencedRelation: "vw_saldos_contas"
+            referencedColumns: ["conta_id"]
+          },
+        ]
+      }
       orders_operator_view: {
         Row: {
           actual_delivery: string | null
@@ -7612,6 +7693,17 @@ export type Database = {
           }
         | {
             Args: {
+              p_conciliacao_id: string
+              p_conta_pagar_id?: string
+              p_conta_receber_id?: string
+              p_transacao_id?: string
+              p_user_id: string
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              p_ajuste_centavos?: number
               p_conciliacao_id: string
               p_conta_pagar_id?: string
               p_conta_receber_id?: string
