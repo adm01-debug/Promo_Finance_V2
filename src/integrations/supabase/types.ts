@@ -1490,6 +1490,44 @@ export type Database = {
         }
         Relationships: []
       }
+      bitrix_sync_logs: {
+        Row: {
+          created_at: string | null
+          detalhes: string | null
+          empresa_id: string | null
+          entidade_id: string | null
+          entidade_tipo: string | null
+          id: string
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          detalhes?: string | null
+          empresa_id?: string | null
+          entidade_id?: string | null
+          entidade_tipo?: string | null
+          id?: string
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          detalhes?: string | null
+          empresa_id?: string | null
+          entidade_id?: string | null
+          entidade_tipo?: string | null
+          id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bitrix_sync_logs_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bitrix_webhook_events: {
         Row: {
           created_at: string | null
@@ -2111,6 +2149,7 @@ export type Database = {
           saldo_disponivel: number | null
           saldo_inicial: number | null
           tipo_conta: string | null
+          updated_at: string | null
         }
         Insert: {
           agencia?: string | null
@@ -2130,6 +2169,7 @@ export type Database = {
           saldo_disponivel?: number | null
           saldo_inicial?: number | null
           tipo_conta?: string | null
+          updated_at?: string | null
         }
         Update: {
           agencia?: string | null
@@ -2149,6 +2189,7 @@ export type Database = {
           saldo_disponivel?: number | null
           saldo_inicial?: number | null
           tipo_conta?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -3778,27 +3819,39 @@ export type Database = {
       }
       historico_conciliacao_ia: {
         Row: {
+          acao: string | null
+          confianca: number | null
           created_at: string | null
           id: string
           resultado: Json | null
           score: number | null
+          score_ia: number | null
           sessao_id: string | null
+          tipo_lancamento: string | null
           transacao_id: string | null
         }
         Insert: {
+          acao?: string | null
+          confianca?: number | null
           created_at?: string | null
           id?: string
           resultado?: Json | null
           score?: number | null
+          score_ia?: number | null
           sessao_id?: string | null
+          tipo_lancamento?: string | null
           transacao_id?: string | null
         }
         Update: {
+          acao?: string | null
+          confianca?: number | null
           created_at?: string | null
           id?: string
           resultado?: Json | null
           score?: number | null
+          score_ia?: number | null
           sessao_id?: string | null
+          tipo_lancamento?: string | null
           transacao_id?: string | null
         }
         Relationships: [
@@ -7165,14 +7218,11 @@ export type Database = {
         Returns: boolean
       }
       is_country_allowed_for_login: {
-        Args: { p_country_code: string }
+        Args: { _country: string }
         Returns: boolean
       }
       is_country_blocked: { Args: { _country_code: string }; Returns: boolean }
-      is_ip_allowed_for_login: {
-        Args: { p_ip_address: unknown }
-        Returns: boolean
-      }
+      is_ip_allowed_for_login: { Args: { _ip: unknown }; Returns: boolean }
       is_ip_blocked: { Args: { p_ip_address: unknown }; Returns: boolean }
       is_ip_whitelisted: { Args: { _ip_address: unknown }; Returns: boolean }
       is_known_device: {
