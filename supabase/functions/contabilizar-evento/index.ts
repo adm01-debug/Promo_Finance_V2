@@ -44,31 +44,13 @@ Deno.serve(async (req) => {
   }
   const userId = userData.user.id;
 
-  let body: Body;
-  try {
-    body = await req.json();
-  } catch {
-    return new Response(JSON.stringify({ error: 'invalid json' }), {
-      status: 400,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+  const rawBody = await req.json().catch(() => ({}));
+  const validation = validatePayload(ContabilizarEventoSchema, rawBody, "contabilizar-evento");
+  if (!validation.success) {
+    return createErrorResponse(validation.error, 400, validation.details);
   }
+  const body = validation.data;
 
-  if (
-    !body.empresa_id ||
-    !body.tipo_evento ||
-    !body.evento_id ||
-    !body.valor ||
-    body.valor <= 0
-  ) {
-    return new Response(
-      JSON.stringify({ error: 'campos obrigatórios ausentes' }),
-      {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      },
-    );
-  }
 
   const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
