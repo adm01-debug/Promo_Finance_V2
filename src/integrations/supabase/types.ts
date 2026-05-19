@@ -8650,6 +8650,10 @@ export type Database = {
       get_cron_run_history:
         | { Args: never; Returns: Json }
         | { Args: { p_job_name?: string; p_limit?: number }; Returns: Json }
+      get_retencoes_pendentes_count: {
+        Args: { p_empresa_id: string }
+        Returns: number
+      }
       get_user_permissions: {
         Args: { _user_id: string }
         Returns: {

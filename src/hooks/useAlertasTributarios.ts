@@ -221,19 +221,15 @@ export function useAlertasTributarios(empresaId?: string) {
     });
 
     // Verificar retenções pendentes
-    const { data: retencoesPendentes } = await (supabase
-      .from('retencoes_fonte')
-      .select('id')
-      .eq('empresa_id', empresaId)
-      .eq('status', 'pendente')
-      .eq('darf_gerado', false) as any);
+    const { data: retencoesPendentes, error: errorRet } = await supabase.rpc('get_retencoes_pendentes_count', { p_empresa_id: empresaId });
+    const countRetencoes = (retencoesPendentes as number) || 0;
 
-    if (retencoesPendentes && retencoesPendentes.length > 5) {
+    if (countRetencoes > 5) {
       alertasParaCriar.push({
         empresa_id: empresaId,
         tipo: 'retencao_pendente',
-        titulo: `${retencoesPendentes.length} retenções aguardando DARF`,
-        mensagem: `Existem ${retencoesPendentes.length} retenções pendentes sem DARF gerado. Consolide e gere os DARFs.`,
+        titulo: `${countRetencoes} retenções aguardando DARF`,
+        mensagem: `Existem ${countRetencoes} retenções pendentes sem DARF gerado. Consolide e gere os DARFs.`,
         prioridade: 'media',
         acao_url: '/reforma-tributaria?tab=retencoes',
         acao_label: 'Gerenciar Retenções',
