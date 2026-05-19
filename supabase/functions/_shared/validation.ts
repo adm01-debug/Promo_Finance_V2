@@ -67,3 +67,15 @@ export const Bitrix24WebhookSchema = z.object({
     application_token: z.string().optional(),
   }).optional()
 });
+
+export const AsaasProxySchema = z.object({
+  action: z.string(),
+  data: z.record(z.any()).optional()
+});
+
+export const AnalyzeDocumentSchema = z.object({
+  documentUrl: z.string().url().optional(),
+  base64: z.string().optional(),
+  fileType: z.string().optional(),
+  empresaId: z.string().uuid().optional()
+});
