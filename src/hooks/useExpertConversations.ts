@@ -144,7 +144,7 @@ export function useSaveMessage() {
       actions?: ExpertAction[];
       actions_executed?: boolean;
     }) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase
         .from('expert_messages')
         .insert({
           conversation_id: message.conversation_id,
@@ -154,7 +154,7 @@ export function useSaveMessage() {
           actions_executed: message.actions_executed || false,
         })
         .select()
-        .single();
+        .single() as any);
 
       if (error) throw error;
       return data;
