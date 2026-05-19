@@ -10,6 +10,8 @@ import { TelemetriaTable } from "./admin-telemetria/TelemetriaTable";
 import { TelemetriaStatsCards } from "@/components/admin/telemetry/TelemetriaStatsCards";
 import { TelemetriaFilters } from "@/components/admin/telemetry/TelemetriaFilters";
 import { TelemetriaTopOffenders } from "@/components/admin/telemetry/TelemetriaTopOffenders";
+import { PerformanceMetrics } from "@/components/admin/telemetry/PerformanceMetrics";
+
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -279,8 +281,12 @@ export default function AdminTelemetriaPage() {
           formatDuration={formatDuration}
         />
 
+        {/* Performance Metrics */}
+        <PerformanceMetrics />
+
         {/* Top Offenders */}
         <TelemetriaTopOffenders topOffenders={topOffenders} formatDuration={formatDuration} />
+
 
         {/* Charts */}
         <TelemetryCharts rows={rows} timeFilter={timeFilter} />

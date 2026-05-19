@@ -5355,6 +5355,42 @@ export type Database = {
         }
         Relationships: []
       }
+      frontend_performance_logs: {
+        Row: {
+          created_at: string
+          id: string
+          metric_name: string
+          navigation_type: string | null
+          rating: string | null
+          url: string | null
+          user_agent: string | null
+          user_id: string | null
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metric_name: string
+          navigation_type?: string | null
+          rating?: string | null
+          url?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+          value: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metric_name?: string
+          navigation_type?: string | null
+          rating?: string | null
+          url?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+          value?: number
+        }
+        Relationships: []
+      }
       geo_blocks: {
         Row: {
           block_type: string

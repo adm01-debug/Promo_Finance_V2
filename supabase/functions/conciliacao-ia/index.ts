@@ -1,27 +1,38 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { validateContract } from "../_shared/contract-validator.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface TransacaoExtrato {
-  id: string;
-  data: string;
-  descricao: string;
-  valor: number;
-  tipo: 'credito' | 'debito';
-}
+const TransacaoExtratoSchema = z.object({
+  id: z.string(),
+  data: z.string(),
+  descricao: z.string(),
+  valor: z.number(),
+  tipo: z.enum(['credito', 'debito']),
+});
 
-interface LancamentoSistema {
-  id: string;
-  tipo: 'pagar' | 'receber';
-  entidade: string;
-  descricao: string;
-  valor: number;
-  dataVencimento: string;
-  documento?: string;
-}
+const LancamentoSistemaSchema = z.object({
+  id: z.string(),
+  tipo: z.enum(['pagar', 'receber']),
+  entidade: z.string(),
+  descricao: z.string().optional(),
+  valor: z.number(),
+  dataVencimento: z.string(),
+  documento: z.string().optional(),
+});
+
+const ConciliacaoInputSchema = z.object({
+  transacoes: z.array(TransacaoExtratoSchema),
+  lancamentos: z.array(LancamentoSistemaSchema),
+  historicoFeedback: z.array(z.any()).optional(),
+});
+
+type TransacaoExtrato = z.infer<typeof TransacaoExtratoSchema>;
+type LancamentoSistema = z.infer<typeof LancamentoSistemaSchema>;
 
 interface MatchSugestaoIA {
   transacaoId: string;
@@ -36,6 +47,7 @@ interface MatchSugestaoIA {
   }>;
   analiseIA?: string;
 }
+
 
 const SYSTEM_PROMPT = `Você é um especialista em conciliação bancária. Sua tarefa é analisar transações de extrato bancário e encontrar correspondências com lançamentos do sistema financeiro.
 
@@ -80,11 +92,15 @@ serve(async (req) => {
   }
 
   try {
-    const { transacoes, lancamentos, historicoFeedback } = await req.json() as {
-      transacoes: TransacaoExtrato[];
-      lancamentos: LancamentoSistema[];
-      historicoFeedback?: any[];
-    };
+    const body = await req.json();
+    const validation = await validateContract(ConciliacaoInputSchema, body);
+    
+    if (!validation.success) {
+      return validation.response;
+    }
+
+    const { transacoes, lancamentos, historicoFeedback } = validation.data;
+
 
     if (!transacoes?.length || !lancamentos?.length) {
       return new Response(

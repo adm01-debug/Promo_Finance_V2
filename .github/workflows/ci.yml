@@ -22,8 +22,12 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Security scan
+        run: bun audit
+
       - name: Lint check
         run: bun run lint
+
 
       - name: Type check
         run: bun run type-check

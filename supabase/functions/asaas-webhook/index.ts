@@ -1,5 +1,8 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { validatePayload, createErrorResponse, AsaasWebhookSchema, corsHeaders } from '../_shared/validation.ts'
+import { createLogger } from '../_shared/logger.ts'
+
+const logger = createLogger('asaas-webhook')
 
 Deno.serve(async (req) => {
   const startTime = Date.now()
@@ -15,9 +18,10 @@ Deno.serve(async (req) => {
     const receivedToken = req.headers.get('asaas-access-token')
 
     if (WEBHOOK_TOKEN && receivedToken !== WEBHOOK_TOKEN) {
-      console.error('Token de webhook inválido')
+      logger.error('Token de webhook inválido', { ip_origem, correlation_id })
       return createErrorResponse('Token inválido', 403)
     }
+
 
     const body = await req.json()
     const validation = validatePayload(AsaasWebhookSchema, body)
