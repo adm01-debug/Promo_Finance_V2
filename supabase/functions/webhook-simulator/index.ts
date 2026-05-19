@@ -15,13 +15,14 @@ Deno.serve(async (req) => {
   const supabase = createClient(supabaseUrl, serviceRoleKey)
 
   try {
-    const { run_id, target_function, scenarios_count = 10 } = await req.json()
+    const body = await req.json()
+    const { run_id, target_function, scenarios_count = 10, mode = 'normal' } = body
 
     if (!run_id || !target_function) {
       throw new Error('run_id e target_function são obrigatórios')
     }
 
-    // Atualizar status para running
+    // Update status to running
     await supabase.from('webhook_simulation_runs').update({ 
       status: 'running',
       started_at: new Date().toISOString(),
@@ -37,28 +38,43 @@ Deno.serve(async (req) => {
       { name: 'Transferência Falhou', type: 'TRANSFER_FAILED' }
     ]
 
+    const fuzzingScenarios = [
+      { name: 'Payload Malformado', type: 'MALFORMED', payload: '{ invalid json }' },
+      { name: 'Campos Ausentes', type: 'MISSING_FIELDS', payload: { event: 'PAYMENT_RECEIVED' } },
+      { name: 'UUID Inválido', type: 'INVALID_UUID', payload: { id: 'not-a-uuid', event: 'PAYMENT_RECEIVED' } },
+      { name: 'Valor Negativo', type: 'NEGATIVE_VALUE', payload: { event: 'PAYMENT_RECEIVED', payment: { value: -100 } } }
+    ]
+
     let successCount = 0
     let failureCount = 0
-    const errors: any[] = []
+    const errors: string[] = []
 
     const WEBHOOK_TOKEN = Deno.env.get('ASAAS_WEBHOOK_TOKEN') || 'simulated-token'
     const functionUrl = `${supabaseUrl}/functions/v1/${target_function}`
 
-    for (let i = 0; i < scenarios_count; i++) {
-      const scenario = scenarios[i % scenarios.length]
-      const payload = {
-        id: `evt_${crypto.randomUUID()}`,
-        event: scenario.type,
-        payment: scenario.type.startsWith('PAYMENT') ? {
-          id: `pay_${crypto.randomUUID()}`,
-          status: 'RECEIVED',
-          value: Math.random() * 1000
-        } : null,
-        transfer: scenario.type.startsWith('TRANSFER') ? {
-          id: `tra_${crypto.randomUUID()}`,
-          status: 'PENDING',
-          value: Math.random() * 5000
-        } : null
+    const runScenario = async (i: number) => {
+      let scenario;
+      let payload;
+
+      if (mode === 'fuzzing') {
+        scenario = fuzzingScenarios[i % fuzzingScenarios.length]
+        payload = scenario.payload
+      } else {
+        scenario = scenarios[i % scenarios.length]
+        payload = {
+          id: `evt_${crypto.randomUUID()}`,
+          event: scenario.type,
+          payment: scenario.type.startsWith('PAYMENT') ? {
+            id: `pay_${crypto.randomUUID()}`,
+            status: 'RECEIVED',
+            value: Math.random() * 1000
+          } : null,
+          transfer: scenario.type.startsWith('TRANSFER') ? {
+            id: `tra_${crypto.randomUUID()}`,
+            status: 'PENDING',
+            value: Math.random() * 5000
+          } : null
+        }
       }
 
       const start = Date.now()
@@ -69,13 +85,14 @@ Deno.serve(async (req) => {
             'Content-Type': 'application/json',
             'asaas-access-token': WEBHOOK_TOKEN
           },
-          body: JSON.stringify(payload)
+          body: typeof payload === 'string' ? payload : JSON.stringify(payload)
         })
 
         const duration = Date.now() - start
         const resBody = await response.json().catch(() => ({ raw: 'Response was not JSON' }))
-
-        const success = response.ok && resBody.success === true
+        
+        // No modo fuzzing, esperamos que a função lide com o erro (4xx) mas não quebre (5xx)
+        const success = mode === 'fuzzing' ? response.status < 500 : (response.ok && resBody.success === true)
 
         if (success) successCount++
         else failureCount++
@@ -102,6 +119,16 @@ Deno.serve(async (req) => {
           error_message: err.message
         })
       }
+    }
+
+    // Se scenarios_count for muito alto, executamos em lotes para não estourar tempo da Edge Function
+    const batchSize = mode === 'stress' ? 50 : 10;
+    for (let i = 0; i < scenarios_count; i += batchSize) {
+      const promises = [];
+      for (let j = 0; j < batchSize && (i + j) < scenarios_count; j++) {
+        promises.push(runScenario(i + j));
+      }
+      await Promise.all(promises);
     }
 
     await supabase.from('webhook_simulation_runs').update({ 
