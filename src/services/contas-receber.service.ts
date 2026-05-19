@@ -2,8 +2,8 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
 
-type StatusPagamento = Database['public']['Enums']['status_pagamento'];
-type TipoCobranca = Database['public']['Enums']['tipo_cobranca'];
+type StatusPagamento = 'pendente' | 'pago' | 'cancelado' | 'atrasado' | 'vencido' | string;
+type TipoCobranca = 'boleto' | 'pix' | 'cartao' | 'transferencia' | string;
 
 export interface ContaReceberFilters {
   status?: StatusPagamento;
