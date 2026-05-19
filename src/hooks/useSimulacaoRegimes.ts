@@ -107,7 +107,7 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
         .order('data_simulacao', { ascending: false })
         .limit(10);
       if (error) throw error;
-      return (data || []) as SimulaoHistoricoItem[];
+      return (data as any || []) as SimulaoHistoricoItem[];
     },
     enabled: !!empresaId,
     staleTime: 60_000,
