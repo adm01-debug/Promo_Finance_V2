@@ -164,24 +164,34 @@ export function useContasBancarias(empresaId?: string) {
   return useQuery({
     queryKey: ['contas-bancarias', empresaId],
     queryFn: async () => {
-      // Use any to bypass deep type instantiation issues in this specific query
-      const query = supabase
-        .from('contas_bancarias')
-        .select('*, empresas:empresa_id(razao_social, nome_fantasia)')
-        .eq('ativo', true)
-        .order('banco');
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
+
+      const queryParams = new URLSearchParams({
+        select: '*,empresas:empresa_id(razao_social,nome_fantasia)',
+        ativo: 'eq.true',
+        order: 'banco'
+      });
       
       if (empresaId && empresaId !== 'all') {
-        query.eq('empresa_id', empresaId);
+        queryParams.append('empresa_id', `eq.${empresaId}`);
       }
 
-      const { data, error } = await (query as any);
-      if (error) throw error;
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const response = await fetch(`https://${projectId}.supabase.co/rest/v1/contas_bancarias?${queryParams}`, {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      });
+
+      if (!response.ok) throw new Error('Erro ao buscar contas bancárias');
+      const data = await response.json();
       
-      const { data: rules } = await supabase
+      const { data: rules } = await (supabase
         .from('regras_roteamento_financeiro')
         .select('*')
-        .eq('ativo', true);
+        .eq('ativo', true) as any);
 
       return (data || []).map((conta: any) => ({
         ...conta,
