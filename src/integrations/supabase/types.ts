@@ -2492,6 +2492,7 @@ export type Database = {
           created_at: string | null
           data_pagamento: string | null
           data_vencimento: string
+          deleted_at: string | null
           desconto: number | null
           descricao: string
           empresa_id: string | null
@@ -2527,6 +2528,7 @@ export type Database = {
           created_at?: string | null
           data_pagamento?: string | null
           data_vencimento: string
+          deleted_at?: string | null
           desconto?: number | null
           descricao: string
           empresa_id?: string | null
@@ -2562,6 +2564,7 @@ export type Database = {
           created_at?: string | null
           data_pagamento?: string | null
           data_vencimento?: string
+          deleted_at?: string | null
           desconto?: number | null
           descricao?: string
           empresa_id?: string | null
@@ -2609,6 +2612,7 @@ export type Database = {
           data_emissao: string | null
           data_recebimento: string | null
           data_vencimento: string
+          deleted_at: string | null
           desconto: number | null
           descricao: string
           empresa_id: string | null
@@ -2647,6 +2651,7 @@ export type Database = {
           data_emissao?: string | null
           data_recebimento?: string | null
           data_vencimento: string
+          deleted_at?: string | null
           desconto?: number | null
           descricao: string
           empresa_id?: string | null
@@ -2685,6 +2690,7 @@ export type Database = {
           data_emissao?: string | null
           data_recebimento?: string | null
           data_vencimento?: string
+          deleted_at?: string | null
           desconto?: number | null
           descricao?: string
           empresa_id?: string | null
@@ -3703,35 +3709,35 @@ export type Database = {
       }
       expert_conversations: {
         Row: {
-          context_summary: string | null
           created_at: string | null
           empresa_id: string | null
           id: string
           last_message_at: string | null
+          resumo: string | null
           status: string | null
-          title: string | null
+          titulo: string | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
-          context_summary?: string | null
           created_at?: string | null
           empresa_id?: string | null
           id?: string
           last_message_at?: string | null
+          resumo?: string | null
           status?: string | null
-          title?: string | null
+          titulo?: string | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
-          context_summary?: string | null
           created_at?: string | null
           empresa_id?: string | null
           id?: string
           last_message_at?: string | null
+          resumo?: string | null
           status?: string | null
-          title?: string | null
+          titulo?: string | null
           updated_at?: string | null
           user_id?: string
         }
@@ -3747,7 +3753,7 @@ export type Database = {
       }
       expert_messages: {
         Row: {
-          actions_executed: Json | null
+          actions_executed: boolean | null
           content: string
           conversation_id: string
           created_at: string | null
@@ -3756,7 +3762,7 @@ export type Database = {
           role: string
         }
         Insert: {
-          actions_executed?: Json | null
+          actions_executed?: boolean | null
           content: string
           conversation_id: string
           created_at?: string | null
@@ -3765,7 +3771,7 @@ export type Database = {
           role: string
         }
         Update: {
-          actions_executed?: Json | null
+          actions_executed?: boolean | null
           content?: string
           conversation_id?: string
           created_at?: string | null
@@ -4047,6 +4053,41 @@ export type Database = {
           },
           {
             foreignKeyName: "fluxos_aprovacao_niveis_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      formas_pagamento: {
+        Row: {
+          ativa: boolean | null
+          created_at: string | null
+          empresa_id: string
+          id: string
+          nome: string
+          tipo: string | null
+        }
+        Insert: {
+          ativa?: boolean | null
+          created_at?: string | null
+          empresa_id: string
+          id?: string
+          nome: string
+          tipo?: string | null
+        }
+        Update: {
+          ativa?: boolean | null
+          created_at?: string | null
+          empresa_id?: string
+          id?: string
+          nome?: string
+          tipo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "formas_pagamento_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
@@ -6020,6 +6061,82 @@ export type Database = {
         }
         Relationships: []
       }
+      regras_duplicidade: {
+        Row: {
+          ativa: boolean | null
+          campos_validacao: string[]
+          created_at: string | null
+          empresa_id: string
+          id: string
+          tempo_bloqueio_minutos: number | null
+        }
+        Insert: {
+          ativa?: boolean | null
+          campos_validacao: string[]
+          created_at?: string | null
+          empresa_id: string
+          id?: string
+          tempo_bloqueio_minutos?: number | null
+        }
+        Update: {
+          ativa?: boolean | null
+          campos_validacao?: string[]
+          created_at?: string | null
+          empresa_id?: string
+          id?: string
+          tempo_bloqueio_minutos?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regras_duplicidade_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      regras_roteamento_financeiro: {
+        Row: {
+          ativa: boolean | null
+          condicoes: Json | null
+          created_at: string | null
+          empresa_id: string
+          id: string
+          nome: string
+          prioridade: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          ativa?: boolean | null
+          condicoes?: Json | null
+          created_at?: string | null
+          empresa_id: string
+          id?: string
+          nome: string
+          prioridade?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          ativa?: boolean | null
+          condicoes?: Json | null
+          created_at?: string | null
+          empresa_id?: string
+          id?: string
+          nome?: string
+          prioridade?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regras_roteamento_financeiro_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       regua_cobranca: {
         Row: {
           ativo: boolean
@@ -6918,6 +7035,39 @@ export type Database = {
           location_country?: string | null
           os?: string | null
           user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_filter_presets: {
+        Row: {
+          created_at: string | null
+          filters: Json
+          id: string
+          is_default: boolean | null
+          name: string
+          screen_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          filters?: Json
+          id?: string
+          is_default?: boolean | null
+          name: string
+          screen_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          filters?: Json
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          screen_id?: string | null
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
@@ -7958,6 +8108,15 @@ export type Database = {
         Returns: string
       }
       generate_reconciliation_suggestions:
+        | {
+            Args: {
+              p_empresa_id: string
+              p_transaction_date: string
+              p_transaction_id?: string
+              p_transaction_value: number
+            }
+            Returns: Json
+          }
         | { Args: { p_sessao_id: string }; Returns: undefined }
         | {
             Args: { p_empresa_id?: string; p_sessao_id: string }
