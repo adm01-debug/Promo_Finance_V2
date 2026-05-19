@@ -182,8 +182,13 @@ serve(async (req) => {
     const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const client = createClient(url, key);
 
-    const body = req.method === "POST" ? await req.json().catch(() => ({})) : {};
-    const empresaIdFiltro = body?.empresa_id ?? null;
+    const rawBody = req.method === "POST" ? await req.json().catch(() => ({})) : {};
+    const validation = validatePayload(OptionalEmpresaIdSchema, rawBody, "calcular-health-score-operacional");
+    if (!validation.success) {
+      return createErrorResponse(validation.error, 400, validation.details);
+    }
+    const empresaIdFiltro = validation.data.empresa_id ?? null;
+
 
     const { data: empresas } = await client
       .from("empresas")
