@@ -1492,25 +1492,37 @@ export type Database = {
       }
       bitrix_field_mappings: {
         Row: {
+          ativo: boolean | null
           bitrix_field_name: string
+          campo_bitrix: string | null
+          campo_sistema: string | null
           created_at: string | null
           empresa_id: string | null
+          entidade: string | null
           entity_type: string
           id: string
           internal_field_name: string
         }
         Insert: {
+          ativo?: boolean | null
           bitrix_field_name: string
+          campo_bitrix?: string | null
+          campo_sistema?: string | null
           created_at?: string | null
           empresa_id?: string | null
+          entidade?: string | null
           entity_type: string
           id?: string
           internal_field_name: string
         }
         Update: {
+          ativo?: boolean | null
           bitrix_field_name?: string
+          campo_bitrix?: string | null
+          campo_sistema?: string | null
           created_at?: string | null
           empresa_id?: string | null
+          entidade?: string | null
           entity_type?: string
           id?: string
           internal_field_name?: string
@@ -1533,7 +1545,10 @@ export type Database = {
           entidade: string | null
           entidade_id: string | null
           entidade_tipo: string | null
+          finalizado_em: string | null
           id: string
+          iniciado_em: string | null
+          mensagem_erro: string | null
           registros_com_erro: number | null
           registros_processados: number | null
           status: string | null
@@ -1546,7 +1561,10 @@ export type Database = {
           entidade?: string | null
           entidade_id?: string | null
           entidade_tipo?: string | null
+          finalizado_em?: string | null
           id?: string
+          iniciado_em?: string | null
+          mensagem_erro?: string | null
           registros_com_erro?: number | null
           registros_processados?: number | null
           status?: string | null
@@ -1559,7 +1577,10 @@ export type Database = {
           entidade?: string | null
           entidade_id?: string | null
           entidade_tipo?: string | null
+          finalizado_em?: string | null
           id?: string
+          iniciado_em?: string | null
+          mensagem_erro?: string | null
           registros_com_erro?: number | null
           registros_processados?: number | null
           status?: string | null
@@ -1845,9 +1866,13 @@ export type Database = {
       }
       boletos: {
         Row: {
+          agencia: string | null
+          banco: string | null
           banco_nome: string | null
+          cedente_cnpj: string | null
           cedente_nome: string | null
           codigo_barras: string | null
+          conta: string | null
           conta_receber_id: string | null
           created_at: string
           data_emissao: string | null
@@ -1870,9 +1895,13 @@ export type Database = {
           vencimento: string | null
         }
         Insert: {
+          agencia?: string | null
+          banco?: string | null
           banco_nome?: string | null
+          cedente_cnpj?: string | null
           cedente_nome?: string | null
           codigo_barras?: string | null
+          conta?: string | null
           conta_receber_id?: string | null
           created_at?: string
           data_emissao?: string | null
@@ -1895,9 +1924,13 @@ export type Database = {
           vencimento?: string | null
         }
         Update: {
+          agencia?: string | null
+          banco?: string | null
           banco_nome?: string | null
+          cedente_cnpj?: string | null
           cedente_nome?: string | null
           codigo_barras?: string | null
+          conta?: string | null
           conta_receber_id?: string | null
           created_at?: string
           data_emissao?: string | null
@@ -1929,15 +1962,15 @@ export type Database = {
           created_at: string | null
           empresa_id: string | null
           id: string
-          nome: string
+          nome: string | null
           period: string | null
-          periodo_fim: string
-          periodo_inicio: string
+          periodo_fim: string | null
+          periodo_inicio: string | null
           spent_amount: number | null
           status: string | null
           updated_at: string | null
           user_id: string | null
-          valor_total: number
+          valor_total: number | null
         }
         Insert: {
           budgeted_amount?: number | null
@@ -1946,15 +1979,15 @@ export type Database = {
           created_at?: string | null
           empresa_id?: string | null
           id?: string
-          nome: string
+          nome?: string | null
           period?: string | null
-          periodo_fim: string
-          periodo_inicio: string
+          periodo_fim?: string | null
+          periodo_inicio?: string | null
           spent_amount?: number | null
           status?: string | null
           updated_at?: string | null
           user_id?: string | null
-          valor_total: number
+          valor_total?: number | null
         }
         Update: {
           budgeted_amount?: number | null
@@ -1963,15 +1996,15 @@ export type Database = {
           created_at?: string | null
           empresa_id?: string | null
           id?: string
-          nome?: string
+          nome?: string | null
           period?: string | null
-          periodo_fim?: string
-          periodo_inicio?: string
+          periodo_fim?: string | null
+          periodo_inicio?: string | null
           spent_amount?: number | null
           status?: string | null
           updated_at?: string | null
           user_id?: string | null
-          valor_total?: number
+          valor_total?: number | null
         }
         Relationships: [
           {
@@ -2295,7 +2328,7 @@ export type Database = {
           created_at: string | null
           empresa_id: string | null
           id: string
-          nome: string
+          nome: string | null
           numero_conta: string | null
           saldo_atual: number
           saldo_disponivel: number | null
@@ -2315,7 +2348,7 @@ export type Database = {
           created_at?: string | null
           empresa_id?: string | null
           id?: string
-          nome: string
+          nome?: string | null
           numero_conta?: string | null
           saldo_atual?: number
           saldo_disponivel?: number | null
@@ -2335,7 +2368,7 @@ export type Database = {
           created_at?: string | null
           empresa_id?: string | null
           id?: string
-          nome?: string
+          nome?: string | null
           numero_conta?: string | null
           saldo_atual?: number
           saldo_disponivel?: number | null
@@ -6018,9 +6051,11 @@ export type Database = {
           conta_pagar_id: string | null
           created_at: string
           entidade_id: string | null
-          entidade_tipo: string
+          entidade_tipo: string | null
           id: string
           motivo_rejeicao: string | null
+          observacoes: string | null
+          solicitado_por: string | null
           status: string
           user_id: string
         }
@@ -6029,9 +6064,11 @@ export type Database = {
           conta_pagar_id?: string | null
           created_at?: string
           entidade_id?: string | null
-          entidade_tipo: string
+          entidade_tipo?: string | null
           id?: string
           motivo_rejeicao?: string | null
+          observacoes?: string | null
+          solicitado_por?: string | null
           status?: string
           user_id?: string
         }
@@ -6040,9 +6077,11 @@ export type Database = {
           conta_pagar_id?: string | null
           created_at?: string
           entidade_id?: string | null
-          entidade_tipo?: string
+          entidade_tipo?: string | null
           id?: string
           motivo_rejeicao?: string | null
+          observacoes?: string | null
+          solicitado_por?: string | null
           status?: string
           user_id?: string
         }
@@ -6292,6 +6331,7 @@ export type Database = {
           id: string
           pix_chave_destino: string | null
           status: string | null
+          tipo: string | null
           user_id: string | null
           valor: number
         }
@@ -6307,6 +6347,7 @@ export type Database = {
           id?: string
           pix_chave_destino?: string | null
           status?: string | null
+          tipo?: string | null
           user_id?: string | null
           valor: number
         }
@@ -6322,6 +6363,7 @@ export type Database = {
           id?: string
           pix_chave_destino?: string | null
           status?: string | null
+          tipo?: string | null
           user_id?: string | null
           valor?: number
         }
