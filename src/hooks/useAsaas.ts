@@ -259,19 +259,13 @@ export function useAsaas(empresaId?: string) {
         .from('asaas_config')
         .select('*')
         .eq('empresa_id', empresaId)
-        .single();
-      if (error && error.code !== 'PGRST116') throw error;
+        .maybeSingle();
+      if (error) throw error;
       
-      // Ensure we return an object with expected properties for the UI
-      const baseConfig = data || { 
-        empresa_id: empresaId,
-        configuracoes: {} 
-      };
-      
-      const conf = (baseConfig.configuracoes as any) || {};
+      const conf = (data?.configuracoes as any) || {};
       
       return {
-        ...baseConfig,
+        ...data,
         retry_limit: conf.retry_limit || 5,
         retry_interval_minutes: conf.retry_interval_minutes || 30,
         backoff_multiplier: conf.backoff_multiplier || 2.0,
@@ -291,27 +285,15 @@ export function useAsaas(empresaId?: string) {
   const salvarConfig = useMutation({
     mutationFn: async (payload: any) => {
       if (!empresaId) return;
-      
-      // Fetch current config to merge
       const { data: current } = await supabase
         .from('asaas_config')
         .select('configuracoes')
         .eq('empresa_id', empresaId)
         .maybeSingle();
-        
-      const mergedConfig = {
-        ...(current?.configuracoes as any || {}),
-        ...payload
-      };
-
-      const { error } = await supabase
-        .from('asaas_config')
-        .upsert({
-          empresa_id: empresaId,
-          configuracoes: mergedConfig,
-          updated_at: new Date().toISOString()
-        }, { onConflict: 'empresa_id' });
-        
+      const mergedConfig = { ...(current?.configuracoes as any || {}), ...payload };
+      const { error } = await supabase.from('asaas_config').upsert({
+        empresa_id: empresaId, configuracoes: mergedConfig, updated_at: new Date().toISOString()
+      }, { onConflict: 'empresa_id' });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -387,6 +369,8 @@ export function useAsaas(empresaId?: string) {
     simularAntecipacao,
     solicitarAntecipacao,
     config,
+    loadingConfig,
+    salvarConfig,
     suggestions,
     aceitarSugestao,
     gerarSugestoes,
@@ -395,22 +379,20 @@ export function useAsaas(empresaId?: string) {
       pendentes: payments.filter(p => p.status === 'PENDING').length,
       recebidos: payments.filter(p => ['RECEIVED', 'CONFIRMED'].includes(p.status)).length,
       vencidos: payments.filter(p => p.status === 'OVERDUE').length,
-      valorPendente: payments.filter(p => p.status === 'PENDING').reduce((s, p) => s + p.valor, 0),
-      valorRecebido: payments.filter(p => ['RECEIVED', 'CONFIRMED'].includes(p.status)).reduce((s, p) => s + (p.valor_liquido || p.valor), 0),
+      valorPendente: (payments || []).filter(p => p.status === 'PENDING').reduce((s, p) => s + (p.valor || 0), 0),
+      valorRecebido: (payments || []).filter(p => ['RECEIVED', 'CONFIRMED'].includes(p.status)).reduce((s, p) => s + (p.valor_liquido || p.valor || 0), 0),
     },
     obterComprovante: { mutateAsync: async (asaasId: string) => ({ url: null }), isPending: false },
     auditTrail: [],
     loadingAudit: false,
     loadingSuggestions: false,
     detailStats: [],
-    loadingConfig: false,
-    salvarConfig: { mutateAsync: async (payload: any) => {}, mutate: (payload: any) => {}, isPending: false },
     syncQueue: [],
     loadingQueue: false,
     reprocessarManual: { mutateAsync: async (payload: any) => {}, mutate: (payload: any) => {}, isPending: false },
-    exportarAuditoria: { mutate: () => {}, isPending: false },
+    exportarAuditoria: { mutate: (payload?: any) => {}, isPending: false },
     exportarAuditoriaPDF: () => {},
-    queueStats: null,
-    simularBackoff: () => {},
+    queueStats: { pendentes: 0, falhas: 0, sucesso: 0 },
+    simularBackoff: { mutate: () => {}, isPending: false },
   };
 }
