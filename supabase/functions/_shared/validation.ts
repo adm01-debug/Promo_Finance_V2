@@ -74,8 +74,8 @@ export const AsaasProxySchema = z.object({
 });
 
 export const AnalyzeDocumentSchema = z.object({
-  documentUrl: z.string().url().optional(),
-  base64: z.string().optional(),
-  fileType: z.string().optional(),
-  empresaId: z.string().uuid().optional()
+  fileName: z.string(),
+  fileType: z.string(),
+  fileContent: z.string(), // base64
 });
+
