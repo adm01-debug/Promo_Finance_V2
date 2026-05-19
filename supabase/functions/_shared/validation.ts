@@ -56,11 +56,12 @@ export const AsaasWebhookSchema = z.object({
 });
 
 export const BlingWebhookSchema = z.object({
-  event: z.string().optional(),
+  event: z.string(),
   module: z.string().optional(),
-  data: z.record(z.any()).optional(),
+  data: z.record(z.any()),
   retries: z.number().optional()
 });
+
 
 export const Bitrix24WebhookSchema = z.object({
   event: z.string(),
