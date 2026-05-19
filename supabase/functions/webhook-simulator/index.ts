@@ -123,15 +123,16 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Se scenarios_count for muito alto, executamos em lotes para não estourar tempo da Edge Function
-    const batchSize = mode === 'stress' ? 50 : 10;
-    for (let i = 0; i < scenarios_count; i += batchSize) {
-      const promises = [];
-      for (let j = 0; j < batchSize && (i + j) < scenarios_count; j++) {
-        promises.push(runScenario(i + j));
-      }
-      await Promise.all(promises);
+    // Usar limitador de concorrência para rodar milhares de simulações com segurança
+    const limiter = new ConcurrencyLimiter(mode === 'stress' ? 50 : 20);
+    const simulationPromises = [];
+
+    for (let i = 0; i < scenarios_count; i++) {
+      simulationPromises.push(limiter.run(() => runScenario(i)));
     }
+
+    await Promise.all(simulationPromises);
+
 
     await supabase.from('webhook_simulation_runs').update({ 
       status: 'completed',
