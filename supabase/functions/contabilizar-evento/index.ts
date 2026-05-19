@@ -7,17 +7,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import { ContabilizarEventoSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
 
 
-interface Body {
-  empresa_id: string;
-  tipo_evento: 'conta_pagar' | 'conta_receber' | 'movimentacao';
-  evento_id: string;
-  valor: number;
-  data: string; // ISO yyyy-mm-dd
-  descricao?: string;
-  categoria_id?: string | null;
-  dry_run?: boolean;
-  ignore_rules?: boolean;
-}
+// Body interface removed in favor of Zod schema
+
 
 function renderTemplate(tpl: string, data: Record<string, unknown>): string {
   return tpl.replace(/\{(\w+)\}/g, (_, k) => String(data[k] ?? ''));
