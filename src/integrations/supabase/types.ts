@@ -1923,36 +1923,64 @@ export type Database = {
       }
       budgets: {
         Row: {
+          budgeted_amount: number | null
+          category: string | null
+          company_id: string | null
           created_at: string | null
           empresa_id: string | null
           id: string
           nome: string
+          period: string | null
           periodo_fim: string
           periodo_inicio: string
+          spent_amount: number | null
           status: string | null
+          updated_at: string | null
+          user_id: string | null
           valor_total: number
         }
         Insert: {
+          budgeted_amount?: number | null
+          category?: string | null
+          company_id?: string | null
           created_at?: string | null
           empresa_id?: string | null
           id?: string
           nome: string
+          period?: string | null
           periodo_fim: string
           periodo_inicio: string
+          spent_amount?: number | null
           status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
           valor_total: number
         }
         Update: {
+          budgeted_amount?: number | null
+          category?: string | null
+          company_id?: string | null
           created_at?: string | null
           empresa_id?: string | null
           id?: string
           nome?: string
+          period?: string | null
           periodo_fim?: string
           periodo_inicio?: string
+          spent_amount?: number | null
           status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
           valor_total?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "budgets_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "budgets_empresa_id_fkey"
             columns: ["empresa_id"]
