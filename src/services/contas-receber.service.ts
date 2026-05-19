@@ -50,7 +50,7 @@ export const contasReceberService = {
       query = query.eq('cliente_id', filters.cliente_id);
     }
     if (filters?.categoria) {
-      query = query.eq('categoria', filters.categoria);
+      query = query.eq('categoria_nome', filters.categoria);
     }
     if (filters?.startDate) {
       query = query.gte('vencimento', filters.startDate);
