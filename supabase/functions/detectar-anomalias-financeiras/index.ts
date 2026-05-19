@@ -56,12 +56,14 @@ serve(async (req) => {
   const triggerSource =
     req.headers.get("x-trigger-source") === "cron" ? "cron" : "manual";
 
-  let body: { run_id?: string } = {};
-  try {
-    if (req.method === "POST") body = await req.json();
-  } catch {
-    body = {};
-  }
+    let body: z.infer<typeof AnomaliaRunInputSchema> = {};
+    if (req.method === "POST") {
+      const json = await req.json();
+      const validation = await validateContract(AnomaliaRunInputSchema, json);
+      if (!validation.success) return validation.response;
+      body = validation.data;
+    }
+
 
   // Limpa órfãos antigos (queued > 5min)
   await client
