@@ -176,7 +176,7 @@ export default function ContasReceber() {
           {/* Core Content: Table or Kanban */}
           <motion.div variants={itemVariants} className="min-h-[600px]">
             {viewMode === 'kanban' ? (
-              <ContasReceberKanban contas={sortedContas} onSelectConta={handleViewConta} />
+              <ContasReceberKanban contas={sortedContas as any} onSelectConta={handleViewConta} />
             ) : (
               <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] rounded-[2.5rem] overflow-hidden ring-1 ring-white/10">
                 {isLoading ? (
@@ -217,7 +217,7 @@ export default function ContasReceber() {
                         ) : sortedContas.map((conta, index) => (
                           <ContasReceberTableRow
                             key={conta.id}
-                            conta={conta}
+                            conta={conta as any}
                             index={index}
                             isSelected={isSelected(conta.id)}
                             onToggleSelect={toggleSelect}

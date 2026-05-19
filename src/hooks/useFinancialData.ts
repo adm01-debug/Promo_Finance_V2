@@ -177,7 +177,7 @@ export function useContasBancarias(empresaId?: string) {
         query = query.eq('empresa_id', empresaId);
       }
 
-      const { data, error } = await query;
+      const { data, error } = await (query as any);
       if (error) throw error;
       
       const { data: rules } = await supabase
@@ -304,7 +304,7 @@ export function useContasPagarPaginated(params: PaginatedContasPagarParams) {
         dataQuery = dataQuery.eq('conta_bancaria_id', contaBancariaId);
       }
 
-      const [countResult, dataResult] = await Promise.all([countQuery, dataQuery]);
+      const [countResult, dataResult] = await Promise.all([countQuery, dataQuery as any]);
 
       if (countResult.error) throw countResult.error;
       if (dataResult.error) throw dataResult.error;
@@ -397,7 +397,7 @@ export function useContasReceberPaginated(params: PaginatedContasReceberParams) 
         dataQuery = dataQuery.eq('conta_bancaria_id', contaBancariaId);
       }
 
-      const [countResult, dataResult] = await Promise.all([countQuery, dataQuery]);
+      const [countResult, dataResult] = await Promise.all([countQuery, dataQuery as any]);
 
       if (countResult.error) throw countResult.error;
       if (dataResult.error) throw dataResult.error;
