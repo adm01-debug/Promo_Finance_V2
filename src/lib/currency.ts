@@ -135,11 +135,26 @@ export function parseCurrency(value: string, currency: CurrencyCode = 'BRL'): nu
   // Handle compact notation
   const compactMatch = cleaned.match(/^([\d.,]+)\s*([KMB])$/i);
   if (compactMatch) {
-    const num = parseFloat(compactMatch[1].replace(info.thousandSeparator, '').replace(info.decimalSeparator, '.'));
+    let numStr = compactMatch[1];
+    // If it contains both separators, or the dot is after the comma, or it's just following the currency rules:
+    if (info.thousandSeparator === '.') {
+      // In BRL, if someone writes 1.5K, they might mean 1,5K (1500) or 1.500 (1500).
+      // But if there's only one dot, and it's 1.5K, it's ambiguous. 
+      // Usually in JS parseFloat, 1.5 is 1.5. 
+      // Let's assume if it contains the decimal separator of the currency, we use it.
+      numStr = numStr.replace(new RegExp(`\\${info.thousandSeparator}`, 'g'), '');
+      numStr = numStr.replace(info.decimalSeparator, '.');
+    } else {
+      numStr = numStr.replace(new RegExp(`\\${info.thousandSeparator}`, 'g'), '');
+      numStr = numStr.replace(info.decimalSeparator, '.');
+    }
+    
+    const num = parseFloat(numStr);
     const multiplier = { K: 1_000, M: 1_000_000, B: 1_000_000_000 }[compactMatch[2].toUpperCase()] || 1;
     const result = num * multiplier;
     return isNegative ? -result : result;
   }
+
 
   // Remove thousand separators and convert decimal separator
   const normalized = cleaned
