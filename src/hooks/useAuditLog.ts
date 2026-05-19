@@ -14,12 +14,12 @@ export function useLogAudit() {
       details?: string;
     }) => {
       const { data, error } = await supabase.rpc('log_audit', {
-        _action: params.action,
-        _table_name: params.tableName || null,
-        _record_id: params.recordId || null,
-        _old_data: params.oldData ? JSON.stringify(params.oldData) : null,
-        _new_data: params.newData ? JSON.stringify(params.newData) : null,
-        _details: params.details || null,
+        p_action: params.action,
+        p_table_name: params.tableName || null,
+        p_record_id: params.recordId || null,
+        p_old_data: params.oldData ? (params.oldData as any) : null,
+        p_new_data: params.newData ? (params.newData as any) : null,
+        p_details: params.details || null,
       });
       if (error) throw error;
       return data;

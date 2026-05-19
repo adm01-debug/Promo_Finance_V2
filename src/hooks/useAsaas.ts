@@ -54,9 +54,9 @@ export interface AsaasPayment {
 }
 
 async function invokeAsaas(action: string, data: any) {
-  const { data: result, error } = await supabase.functions.invoke('asaas-proxy', {
+  const { data: result, error } = await (supabase.functions.invoke('asaas-proxy', {
     body: { action, data },
-  });
+  }) as any);
   if (error) throw new Error(error.message);
   if (result?.errors) {
     throw new Error(result.errors.map((e: any) => e.description).join(', '));
@@ -451,14 +451,14 @@ export function useAsaas(empresaId?: string) {
   const reprocessarManual = useMutation({
     mutationFn: async ({ paymentId, reason, userId }: { paymentId: string; reason: string; userId: string }) => {
       // 1. Forçamos a retentativa na fila
-      const { error: queueError } = await supabase
+      const { error: queueError } = await (supabase
         .from('asaas_sync_queue')
         .update({
           attempts: 0,
           status: 'pending',
           next_retry_at: new Date().toISOString()
         })
-        .eq('payment_id', paymentId);
+        .eq('payment_id', paymentId) as any);
       if (queueError) throw queueError;
       
       // 3. Invocamos o proxy para sincronizar imediatamente (o proxy agora registra a auditoria com o motivo)

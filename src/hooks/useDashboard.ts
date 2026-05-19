@@ -131,7 +131,7 @@ export function useDashboard(options: UseDashboardOptions = {}) {
           type: 'entrada' as const,
           description: c.descricao,
           value: c.valor,
-          date: c.data_recebimento || c.vencimento,
+          date: c.data_recebimento || (c as any).vencimento || (c as any).data_vencimento,
           status: c.status,
         })),
         ...(pagar || []).map(c => ({
@@ -139,7 +139,7 @@ export function useDashboard(options: UseDashboardOptions = {}) {
           type: 'saida' as const,
           description: c.descricao,
           value: c.valor,
-          date: c.data_pagamento || c.vencimento,
+          date: c.data_pagamento || (c as any).vencimento || (c as any).data_vencimento,
           status: c.status,
         })),
       ];
@@ -170,9 +170,9 @@ export function useDashboard(options: UseDashboardOptions = {}) {
         id: conta.id,
         description: conta.descricao,
         value: conta.valor,
-        dueDate: conta.vencimento,
+        dueDate: (conta as any).vencimento || (conta as any).data_vencimento,
         daysUntilDue: Math.ceil(
-          (new Date(conta.vencimento).getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+          (new Date((conta as any).vencimento || (conta as any).data_vencimento).getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
         ),
       })).sort((a, b) => a.daysUntilDue - b.daysUntilDue);
     },
@@ -191,9 +191,9 @@ export function useDashboard(options: UseDashboardOptions = {}) {
         id: conta.id,
         description: conta.descricao,
         value: conta.valor,
-        dueDate: conta.vencimento,
+        dueDate: (conta as any).vencimento || (conta as any).data_vencimento,
         daysOverdue: Math.ceil(
-          (today.getTime() - new Date(conta.vencimento).getTime()) / (1000 * 60 * 60 * 24)
+          (today.getTime() - new Date((conta as any).vencimento || (conta as any).data_vencimento).getTime()) / (1000 * 60 * 60 * 24)
         ),
       })).sort((a, b) => b.daysOverdue - a.daysOverdue);
     },

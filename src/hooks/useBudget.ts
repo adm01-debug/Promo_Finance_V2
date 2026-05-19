@@ -19,6 +19,7 @@ export interface BudgetInput {
   budgeted_amount: number;
   period: string;
   company_id?: string;
+  user_id?: string;
 }
 
 export function useBudgets(period?: string) {
@@ -29,9 +30,9 @@ export function useBudgets(period?: string) {
       if (period) {
         query = query.eq('period', period);
       }
-      const { data, error } = await query;
+      const { data, error } = await query as { data: Budget[] | null, error: any };
       if (error) throw error;
-      return data as Budget[];
+      return data || [];
     },
   });
 }
@@ -50,9 +51,10 @@ export function useBudgetsWithSpent(period: string, companyId?: string) {
         query = query.eq('company_id', companyId);
       }
       
-      const { data: budgets, error: budgetError } = await query;
+      const { data: budgets, error: budgetError } = await query as { data: Budget[] | null, error: any };
       
       if (budgetError) throw budgetError;
+      if (!budgets) return [];
 
       // 2. Fetch actual spent from contas_pagar for this period and company
       let spentQuery = supabase
@@ -66,7 +68,7 @@ export function useBudgetsWithSpent(period: string, companyId?: string) {
         spentQuery = spentQuery.eq('empresa_id', companyId);
       }
 
-      const { data: spentData, error: spentError } = await spentQuery;
+      const { data: spentData, error: spentError } = await spentQuery as { data: any[] | null, error: any };
 
       if (spentError) throw spentError;
 

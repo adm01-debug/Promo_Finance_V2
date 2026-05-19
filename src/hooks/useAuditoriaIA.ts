@@ -52,7 +52,7 @@ export function useAuditoriaIA() {
         .limit(500);
 
       if (error) throw error;
-      const rows = (historico ?? []) as RawHistorico[];
+      const rows = (historico ?? []) as unknown as RawHistorico[];
       if (rows.length === 0) return [];
 
       const userIds = Array.from(new Set(rows.map((r) => r.aprovado_por).filter(Boolean) as string[]));

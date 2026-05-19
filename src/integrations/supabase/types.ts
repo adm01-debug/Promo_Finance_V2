@@ -2032,63 +2032,38 @@ export type Database = {
           category: string | null
           company_id: string | null
           created_at: string | null
-          empresa_id: string | null
           id: string
-          nome: string | null
           period: string | null
-          periodo_fim: string | null
-          periodo_inicio: string | null
           spent_amount: number | null
-          status: string | null
           updated_at: string | null
           user_id: string | null
-          valor_total: number | null
         }
         Insert: {
           budgeted_amount?: number | null
           category?: string | null
           company_id?: string | null
           created_at?: string | null
-          empresa_id?: string | null
           id?: string
-          nome?: string | null
           period?: string | null
-          periodo_fim?: string | null
-          periodo_inicio?: string | null
           spent_amount?: number | null
-          status?: string | null
           updated_at?: string | null
           user_id?: string | null
-          valor_total?: number | null
         }
         Update: {
           budgeted_amount?: number | null
           category?: string | null
           company_id?: string | null
           created_at?: string | null
-          empresa_id?: string | null
           id?: string
-          nome?: string | null
           period?: string | null
-          periodo_fim?: string | null
-          periodo_inicio?: string | null
           spent_amount?: number | null
-          status?: string | null
           updated_at?: string | null
           user_id?: string | null
-          valor_total?: number | null
         }
         Relationships: [
           {
             foreignKeyName: "budgets_company_id_fkey"
             columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "empresas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budgets_empresa_id_fkey"
-            columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
             referencedColumns: ["id"]
@@ -2810,6 +2785,7 @@ export type Database = {
           status: string | null
           tipo_tributo: string
           valor_credito: number | null
+          valor_utilizado: number | null
         }
         Insert: {
           competencia_origem?: string | null
@@ -2822,6 +2798,7 @@ export type Database = {
           status?: string | null
           tipo_tributo: string
           valor_credito?: number | null
+          valor_utilizado?: number | null
         }
         Update: {
           competencia_origem?: string | null
@@ -2834,6 +2811,7 @@ export type Database = {
           status?: string | null
           tipo_tributo?: string
           valor_credito?: number | null
+          valor_utilizado?: number | null
         }
         Relationships: [
           {
@@ -2887,6 +2865,94 @@ export type Database = {
           success?: boolean | null
         }
         Relationships: []
+      }
+      custom_field_definitions: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          empresa_id: string | null
+          entity_type: string
+          field_type: string
+          id: string
+          label: string
+          name: string
+          options: Json | null
+          placeholder: string | null
+          required: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          empresa_id?: string | null
+          entity_type: string
+          field_type?: string
+          id?: string
+          label: string
+          name: string
+          options?: Json | null
+          placeholder?: string | null
+          required?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          empresa_id?: string | null
+          entity_type?: string
+          field_type?: string
+          id?: string
+          label?: string
+          name?: string
+          options?: Json | null
+          placeholder?: string | null
+          required?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_field_definitions_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      custom_field_values: {
+        Row: {
+          created_at: string | null
+          definition_id: string | null
+          entity_id: string
+          field_value: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          definition_id?: string | null
+          entity_id: string
+          field_value?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          definition_id?: string | null
+          entity_id?: string
+          field_value?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_field_values_definition_id_fkey"
+            columns: ["definition_id"]
+            isOneToOne: false
+            referencedRelation: "custom_field_definitions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       darfs: {
         Row: {
@@ -5030,6 +5096,7 @@ export type Database = {
           serie: string | null
           status: string | null
           valor_icms: number | null
+          valor_produtos: number | null
           valor_total: number | null
           xml_url: string | null
         }
@@ -5043,6 +5110,7 @@ export type Database = {
           serie?: string | null
           status?: string | null
           valor_icms?: number | null
+          valor_produtos?: number | null
           valor_total?: number | null
           xml_url?: string | null
         }
@@ -5056,6 +5124,7 @@ export type Database = {
           serie?: string | null
           status?: string | null
           valor_icms?: number | null
+          valor_produtos?: number | null
           valor_total?: number | null
           xml_url?: string | null
         }
@@ -6269,6 +6338,7 @@ export type Database = {
       }
       solicitacoes_aprovacao: {
         Row: {
+          aprovado_em: string | null
           aprovado_por: string | null
           conta_pagar_id: string | null
           created_at: string
@@ -6277,11 +6347,13 @@ export type Database = {
           id: string
           motivo_rejeicao: string | null
           observacoes: string | null
+          solicitado_em: string | null
           solicitado_por: string | null
           status: string
           user_id: string
         }
         Insert: {
+          aprovado_em?: string | null
           aprovado_por?: string | null
           conta_pagar_id?: string | null
           created_at?: string
@@ -6290,11 +6362,13 @@ export type Database = {
           id?: string
           motivo_rejeicao?: string | null
           observacoes?: string | null
+          solicitado_em?: string | null
           solicitado_por?: string | null
           status?: string
           user_id?: string
         }
         Update: {
+          aprovado_em?: string | null
           aprovado_por?: string | null
           conta_pagar_id?: string | null
           created_at?: string
@@ -6303,6 +6377,7 @@ export type Database = {
           id?: string
           motivo_rejeicao?: string | null
           observacoes?: string | null
+          solicitado_em?: string | null
           solicitado_por?: string | null
           status?: string
           user_id?: string
@@ -6877,28 +6952,43 @@ export type Database = {
       }
       verificacoes_conformidade: {
         Row: {
+          checks_aprovados: number | null
           created_at: string | null
           empresa_id: string | null
           id: string
+          itens: Json | null
+          nivel: string | null
+          periodo: string | null
           score: number | null
           status: string | null
           titulo: string
+          total_checks: number | null
         }
         Insert: {
+          checks_aprovados?: number | null
           created_at?: string | null
           empresa_id?: string | null
           id?: string
+          itens?: Json | null
+          nivel?: string | null
+          periodo?: string | null
           score?: number | null
           status?: string | null
           titulo: string
+          total_checks?: number | null
         }
         Update: {
+          checks_aprovados?: number | null
           created_at?: string | null
           empresa_id?: string | null
           id?: string
+          itens?: Json | null
+          nivel?: string | null
+          periodo?: string | null
           score?: number | null
           status?: string | null
           titulo?: string
+          total_checks?: number | null
         }
         Relationships: [
           {

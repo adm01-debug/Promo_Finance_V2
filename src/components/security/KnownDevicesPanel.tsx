@@ -45,7 +45,7 @@ export function KnownDevicesPanel() {
     if (!user) return;
     setLoading(true);
     const data = await getKnownDevices(user.id);
-    setDevices(data);
+    setDevices((data || []) as unknown as Device[]);
     setLoading(false);
   };
 

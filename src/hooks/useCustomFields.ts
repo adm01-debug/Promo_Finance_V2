@@ -24,19 +24,26 @@ export function useCustomFieldDefinitions(entityType?: EntityType, empresaId?: s
     queryKey: ['custom-field-definitions', entityType, empresaId],
     queryFn: async () => {
       if (!empresaId) return [];
-      let query = supabase
+      const { data, error } = await (supabase
         .from('custom_field_definitions')
         .select('*')
         .eq('empresa_id', empresaId)
-        .eq('active', true);
+        .eq('active', true) as any);
 
-      if (entityType) {
-        query = query.eq('entity_type', entityType);
-      }
-
-      const { data, error } = await query;
       if (error) throw error;
-      return (data as any) as CustomFieldDefinition[];
+      
+      let filtered = (data || []) as any[];
+      if (entityType) {
+        filtered = filtered.filter(f => f.entity_type === entityType);
+      }
+      
+      return filtered.map(f => ({
+        ...f,
+        entity_type: f.entity_type as EntityType,
+        field_type: f.field_type as FieldType,
+        options: Array.isArray(f.options) ? f.options : null,
+        required: !!f.required,
+      })) as CustomFieldDefinition[];
     },
     enabled: !!empresaId,
   });
@@ -47,16 +54,21 @@ export function useSaveCustomFieldDefinition() {
   return useMutation({
     mutationFn: async (payload: Partial<CustomFieldDefinition> & { entity_type: EntityType; name: string; label: string; empresa_id: string }) => {
       const { id, ...rest } = payload;
+      const dbPayload = {
+        ...rest,
+        required: payload.required ?? false,
+      };
+      
       if (id) {
-        const { data, error } = await supabase.from('custom_field_definitions').update(rest).eq('id', id).select().maybeSingle();
+        const { data, error } = await (supabase.from('custom_field_definitions').update(dbPayload).eq('id', id).select().maybeSingle() as any);
         if (error) throw error;
         return data;
       }
-      const { data, error } = await supabase.from('custom_field_definitions').insert(rest).select().maybeSingle();
+      const { data, error } = await (supabase.from('custom_field_definitions').insert(dbPayload).select().maybeSingle() as any);
       if (error) throw error;
       return data;
     },
-    onSuccess: (_, vars) => {
+    onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['custom-field-definitions'] });
       toast.success('Campo customizado salvo');
     },
@@ -67,7 +79,7 @@ export function useDeleteCustomFieldDefinition() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('custom_field_definitions').update({ active: false }).eq('id', id);
+      const { error } = await (supabase.from('custom_field_definitions').update({ active: false }).eq('id', id) as any);
       if (error) throw error;
     },
     onSuccess: () => {
