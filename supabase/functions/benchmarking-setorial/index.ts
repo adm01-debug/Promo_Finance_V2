@@ -8,7 +8,13 @@ serve(async (req) => {
   }
 
   try {
-    const { metricas, setor } = await req.json();
+    const rawBody = await req.json();
+    const validation = validatePayload(BenchmarkingSetorialSchema, rawBody, "benchmarking-setorial");
+    if (!validation.success) {
+      return createErrorResponse(validation.error, 400, validation.details);
+    }
+    const { metricas, setor } = validation.data;
+
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY não configurada');
 
