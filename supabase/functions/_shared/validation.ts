@@ -156,6 +156,21 @@ export const ExecutarRelatoriosSchema = z.object({
   relatorio_id: z.string().uuid().optional().nullable(),
 });
 
+export const WhatsappIaProativoSchema = z.object({
+  action: z.enum(['analisar-alertas', 'enviar-mensagem', 'gerar-resposta-ia']),
+  data: z.record(z.any()).optional(),
+});
+
+export const ExpertAgentSchema = z.object({
+  messages: z.array(z.object({
+    role: z.string(),
+    content: z.string(),
+  })),
+  context: z.string().optional().nullable(),
+  conversationSummary: z.string().optional().nullable(),
+});
+
+
 
 export const CalculoIvaSchema = z.object({
   faturamentoAnual: z.number(),
