@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { STALE_TIMES } from '@/lib/queryClient';
@@ -178,7 +177,6 @@ export function useContasBancarias(empresaId?: string) {
       const { data, error } = await query;
       if (error) throw error;
       
-      // Enhance with routing rules if they exist
       const { data: rules } = await supabase
         .from('regras_roteamento_financeiro')
         .select('*')
@@ -187,7 +185,7 @@ export function useContasBancarias(empresaId?: string) {
       return (data || []).map(conta => ({
         ...conta,
         regras: rules?.filter(r => r.conta_bancaria_id === conta.id) || []
-      })) as ContaBancaria[];
+      })) as any[];
     },
     staleTime: STALE_TIMES.config,
   });
@@ -241,7 +239,7 @@ export function useContasPagar(empresaId?: string) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data;
+      return data as any[];
     },
     staleTime: STALE_TIMES.financial,
   });
@@ -329,7 +327,7 @@ export function useContasReceber(empresaId?: string) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data;
+      return data as any[];
     },
     staleTime: STALE_TIMES.financial,
   });
