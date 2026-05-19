@@ -7,7 +7,7 @@ export const Fuzzer = {
   /**
    * Generates a variety of invalid payloads based on common failure modes.
    */
-  generateInvalidPayloads(): any[] {
+  generateGeneralInvalidPayloads(): any[] {
     return [
       {}, // Empty
       { unexpected_field: "malicious_data" }, // Unknown field
@@ -24,35 +24,53 @@ export const Fuzzer = {
   },
 
   /**
-   * Helper to run a fuzz test against a specific function's logic
+   * Generates invalid payloads specifically targeting a Zod schema's fields.
    */
-  async runFuzzTest(handler: (req: Request) => Promise<Response>, baseUrl: string = "http://localhost") {
-    const payloads = this.generateInvalidPayloads();
-    const results = [];
+  generateSchemaSpecificInvalidPayloads(schema: z.ZodObject<any>): any[] {
+    const shape = schema.shape;
+    const payloads: any[] = [];
 
-    for (const payload of payloads) {
-      const req = new Request(baseUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      try {
-        const res = await handler(req);
-        results.push({
-          payload,
-          status: res.status,
-          success: res.status === 400 || res.status === 422 || res.status === 401, // Expected failure statuses
-        });
-      } catch (err) {
-        results.push({
-          payload,
-          error: err.message,
-          success: false, // Crashing is a failure
-        });
+    // 1. Missing required fields
+    for (const key of Object.keys(shape)) {
+      const payload: any = {};
+      for (const otherKey of Object.keys(shape)) {
+        if (otherKey !== key) {
+          payload[otherKey] = this.getSampleValidValue(shape[otherKey]);
+        }
       }
+      payloads.push(payload);
     }
 
-    return results;
+    // 2. Wrong types for fields
+    for (const key of Object.keys(shape)) {
+      const payload: any = {};
+      for (const k of Object.keys(shape)) {
+        payload[k] = k === key ? this.getWrongTypeValue(shape[k]) : this.getSampleValidValue(shape[k]);
+      }
+      payloads.push(payload);
+    }
+
+    return payloads;
+  },
+
+  getSampleValidValue(field: any): any {
+    if (field instanceof z.ZodString) return "test-string";
+    if (field instanceof z.ZodNumber) return 123;
+    if (field instanceof z.ZodBoolean) return true;
+    if (field instanceof z.ZodArray) return [];
+    if (field instanceof z.ZodObject) return {};
+    if (field instanceof z.ZodEnum) return field._def.values[0];
+    if (field instanceof z.ZodOptional || field instanceof z.ZodNullable) return this.getSampleValidValue(field._def.innerType);
+    return "test";
+  },
+
+  getWrongTypeValue(field: any): any {
+    if (field instanceof z.ZodString) return 12345;
+    if (field instanceof z.ZodNumber) return "not-a-number";
+    if (field instanceof z.ZodBoolean) return "not-a-boolean";
+    if (field instanceof z.ZodArray) return "not-an-array";
+    if (field instanceof z.ZodObject) return "not-an-object";
+    return null;
   }
 };
+
