@@ -392,7 +392,7 @@ export function useAsaas(empresaId?: string) {
     reprocessarManual: { mutateAsync: async (payload: any) => {}, mutate: (payload: any) => {}, isPending: false },
     exportarAuditoria: { mutate: (payload?: any) => {}, isPending: false },
     exportarAuditoriaPDF: () => {},
-    queueStats: { pendentes: 0, falhas: 0, sucesso: 0 },
+    queueStats: { pendentes: 0, falhas: 0, sucesso: 0, total: 0 },
     simularBackoff: { mutate: () => {}, isPending: false },
   };
 }
