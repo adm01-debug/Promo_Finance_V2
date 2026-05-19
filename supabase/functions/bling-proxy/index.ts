@@ -28,8 +28,13 @@ Deno.serve(async (req) => {
     }
 
     const userId = user.id;
-    const body = await req.json();
-    const { action, ...params } = body;
+    const rawBody = await req.json();
+    const validation = validatePayload(BlingProxySchema, rawBody, "bling-proxy");
+    if (!validation.success) {
+      return createErrorResponse(validation.error, 400, validation.details);
+    }
+    const { action, ...params } = validation.data;
+
 
     // --- OAuth Actions ---
     if (action === "oauth_callback") {
