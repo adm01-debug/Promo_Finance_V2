@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { startOfMonth, endOfMonth, subMonths, format } from 'date-fns';
@@ -157,8 +157,8 @@ export function useDespesasPorCategoria(empresaId?: string) {
 
       // Aggregate by category
       const categorias: Record<string, number> = {};
-      (data || []).forEach(c => {
-        const centroCusto = c.centros_custo as { nome: string } | null;
+      (data || []).forEach((c: any) => {
+        const centroCusto = c.centros_custo;
         const nome = centroCusto?.nome || 'Outros';
         categorias[nome] = (categorias[nome] || 0) + (c.valor_pago || 0);
       });
