@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
@@ -175,7 +174,7 @@ export function useWebAuthn() {
           public_key: publicKey,
           counter: 0,
           device_name: deviceName || detectDeviceName(),
-        });
+        } as any);
 
       if (error) {
         logger.error('[WebAuthn] Error storing credential:', error);
@@ -213,14 +212,15 @@ export function useWebAuthn() {
 
     try {
       // Get user's registered credentials using RPC function
-      const { data: credentials, error: fetchError } = await supabase
-        .rpc('get_webauthn_credential_by_email', { p_email: userEmail });
+      const { data: rawCredentials, error: fetchError } = await supabase
+        .rpc('get_webauthn_credential_by_email' as any, { p_email: userEmail });
 
-      if (fetchError || !credentials || credentials.length === 0) {
+      if (fetchError || !rawCredentials || (rawCredentials as any[]).length === 0) {
         toast.error('Nenhuma biometria registrada para este email');
         return { success: false };
       }
 
+      const credentials = rawCredentials as unknown as StoredCredential[];
       const challenge = generateChallenge();
 
       const allowCredentials: PublicKeyCredentialDescriptor[] = credentials.map((cred: StoredCredential) => ({
@@ -265,7 +265,7 @@ export function useWebAuthn() {
 
       await supabase
         .from('webauthn_credentials')
-        .update({ counter, last_used_at: new Date().toISOString() })
+        .update({ counter, last_used_at: new Date().toISOString() } as any)
         .eq('credential_id', assertionCredentialId);
 
       logger.debug('[WebAuthn] Authentication successful');
