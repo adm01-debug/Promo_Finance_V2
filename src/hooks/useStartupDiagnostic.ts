@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
@@ -46,17 +45,11 @@ export const useStartupDiagnostic = () => {
     updateStatus('tables', 'loading');
     try {
       const essentialTables = ['profiles', 'centros_custo', 'anomalias_detectadas', 'active_tracking', 'empresas'];
-      const { data, error } = await supabase
-        .rpc('check_tables_existence', { tables: essentialTables } as any);
-      
-      // If RPC doesn't exist, we fallback to a manual check via information_schema if possible, 
-      // but usually we can't query information_schema directly from client easily due to RLS.
-      // So let's try a simple query for each.
       
       const missingTables = [];
       for (const table of essentialTables) {
         const { error: tableError } = await supabase.from(table as any).select('count', { count: 'exact', head: true }).limit(0);
-        if (tableError && (tableError.code === '42P01' || tableError.message.includes('does not exist'))) {
+        if (tableError && (tableError.code === '42P01' || (tableError.message && tableError.message.includes('does not exist')))) {
           missingTables.push(table);
         }
       }
@@ -81,9 +74,7 @@ export const useStartupDiagnostic = () => {
 
       for (const rpc of essentialRPCs) {
         const { error: rpcError } = await supabase.rpc(rpc as any, { _role: 'user', _user_id: '00000000-0000-0000-0000-000000000000' } as any);
-        // If it's a "function does not exist" error, it's missing. 
-        // Note: has_role might return error because of argument mismatch, but we check the message.
-        if (rpcError && (rpcError.message.includes('function') && rpcError.message.includes('does not exist'))) {
+        if (rpcError && rpcError.message && rpcError.message.includes('function') && rpcError.message.includes('does not exist')) {
           missingRPCs.push(rpc);
         }
       }
@@ -95,7 +86,6 @@ export const useStartupDiagnostic = () => {
         updateStatus('rpcs', 'success');
       }
     } catch (error) {
-
       logger.error('Diagnostic Error (rpcs):', error);
       updateStatus('rpcs', 'error', 'Erro ao validar funções de sistema.');
       setHasError(true);

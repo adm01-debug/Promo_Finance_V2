@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { STALE_TIMES } from '@/lib/queryClient';
@@ -132,12 +131,12 @@ export function useTransferenciasPainel() {
     queryKey: ['views', 'transferencias-painel'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('vw_transferencias_painel')
+        .from('vw_transferencias_painel' as any)
         .select('*')
         .order('created_at', { ascending: false })
         .limit(100);
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
     staleTime: STALE_TIMES.financial,
   });
