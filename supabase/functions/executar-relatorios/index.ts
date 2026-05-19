@@ -13,14 +13,15 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Check for manual execution with specific report ID
-    let relatorioId: string | null = null;
-    try {
-      const body = await req.json();
-      relatorioId = body?.relatorio_id || null;
-    } catch {
-      // No body or invalid JSON - proceed with scheduled execution
+    const rawBody = await req.json().catch(() => ({}));
+    const validation = validatePayload(ExecutarRelatoriosSchema, rawBody, "executar-relatorios");
+    if (!validation.success) {
+      // For this specific function, we might want to continue if it's a scheduled call with empty body
+      // but let's be strict for manual calls.
+      return createErrorResponse(validation.error, 400, validation.details);
     }
+    const relatorioId = validation.data.relatorio_id || null;
+
 
     if (relatorioId) {
       console.log(`[executar-relatorios] Execução manual do relatório: ${relatorioId}`);
