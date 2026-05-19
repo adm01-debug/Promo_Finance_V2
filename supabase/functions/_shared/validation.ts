@@ -117,5 +117,10 @@ export const EnviarAlertaEmailSchema = z.object({
   }),
 });
 
+export const OptionalEmpresaIdSchema = z.object({
+  empresa_id: z.string().uuid().optional().nullable(),
+});
+
+
 
 
