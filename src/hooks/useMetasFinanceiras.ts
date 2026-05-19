@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -8,12 +7,12 @@ export function useMetasFinanceiras(ano?: number, mes?: number) {
   return useQuery({
     queryKey: ['metas-financeiras', ano, mes],
     queryFn: async () => {
-      let query = supabase.from('metas_financeiras').select('*').eq('ativo', true).order('ano', { ascending: false }).order('mes');
+      let query = supabase.from('metas_financeiras' as any).select('*').eq('ativo', true).order('ano', { ascending: false }).order('mes');
       if (ano) query = query.eq('ano', ano);
       if (mes) query = query.eq('mes', mes);
       const { data, error } = await query;
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
   });
 }
@@ -23,7 +22,7 @@ export function useCreateMeta() {
   const { user } = useAuth();
   return useMutation({
     mutationFn: async (input: { titulo: string; tipo: string; valor_meta: number; ano: number; mes: number }) => {
-      const { data, error } = await supabase.from('metas_financeiras')
+      const { data, error } = await supabase.from('metas_financeiras' as any)
         .insert({ ...input, created_by: user?.id || '' })
         .select().single();
       if (error) throw error;
@@ -38,7 +37,7 @@ export function useUpdateMeta() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...data }: { id: string; titulo?: string; valor_meta?: number; ativo?: boolean }) => {
-      const { error } = await supabase.from('metas_financeiras').update(data).eq('id', id);
+      const { error } = await supabase.from('metas_financeiras' as any).update(data).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['metas-financeiras'] }); toast.success('Meta atualizada!'); },
@@ -50,7 +49,7 @@ export function useDeleteMeta() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('metas_financeiras').update({ ativo: false }).eq('id', id);
+      const { error } = await supabase.from('metas_financeiras' as any).update({ ativo: false }).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['metas-financeiras'] }); toast.success('Meta removida!'); },
@@ -58,39 +57,33 @@ export function useDeleteMeta() {
   });
 }
 
-// ============================================
-// HISTÓRICO SCORE SAÚDE
-// ============================================
 export function useHistoricoScoreSaude() {
   return useQuery({
     queryKey: ['historico-score-saude'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('historico_score_saude' as never)
+        .from('historico_score_saude' as any)
         .select('*')
         .order('data_calculo', { ascending: false })
         .limit(30);
       if (error) throw error;
-      return (data || []) as Array<{ id: string; score: number; data_calculo: string; detalhes: unknown; created_at: string }>;
+      return (data || []) as any[];
     },
   });
 }
 
-// ============================================
-// RECOMENDAÇÕES IA
-// ============================================
 export function useRecomendacoesIA() {
   return useQuery({
     queryKey: ['recomendacoes-metas-ia'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('recomendacoes_metas_ia' as never)
+        .from('recomendacoes_metas_ia' as any)
         .select('*')
         .eq('aplicada', false)
         .order('created_at', { ascending: false })
         .limit(20);
       if (error) throw error;
-      return (data || []) as Array<{ id: string; tipo: string; titulo: string; descricao: string; impacto_estimado: number; aplicada: boolean; created_at: string }>;
+      return (data || []) as any[];
     },
   });
 }
