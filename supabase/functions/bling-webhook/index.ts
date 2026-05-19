@@ -159,7 +159,12 @@ export const handler = async (req: Request) => {
       }
     );
   }
-});
+}
+
+if (import.meta.main) {
+  Deno.serve(handler)
+}
+
 
 // --- Event Processors ---
 
