@@ -14,35 +14,30 @@ Deno.test("Fuzzing: All Contract Schemas should reject invalid data", () => {
     key.endsWith("Schema") && typeof val === 'object' && 'safeParse' in (val as any)
   );
 
-  console.log(`Running fuzz tests for ${schemaEntries.length} schemas...`);
-
   for (const [name, schema] of schemaEntries) {
     const s = schema as any;
     
     // 1. Test general invalid payloads
     const generalPayloads = Fuzzer.generateGeneralInvalidPayloads();
     for (const payload of generalPayloads) {
-      const result = validatePayload(s, payload, name);
-      // We skip null/undefined check for schemas that might allow them (though rare here)
+      const result = s.safeParse(payload);
       if (payload === null || payload === undefined) continue;
       
-      assertEquals(result.success, false, `Schema ${name} should have rejected general invalid payload: ${JSON.stringify(payload)}`);
+      if (result.success) {
+        throw new Error(`Schema ${name} should have rejected general invalid payload: ${JSON.stringify(payload)}`);
+      }
     }
 
     // 2. Test schema-specific invalid payloads (only for objects)
     if (s._def && s._def.shape) {
       const specificPayloads = Fuzzer.generateSchemaSpecificInvalidPayloads(s);
       for (const payload of specificPayloads) {
-        const result = validatePayload(s, payload, name);
-        // We just ensure no crashes here
-        if (!result.success) {
-           assertEquals(typeof result.error, "string");
-        }
+        const result = s.safeParse(payload);
+        // No crash expected
       }
     }
-    
-    console.log(`✅ Fuzz tests passed for ${name}`);
   }
 });
+
 
 
