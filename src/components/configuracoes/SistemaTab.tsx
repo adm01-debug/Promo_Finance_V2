@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Palette, Globe, Database, Zap, CreditCard, Save, Sparkles } from 'lucide-react';
+import { Palette, Globe, Database, Zap, CreditCard, Save, Sparkles, Layout, Monitor } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -36,6 +36,62 @@ export function SistemaTab({ preferencias, onPreferenciasChange, onSave }: Siste
             </div>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Layout className="h-5 w-5" /> Layout e UX
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Sidebar Compacta</p>
+                <p className="text-sm text-muted-foreground">Iniciar com o menu lateral recolhido</p>
+              </div>
+              <Switch checked={false} />
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Animações de Transição</p>
+                <p className="text-sm text-muted-foreground">Efeitos suaves ao mudar de página</p>
+              </div>
+              <Switch checked={true} />
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Sons de Notificação</p>
+                <p className="text-sm text-muted-foreground">Alertas sonoros para eventos críticos</p>
+              </div>
+              <Switch checked={true} />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Monitor className="h-5 w-5" /> Desempenho
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Lazy Loading Avançado</p>
+                <p className="text-sm text-muted-foreground">Otimiza o carregamento de módulos pesados</p>
+              </div>
+              <Switch checked={true} />
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Cache de Dados IA</p>
+                <p className="text-sm text-muted-foreground">Persistência local para respostas instantâneas</p>
+              </div>
+              <Switch checked={true} />
+            </div>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader><CardTitle className="flex items-center gap-2"><Globe className="h-5 w-5" />Regionalização</CardTitle></CardHeader>
           <CardContent className="space-y-4">
