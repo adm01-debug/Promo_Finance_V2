@@ -9,7 +9,7 @@ import { validatePayload } from "./_shared/validation.ts";
  * malicious or malformed payloads for every webhook and edge function.
  */
 
-Deno.test("Fuzzing: All Contract Schemas should reject invalid data", () => {
+Deno.test("Fuzzing: All Contract Schemas should reject invalid data and malformed entries", () => {
   const schemaEntries = Object.entries(Schemas).filter(([key, val]) => 
     key.endsWith("Schema") && typeof val === 'object' && 'safeParse' in (val as any)
   );
