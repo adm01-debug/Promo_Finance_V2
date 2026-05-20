@@ -16,8 +16,9 @@ if (import.meta.main) {
   }
 
   const results = await runLoadTest(`${SUPABASE_URL}/functions/v1/asaas-proxy`, {
-    concurrency: 10,
-    durationMs: 5000,
+    concurrency: 50, // Increased for real stress
+    durationMs: 10000, // 10s
+
     headers: {
       "Authorization": `Bearer ${SERVICE_ROLE_KEY}`
     },

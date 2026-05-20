@@ -41,7 +41,16 @@ export function createErrorResponse(message: string, status = 400, details?: any
 }
 
 // Schemas
+
+export const WebhookIdempotencySchema = z.object({
+  id: z.string().optional(),
+  provider: z.string().optional(),
+  processed: z.boolean().default(false),
+  error_message: z.string().optional().nullable(),
+});
+
 export const AsaasWebhookSchema = z.object({
+
   event: z.string(),
   payment: z.object({
     id: z.string(),
