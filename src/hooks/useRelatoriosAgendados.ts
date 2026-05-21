@@ -217,7 +217,7 @@ function calcularProximoEnvio(
   const agora = new Date();
   const [horas, minutos] = hora.split(':').map(Number);
   
-  let proximo = new Date(agora);
+  const proximo = new Date(agora);
   proximo.setHours(horas, minutos, 0, 0);
 
   if (proximo <= agora) {

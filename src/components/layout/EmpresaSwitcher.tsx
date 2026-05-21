@@ -45,9 +45,9 @@ export function EmpresaSwitcher() {
     return () => window.removeEventListener('current-empresa-changed', handler);
   }, []);
 
-  if (isLoading || vinculos.length === 0) return null;
-
   const navigate = useNavigate();
+
+  if (isLoading || vinculos.length === 0) return null;
 
   const switchTo = (id: string) => {
     setCurrentEmpresaId(id);
