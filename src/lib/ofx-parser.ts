@@ -444,42 +444,52 @@ function extrairTransacoesOFX(content: string, avisos: string[]): TransacaoOFX[]
 
 function parseOFXDate(dateStr: string): Date {
   // OFX date format: YYYYMMDDHHMMSS or YYYYMMDD
-  const year = parseInt(dateStr.substring(0, 4));
-  const month = parseInt(dateStr.substring(4, 6)) - 1;
-  const day = parseInt(dateStr.substring(6, 8));
-  const hour = dateStr.length > 8 ? parseInt(dateStr.substring(8, 10)) : 0;
-  const min = dateStr.length > 10 ? parseInt(dateStr.substring(10, 12)) : 0;
-  const sec = dateStr.length > 12 ? parseInt(dateStr.substring(12, 14)) : 0;
-  
-  return new Date(year, month, day, hour, min, sec);
+  if (!/^\d{8}(\d{6})?/.test(dateStr)) {
+    throw new Error(`Data OFX inválida: ${dateStr}`);
+  }
+  const year = parseInt(dateStr.substring(0, 4), 10);
+  const month = parseInt(dateStr.substring(4, 6), 10) - 1;
+  const day = parseInt(dateStr.substring(6, 8), 10);
+  const hour = dateStr.length > 8 ? parseInt(dateStr.substring(8, 10), 10) : 0;
+  const min = dateStr.length > 10 ? parseInt(dateStr.substring(10, 12), 10) : 0;
+  const sec = dateStr.length > 12 ? parseInt(dateStr.substring(12, 14), 10) : 0;
+
+  const d = new Date(year, month, day, hour, min, sec);
+  if (isNaN(d.getTime())) {
+    throw new Error(`Data OFX inválida: ${dateStr}`);
+  }
+  return d;
 }
 
 function parseData(dateStr: string): Date {
-  // Try common date formats
   const cleaned = dateStr.replace(/"/g, '').trim();
-  
-  // DD/MM/YYYY or DD-MM-YYYY
+
+  // DD/MM/YYYY or DD-MM-YYYY (Brazilian format)
   let match = cleaned.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
   if (match) {
-    const day = parseInt(match[1]);
-    const month = parseInt(match[2]) - 1;
-    let year = parseInt(match[3]);
+    const day = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10) - 1;
+    let year = parseInt(match[3], 10);
     if (year < 100) year += 2000;
-    return new Date(year, month, day);
+    const d = new Date(year, month, day);
+    if (isNaN(d.getTime())) throw new Error(`Data inválida: ${dateStr}`);
+    return d;
   }
-  
-  // YYYY-MM-DD or YYYY/MM/DD
+
+  // YYYY-MM-DD or YYYY/MM/DD (ISO-like, local time)
   match = cleaned.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
   if (match) {
-    return new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]));
+    const d = new Date(
+      parseInt(match[1], 10),
+      parseInt(match[2], 10) - 1,
+      parseInt(match[3], 10),
+    );
+    if (isNaN(d.getTime())) throw new Error(`Data inválida: ${dateStr}`);
+    return d;
   }
-  
-  // Try native parsing
-  const parsed = new Date(cleaned);
-  if (!isNaN(parsed.getTime())) {
-    return parsed;
-  }
-  
+
+  // No native fallback — too ambiguous (US MM/DD/YYYY vs BR DD/MM/YYYY
+  // would parse to different days silently). Reject explicitly.
   throw new Error(`Formato de data não reconhecido: ${dateStr}`);
 }
 
