@@ -11,7 +11,7 @@ import { toast } from '@/hooks/use-toast';
 import { toastPaymentSuccess } from '@/lib/toast-confetti';
 import { sounds } from '@/lib/sound-feedback';
 import { haptic } from '@/lib/haptic-feedback';
-import { formatCurrency } from '@/lib/formatters';
+import { formatCurrency , todayISOLocal} from '@/lib/formatters';
 import { logger } from '@/lib/logger';
 import {
   Dialog,
@@ -121,7 +121,7 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
     resolver: zodResolver(pagamentoSchema),
     defaultValues: {
       valor_pago: saldoRestante,
-      data_pagamento: new Date().toISOString().split('T')[0],
+      data_pagamento: todayISOLocal(),
       observacoes: '',
     },
   });
@@ -131,7 +131,7 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
       const saldo = conta.valor - (conta.valor_pago || 0);
       form.reset({
         valor_pago: tipoPagamento === 'total' ? saldo : 0,
-        data_pagamento: new Date().toISOString().split('T')[0],
+        data_pagamento: todayISOLocal(),
         observacoes: '',
       });
     }

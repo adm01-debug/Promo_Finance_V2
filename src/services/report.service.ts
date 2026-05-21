@@ -1,3 +1,4 @@
+import { todayISOLocal } from '@/lib/formatters';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface ReportFilters {
@@ -72,7 +73,7 @@ export const reportService = {
     if (endDate) contasPagarQuery = contasPagarQuery.lte('data_vencimento', endDate);
     const { data: contasPagar } = await contasPagarQuery;
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = todayISOLocal();
 
     const totalReceitas = (contasReceber || []).filter(c => c.status === 'pago').reduce((sum, c) => sum + (c.valor || 0), 0);
     const totalDespesas = (contasPagar || []).filter(c => c.status === 'pago').reduce((sum, c) => sum + (c.valor || 0), 0);
@@ -192,7 +193,7 @@ export const reportService = {
 
   async getByCliente(filters: ReportFilters = {}): Promise<ClienteReport[]> {
     const { startDate, endDate } = filters;
-    const today = new Date().toISOString().split('T')[0];
+    const today = todayISOLocal();
 
     // Get contas_receber with client info (client name stored directly on the conta)
     let query = supabase.from('contas_receber').select('*');
@@ -223,7 +224,7 @@ export const reportService = {
 
   async getByFornecedor(filters: ReportFilters = {}): Promise<FornecedorReport[]> {
     const { startDate, endDate } = filters;
-    const today = new Date().toISOString().split('T')[0];
+    const today = todayISOLocal();
 
     let query = supabase.from('contas_pagar').select('*');
     if (startDate) query = query.gte('data_vencimento', startDate);

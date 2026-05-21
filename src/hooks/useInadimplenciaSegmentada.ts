@@ -1,3 +1,4 @@
+import { todayISOLocal } from '@/lib/formatters';
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -60,7 +61,7 @@ export function useInadimplenciaPorRamo() {
   return useQuery({
     queryKey: ["inadimplencia-por-ramo"],
     queryFn: async () => {
-      const hoje = new Date().toISOString().split('T')[0];
+      const hoje = todayISOLocal();
       
       const { data: contas, error } = await supabase
         .from("contas_receber")
@@ -140,7 +141,7 @@ export function useInadimplenciaPorVendedor() {
   return useQuery({
     queryKey: ["inadimplencia-por-vendedor"],
     queryFn: async () => {
-      const hoje = new Date().toISOString().split('T')[0];
+      const hoje = todayISOLocal();
       const inicioMes = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
       
       const { data: vendedores, error: vendedoresError } = await supabase

@@ -1,3 +1,4 @@
+import { todayISOLocal } from '@/lib/formatters';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { differenceInDays, parseISO, subDays } from 'date-fns';
@@ -50,7 +51,7 @@ export function useContasVencidas() {
   return useQuery({
     queryKey: ['contas-vencidas', currentEmpresaId],
     queryFn: async (): Promise<ContaVencida[]> => {
-      const hoje = new Date().toISOString().split('T')[0];
+      const hoje = todayISOLocal();
       
       let query = supabase
         .from('contas_receber')
@@ -96,7 +97,7 @@ export function useCobrancaKPIs() {
   return useQuery({
     queryKey: ['cobranca-kpis', currentEmpresaId],
     queryFn: async (): Promise<CobrancaKPIs> => {
-      const hoje = new Date().toISOString().split('T')[0];
+      const hoje = todayISOLocal();
       const trintaDiasAtras = subDays(new Date(), 30).toISOString().split('T')[0];
 
       // Buscar contas vencidas (não pagas)
@@ -159,7 +160,7 @@ export function useAgingData() {
   return useQuery({
     queryKey: ['aging-inadimplencia', currentEmpresaId],
     queryFn: async (): Promise<AgingData[]> => {
-      const hoje = new Date().toISOString().split('T')[0];
+      const hoje = todayISOLocal();
       
       let query = supabase
         .from('contas_receber')
@@ -203,7 +204,7 @@ export function useTopDevedores(limit: number = 10) {
   return useQuery({
     queryKey: ['top-devedores', limit, currentEmpresaId],
     queryFn: async (): Promise<TopDevedor[]> => {
-      const hoje = new Date().toISOString().split('T')[0];
+      const hoje = todayISOLocal();
       
       let query = supabase
         .from('contas_receber')
@@ -259,7 +260,7 @@ export function useEtapasCobranca() {
   return useQuery({
     queryKey: ['etapas-cobranca', currentEmpresaId],
     queryFn: async (): Promise<EtapaCount[]> => {
-      const hoje = new Date().toISOString().split('T')[0];
+      const hoje = todayISOLocal();
       
       let query = supabase
         .from('contas_receber')

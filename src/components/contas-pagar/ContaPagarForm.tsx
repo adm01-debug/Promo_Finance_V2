@@ -1,3 +1,4 @@
+import { todayISOLocal } from '@/lib/formatters';
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -100,7 +101,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
       descricao: '', 
       valor: 0, 
       data_vencimento: '', 
-      data_emissao: new Date().toISOString().split('T')[0], 
+      data_emissao: todayISOLocal(), 
       empresa_id: '', 
       tipo_cobranca: 'boleto', 
       recorrente: false 
@@ -133,7 +134,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
         descricao: '', 
         valor: 0, 
         data_vencimento: '', 
-        data_emissao: new Date().toISOString().split('T')[0], 
+        data_emissao: todayISOLocal(), 
         empresa_id: '', 
         tipo_cobranca: 'boleto', 
         recorrente: false 

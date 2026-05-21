@@ -1,3 +1,4 @@
+import { todayISOLocal } from '@/lib/formatters';
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -75,7 +76,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
     resolver: zodResolver(contaReceberSchema),
     defaultValues: { 
       cliente_nome: '', descricao: '', valor: 0, data_vencimento: '', 
-      data_emissao: new Date().toISOString().split('T')[0], empresa_id: '', 
+      data_emissao: todayISOLocal(), empresa_id: '', 
       tipo_cobranca: 'boleto', recorrente: false 
     },
   });
@@ -98,7 +99,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
     } else if (!conta && open) {
       form.reset({ 
         cliente_nome: '', descricao: '', valor: 0, data_vencimento: '', 
-        data_emissao: new Date().toISOString().split('T')[0], empresa_id: '', 
+        data_emissao: todayISOLocal(), empresa_id: '', 
         tipo_cobranca: 'boleto', recorrente: false 
       });
       setShowClienteSelect(false);
@@ -114,7 +115,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
       const { error } = await supabase.from('contas_receber').insert({
         cliente_id: data.cliente_id || null, cliente_nome: data.cliente_nome, descricao: data.descricao,
         valor: data.valor, data_vencimento: data.data_vencimento,
-        data_emissao: data.data_emissao || new Date().toISOString().split('T')[0],
+        data_emissao: data.data_emissao || todayISOLocal(),
         empresa_id: data.empresa_id, centro_custo_id: data.centro_custo_id || null,
         categoria_id: data.categoria_id || null,
         conta_bancaria_id: finalContaId, vendedor_id: data.vendedor_id || null,
@@ -137,7 +138,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
       const { error } = await supabase.from('contas_receber').update({
         cliente_id: data.cliente_id || null, cliente_nome: data.cliente_nome, descricao: data.descricao,
         valor: data.valor, data_vencimento: data.data_vencimento,
-        data_emissao: data.data_emissao || new Date().toISOString().split('T')[0],
+        data_emissao: data.data_emissao || todayISOLocal(),
         empresa_id: data.empresa_id, centro_custo_id: data.centro_custo_id || null,
         categoria_id: data.categoria_id || null,
         conta_bancaria_id: data.conta_bancaria_id || null, tipo_cobranca: data.tipo_cobranca,
@@ -151,7 +152,13 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
     onError: (error: unknown) => { logger.error('Error updating conta receber:', error); toast({ title: 'Erro ao atualizar', description: 'Tente novamente.', variant: 'destructive' }); },
   });
 
-  const onSubmit = (data: ContaReceberFormData) => { isEditing ? updateMutation.mutate(data) : createMutation.mutate(data); };
+  const onSubmit = (data: ContaReceberFormData) => {
+    if (isEditing) {
+      updateMutation.mutate(data);
+    } else {
+      createMutation.mutate(data);
+    }
+  };
 
   const handleClienteSelect = (clienteId: string) => {
     const cliente = clientes.find((c) => c.id === clienteId);

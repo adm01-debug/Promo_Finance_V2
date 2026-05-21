@@ -1,3 +1,4 @@
+import { todayISOLocal } from '@/lib/formatters';
 // ============================================
 // DIALOG: Segunda Via Boleto ASAAS
 // ============================================
@@ -51,7 +52,7 @@ export function SegundaViaDialog({ open, onOpenChange, asaasId, empresaId }: Pro
         <div className="space-y-4 mt-2">
           <div className="space-y-2">
             <Label>Nova data de vencimento *</Label>
-            <Input type="date" value={novaData} onChange={e => setNovaData(e.target.value)} min={new Date().toISOString().split('T')[0]} />
+            <Input type="date" value={novaData} onChange={e => setNovaData(e.target.value)} min={todayISOLocal()} />
           </div>
           <Button className="w-full" onClick={handleGerar} disabled={segundaViaBoleto.isPending || !novaData}>
             {segundaViaBoleto.isPending ? (

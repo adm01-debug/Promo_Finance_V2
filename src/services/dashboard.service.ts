@@ -1,3 +1,4 @@
+import { todayISOLocal, formatDateForInput } from '@/lib/formatters';
 
 import { supabase } from '@/integrations/supabase/client'; // dashboard service
 
@@ -84,7 +85,7 @@ export const dashboardService = {
     const totalReceitas = receitasResult.data?.reduce((sum, r) => sum + (r.valor || 0), 0) || 0;
     const totalDespesas = despesasResult.data?.reduce((sum, d) => sum + (d.valor || 0), 0) || 0;
     
-    const today = new Date().toISOString().split('T')[0];
+    const today = todayISOLocal();
     const contasAtrasadas = [
       ...(contasPagarResult.data?.filter(c => c.data_vencimento < today && c.status !== 'pago') || []),
       ...(contasReceberResult.data?.filter(c => c.data_vencimento < today && c.status !== 'pago') || []),
@@ -184,7 +185,7 @@ export const dashboardService = {
   },
 
   async getOverdueBills(): Promise<OverdueBill[]> {
-    const today = new Date().toISOString().split('T')[0];
+    const today = todayISOLocal();
 
     const { data, error } = await supabase
       .from('contas_pagar')
@@ -209,7 +210,7 @@ export const dashboardService = {
   },
 
   async getDueToday(): Promise<UpcomingBill[]> {
-    const today = new Date().toISOString().split('T')[0];
+    const today = todayISOLocal();
 
     const { data, error } = await supabase
       .from('contas_pagar')
@@ -314,21 +315,24 @@ function getDateRange(periodo: string): { startDate: string; endDate: string } {
     case 'today':
       startDate = endDate;
       break;
-    case 'week':
+    case 'week': {
       const weekAgo = new Date(today);
       weekAgo.setDate(today.getDate() - 7);
-      startDate = weekAgo.toISOString().split('T')[0];
+      startDate = formatDateForInput(weekAgo);
       break;
-    case 'year':
+    }
+    case 'year': {
       const yearAgo = new Date(today);
       yearAgo.setFullYear(today.getFullYear() - 1);
-      startDate = yearAgo.toISOString().split('T')[0];
+      startDate = formatDateForInput(yearAgo);
       break;
+    }
     case 'month':
-    default:
+    default: {
       const monthAgo = new Date(today);
       monthAgo.setMonth(today.getMonth() - 1);
-      startDate = monthAgo.toISOString().split('T')[0];
+      startDate = formatDateForInput(monthAgo);
+    }
   }
 
   return { startDate, endDate };

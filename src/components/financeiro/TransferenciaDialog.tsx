@@ -1,3 +1,4 @@
+import { todayISOLocal } from '@/lib/formatters';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -47,7 +48,7 @@ export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogP
     resolver: zodResolver(transferenciaSchema),
     defaultValues: {
       valor: 0,
-      data_transferencia: new Date().toISOString().split('T')[0],
+      data_transferencia: todayISOLocal(),
       descricao: 'Transferência interna',
     },
   });

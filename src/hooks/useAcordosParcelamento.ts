@@ -1,3 +1,4 @@
+import { todayISOLocal } from '@/lib/formatters';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -183,7 +184,7 @@ export function useAcordosParcelamento() {
         .from('parcelas_acordo')
         .update({
           status: 'pago',
-          data_pagamento: new Date().toISOString().split('T')[0],
+          data_pagamento: todayISOLocal(),
           valor_pago: valorPago,
         })
         .eq('id', parcelaId)

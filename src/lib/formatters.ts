@@ -282,6 +282,13 @@ export const formatDateForInput = (date: Date | string | null): string => {
 };
 
 /**
+ * "Hoje" em formato YYYY-MM-DD usando fuso local — substitui o idiomatico
+ * `new Date().toISOString().split('T')[0]`, que mostra o dia seguinte para
+ * timezones a oeste de UTC depois das ~21h locais (caso típico BRT).
+ */
+export const todayISOLocal = (): string => formatDateForInput(new Date());
+
+/**
  * Checa se uma data é hoje
  */
 export const isToday = (date: Date | string): boolean => {

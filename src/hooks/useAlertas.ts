@@ -1,3 +1,4 @@
+import { todayISOLocal } from '@/lib/formatters';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -155,7 +156,7 @@ export function useCriarAlerta() {
 
 // Função utilitária para gerar alertas automáticos baseados em regras de negócio
 export async function gerarAlertasAutomaticos() {
-  const hoje = new Date().toISOString().split('T')[0];
+  const hoje = todayISOLocal();
   const emTresDias = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
   // Buscar contas a pagar próximas do vencimento

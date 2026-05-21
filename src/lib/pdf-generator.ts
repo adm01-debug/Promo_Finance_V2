@@ -1,4 +1,5 @@
-import { formatCurrency, formatDate } from './formatters';
+import { toast } from 'sonner';
+import { formatCurrency, formatDate, todayISOLocal } from './formatters';
 
 export interface BoletoData {
   numero: string;
@@ -19,7 +20,7 @@ export interface BoletoData {
 export function generateBoletoPDF(boleto: BoletoData): void {
   const printWindow = window.open('', '_blank');
   if (!printWindow) {
-    alert('Permita pop-ups para gerar o PDF');
+    toast.error('Permita pop-ups para gerar o PDF');
     return;
   }
 
@@ -303,7 +304,7 @@ export function generateFluxoCaixaPDF(
 ): void {
   const printWindow = window.open('', '_blank');
   if (!printWindow) {
-    alert('Permita pop-ups para gerar o PDF');
+    toast.error('Permita pop-ups para gerar o PDF');
     return;
   }
 
@@ -424,7 +425,7 @@ export function generateFluxoCaixaCSV(
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = `fluxo_caixa_${new Date().toISOString().split('T')[0]}.csv`;
+  link.download = `fluxo_caixa_${todayISOLocal()}.csv`;
   link.click();
   URL.revokeObjectURL(link.href);
 }
@@ -443,7 +444,7 @@ export function generateConciliacaoAuditPDF(
 ): void {
   const printWindow = window.open('', '_blank');
   if (!printWindow) {
-    alert('Permita pop-ups para gerar o PDF');
+    toast.error('Permita pop-ups para gerar o PDF');
     return;
   }
 
@@ -527,7 +528,7 @@ export function generateBenchmarkingPDF(
 ): void {
   const printWindow = window.open('', '_blank');
   if (!printWindow) {
-    alert('Permita pop-ups para gerar o PDF');
+    toast.error('Permita pop-ups para gerar o PDF');
     return;
   }
 

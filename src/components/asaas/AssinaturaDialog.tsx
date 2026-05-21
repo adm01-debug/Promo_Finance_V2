@@ -1,3 +1,4 @@
+import { todayISOLocal } from '@/lib/formatters';
 // ============================================
 // DIALOG: Nova Assinatura (Recorrência) ASAAS
 // ============================================
@@ -121,7 +122,7 @@ export function AssinaturaDialog({ open, onOpenChange, empresaId }: Props) {
             </div>
             <div className="space-y-2">
               <Label>Próximo Vencimento *</Label>
-              <Input type="date" value={proximoVencimento} onChange={e => setProximoVencimento(e.target.value)} min={new Date().toISOString().split('T')[0]} />
+              <Input type="date" value={proximoVencimento} onChange={e => setProximoVencimento(e.target.value)} min={todayISOLocal()} />
             </div>
           </div>
 

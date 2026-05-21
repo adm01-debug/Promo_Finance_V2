@@ -1,3 +1,4 @@
+import { todayISOLocal } from '@/lib/formatters';
 
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
@@ -141,7 +142,7 @@ export const contasReceberService = {
       .from('contas_receber')
       .update({
         status: 'pago' as StatusPagamento,
-        data_recebimento: dataRecebimento || new Date().toISOString().split('T')[0],
+        data_recebimento: dataRecebimento || todayISOLocal(),
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)
@@ -168,7 +169,7 @@ export const contasReceberService = {
   },
 
   async getOverdue() {
-    const today = new Date().toISOString().split('T')[0];
+    const today = todayISOLocal();
 
     const { data, error } = await supabase
       .from('contas_receber')
@@ -254,7 +255,7 @@ export const contasReceberService = {
       .from('contas_receber')
       .update({
         status: 'pago' as StatusPagamento,
-        data_recebimento: dataRecebimento || new Date().toISOString().split('T')[0],
+        data_recebimento: dataRecebimento || todayISOLocal(),
         updated_at: new Date().toISOString(),
       })
       .in('id', ids)
@@ -307,7 +308,7 @@ export const contasReceberService = {
     
     const link = document.createElement('a');
     link.href = url;
-    link.download = `contas-receber-${new Date().toISOString().split('T')[0]}.csv`;
+    link.download = `contas-receber-${todayISOLocal()}.csv`;
     link.click();
     
     URL.revokeObjectURL(url);

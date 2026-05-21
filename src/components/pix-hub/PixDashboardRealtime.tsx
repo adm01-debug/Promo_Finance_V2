@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { formatCurrency, formatDateTime } from '@/lib/formatters';
+import { formatCurrency, formatDateTime , todayISOLocal} from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { QrCode, ArrowUpRight, ArrowDownLeft, AlertCircle, CheckCircle2, Clock, TrendingUp } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
@@ -15,7 +15,7 @@ export function PixDashboardRealtime() {
   const { data: transferenciasHoje = [], isLoading: lt } = useQuery({
     queryKey: ['pix-dashboard-hoje'],
     queryFn: async () => {
-      const hoje = new Date().toISOString().split('T')[0];
+      const hoje = todayISOLocal();
       const { data, error } = await supabase
         .from('transferencias')
         .select('*')
@@ -30,7 +30,7 @@ export function PixDashboardRealtime() {
   const { data: pagamentosHoje = [], isLoading: lp } = useQuery({
     queryKey: ['asaas-payments-hoje'],
     queryFn: async () => {
-      const hoje = new Date().toISOString().split('T')[0];
+      const hoje = todayISOLocal();
       const { data, error } = await supabase
         .from('asaas_payments')
         .select('*')
