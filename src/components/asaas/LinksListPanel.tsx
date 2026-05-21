@@ -43,7 +43,6 @@ export function LinksListPanel({ empresaId }: Props) {
 
   useEffect(() => {
     if (empresaId) fetchLinks();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [empresaId]);
 
   const handleDelete = async () => {

@@ -57,7 +57,6 @@ export function AssinaturasListPanel({ empresaId }: Props) {
 
   useEffect(() => {
     if (empresaId) fetchSubscriptions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [empresaId]);
 
   const handleCancelar = async () => {
