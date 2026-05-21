@@ -23,4 +23,10 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-createRoot(document.getElementById("root")!).render(<App />);
+const rootElement = document.getElementById("root");
+if (!rootElement) {
+  throw new Error(
+    '[promo-finance] Elemento #root não encontrado no index.html — não é possível montar a aplicação.',
+  );
+}
+createRoot(rootElement).render(<App />);
