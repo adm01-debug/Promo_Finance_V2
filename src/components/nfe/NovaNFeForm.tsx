@@ -173,8 +173,8 @@ export function NovaNFeForm({ onClose, onSuccess }: NovaNFeFormProps) {
               <div><Label>Código</Label><Input value={item.codigo} onChange={(e) => updateItem(index, 'codigo', e.target.value)} placeholder="SKU" /></div>
               <div className="col-span-3"><Label>Descrição</Label><Input value={item.descricao} onChange={(e) => updateItem(index, 'descricao', e.target.value)} placeholder="Descrição do produto" required /></div>
               <div><Label>NCM</Label><Input value={item.ncm} onChange={(e) => updateItem(index, 'ncm', e.target.value)} placeholder="00000000" /></div>
-              <div><Label>Quantidade</Label><Input type="number" min="1" value={item.quantidade} onChange={(e) => updateItem(index, 'quantidade', parseInt(e.target.value) || 0)} /></div>
-              <div><Label>Valor Unitário</Label><Input type="number" step="0.01" min="0" value={item.valorUnitario} onChange={(e) => updateItem(index, 'valorUnitario', parseFloat(e.target.value) || 0)} /></div>
+              <div><Label>Quantidade</Label><Input type="number" min="1" value={item.quantidade} onChange={(e) => updateItem(index, 'quantidade', parseInt(e.target.value, 10) || 0)} /></div>
+              <div><Label>Valor Unitário</Label><Input type="number" step="0.01" min="0" value={item.valorUnitario} onChange={(e) => updateItem(index, 'valorUnitario', Number.parseFloat(e.target.value) || 0)} /></div>
               <div><Label>Total</Label><Input value={formatCurrency(item.valorTotal)} disabled className="bg-muted" /></div>
             </div>
           </div>

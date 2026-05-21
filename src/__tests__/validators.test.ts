@@ -4,14 +4,18 @@ import { validateCPF, validateCNPJ, validateEmail, validatePhone } from '../lib/
 describe('Validators', () => {
   describe('validateCPF', () => {
     it('should return true for valid CPF', () => {
-      // Common valid CPFs (generated)
-      expect(validateCPF('12345678909')).toBe(false); // actually invalid check logic needed?
-      // Let's use a real one or mocking the digits
+      // 12345678909 is mathematically valid (verifier digits 0 and 9).
+      // The old in-file validator had a bug that returned false for this
+      // input; the consolidated brazilian-validators implementation
+      // correctly accepts it.
+      expect(validateCPF('123.456.789-09')).toBe(true);
+      expect(validateCPF('12345678909')).toBe(true);
     });
 
     it('should return false for invalid CPF', () => {
       expect(validateCPF('11111111111')).toBe(false);
       expect(validateCPF('123')).toBe(false);
+      expect(validateCPF('12345678900')).toBe(false); // wrong verifier digits
     });
   });
 
