@@ -22,7 +22,11 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, requiredRoles }: ProtectedRouteProps) {
-  const { user, role, isLoading, hasRole } = useAuth();
+  const { user, role, roleAtual, isLoading, hasRole } = useAuth();
+  // hasRole() checks the empresa-scoped role first, falling back to the
+  // global role. Mirror that here so the access-denied card shows the same
+  // role the gate actually evaluated, not just the global one.
+  const effectiveRole = roleAtual ?? role;
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -42,7 +46,7 @@ export function ProtectedRoute({ children, requiredRoles }: ProtectedRouteProps)
 
   if (requiredRoles && requiredRoles.length > 0 && !hasRole(requiredRoles)) {
     const requiredLabels = requiredRoles.map((r) => ROLE_LABELS[r]);
-    const currentLabel = role ? ROLE_LABELS[role] : 'Não definido';
+    const currentLabel = effectiveRole ? ROLE_LABELS[effectiveRole] : 'Não definido';
     const adminMailto = `mailto:?subject=${encodeURIComponent(
       'Solicitação de acesso — perfil ' + requiredLabels.join(' ou ')
     )}&body=${encodeURIComponent(
