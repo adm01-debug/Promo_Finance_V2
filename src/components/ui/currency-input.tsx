@@ -50,7 +50,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
     const handleChange = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
         let inputValue = e.target.value;
-        inputValue = inputValue.replace(/[^\d,.\-]/g, '');
+        inputValue = inputValue.replace(/[^\d,.-]/g, '');
         if (!allowNegative) {
           inputValue = inputValue.replace(/-/g, '');
         }

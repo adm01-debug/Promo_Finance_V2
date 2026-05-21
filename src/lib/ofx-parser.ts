@@ -48,7 +48,7 @@ export function parseOFX(content: string, fileName: string): ResultadoImportacao
   
   try {
     // Remove XML header and SGML tags if present
-    let cleanContent = content
+    const cleanContent = content
       .replace(/<\?.*\?>/g, '')
       .replace(/<!--.*-->/g, '')
       .trim();
@@ -185,7 +185,7 @@ export function parseCSV(content: string, fileName: string, mapeamento?: Record<
         const data = parseData(dataStr);
         
         // Value extraction
-        let valorRaw = valorIdx !== -1 ? cols[valorIdx] : cols[1];
+        const valorRaw = valorIdx !== -1 ? cols[valorIdx] : cols[1];
         if (!valorRaw) continue;
         
         let valor = parseFloat(valorRaw
@@ -291,7 +291,7 @@ export function parseExcel(content: ArrayBuffer, fileName: string): ResultadoImp
 
       try {
         const data = row[dataIdx] instanceof Date ? row[dataIdx] : parseData(String(row[dataIdx]));
-        let valor = typeof row[valorIdx] === 'number' ? row[valorIdx] : parseFloat(String(row[valorIdx]).replace(/[^\d,.-]/g, '').replace(',', '.'));
+        const valor = typeof row[valorIdx] === 'number' ? row[valorIdx] : parseFloat(String(row[valorIdx]).replace(/[^\d,.-]/g, '').replace(',', '.'));
         
         const tipo: 'credito' | 'debito' = valor >= 0 ? 'credito' : 'debito';
         const descricao = String(row[descIdx] || 'Transação Excel');
@@ -465,7 +465,7 @@ function parseData(dateStr: string): Date {
   const cleaned = dateStr.replace(/"/g, '').trim();
 
   // DD/MM/YYYY or DD-MM-YYYY (Brazilian format)
-  let match = cleaned.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+  let match = cleaned.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})$/);
   if (match) {
     const day = parseInt(match[1], 10);
     const month = parseInt(match[2], 10) - 1;
@@ -477,7 +477,7 @@ function parseData(dateStr: string): Date {
   }
 
   // YYYY-MM-DD or YYYY/MM/DD (ISO-like, local time)
-  match = cleaned.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+  match = cleaned.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$/);
   if (match) {
     const d = new Date(
       parseInt(match[1], 10),

@@ -256,7 +256,7 @@ export const formatAverageDays = (days: number): string => {
 export const parseCurrencyInput = (value: string): number => {
   if (!value) return 0;
   // Remove símbolos / espaços, mantém dígitos, vírgula, ponto e sinal
-  const cleaned = value.replace(/[^\d,.\-]/g, '').trim();
+  const cleaned = value.replace(/[^\d,.-]/g, '').trim();
   if (!cleaned || cleaned === '-' || cleaned === ',' || cleaned === '.') return 0;
   // Normaliza para "1234.56": tira milhar e troca decimal
   const hasComma = cleaned.includes(',');
