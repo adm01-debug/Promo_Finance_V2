@@ -196,8 +196,11 @@ export function calculateInstallments(
   interestAmount: number;
   installmentDetails: Array<{ number: number; value: number; balance: number }>;
 } {
-  if (installments <= 0) {
-    throw new Error('Number of installments must be greater than 0');
+  if (!Number.isInteger(installments) || installments <= 0) {
+    throw new Error('Number of installments must be a positive integer');
+  }
+  if (!Number.isFinite(totalValue) || totalValue < 0) {
+    throw new Error('totalValue must be a non-negative finite number');
   }
 
   let totalWithInterest: number;
@@ -209,24 +212,32 @@ export function calculateInstallments(
   } else {
     const rate = interestRate / 100;
     installmentValue =
-      totalValue * (rate * Math.pow(1 + rate, installments)) / (Math.pow(1 + rate, installments) - 1);
+      (totalValue * (rate * Math.pow(1 + rate, installments))) /
+      (Math.pow(1 + rate, installments) - 1);
     totalWithInterest = installmentValue * installments;
   }
 
-  const roundedInstallmentValue = Math.round(installmentValue * 100) / 100;
-  const roundedTotalWithInterest = Math.round(totalWithInterest * 100) / 100;
+  // Work in cents to avoid IEEE-754 drift, then round the per-installment
+  // value down so the remainder absorbed by the final installment is never
+  // negative.
+  const totalCents = Math.round(totalWithInterest * 100);
+  const baseCents = Math.floor((installmentValue * 100) + 1e-9);
+  const lastCents = totalCents - baseCents * (installments - 1);
+
+  const roundedInstallmentValue = baseCents / 100;
+  const roundedTotalWithInterest = totalCents / 100;
   const interestAmount = roundedTotalWithInterest - totalValue;
 
   const installmentDetails: Array<{ number: number; value: number; balance: number }> = [];
-  let remainingTotal = roundedTotalWithInterest;
+  let remainingCents = totalCents;
 
   for (let i = 1; i <= installments; i++) {
-    const value = i === installments ? remainingTotal : roundedInstallmentValue;
-    remainingTotal = Math.round((remainingTotal - value) * 100) / 100;
+    const valueCents = i === installments ? lastCents : baseCents;
+    remainingCents -= valueCents;
     installmentDetails.push({
       number: i,
-      value: value,
-      balance: Math.max(0, remainingTotal),
+      value: valueCents / 100,
+      balance: Math.max(0, remainingCents) / 100,
     });
   }
 

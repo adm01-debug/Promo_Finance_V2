@@ -1,5 +1,26 @@
 // Formatadores de valores monetários e datas
 
+/**
+ * Parses a date input that can be either a Date object or a string.
+ * Strings in `YYYY-MM-DD` (and `YYYY-MM-DDTHH:mm[:ss]` without timezone)
+ * are interpreted as **local time** instead of UTC, which prevents the
+ * classic "shows the previous day in BRT" bug when displaying dates that
+ * Supabase returns as bare ISO date strings.
+ */
+const toLocalDate = (input: Date | string): Date => {
+  if (input instanceof Date) return input;
+  const s = String(input);
+  // Bare YYYY-MM-DD → midnight local time
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+    return new Date(`${s}T00:00:00`);
+  }
+  // Datetime without timezone marker → assume local
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?$/.test(s)) {
+    return new Date(s);
+  }
+  return new Date(s);
+};
+
 export const formatCurrency = (value: number | null | undefined): string => {
   if (value == null || isNaN(value)) return 'R$ 0,00';
   return new Intl.NumberFormat('pt-BR', {
@@ -10,18 +31,23 @@ export const formatCurrency = (value: number | null | undefined): string => {
 
 export const formatCurrencyCompact = (value: number | null | undefined): string => {
   const v = value ?? 0;
-  if (v >= 1000000) {
-    return `R$ ${(v / 1000000).toFixed(1)}M`;
+  const abs = Math.abs(v);
+  const sign = v < 0 ? '-' : '';
+  if (abs >= 1_000_000_000) {
+    return `${sign}R$ ${(abs / 1_000_000_000).toFixed(1)}B`;
   }
-  if (v >= 1000) {
-    return `R$ ${(v / 1000).toFixed(1)}K`;
+  if (abs >= 1_000_000) {
+    return `${sign}R$ ${(abs / 1_000_000).toFixed(1)}M`;
+  }
+  if (abs >= 1_000) {
+    return `${sign}R$ ${(abs / 1_000).toFixed(1)}K`;
   }
   return formatCurrency(v);
 };
 
 export const formatDate = (date: Date | string | null | undefined): string => {
   if (!date) return '-';
-  const d = typeof date === 'string' ? new Date(date) : date;
+  const d = toLocalDate(date);
   if (isNaN(d.getTime())) return '-';
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
@@ -32,7 +58,7 @@ export const formatDate = (date: Date | string | null | undefined): string => {
 
 export const formatDateShort = (date: Date | string | null | undefined): string => {
   if (!date) return '-';
-  const d = typeof date === 'string' ? new Date(date) : date;
+  const d = toLocalDate(date);
   if (isNaN(d.getTime())) return '-';
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
@@ -42,7 +68,7 @@ export const formatDateShort = (date: Date | string | null | undefined): string 
 
 export const formatDateTime = (date: Date | string | null | undefined): string => {
   if (!date) return '-';
-  const d = typeof date === 'string' ? new Date(date) : date;
+  const d = toLocalDate(date);
   if (isNaN(d.getTime())) return '-';
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
@@ -62,7 +88,7 @@ export const formatNumber = (value: number): string => {
 };
 
 export const getDaysUntil = (date: Date | string): number => {
-  const d = new Date(typeof date === 'string' ? date : date.getTime());
+  const d = toLocalDate(date);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   d.setHours(0, 0, 0, 0);
@@ -76,7 +102,7 @@ export const getDaysOverdue = (date: Date | string): number => {
 };
 
 export const calculateOverdueDays = (date: Date | string): number => {
-  const d = typeof date === 'string' ? new Date(date) : new Date(date);
+  const d = toLocalDate(date);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   d.setHours(0, 0, 0, 0);
@@ -85,7 +111,7 @@ export const calculateOverdueDays = (date: Date | string): number => {
 };
 
 export const getRelativeTime = (date: Date | string): string => {
-  const d = typeof date === 'string' ? new Date(date) : date;
+  const d = toLocalDate(date);
   const now = new Date();
   const diff = now.getTime() - d.getTime();
   const minutes = Math.floor(diff / 60000);
@@ -224,27 +250,42 @@ export const formatAverageDays = (days: number): string => {
 };
 
 /**
- * Formata valor para input de moeda
+ * Parse de valor monetário digitado em pt-BR (e.g. "1.234,56" → 1234.56).
+ * Trata tanto separador de milhar `.` quanto decimal `,`.
  */
 export const parseCurrencyInput = (value: string): number => {
-  const cleaned = value.replace(/[^\d,.-]/g, '').replace(',', '.');
-  return parseFloat(cleaned) || 0;
+  if (!value) return 0;
+  // Remove símbolos / espaços, mantém dígitos, vírgula, ponto e sinal
+  const cleaned = value.replace(/[^\d,.\-]/g, '').trim();
+  if (!cleaned || cleaned === '-' || cleaned === ',' || cleaned === '.') return 0;
+  // Normaliza para "1234.56": tira milhar e troca decimal
+  const hasComma = cleaned.includes(',');
+  const normalized = hasComma
+    ? cleaned.replace(/\./g, '').replace(',', '.')
+    : cleaned;
+  const n = parseFloat(normalized);
+  return Number.isFinite(n) ? n : 0;
 };
 
 /**
- * Formata data para input date
+ * Formata data para input date. Usa fuso local para evitar `toISOString()`
+ * jogar o dia para trás em fusos atrás de UTC.
  */
 export const formatDateForInput = (date: Date | string | null): string => {
   if (!date) return '';
-  const d = typeof date === 'string' ? new Date(date) : date;
-  return d.toISOString().split('T')[0];
+  const d = toLocalDate(date);
+  if (isNaN(d.getTime())) return '';
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
 };
 
 /**
  * Checa se uma data é hoje
  */
 export const isToday = (date: Date | string): boolean => {
-  const d = typeof date === 'string' ? new Date(date) : date;
+  const d = toLocalDate(date);
   const today = new Date();
   return d.toDateString() === today.toDateString();
 };
@@ -253,7 +294,7 @@ export const isToday = (date: Date | string): boolean => {
  * Checa se uma data já passou
  */
 export const isPast = (date: Date | string): boolean => {
-  const d = typeof date === 'string' ? new Date(date) : date;
+  const d = toLocalDate(date);
   return d < new Date();
 };
 

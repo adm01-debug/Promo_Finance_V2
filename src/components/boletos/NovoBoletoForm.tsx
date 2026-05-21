@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { NovoBoletoData } from '@/hooks/useBoletos';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { parseCurrencyInput } from '@/lib/formatters';
 
 interface NovoBoletoFormProps {
   onClose: () => void;
@@ -72,18 +73,26 @@ export function NovoBoletoForm({ onClose, empresas, contasBancarias, onSubmit, i
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.empresa_id || !formData.conta_bancaria_id) { toast.error('Selecione a empresa e conta bancária'); return; }
-    onSubmit({ 
-      sacado_nome: formData.sacado_nome, 
-      sacado_cpf_cnpj: formData.sacado_cpf_cnpj, 
-      valor: parseFloat(formData.valor), 
-      vencimento: formData.vencimento, 
-      empresa_id: formData.empresa_id, 
-      conta_bancaria_id: formData.conta_bancaria_id, 
+    if (!formData.empresa_id || !formData.conta_bancaria_id) {
+      toast.error('Selecione a empresa e conta bancária');
+      return;
+    }
+    const valor = parseCurrencyInput(formData.valor);
+    if (!Number.isFinite(valor) || valor <= 0) {
+      toast.error('Informe um valor maior que zero');
+      return;
+    }
+    onSubmit({
+      sacado_nome: formData.sacado_nome,
+      sacado_cpf_cnpj: formData.sacado_cpf_cnpj,
+      valor,
+      vencimento: formData.vencimento,
+      empresa_id: formData.empresa_id,
+      conta_bancaria_id: formData.conta_bancaria_id,
       descricao: formData.descricao || undefined,
       conta_receber_id: formData.conta_receber_id || undefined,
       conta_pagar_id: formData.conta_pagar_id || undefined,
-      provider: formData.provider
+      provider: formData.provider,
     });
     onClose();
   };
