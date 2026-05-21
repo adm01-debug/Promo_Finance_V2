@@ -24,6 +24,10 @@ export interface ParametrosSimulacao {
   percentualServicos: number;
   comprasComCredito?: number;
   despesasOperacionais?: number;
+  /** Alíquota ICMS efetiva (0..1), default 0.18 (SP interna). */
+  aliquotaICMS?: number;
+  /** Alíquota ISS efetiva (0..1), default 0.05 (teto LC 116/2003). */
+  aliquotaISS?: number;
 }
 export interface ResultadoCenario {
   regime: RegimeTributario; nome: string; elegivel: boolean;
@@ -132,16 +136,36 @@ export function simularSimples(p: ParametrosSimulacao, ano: number, mes: number)
   const das = p.faturamentoAnual * aliqEfet;
   obs.push(`Faixa ${faixa.faixa}, alíq nominal ${(faixa.aliq * 100).toFixed(2)}%, efetiva ${(aliqEfet * 100).toFixed(2)}%.`);
   
-  // Distribuição simplificada
-  const dist: Record<AnexoSimples, any> = {
-    I:   { irpj: 0.055, csll: 0.035, cofins: 0.1282, pis: 0.0278, cpp: 0.415, icms: 0.34,  iss: 0 },
-    II:  { irpj: 0.055, csll: 0.035, cofins: 0.1182, pis: 0.0278, cpp: 0.415, icms: 0.32,  iss: 0,  },
-    III: { irpj: 0.04,  csll: 0.035, cofins: 0.1282, pis: 0.0278, cpp: 0.4340, icms: 0,    iss: 0.335 },
-    IV:  { irpj: 0.185, csll: 0.15,  cofins: 0.1603, pis: 0.0347, cpp: 0,     icms: 0,    iss: 0.47 },
-    V:   { irpj: 0.25,  csll: 0.15,  cofins: 0.1428, pis: 0.0309, cpp: 0.2885, icms: 0,    iss: 0.137 },
+  // Distribuição simplificada por anexo (LC 123/2006, Anexos I-V).
+  // As frações de cada anexo precisam somar 1.0 — caso contrário o cálculo
+  // sobrestima/subestima o total. Renormalizamos defensivamente para evitar
+  // que pequenos desvios na tabela (ex.: 0.055+0.035+0.1282+0.0278+0.415+0.34
+  // do Anexo I = 1.001) afetem o DAS.
+  type DistribuicaoAnexo = {
+    irpj: number; csll: number; cofins: number; pis: number;
+    cpp: number; icms: number; iss: number;
+  };
+  const dist: Record<AnexoSimples, DistribuicaoAnexo> = {
+    I:   { irpj: 0.055, csll: 0.035, cofins: 0.1282, pis: 0.0278, cpp: 0.415,  icms: 0.34,  iss: 0 },
+    II:  { irpj: 0.055, csll: 0.035, cofins: 0.1182, pis: 0.0278, cpp: 0.415,  icms: 0.32,  iss: 0 },
+    III: { irpj: 0.04,  csll: 0.035, cofins: 0.1282, pis: 0.0278, cpp: 0.4340, icms: 0,     iss: 0.335 },
+    IV:  { irpj: 0.185, csll: 0.15,  cofins: 0.1603, pis: 0.0347, cpp: 0,      icms: 0,     iss: 0.47 },
+    V:   { irpj: 0.25,  csll: 0.15,  cofins: 0.1428, pis: 0.0309, cpp: 0.2885, icms: 0,     iss: 0.137 },
   };
 
-  const d = dist[anexo];
+  const raw = dist[anexo];
+  const sum = raw.irpj + raw.csll + raw.cofins + raw.pis + raw.cpp + raw.icms + raw.iss;
+  const d: DistribuicaoAnexo = sum > 0
+    ? {
+        irpj: raw.irpj / sum,
+        csll: raw.csll / sum,
+        cofins: raw.cofins / sum,
+        pis: raw.pis / sum,
+        cpp: raw.cpp / sum,
+        icms: raw.icms / sum,
+        iss: raw.iss / sum,
+      }
+    : raw;
   return {
     regime: 'simples_nacional', nome: 'Simples Nacional', elegivel: true,
     irpj: das * d.irpj, csll: das * d.csll, pis: das * d.pis, cofins: das * d.cofins,
@@ -166,20 +190,26 @@ export function simularPresumido(p: ParametrosSimulacao): ResultadoCenario {
   const pc = 1 - ps;
   const rs = p.faturamentoAnual * ps;
   const rc = p.faturamentoAnual * pc;
+  const aliqICMS = p.aliquotaICMS ?? 0.18;
+  const aliqISS = p.aliquotaISS ?? 0.05;
   const baseIrpj = rs * 0.32 + rc * 0.08;
   const irpj = baseIrpj * 0.15 + (baseIrpj > 240000 ? (baseIrpj - 240000) * 0.10 : 0);
   const csll = (rs * 0.32 + rc * 0.12) * 0.09;
   const pis = p.faturamentoAnual * 0.0065;
   const cofins = p.faturamentoAnual * 0.03;
-  const icms = rc * 0.18;
-  const iss = rs * 0.05;
+  const icms = rc * aliqICMS;
+  const iss = rs * aliqISS;
   const cpp = (p.folhaAnual || 0) * 0.20;
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
   return {
     regime: 'lucro_presumido', nome: 'Lucro Presumido', elegivel: true,
     irpj, csll, pis, cofins, cpp, icms, iss, cbs: 0, ibs: 0,
     totalTributos: total, cargaEfetiva: p.faturamentoAnual > 0 ? (total / p.faturamentoAnual) * 100 : 0,
-    observacoes: ['Presunção 8% comércio / 32% serviços.', 'PIS/COFINS cumulativo.'],
+    observacoes: [
+      'Presunção 8% comércio / 32% serviços.',
+      'PIS/COFINS cumulativo.',
+      `ICMS ${(aliqICMS * 100).toFixed(2)}% / ISS ${(aliqISS * 100).toFixed(2)}%.`,
+    ],
   };
 }
 
@@ -193,8 +223,10 @@ export function simularReal(p: ParametrosSimulacao): ResultadoCenario {
   const ps = p.percentualServicos / 100;
   const rs = p.faturamentoAnual * ps;
   const rc = p.faturamentoAnual * (1 - ps);
-  const icms = Math.max(0, rc * 0.18 - (p.comprasComCredito || 0) * 0.18);
-  const iss = rs * 0.05;
+  const aliqICMS = p.aliquotaICMS ?? 0.18;
+  const aliqISS = p.aliquotaISS ?? 0.05;
+  const icms = Math.max(0, rc * aliqICMS - (p.comprasComCredito || 0) * aliqICMS);
+  const iss = rs * aliqISS;
   const cpp = (p.folhaAnual || 0) * 0.20;
   const total = irpj + csll + pis + cofins + icms + iss + cpp;
   return {
