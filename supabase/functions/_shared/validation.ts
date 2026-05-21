@@ -1,10 +1,39 @@
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { createLogger, LogLevel } from "./logger.ts";
 
-export const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, asaas-access-token, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-platform-runtime, x-supabase-client-platform-version, x-supabase-client-platform-runtime, x-supabase-client-platform-runtime-version',
+/**
+ * Default CORS headers used by edge functions.
+ *
+ * `Access-Control-Allow-Origin` is taken from the `ALLOWED_ORIGINS` env var
+ * (comma-separated list), falling back to '*' only when not set. For
+ * authenticated endpoints, configure ALLOWED_ORIGINS so credentials can't
+ * be sent from arbitrary origins. Webhooks from third parties (Asaas,
+ * Bling, Bitrix) should keep the wildcard — they're authenticated by
+ * shared-secret tokens, not by Origin.
+ *
+ * Pass the request to `buildCorsHeaders(req)` to echo back the matched
+ * allowed origin (required when Allow-Credentials is true).
+ */
+const RAW_ALLOWED = (globalThis as { Deno?: { env: { get(k: string): string | undefined } } })
+  .Deno?.env.get('ALLOWED_ORIGINS') ?? '';
+const ALLOWED_ORIGIN_LIST = RAW_ALLOWED
+  ? RAW_ALLOWED.split(',').map((s) => s.trim()).filter(Boolean)
+  : [];
+
+export const corsHeaders: Record<string, string> = {
+  'Access-Control-Allow-Origin': ALLOWED_ORIGIN_LIST.length === 1 ? ALLOWED_ORIGIN_LIST[0] : '*',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type, asaas-access-token, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-platform-runtime, x-supabase-client-platform-runtime-version',
 };
+
+export function buildCorsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get('origin');
+  if (!origin || ALLOWED_ORIGIN_LIST.length === 0) return corsHeaders;
+  if (ALLOWED_ORIGIN_LIST.includes('*') || ALLOWED_ORIGIN_LIST.includes(origin)) {
+    return { ...corsHeaders, 'Access-Control-Allow-Origin': origin };
+  }
+  return { ...corsHeaders, 'Access-Control-Allow-Origin': ALLOWED_ORIGIN_LIST[0] };
+}
 
 const logger = createLogger("Validation");
 
