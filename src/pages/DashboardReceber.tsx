@@ -54,10 +54,10 @@ export default function DashboardReceber() {
 
   // Sincroniza com empresa ativa do sistema
   useEffect(() => {
-    if (currentEmpresaId && empresaId !== currentEmpresaId && empresaId === 'todas') {
+    if (currentEmpresaId && filtersController.values.empresaId !== currentEmpresaId && filtersController.values.empresaId === 'todas') {
       filtersController.setField('empresaId', currentEmpresaId);
     }
-  }, [currentEmpresaId, empresaId]);
+  }, [currentEmpresaId]);
   const dataInicio = dataInicioIso ? new Date(dataInicioIso) : undefined;
   const dataFim = dataFimIso ? new Date(dataFimIso) : undefined;
   const setEmpresaId = (v: string) => filtersController.setField('empresaId', v);

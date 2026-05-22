@@ -31,14 +31,21 @@ export const useAprovacoesPendentesCount = () => {
           schema: 'public',
           table: 'solicitacoes_aprovacao',
         },
-        async () => {
+        async (payload) => {
           // Refetch the count when any change happens
-          const { count } = await supabase
-            .from('solicitacoes_aprovacao')
-            .select('*', { count: 'exact', head: true })
-            .eq('status', 'pendente');
+          try {
+            const { count, error } = await supabase
+              .from('solicitacoes_aprovacao')
+              .select('*', { count: 'exact', head: true })
+              .eq('status', 'pendente');
+            
+            if (!error) {
+              setRealtimeCount(count || 0);
+            }
+          } catch (err) {
+            console.error('[Realtime] Failed to refetch approval count:', err);
+          }
           
-          setRealtimeCount(count || 0);
           queryClient.invalidateQueries({ queryKey: ['aprovacoes-pendentes-count'] });
           queryClient.invalidateQueries({ queryKey: ['solicitacoes-pendentes'] });
         }

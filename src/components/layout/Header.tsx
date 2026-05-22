@@ -138,6 +138,11 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
             <Input
               placeholder="Intelligent Search (⌘K)"
               className="pl-14 bg-white/5 border-white/10 focus:bg-background/80 focus:border-primary/50 h-16 rounded-[1.25rem] transition-all duration-1000 font-black text-sm shadow-2xl placeholder:text-white/10 text-white tracking-widest uppercase"
+              onFocus={(e) => {
+                e.preventDefault();
+                e.target.blur();
+                window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
+              }}
             />
           </div>
 

@@ -50,7 +50,10 @@ export function useContasReceberLogic() {
   // Sincroniza com filtros globais via eventos
   useEffect(() => {
     const handleSync = (e: Event) => {
-      const { empresaId, bankAccountId } = (e as CustomEvent).detail;
+      const detail = (e as CustomEvent).detail;
+      if (!detail) return;
+      
+      const { empresaId, bankAccountId } = detail;
       if (empresaId && empresaId !== 'all') {
         setEmpresaFilter(empresaId);
         setCurrentPage(1);

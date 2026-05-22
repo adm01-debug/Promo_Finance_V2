@@ -38,7 +38,7 @@ export const MobileBottomNav = ({ onMenuClick }: MobileBottomNavProps) => {
       <div className="flex items-center justify-around h-24 px-4">
         {navItems.map(item => {
           const Icon = item.icon;
-          const isActive = location.pathname === item.href;
+          const isActive = location.pathname === item.href || (item.href === '/' && location.pathname === '/dashboard');
 
           return (
             <NavLink

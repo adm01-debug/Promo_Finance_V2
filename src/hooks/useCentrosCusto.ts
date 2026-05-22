@@ -8,6 +8,27 @@ export type CentroCusto = Tables<'centros_custo'>;
 export type CentroCustoInsert = TablesInsert<'centros_custo'>;
 export type CentroCustoUpdate = TablesUpdate<'centros_custo'>;
 
+export function useCentrosCusto(empresaId?: string) {
+  return useQuery({
+    queryKey: ['centros_custo', empresaId || 'all'],
+    queryFn: async () => {
+      let query = supabase
+        .from('centros_custo')
+        .select('*')
+        .eq('ativo', true)
+        .order('codigo');
+      
+      if (empresaId && empresaId !== 'all') {
+        query = query.eq('empresa_id', empresaId);
+      }
+      
+      const { data, error } = await query;
+      if (error) throw error;
+      return data as CentroCusto[];
+    },
+  });
+}
+
 export function useAllCentrosCusto() {
   return useQuery({
     queryKey: ['centros_custo', 'all'],

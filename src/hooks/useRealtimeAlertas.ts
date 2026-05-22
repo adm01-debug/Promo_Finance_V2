@@ -17,6 +17,8 @@ export function useRealtimeAlertas() {
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'alertas' },
         (payload) => {
+          if (!payload.new) return;
+          
           // Invalidate queries so badge counts update
           queryClient.invalidateQueries({ queryKey: ['alertas'] });
           queryClient.invalidateQueries({ queryKey: ['alertas-nao-lidos-count'] });
@@ -40,7 +42,11 @@ export function useRealtimeAlertas() {
           }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('[Realtime] Subscribed to alertas changes');
+        }
+      });
 
     return () => {
       supabase.removeChannel(channel);

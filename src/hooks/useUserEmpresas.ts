@@ -81,17 +81,22 @@ export async function setCurrentEmpresaId(id: string) {
       
       const nomeEmpresa = empresa?.nome_fantasia || empresa?.razao_social || 'Desconhecida';
 
-      await supabase.rpc('registrar_auditoria_config', {
-        _tipo_acao: 'troca_empresa',
-        _empresa_id: id,
-        _detalhes: {
-          previous_empresa_id: previousId,
-          new_empresa_id: id,
-          new_empresa_nome: nomeEmpresa,
-          timestamp: new Date().toISOString(),
-          context: 'EmpresaSwitcher QuickSwitch'
-        }
-      });
+      // Use safe RPC call with fallback
+      try {
+        await (supabase as any).rpc('registrar_auditoria_config', {
+          _tipo_acao: 'troca_empresa',
+          _empresa_id: id,
+          _detalhes: {
+            previous_empresa_id: previousId,
+            new_empresa_id: id,
+            new_empresa_nome: nomeEmpresa,
+            timestamp: new Date().toISOString(),
+            context: 'EmpresaSwitcher QuickSwitch'
+          }
+        });
+      } catch (rpcErr) {
+        console.warn('RPC registrar_auditoria_config not available, skipping audit log:', rpcErr);
+      }
 
       // Notificar o usuário sobre a mudança crítica
       toast.info(`Ambiente alterado para: ${nomeEmpresa}`, {
