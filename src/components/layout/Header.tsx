@@ -124,10 +124,10 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
     <header
       ref={ref}
       className={cn(
-        'fixed top-0 right-0 z-30 h-20 bg-background/60 backdrop-blur-3xl border-b border-border transition-all duration-700 ease-apple',
-        sidebarCollapsed ? 'left-[80px]' : 'left-[300px]'
+        'fixed top-0 right-0 z-30 h-24 bg-background/30 backdrop-blur-3xl border-b border-border/40 transition-all duration-1000 ease-apple',
+        sidebarCollapsed ? 'left-[100px]' : 'left-[320px]'
       )}
-      style={{ boxShadow: '0 4px 24px -1px rgba(0, 0, 0, 0.03)' }}
+      style={{ boxShadow: '0 8px 32px -1px rgba(0, 0, 0, 0.05)' }}
     >
       <div className="h-full flex items-center justify-between px-8 gap-8">
         {/* Left: Search Command & Filter Status */}
@@ -136,15 +136,15 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
             <div className="absolute inset-0 bg-white/5 rounded-2xl -m-0.5 opacity-0 group-focus-within:opacity-100 transition-opacity blur-sm pointer-events-none" />
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-white/20 group-focus-within:text-primary transition-all duration-500 group-focus-within:scale-110" />
             <Input
-              placeholder="Search (⌘K)"
-              className="pl-14 bg-white/5 border-white/5 focus:bg-background/80 focus:border-primary/40 h-14 rounded-2xl transition-all duration-700 font-bold text-sm shadow-inner placeholder:text-white/20 text-white"
+              placeholder="Intelligent Search (⌘K)"
+              className="pl-14 bg-white/5 border-white/10 focus:bg-background/80 focus:border-primary/50 h-16 rounded-[1.25rem] transition-all duration-1000 font-black text-sm shadow-2xl placeholder:text-white/10 text-white tracking-widest uppercase"
             />
           </div>
 
-          <div className="hidden xl:flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
-            <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 whitespace-nowrap">
-              Empresa: {empresaLabel || 'Global'}
+          <div className="hidden xl:flex items-center gap-3 px-6 py-2.5 rounded-[1.25rem] bg-white/5 border border-white/10 backdrop-blur-3xl shadow-2xl">
+            <div className="h-2 w-2 rounded-full bg-success animate-pulse shadow-[0_0_12px_rgba(34,197,94,0.5)]" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80 whitespace-nowrap">
+              Cyber-Node: {empresaLabel || 'Global Nexus'}
             </span>
           </div>
         </div>
@@ -169,7 +169,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
               <DropdownMenuTrigger asChild>
                 <Tooltip delayDuration={300}>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl bg-white/5 hover:bg-primary/20 hover:text-primary border border-white/10 transition-all duration-500 shadow-lg ring-1 ring-white/5">
+                    <Button variant="ghost" size="icon" className="h-14 w-14 rounded-[1.25rem] bg-white/5 hover:bg-primary/20 hover:text-primary border border-white/10 transition-all duration-1000 shadow-2xl ring-1 ring-white/5">
                       <Languages className="h-5 w-5" />
                     </Button>
                   </TooltipTrigger>
@@ -200,7 +200,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
               <DropdownMenuTrigger asChild data-tour="theme">
                 <Tooltip delayDuration={300}>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl bg-muted/20 hover:bg-primary/20 hover:text-primary border border-border transition-all duration-500 shadow-lg ring-1 ring-white/5">
+                    <Button variant="ghost" size="icon" className="h-14 w-14 rounded-[1.25rem] bg-muted/20 hover:bg-primary/20 hover:text-primary border border-border transition-all duration-1000 shadow-2xl ring-1 ring-white/5">
                       <AnimatePresence mode="wait">
                         <motion.div
                           key={theme}
@@ -240,7 +240,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
             <DropdownMenuTrigger asChild data-tour="notifications">
               <Tooltip delayDuration={300}>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl bg-white/5 hover:bg-primary/20 hover:text-primary border border-white/10 transition-all duration-500 relative shadow-lg ring-1 ring-white/5">
+                  <Button variant="ghost" size="icon" className="h-14 w-14 rounded-[1.25rem] bg-white/5 hover:bg-primary/20 hover:text-primary border border-white/10 transition-all duration-1000 relative shadow-2xl ring-1 ring-white/5">
                     <Bell className="h-5 w-5" />
                     {unreadAlerts > 0 && (
                       <motion.span
@@ -298,7 +298,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
           {/* User Menu with gradient avatar */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-14 gap-4 pl-2 pr-6 hover:bg-muted/20 rounded-2xl transition-all duration-500 ring-1 ring-border hover:ring-primary/20 bg-muted/10 shadow-xl">
+              <Button variant="ghost" className="h-16 gap-5 pl-2 pr-8 hover:bg-muted/20 rounded-[1.25rem] transition-all duration-1000 ring-1 ring-border/40 hover:ring-primary/40 bg-muted/5 shadow-2xl">
                 {/* Gradient Avatar */}
                 <div className="relative">
                   <div className={cn(
