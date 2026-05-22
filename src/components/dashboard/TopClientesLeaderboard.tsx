@@ -28,10 +28,10 @@ interface TopClientesLeaderboardProps {
 export function TopClientesLeaderboard({ topClientesReceita }: TopClientesLeaderboardProps) {
   return (
     <motion.div variants={itemVariants} className="lg:col-span-1">
-      <Card className="h-[450px] overflow-hidden border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2rem]">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-black tracking-tight flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-coins/10 flex items-center justify-center">
+      <Card className="h-[400px] sm:h-[450px] md:h-[500px] overflow-hidden border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem]">
+        <CardHeader className="pb-4 p-6 sm:p-8 md:p-10">
+          <CardTitle className="text-lg sm:text-xl md:text-2xl font-black tracking-tighter flex items-center gap-4">
+            <div className="h-12 w-12 rounded-[1rem] bg-coins/10 flex items-center justify-center shrink-0 shadow-2xl shadow-coins/10">
               <Trophy className="h-4 w-4 text-coins" />
             </div>
             Elite Entity Leaderboard

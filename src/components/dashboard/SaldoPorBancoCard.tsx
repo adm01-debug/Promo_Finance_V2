@@ -30,17 +30,17 @@ interface SaldoPorBancoCardProps {
 export function SaldoPorBancoCard({ contasBancariasFiltradas, saldoTotal }: SaldoPorBancoCardProps) {
   return (
     <motion.div variants={itemVariants}>
-      <Card className="h-[320px] sm:h-[360px] md:h-[400px] overflow-hidden border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem]">
-        <CardHeader className="pb-2 p-3 sm:p-4 md:p-6">
-          <CardTitle className="text-sm sm:text-base md:text-lg font-black tracking-tight flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0">
+      <Card className="h-[400px] sm:h-[450px] md:h-[500px] overflow-hidden border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem]">
+        <CardHeader className="pb-4 p-6 sm:p-8 md:p-10">
+          <CardTitle className="text-lg sm:text-xl md:text-2xl font-black tracking-tighter flex items-center gap-4">
+            <div className="h-12 w-12 rounded-[1rem] bg-secondary/10 flex items-center justify-center shrink-0 shadow-2xl shadow-secondary/10">
               <Landmark className="h-4 w-4 text-secondary" />
             </div>
             <span className="truncate">Liquidity Distribution Node</span>
           </CardTitle>
           <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">Saldos Bancários em Tempo Real</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-2.5 sm:space-y-3 overflow-y-auto max-h-[200px] sm:max-h-[240px] md:max-h-[300px] p-3 sm:p-4 md:p-6 pt-0">
+        <CardContent className="space-y-4 sm:space-y-6 overflow-y-auto max-h-[250px] sm:max-h-[300px] md:max-h-[350px] p-6 sm:p-8 md:p-10 pt-0">
           {contasBancariasFiltradas.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
               <CreditCard className="h-8 w-8 mb-2 opacity-40" />
