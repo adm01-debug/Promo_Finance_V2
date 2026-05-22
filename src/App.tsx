@@ -109,6 +109,8 @@ const InteligenciaOperacionalPage = lazy(() => import('./pages/InteligenciaOpera
 const MetasFinanceirasPage = lazy(() => import('./pages/MetasFinanceiras'));
 const PortalTokensPage = lazy(() => import('./pages/clientes/PortalTokens'));
 const ScoringClientesPage = lazy(() => import('./pages/clientes/ScoringClientes'));
+const Logistica = lazy(() => import('./pages/Logistica'));
+
 
 const GlossarioTributario = lazy(() => import('./pages/tributario/GlossarioTributario'));
 const Orcamentos = lazy(() => import('./pages/Orcamentos'));
