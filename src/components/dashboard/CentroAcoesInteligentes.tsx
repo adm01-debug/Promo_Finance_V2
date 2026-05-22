@@ -113,8 +113,8 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
                         <UrgIcon className="h-5 w-5" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-3 flex-wrap">
-                          <p className="text-base font-bold tracking-tight">{acao.titulo}</p>
+                        <div className="flex items-center gap-4 flex-wrap">
+                          <p className="text-lg font-black tracking-tight">{acao.titulo}</p>
                           <Badge variant={cfg.variant} className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md border-none">
                             {cfg.label}
                           </Badge>
