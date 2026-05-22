@@ -41,7 +41,7 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
     <motion.aside
       ref={ref}
       initial={false}
-      animate={{ width: collapsed ? 80 : 300 }}
+      animate={{ width: collapsed ? 100 : 320 }}
       transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
       className={cn(
         'fixed left-0 top-0 z-40 h-screen bg-sidebar/80 backdrop-blur-3xl border-r border-sidebar-border flex flex-col shadow-[20px_0_60px_-20px_rgba(0,0,0,0.5)] transition-all duration-700'
@@ -52,7 +52,7 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
       <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
       
       {/* Logo Section */}
-      <div className="h-24 flex items-center justify-between px-7 border-b border-sidebar-border relative overflow-hidden group/logo">
+      <div className="h-32 flex items-center justify-between px-8 border-b border-sidebar-border relative overflow-hidden group/logo">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 opacity-0 group-hover/logo:opacity-100 transition-opacity duration-1000" />
         
         <AnimatePresence mode="wait">
@@ -106,7 +106,7 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
       {/* Collapse Button */}
       <button
         onClick={() => handleCollapse(!collapsed)}
-        className="absolute -right-4 top-24 h-9 w-9 rounded-full bg-[#0A0D14] border border-white/10 flex items-center justify-center shadow-2xl hover:bg-primary hover:text-white transition-all duration-500 group/btn hover:scale-110 active:scale-95 z-50 ring-1 ring-white/5"
+        className="absolute -right-5 top-28 h-10 w-10 rounded-full bg-[#0A0D14] border border-white/10 flex items-center justify-center shadow-2xl hover:bg-primary hover:text-white transition-all duration-700 group/btn hover:scale-110 active:scale-95 z-50 ring-1 ring-white/5"
       >
         {collapsed ? (
           <ChevronRight className="h-5 w-5 group-hover/btn:translate-x-0.5 transition-transform" />

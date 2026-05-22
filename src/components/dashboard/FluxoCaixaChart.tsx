@@ -39,22 +39,22 @@ function CustomTooltip({ active, payload, label }: any) {
 export function FluxoCaixaChart({ data, periodoFluxo, setPeriodoFluxo }: FluxoCaixaChartProps) {
   return (
     <motion.div variants={itemVariants} className="w-full">
-      <Card className="h-[320px] sm:h-[360px] md:h-[400px] overflow-hidden border-none bg-background/20 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] ring-1 ring-white/10 rounded-[2.5rem] group hover:ring-white/20 transition-all duration-500">
-        <CardHeader className="pb-2 p-3 sm:p-4 md:p-6">
+      <Card className="h-[400px] sm:h-[450px] md:h-[500px] overflow-hidden border-none bg-background/20 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] ring-1 ring-white/10 rounded-[2.5rem] group hover:ring-white/20 transition-all duration-700">
+        <CardHeader className="pb-4 p-6 sm:p-8 md:p-10">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="min-w-0">
-              <CardTitle className="text-sm sm:text-base md:text-lg font-black tracking-tight flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 shadow-lg shadow-primary/5 group-hover:scale-110 transition-transform duration-500">
-                  <Activity className="h-4 w-4 text-primary" />
+              <CardTitle className="text-lg sm:text-xl md:text-2xl font-black tracking-tighter flex items-center gap-4">
+                <div className="h-12 w-12 rounded-[1rem] bg-primary/10 flex items-center justify-center shrink-0 shadow-2xl shadow-primary/10 group-hover:scale-110 group-hover:rotate-6 transition-all duration-700">
+                  <Activity className="h-6 w-6 text-primary" />
                 </div>
                 <span className="truncate">Quantum Cash Horizon 10/10</span>
               </CardTitle>
               <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 hidden sm:block mt-1">Projeção Neural de Liquidez</CardDescription>
             </div>
-            <Tabs value={periodoFluxo} onValueChange={setPeriodoFluxo}>
-              <TabsList className="h-8 bg-muted/60">
+            <Tabs value={periodoFluxo} onValueChange={setPeriodoFluxo} className="bg-white/5 p-1 rounded-2xl border border-white/10">
+              <TabsList className="h-10 bg-transparent border-none">
                 {['7', '15', '30'].map(v => (
-                  <TabsTrigger key={v} value={v} className="text-[10px] sm:text-xs px-2.5 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  <TabsTrigger key={v} value={v} className="text-xs px-5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-black uppercase tracking-widest rounded-xl transition-all">
                     {v}d
                   </TabsTrigger>
                 ))}
@@ -62,7 +62,7 @@ export function FluxoCaixaChart({ data, periodoFluxo, setPeriodoFluxo }: FluxoCa
             </Tabs>
           </div>
         </CardHeader>
-        <CardContent className="h-[220px] sm:h-[260px] md:h-[300px] p-2 sm:p-4 md:p-6 pt-0">
+        <CardContent className="h-[280px] sm:h-[320px] md:h-[350px] p-6 sm:p-8 md:p-10 pt-0">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={data} margin={{ left: -15, right: 5, top: 5, bottom: 5 }}>
               <defs>

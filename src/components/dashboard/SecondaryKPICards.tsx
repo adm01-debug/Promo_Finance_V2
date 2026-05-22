@@ -42,7 +42,7 @@ function MiniKPICard({ icon: Icon, label, value, iconBg, iconColor, href, alertL
       className="h-full"
     >
       <div className={cn(
-        'relative h-full p-4 rounded-[1.5rem] border border-white/10 bg-background/30 backdrop-blur-xl transition-all duration-500 group cursor-pointer overflow-hidden ring-1 ring-white/5',
+        'relative h-full p-5 rounded-[2rem] border border-white/10 bg-card/20 backdrop-blur-3xl transition-all duration-700 group cursor-pointer overflow-hidden ring-1 ring-white/5',
         'hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.25)] hover:ring-white/20',
         alertLevel === 'warning' && value > 0 && 'border-warning/40 shadow-[0_0_20px_hsl(var(--warning)/0.15)]',
         alertLevel === 'danger' && value > 0 && 'border-destructive/30 shadow-[0_0_20px_hsl(var(--destructive)/0.12)]',
@@ -112,7 +112,7 @@ export function SecondaryKPICards({
   taxaRecuperacao = 0,
 }: SecondaryKPICardsProps) {
   return (
-    <div className="col-span-1 lg:col-span-3 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-9 gap-3">
+    <div className="col-span-1 lg:col-span-3 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-9 gap-4 sm:gap-6">
       <MiniKPICard
         icon={Building2} label="Business Units" value={empresasCount}
         iconBg="bg-primary/10" iconColor="text-primary"

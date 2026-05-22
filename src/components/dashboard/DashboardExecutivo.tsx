@@ -50,14 +50,14 @@ function SectionDivider({ label, icon: Icon }: { label: string; icon: React.Elem
   return (
     <div className="flex items-center gap-3 py-1">
       <div className="flex items-center gap-2 shrink-0">
-        <div className="h-7 w-7 rounded-lg bg-primary/[0.06] flex items-center justify-center">
-          <Icon className="h-3.5 w-3.5 text-primary/70" />
+        <div className="h-10 w-10 rounded-xl bg-primary/[0.08] flex items-center justify-center border border-primary/10 shadow-inner">
+          <Icon className="h-5 w-5 text-primary" />
         </div>
-        <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/70">
+        <span className="text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground/80">
           {label}
         </span>
       </div>
-      <div className="flex-1 h-px bg-gradient-to-r from-border/60 via-border/30 to-transparent" />
+      <div className="flex-1 h-[2px] bg-gradient-to-r from-border/60 via-border/20 to-transparent" />
     </div>
   );
 }
@@ -203,18 +203,18 @@ export const DashboardExecutivo = () => {
     <div className="relative min-h-screen">
       {/* Premium Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-5%] w-[60%] h-[60%] rounded-full bg-primary/20 blur-[140px] animate-[pulse_4s_infinite]" />
-        <div className="absolute bottom-[10%] right-[-15%] w-[50%] h-[50%] rounded-full bg-blue-600/15 blur-[120px] animate-[pulse_6s_infinite]" style={{ animationDelay: '2s' }} />
-        <div className="absolute top-[20%] right-[5%] w-[45%] h-[45%] rounded-full bg-purple-600/15 blur-[150px] animate-[pulse_5s_infinite]" style={{ animationDelay: '4s' }} />
-        <div className="absolute middle-0 left-[20%] w-[40%] h-[40%] rounded-full bg-emerald-500/10 blur-[130px] animate-[pulse_7s_infinite]" style={{ animationDelay: '1s' }} />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.03)_0%,transparent_100%)]" />
+        <div className="absolute top-[-10%] left-[-5%] w-[70%] h-[70%] rounded-full bg-primary/25 blur-[160px] animate-[pulse_6s_infinite] opacity-60" />
+        <div className="absolute bottom-[10%] right-[-15%] w-[60%] h-[60%] rounded-full bg-blue-600/20 blur-[140px] animate-[pulse_8s_infinite] opacity-60" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-[20%] right-[5%] w-[55%] h-[55%] rounded-full bg-purple-600/20 blur-[170px] animate-[pulse_7s_infinite] opacity-60" style={{ animationDelay: '4s' }} />
+        <div className="absolute middle-0 left-[20%] w-[50%] h-[50%] rounded-full bg-emerald-500/15 blur-[150px] animate-[pulse_9s_infinite] opacity-50" style={{ animationDelay: '1s' }} />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.05)_0%,transparent_100%)]" />
       </div>
 
       <motion.div 
         variants={containerVariants} 
         initial="hidden" 
         animate="visible" 
-        className="relative z-10 space-y-8 sm:space-y-10 pb-20" 
+        className="relative z-10 space-y-12 sm:space-y-16 pb-32" 
         data-tour="dashboard"
       >
         {/* Header Section */}
@@ -291,7 +291,7 @@ export const DashboardExecutivo = () => {
         </motion.div>
 
         {/* Key Metrics Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16">
           <div className="lg:col-span-8 space-y-10">
             {/* Secondary KPIs */}
             <motion.div variants={itemVariants}>
@@ -315,11 +315,11 @@ export const DashboardExecutivo = () => {
 
             {/* Analytics Section */}
             <div className="space-y-6">
-              <SectionDivider label="Cyber-Neural Matrix: Strategic Analytics 10/10" icon={BarChart3} />
+              <SectionDivider label="Matrix Strategic Analytics 10/10" icon={BarChart3} />
               
               {/* Intelligent Purchasing 360 & Anti-Duplicity Hub */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-                <motion.div variants={itemVariants} className="premium-card p-6 border border-white/10 bg-gradient-to-br from-primary/5 to-transparent backdrop-blur-md rounded-[2rem] relative overflow-hidden group">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 mb-16">
+                <motion.div variants={itemVariants} className="premium-card p-8 border border-white/10 bg-gradient-to-br from-primary/5 to-transparent backdrop-blur-3xl rounded-[2.5rem] relative overflow-hidden group">
                   <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                     <ShieldCheck className="h-12 w-12 text-primary" />
                   </div>
@@ -341,17 +341,17 @@ export const DashboardExecutivo = () => {
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed">Bloqueio automático de pagamentos duplicados e auditoria cyber-neural em tempo real.</p>
                     <div className="flex items-center gap-3 pt-2">
-                      <Button asChild size="sm" className="rounded-xl font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+                      <Button asChild size="lg" className="rounded-2xl font-black uppercase tracking-widest bg-primary text-primary-foreground shadow-2xl shadow-primary/30 h-14 px-8">
                         <Link to="/contas-pagar/bloqueios">Ver Auditoria</Link>
                       </Button>
-                      <Button asChild variant="ghost" size="sm" className="rounded-xl font-bold text-muted-foreground hover:text-primary">
+                      <Button asChild variant="ghost" size="lg" className="rounded-2xl font-black uppercase tracking-widest text-muted-foreground/60 hover:text-primary h-14 px-8">
                         <Link to="/configuracoes">Regras de Bloqueio</Link>
                       </Button>
                     </div>
                   </div>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="premium-card p-6 border border-white/10 bg-gradient-to-br from-blue-500/5 to-transparent backdrop-blur-md rounded-[2rem] relative overflow-hidden group">
+                <motion.div variants={itemVariants} className="premium-card p-8 border border-white/10 bg-gradient-to-br from-blue-500/5 to-transparent backdrop-blur-3xl rounded-[2.5rem] relative overflow-hidden group">
                   <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                     <FileText className="h-12 w-12 text-blue-400" />
                   </div>
@@ -362,7 +362,7 @@ export const DashboardExecutivo = () => {
                     <h3 className="text-xl font-black tracking-tight">Relatórios & Conciliação</h3>
                     <p className="text-xs text-muted-foreground leading-relaxed">Exporte trilhas de auditoria completas em PDF/CSV para conciliações bancárias impecáveis.</p>
                     <div className="flex items-center gap-3 pt-2">
-                      <Button asChild size="sm" variant="secondary" className="rounded-xl font-bold">
+                      <Button asChild size="lg" variant="secondary" className="rounded-2xl font-black uppercase tracking-widest h-14 px-8">
                         <Link to="/relatorios">Painel de Relatórios</Link>
                       </Button>
                       <Button 

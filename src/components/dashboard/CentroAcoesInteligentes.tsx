@@ -31,13 +31,13 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
     <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 group">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-purple-500/5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
       
-      <CardHeader className="flex flex-row items-start justify-between gap-6 p-8 relative z-10">
+      <CardHeader className="flex flex-row items-start justify-between gap-6 p-10 relative z-10">
         <div className="flex items-start gap-4">
-          <div className="p-4 rounded-2xl bg-primary shadow-xl shadow-primary/20 text-primary-foreground transform group-hover:scale-110 transition-transform duration-500">
-            <Sparkles className="h-7 w-7" />
+          <div className="p-5 rounded-[1.25rem] bg-gradient-to-br from-primary to-blue-600 shadow-2xl shadow-primary/30 text-primary-foreground transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-700">
+            <Sparkles className="h-8 w-8" />
           </div>
           <div>
-            <CardTitle className="text-2xl font-black tracking-tight">Quantum Governance 10/10</CardTitle>
+            <CardTitle className="text-3xl font-black tracking-tighter">Quantum Governance 10/10</CardTitle>
             <CardDescription className="text-sm font-medium opacity-60">
               Top 5 prioridades processadas por Redes Neurais Financeiras
             </CardDescription>
@@ -48,7 +48,7 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
           size="icon"
           onClick={() => regenerar.mutate()}
           disabled={regenerar.isPending}
-          className="h-12 w-12 rounded-2xl bg-white/5 hover:bg-white/10 text-primary transition-all"
+          className="h-14 w-14 rounded-2xl bg-white/5 hover:bg-white/10 text-primary transition-all border border-white/10 shadow-2xl"
         >
           {regenerar.isPending ? (
             <Loader2 className="h-5 w-5 animate-spin" />
@@ -57,7 +57,7 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
           )}
         </Button>
       </CardHeader>
-      <CardContent className="p-8 pt-2 relative z-10">
+      <CardContent className="p-10 pt-4 relative z-10">
         {isLoading && (
           <div className="space-y-4">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -105,7 +105,7 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.1 }}
-                  className="group/item rounded-[1.5rem] border border-white/5 bg-white/[0.03] p-5 transition-all duration-300 hover:bg-white/[0.07] hover:translate-x-1"
+                  className="group/item rounded-[2rem] border border-white/5 bg-white/[0.04] p-7 transition-all duration-700 hover:bg-white/[0.08] hover:translate-x-2 shadow-sm hover:shadow-2xl"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-4 min-w-0 flex-1">
@@ -113,8 +113,8 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
                         <UrgIcon className="h-5 w-5" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-3 flex-wrap">
-                          <p className="text-base font-bold tracking-tight">{acao.titulo}</p>
+                        <div className="flex items-center gap-4 flex-wrap">
+                          <p className="text-lg font-black tracking-tight">{acao.titulo}</p>
                           <Badge variant={cfg.variant} className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md border-none">
                             {cfg.label}
                           </Badge>
@@ -134,7 +134,7 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
                       </div>
                     </div>
                     {acao.link_resolucao && (
-                      <Button asChild size="sm" className="shrink-0 h-10 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-4">
+                      <Button asChild size="lg" className="shrink-0 h-14 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-widest px-8 shadow-xl shadow-primary/20">
                         <Link to={acao.link_resolucao}>
                           Execute <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>

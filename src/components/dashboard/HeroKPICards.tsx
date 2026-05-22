@@ -150,12 +150,12 @@ export function HeroKPICard({
       <Card
         className={cn(
           'relative overflow-hidden transition-all duration-500 cursor-pointer group h-full',
-          'border border-white/10 bg-background/20 backdrop-blur-2xl',
-          'shadow-[0_8px_32px_-8px_rgba(0,0,0,0.2)] hover:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.3)]',
+          'border border-white/10 bg-card/20 backdrop-blur-3xl',
+          'shadow-2xl hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.4)]',
           'ring-1 ring-white/5 hover:ring-white/20',
           config.card,
           size === 'hero' && 'rounded-[2rem]',
-          size !== 'hero' && 'rounded-[1.5rem]',
+          size !== 'hero' && 'rounded-[2rem]',
         )}
         style={accentColor ? {
           borderColor: isHovered ? `${accentColor}40` : undefined,
@@ -286,10 +286,10 @@ export function HeroKPIGrid({ children, layout = 'default' }: HeroKPIGridProps) 
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="grid grid-cols-1 lg:grid-cols-5 gap-3 sm:gap-4"
+        className="grid grid-cols-1 lg:grid-cols-5 gap-6 sm:gap-10"
       >
         <div className="lg:col-span-2">{heroChild}</div>
-        <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+        <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
           {otherChildren}
         </div>
       </motion.div>

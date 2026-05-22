@@ -122,8 +122,8 @@ export function DashboardFiltersHeader({
                   <GreetingIcon className="h-8 w-8 text-white relative z-10" />
                 </motion.div>
                 <div>
-                  <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-foreground flex items-center gap-3">
-                    Cyber-Singularity: <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600 drop-shadow-[0_0_15px_rgba(var(--primary),0.3)]">{user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Gestor'}</span>
+                  <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-foreground flex items-center gap-3">
+                    Cyber-Singularity: <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600 drop-shadow-[0_0_30px_rgba(var(--primary),0.5)]">{user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Gestor'}</span>
                   </h1>
                   <p className="text-lg font-medium text-muted-foreground/70 mt-1 max-w-xl italic">
                     "{insight}"
