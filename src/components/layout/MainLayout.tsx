@@ -95,9 +95,9 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           width: isMobile ? '100%' : `calc(100% - ${sidebarCollapsed ? 100 : 320}px)`,
         }}
       >
-        <div className="w-full max-w-[1800px] mx-auto p-8 md:p-10 lg:p-14">
+        <div className="w-full max-w-[1800px] mx-auto p-10 md:p-14 lg:p-20">
           {/* Contextual Breadcrumbs with Back Button */}
-          <div className="mb-8">
+          <div className="mb-12">
             <ContextualBreadcrumbs />
           </div>
           
