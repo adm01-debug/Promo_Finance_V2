@@ -1,9 +1,10 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { BlingProxySchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
-
+import { withRetry, createCircuitBreaker } from "../_shared/resilience.ts";
 
 const BLING_API_BASE = "https://api.bling.com.br/Api/v3";
 const BLING_AUTH_BASE = "https://www.bling.com.br/Api/v3/oauth";
+const blingCB = createCircuitBreaker('bling');
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
