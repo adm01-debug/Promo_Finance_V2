@@ -291,7 +291,7 @@ export const DashboardExecutivo = () => {
         </motion.div>
 
         {/* Key Metrics Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16">
           <div className="lg:col-span-8 space-y-10">
             {/* Secondary KPIs */}
             <motion.div variants={itemVariants}>
@@ -318,8 +318,8 @@ export const DashboardExecutivo = () => {
               <SectionDivider label="Matrix Strategic Analytics 10/10" icon={BarChart3} />
               
               {/* Intelligent Purchasing 360 & Anti-Duplicity Hub */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-                <motion.div variants={itemVariants} className="premium-card p-6 border border-white/10 bg-gradient-to-br from-primary/5 to-transparent backdrop-blur-md rounded-[2rem] relative overflow-hidden group">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 mb-16">
+                <motion.div variants={itemVariants} className="premium-card p-8 border border-white/10 bg-gradient-to-br from-primary/5 to-transparent backdrop-blur-3xl rounded-[2.5rem] relative overflow-hidden group">
                   <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                     <ShieldCheck className="h-12 w-12 text-primary" />
                   </div>
@@ -351,7 +351,7 @@ export const DashboardExecutivo = () => {
                   </div>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="premium-card p-6 border border-white/10 bg-gradient-to-br from-blue-500/5 to-transparent backdrop-blur-md rounded-[2rem] relative overflow-hidden group">
+                <motion.div variants={itemVariants} className="premium-card p-8 border border-white/10 bg-gradient-to-br from-blue-500/5 to-transparent backdrop-blur-3xl rounded-[2.5rem] relative overflow-hidden group">
                   <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                     <FileText className="h-12 w-12 text-blue-400" />
                   </div>
