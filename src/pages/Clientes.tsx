@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion } from 'framer-motion';
-import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { ClientesTableBody } from '@/pages/clientes/ClientesTableBody';
 import { ClientesKPIs } from '@/pages/clientes/ClientesKPIs';
 import { ClientesFiltersPanel } from '@/pages/clientes/ClientesFiltersPanel';
@@ -14,7 +13,6 @@ import {
   Users,
   Trophy,
 } from 'lucide-react';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -25,16 +23,15 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { ExportMenu } from '@/components/ui/export-menu';
-import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useClientes, useClientesPaginated, ExternalCliente } from '@/hooks/useFinancialData';
 import { clientesColumns } from '@/lib/export-utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
+import { StandardTableCard } from '@/components/shared/StandardTableCard';
 import { ClienteForm } from '@/components/clientes/ClienteForm';
 import { ClienteDetailDialog } from '@/components/clientes/ClienteDetailDialog';
 import { ScoringClientesPanel } from '@/components/clientes/ScoringClientesPanel';
-import { TablePagination } from '@/components/ui/table-pagination';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 
