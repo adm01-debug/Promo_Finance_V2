@@ -47,6 +47,7 @@ export function useRealtimeAnomalias() {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "anomalias_detectadas" },
         async (payload) => {
+          if (!payload.new) return;
           const a = payload.new as {
             id: string;
             severidade?: string;
