@@ -176,32 +176,37 @@ export default function Fornecedores() {
   return (
     <MainLayout>
       <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
-        {/* Page Header */}
-        <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-display-md text-foreground">Fornecedores</h1>
-            <p className="text-muted-foreground mt-1">Gerencie sua base de fornecedores</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <ExportMenu
-              data={filteredFornecedores}
-              columns={fornecedoresColumns}
-              filename="fornecedores"
-              title="Relatório de Fornecedores"
-            />
-            <Button 
-              size="sm" 
-              className="gap-2 bg-gradient-to-r from-warning to-warning/80 hover:from-warning/90 hover:to-warning/70 shadow-lg shadow-warning/25 text-warning-foreground"
-              onClick={() => {
-                setEditingFornecedor(null);
-                setFormOpen(true);
-              }}
-            >
-              <Plus className="h-4 w-4" />
-              Novo Fornecedor
-            </Button>
-          </div>
-        </motion.div>
+        <PageBackground />
+        
+        <PageHeader 
+          title="Fornecedores" 
+          subtitle="Gerencie sua base de fornecedores e otimize a cadeia de suprimentos."
+          badge="Supply Chain Management"
+          icon={Package}
+          gradientFrom="from-warning"
+          gradientVia="via-orange-500"
+          gradientTo="to-red-500"
+          actions={
+            <div className="flex items-center gap-3">
+              <ExportMenu
+                data={filteredFornecedores}
+                columns={fornecedoresColumns}
+                filename="fornecedores"
+                title="Relatório de Fornecedores"
+              />
+              <Button 
+                size="lg" 
+                className="h-10 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]"
+                onClick={() => {
+                  setEditingFornecedor(null);
+                  setFormOpen(true);
+                }}
+              >
+                <Plus className="h-5 w-5" /> Novo Fornecedor
+              </Button>
+            </div>
+          }
+        />
 
         {/* KPI Cards */}
         <FornecedoresKPIs total={totalFornecedores} ativos={fornecedoresAtivos} />
@@ -235,59 +240,54 @@ export default function Fornecedores() {
 
         {/* Table */}
         <motion.div variants={itemVariants}>
-          <Card className="card-elevated overflow-hidden">
-            {isLoading ? (
-              <TableShimmerSkeleton rows={8} columns={5} />
-            ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="hover:bg-transparent">
-                      <TableHead className="w-[250px]">Fornecedor</TableHead>
-                      <TableHead>Contato</TableHead>
-                      <TableHead>Localização</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="w-[80px]"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {paginatedFornecedores.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={5} className="p-0">
-                          <EmptyState 
-                            icon={<Package className="h-8 w-8 text-muted-foreground" />}
-                            title={fornecedores.length === 0 ? 'Nenhum fornecedor cadastrado' : 'Nenhum fornecedor encontrado'}
-                            description={fornecedores.length === 0 ? 'Comece adicionando seu primeiro fornecedor' : 'Tente ajustar os filtros de busca'}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      paginatedFornecedores.map((fornecedor, index) => (
-                        <FornecedoresTableRow
-                          key={fornecedor.id}
-                          fornecedor={fornecedor}
-                          index={index}
-                          onView={(f) => { setViewingFornecedor(f); setDetailOpen(true); }}
-                          onEdit={(f) => { setEditingFornecedor(f); setFormOpen(true); }}
-                          onDelete={(f) => { setDeletingFornecedor(f); setDeleteDialogOpen(true); }}
-                        />
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-            {filteredFornecedores.length > 0 && (
-              <TablePagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                pageSize={pageSize}
-                totalItems={totalCount}
-                onPageChange={setCurrentPage}
-                onPageSizeChange={handlePageSizeChange}
-              />
-            )}
-          </Card>
+          <StandardTableCard
+            isLoading={isLoading}
+            pageSize={pageSize}
+            pagination={filteredFornecedores.length > 0 ? {
+              currentPage,
+              totalPages,
+              pageSize,
+              totalItems: totalCount,
+              onPageChange: setCurrentPage,
+              onPageSizeChange: handlePageSizeChange
+            } : undefined}
+          >
+            <Table>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent border-b border-white/5">
+                  <TableHead className="w-[250px] font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Fornecedor</TableHead>
+                  <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Contato</TableHead>
+                  <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Localização</TableHead>
+                  <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Status</TableHead>
+                  <TableHead className="w-[80px] p-6"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="divide-y divide-white/5">
+                {fornecedores.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="p-0">
+                      <EmptyState 
+                        icon={<Package className="h-8 w-8 text-muted-foreground" />}
+                        title={fornecedores.length === 0 ? 'Nenhum fornecedor cadastrado' : 'Nenhum fornecedor encontrado'}
+                        description={fornecedores.length === 0 ? 'Comece adicionando seu primeiro fornecedor' : 'Tente ajustar os filtros de busca'}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  fornecedores.map((fornecedor, index) => (
+                    <FornecedoresTableRow
+                      key={fornecedor.id}
+                      fornecedor={fornecedor}
+                      index={index}
+                      onView={(f) => { setViewingFornecedor(f); setDetailOpen(true); }}
+                      onEdit={(f) => { setEditingFornecedor(f); setFormOpen(true); }}
+                      onDelete={(f) => { setDeletingFornecedor(f); setDeleteDialogOpen(true); }}
+                    />
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </StandardTableCard>
         </motion.div>
 
         <FornecedorForm 
