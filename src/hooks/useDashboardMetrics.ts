@@ -34,8 +34,9 @@ export function useDashboardMetrics(filters: DashboardFilters) {
 
   const totalDivergencias = useMemo(() => {
     return (divergencias || []).filter(d => {
+      if (!d) return false;
       const matchEmpresa = (empresaFilter === 'all' ? true : d.conta_bancaria_id === empresaFilter); // Simplified mapping
-      return d.status === 'pendente';
+      return d.status === 'pendente' && matchEmpresa;
     }).length;
   }, [divergencias, empresaFilter]);
 
