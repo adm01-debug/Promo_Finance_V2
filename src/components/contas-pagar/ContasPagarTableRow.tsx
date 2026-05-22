@@ -109,7 +109,7 @@ export const ContasPagarTableRow = memo(({
       <TableCell className="p-6 text-center">
         <Checkbox
           checked={isSelected}
-          onCheckedChange={onToggleSelect}
+          onChange={onToggleSelect}
           aria-label={`Selecionar ${conta.descricao}`}
         />
       </TableCell>
