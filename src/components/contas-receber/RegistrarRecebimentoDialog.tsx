@@ -261,8 +261,8 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
                 <FormItem>
                   <FormLabel>Valor do Recebimento *</FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">R$</span>
+                    <div className="relative group">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors text-sm font-bold">R$</span>
                       <Input
                         type="number"
                         step="0.01"
@@ -271,7 +271,7 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
                         {...field}
                         onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         disabled={tipoRecebimento === 'total'}
-                        className="pl-10"
+                        className="pl-12 h-12 rounded-xl bg-white/5 border-white/10 font-bold"
                       />
                     </div>
                   </FormControl>
@@ -289,8 +289,8 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
                   <FormLabel>Data do Recebimento *</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input type="date" {...field} className="pl-10" />
+                      <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                      <Input type="date" {...field} className="pl-12 h-12 rounded-xl bg-white/5 border-white/10" />
                     </div>
                   </FormControl>
                   <FormMessage />
