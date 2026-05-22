@@ -50,14 +50,14 @@ function SectionDivider({ label, icon: Icon }: { label: string; icon: React.Elem
   return (
     <div className="flex items-center gap-3 py-1">
       <div className="flex items-center gap-2 shrink-0">
-        <div className="h-7 w-7 rounded-lg bg-primary/[0.06] flex items-center justify-center">
-          <Icon className="h-3.5 w-3.5 text-primary/70" />
+        <div className="h-10 w-10 rounded-xl bg-primary/[0.08] flex items-center justify-center border border-primary/10 shadow-inner">
+          <Icon className="h-5 w-5 text-primary" />
         </div>
-        <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/70">
+        <span className="text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground/80">
           {label}
         </span>
       </div>
-      <div className="flex-1 h-px bg-gradient-to-r from-border/60 via-border/30 to-transparent" />
+      <div className="flex-1 h-[2px] bg-gradient-to-r from-border/60 via-border/20 to-transparent" />
     </div>
   );
 }
@@ -341,10 +341,10 @@ export const DashboardExecutivo = () => {
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed">Bloqueio automático de pagamentos duplicados e auditoria cyber-neural em tempo real.</p>
                     <div className="flex items-center gap-3 pt-2">
-                      <Button asChild size="sm" className="rounded-xl font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+                      <Button asChild size="lg" className="rounded-2xl font-black uppercase tracking-widest bg-primary text-primary-foreground shadow-2xl shadow-primary/30 h-14 px-8">
                         <Link to="/contas-pagar/bloqueios">Ver Auditoria</Link>
                       </Button>
-                      <Button asChild variant="ghost" size="sm" className="rounded-xl font-bold text-muted-foreground hover:text-primary">
+                      <Button asChild variant="ghost" size="lg" className="rounded-2xl font-black uppercase tracking-widest text-muted-foreground/60 hover:text-primary h-14 px-8">
                         <Link to="/configuracoes">Regras de Bloqueio</Link>
                       </Button>
                     </div>
@@ -362,7 +362,7 @@ export const DashboardExecutivo = () => {
                     <h3 className="text-xl font-black tracking-tight">Relatórios & Conciliação</h3>
                     <p className="text-xs text-muted-foreground leading-relaxed">Exporte trilhas de auditoria completas em PDF/CSV para conciliações bancárias impecáveis.</p>
                     <div className="flex items-center gap-3 pt-2">
-                      <Button asChild size="sm" variant="secondary" className="rounded-xl font-bold">
+                      <Button asChild size="lg" variant="secondary" className="rounded-2xl font-black uppercase tracking-widest h-14 px-8">
                         <Link to="/relatorios">Painel de Relatórios</Link>
                       </Button>
                       <Button 
