@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Tag, Layers, ArrowUpDown, Filter, Search } from 'lucide-react';
+import { Plus, Tag, ArrowUpDown } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CategoriaForm } from '@/components/categorias/CategoriaForm';
 import { CategoriaTable } from '@/components/categorias/CategoriaTable';
 import { useCategorias } from '@/hooks/useCategorias';
+import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
+import { StandardFilterSection } from '@/components/shared/StandardFilterSection';
+import { StandardTableCard } from '@/components/shared/StandardTableCard';
 
 export default function Categorias() {
   const [activeTab, setActiveTab] = useState<'despesa' | 'receita'>('despesa');
@@ -36,61 +37,54 @@ export default function Categorias() {
 
   return (
     <MainLayout>
-      <div className="space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground flex items-center gap-3">
-              <Tag className="h-7 w-7 text-primary" />
-              Categorias Financeiras
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              Gerencie a classificação de receitas e despesas do seu negócio
-            </p>
-          </div>
-          <Button onClick={handleCreate} className="gap-2">
-            <Plus className="h-4 w-4" />
-            Nova Categoria
-          </Button>
-        </div>
+      <div className="relative min-h-screen">
+        <PageBackground />
+        
+        <div className="relative z-10 space-y-10 pb-20">
+          <PageHeader 
+            title="Categorias Financeiras" 
+            subtitle="Gerencie a classificação de receitas e despesas do seu negócio."
+            badge="Chart of Accounts"
+            icon={Tag}
+            actions={
+              <Button onClick={handleCreate} size="lg" className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]">
+                <Plus className="h-5 w-5" /> Novo Registro
+              </Button>
+            }
+          />
 
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-          <Tabs 
-            value={activeTab} 
-            onValueChange={(v) => setActiveTab(v as any)} 
-            className="w-full md:w-auto"
+          <StandardFilterSection
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            searchPlaceholder="Buscar categoria..."
+            badge="Classificação"
           >
-            <TabsList className="grid grid-cols-2 w-full md:w-[300px]">
-              <TabsTrigger value="despesa" className="gap-2">
-                <ArrowUpDown className="h-4 w-4 text-destructive" />
-                Despesas
-              </TabsTrigger>
-              <TabsTrigger value="receita" className="gap-2">
-                <ArrowUpDown className="h-4 w-4 text-success" />
-                Receitas
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+            <Tabs 
+              value={activeTab} 
+              onValueChange={(v) => setActiveTab(v as any)} 
+              className="w-full md:w-auto"
+            >
+              <TabsList className="grid grid-cols-2 w-full md:w-[300px] h-10 bg-white/5 border-white/10 rounded-xl">
+                <TabsTrigger value="despesa" className="gap-2 rounded-lg">
+                  <ArrowUpDown className="h-4 w-4 text-destructive" />
+                  Despesas
+                </TabsTrigger>
+                <TabsTrigger value="receita" className="gap-2 rounded-lg">
+                  <ArrowUpDown className="h-4 w-4 text-success" />
+                  Receitas
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </StandardFilterSection>
 
-          <div className="relative w-full md:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar categoria..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-        </div>
-
-        <Card className="border-none bg-background/50 backdrop-blur-xl shadow-xl ring-1 ring-white/10">
-          <CardContent className="p-0">
+          <StandardTableCard isLoading={isLoading}>
             <CategoriaTable 
               categorias={filteredCategorias} 
               isLoading={isLoading} 
               onEdit={handleEdit}
             />
-          </CardContent>
-        </Card>
+          </StandardTableCard>
+        </div>
       </div>
 
       <CategoriaForm 

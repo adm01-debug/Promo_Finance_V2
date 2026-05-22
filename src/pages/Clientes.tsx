@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion } from 'framer-motion';
-import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
 import { ClientesTableBody } from '@/pages/clientes/ClientesTableBody';
 import { ClientesKPIs } from '@/pages/clientes/ClientesKPIs';
 import { ClientesFiltersPanel } from '@/pages/clientes/ClientesFiltersPanel';
@@ -14,7 +13,6 @@ import {
   Users,
   Trophy,
 } from 'lucide-react';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -25,16 +23,15 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { ExportMenu } from '@/components/ui/export-menu';
-import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useClientes, useClientesPaginated, ExternalCliente } from '@/hooks/useFinancialData';
 import { clientesColumns } from '@/lib/export-utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
+import { StandardTableCard } from '@/components/shared/StandardTableCard';
 import { ClienteForm } from '@/components/clientes/ClienteForm';
 import { ClienteDetailDialog } from '@/components/clientes/ClienteDetailDialog';
 import { ScoringClientesPanel } from '@/components/clientes/ScoringClientesPanel';
-import { TablePagination } from '@/components/ui/table-pagination';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -176,31 +173,32 @@ export default function Clientes() {
               gradientFrom="from-blue-600"
               gradientVia="via-primary"
               gradientTo="to-indigo-500"
-            >
-              <div className="flex items-center gap-3">
-                <TabsList className="bg-primary/10 border-primary/20 h-10 px-1 rounded-xl">
-                  <TabsTrigger value="lista" className="rounded-lg font-bold px-4" onClick={() => window.history.replaceState(null, '', '/clientes')}>Lista Geral</TabsTrigger>
-                  <TabsTrigger value="scoring" className="rounded-lg font-bold px-4" onClick={() => window.history.replaceState(null, '', '/clientes#scoring')}>Scoring & Risco</TabsTrigger>
-                </TabsList>
-                <div className="h-8 w-px bg-white/10 mx-1" />
-                <ExportMenu
-                  data={filteredClientes}
-                  columns={clientesColumns}
-                  filename="clientes"
-                  title="Relatório de Clientes"
-                />
-                <Button 
-                  size="lg" 
-                  className="h-10 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]"
-                  onClick={() => {
-                    setEditingCliente(null);
-                    setFormOpen(true);
-                  }}
-                >
-                  <Plus className="h-5 w-5" /> Novo Cliente
-                </Button>
-              </div>
-            </PageHeader>
+              actions={
+                <div className="flex items-center gap-3">
+                  <TabsList className="bg-primary/10 border-primary/20 h-10 px-1 rounded-xl">
+                    <TabsTrigger value="lista" className="rounded-lg font-bold px-4" onClick={() => window.history.replaceState(null, '', '/clientes')}>Lista Geral</TabsTrigger>
+                    <TabsTrigger value="scoring" className="rounded-lg font-bold px-4" onClick={() => window.history.replaceState(null, '', '/clientes#scoring')}>Scoring & Risco</TabsTrigger>
+                  </TabsList>
+                  <div className="h-8 w-px bg-white/10 mx-1" />
+                  <ExportMenu
+                    data={filteredClientes}
+                    columns={clientesColumns}
+                    filename="clientes"
+                    title="Relatório de Clientes"
+                  />
+                  <Button 
+                    size="lg" 
+                    className="h-10 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]"
+                    onClick={() => {
+                      setEditingCliente(null);
+                      setFormOpen(true);
+                    }}
+                  >
+                    <Plus className="h-5 w-5" /> Novo Cliente
+                  </Button>
+                </div>
+              }
+            />
 
             <TabsContent value="lista" className="space-y-6 m-0 border-none p-0">
               <ClientesKPIs totalClientes={totalClientes} clientesAtivos={clientesAtivos} limiteTotal={limiteTotal} />
@@ -233,64 +231,57 @@ export default function Clientes() {
                 }
               />
               <motion.div variants={itemVariants}>
-                <Card className="card-elevated overflow-hidden bg-background/40 backdrop-blur-xl border-white/10">
-                  {isLoading ? (
-                    <TableShimmerSkeleton rows={pageSize} columns={6} showCheckbox={false} showAvatar />
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="hover:bg-transparent border-b border-white/5">
-                            <TableHead className="w-[250px] font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Cliente</TableHead>
-                            <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Contato</TableHead>
-                            <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Localização</TableHead>
-                            <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">
-                              <div className="flex items-center gap-2">
-                                <Trophy className="h-4 w-4 text-amber-500" />
-                                Score / Rank
-                              </div>
-                            </TableHead>
-                            <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Limite</TableHead>
-                            <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Status</TableHead>
-                            <TableHead className="w-[80px] p-6"></TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody className="divide-y divide-white/5">
-                          {clientes.length === 0 ? (
-                            <TableRow>
-                              <TableCell colSpan={7} className="p-0">
-                                <EmptyState 
-                                  icon={<Users className="h-8 w-8 text-muted-foreground" />}
-                                  title={clientes.length === 0 ? 'Nenhum cliente cadastrado' : 'Nenhum cliente encontrado'}
-                                  description={clientes.length === 0 ? 'Comece adicionando seu primeiro cliente' : 'Tente ajustar os filtros de busca'}
-                                />
-                              </TableCell>
-                            </TableRow>
-                          ) : (
-                            <ClientesTableBody
-                              clientes={clientes}
-                              onView={(c) => { setViewingCliente(c); setDetailOpen(true); }}
-                              onEdit={(c) => { setEditingCliente(c); setFormOpen(true); }}
-                              onDelete={(c) => { setDeletingCliente(c); setDeleteDialogOpen(true); }}
+                <StandardTableCard
+                  isLoading={isLoading}
+                  pageSize={pageSize}
+                  pagination={totalCount > 0 ? {
+                    currentPage,
+                    totalPages,
+                    pageSize,
+                    totalItems: totalCount,
+                    onPageChange: setCurrentPage,
+                    onPageSizeChange: handlePageSizeChange
+                  } : undefined}
+                >
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="hover:bg-transparent border-b border-white/5">
+                        <TableHead className="w-[250px] font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Cliente</TableHead>
+                        <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Contato</TableHead>
+                        <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Localização</TableHead>
+                        <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">
+                          <div className="flex items-center gap-2">
+                            <Trophy className="h-4 w-4 text-amber-500" />
+                            Score / Rank
+                          </div>
+                        </TableHead>
+                        <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Limite</TableHead>
+                        <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Status</TableHead>
+                        <TableHead className="w-[80px] p-6"></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody className="divide-y divide-white/5">
+                      {clientes.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={7} className="p-0">
+                            <EmptyState 
+                              icon={<Users className="h-8 w-8 text-muted-foreground" />}
+                              title={clientes.length === 0 ? 'Nenhum cliente cadastrado' : 'Nenhum cliente encontrado'}
+                              description={clientes.length === 0 ? 'Comece adicionando seu primeiro cliente' : 'Tente ajustar os filtros de busca'}
                             />
-                          )}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  )}
-                  {totalCount > 0 && (
-                    <div className="p-6 border-t border-white/5 bg-black/20">
-                      <TablePagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        pageSize={pageSize}
-                        totalItems={totalCount}
-                        onPageChange={setCurrentPage}
-                        onPageSizeChange={handlePageSizeChange}
-                      />
-                    </div>
-                  )}
-                </Card>
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        <ClientesTableBody
+                          clientes={clientes}
+                          onView={(c) => { setViewingCliente(c); setDetailOpen(true); }}
+                          onEdit={(c) => { setEditingCliente(c); setFormOpen(true); }}
+                          onDelete={(c) => { setDeletingCliente(c); setDeleteDialogOpen(true); }}
+                        />
+                      )}
+                    </TableBody>
+                  </Table>
+                </StandardTableCard>
               </motion.div>
             </TabsContent>
 
