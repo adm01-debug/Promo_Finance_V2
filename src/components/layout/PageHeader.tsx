@@ -12,7 +12,9 @@ interface PageHeaderProps {
   gradientVia?: string;
   gradientTo?: string;
   children?: ReactNode;
+  actions?: ReactNode;
   className?: string;
+  showEmpresaSwitcher?: boolean;
 }
 
 export const PageHeader = ({
@@ -24,14 +26,16 @@ export const PageHeader = ({
   gradientVia = "via-blue-500",
   gradientTo = "to-purple-600",
   children,
+  actions,
   className,
+  showEmpresaSwitcher = false,
 }: PageHeaderProps) => {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-      className={cn("flex flex-col lg:flex-row lg:items-end justify-between gap-8 pt-4 mb-8", className)}
+      className={cn("flex flex-col lg:flex-row lg:items-end justify-between gap-8 pt-4 mb-10", className)}
     >
       <div className="space-y-4">
         {badge && (
@@ -58,11 +62,19 @@ export const PageHeader = ({
         )}
       </div>
 
-      {children && (
-        <div className="flex items-center gap-4 bg-background/40 p-2.5 rounded-[2rem] border border-white/10 backdrop-blur-2xl shadow-2xl ring-1 ring-white/10">
-          {children}
-        </div>
-      )}
+      <div className="flex flex-col md:flex-row items-center gap-4 bg-background/40 p-2.5 rounded-[2rem] border border-white/10 backdrop-blur-2xl shadow-2xl ring-1 ring-white/10">
+        {showEmpresaSwitcher && (
+          <div className="hidden lg:flex items-center gap-3 pr-3 border-r border-white/10">
+            <EmpresaSwitcher />
+          </div>
+        )}
+        {children}
+        {actions && (
+          <div className="flex items-center gap-3">
+            {actions}
+          </div>
+        )}
+      </div>
     </motion.div>
   );
 };
