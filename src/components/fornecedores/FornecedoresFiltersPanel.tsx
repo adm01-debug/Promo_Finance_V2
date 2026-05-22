@@ -33,67 +33,53 @@ export function FornecedoresFiltersPanel({
 }: Props) {
   return (
     <motion.div variants={itemVariants}>
-      <Card className="card-base">
-        <CardContent className="p-4 space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por razão social, nome fantasia, CNPJ ou e-mail..."
-              value={searchTerm}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+      <StandardFilterSection
+        searchTerm={searchTerm}
+        onSearchChange={onSearchChange}
+        searchPlaceholder="Buscar por razão social, nome fantasia, CNPJ ou e-mail..."
+        badge="Filtros"
+      >
+        <Select value={statusFilter} onValueChange={onStatusChange}>
+          <SelectTrigger className="w-[130px] h-9">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="ativo">Ativos</SelectItem>
+            <SelectItem value="inativo">Inativos</SelectItem>
+          </SelectContent>
+        </Select>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Filter className="h-4 w-4" />
-              Filtros:
-            </div>
+        <Select value={estadoFilter} onValueChange={onEstadoChange}>
+          <SelectTrigger className="w-[130px] h-9">
+            <SelectValue placeholder="Estado" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            {estados.map((estado) => (
+              <SelectItem key={estado} value={estado}>{estado}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-            <Select value={statusFilter} onValueChange={onStatusChange}>
-              <SelectTrigger className="w-[130px] h-9">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="ativo">Ativos</SelectItem>
-                <SelectItem value="inativo">Inativos</SelectItem>
-              </SelectContent>
-            </Select>
+        {clearSlot ?? (
+          hasActiveFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClearFilters}
+              className="h-9 px-2 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4 mr-1" />
+              Limpar
+            </Button>
+          )
+        )}
 
-            <Select value={estadoFilter} onValueChange={onEstadoChange}>
-              <SelectTrigger className="w-[130px] h-9">
-                <SelectValue placeholder="Estado" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                {estados.map((estado) => (
-                  <SelectItem key={estado} value={estado}>{estado}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {clearSlot ?? (
-              hasActiveFilters && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onClearFilters}
-                  className="h-9 px-2 text-muted-foreground hover:text-foreground"
-                >
-                  <X className="h-4 w-4 mr-1" />
-                  Limpar
-                </Button>
-              )
-            )}
-
-            <div className="ml-auto text-sm text-muted-foreground">
-              {filteredCount} de {totalCount} fornecedores
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        <div className="ml-auto text-sm text-muted-foreground whitespace-nowrap">
+          {filteredCount} de {totalCount} fornecedores
+        </div>
+      </StandardFilterSection>
     </motion.div>
   );
 }
