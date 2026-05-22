@@ -1,10 +1,9 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Filter, X } from 'lucide-react';
+import { X } from 'lucide-react';
+import { StandardFilterSection } from '@/components/shared/StandardFilterSection';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
