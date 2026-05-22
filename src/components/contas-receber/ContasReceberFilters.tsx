@@ -1,6 +1,4 @@
-import { Search, SlidersHorizontal, Building2, Target, CreditCard, Tag, Banknote } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Building2, Target, CreditCard, Tag, Banknote } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -9,6 +7,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { AdvancedFiltersPopover, AdvancedFilters } from '@/components/ui/advanced-filters';
+import { StandardFilterSection } from '../shared/StandardFilterSection';
 
 interface CentroCusto {
   id: string;
