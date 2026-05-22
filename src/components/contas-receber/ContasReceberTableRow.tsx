@@ -130,7 +130,11 @@ export function ContasReceberTableRow({
       )}
     >
       <TableCell className="p-6 text-center">
-        <Checkbox checked={isSelected} onChange={() => onToggleSelect(conta.id)} aria-label={`Selecionar ${conta.descricao}`} />
+        <Checkbox 
+          checked={isSelected} 
+          onCheckedChange={() => onToggleSelect(conta.id)} 
+          aria-label={`Selecionar ${conta.descricao}`} 
+        />
       </TableCell>
       
       <TableCell className="p-6">

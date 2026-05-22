@@ -156,10 +156,11 @@ export function useQuickDateFilter(initialValue: DateFilterOption = 'all') {
     setDateRange(range);
   }, []);
 
-  const filterByDate = React.useCallback(<T extends { data_vencimento: string }>(items: T[]): T[] => {
+  const filterByDate = React.useCallback(<T extends { data_vencimento?: string }>(items: T[]): T[] => {
     if (!dateRange) return items;
     
     return items.filter(item => {
+      if (!item.data_vencimento) return true;
       const itemDate = new Date(item.data_vencimento);
       return itemDate >= dateRange.start && itemDate <= dateRange.end;
     });

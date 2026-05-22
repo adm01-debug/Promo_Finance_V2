@@ -67,7 +67,7 @@ export function TablePagination({
           size="icon"
           className="hidden sm:flex h-10 w-10 rounded-xl bg-white/5 border-white/10 hover:bg-primary/20 hover:text-primary transition-all"
           onClick={() => onPageChange(1)}
-          disabled={currentPage === 1}
+          disabled={currentPage <= 1}
         >
           <ChevronsLeft className="h-4 w-4" />
         </Button>
@@ -76,7 +76,7 @@ export function TablePagination({
           size="icon"
           className="h-10 w-10 rounded-xl bg-white/5 border-white/10 hover:bg-primary/20 hover:text-primary transition-all"
           onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
+          disabled={currentPage <= 1}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
