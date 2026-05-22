@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Tag, Layers, ArrowUpDown, Filter, Search } from 'lucide-react';
+import { Plus, Tag, ArrowUpDown } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CategoriaForm } from '@/components/categorias/CategoriaForm';
 import { CategoriaTable } from '@/components/categorias/CategoriaTable';
 import { useCategorias } from '@/hooks/useCategorias';
+import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
+import { StandardFilterSection } from '@/components/shared/StandardFilterSection';
+import { StandardTableCard } from '@/components/shared/StandardTableCard';
 
 export default function Categorias() {
   const [activeTab, setActiveTab] = useState<'despesa' | 'receita'>('despesa');
