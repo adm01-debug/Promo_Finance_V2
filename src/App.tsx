@@ -109,6 +109,8 @@ const InteligenciaOperacionalPage = lazy(() => import('./pages/InteligenciaOpera
 const MetasFinanceirasPage = lazy(() => import('./pages/MetasFinanceiras'));
 const PortalTokensPage = lazy(() => import('./pages/clientes/PortalTokens'));
 const ScoringClientesPage = lazy(() => import('./pages/clientes/ScoringClientes'));
+const Logistica = lazy(() => import('./pages/Logistica'));
+
 
 const GlossarioTributario = lazy(() => import('./pages/tributario/GlossarioTributario'));
 const Orcamentos = lazy(() => import('./pages/Orcamentos'));
@@ -222,6 +224,8 @@ function AppRoutes() {
             <Route path="/admin/filtros-compartilhados" element={<ProtectedRoute requiredRoles={['admin']}><SharedFiltersAdmin /></ProtectedRoute>} />
             <Route path="/admin/api" element={<ProtectedRoute requiredRoles={['admin']}><ApiManagement /></ProtectedRoute>} />
             <Route path="/admin/campos-customizados" element={<ProtectedRoute requiredRoles={['admin']}><CustomFieldsAdmin /></ProtectedRoute>} />
+            <Route path="/logistica" element={<ProtectedRoute><Logistica /></ProtectedRoute>} />
+
 
 
             

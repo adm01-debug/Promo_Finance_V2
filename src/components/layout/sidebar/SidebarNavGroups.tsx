@@ -127,6 +127,8 @@ const navGroups: NavGroup[] = [
       { label: 'Orçamentos', icon: Scale, href: '/orcamentos', highlight: true },
       { label: 'Quantum-Sentinel: Riscos', icon: Brain, href: '/inteligencia#alertas-preditivos', highlight: true },
       { label: 'Gestão de Compras', icon: ShoppingCart, href: '/compras', highlight: true },
+      { label: 'Gestão Logística', icon: Truck, href: '/logistica', highlight: true },
+
     ],
   },
   {
