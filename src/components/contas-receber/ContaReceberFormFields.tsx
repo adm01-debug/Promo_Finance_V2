@@ -230,12 +230,12 @@ export function ContaReceberFormFields({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormField control={form.control} name="data_vencimento" render={({ field }) => (
           <FormItem><FormLabel>Data de Vencimento *</FormLabel><FormControl>
-            <div className="relative"><Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input type="date" {...field} className="pl-10" /></div>
+            <div className="relative group"><Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" /><Input type="date" {...field} className="pl-12 h-12 rounded-xl bg-white/5 border-white/10" /></div>
           </FormControl><FormMessage /></FormItem>
         )} />
         <FormField control={form.control} name="data_emissao" render={({ field }) => (
           <FormItem><FormLabel>Data de Emissão</FormLabel><FormControl>
-            <div className="relative"><Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input type="date" {...field} className="pl-10" /></div>
+            <div className="relative group"><Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" /><Input type="date" {...field} className="pl-12 h-12 rounded-xl bg-white/5 border-white/10" /></div>
           </FormControl><FormMessage /></FormItem>
         )} />
       </div>
@@ -288,7 +288,7 @@ export function ContaReceberFormFields({
         )} />
         <FormField control={form.control} name="numero_documento" render={({ field }) => (
           <FormItem><FormLabel>Número do Documento</FormLabel><FormControl>
-            <div className="relative"><Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input {...field} placeholder="NF, Fatura, etc." className="pl-10" /></div>
+            <div className="relative group"><Tag className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" /><Input {...field} placeholder="NF, Fatura, etc." className="pl-12 h-12 rounded-xl bg-white/5 border-white/10" /></div>
           </FormControl><FormMessage /></FormItem>
         )} />
       </div>
