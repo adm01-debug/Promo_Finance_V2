@@ -14,6 +14,8 @@ Deno.test("Fuzzing: All Contract Schemas should reject invalid data and malforme
     key.endsWith("Schema") && typeof val === 'object' && 'safeParse' in (val as any)
   );
 
+  console.log(`🔍 Fuzzing ${schemaEntries.length} schemas...`);
+
   for (const [name, schema] of schemaEntries) {
     const s = schema as any;
     
@@ -30,11 +32,7 @@ Deno.test("Fuzzing: All Contract Schemas should reject invalid data and malforme
         if (isActuallyMalicious) {
           throw new Error(`Schema ${name} should have rejected malicious payload: ${JSON.stringify(payload).slice(0, 100)}...`);
         }
-        
-        // If it's just an empty object and the schema allows it, it's fine.
       }
-
-
     }
 
     // 2. Test schema-specific invalid payloads (only for objects)
@@ -42,11 +40,12 @@ Deno.test("Fuzzing: All Contract Schemas should reject invalid data and malforme
       const specificPayloads = Fuzzer.generateSchemaSpecificInvalidPayloads(s);
       for (const payload of specificPayloads) {
         const result = s.safeParse(payload);
-        // No crash expected
+        if (result.success) {
+          // If we intentionally sent wrong types, it should fail
+          // But some fields might be optional or have loose types, so we don't assert strictly here
+          // without deeper inspection of which field was modified.
+        }
       }
     }
   }
 });
-
-
-
