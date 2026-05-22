@@ -7,7 +7,6 @@ import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 import { EmptyState } from '@/components/ui/micro-interactions';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
 import { Plus, Package } from 'lucide-react';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -18,14 +17,14 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { ExportMenu } from '@/components/ui/export-menu';
-import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useFornecedores, useFornecedoresPaginated, ExternalCliente } from '@/hooks/useFinancialData';
 import { fornecedoresColumns } from '@/lib/export-utils';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
+import { StandardTableCard } from '@/components/shared/StandardTableCard';
 import { FornecedorForm } from '@/components/fornecedores/FornecedorForm';
 import { FornecedorDetailDialog } from '@/components/fornecedores/FornecedorDetailDialog';
-import { TablePagination } from '@/components/ui/table-pagination';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { FornecedoresTableRow } from './fornecedores/FornecedoresTableRow';
