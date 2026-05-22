@@ -98,10 +98,10 @@ export function DataTable<T>({
   const isSomeSelected = paginatedData.some((row) => selectedKeys.has(keyExtractor(row)));
 
   return (
-    <div className={cn('bg-card rounded-lg shadow overflow-hidden', className)}>
+    <div className={cn('bg-background/20 backdrop-blur-3xl rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden', className)}>
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-muted/50">
+          <thead className="bg-white/[0.02] border-b border-white/5">
             <tr>
               {selectable && (
                 <th className="w-12 px-4 py-3">
@@ -110,9 +110,9 @@ export function DataTable<T>({
                 </th>
               )}
               {columns.map((column) => (
-                <th key={column.key} className={cn('px-6 text-xs font-medium text-muted-foreground uppercase tracking-wider', compact ? 'py-2' : 'py-3',
+                <th key={column.key} className={cn('px-6 h-14 text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] whitespace-nowrap',
                   column.align === 'center' && 'text-center', column.align === 'right' && 'text-right', column.align !== 'center' && column.align !== 'right' && 'text-left',
-                  sortable && column.sortable && 'cursor-pointer select-none hover:bg-muted', column.headerClassName)}
+                  sortable && column.sortable && 'cursor-pointer select-none hover:bg-white/5', column.headerClassName)}
                   style={{ width: column.width }} onClick={() => sortable && column.sortable && handleSort(column.key)}>
                   <div className={cn('flex items-center gap-1', column.align === 'center' && 'justify-center', column.align === 'right' && 'justify-end')}>
                     {column.header}{getSortIcon(column)}
@@ -121,7 +121,7 @@ export function DataTable<T>({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-border">
+          <tbody className="divide-y divide-white/5">
             {loading ? (
               <tr><td colSpan={columns.length + (selectable ? 1 : 0)} className="px-6 py-12 text-center">
                 <div className="flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>
@@ -134,14 +134,14 @@ export function DataTable<T>({
               const key = keyExtractor(row);
               const isSelected = selectedKeys.has(key);
               return (
-                <tr key={key} className={cn(hoverable && 'hover:bg-muted/50', striped && rowIndex % 2 === 1 && 'bg-muted/25', isSelected && 'bg-primary/5', onRowClick && 'cursor-pointer', rowClassName?.(row))} onClick={() => onRowClick?.(row)}>
+                <tr key={key} className={cn('group transition-all duration-300 hover:bg-white/[0.04]', striped && rowIndex % 2 === 1 && 'bg-white/[0.01]', isSelected && 'bg-primary/10', onRowClick && 'cursor-pointer', rowClassName?.(row))} onClick={() => onRowClick?.(row)}>
                   {selectable && (
                     <td className="w-12 px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       <input type="checkbox" checked={isSelected} onChange={() => handleSelectRow(row)} className="h-4 w-4 rounded border-border text-primary focus:ring-primary" />
                     </td>
                   )}
                   {columns.map((column) => (
-                    <td key={column.key} className={cn('px-6 text-sm text-foreground', compact ? 'py-2' : 'py-4', column.align === 'center' && 'text-center', column.align === 'right' && 'text-right', column.className)}>
+                    <td key={column.key} className={cn('px-6 text-sm text-foreground transition-all duration-300 group-hover:text-primary', compact ? 'py-2' : 'py-6', column.align === 'center' && 'text-center', column.align === 'right' && 'text-right', column.className)}>
                       {renderCell(row, column)}
                     </td>
                   ))}
@@ -152,7 +152,7 @@ export function DataTable<T>({
         </table>
       </div>
       {pagination && sortedData.length > 0 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-border">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-6 border-t border-white/5 bg-black/20 backdrop-blur-xl">
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Mostrando</span>
             <select value={pageSize} onChange={(e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
