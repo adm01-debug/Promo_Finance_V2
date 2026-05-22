@@ -11327,29 +11327,21 @@ export type Database = {
         Args: { p_empresa_id: string }
         Returns: number
       }
-      get_user_permissions: {
-        Args: { _user_id: string }
-        Returns: {
-          action: string
-          module: string
-          permission_name: string
-        }[]
-      }
-      get_user_roles: {
-        Args: { _user_id: string }
-        Returns: Database["public"]["Enums"]["app_role"][]
-      }
+      get_user_permissions: { Args: { user_id: string }; Returns: string[] }
+      get_user_roles: { Args: { user_id: string }; Returns: string[] }
       has_permission: {
         Args: { _permission_name: string; _user_id: string }
         Returns: boolean
       }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
+      has_role:
+        | {
+            Args: {
+              _role: Database["public"]["Enums"]["app_role"]
+              _user_id: string
+            }
+            Returns: boolean
+          }
+        | { Args: { role: string; user_id: string }; Returns: boolean }
       increment_failed_attempts: {
         Args: { _email: string }
         Returns: undefined
