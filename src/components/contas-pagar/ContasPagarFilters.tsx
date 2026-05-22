@@ -1,8 +1,6 @@
 import { forwardRef } from 'react';
 import { motion } from 'framer-motion';
-import { Search, ShieldAlert, SlidersHorizontal, Tag, Target, ArrowDownAZ, LayoutGrid } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { ShieldAlert, Tag, Target, ArrowDownAZ } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -12,6 +10,7 @@ import {
 } from '@/components/ui/select';
 import { AdvancedFiltersPopover, AdvancedFilters } from '@/components/ui/advanced-filters';
 import { cn } from '@/lib/utils';
+import { StandardFilterSection } from '../shared/StandardFilterSection';
 
 interface CentroCusto {
   id: string;
