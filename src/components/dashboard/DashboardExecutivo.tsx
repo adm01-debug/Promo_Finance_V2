@@ -214,7 +214,7 @@ export const DashboardExecutivo = () => {
         variants={containerVariants} 
         initial="hidden" 
         animate="visible" 
-        className="relative z-10 space-y-8 sm:space-y-10 pb-20" 
+        className="relative z-10 space-y-12 sm:space-y-16 pb-32" 
         data-tour="dashboard"
       >
         {/* Header Section */}
@@ -315,7 +315,7 @@ export const DashboardExecutivo = () => {
 
             {/* Analytics Section */}
             <div className="space-y-6">
-              <SectionDivider label="Cyber-Neural Matrix: Strategic Analytics 10/10" icon={BarChart3} />
+              <SectionDivider label="Matrix Strategic Analytics 10/10" icon={BarChart3} />
               
               {/* Intelligent Purchasing 360 & Anti-Duplicity Hub */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">

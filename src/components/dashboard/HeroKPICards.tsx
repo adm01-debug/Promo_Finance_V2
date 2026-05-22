@@ -150,8 +150,8 @@ export function HeroKPICard({
       <Card
         className={cn(
           'relative overflow-hidden transition-all duration-500 cursor-pointer group h-full',
-          'border border-white/10 bg-background/20 backdrop-blur-2xl',
-          'shadow-[0_8px_32px_-8px_rgba(0,0,0,0.2)] hover:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.3)]',
+          'border border-white/10 bg-card/20 backdrop-blur-3xl',
+          'shadow-2xl hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.4)]',
           'ring-1 ring-white/5 hover:ring-white/20',
           config.card,
           size === 'hero' && 'rounded-[2rem]',
