@@ -14,15 +14,15 @@ export interface InputProps extends React.ComponentProps<"input"> {
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, variant = "default", inputSize = "md", error, success, ...props }, ref) => {
     const variants = {
-      default: "border border-input bg-background rounded-md",
-      filled: "border-0 bg-muted rounded-md",
-      underline: "border-0 border-b-2 border-input rounded-none bg-transparent px-0",
+      default: "border border-white/10 bg-white/5 rounded-xl shadow-inner focus-within:bg-background/80 focus-within:border-primary/40 focus-within:ring-primary/20",
+      filled: "border-0 bg-muted/50 rounded-xl hover:bg-muted/80 focus-within:bg-background/80",
+      underline: "border-0 border-b-2 border-white/10 rounded-none bg-transparent px-0 focus-within:border-primary",
     };
 
     const sizes = {
-      sm: "h-8 text-xs px-2",
-      md: "h-10 text-sm px-3",
-      lg: "h-12 text-base px-4",
+      sm: "h-9 text-xs px-3",
+      md: "h-12 text-sm px-4",
+      lg: "h-14 text-base px-6",
     };
 
     return (

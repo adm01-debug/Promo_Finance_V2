@@ -37,11 +37,11 @@ const DialogContent = React.forwardRef<
       ref={ref}
       className={cn(
         // Base: full screen on mobile, centered modal on larger screens
-        "fixed z-50 grid w-full gap-4 border bg-background shadow-lg duration-200",
+        "fixed z-50 grid w-full gap-4 border border-white/10 bg-background/80 backdrop-blur-2xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] duration-300",
         // Mobile: bottom sheet style with safe area
-        "inset-x-0 bottom-0 max-h-[90vh] overflow-y-auto rounded-t-2xl p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]",
+        "inset-x-0 bottom-0 max-h-[90vh] overflow-y-auto rounded-t-[2.5rem] p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))]",
         // Tablet+: centered modal
-        "sm:inset-auto sm:left-[50%] sm:top-[50%] sm:max-w-lg sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg sm:p-6 sm:pb-6",
+        "sm:inset-auto sm:left-[50%] sm:top-[50%] sm:max-w-2xl sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-[2.5rem] sm:p-10",
         // Animations
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
