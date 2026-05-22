@@ -5,28 +5,40 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { validatePayload, createErrorResponse, AsaasProxySchema, corsHeaders } from '../_shared/validation.ts'
-
+import { withRetry, createCircuitBreaker } from '../_shared/resilience.ts'
 
 const ASAAS_BASE_URL = 'https://api.asaas.com/v3'
+const asaasCB = createCircuitBreaker('asaas')
 
 async function asaasFetch(path: string, apiKey: string, options: RequestInit = {}) {
-  const response = await fetch(`${ASAAS_BASE_URL}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      'access_token': apiKey,
-      ...(options.headers || {}),
-    },
+  return await asaasCB.run(async () => {
+    return await withRetry(async () => {
+      const response = await fetch(`${ASAAS_BASE_URL}${path}`, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          'access_token': apiKey,
+          ...(options.headers || {}),
+        },
+      })
+      
+      const contentType = response.headers.get('content-type') || ''
+      if (!contentType.includes('application/json')) {
+        const text = await response.text()
+        console.error(`ASAAS retornou resposta não-JSON (${response.status}):`, text.substring(0, 500))
+        throw new Error(`ASAAS retornou erro ${response.status}: resposta inesperada`)
+      }
+      
+      const data = await response.json()
+      
+      // If ASAAS returns a 429 or 5xx, we want the retry logic to catch it
+      if (!response.ok && [429, 500, 502, 503, 504].includes(response.status)) {
+        throw new Error(`ASAAS error ${response.status}: ${JSON.stringify(data)}`)
+      }
+
+      return data
+    })
   })
-  
-  const contentType = response.headers.get('content-type') || ''
-  if (!contentType.includes('application/json')) {
-    const text = await response.text()
-    console.error(`ASAAS retornou resposta não-JSON (${response.status}):`, text.substring(0, 500))
-    throw new Error(`ASAAS retornou erro ${response.status}: resposta inesperada`)
-  }
-  
-  return response.json()
 }
 
 export const handler = async (req: Request) => {

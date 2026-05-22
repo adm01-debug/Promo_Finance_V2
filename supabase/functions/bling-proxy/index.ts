@@ -1,9 +1,10 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { BlingProxySchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
-
+import { withRetry, createCircuitBreaker } from "../_shared/resilience.ts";
 
 const BLING_API_BASE = "https://api.bling.com.br/Api/v3";
 const BLING_AUTH_BASE = "https://www.bling.com.br/Api/v3/oauth";
+const blingCB = createCircuitBreaker('bling');
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -505,65 +506,53 @@ async function blingFetch(
   accessToken: string,
   url: string,
   method: string,
-  data?: any,
-  attempt = 0
+  data?: any
 ): Promise<Response> {
-  const MAX_RETRIES = 3;
+  return await blingCB.run(async () => {
+    return await withRetry(async () => {
+      const headers: Record<string, string> = {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: "application/json",
+      };
+      if (data && (method === "POST" || method === "PUT" || method === "PATCH")) {
+        headers["Content-Type"] = "application/json";
+      }
 
-  const headers: Record<string, string> = {
-    Authorization: `Bearer ${accessToken}`,
-    Accept: "application/json",
-  };
-  if (data && (method === "POST" || method === "PUT" || method === "PATCH")) {
-    headers["Content-Type"] = "application/json";
-  }
+      const opts: RequestInit = { method, headers };
+      if (data && method !== "GET") {
+        opts.body = JSON.stringify(data);
+      }
 
-  const opts: RequestInit = { method, headers };
-  if (data && method !== "GET") {
-    opts.body = JSON.stringify(data);
-  }
+      // Rate limit safety
+      await new Promise((r) => setTimeout(r, 350));
 
-  // Rate limit: wait 350ms between calls
-  await new Promise((r) => setTimeout(r, 350));
+      const res = await fetch(url, opts);
+      const contentType = res.headers.get("content-type") || "";
 
-  const res = await fetch(url, opts);
-  const contentType = res.headers.get("content-type") || "";
+      // Handle server errors and rate limits for retry
+      if (!res.ok && (res.status === 429 || res.status >= 500)) {
+        const errText = await res.text();
+        throw new Error(`Bling API status ${res.status}: ${errText.substring(0, 500)}`);
+      }
 
-  // Gap #5: Handle 429 (rate limit) with retry
-  if (res.status === 429 && attempt < MAX_RETRIES) {
-    const retryAfter = parseInt(res.headers.get("Retry-After") || "0", 10);
-    const waitMs = retryAfter > 0 ? retryAfter * 1000 : Math.pow(2, attempt + 1) * 1000;
-    console.warn(`Bling 429 rate limit. Retrying in ${waitMs}ms (attempt ${attempt + 1})`);
-    await res.text(); // consume body
-    await new Promise((r) => setTimeout(r, waitMs));
-    return blingFetch(accessToken, url, method, data, attempt + 1);
-  }
+      let responseData: any;
+      if (contentType.includes("application/json")) {
+        responseData = await res.json();
+      } else {
+        responseData = { raw: await res.text() };
+      }
 
-  // Gap #5: Handle 5xx with exponential backoff
-  if (res.status >= 500 && attempt < MAX_RETRIES) {
-    const waitMs = Math.pow(2, attempt + 1) * 1000;
-    console.warn(`Bling ${res.status} server error. Retrying in ${waitMs}ms (attempt ${attempt + 1})`);
-    await res.text(); // consume body
-    await new Promise((r) => setTimeout(r, waitMs));
-    return blingFetch(accessToken, url, method, data, attempt + 1);
-  }
+      if (!res.ok) {
+        console.error(`Bling API error [${res.status}]:`, JSON.stringify(responseData));
+        return jsonResponse(
+          { error: `Bling API error`, status: res.status, details: responseData },
+          res.status === 403 ? 403 : 400
+        );
+      }
 
-  let responseData: any;
-  if (contentType.includes("application/json")) {
-    responseData = await res.json();
-  } else {
-    responseData = { raw: await res.text() };
-  }
-
-  if (!res.ok) {
-    console.error(`Bling API error [${res.status}]:`, JSON.stringify(responseData));
-    return jsonResponse(
-      { error: `Bling API error`, status: res.status, details: responseData },
-      res.status === 429 ? 429 : res.status === 403 ? 403 : res.status >= 500 ? 502 : 400
-    );
-  }
-
-  return jsonResponse(responseData);
+      return jsonResponse(responseData);
+    });
+  });
 }
 
 function jsonResponse(data: any, status = 200) {
