@@ -16,6 +16,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { CommandPalette } from '@/components/command-palette/CommandPalette';
 import { StartupDiagnostic } from '@/components/common/StartupDiagnostic';
 import { VisualValidator } from '@/components/ui/ux-validator';
+import { VisualCorrectionOverlay } from '@/components/layout/VisualCorrectionOverlay';
 
 
 
@@ -140,6 +141,7 @@ function AppRoutes() {
         <CommandPalette />
         <Toaster richColors closeButton position="top-right" />
         <VisualValidator />
+        <VisualCorrectionOverlay />
         <Suspense fallback={<PageLoading />}>
           <Routes>
             {/* Public Routes */}
