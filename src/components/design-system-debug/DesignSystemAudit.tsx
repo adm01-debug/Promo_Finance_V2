@@ -33,28 +33,29 @@ export const DesignSystemAudit = () => {
       const rootStyles = getComputedStyle(document.documentElement);
       
       const colors = [
-        { name: 'Primary', value: rootStyles.getPropertyValue('--primary'), status: 'ok' },
-        { name: 'Secondary', value: rootStyles.getPropertyValue('--secondary'), status: 'ok' },
-        { name: 'Accent', value: rootStyles.getPropertyValue('--accent'), status: 'warning' },
-        { name: 'Destructive', value: rootStyles.getPropertyValue('--destructive'), status: 'ok' },
-        { name: 'Muted', value: rootStyles.getPropertyValue('--muted'), status: 'ok' },
+        { name: 'Primary', value: rootStyles.getPropertyValue('--primary').trim(), status: 'ok' },
+        { name: 'Secondary', value: rootStyles.getPropertyValue('--secondary').trim(), status: 'ok' },
+        { name: 'Accent', value: rootStyles.getPropertyValue('--accent').trim(), status: 'warning' },
+        { name: 'Destructive', value: rootStyles.getPropertyValue('--destructive').trim(), status: 'ok' },
+        { name: 'Muted', value: rootStyles.getPropertyValue('--muted').trim(), status: 'ok' },
+        { name: 'Border', value: rootStyles.getPropertyValue('--border').trim(), status: 'ok' },
       ];
 
       const typography = [
-        { name: 'Display XL', size: '3.75rem', lh: '1', weight: '800', tracking: '-0.05em' },
+        { name: 'Display XL', size: '4xl (3.75rem)', lh: '0.9', weight: '900', tracking: '-0.05em' },
         { name: 'Display L', size: '3rem', lh: '1', weight: '800', tracking: '-0.05em' },
         { name: 'Heading 1', size: '2.25rem', lh: '2.5rem', weight: '700', tracking: '-0.025em' },
-        { name: 'Heading 2', size: '1.875rem', lh: '2.25rem', weight: '700', tracking: '-0.025em' },
+        { name: 'Heading 2', size: 'xl (1.25rem)', lh: '1.5rem', weight: '700', tracking: '-0.025em' },
         { name: 'Body Base', size: '0.875rem', lh: '1.5rem', weight: '400', tracking: 'normal' },
-        { name: 'Caption', size: '0.75rem', lh: '1rem', weight: '500', tracking: '0.05em' },
+        { name: 'Caption', size: '0.625rem', lh: '1rem', weight: '900', tracking: '0.2em' },
       ];
 
       const spacing = [
-        { name: 'Tiny', value: '0.25rem', px: '4px' },
-        { name: 'Small', value: '0.5rem', px: '8px' },
-        { name: 'Base', value: '1rem', px: '16px' },
-        { name: 'Large', value: '2rem', px: '32px' },
-        { name: 'Huge', value: '4rem', px: '64px' },
+        { name: '4px (p-1)', value: '0.25rem', px: '4px' },
+        { name: '8px (p-2)', value: '0.5rem', px: '8px' },
+        { name: '16px (p-4)', value: '1rem', px: '16px' },
+        { name: '32px (p-8)', value: '2rem', px: '32px' },
+        { name: '64px (p-16)', value: '4rem', px: '64px' },
       ];
 
       setAuditResults({

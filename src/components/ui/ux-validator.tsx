@@ -125,6 +125,7 @@ export const VisualValidator = () => {
     { id: 'fluxo', name: 'Fluxo de Caixa', path: '/fluxo-caixa', status: 'pending' },
     { id: 'clientes', name: 'Gestão de Clientes', path: '/clientes', status: 'pending' },
     { id: 'config', name: 'Configurações', path: '/configuracoes', status: 'pending' },
+    { id: 'design-audit', name: 'Relatório de Auditoria', path: '/design-system-debug', status: 'pending' },
   ]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [viewMode, setViewMode] = useState<'side-by-side' | 'overlay' | 'diff'>('side-by-side');
