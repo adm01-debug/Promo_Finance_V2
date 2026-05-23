@@ -153,9 +153,9 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
           <div className="flex items-center justify-between px-1">
             <button
               onClick={() => setIsRecentOpen(!isRecentOpen)}
-              className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-white transition-all group"
+              className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-all group"
             >
-              <div className="p-2 rounded-xl bg-primary/10 text-primary group-hover:bg-primary/20 transition-all shadow-sm ring-1 ring-primary/20">
+              <div className="p-1.5 rounded bg-muted text-muted-foreground group-hover:bg-muted/80 transition-all border border-border">
                 <Clock className="h-4 w-4" />
               </div>
               <span>Recent Activity</span>
