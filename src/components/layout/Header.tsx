@@ -171,7 +171,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 text-[#64748b] hover:text-[#1a1c21] hover:bg-[#f1f3f9] relative">
+                <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted relative">
                   <Bell className="h-4 w-4" />
                   {unreadAlerts > 0 && (
                     <span className="absolute top-2 right-2 h-2 w-2 bg-rose-500 rounded-full border-2 border-white" />
