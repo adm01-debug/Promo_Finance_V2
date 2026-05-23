@@ -70,7 +70,7 @@ export const PixelPerfectOverlay = ({ referenceImageUrl }: PixelPerfectOverlayPr
             ) : (
               <div className="flex items-center justify-between space-x-2">
                 <div className="text-xs truncate max-w-[150px] font-mono bg-muted p-1 rounded">Ref: Loaded</div>
-                <Button variant="outline" size="xs" onClick={() => setOverlayUrl('')} className="text-[10px] h-7">Clear</Button>
+                <Button variant="outline" size="sm" onClick={() => setOverlayUrl('')} className="text-[10px] h-7">Clear</Button>
               </div>
             )}
           </div>
