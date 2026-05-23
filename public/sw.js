@@ -1,5 +1,5 @@
 // Service Worker for Push Notifications and Offline Cache
-const CACHE_NAME = 'promo-brindes-v2';
+const CACHE_NAME = 'promo-brindes-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -8,7 +8,7 @@ const STATIC_ASSETS = [
 ];
 
 // Dynamic cache for API responses
-const API_CACHE_NAME = 'promo-brindes-api-v1';
+const API_CACHE_NAME = 'promo-brindes-api-v2';
 const API_CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes
 
 self.addEventListener('install', (event) => {
@@ -57,7 +57,11 @@ self.addEventListener('fetch', (event) => {
     url.pathname.includes('/rest/v1/') ||
     url.pathname.includes('/functions/') ||
     url.pathname.includes('/auth/v1/') ||
-    url.hostname.endsWith('.supabase.co')
+    url.pathname.includes('/storage/v1/') ||
+    url.pathname.includes('/realtime/v1/') ||
+    url.hostname.endsWith('.supabase.co') ||
+    url.hostname.endsWith('.supabase.in') ||
+    url.hostname.endsWith('.functions.supabase.co')
   ) {
     return; // bypass SW entirely
   }
