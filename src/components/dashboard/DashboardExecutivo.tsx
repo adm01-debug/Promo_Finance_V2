@@ -279,7 +279,7 @@ export const DashboardExecutivo = () => {
               <SectionDivider label="Análises Estratégicas" icon={BarChart3} />
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                <motion.div variants={itemVariants} className="premium-card p-6 border border-border bg-white rounded-xl relative overflow-hidden group">
+                <motion.div variants={itemVariants} className="premium-card p-6 border border-border bg-card rounded-md relative overflow-hidden group">
                   <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                     <ShieldCheck className="h-10 w-10 text-primary" />
                   </div>
