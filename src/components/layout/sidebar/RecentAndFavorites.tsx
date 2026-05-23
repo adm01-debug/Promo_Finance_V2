@@ -92,10 +92,10 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
         <div className="space-y-3">
           <button
             onClick={() => setIsFavoritesOpen(!isFavoritesOpen)}
-            className="w-full flex items-center gap-4 px-2 text-[10px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-white transition-all group"
+            className="w-full flex items-center gap-2 px-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-all group"
           >
-            <div className="p-2 rounded-xl bg-warning/10 text-warning group-hover:bg-warning/20 transition-all shadow-sm ring-1 ring-warning/20">
-              <Star className="h-4 w-4 fill-warning" />
+            <div className="p-1.5 rounded bg-muted text-muted-foreground group-hover:bg-muted/80 transition-all border border-border">
+              <Star className="h-4 w-4" />
             </div>
             <span className="flex-1 text-left">Priority Access</span>
             <motion.div
