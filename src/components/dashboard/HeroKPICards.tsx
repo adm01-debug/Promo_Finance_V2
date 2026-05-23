@@ -64,7 +64,7 @@ export function HeroKPICard({
   const content = (
     <Card
       className={cn(
-        'relative overflow-hidden transition-all duration-200 cursor-pointer group h-full border border-border bg-white shadow-sm hover:shadow-md rounded-xl'
+        'relative overflow-hidden transition-all duration-200 cursor-pointer group h-full border border-border bg-card shadow-sm hover:shadow-md rounded-md'
       )}
     >
       <CardContent className={cn("p-6 flex flex-col justify-between h-full", size === 'hero' ? 'p-8' : 'p-6')}>
