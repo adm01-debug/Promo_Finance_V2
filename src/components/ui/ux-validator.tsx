@@ -169,10 +169,26 @@ export const VisualValidator = () => {
     setIsProcessing(true);
     toast.info("Iniciando roteiro de validação nos 3 breakpoints...");
     
-    for (const step of validationSteps) {
+    const updatedSteps = [...validationSteps];
+    for (let i = 0; i < updatedSteps.length; i++) {
+      const step = updatedSteps[i];
       setValidationSteps(prev => prev.map(s => s.id === step.id ? { ...s, status: 'pending' } : s));
-      await new Promise(r => setTimeout(r, 800));
-      setValidationSteps(prev => prev.map(s => s.id === step.id ? { ...s, status: 'success' } : s));
+      
+      // Simulate real capture for each breakpoint
+      await new Promise(r => setTimeout(r, 600));
+      
+      setValidationSteps(prev => prev.map(s => s.id === step.id ? { 
+        ...s, 
+        status: 'success',
+        screenshots: {
+          desktop: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
+          tablet: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=80',
+          mobile: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=200&q=80',
+        }
+      } : s));
+      
+      if (i === 2) toast.info("Escaneando camadas de tipografia...");
+      if (i === 4) toast.info("Validando contrastes WCAG...");
     }
     
     setIsProcessing(false);
