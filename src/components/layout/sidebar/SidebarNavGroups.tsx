@@ -418,7 +418,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
                     transition={{ duration: 0.2, ease: 'easeInOut' }}
                     className="overflow-hidden"
                   >
-                    <div className="pl-4 space-y-1 border-l border-primary/10 ml-5 mt-2 transition-all">
+                    <div className="pl-3 space-y-0.5 mt-1 transition-all">
                       {group.items.map(item => (
                         <NavItemComponent key={item.href} item={item} />
                       ))}
