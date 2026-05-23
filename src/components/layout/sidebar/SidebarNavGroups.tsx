@@ -385,27 +385,25 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
               <button
                 onClick={() => toggleGroup(group.id)}
                 className={cn(
-                  'w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-700 group mt-6 first:mt-0',
-                  hasActive
-                    ? 'text-white font-black'
-                    : 'text-white/20 hover:bg-white/5 hover:text-white'
+                  'w-full flex items-center justify-between px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition-colors group mt-2 first:mt-0',
+                  hasActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
                 )}
               >
-                <div className={cn(
-                  "p-2.5 rounded-xl transition-all duration-700 ease-apple shadow-inner",
-                  hasActive ? "bg-primary/20 text-primary ring-1 ring-primary/20" : "bg-white/5 text-white/20"
-                )}>
-                  <GroupIcon className="h-4.5 w-4.5 shrink-0" />
+                <div className="flex items-center gap-2">
+                  <div className={cn(
+                    "p-1.5 rounded border border-border transition-colors",
+                    hasActive ? "bg-accent text-primary" : "bg-muted text-muted-foreground group-hover:bg-muted/80"
+                  )}>
+                    <GroupIcon className="h-4 w-4" />
+                  </div>
+                  <span>{translatedGroupLabel}</span>
                 </div>
-                <span className="font-black text-[11px] uppercase tracking-[0.3em] flex-1 text-left">{translatedGroupLabel}</span>
-                <motion.div
-                  animate={{ rotate: isOpen ? 180 : 0 }}
-
-                  transition={{ duration: 0.4, ease: "backOut" }}
-                  className="opacity-40 group-hover:opacity-100 transition-opacity"
-                >
-                  <ChevronDown className="h-4 w-4" />
-                </motion.div>
+                <ChevronDown
+                  className={cn(
+                    'h-3.5 w-3.5 transition-transform duration-200 opacity-50',
+                    isOpen && 'rotate-180'
+                  )}
+                />
               </button>
             )}
 
