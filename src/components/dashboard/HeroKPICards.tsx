@@ -103,7 +103,7 @@ export function HeroKPICard({
 
         <div className="mt-4 flex items-center justify-between">
           {isZero && emptyStateMessage ? (
-            <span className="text-[10px] font-semibold text-[#64748b]">{emptyStateMessage}</span>
+            <span className="text-[10px] font-medium text-muted-foreground">{emptyStateMessage}</span>
           ) : (
             <div className={cn(
               'flex items-center gap-1 text-[11px] font-bold',
