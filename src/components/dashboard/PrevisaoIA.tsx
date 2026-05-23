@@ -81,18 +81,19 @@ export function PrevisaoIA({ className }: { className?: string }) {
 
   if (!analise && !loading) {
     return (
-      <Card className={cn(className, "border border-border bg-white shadow-sm rounded-xl overflow-hidden")}>
-        <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="h-16 w-16 rounded-xl bg-blue-50 flex items-center justify-center border border-blue-100 mb-6">
-            <Brain className="h-8 w-8 text-primary" />
+      <Card className={cn(className, "premium-card border-none overflow-hidden")}>
+        <CardContent className="flex flex-col items-center justify-center py-20 text-center relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 opacity-50" />
+          <div className="h-20 w-20 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 mb-8 relative z-10 shadow-xl shadow-primary/10 animate-pulse">
+            <Brain className="h-10 w-10 text-primary" />
           </div>
-          <h3 className="mb-2 text-xl font-bold text-[#1a1c21]">Inteligência Artificial</h3>
-          <p className="mb-8 max-w-sm text-sm font-medium text-[#64748b] leading-relaxed px-6">
-            Análise preditiva de fluxo de caixa, tendências e recomendações estratégicas baseadas em IA.
+          <h3 className="mb-3 text-2xl font-black text-foreground tracking-tight font-heading relative z-10">IA Estratégica P14</h3>
+          <p className="mb-10 max-w-sm text-sm font-medium text-muted-foreground leading-relaxed px-6 relative z-10">
+            Libere o poder da inteligência preditiva para antecipar riscos e otimizar seu fluxo de caixa automaticamente.
           </p>
-          <Button onClick={gerarAnalise} className="h-11 px-6 rounded-lg bg-primary text-white font-bold gap-2 shadow-sm">
-            <Sparkles className="h-4 w-4" />
-            Gerar Insights
+          <Button onClick={gerarAnalise} className="premium-button relative z-10">
+            <Sparkles className="h-4 w-4 mr-2" />
+            Gerar Análise
           </Button>
         </CardContent>
       </Card>
@@ -125,31 +126,32 @@ export function PrevisaoIA({ className }: { className?: string }) {
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="visible" className={className}>
-      <Card className="border border-border bg-white shadow-sm rounded-xl overflow-hidden">
-        <CardHeader className="p-6 pb-4">
+      <Card className="premium-card border-none overflow-hidden">
+        <CardHeader className="p-8 pb-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center text-primary border border-blue-100">
-                <Brain className="h-5 w-5" />
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-sm transition-transform hover:scale-110">
+                <Brain className="h-6 w-6" />
               </div>
               <div>
-                <CardTitle className="text-lg font-bold text-[#1a1c21]">Insights de IA</CardTitle>
-                {geradoEm && <CardDescription className="text-[10px] font-bold uppercase tracking-wider text-[#64748b]">Gerado às {new Date(geradoEm).toLocaleTimeString('pt-BR')}</CardDescription>}
+                <CardTitle className="text-xl font-black text-foreground tracking-tight font-heading">Insights de IA</CardTitle>
+                {geradoEm && <CardDescription className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground/60">Análise gerada em {new Date(geradoEm).toLocaleTimeString('pt-BR')}</CardDescription>}
               </div>
             </div>
             <Button 
               variant="outline" 
               size="sm" 
               onClick={gerarAnalise} 
-              className="h-8 rounded-md border-border bg-white text-xs font-bold"
+              className="h-9 rounded-xl border-border bg-background text-[10px] font-black uppercase tracking-widest gap-2 hover:bg-accent transition-all shadow-sm active:scale-95"
             >
-              <RefreshCw className={cn("mr-1.5 h-3.5 w-3.5", loading && "animate-spin")} />
+              <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
               Atualizar
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="p-6 pt-0 space-y-6">
-          <div className="rounded-lg border border-border bg-[#f8f9fc] p-6">
+        <CardContent className="p-8 pt-2 space-y-8">
+          <div className="rounded-2xl border border-primary/10 bg-gradient-to-br from-primary/[0.03] to-transparent p-8 shadow-inner relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl opacity-50" />
             <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
               <div className="space-y-1 text-center sm:text-left">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748b]">Score Financeiro</p>
