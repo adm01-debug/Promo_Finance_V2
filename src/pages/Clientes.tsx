@@ -164,7 +164,7 @@ export default function Clientes() {
         <div className="relative min-h-screen">
           <PageBackground />
           
-          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="container mx-auto p-6 relative z-10 space-y-8">
+          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="relative z-10 space-y-12">
             <PageHeader 
               title="Gestão de Clientes" 
               subtitle="Análise de perfil, scoring de crédito e automação de cobranças neurais."
@@ -175,7 +175,7 @@ export default function Clientes() {
               gradientTo="to-indigo-500"
               actions={
                 <div className="flex items-center gap-3">
-                  <TabsList className="bg-primary/10 border-primary/20 h-10 px-1 rounded-xl">
+                  <TabsList className="bg-primary/10 border-primary/20 h-10 px-1 rounded-xl glass-effect">
                     <TabsTrigger value="lista" className="rounded-lg font-bold px-4" onClick={() => window.history.replaceState(null, '', '/clientes')}>Lista Geral</TabsTrigger>
                     <TabsTrigger value="scoring" className="rounded-lg font-bold px-4" onClick={() => window.history.replaceState(null, '', '/clientes#scoring')}>Scoring & Risco</TabsTrigger>
                   </TabsList>
@@ -188,7 +188,7 @@ export default function Clientes() {
                   />
                   <Button 
                     size="lg" 
-                    className="h-10 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]"
+                    className="premium-button"
                     onClick={() => {
                       setEditingCliente(null);
                       setFormOpen(true);
@@ -246,17 +246,17 @@ export default function Clientes() {
                   <Table>
                     <TableHeader>
                       <TableRow className="hover:bg-transparent border-b border-white/5">
-                        <TableHead className="w-[250px] font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Cliente</TableHead>
-                        <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Contato</TableHead>
-                        <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Localização</TableHead>
+                        <TableHead className="w-[250px] text-caption p-6">Cliente</TableHead>
+                        <TableHead className="text-caption p-6">Contato</TableHead>
+                        <TableHead className="text-caption p-6">Localização</TableHead>
                         <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">
                           <div className="flex items-center gap-2">
                             <Trophy className="h-4 w-4 text-amber-500" />
                             Score / Rank
                           </div>
                         </TableHead>
-                        <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Limite</TableHead>
-                        <TableHead className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60 p-6">Status</TableHead>
+                        <TableHead className="text-caption p-6">Limite</TableHead>
+                        <TableHead className="text-caption p-6">Status</TableHead>
                         <TableHead className="w-[80px] p-6"></TableHead>
                       </TableRow>
                     </TableHeader>

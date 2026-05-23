@@ -36,16 +36,16 @@ export const PageHeader = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-      className={cn("flex flex-col lg:flex-row lg:items-end justify-between gap-8 pt-4 mb-10", className)}
+      className={cn("flex flex-col lg:flex-row lg:items-end justify-between gap-8 pt-4 mb-12", className)}
     >
       <div className="space-y-4">
         {badge && (
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.2em] animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-caption animate-fade-in">
             <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
             {badge}
           </div>
         )}
-        <h1 className="text-3xl md:text-5xl lg:text-7xl font-black tracking-tighter">
+        <h1 className="text-display">
           {title.split(' ').map((word, i, arr) => (
             i === arr.length - 1 ? (
               <span key={i} className={cn("text-transparent bg-clip-text bg-gradient-to-r", gradientFrom, gradientVia, gradientTo)}>
