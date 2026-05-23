@@ -279,7 +279,8 @@ export const DashboardExecutivo = () => {
               <SectionDivider label="Análises Estratégicas" icon={BarChart3} />
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                <motion.div variants={itemVariants} className="premium-card p-6 border border-border bg-card rounded-md relative overflow-hidden group">
+                <motion.div variants={itemVariants} className="premium-card p-6 relative overflow-hidden group">
+
                   <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                     <ShieldCheck className="h-10 w-10 text-primary" />
                   </div>
@@ -301,9 +302,10 @@ export const DashboardExecutivo = () => {
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed">Bloqueio automático de pagamentos duplicados e auditoria contínua.</p>
                     <div className="flex items-center gap-2 pt-2">
-                      <Button asChild size="sm" className="rounded-md font-medium bg-primary text-white h-9 px-4">
+                      <Button asChild className="premium-button">
                         <Link to="/contas-pagar/bloqueios">Ver Auditoria</Link>
                       </Button>
+
                       <Button asChild variant="ghost" size="sm" className="rounded-md font-medium text-muted-foreground hover:text-foreground h-9 px-4">
                         <Link to="/configuracoes">Configurar</Link>
                       </Button>
@@ -311,7 +313,7 @@ export const DashboardExecutivo = () => {
                   </div>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="premium-card p-6 border border-border bg-card rounded-md relative overflow-hidden group">
+                <motion.div variants={itemVariants} className="premium-card p-6 relative overflow-hidden group">
                   <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                     <FileText className="h-10 w-10 text-indigo-400" />
                   </div>
@@ -322,9 +324,10 @@ export const DashboardExecutivo = () => {
                     <h3 className="text-lg font-black tracking-tight text-foreground font-heading">Relatórios & Conciliação</h3>
                     <p className="text-xs text-muted-foreground leading-relaxed">Exporte trilhas de auditoria completas para conciliações bancárias impecáveis.</p>
                     <div className="flex items-center gap-2 pt-2">
-                      <Button size="sm" className="rounded-md font-medium bg-primary text-white h-9 px-4">
+                      <Button className="premium-button">
                         Gerar PDF
                       </Button>
+
                       <Button variant="ghost" size="sm" className="rounded-md font-medium text-muted-foreground hover:text-foreground h-9 px-4">
                         Outros formatos
                       </Button>
