@@ -32,40 +32,43 @@ function MiniKPICard({ icon: Icon, label, value, iconBg, iconColor, href, alertL
 
   const cardContent = (
     <motion.div
-      initial={{ opacity: 0, y: 5 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.03 }}
+      transition={{ delay: index * 0.05, duration: 0.4 }}
       className="h-full"
     >
       <div className={cn(
-        'relative h-full p-4 rounded-md border border-border bg-card transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-md',
-        alertLevel === 'warning' && value > 0 && 'border-amber-200 bg-amber-50',
-        alertLevel === 'danger' && value > 0 && 'border-rose-200 bg-rose-50',
+        'relative h-full p-4 rounded-xl border transition-all duration-300 group cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-1 overflow-hidden',
+        alertLevel === 'warning' && value > 0 
+          ? 'border-amber-200 bg-amber-50/50 dark:bg-amber-900/10' 
+          : alertLevel === 'danger' && value > 0 
+            ? 'border-rose-200 bg-rose-50/50 dark:bg-rose-900/10' 
+            : 'border-black/5 bg-white dark:bg-zinc-900/50 dark:border-white/5'
       )}>
-        <div className="flex items-center gap-3 relative">
+        <div className="flex items-center gap-3 relative z-10">
           <div className={cn(
-            'p-2 rounded border border-border transition-all duration-200',
+            'p-2.5 rounded-xl border border-white/20 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-sm',
             iconBg,
           )}>
             <Icon className={cn('h-4 w-4 transition-all duration-300', iconColor)} />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground truncate mb-0.5">{label}</p>
+            <p className="text-[9px] font-black uppercase tracking-[0.15em] text-muted-foreground/60 truncate mb-0.5">{label}</p>
             <p className={cn(
-              'text-lg font-semibold tabular-nums tracking-tight text-foreground',
-              alertLevel === 'warning' && value > 0 && 'text-amber-700',
-              alertLevel === 'danger' && value > 0 && 'text-rose-700',
+              'text-xl font-black tabular-nums tracking-tighter transition-all duration-300 group-hover:translate-x-0.5 font-heading',
+              alertLevel === 'warning' && value > 0 ? 'text-amber-700' : alertLevel === 'danger' && value > 0 ? 'text-rose-700' : 'text-foreground',
             )}>
               {Math.round(animatedValue)}
             </p>
           </div>
-          {href && (
-            <ArrowRight className="h-3 w-3 text-[#94a3b8] group-hover:text-primary transition-colors" />
-          )}
         </div>
       </div>
     </motion.div>
   );
+
+  if (href) return <Link to={href} className="h-full no-underline">{cardContent}</Link>;
+  return cardContent;
+}
 
   if (href) return <Link to={href} className="h-full">{cardContent}</Link>;
   return cardContent;

@@ -64,28 +64,39 @@ export function HeroKPICard({
   const content = (
     <Card
       className={cn(
-        'relative overflow-hidden transition-all duration-300 cursor-pointer group h-full premium-card'
+        'relative overflow-hidden transition-all duration-500 cursor-pointer group h-full premium-card border-white/10',
+        size === 'hero' && 'bg-gradient-to-br from-white to-primary/[0.02] dark:from-zinc-900 dark:to-primary/[0.05]'
       )}
     >
+      <div className={cn(
+        "absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl transition-opacity group-hover:opacity-100 opacity-50",
+        size === 'hero' ? 'opacity-70' : 'opacity-0'
+      )} />
 
-      <CardContent className={cn("p-6 flex flex-col justify-between h-full", size === 'hero' ? 'p-8' : 'p-6')}>
+      <CardContent className={cn("p-6 flex flex-col justify-between h-full relative z-10", size === 'hero' ? 'p-8' : 'p-6')}>
         <div className="flex items-start justify-between">
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{title}</p>
+              <p className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.15em]">{title}</p>
               {badge && (
-                <Badge variant={badgeVariant} className="text-[9px] font-bold px-1.5 py-0 h-auto rounded-sm">
+                <Badge 
+                  variant={badgeVariant} 
+                  className={cn(
+                    "text-[9px] font-black px-2 py-0.5 h-auto rounded-full uppercase tracking-wider border-none shadow-sm",
+                    badgeVariant === 'destructive' ? 'bg-rose-500/10 text-rose-600' : 'bg-primary/10 text-primary'
+                  )}
+                >
                   {badge}
                 </Badge>
               )}
             </div>
             
             {loading ? (
-              <Skeleton className="h-8 w-32" />
+              <Skeleton className="h-10 w-40" />
             ) : (
               <p className={cn(
-                'text-foreground font-black tabular-nums tracking-tighter font-heading',
-                size === 'hero' ? 'text-3xl' : 'text-xl',
+                'text-foreground font-black tabular-nums tracking-tighter leading-none font-heading transition-all duration-300 group-hover:translate-x-1',
+                size === 'hero' ? 'text-4xl' : 'text-2xl',
                 isZero && 'text-[#94a3b8]'
               )}>
                 {formattedValue}
@@ -94,21 +105,21 @@ export function HeroKPICard({
           </div>
 
           <div className={cn(
-            'flex items-center justify-center rounded border border-border shadow-sm',
+            'flex items-center justify-center rounded-2xl border border-white/20 shadow-xl transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110',
             iconBg,
-            size === 'hero' ? 'h-10 w-10' : 'h-8 w-8'
+            size === 'hero' ? 'h-14 w-14' : 'h-10 w-10'
           )}>
-            <Icon className={cn(iconColor, size === 'hero' ? 'h-5 w-5' : 'h-4 w-4')} />
+            <Icon className={cn(iconColor, size === 'hero' ? 'h-6 w-6' : 'h-5 w-5')} />
           </div>
         </div>
 
-        <div className="mt-4 flex items-center justify-between">
+        <div className="mt-6 flex items-center justify-between">
           {isZero && emptyStateMessage ? (
-            <span className="text-[10px] font-medium text-muted-foreground">{emptyStateMessage}</span>
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{emptyStateMessage}</span>
           ) : (
             <div className={cn(
-              'flex items-center gap-1 text-[11px] font-medium',
-              isPositive ? 'text-emerald-600' : 'text-rose-600',
+              'flex items-center gap-1.5 text-[11px] font-black px-2 py-1 rounded-lg',
+              isPositive ? 'text-emerald-600 bg-emerald-500/5' : 'text-rose-600 bg-rose-500/5',
             )}>
               {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
               <span>{formatPercentage(Math.abs(variationValue))}</span>
@@ -116,14 +127,16 @@ export function HeroKPICard({
           )}
 
           {href && (
-            <ArrowRight className="h-3 w-3 text-[#94a3b8] group-hover:text-primary transition-colors" />
+            <div className="h-8 w-8 rounded-full bg-muted/50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300">
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </div>
           )}
         </div>
       </CardContent>
     </Card>
   );
 
-  if (href) return <Link to={href} className="h-full block">{content}</Link>;
+  if (href) return <Link to={href} className="h-full block no-underline">{content}</Link>;
   return content;
 }
 
