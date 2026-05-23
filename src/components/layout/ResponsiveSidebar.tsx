@@ -42,7 +42,7 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
       animate={{ width: collapsed ? 80 : 280 }}
       transition={{ duration: 0.2, ease: "easeInOut" }}
       className={cn(
-        'fixed left-0 top-0 z-40 h-screen bg-sidebar border-r border-sidebar-border flex flex-col shadow-none transition-all duration-200 glass-effect'
+        'fixed left-0 top-0 z-40 h-screen bg-sidebar border-r border-sidebar-border flex flex-col shadow-none transition-all duration-200 glass-effect bg-white/70 dark:bg-zinc-950/70 backdrop-blur-2xl'
       )}
       data-tour="sidebar"
     >
@@ -59,10 +59,10 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
                 <Shield className="h-5 w-5 text-white" />
               </div>
               <div className="flex flex-col">
-                <span className="font-black text-sm text-foreground tracking-tighter uppercase leading-none">
+                <span className="font-black text-sm text-foreground tracking-tighter uppercase leading-none font-heading">
                   Promo Finance
                 </span>
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                <span className="text-caption text-primary/60 mt-0.5">
                   Enterprise
                 </span>
               </div>
@@ -102,7 +102,7 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
       {!collapsed && (
         <div className="p-4 border-t border-sidebar-border">
           <div className="p-3 rounded bg-muted border border-sidebar-border group/support cursor-pointer hover:bg-accent transition-colors">
-            <p className="text-[10px] font-semibold text-primary uppercase tracking-wider mb-0.5">Suporte</p>
+            <p className="text-caption text-primary mb-0.5">Suporte</p>
             <p className="text-[11px] text-muted-foreground font-medium group-hover:text-foreground transition-colors">Falar com especialista</p>
           </div>
         </div>

@@ -47,7 +47,7 @@ function SectionDivider({ label, icon: Icon }: { label: string; icon: React.Elem
         <div className="h-9 w-9 rounded-xl bg-primary/5 flex items-center justify-center border border-primary/10 shadow-sm">
           <Icon className="h-4 w-4 text-primary" />
         </div>
-        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80">
+        <span className="text-caption text-muted-foreground/80">
           {label}
         </span>
       </div>
@@ -181,7 +181,7 @@ export const DashboardExecutivo = () => {
         variants={containerVariants} 
         initial="hidden" 
         animate="visible" 
-        className="relative z-10 space-y-10 pb-24" 
+        className="relative z-10 space-y-12 pb-32" 
         data-tour="dashboard"
       >
         {/* Header Section */}
@@ -278,25 +278,25 @@ export const DashboardExecutivo = () => {
             <div className="space-y-4">
               <SectionDivider label="Análises Estratégicas" icon={BarChart3} />
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
                 <motion.div variants={itemVariants} className="premium-card p-6 relative overflow-hidden group">
 
                   <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                     <ShieldCheck className="h-10 w-10 text-primary" />
                   </div>
                   <div className="relative z-10 space-y-3">
-                    <div className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider">
+                    <div className="text-caption inline-flex items-center gap-2 px-2 py-1 rounded-md bg-blue-50 text-blue-700">
                       <ShieldAlert className="h-3 w-3" /> Anti-Duplicidade
                     </div>
                     <h3 className="text-lg font-black tracking-tight text-foreground font-heading">Sentinel: Proteção de Caixa</h3>
                     <div className="flex items-center gap-2 py-1">
                       <div className="flex flex-col">
-                        <span className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">Proteção</span>
+                        <span className="text-caption">Proteção</span>
                         <span className="text-sm font-semibold text-emerald-600">{formatCurrency(duplicateStats?.totalValue || 0)}</span>
                       </div>
                       <div className="h-6 w-px bg-border mx-2" />
                       <div className="flex flex-col">
-                        <span className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">Bloqueios</span>
+                        <span className="text-caption">Bloqueios</span>
                         <span className="text-sm font-semibold">{duplicateStats?.count || 0} ocorrências</span>
                       </div>
                     </div>
@@ -318,7 +318,7 @@ export const DashboardExecutivo = () => {
                     <FileText className="h-10 w-10 text-indigo-400" />
                   </div>
                   <div className="relative z-10 space-y-3">
-                    <div className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-wider">
+                    <div className="text-caption inline-flex items-center gap-2 px-2 py-1 rounded-md bg-indigo-50 text-indigo-700">
                       <Download className="h-3 w-3" /> Relatórios
                     </div>
                     <h3 className="text-lg font-black tracking-tight text-foreground font-heading">Relatórios & Conciliação</h3>
@@ -328,7 +328,7 @@ export const DashboardExecutivo = () => {
                         Gerar PDF
                       </Button>
 
-                      <Button variant="ghost" size="sm" className="rounded-md font-medium text-muted-foreground hover:text-foreground h-9 px-4">
+                      <Button variant="ghost" size="sm" className="premium-button bg-transparent border-black/5 text-muted-foreground hover:text-foreground">
                         Outros formatos
                       </Button>
                     </div>
