@@ -301,10 +301,10 @@ export const DashboardExecutivo = () => {
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed">Bloqueio automático de pagamentos duplicados e auditoria contínua.</p>
                     <div className="flex items-center gap-2 pt-2">
-                      <Button asChild size="sm" className="rounded-lg font-bold bg-primary text-white h-9 px-4">
+                      <Button asChild size="sm" className="rounded-md font-medium bg-primary text-white h-9 px-4">
                         <Link to="/contas-pagar/bloqueios">Ver Auditoria</Link>
                       </Button>
-                      <Button asChild variant="ghost" size="sm" className="rounded-lg font-bold text-[#64748b] hover:text-[#1a1c21] h-9 px-4">
+                      <Button asChild variant="ghost" size="sm" className="rounded-md font-medium text-muted-foreground hover:text-foreground h-9 px-4">
                         <Link to="/configuracoes">Configurar</Link>
                       </Button>
                     </div>
