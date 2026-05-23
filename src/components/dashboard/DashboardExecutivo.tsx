@@ -44,10 +44,10 @@ function SectionDivider({ label, icon: Icon }: { label: string; icon: React.Elem
   return (
     <div className="flex items-center gap-3 py-2">
       <div className="flex items-center gap-2 shrink-0">
-        <div className="h-8 w-8 rounded-lg bg-[#f1f3f9] flex items-center justify-center border border-border">
-          <Icon className="h-4 w-4 text-[#64748b]" />
+        <div className="h-8 w-8 rounded bg-muted flex items-center justify-center border border-border">
+          <Icon className="h-4 w-4 text-muted-foreground" />
         </div>
-        <span className="text-[11px] font-bold uppercase tracking-wider text-[#64748b]">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
           {label}
         </span>
       </div>
@@ -279,7 +279,7 @@ export const DashboardExecutivo = () => {
               <SectionDivider label="Análises Estratégicas" icon={BarChart3} />
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                <motion.div variants={itemVariants} className="premium-card p-6 border border-border bg-white rounded-xl relative overflow-hidden group">
+                <motion.div variants={itemVariants} className="premium-card p-6 border border-border bg-card rounded-md relative overflow-hidden group">
                   <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                     <ShieldCheck className="h-10 w-10 text-primary" />
                   </div>
@@ -287,31 +287,31 @@ export const DashboardExecutivo = () => {
                     <div className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider">
                       <ShieldAlert className="h-3 w-3" /> Anti-Duplicidade
                     </div>
-                    <h3 className="text-lg font-bold tracking-tight text-[#1a1c21]">Sentinel: Proteção de Caixa</h3>
+                    <h3 className="text-lg font-semibold tracking-tight text-foreground">Sentinel: Proteção de Caixa</h3>
                     <div className="flex items-center gap-2 py-1">
                       <div className="flex flex-col">
-                        <span className="text-[10px] text-[#64748b] uppercase font-bold tracking-wider">Proteção</span>
-                        <span className="text-sm font-bold text-emerald-600">{formatCurrency(duplicateStats?.totalValue || 0)}</span>
+                        <span className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">Proteção</span>
+                        <span className="text-sm font-semibold text-emerald-600">{formatCurrency(duplicateStats?.totalValue || 0)}</span>
                       </div>
                       <div className="h-6 w-px bg-border mx-2" />
                       <div className="flex flex-col">
-                        <span className="text-[10px] text-[#64748b] uppercase font-bold tracking-wider">Bloqueios</span>
-                        <span className="text-sm font-bold">{duplicateStats?.count || 0} ocorrências</span>
+                        <span className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">Bloqueios</span>
+                        <span className="text-sm font-semibold">{duplicateStats?.count || 0} ocorrências</span>
                       </div>
                     </div>
-                    <p className="text-xs text-[#64748b] leading-relaxed">Bloqueio automático de pagamentos duplicados e auditoria contínua.</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Bloqueio automático de pagamentos duplicados e auditoria contínua.</p>
                     <div className="flex items-center gap-2 pt-2">
-                      <Button asChild size="sm" className="rounded-lg font-bold bg-primary text-white h-9 px-4">
+                      <Button asChild size="sm" className="rounded-md font-medium bg-primary text-white h-9 px-4">
                         <Link to="/contas-pagar/bloqueios">Ver Auditoria</Link>
                       </Button>
-                      <Button asChild variant="ghost" size="sm" className="rounded-lg font-bold text-[#64748b] hover:text-[#1a1c21] h-9 px-4">
+                      <Button asChild variant="ghost" size="sm" className="rounded-md font-medium text-muted-foreground hover:text-foreground h-9 px-4">
                         <Link to="/configuracoes">Configurar</Link>
                       </Button>
                     </div>
                   </div>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="premium-card p-6 border border-border bg-white rounded-xl relative overflow-hidden group">
+                <motion.div variants={itemVariants} className="premium-card p-6 border border-border bg-card rounded-md relative overflow-hidden group">
                   <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                     <FileText className="h-10 w-10 text-indigo-400" />
                   </div>
@@ -319,13 +319,13 @@ export const DashboardExecutivo = () => {
                     <div className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-wider">
                       <Download className="h-3 w-3" /> Relatórios
                     </div>
-                    <h3 className="text-lg font-bold tracking-tight text-[#1a1c21]">Relatórios & Conciliação</h3>
-                    <p className="text-xs text-[#64748b] leading-relaxed">Exporte trilhas de auditoria completas para conciliações bancárias impecáveis.</p>
+                    <h3 className="text-lg font-semibold tracking-tight text-foreground">Relatórios & Conciliação</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Exporte trilhas de auditoria completas para conciliações bancárias impecáveis.</p>
                     <div className="flex items-center gap-2 pt-2">
-                      <Button size="sm" className="rounded-lg font-bold bg-primary text-white h-9 px-4">
+                      <Button size="sm" className="rounded-md font-medium bg-primary text-white h-9 px-4">
                         Gerar PDF
                       </Button>
-                      <Button variant="ghost" size="sm" className="rounded-lg font-bold text-[#64748b] hover:text-[#1a1c21] h-9 px-4">
+                      <Button variant="ghost" size="sm" className="rounded-md font-medium text-muted-foreground hover:text-foreground h-9 px-4">
                         Outros formatos
                       </Button>
                     </div>

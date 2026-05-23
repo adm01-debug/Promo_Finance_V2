@@ -31,16 +31,16 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
   if (collapsed) return null;
 
   return (
-    <div className="px-4 py-8 space-y-8 border-b border-white/5 bg-white/[0.02] relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
+    <div className="px-3 py-4 space-y-4 border-b border-border bg-muted/20 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none" />
       {/* Quick Company Switcher */}
       {vinculos.length > 0 && (
         <div className="space-y-3">
           <button
             onClick={() => setIsEmpresasOpen(!isEmpresasOpen)}
-            className="w-full flex items-center gap-4 px-2 text-[10px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-white transition-all group"
+            className="w-full flex items-center gap-2 px-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-all group"
           >
-            <div className="p-2 rounded-xl bg-primary/10 text-primary group-hover:bg-primary/20 transition-all shadow-sm ring-1 ring-primary/20">
+            <div className="p-1.5 rounded bg-muted text-muted-foreground group-hover:bg-muted/80 transition-all border border-border">
               <Building2 className="h-4 w-4" />
             </div>
             <span className="flex-1 text-left">Empresas do Grupo</span>
@@ -68,10 +68,10 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
                       key={v.empresa_id}
                       onClick={() => setCurrentEmpresaId(v.empresa_id)}
                       className={cn(
-                        'w-full flex items-center justify-between px-4 py-2.5 text-[11px] rounded-xl transition-all duration-700 truncate font-black tracking-tight uppercase group/comp',
+                        'w-full flex items-center justify-between px-3 py-1.5 text-xs rounded-md transition-all truncate font-medium group/comp',
                         currentEmpresaId === v.empresa_id
-                          ? 'bg-primary/10 text-primary shadow-[0_0_20px_rgba(var(--primary),0.1)] ring-1 ring-primary/20'
-                          : 'text-muted-foreground/50 hover:bg-primary/5 hover:text-primary hover:translate-x-1'
+                          ? 'bg-accent text-accent-foreground'
+                          : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground hover:translate-x-1'
                       )}
                     >
                       <span className="truncate">{v.empresa.nome_fantasia || v.empresa.razao_social}</span>
@@ -92,12 +92,12 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
         <div className="space-y-3">
           <button
             onClick={() => setIsFavoritesOpen(!isFavoritesOpen)}
-            className="w-full flex items-center gap-4 px-2 text-[10px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-white transition-all group"
+            className="w-full flex items-center gap-2 px-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-all group"
           >
-            <div className="p-2 rounded-xl bg-warning/10 text-warning group-hover:bg-warning/20 transition-all shadow-sm ring-1 ring-warning/20">
-              <Star className="h-4 w-4 fill-warning" />
+            <div className="p-1.5 rounded bg-muted text-muted-foreground group-hover:bg-muted/80 transition-all border border-border">
+              <Star className="h-4 w-4" />
             </div>
-            <span className="flex-1 text-left">Priority Access</span>
+            <span className="flex-1 text-left">Favoritos</span>
             <motion.div
               animate={{ rotate: isFavoritesOpen ? 180 : 0 }}
               transition={{ duration: 0.4, ease: "backOut" }}
@@ -122,10 +122,10 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
                       <NavLink
                         to={item.path}
                         className={cn(
-                          'flex-1 px-4 py-2.5 text-[11px] rounded-xl transition-all duration-700 truncate font-black tracking-tight uppercase',
+                          'flex-1 px-3 py-1.5 text-xs rounded-md transition-all truncate font-medium',
                           location.pathname === item.path
-                            ? 'bg-primary/10 text-primary shadow-[0_0_20px_rgba(var(--primary),0.1)] ring-1 ring-primary/20'
-                            : 'text-muted-foreground/50 hover:bg-primary/5 hover:text-primary hover:translate-x-1'
+                            ? 'bg-accent text-accent-foreground'
+                            : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground hover:translate-x-1'
                         )}
                       >
                         {item.label}
@@ -153,12 +153,12 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
           <div className="flex items-center justify-between px-1">
             <button
               onClick={() => setIsRecentOpen(!isRecentOpen)}
-              className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-white transition-all group"
+              className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-all group"
             >
-              <div className="p-2 rounded-xl bg-primary/10 text-primary group-hover:bg-primary/20 transition-all shadow-sm ring-1 ring-primary/20">
+              <div className="p-1.5 rounded bg-muted text-muted-foreground group-hover:bg-muted/80 transition-all border border-border">
                 <Clock className="h-4 w-4" />
               </div>
-              <span>Recent Activity</span>
+              <span>Recentes</span>
               <motion.div
                 animate={{ rotate: isRecentOpen ? 180 : 0 }}
                 transition={{ duration: 0.4, ease: "backOut" }}
@@ -193,10 +193,10 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
                       <NavLink
                         to={item.path}
                         className={cn(
-                          'flex-1 px-4 py-2.5 text-[11px] rounded-xl transition-all duration-700 truncate font-black tracking-tight uppercase',
+                          'flex-1 px-3 py-1.5 text-xs rounded-md transition-all truncate font-medium',
                           location.pathname === item.path
-                            ? 'bg-primary/10 text-primary shadow-[0_0_20px_rgba(var(--primary),0.1)] ring-1 ring-primary/20'
-                            : 'text-muted-foreground/50 hover:bg-primary/5 hover:text-primary hover:translate-x-1'
+                            ? 'bg-accent text-accent-foreground'
+                            : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground hover:translate-x-1'
                         )}
                       >
                         {item.label}

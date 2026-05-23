@@ -309,74 +309,30 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
       <NavLink
         to={item.href}
         className={cn(
-          'flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all duration-700 group relative overflow-hidden',
+          'flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 group relative',
           isActive
-            ? 'bg-primary text-primary-foreground font-black shadow-[0_12px_32px_-8px_rgba(var(--primary),0.6)] scale-[1.02] ring-1 ring-white/10'
-            : item.highlight
-              ? 'bg-primary/5 text-foreground hover:bg-primary/10 border border-primary/10'
-              : 'text-white/40 hover:bg-white/5 hover:text-white hover:translate-x-1.5'
+            ? 'bg-accent text-accent-foreground font-medium'
+            : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'
         )}
       >
-        {isActive && (
-          <motion.div
-            layoutId="active-pill"
-            className="absolute inset-0 bg-gradient-to-r from-primary via-primary to-blue-600 -z-10"
-            transition={{ type: 'spring', bounce: 0.15, duration: 0.6 }}
-          />
-        )}
         <Icon
           className={cn(
-            'h-5 w-5 flex-shrink-0 transition-all duration-700 ease-apple',
-            !isActive && 'group-hover:scale-110 group-hover:rotate-3',
-            isActive && 'drop-shadow-lg',
-            item.highlight && !isActive && 'text-primary'
+            'h-4 w-4 flex-shrink-0 transition-colors',
+            isActive ? 'text-primary' : 'group-hover:text-foreground'
           )}
         />
-        <AnimatePresence mode="wait">
-          {!collapsed && (
-            <motion.span
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              className={cn(
-                "text-sm whitespace-nowrap overflow-hidden tracking-tight transition-all duration-500",
-                isActive ? "font-black" : "font-semibold"
-              )}
-            >
-              {t(item.label.toLowerCase().replace(/\s+/g, '_'), item.label)}
-            </motion.span>
-
-          )}
-        </AnimatePresence>
-        {isSynced && !collapsed && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="ml-auto flex items-center">
-                <div className="h-1.5 w-1.5 rounded-full bg-success animate-pulse mr-2" />
-                <CheckCircle className="h-3 w-3 text-success shrink-0" />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="right" className="font-bold text-[10px] uppercase tracking-widest">
-              Filtros Sincronizados
-            </TooltipContent>
-          </Tooltip>
+        {!collapsed && (
+          <span className="text-sm whitespace-nowrap overflow-hidden">
+            {t(item.label.toLowerCase().replace(/\s+/g, '_'), item.label)}
+          </span>
         )}
-
         {badge && !collapsed && (
           <Badge
             variant="secondary"
-            className={cn(
-              'ml-auto text-[10px] font-black px-2 py-0.5 rounded-md border-none',
-              isActive ? 'bg-white/20 text-white shadow-sm' : 'bg-primary/10 text-primary'
-            )}
+            className="ml-auto text-[10px] h-5 px-1.5"
           >
             {badge}
           </Badge>
-        )}
-        {badge && collapsed && (
-          <span className="absolute top-2 right-2 h-4.5 w-4.5 bg-destructive text-white rounded-full text-[10px] flex items-center justify-center font-black shadow-lg ring-2 ring-background">
-            {badge > 9 ? '9+' : badge}
-          </span>
         )}
       </NavLink>
     );
@@ -385,14 +341,8 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
       return (
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>{content}</TooltipTrigger>
-          <TooltipContent side="right" className="flex items-center gap-2">
+          <TooltipContent side="right">
             {t(item.label.toLowerCase().replace(/\s+/g, '_'), item.label)}
-            {badge && (
-
-              <Badge variant="secondary" className="text-xs">
-                {badge}
-              </Badge>
-            )}
           </TooltipContent>
         </Tooltip>
       );
@@ -435,27 +385,25 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
               <button
                 onClick={() => toggleGroup(group.id)}
                 className={cn(
-                  'w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-700 group mt-6 first:mt-0',
-                  hasActive
-                    ? 'text-white font-black'
-                    : 'text-white/20 hover:bg-white/5 hover:text-white'
+                  'w-full flex items-center justify-between px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition-colors group mt-2 first:mt-0',
+                  hasActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
                 )}
               >
-                <div className={cn(
-                  "p-2.5 rounded-xl transition-all duration-700 ease-apple shadow-inner",
-                  hasActive ? "bg-primary/20 text-primary ring-1 ring-primary/20" : "bg-white/5 text-white/20"
-                )}>
-                  <GroupIcon className="h-4.5 w-4.5 shrink-0" />
+                <div className="flex items-center gap-2">
+                  <div className={cn(
+                    "p-1.5 rounded border border-border transition-colors",
+                    hasActive ? "bg-accent text-primary" : "bg-muted text-muted-foreground group-hover:bg-muted/80"
+                  )}>
+                    <GroupIcon className="h-4 w-4" />
+                  </div>
+                  <span>{translatedGroupLabel}</span>
                 </div>
-                <span className="font-black text-[11px] uppercase tracking-[0.3em] flex-1 text-left">{translatedGroupLabel}</span>
-                <motion.div
-                  animate={{ rotate: isOpen ? 180 : 0 }}
-
-                  transition={{ duration: 0.4, ease: "backOut" }}
-                  className="opacity-40 group-hover:opacity-100 transition-opacity"
-                >
-                  <ChevronDown className="h-4 w-4" />
-                </motion.div>
+                <ChevronDown
+                  className={cn(
+                    'h-3.5 w-3.5 transition-transform duration-200 opacity-50',
+                    isOpen && 'rotate-180'
+                  )}
+                />
               </button>
             )}
 
@@ -470,7 +418,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
                     transition={{ duration: 0.2, ease: 'easeInOut' }}
                     className="overflow-hidden"
                   >
-                    <div className="pl-4 space-y-1 border-l border-primary/10 ml-5 mt-2 transition-all">
+                    <div className="pl-3 space-y-0.5 mt-1 transition-all">
                       {group.items.map(item => (
                         <NavItemComponent key={item.href} item={item} />
                       ))}

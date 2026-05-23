@@ -41,7 +41,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const showOnboarding = location.pathname === '/';
 
   return (
-    <div className="min-h-screen bg-[#f8f9fc] text-[#1a1c21] selection:bg-primary selection:text-white">
+    <div className="min-h-screen bg-background text-foreground font-sans antialiased">
       {/* Skip links para acessibilidade WCAG AA */}
       <SkipLinks />
 
@@ -84,15 +84,15 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         id="main-content"
         initial={false}
         animate={{
-          marginLeft: isMobile ? 0 : (sidebarCollapsed ? 100 : 320),
+          marginLeft: isMobile ? 0 : (sidebarCollapsed ? 80 : 280),
         }}
         transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
         className={cn(
           'min-h-screen w-full transition-all duration-500',
-          isMobile ? 'pt-4 pb-24' : 'pt-16'
+          isMobile ? 'pt-4 pb-24' : 'pt-14'
         )}
         style={{
-          width: isMobile ? '100%' : `calc(100% - ${sidebarCollapsed ? 100 : 320}px)`,
+          width: isMobile ? '100%' : `calc(100% - ${sidebarCollapsed ? 80 : 280}px)`,
         }}
       >
         <div className="w-full max-w-7xl mx-auto p-4 md:p-8 lg:p-10">

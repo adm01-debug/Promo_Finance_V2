@@ -64,14 +64,14 @@ export function HeroKPICard({
   const content = (
     <Card
       className={cn(
-        'relative overflow-hidden transition-all duration-200 cursor-pointer group h-full border border-border bg-white shadow-sm hover:shadow-md rounded-xl'
+        'relative overflow-hidden transition-all duration-200 cursor-pointer group h-full border border-border bg-card shadow-sm hover:shadow-md rounded-md'
       )}
     >
       <CardContent className={cn("p-6 flex flex-col justify-between h-full", size === 'hero' ? 'p-8' : 'p-6')}>
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <p className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">{title}</p>
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{title}</p>
               {badge && (
                 <Badge variant={badgeVariant} className="text-[9px] font-bold px-1.5 py-0 h-auto rounded-sm">
                   {badge}
@@ -83,7 +83,7 @@ export function HeroKPICard({
               <Skeleton className="h-8 w-32" />
             ) : (
               <p className={cn(
-                'text-[#1a1c21] font-bold tabular-nums tracking-tight',
+                'text-foreground font-semibold tabular-nums tracking-tight',
                 size === 'hero' ? 'text-3xl' : 'text-xl',
                 isZero && 'text-[#94a3b8]'
               )}>
@@ -93,7 +93,7 @@ export function HeroKPICard({
           </div>
 
           <div className={cn(
-            'flex items-center justify-center rounded-lg shadow-sm',
+            'flex items-center justify-center rounded border border-border shadow-sm',
             iconBg,
             size === 'hero' ? 'h-10 w-10' : 'h-8 w-8'
           )}>
@@ -103,10 +103,10 @@ export function HeroKPICard({
 
         <div className="mt-4 flex items-center justify-between">
           {isZero && emptyStateMessage ? (
-            <span className="text-[10px] font-semibold text-[#64748b]">{emptyStateMessage}</span>
+            <span className="text-[10px] font-medium text-muted-foreground">{emptyStateMessage}</span>
           ) : (
             <div className={cn(
-              'flex items-center gap-1 text-[11px] font-bold',
+              'flex items-center gap-1 text-[11px] font-medium',
               isPositive ? 'text-emerald-600' : 'text-rose-600',
             )}>
               {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}

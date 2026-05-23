@@ -38,21 +38,21 @@ function MiniKPICard({ icon: Icon, label, value, iconBg, iconColor, href, alertL
       className="h-full"
     >
       <div className={cn(
-        'relative h-full p-4 rounded-xl border border-border bg-white transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-md',
+        'relative h-full p-4 rounded-md border border-border bg-card transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-md',
         alertLevel === 'warning' && value > 0 && 'border-amber-200 bg-amber-50',
         alertLevel === 'danger' && value > 0 && 'border-rose-200 bg-rose-50',
       )}>
         <div className="flex items-center gap-3 relative">
           <div className={cn(
-            'p-2 rounded-lg border border-border transition-all duration-200',
+            'p-2 rounded border border-border transition-all duration-200',
             iconBg,
           )}>
             <Icon className={cn('h-4 w-4 transition-all duration-300', iconColor)} />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748b] truncate mb-0.5">{label}</p>
+            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground truncate mb-0.5">{label}</p>
             <p className={cn(
-              'text-lg font-bold tabular-nums tracking-tight text-[#1a1c21]',
+              'text-lg font-semibold tabular-nums tracking-tight text-foreground',
               alertLevel === 'warning' && value > 0 && 'text-amber-700',
               alertLevel === 'danger' && value > 0 && 'text-rose-700',
             )}>

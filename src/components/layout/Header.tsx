@@ -102,17 +102,17 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
     <header
       ref={ref}
       className={cn(
-        'fixed top-0 right-0 z-30 h-14 bg-white border-b border-border transition-all duration-200',
+        'fixed top-0 right-0 z-30 h-14 bg-background border-b border-border transition-all duration-200',
         sidebarCollapsed ? 'left-[80px]' : 'left-[280px]'
       )}
     >
       <div className="h-full flex items-center justify-between px-6 gap-6">
         <div className="flex items-center flex-1 max-w-xl gap-3">
-          <div className="relative w-full max-w-sm group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94a3b8] group-focus-within:text-primary transition-colors" />
+          <div className="relative w-full max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Pesquisar..."
-              className="pl-10 bg-[#f1f3f9] border-transparent focus:bg-white focus:border-primary/30 h-9 rounded-lg transition-all text-sm font-medium"
+              className="pl-10 bg-muted/50 border-transparent focus:bg-background h-9 rounded-md transition-all text-sm"
               onFocus={(e) => {
                 e.preventDefault();
                 e.target.blur();
@@ -122,9 +122,9 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
           </div>
 
           {empresaLabel && (
-            <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#f1f3f9] border border-border">
-              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              <span className="text-[11px] font-semibold text-[#64748b] truncate max-w-[150px]">
+            <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted/50 border border-border">
+              <div className="h-1.5 w-1.5 rounded-full bg-success" />
+              <span className="text-[11px] font-medium text-muted-foreground truncate max-w-[150px]">
                 {empresaLabel}
               </span>
             </div>
@@ -141,7 +141,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 text-[#64748b] hover:text-[#1a1c21] hover:bg-[#f1f3f9]">
+                <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted">
                   <Languages className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -156,7 +156,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 text-[#64748b] hover:text-[#1a1c21] hover:bg-[#f1f3f9]">
+                <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted">
                   <ThemeIcon className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -171,7 +171,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 text-[#64748b] hover:text-[#1a1c21] hover:bg-[#f1f3f9] relative">
+                <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted relative">
                   <Bell className="h-4 w-4" />
                   {unreadAlerts > 0 && (
                     <span className="absolute top-2 right-2 h-2 w-2 bg-rose-500 rounded-full border-2 border-white" />
@@ -204,17 +204,17 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-9 px-2 gap-2 hover:bg-[#f1f3f9] transition-all">
-                <div className="h-7 w-7 rounded-md bg-[#e2e8f0] flex items-center justify-center font-bold text-[#64748b] text-[10px]">
+              <Button variant="ghost" className="h-9 px-2 gap-2 hover:bg-muted transition-all">
+                <div className="h-7 w-7 rounded bg-muted flex items-center justify-center font-bold text-muted-foreground text-[10px]">
                   {initials}
                 </div>
                 <div className="hidden sm:flex flex-col items-start text-left">
-                  <span className="text-xs font-bold text-[#1a1c21] leading-none">{displayName}</span>
+                  <span className="text-xs font-semibold text-foreground leading-none">{displayName}</span>
                   {roleInfo && (
-                    <span className="text-[10px] text-[#64748b] font-medium mt-0.5">{roleInfo.label}</span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">{roleInfo.label}</span>
                   )}
                 </div>
-                <ChevronDown className="h-3.5 w-3.5 text-[#94a3b8]" />
+                <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
