@@ -114,10 +114,14 @@ interface ValidationStep {
   name: string;
   path: string;
   status: 'pending' | 'success' | 'error';
+  diffScore?: number;
   screenshots?: {
     mobile?: string;
     tablet?: string;
     desktop?: string;
+    diffMobile?: string;
+    diffTablet?: string;
+    diffDesktop?: string;
   };
 }
 
@@ -172,8 +176,8 @@ export const VisualValidator = () => {
       setCurrentScreenshot(dataUrl);
       
       if (referenceImage) {
-        const diff = await compareImages(referenceImage, dataUrl);
-        setDiffImage(diff);
+        const { heatmap } = await compareImages(referenceImage, dataUrl);
+        setDiffImage(heatmap);
       }
       
       toast.success('Screenshot capturado e comparado!');
@@ -238,6 +242,7 @@ export const VisualValidator = () => {
       setValidationSteps(prev => prev.map(s => s.id === step.id ? { ...s, status: 'pending' } : s));
       
       const stepScreenshots: any = {};
+      let totalDiff = 0;
       
       for (const bp of breakpoints) {
         toast.info(`Processando: ${step.name} (${bp.name})...`);
@@ -245,14 +250,20 @@ export const VisualValidator = () => {
         stepScreenshots[bp.name] = screenshot;
         
         const baselineKey = `baseline-${step.id}-${bp.name}`;
-        if (!localStorage.getItem(baselineKey) && screenshot) {
+        const baseline = localStorage.getItem(baselineKey);
+        if (!baseline && screenshot) {
           localStorage.setItem(baselineKey, screenshot);
+        } else if (baseline && screenshot) {
+          const { heatmap, diffScore } = await compareImages(baseline, screenshot);
+          stepScreenshots[`diff${bp.name.charAt(0).toUpperCase() + bp.name.slice(1)}`] = heatmap;
+          totalDiff += diffScore;
         }
       }
       
       setValidationSteps(prev => prev.map(s => s.id === step.id ? { 
         ...s, 
-        status: 'success',
+        status: totalDiff > 5 ? 'error' : 'success',
+        diffScore: totalDiff / 3,
         screenshots: stepScreenshots
       } : s));
     }
@@ -272,8 +283,8 @@ export const VisualValidator = () => {
         localStorage.setItem('ux-reference-image', result);
         
         if (currentScreenshot) {
-          const diff = await compareImages(result, currentScreenshot);
-          setDiffImage(diff);
+          const { heatmap } = await compareImages(result, currentScreenshot);
+          setDiffImage(heatmap);
         }
         
         toast.success('Referência carregada!');
