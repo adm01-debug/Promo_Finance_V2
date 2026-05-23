@@ -27,7 +27,7 @@ export function SortableHeader({
     <Button
       variant="ghost"
       size="sm"
-      className={cn("gap-1 -ml-3 h-8 font-semibold", className)}
+      className={cn("gap-1 -ml-3 h-8 text-caption text-muted-foreground/60 hover:text-foreground", className)}
       onClick={() => onSort(sortKey)}
     >
       {label}

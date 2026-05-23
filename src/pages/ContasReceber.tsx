@@ -96,16 +96,16 @@ export default function ContasReceber() {
           empresa={empresas.find(e => e.id === empresaFilter)}
           kpis={kpis}
         />
-        <Button variant="outline" size="lg" className="h-12 px-6 rounded-xl border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10 text-blue-500 font-black gap-2 transition-all" onClick={handleSyncStages}>
+        <Button variant="outline" size="lg" className="premium-button bg-transparent border-blue-500/20 text-blue-500" onClick={handleSyncStages}>
           <RefreshCcw className="h-5 w-5" /> Sincronizar Régua
         </Button>
-        <Button variant="outline" size="lg" className="h-12 px-6 rounded-xl border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary font-black gap-2 transition-all" onClick={() => setBaixaDialogOpen(true)}>
+        <Button variant="outline" size="lg" className="premium-button bg-transparent border-primary/20 text-primary" onClick={() => setBaixaDialogOpen(true)}>
           <Zap className="h-5 w-5" /> Baixa Automática
         </Button>
-        <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl border-white/5 bg-white/5 hover:bg-white/10 text-muted-foreground transition-all" onClick={() => setWebhookDialogOpen(true)}>
+        <Button variant="outline" size="icon" className="premium-button bg-transparent border-white/5 w-12 h-12" onClick={() => setWebhookDialogOpen(true)}>
           <Settings className="h-5 w-5" />
         </Button>
-        <Button size="lg" className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]" onClick={() => setFormOpen(true)}>
+        <Button size="lg" className="premium-button" onClick={() => setFormOpen(true)}>
           <Plus className="h-5 w-5" /> Novo Comando
         </Button>
       </div>
@@ -121,7 +121,7 @@ export default function ContasReceber() {
           <div className="absolute top-[30%] right-[10%] w-[35%] h-[35%] rounded-full bg-purple-500/5 blur-[120px] animate-pulse" style={{ animationDelay: '4s' }} />
         </div>
 
-        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="relative z-10 space-y-10 pb-20">
+        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="relative z-10 space-y-12 pb-32">
           <PageHeader 
             title="Contas a Receber" 
             subtitle="Monitore ativos financeiros e maximize a eficiência do capital de giro." 
@@ -174,14 +174,14 @@ export default function ContasReceber() {
                     <tr className="bg-white/[0.02] border-b border-white/5">
                       <th className="w-16 p-6 text-center"><Checkbox checked={isAllSelected} onClick={selectAll} /></th>
                       <th className="w-[300px] p-6"><SortableHeader label="Entity / Client" sortKey="cliente_nome" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></th>
-                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Reference Description</th>
+                      <th className="p-6 text-caption text-left">Reference Description</th>
                       <th className="p-6"><SortableHeader label="Nominal Value" sortKey="valor" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></th>
                       <th className="p-6"><SortableHeader label="Maturity Date" sortKey="data_vencimento" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></th>
                       <th className="w-24 p-6 text-center"><SortableHeader label="Delay" sortKey="data_vencimento" currentSort={sortKey} currentDirection={sortDirection} onSort={handleSort} /></th>
-                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-center">Status</th>
-                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Conta Bancária</th>
-                      {empresas.length > 1 && <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Corporate</th>}
-                      <th className="p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-center">Credit Score</th>
+                      <th className="p-6 text-caption text-center">Status</th>
+                      <th className="p-6 text-caption text-left">Conta Bancária</th>
+                      {empresas.length > 1 && <th className="p-6 text-caption text-left">Corporate</th>}
+                      <th className="p-6 text-caption text-center">Credit Score</th>
                       <th className="w-20 p-6"></th>
                     </tr>
                   </TableHeader>

@@ -68,14 +68,14 @@ export default function ContasPagar() {
         <Button 
           size="lg" 
           variant="outline"
-          className="h-12 px-4 rounded-xl font-black gap-2 transition-all hover:bg-destructive/10 hover:text-destructive"
+          className="premium-button bg-transparent border-white/10 hover:bg-destructive/10 hover:text-destructive"
           onClick={() => navigate('/contas-pagar/bloqueios')}
         >
           <ShieldAlert className="h-5 w-5" /> Auditoria
         </Button>
         <Button 
           size="lg" 
-          className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-2 shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px]"
+          className="premium-button"
           onClick={() => logic.setFormOpen(true)}
         >
           <Plus className="h-5 w-5" /> Novo Registro
@@ -92,7 +92,7 @@ export default function ContasPagar() {
           <div className="absolute bottom-[10%] left-[-5%] w-[45%] h-[45%] rounded-full bg-primary/5 blur-[100px] animate-pulse" style={{ animationDelay: '3s' }} />
         </div>
 
-        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="relative z-10 space-y-10 pb-20">
+        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="relative z-10 space-y-12 pb-32">
           <PageHeader 
             title="Contas a Pagar" 
             subtitle="Sincronize fluxos de saída e otimize relações estratégicas com fornecedores." 
