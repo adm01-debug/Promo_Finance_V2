@@ -102,7 +102,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
     <header
       ref={ref}
       className={cn(
-        'fixed top-0 right-0 z-30 h-14 bg-white border-b border-border transition-all duration-200',
+        'fixed top-0 right-0 z-30 h-14 bg-background border-b border-border transition-all duration-200',
         sidebarCollapsed ? 'left-[80px]' : 'left-[280px]'
       )}
     >
