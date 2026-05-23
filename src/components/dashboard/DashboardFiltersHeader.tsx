@@ -73,7 +73,7 @@ export function DashboardFiltersHeader({
             <span className="text-[11px] font-medium uppercase tracking-wider">{dateStr}</span>
           </div>
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-xl bg-blue-50 flex items-center justify-center border border-blue-100 shadow-sm text-primary">
+            <div className="h-12 w-12 rounded bg-muted flex items-center justify-center border border-border shadow-sm text-primary">
               <GreetingIcon className="h-6 w-6" />
             </div>
             <div>
