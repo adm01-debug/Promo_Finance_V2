@@ -158,7 +158,7 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
               <div className="p-1.5 rounded bg-muted text-muted-foreground group-hover:bg-muted/80 transition-all border border-border">
                 <Clock className="h-4 w-4" />
               </div>
-              <span>Recent Activity</span>
+              <span>Recentes</span>
               <motion.div
                 animate={{ rotate: isRecentOpen ? 180 : 0 }}
                 transition={{ duration: 0.4, ease: "backOut" }}
