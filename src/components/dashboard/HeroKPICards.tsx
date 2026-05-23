@@ -77,7 +77,7 @@ export function HeroKPICard({
         <div className="flex items-start justify-between">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <p className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.15em]">{title}</p>
+              <p className="text-caption">{title}</p>
               {badge && (
                 <Badge 
                   variant={badgeVariant} 
