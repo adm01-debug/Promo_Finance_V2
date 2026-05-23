@@ -38,7 +38,7 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
         <div className="space-y-3">
           <button
             onClick={() => setIsEmpresasOpen(!isEmpresasOpen)}
-            className="w-full flex items-center gap-4 px-2 text-[10px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-white transition-all group"
+            className="w-full flex items-center gap-2 px-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-all group"
           >
             <div className="p-2 rounded-xl bg-primary/10 text-primary group-hover:bg-primary/20 transition-all shadow-sm ring-1 ring-primary/20">
               <Building2 className="h-4 w-4" />
