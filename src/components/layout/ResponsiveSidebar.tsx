@@ -95,10 +95,10 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
       </button>
 
       {!collapsed && (
-        <div className="p-4 border-t border-border">
-          <div className="p-3 rounded-lg bg-[#f1f3f9] border border-border group/support cursor-pointer hover:bg-[#e2e8f0] transition-colors">
-            <p className="text-[10px] font-bold text-primary uppercase tracking-wider mb-0.5">Suporte</p>
-            <p className="text-[11px] text-[#64748b] font-medium group-hover:text-[#1a1c21] transition-colors">Falar com especialista</p>
+        <div className="p-4 border-t border-sidebar-border">
+          <div className="p-3 rounded bg-muted border border-sidebar-border group/support cursor-pointer hover:bg-accent transition-colors">
+            <p className="text-[10px] font-semibold text-primary uppercase tracking-wider mb-0.5">Suporte</p>
+            <p className="text-[11px] text-muted-foreground font-medium group-hover:text-foreground transition-colors">Falar com especialista</p>
           </div>
         </div>
       )}
