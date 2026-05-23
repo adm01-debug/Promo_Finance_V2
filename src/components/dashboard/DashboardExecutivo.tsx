@@ -287,7 +287,7 @@ export const DashboardExecutivo = () => {
                     <div className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider">
                       <ShieldAlert className="h-3 w-3" /> Anti-Duplicidade
                     </div>
-                    <h3 className="text-lg font-bold tracking-tight text-[#1a1c21]">Sentinel: Proteção de Caixa</h3>
+                    <h3 className="text-lg font-semibold tracking-tight text-foreground">Sentinel: Proteção de Caixa</h3>
                     <div className="flex items-center gap-2 py-1">
                       <div className="flex flex-col">
                         <span className="text-[10px] text-[#64748b] uppercase font-bold tracking-wider">Proteção</span>
