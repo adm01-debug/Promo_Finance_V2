@@ -50,7 +50,7 @@ function MiniKPICard({ icon: Icon, label, value, iconBg, iconColor, href, alertL
             <Icon className={cn('h-4 w-4 transition-all duration-300', iconColor)} />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748b] truncate mb-0.5">{label}</p>
+            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground truncate mb-0.5">{label}</p>
             <p className={cn(
               'text-lg font-bold tabular-nums tracking-tight text-[#1a1c21]',
               alertLevel === 'warning' && value > 0 && 'text-amber-700',
