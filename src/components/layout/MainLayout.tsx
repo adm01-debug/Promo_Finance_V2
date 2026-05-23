@@ -89,13 +89,13 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
         className={cn(
           'min-h-screen w-full transition-all duration-500',
-          isMobile ? 'pt-4 pb-24' : 'pt-20'
+          isMobile ? 'pt-4 pb-24' : 'pt-16'
         )}
         style={{
           width: isMobile ? '100%' : `calc(100% - ${sidebarCollapsed ? 100 : 320}px)`,
         }}
       >
-        <div className="w-full max-w-[1800px] mx-auto p-10 md:p-14 lg:p-20">
+        <div className="w-full max-w-[1800px] mx-auto p-4 md:p-10 lg:p-16">
           {/* Contextual Breadcrumbs with Back Button */}
           <div className="mb-12">
             <ContextualBreadcrumbs />

@@ -63,7 +63,7 @@ export default function Logistica() {
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                 {[
                   { label: 'Em Trânsito', value: '12', icon: Truck, color: 'text-blue-500', bg: 'bg-blue-500/10' },
                   { label: 'Aguardando Coleta', value: '08', icon: Package, color: 'text-amber-500', bg: 'bg-amber-500/10' },

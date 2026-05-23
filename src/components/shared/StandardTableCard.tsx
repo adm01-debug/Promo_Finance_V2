@@ -27,7 +27,7 @@ export function StandardTableCard({
   pageSize = 10,
 }: StandardTableCardProps) {
   return (
-    <Card className={cn("border-none bg-background/20 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] rounded-[2.5rem] overflow-hidden ring-1 ring-white/10", className)}>
+    <Card className={cn("border-none bg-background/20 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] rounded-2xl md:rounded-[2.5rem] overflow-hidden ring-1 ring-white/10", className)}>
       {isLoading ? (
         <TableShimmerSkeleton rows={pageSize} columns={8} showCheckbox showAvatar />
       ) : (

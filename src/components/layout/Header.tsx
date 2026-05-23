@@ -124,7 +124,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
     <header
       ref={ref}
       className={cn(
-        'fixed top-0 right-0 z-30 h-24 bg-background/30 backdrop-blur-3xl border-b border-border/40 transition-all duration-1000 ease-apple',
+        'fixed top-0 right-0 z-30 h-20 bg-background/30 backdrop-blur-3xl border-b border-border/40 transition-all duration-1000 ease-apple',
         sidebarCollapsed ? 'left-[100px]' : 'left-[320px]'
       )}
       style={{ boxShadow: '0 8px 32px -1px rgba(0, 0, 0, 0.05)' }}
@@ -137,7 +137,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-white/20 group-focus-within:text-primary transition-all duration-500 group-focus-within:scale-110" />
             <Input
               placeholder="Intelligent Search (⌘K)"
-              className="pl-14 bg-white/5 border-white/10 focus:bg-background/80 focus:border-primary/50 h-16 rounded-[1.25rem] transition-all duration-1000 font-black text-sm shadow-2xl placeholder:text-white/10 text-white tracking-widest uppercase"
+              className="pl-14 bg-white/5 border-white/10 focus:bg-background/80 focus:border-primary/50 h-12 rounded-[1rem] transition-all duration-1000 font-black text-xs shadow-2xl placeholder:text-white/10 text-white tracking-widest uppercase"
               onFocus={(e) => {
                 e.preventDefault();
                 e.target.blur();
@@ -174,7 +174,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
               <DropdownMenuTrigger asChild>
                 <Tooltip delayDuration={300}>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-14 w-14 rounded-[1.25rem] bg-white/5 hover:bg-primary/20 hover:text-primary border border-white/10 transition-all duration-1000 shadow-2xl ring-1 ring-white/5">
+                    <Button variant="ghost" size="icon" className="h-11 w-11 rounded-[1rem] bg-white/5 hover:bg-primary/20 hover:text-primary border border-white/10 transition-all duration-1000 shadow-2xl ring-1 ring-white/5">
                       <Languages className="h-5 w-5" />
                     </Button>
                   </TooltipTrigger>
@@ -205,7 +205,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
               <DropdownMenuTrigger asChild data-tour="theme">
                 <Tooltip delayDuration={300}>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-14 w-14 rounded-[1.25rem] bg-muted/20 hover:bg-primary/20 hover:text-primary border border-border transition-all duration-1000 shadow-2xl ring-1 ring-white/5">
+                    <Button variant="ghost" size="icon" className="h-11 w-11 rounded-[1rem] bg-muted/20 hover:bg-primary/20 hover:text-primary border border-border transition-all duration-1000 shadow-2xl ring-1 ring-white/5">
                       <AnimatePresence mode="wait">
                         <motion.div
                           key={theme}
@@ -245,7 +245,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
             <DropdownMenuTrigger asChild data-tour="notifications">
               <Tooltip delayDuration={300}>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-14 w-14 rounded-[1.25rem] bg-white/5 hover:bg-primary/20 hover:text-primary border border-white/10 transition-all duration-1000 relative shadow-2xl ring-1 ring-white/5">
+                  <Button variant="ghost" size="icon" className="h-11 w-11 rounded-[1rem] bg-white/5 hover:bg-primary/20 hover:text-primary border border-white/10 transition-all duration-1000 relative shadow-2xl ring-1 ring-white/5">
                     <Bell className="h-5 w-5" />
                     {unreadAlerts > 0 && (
                       <motion.span
@@ -303,7 +303,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
           {/* User Menu with gradient avatar */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-16 gap-5 pl-2 pr-8 hover:bg-muted/20 rounded-[1.25rem] transition-all duration-1000 ring-1 ring-border/40 hover:ring-primary/40 bg-muted/5 shadow-2xl">
+              <Button variant="ghost" className="h-12 gap-3 pl-2 pr-6 hover:bg-muted/20 rounded-[1rem] transition-all duration-1000 ring-1 ring-border/40 hover:ring-primary/40 bg-muted/5 shadow-2xl">
                 {/* Gradient Avatar */}
                 <div className="relative">
                   <div className={cn(
