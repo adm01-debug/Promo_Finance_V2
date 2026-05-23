@@ -58,7 +58,7 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
               <div className="h-7 w-7 rounded bg-primary flex items-center justify-center shadow-none">
                 <Shield className="h-5 w-5 text-white" />
               </div>
-              <span className="font-bold text-lg text-[#1a1c21] tracking-tight">
+              <span className="font-semibold text-base text-foreground tracking-tight">
                 Promo Finance
               </span>
             </motion.div>
