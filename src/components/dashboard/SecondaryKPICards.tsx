@@ -44,7 +44,7 @@ function MiniKPICard({ icon: Icon, label, value, iconBg, iconColor, href, alertL
       )}>
         <div className="flex items-center gap-3 relative">
           <div className={cn(
-            'p-2 rounded-lg border border-border transition-all duration-200',
+            'p-2 rounded border border-border transition-all duration-200',
             iconBg,
           )}>
             <Icon className={cn('h-4 w-4 transition-all duration-300', iconColor)} />
