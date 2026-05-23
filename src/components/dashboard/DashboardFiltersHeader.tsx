@@ -90,9 +90,9 @@ export function DashboardFiltersHeader({
         <Button
           variant="outline"
           onClick={onOpenConfig}
-          className="h-10 px-4 rounded-lg border-border bg-white font-bold text-xs gap-2 hover:bg-[#f8f9fc] transition-all self-start md:self-auto"
+          className="h-10 px-4 rounded-md border-border bg-card font-medium text-xs gap-2 hover:bg-accent transition-all self-start md:self-auto"
         >
-          <Settings2 className="h-4 w-4 text-[#64748b]" />
+          <Settings2 className="h-4 w-4 text-muted-foreground" />
           Personalizar Painel
         </Button>
       </div>
