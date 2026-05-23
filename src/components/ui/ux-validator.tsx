@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Camera, 
@@ -28,6 +28,7 @@ import {
   ChevronDown,
   Info,
   Loader2,
+  RefreshCw,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -38,6 +39,64 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import html2canvas from 'html2canvas';
+
+// --- Comparison Utility ---
+const compareImages = (img1Data: string, img2Data: string): Promise<string> => {
+  return new Promise((resolve) => {
+    const img1 = new Image();
+    const img2 = new Image();
+    let loadedCount = 0;
+
+    const onLoaded = () => {
+      loadedCount++;
+      if (loadedCount === 2) {
+        const canvas = document.createElement('canvas');
+        const width = Math.max(img1.width, img2.width);
+        const height = Math.max(img1.height, img2.height);
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return resolve(img1Data);
+
+        // Draw first image
+        ctx.drawImage(img1, 0, 0);
+        const img1Pixels = ctx.getImageData(0, 0, width, height);
+
+        // Draw second image with difference blend mode
+        ctx.globalCompositeOperation = 'difference';
+        ctx.drawImage(img2, 0, 0);
+        
+        // Enhance difference for heatmap
+        const diffData = ctx.getImageData(0, 0, width, height);
+        const data = diffData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          const brightness = (r + g + b) / 3;
+          
+          if (brightness > 0) {
+            // Highlight differences in red/magenta
+            data[i] = 255;
+            data[i + 1] = 0;
+            data[i + 2] = 255;
+            data[i + 3] = 200; // Semi-transparent
+          } else {
+            data[i + 3] = 0; // Fully transparent where they match
+          }
+        }
+        ctx.putImageData(diffData, 0, 0);
+        resolve(canvas.toDataURL());
+      }
+    };
+
+    img1.onload = onLoaded;
+    img2.onload = onLoaded;
+    img1.src = img1Data;
+    img2.src = img2Data;
+  });
+};
+
 
 // --- Types ---
 
@@ -72,10 +131,15 @@ export const VisualValidator = () => {
     { id: 'dashboard', name: 'Dashboard Principal', path: '/', status: 'pending' },
     { id: 'receber', name: 'Contas a Receber', path: '/contas-receber', status: 'pending' },
     { id: 'pagar', name: 'Contas a Pagar', path: '/contas-pagar', status: 'pending' },
+    { id: 'fluxo', name: 'Fluxo de Caixa', path: '/fluxo-caixa', status: 'pending' },
+    { id: 'clientes', name: 'Gestão de Clientes', path: '/clientes', status: 'pending' },
     { id: 'config', name: 'Configurações', path: '/configuracoes', status: 'pending' },
   ]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [viewMode, setViewMode] = useState<'side-by-side' | 'overlay' | 'diff'>('side-by-side');
+  const [diffImage, setDiffImage] = useState<string | null>(null);
+  const [activeBreakpoint, setActiveBreakpoint] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
+
 
   // Load reference from localStorage if exists
   useEffect(() => {
@@ -242,6 +306,13 @@ export const VisualValidator = () => {
                               >
                                 <Layers className="h-4 w-4" /> Overlay Heatmap
                               </Button>
+                              <Button 
+                                variant={viewMode === 'diff' ? 'default' : 'outline'} 
+                                onClick={() => setViewMode('diff')}
+                                className="justify-start gap-2 h-9 text-xs"
+                              >
+                                <Zap className="h-4 w-4" /> Heatmap de Desvios
+                              </Button>
                               <div className="pt-2">
                                 <p className="text-[10px] text-white/40 uppercase font-bold tracking-widest mb-2">Opacidade Overlay</p>
                                 <input 
@@ -251,12 +322,13 @@ export const VisualValidator = () => {
                                   step="0.1" 
                                   value={overlayOpacity} 
                                   onChange={(e) => setOverlayOpacity(parseFloat(e.target.value))}
-                                  className="w-full accent-primary"
+                                  className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
                                 />
                               </div>
                             </div>
                           </CardContent>
                         </Card>
+
                       </div>
 
                       {/* Comparison View */}
@@ -291,12 +363,34 @@ export const VisualValidator = () => {
                              )}
                              {!currentScreenshot && !referenceImage && <PlaceholderView />}
                              <div className="absolute bottom-4 right-4 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 text-[10px] text-white/60">
-                               Modo Diferença: Áreas brancas/coloridas indicam desvio
+                                Modo Diferença: Transparência em 0 indica pixels idênticos
+                             </div>
+                          </div>
+                        )}
+
+                        {viewMode === 'diff' && (
+                          <div className="relative aspect-video w-full max-w-4xl mx-auto rounded-xl overflow-hidden border border-white/10 bg-zinc-900 flex items-center justify-center">
+                             {currentScreenshot && <img src={currentScreenshot} className="absolute inset-0 w-full opacity-30" alt="Base" />}
+                             {diffImage ? (
+                               <img 
+                                 src={diffImage} 
+                                 className="absolute inset-0 w-full z-10" 
+                                 alt="Heatmap diff" 
+                               />
+                             ) : (
+                               <div className="text-center p-8">
+                                 <AlertCircle className="h-12 w-12 text-white/10 mx-auto mb-4" />
+                                 <p className="text-white/40 text-sm">Capture o screenshot atual e carregue uma referência para gerar o heatmap.</p>
+                               </div>
+                             )}
+                             <div className="absolute bottom-4 left-4 bg-primary/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-primary/30 text-[10px] text-primary font-bold">
+                               MAGENTA = DESVIO DETECTADO
                              </div>
                           </div>
                         )}
                       </div>
                     </div>
+
                   )}
 
                   {activeTab === 'audit' && (
@@ -343,16 +437,25 @@ export const VisualValidator = () => {
                   {activeTab === 'breakpoints' && (
                     <div className="space-y-8">
                       <div className="flex items-center gap-4 bg-white/5 p-2 rounded-xl border border-white/5 w-fit">
-                        <DeviceToggle icon={Smartphone} label="Mobile (375px)" active />
-                        <DeviceToggle icon={Tablet} label="Tablet (768px)" />
-                        <DeviceToggle icon={Monitor} label="Desktop (1440px)" />
+                        <DeviceToggle icon={Smartphone} label="Mobile (375px)" active={activeBreakpoint === 'mobile'} onClick={() => setActiveBreakpoint('mobile')} />
+                        <DeviceToggle icon={Tablet} label="Tablet (768px)" active={activeBreakpoint === 'tablet'} onClick={() => setActiveBreakpoint('tablet')} />
+                        <DeviceToggle icon={Monitor} label="Desktop (1440px)" active={activeBreakpoint === 'desktop'} onClick={() => setActiveBreakpoint('desktop')} />
                       </div>
 
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                          <h3 className="text-white font-bold">Plano de Validação Automática</h3>
-                          <Button size="sm" className="bg-white text-black text-xs font-bold px-6">EXECUTAR ROTEIRO</Button>
+                          <h3 className="text-white font-bold tracking-tight">Roteiro de Validação Pixel-Perfect</h3>
+                          <Button 
+                            size="sm" 
+                            onClick={runValidationRoadmap}
+                            disabled={isProcessing}
+                            className="bg-white text-black text-xs font-black px-8 py-5 rounded-xl hover:bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all hover:scale-105 active:scale-95"
+                          >
+                            {isProcessing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Zap className="h-4 w-4 mr-2" />}
+                            EXECUTAR ROTEIRO COMPLETO
+                          </Button>
                         </div>
+
                         
                         <div className="grid gap-3">
                           {validationSteps.map((step) => (
