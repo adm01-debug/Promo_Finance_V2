@@ -30,6 +30,7 @@ interface HeroKPICardProps {
   insight?: string;
   emptyStateMessage?: string;
   emptyStateHref?: string;
+  riskLevel?: 'none' | 'low' | 'medium' | 'high' | 'critical';
 }
 
 export function HeroKPICard({
@@ -48,6 +49,7 @@ export function HeroKPICard({
   badgeVariant = 'secondary',
   size = 'primary',
   emptyStateMessage,
+  riskLevel = 'none',
 }: HeroKPICardProps) {
   const animatedValue = useCountUp(value, { duration: 1000, decimals: isPercentage ? 1 : 2 });
   const isZero = value === 0;
@@ -65,12 +67,15 @@ export function HeroKPICard({
     <Card
       className={cn(
         'relative overflow-hidden transition-all duration-500 cursor-pointer group h-full premium-card border-white/10',
-        size === 'hero' && 'bg-gradient-to-br from-white to-primary/[0.02] dark:from-zinc-900 dark:to-primary/[0.05]'
+        size === 'hero' && 'bg-gradient-to-br from-white to-primary/[0.02] dark:from-zinc-900 dark:to-primary/[0.05]',
+        riskLevel === 'high' && 'border-orange-500/30 shadow-[0_0_15px_rgba(249,115,22,0.1)]',
+        riskLevel === 'critical' && 'border-rose-500/40 shadow-[0_0_20px_rgba(244,63,94,0.15)] animate-pulse-subtle'
       )}
     >
       <div className={cn(
         "absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl transition-opacity group-hover:opacity-100 opacity-50",
-        size === 'hero' ? 'opacity-70' : 'opacity-0'
+        size === 'hero' ? 'opacity-70' : 'opacity-0',
+        riskLevel === 'critical' && 'bg-rose-500/10'
       )} />
 
       <CardContent className={cn("p-6 flex flex-col justify-between h-full relative z-10", size === 'hero' ? 'p-8' : 'p-6')}>

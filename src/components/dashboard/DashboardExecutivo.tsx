@@ -247,6 +247,7 @@ export const DashboardExecutivo = () => {
               isCurrency={false}
               badge={inadimplenciaBadge}
               badgeVariant={inadimplenciaBadgeVariant}
+              riskLevel={metrics.inadimplencia > 15 ? 'critical' : metrics.inadimplencia > 10 ? 'high' : metrics.inadimplencia > 5 ? 'medium' : 'none'}
             />
           </HeroKPIGrid>
         </motion.div>

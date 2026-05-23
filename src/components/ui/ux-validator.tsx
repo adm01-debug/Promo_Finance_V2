@@ -150,11 +150,12 @@ export const VisualValidator = () => {
     { id: 'seguranca', name: 'Segurança & Logs', path: '/seguranca', status: 'pending' },
   ]);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [viewMode, setViewMode] = useState<'side-by-side' | 'overlay' | 'diff' | 'split'>('side-by-side');
+  const [viewMode, setViewMode] = useState<'side-by-side' | 'overlay' | 'diff' | 'split' | 'heatmap'>('side-by-side');
   const [diffImage, setDiffImage] = useState<string | null>(null);
   const [activeBreakpoint, setActiveBreakpoint] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
   const [showReport, setShowReport] = useState(false);
   const [splitPosition, setSplitPosition] = useState(50);
+  const [heatmapIntensity, setHeatmapIntensity] = useState(0.8);
 
   // Load reference from localStorage if exists
   useEffect(() => {
@@ -428,15 +429,26 @@ export const VisualValidator = () => {
                               >
                                 <Maximize2 className="h-4 w-4" /> Split View Slider
                               </Button>
+                              <Button 
+                                variant={viewMode === 'heatmap' ? 'default' : 'outline'} 
+                                onClick={() => setViewMode('heatmap')}
+                                className="justify-start gap-2 h-9 text-xs"
+                              >
+                                <Zap className="h-4 w-4" /> Heatmap Avançado
+                              </Button>
                               <div className="pt-2">
-                                <p className="text-caption mb-2">Opacidade Overlay</p>
+                                <p className="text-caption mb-2">Ajuste de Intensidade / Opacidade</p>
                                 <input 
                                   type="range" 
                                   min="0" 
                                   max="1" 
                                   step="0.1" 
-                                  value={overlayOpacity} 
-                                  onChange={(e) => setOverlayOpacity(parseFloat(e.target.value))}
+                                  value={viewMode === 'heatmap' ? heatmapIntensity : overlayOpacity} 
+                                  onChange={(e) => {
+                                    const val = parseFloat(e.target.value);
+                                    if (viewMode === 'heatmap') setHeatmapIntensity(val);
+                                    else setOverlayOpacity(val);
+                                  }}
                                   className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
                                 />
                               </div>
@@ -553,6 +565,33 @@ export const VisualValidator = () => {
                              )}
                              <div className="absolute bottom-4 left-4 bg-primary/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-primary/30 text-[10px] text-primary font-bold">
                                MAGENTA = DESVIO DETECTADO
+                             </div>
+                          </div>
+                        )}
+
+                        {viewMode === 'heatmap' && (
+                          <div className="relative aspect-video w-full max-w-4xl mx-auto rounded-xl overflow-hidden border border-white/10 bg-zinc-950 flex items-center justify-center">
+                             {currentScreenshot && <img src={currentScreenshot} className="absolute inset-0 w-full opacity-40 grayscale" alt="Base" />}
+                             {diffImage ? (
+                               <div className="absolute inset-0 z-10" style={{ filter: `blur(8px) contrast(2) brightness(1.5)` }}>
+                                 <img 
+                                   src={diffImage} 
+                                   className="w-full h-full object-contain mix-blend-screen" 
+                                   style={{ opacity: heatmapIntensity }}
+                                   alt="Heatmap overlay" 
+                                 />
+                               </div>
+                             ) : (
+                               <div className="text-center p-8">
+                                 <Zap className="h-12 w-12 text-primary/20 mx-auto mb-4" />
+                                 <p className="text-white/40 text-sm">Aguardando dados de comparação para gerar heatmap térmico.</p>
+                               </div>
+                             )}
+                             <div className="absolute top-4 right-4 flex flex-col gap-1 items-end">
+                               <div className="flex items-center gap-2">
+                                 <div className="h-2 w-10 bg-gradient-to-r from-blue-500 via-yellow-500 to-red-500 rounded-full" />
+                                 <span className="text-[10px] text-white/40 font-bold">GRADIENTE DE DESVIO</span>
+                               </div>
                              </div>
                           </div>
                         )}
