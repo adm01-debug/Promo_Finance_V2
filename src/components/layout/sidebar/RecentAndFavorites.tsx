@@ -68,10 +68,10 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
                       key={v.empresa_id}
                       onClick={() => setCurrentEmpresaId(v.empresa_id)}
                       className={cn(
-                        'w-full flex items-center justify-between px-4 py-2.5 text-[11px] rounded-xl transition-all duration-700 truncate font-black tracking-tight uppercase group/comp',
+                        'w-full flex items-center justify-between px-3 py-1.5 text-xs rounded-md transition-all truncate font-medium group/comp',
                         currentEmpresaId === v.empresa_id
-                          ? 'bg-primary/10 text-primary shadow-[0_0_20px_rgba(var(--primary),0.1)] ring-1 ring-primary/20'
-                          : 'text-muted-foreground/50 hover:bg-primary/5 hover:text-primary hover:translate-x-1'
+                          ? 'bg-accent text-accent-foreground'
+                          : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground hover:translate-x-1'
                       )}
                     >
                       <span className="truncate">{v.empresa.nome_fantasia || v.empresa.razao_social}</span>
