@@ -3,6 +3,7 @@ import { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ReactNode } from 'react';
 import { EmpresaSwitcher } from './EmpresaSwitcher';
+import { VisualValidator } from '@/components/ui/ux-validator';
 
 interface PageHeaderProps {
   title: string;
@@ -16,6 +17,7 @@ interface PageHeaderProps {
   actions?: ReactNode;
   className?: string;
   showEmpresaSwitcher?: boolean;
+  showUxValidator?: boolean;
 }
 
 export const PageHeader = ({
@@ -30,6 +32,7 @@ export const PageHeader = ({
   actions,
   className,
   showEmpresaSwitcher = false,
+  showUxValidator = false,
 }: PageHeaderProps) => {
   return (
     <motion.div 
@@ -69,6 +72,7 @@ export const PageHeader = ({
             <EmpresaSwitcher />
           </div>
         )}
+        {showUxValidator && <VisualValidator />}
         {children}
         {actions && (
           <div className="flex items-center gap-3">

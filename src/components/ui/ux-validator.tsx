@@ -126,8 +126,10 @@ export const VisualValidator = () => {
     { id: 'pagar', name: 'Contas a Pagar', path: '/contas-pagar', status: 'pending' },
     { id: 'fluxo', name: 'Fluxo de Caixa', path: '/fluxo-caixa', status: 'pending' },
     { id: 'clientes', name: 'Gestão de Clientes', path: '/clientes', status: 'pending' },
+    { id: 'fornecedores', name: 'Gestão de Fornecedores', path: '/fornecedores', status: 'pending' },
     { id: 'tributario', name: 'Dashboard Tributário', path: '/tributario', status: 'pending' },
     { id: 'bi', name: 'Business Intelligence', path: '/bi', status: 'pending' },
+    { id: 'conciliacao', name: 'Conciliação Bancária', path: '/conciliacao', status: 'pending' },
     { id: 'config', name: 'Configurações', path: '/configuracoes', status: 'pending' },
   ]);
   const [isProcessing, setIsProcessing] = useState(false);

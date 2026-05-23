@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/select';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect } from 'react';
+import { VisualValidator } from '@/components/ui/ux-validator';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 10 },
@@ -98,6 +99,10 @@ export function DashboardFiltersHeader({
       </div>
       
       <div className="flex flex-col sm:flex-row items-center gap-4 p-2.5 rounded-2xl glass-effect bg-white/40 dark:bg-zinc-900/40 border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-xl">
+        <div className="flex items-center px-2">
+          <VisualValidator />
+        </div>
+        <div className="w-px h-6 bg-border hidden sm:block" />
         <div className="flex items-center gap-2 flex-1 w-full px-2">
           <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
           <Select value={empresaFilter} onValueChange={setEmpresaFilter}>

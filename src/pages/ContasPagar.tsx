@@ -99,6 +99,7 @@ export default function ContasPagar() {
             badge="Payables Optimization"
             showEmpresaSwitcher
             actions={headerActions}
+            showUxValidator
             gradientFrom="from-destructive"
             gradientVia="via-red-500"
             gradientTo="to-orange-600"

@@ -128,6 +128,7 @@ export default function ContasReceber() {
             badge="Receivables Governance"
             showEmpresaSwitcher
             actions={headerActions}
+            showUxValidator
           />
 
           <motion.div variants={itemVariants}>
