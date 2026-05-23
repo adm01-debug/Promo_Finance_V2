@@ -2,12 +2,11 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Brain, RefreshCw, Sparkles, TrendingUp, TrendingDown, Activity, AlertTriangle, BarChart3, PieChart, Target } from 'lucide-react';
+import { Brain, RefreshCw, Sparkles, Activity, AlertTriangle, BarChart3, PieChart, Target } from 'lucide-react';
 import { logger } from '@/lib/logger';
 import { cn } from '@/lib/utils';
 import { PrevisaoIAVisaoGeral } from './previsao-ia/PrevisaoIAVisaoGeral';
@@ -36,7 +35,7 @@ interface AnalisePreditiva {
   indicadores_chave?: { prazo_medio_recebimento: string; prazo_medio_pagamento: string; ciclo_financeiro: string; liquidez_corrente: string; cobertura_despesas: string };
 }
 
-const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } } as const;
+const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.2 } } } as const;
 
 export function PrevisaoIA({ className }: { className?: string }) {
   const [analise, setAnalise] = useState<AnalisePreditiva | null>(null);
@@ -53,24 +52,19 @@ export function PrevisaoIA({ className }: { className?: string }) {
       if (data.error) throw new Error(data.error);
       setAnalise(data.analise);
       setGeradoEm(data.gerado_em);
-      toast({ title: "Análise concluída", description: `Analisados ${data.dados_analisados.contas_receber} recebíveis, ${data.dados_analisados.contas_pagar} pagáveis, ${data.dados_analisados.clientes} clientes e ${data.dados_analisados.meses_historico || 0} meses de histórico.` });
+      toast({ title: "Análise concluída" });
     } catch (error: unknown) {
       logger.error('Erro na análise preditiva:', error);
-      toast({ title: "Erro na análise", description: error instanceof Error ? error.message : "Não foi possível gerar a análise preditiva.", variant: "destructive" });
+      toast({ title: "Erro na análise", variant: "destructive" });
     } finally { setLoading(false); }
   };
 
   const getTendenciaIcon = (tendencia: string) => {
-    if (tendencia?.toLowerCase().includes('cresc')) return <TrendingUp className="h-4 w-4 text-success" />;
-    if (tendencia?.toLowerCase().includes('decresc')) return <TrendingDown className="h-4 w-4 text-destructive" />;
-    return <Activity className="h-4 w-4 text-muted-foreground" />;
+    return <Activity className="h-4 w-4 text-[#64748b]" />;
   };
 
   const getTendenciaColor = (tendencia: string, inverted = false) => {
-    const isUp = tendencia?.toLowerCase().includes('cresc');
-    const isDown = tendencia?.toLowerCase().includes('decresc');
-    if (inverted) { return isUp ? 'text-destructive' : isDown ? 'text-success' : 'text-muted-foreground'; }
-    return isUp ? 'text-success' : isDown ? 'text-destructive' : 'text-muted-foreground';
+    return 'text-[#64748b]';
   };
 
   const parseValor = (valor: string): number => {
@@ -80,32 +74,25 @@ export function PrevisaoIA({ className }: { className?: string }) {
 
   const getScoreColor = (score: string): string => {
     const s = parseInt(score) || 0;
-    if (s >= 80) return 'text-success';
-    if (s >= 60) return 'text-warning';
-    if (s >= 40) return 'text-streak';
-    return 'text-destructive';
+    if (s >= 80) return 'text-emerald-600';
+    if (s >= 60) return 'text-amber-600';
+    return 'text-rose-600';
   };
 
   if (!analise && !loading) {
     return (
-      <Card className={cn(className, "border-none bg-background/20 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative group")}>
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-purple-500/5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-        <CardContent className="relative flex flex-col items-center justify-center py-20 text-center z-10">
-          <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.5 }}>
-            <div className="relative mb-8">
-              <div className="absolute inset-0 animate-pulse rounded-full bg-primary/20 blur-[40px]" />
-              <div className="relative h-20 w-20 rounded-3xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-2xl">
-                <Brain className="h-10 w-10 text-white" />
-              </div>
-            </div>
-          </motion.div>
-          <h3 className="mb-3 text-3xl font-black tracking-tight text-foreground">Cognitive Intelligence</h3>
-          <p className="mb-8 max-w-md text-base font-medium text-muted-foreground/70 leading-relaxed italic px-6">
-            Ative o processamento neural para identificar tendências, anomalias e projeções estratégicas personalizadas para seu negócio.
+      <Card className={cn(className, "border border-border bg-white shadow-sm rounded-xl overflow-hidden")}>
+        <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="h-16 w-16 rounded-xl bg-blue-50 flex items-center justify-center border border-blue-100 mb-6">
+            <Brain className="h-8 w-8 text-primary" />
+          </div>
+          <h3 className="mb-2 text-xl font-bold text-[#1a1c21]">Inteligência Artificial</h3>
+          <p className="mb-8 max-w-sm text-sm font-medium text-[#64748b] leading-relaxed px-6">
+            Análise preditiva de fluxo de caixa, tendências e recomendações estratégicas baseadas em IA.
           </p>
-          <Button onClick={gerarAnalise} size="lg" className="h-14 px-8 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-3 shadow-xl transition-all hover:scale-105 active:scale-95">
-            <Sparkles className="h-5 w-5" />
-            Engajar Inteligência Financeira
+          <Button onClick={gerarAnalise} className="h-11 px-6 rounded-lg bg-primary text-white font-bold gap-2 shadow-sm">
+            <Sparkles className="h-4 w-4" />
+            Gerar Insights
           </Button>
         </CardContent>
       </Card>
@@ -114,30 +101,21 @@ export function PrevisaoIA({ className }: { className?: string }) {
 
   if (loading) {
     return (
-      <Card className={cn(className, "border-none bg-background/20 backdrop-blur-3xl shadow-xl rounded-[2.5rem] ring-1 ring-white/10")}>
-        <CardHeader className="p-10">
-          <div className="flex items-center gap-6">
-            <motion.div 
-              animate={{ 
-                rotate: 360,
-                scale: [1, 1.1, 1],
-              }} 
-              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-              className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner"
-            >
-              <Brain className="h-7 w-7" />
-            </motion.div>
+      <Card className={cn(className, "border border-border bg-white shadow-sm rounded-xl")}>
+        <CardHeader className="p-6">
+          <div className="flex items-center gap-4">
+            <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center text-primary animate-pulse">
+              <Brain className="h-6 w-6" />
+            </div>
             <div>
-              <CardTitle className="text-2xl font-black tracking-tight">Sincronizando Redes Neurais...</CardTitle>
-              <CardDescription className="text-sm font-medium">Extraindo insights de milhares de pontos de dados transacionais.</CardDescription>
+              <CardTitle className="text-lg font-bold">Processando dados...</CardTitle>
+              <CardDescription className="text-xs">Gerando previsões com inteligência artificial.</CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-10 pt-2 space-y-8">
-          <div className="grid gap-6 md:grid-cols-3">
-            {[1, 2, 3].map((i) => <Skeleton key={i} className="h-32 w-full rounded-2xl bg-white/5" />)}
-          </div>
-          <Skeleton className="h-56 w-full rounded-3xl bg-white/5" />
+        <CardContent className="p-6 pt-2 space-y-6">
+          <Skeleton className="h-32 w-full rounded-lg bg-[#f1f3f9]" />
+          <Skeleton className="h-48 w-full rounded-lg bg-[#f1f3f9]" />
         </CardContent>
       </Card>
     );
@@ -147,56 +125,54 @@ export function PrevisaoIA({ className }: { className?: string }) {
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="visible" className={className}>
-      <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] rounded-[2.5rem] overflow-hidden ring-1 ring-white/10">
-        <CardHeader className="p-8 pb-4">
-          <div className="flex items-center justify-between gap-4 flex-wrap">
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-2xl bg-primary shadow-lg shadow-primary/20 flex items-center justify-center text-white">
-                <Brain className="h-6 w-6" />
+      <Card className="border border-border bg-white shadow-sm rounded-xl overflow-hidden">
+        <CardHeader className="p-6 pb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center text-primary border border-blue-100">
+                <Brain className="h-5 w-5" />
               </div>
               <div>
-                <CardTitle className="text-2xl font-black tracking-tight">Cyber-Neural Matrix & Quantum Forecast 10/10</CardTitle>
-                {geradoEm && <CardDescription className="text-xs font-bold uppercase tracking-widest opacity-60">Insight gerado às {new Date(geradoEm).toLocaleTimeString('pt-BR')}</CardDescription>}
+                <CardTitle className="text-lg font-bold text-[#1a1c21]">Insights de IA</CardTitle>
+                {geradoEm && <CardDescription className="text-[10px] font-bold uppercase tracking-wider text-[#64748b]">Gerado às {new Date(geradoEm).toLocaleTimeString('pt-BR')}</CardDescription>}
               </div>
             </div>
             <Button 
               variant="outline" 
               size="sm" 
               onClick={gerarAnalise} 
-              disabled={loading}
-              className="h-10 rounded-xl border-white/10 bg-white/5 font-bold hover:bg-white/10"
+              className="h-8 rounded-md border-border bg-white text-xs font-bold"
             >
-              <RefreshCw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} />
-              Re-analisar
+              <RefreshCw className={cn("mr-1.5 h-3.5 w-3.5", loading && "animate-spin")} />
+              Atualizar
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="p-8 pt-4 space-y-8">
-          <div className="rounded-[2rem] border border-white/5 bg-black/20 p-8 shadow-inner relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-              <div className="space-y-1 text-center md:text-left">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 mb-2">Corporate Health Score</p>
-                <div className="flex items-baseline gap-2">
-                  <span className={cn("text-6xl font-black tracking-tighter tabular-nums", getScoreColor(analise?.score_saude_financeira || '0'))}>
+        <CardContent className="p-6 pt-0 space-y-6">
+          <div className="rounded-lg border border-border bg-[#f8f9fc] p-6">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="space-y-1 text-center sm:text-left">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748b]">Score Financeiro</p>
+                <div className="flex items-baseline justify-center sm:justify-start gap-1">
+                  <span className={cn("text-5xl font-bold tracking-tight", getScoreColor(analise?.score_saude_financeira || '0'))}>
                     {analise?.score_saude_financeira || 0}
                   </span>
-                  <span className="text-xl font-bold text-muted-foreground/40 italic">/ 100</span>
+                  <span className="text-base font-medium text-[#94a3b8]">/100</span>
                 </div>
               </div>
-              <div className="flex-1 max-w-sm w-full space-y-4">
-                <div className="h-3 rounded-full bg-white/5 overflow-hidden ring-1 ring-white/10">
+              <div className="flex-1 max-w-xs w-full space-y-3">
+                <div className="h-2 rounded-full bg-[#e2e8f0] overflow-hidden">
                   <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${score}%` }}
-                    transition={{ duration: 1.5, ease: "circOut" }}
+                    transition={{ duration: 1 }}
                     className={cn(
-                      "h-full rounded-full shadow-[0_0_15px_rgba(var(--primary),0.5)]",
-                      score >= 80 ? "bg-success" : score >= 60 ? "bg-warning" : "bg-destructive"
+                      "h-full rounded-full",
+                      score >= 80 ? "bg-emerald-500" : score >= 60 ? "bg-amber-500" : "bg-rose-500"
                     )} 
                   />
                 </div>
-                <p className="text-xs font-medium text-muted-foreground/80 leading-relaxed text-center italic">
+                <p className="text-[11px] font-medium text-[#64748b] leading-relaxed text-center italic">
                   "{analise?.resumo_executivo}"
                 </p>
               </div>
@@ -204,26 +180,26 @@ export function PrevisaoIA({ className }: { className?: string }) {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="inline-flex h-12 items-center justify-center rounded-2xl bg-white/5 p-1 text-muted-foreground w-full border border-white/10 backdrop-blur-xl mb-6">
-              <TabsTrigger value="visao-geral" className="flex-1 rounded-xl data-[state=active]:bg-white data-[state=active]:text-primary font-bold text-xs gap-2">
+            <TabsList className="grid grid-cols-4 h-9 items-center justify-center rounded-lg bg-[#f1f3f9] p-0.5 text-[#64748b] w-full border border-border mb-6">
+              <TabsTrigger value="visao-geral" className="rounded-md data-[state=active]:bg-white data-[state=active]:text-primary font-bold text-[10px] gap-1.5 h-8">
                 <PieChart className="h-3.5 w-3.5" />
-                Snapshot
+                Resumo
               </TabsTrigger>
-              <TabsTrigger value="tendencias" className="flex-1 rounded-xl data-[state=active]:bg-white data-[state=active]:text-primary font-bold text-xs gap-2">
+              <TabsTrigger value="tendencias" className="rounded-md data-[state=active]:bg-white data-[state=active]:text-primary font-bold text-[10px] gap-1.5 h-8">
                 <BarChart3 className="h-3.5 w-3.5" />
                 Trends
               </TabsTrigger>
-              <TabsTrigger value="projecoes" className="flex-1 rounded-xl data-[state=active]:bg-white data-[state=active]:text-primary font-bold text-xs gap-2">
+              <TabsTrigger value="projecoes" className="rounded-md data-[state=active]:bg-white data-[state=active]:text-primary font-bold text-[10px] gap-1.5 h-8">
                 <Target className="h-3.5 w-3.5" />
-                Target
+                Metas
               </TabsTrigger>
-              <TabsTrigger value="alertas" className="flex-1 rounded-xl data-[state=active]:bg-white data-[state=active]:text-primary font-bold text-xs gap-2">
+              <TabsTrigger value="alertas" className="rounded-md data-[state=active]:bg-white data-[state=active]:text-primary font-bold text-[10px] gap-1.5 h-8">
                 <AlertTriangle className="h-3.5 w-3.5" />
-                Risks
+                Riscos
               </TabsTrigger>
             </TabsList>
 
-            <div className="min-h-[300px]">
+            <div className="min-h-[250px]">
               <TabsContent value="visao-geral" className="mt-0 outline-none">
                 <PrevisaoIAVisaoGeral indicadores={analise?.indicadores_chave} inadimplencia={analise?.analise_inadimplencia} getTendenciaIcon={getTendenciaIcon} />
               </TabsContent>
