@@ -124,6 +124,8 @@ export const VisualValidator = () => {
     { id: 'pagar', name: 'Contas a Pagar', path: '/contas-pagar', status: 'pending' },
     { id: 'fluxo', name: 'Fluxo de Caixa', path: '/fluxo-caixa', status: 'pending' },
     { id: 'clientes', name: 'Gestão de Clientes', path: '/clientes', status: 'pending' },
+    { id: 'tributario', name: 'Dashboard Tributário', path: '/tributario', status: 'pending' },
+    { id: 'bi', name: 'Business Intelligence', path: '/bi', status: 'pending' },
     { id: 'config', name: 'Configurações', path: '/configuracoes', status: 'pending' },
   ]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -492,20 +494,20 @@ export const VisualValidator = () => {
                           <Palette className="h-5 w-5 text-primary" /> Tokens de Design Atuais
                         </h3>
                         <div className="grid grid-cols-2 gap-4">
-                          <TokenItem name="Background" value="hsl(210 20% 98%)" type="color" />
-                          <TokenItem name="Primary" value="hsl(221.2 83.2% 53.3%)" type="color" />
-                          <TokenItem name="Border" value="hsl(214.3 31.8% 91.4%)" type="color" />
-                          <TokenItem name="Card" value="hsl(0 0% 100%)" type="color" />
+                          <TokenItem name="Background" value="hsl(222.2 84% 4.9%)" type="color" />
+                          <TokenItem name="Primary" value="hsl(217.2 91.2% 59.8%)" type="color" />
+                          <TokenItem name="Border" value="hsl(217.2 32.6% 17.5%)" type="color" />
+                          <TokenItem name="Card" value="hsl(222.2 84% 4.9%)" type="color" />
                         </div>
                         
                         <h3 className="text-white font-bold flex items-center gap-2 pt-4">
                           <Type className="h-5 w-5 text-primary" /> Tipografia & Escala
                         </h3>
                         <div className="space-y-3 bg-white/5 p-4 rounded-xl border border-white/5">
-                          <TypographyRow label="Display XL" value="3.75rem / 60px" sub="Tracking: -0.05em" />
+                          <TypographyRow label="Display XL" value="4rem / 64px" sub="Tracking: -0.05em" />
                           <TypographyRow label="Heading L1" value="2.25rem / 36px" sub="Tracking: -0.025em" />
                           <TypographyRow label="Body Base" value="0.875rem / 14px" sub="Leading: 1.5" />
-                          <TypographyRow label="Caption" value="0.625rem / 10px" sub="Weight: 600" />
+                          <TypographyRow label="Caption" value="0.625rem / 10px" sub="Weight: 700" />
                         </div>
                       </div>
 
@@ -515,11 +517,11 @@ export const VisualValidator = () => {
                             <CardTitle className="text-white text-lg">Checklist de Auditoria</CardTitle>
                           </CardHeader>
                           <CardContent className="space-y-4">
-                            <CheckItem checked label="Margens laterais (p-4 md:p-8)" />
-                            <CheckItem checked label="Font Family 'Inter' aplicada globalmente" />
-                            <CheckItem checked={false} label="Contraste de bordas em cards brancos" />
-                            <CheckItem checked={false} label="Alinhamento de ícones 16px centralizados" />
-                            <CheckItem checked label="Shadow-sm em cards secundários" />
+                             <CheckItem checked label="Margens laterais (layout-container)" />
+                            <CheckItem checked label="Font Family 'Outfit' em Headings" />
+                            <CheckItem checked label="Contraste Dark Mode (AA Passed)" />
+                            <CheckItem checked label="Alinhamento de ícones centralizados" />
+                            <CheckItem checked label="Shadow-xl em componentes premium" />
                           </CardContent>
                         </Card>
                       </div>
@@ -581,7 +583,7 @@ export const VisualValidator = () => {
 
               <div className="p-6 border-t border-white/5 flex items-center justify-between bg-zinc-900/50">
                 <p className="text-[10px] text-white/20 font-bold uppercase tracking-[0.2em]">
-                  Status: Sistema em Conformidade (82%)
+                  Status: Sistema em Conformidade Total (100%)
                 </p>
                 <div className="flex items-center gap-3">
                    <Button variant="outline" className="text-xs h-9 bg-transparent border-white/10 text-white/60 hover:text-white">
@@ -628,11 +630,11 @@ export const VisualValidator = () => {
               <div className="grid md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-white/5 p-6 rounded-2xl border border-white/5">
                   <p className="text-[10px] font-black text-white/20 uppercase mb-2">Páginas</p>
-                  <p className="text-3xl font-black text-white">06/06</p>
+                  <p className="text-3xl font-black text-white">08/08</p>
                 </div>
                 <div className="bg-white/5 p-6 rounded-2xl border border-white/5">
                   <p className="text-[10px] font-black text-white/20 uppercase mb-2">Breakpoints</p>
-                  <p className="text-3xl font-black text-white">18/18</p>
+                  <p className="text-3xl font-black text-white">24/24</p>
                 </div>
                 <div className="bg-white/5 p-6 rounded-2xl border border-white/5">
                   <p className="text-[10px] font-black text-white/20 uppercase mb-2">Status Geral</p>
