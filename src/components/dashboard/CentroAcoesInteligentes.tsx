@@ -1,7 +1,3 @@
-// ============================================
-// COMPONENT: CentroAcoesInteligentes (P13)
-// Top 5 ações priorizadas por IA cruzando 5 fontes
-// ============================================
 import { Sparkles, ArrowRight, RefreshCw, Loader2, AlertOctagon, AlertTriangle, Info, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -14,10 +10,10 @@ import { formatCurrency } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 
 const URGENCIA_CONFIG: Record<AcaoRecomendada["urgencia"], { label: string; icon: React.ElementType; variant: "default" | "secondary" | "destructive" | "outline"; color: string }> = {
-  critica: { label: "Crítica", icon: AlertOctagon, variant: "destructive", color: "text-destructive" },
-  alta: { label: "Alta", icon: AlertTriangle, variant: "destructive", color: "text-destructive" },
-  media: { label: "Média", icon: Info, variant: "secondary", color: "text-warning" },
-  baixa: { label: "Baixa", icon: CheckCircle2, variant: "outline", color: "text-muted-foreground" },
+  critica: { label: "Crítica", icon: AlertOctagon, variant: "destructive", color: "text-rose-600" },
+  alta: { label: "Alta", icon: AlertTriangle, variant: "destructive", color: "text-rose-600" },
+  media: { label: "Média", icon: Info, variant: "secondary", color: "text-amber-600" },
+  baixa: { label: "Baixa", icon: CheckCircle2, variant: "outline", color: "text-[#64748b]" },
 };
 
 interface Props {
@@ -28,18 +24,16 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
   const { data: acoes, isLoading, regenerar } = useAcoesRecomendadas(empresaId);
 
   return (
-    <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 group">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-purple-500/5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-      
-      <CardHeader className="flex flex-row items-start justify-between gap-6 p-10 relative z-10">
-        <div className="flex items-start gap-4">
-          <div className="p-5 rounded-[1.25rem] bg-gradient-to-br from-primary to-blue-600 shadow-2xl shadow-primary/30 text-primary-foreground transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-700">
-            <Sparkles className="h-8 w-8" />
+    <Card className="border border-border bg-white shadow-sm rounded-xl overflow-hidden group">
+      <CardHeader className="flex flex-row items-center justify-between gap-6 p-6 pb-4">
+        <div className="flex items-center gap-4">
+          <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center border border-blue-100 text-primary group-hover:scale-105 transition-all">
+            <Sparkles className="h-5 w-5" />
           </div>
           <div>
-            <CardTitle className="text-3xl font-black tracking-tighter">Quantum Governance 10/10</CardTitle>
-            <CardDescription className="text-sm font-medium opacity-60">
-              Top 5 prioridades processadas por Redes Neurais Financeiras
+            <CardTitle className="text-lg font-bold text-[#1a1c21]">Ações Prioritárias</CardTitle>
+            <CardDescription className="text-xs text-[#64748b]">
+              Recomendações baseadas em inteligência financeira
             </CardDescription>
           </div>
         </div>
@@ -48,46 +42,38 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
           size="icon"
           onClick={() => regenerar.mutate()}
           disabled={regenerar.isPending}
-          className="h-14 w-14 rounded-2xl bg-white/5 hover:bg-white/10 text-primary transition-all border border-white/10 shadow-2xl"
+          className="h-9 w-9 rounded-md text-[#64748b] hover:bg-[#f1f3f9]"
         >
           {regenerar.isPending ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
-            <RefreshCw className="h-5 w-5" />
+            <RefreshCw className="h-4 w-4" />
           )}
         </Button>
       </CardHeader>
-      <CardContent className="p-10 pt-4 relative z-10">
+      <CardContent className="p-6 pt-0">
         {isLoading && (
           <div className="space-y-4">
             {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className="h-24 w-full rounded-2xl bg-white/5" />
+              <Skeleton key={i} className="h-20 w-full rounded-lg bg-[#f1f3f9]" />
             ))}
           </div>
         )}
 
         {!isLoading && (!acoes || acoes.length === 0) && (
-          <div className="rounded-[2rem] border border-dashed border-white/10 p-12 text-center bg-white/5">
-            <div className="p-5 rounded-full bg-success/10 text-success w-fit mx-auto mb-6">
-              <CheckCircle2 className="h-10 w-10" />
+          <div className="rounded-lg border border-dashed border-border p-10 text-center">
+            <div className="p-3 rounded-full bg-emerald-50 text-emerald-600 w-fit mx-auto mb-4">
+              <CheckCircle2 className="h-8 w-8" />
             </div>
-            <p className="text-xl font-bold text-foreground">Sistema em Homeostase</p>
-            <p className="text-sm text-muted-foreground mt-2 max-w-xs mx-auto">
-              Nenhuma anomalia detectada. Sua governança financeira está em conformidade absoluta.
+            <p className="text-sm font-bold text-[#1a1c21]">Tudo em dia!</p>
+            <p className="text-xs text-[#64748b] mt-1 max-w-[200px] mx-auto leading-relaxed">
+              Nenhuma ação crítica pendente no momento.
             </p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => regenerar.mutate()}
-              className="mt-8 rounded-xl border-white/10 bg-white/5 font-bold"
-            >
-              Recalcular Algoritmos
-            </Button>
           </div>
         )}
 
         {!isLoading && acoes && acoes.length > 0 && (
-          <ul className="space-y-4">
+          <ul className="space-y-3">
             {acoes.map((acao, idx) => {
               const cfg = URGENCIA_CONFIG[acao.urgencia];
               const UrgIcon = cfg.icon;
@@ -102,41 +88,37 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
               return (
                 <motion.li
                   key={acao.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="group/item rounded-[2rem] border border-white/5 bg-white/[0.04] p-7 transition-all duration-700 hover:bg-white/[0.08] hover:translate-x-2 shadow-sm hover:shadow-2xl"
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  className="rounded-lg border border-border bg-[#f8f9fc] p-4 transition-all hover:bg-white hover:shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-4 min-w-0 flex-1">
-                      <div className={cn("p-2.5 rounded-xl bg-current/10 shrink-0", cfg.color)}>
-                        <UrgIcon className="h-5 w-5" />
+                    <div className="flex items-start gap-3 min-w-0 flex-1">
+                      <div className={cn("p-1.5 rounded-md bg-white border border-border mt-0.5", cfg.color)}>
+                        <UrgIcon className="h-3.5 w-3.5" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-4 flex-wrap">
-                          <p className="text-lg font-black tracking-tight">{acao.titulo}</p>
-                          <Badge variant={cfg.variant} className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md border-none">
+                        <div className="flex items-center gap-2 flex-wrap mb-1">
+                          <span className="text-sm font-bold text-[#1a1c21]">{acao.titulo}</span>
+                          <Badge variant={cfg.variant} className="text-[9px] font-bold px-1.5 h-auto rounded-sm border-none uppercase">
                             {cfg.label}
                           </Badge>
                           {impactoLabel && (
-                            <Badge variant="outline" className="text-[10px] font-black uppercase bg-primary/10 text-primary border-none">
-                              Impacto: {impactoLabel}
+                            <Badge variant="outline" className="text-[9px] font-bold bg-blue-50 text-primary border-none uppercase">
+                              {impactoLabel}
                             </Badge>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground/70 mt-1 line-clamp-2 leading-relaxed">
+                        <p className="text-xs text-[#64748b] line-clamp-2 leading-relaxed">
                           {acao.descricao}
                         </p>
-                        <div className="flex items-center gap-2 mt-3 text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.15em]">
-                          <span className="h-1 w-1 rounded-full bg-current" />
-                          Neural Node: {acao.fonte}
-                        </div>
                       </div>
                     </div>
                     {acao.link_resolucao && (
-                      <Button asChild size="lg" className="shrink-0 h-14 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-widest px-8 shadow-xl shadow-primary/20">
+                      <Button asChild size="sm" className="h-8 rounded-md bg-primary text-white font-bold px-4 text-xs shrink-0">
                         <Link to={acao.link_resolucao}>
-                          Execute <ArrowRight className="ml-2 h-4 w-4" />
+                          Resolver <ArrowRight className="ml-1.5 h-3 w-3" />
                         </Link>
                       </Button>
                     )}
