@@ -322,10 +322,10 @@ export const DashboardExecutivo = () => {
                     <h3 className="text-lg font-semibold tracking-tight text-foreground">Relatórios & Conciliação</h3>
                     <p className="text-xs text-muted-foreground leading-relaxed">Exporte trilhas de auditoria completas para conciliações bancárias impecáveis.</p>
                     <div className="flex items-center gap-2 pt-2">
-                      <Button size="sm" className="rounded-lg font-bold bg-primary text-white h-9 px-4">
+                      <Button size="sm" className="rounded-md font-medium bg-primary text-white h-9 px-4">
                         Gerar PDF
                       </Button>
-                      <Button variant="ghost" size="sm" className="rounded-lg font-bold text-[#64748b] hover:text-[#1a1c21] h-9 px-4">
+                      <Button variant="ghost" size="sm" className="rounded-md font-medium text-muted-foreground hover:text-foreground h-9 px-4">
                         Outros formatos
                       </Button>
                     </div>
