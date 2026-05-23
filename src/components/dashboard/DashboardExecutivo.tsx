@@ -44,10 +44,10 @@ function SectionDivider({ label, icon: Icon }: { label: string; icon: React.Elem
   return (
     <div className="flex items-center gap-3 py-2">
       <div className="flex items-center gap-2 shrink-0">
-        <div className="h-8 w-8 rounded-lg bg-[#f1f3f9] flex items-center justify-center border border-border">
-          <Icon className="h-4 w-4 text-[#64748b]" />
+        <div className="h-8 w-8 rounded bg-muted flex items-center justify-center border border-border">
+          <Icon className="h-4 w-4 text-muted-foreground" />
         </div>
-        <span className="text-[11px] font-bold uppercase tracking-wider text-[#64748b]">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
           {label}
         </span>
       </div>
