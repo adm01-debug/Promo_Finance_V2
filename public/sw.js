@@ -57,7 +57,11 @@ self.addEventListener('fetch', (event) => {
     url.pathname.includes('/rest/v1/') ||
     url.pathname.includes('/functions/') ||
     url.pathname.includes('/auth/v1/') ||
-    url.hostname.endsWith('.supabase.co')
+    url.pathname.includes('/storage/v1/') ||
+    url.pathname.includes('/realtime/v1/') ||
+    url.hostname.endsWith('.supabase.co') ||
+    url.hostname.endsWith('.supabase.in') ||
+    url.hostname.endsWith('.functions.supabase.co')
   ) {
     return; // bypass SW entirely
   }
