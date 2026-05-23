@@ -65,23 +65,23 @@ export function DashboardFiltersHeader({
   }, [currentEmpresaId, empresaFilter, setEmpresaFilter]);
 
   return (
-    <motion.div variants={itemVariants} className="space-y-6">
+    <motion.div variants={itemVariants} className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 text-muted-foreground mb-1">
-            <Calendar className="h-3.5 w-3.5" />
-            <span className="text-[11px] font-medium uppercase tracking-wider">{dateStr}</span>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2.5 text-muted-foreground/60 mb-2">
+            <Calendar className="h-4 w-4 text-primary/60" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em]">{dateStr}</span>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded bg-muted flex items-center justify-center border border-border shadow-sm text-primary">
-              <GreetingIcon className="h-6 w-6" />
+          <div className="flex items-center gap-6">
+            <div className="h-16 w-16 rounded-2xl bg-primary/5 flex items-center justify-center border border-primary/10 shadow-xl shadow-primary/5 transition-transform hover:scale-105 duration-500">
+              <GreetingIcon className="h-8 w-8 text-primary" />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground font-heading">
-                {greeting.text}, <span className="text-primary">{displayName}</span>
+              <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground font-heading leading-tight">
+                {greeting.text}, <span className="bg-gradient-to-r from-primary to-primary-foreground bg-clip-text text-transparent">{displayName}</span>
               </h1>
-              <p className="text-sm font-normal text-muted-foreground">
-                Bem-vindo ao seu painel financeiro consolidado.
+              <p className="text-[13px] font-medium text-muted-foreground/80 mt-1 max-w-md">
+                Análise estratégica e visão consolidada do seu fluxo financeiro em tempo real.
               </p>
             </div>
           </div>
@@ -90,14 +90,14 @@ export function DashboardFiltersHeader({
         <Button
           variant="outline"
           onClick={onOpenConfig}
-          className="h-10 px-4 rounded-md border-border bg-card font-medium text-xs gap-2 hover:bg-accent transition-all self-start md:self-auto"
+          className="h-12 px-6 rounded-xl border-border bg-background font-black text-[10px] uppercase tracking-widest gap-2.5 hover:bg-accent transition-all self-start md:self-auto shadow-sm hover:shadow-md active:scale-95"
         >
-          <Settings2 className="h-4 w-4 text-muted-foreground" />
-          Personalizar Painel
+          <Settings2 className="h-4 w-4" />
+          Personalizar
         </Button>
       </div>
       
-      <div className="flex flex-col sm:flex-row items-center gap-4 p-2 rounded-md bg-card border border-border shadow-sm">
+      <div className="flex flex-col sm:flex-row items-center gap-4 p-2.5 rounded-2xl glass-effect bg-white/40 dark:bg-zinc-900/40 border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-xl">
         <div className="flex items-center gap-2 flex-1 w-full px-2">
           <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
           <Select value={empresaFilter} onValueChange={setEmpresaFilter}>

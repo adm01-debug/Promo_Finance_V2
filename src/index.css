@@ -83,15 +83,19 @@
   /* Ultra-Premium Design System Layer */
   
   .premium-card {
-    @apply rounded-2xl border border-black/5 bg-white/80 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:-translate-y-1;
+    @apply rounded-2xl border border-black/5 bg-white/80 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:-translate-y-1 dark:bg-zinc-900/80 dark:border-white/5;
   }
 
   .premium-button {
-    @apply relative overflow-hidden inline-flex items-center justify-center rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300 active:scale-95 bg-black text-white px-8 py-4 hover:shadow-2xl hover:bg-zinc-900 border border-white/10;
+    @apply relative overflow-hidden inline-flex items-center justify-center rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300 active:scale-95 bg-black text-white px-8 py-4 hover:shadow-2xl hover:bg-zinc-900 border border-white/10 dark:bg-white dark:text-black dark:hover:bg-zinc-100;
+  }
+
+  .active-nav-item {
+    @apply bg-primary/5 text-primary font-bold relative after:absolute after:left-0 after:top-1/2 after:-translate-y-1/2 after:h-5 after:w-1 after:bg-primary after:rounded-r-full after:content-[''];
   }
 
   .glass-effect {
-    @apply bg-white/40 backdrop-blur-xl border border-white/20 shadow-xl;
+    @apply bg-white/40 backdrop-blur-xl border border-white/20 shadow-xl dark:bg-black/40 dark:border-white/10;
   }
 
   /* Pixel-Perfect Layout Helpers */
@@ -104,15 +108,15 @@
   }
 
   .text-display {
-    @apply text-4xl md:text-6xl font-black tracking-tighter leading-[0.9] text-zinc-900;
+    @apply text-4xl md:text-6xl font-black tracking-tighter leading-[0.9] text-zinc-900 dark:text-zinc-100;
   }
 
   .text-heading {
-    @apply text-xl md:text-2xl font-black tracking-tight text-zinc-900;
+    @apply text-xl md:text-2xl font-black tracking-tight text-zinc-900 dark:text-zinc-100;
   }
 
   .text-caption {
-    @apply text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400;
+    @apply text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500;
   }
 }
 

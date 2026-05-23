@@ -42,32 +42,37 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
       animate={{ width: collapsed ? 80 : 280 }}
       transition={{ duration: 0.2, ease: "easeInOut" }}
       className={cn(
-        'fixed left-0 top-0 z-40 h-screen bg-sidebar border-r border-sidebar-border flex flex-col shadow-none transition-all duration-200'
+        'fixed left-0 top-0 z-40 h-screen bg-sidebar border-r border-sidebar-border flex flex-col shadow-none transition-all duration-200 glass-effect'
       )}
       data-tour="sidebar"
     >
-      <div className="h-14 flex items-center px-6 border-b border-sidebar-border">
+      <div className="h-16 flex items-center px-6 border-b border-sidebar-border bg-sidebar/50 backdrop-blur-lg">
         <AnimatePresence mode="wait">
           {!collapsed ? (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
               className="flex items-center gap-3"
             >
-              <div className="h-7 w-7 rounded bg-primary flex items-center justify-center shadow-none">
+              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
                 <Shield className="h-5 w-5 text-white" />
               </div>
-              <span className="font-semibold text-base text-foreground tracking-tight">
-                Promo Finance
-              </span>
+              <div className="flex flex-col">
+                <span className="font-black text-sm text-foreground tracking-tighter uppercase leading-none">
+                  Promo Finance
+                </span>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                  Enterprise
+                </span>
+              </div>
             </motion.div>
           ) : (
             <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="h-7 w-7 rounded bg-primary flex items-center justify-center shadow-none mx-auto"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center shadow-lg shadow-primary/20 mx-auto"
             >
               <Shield className="h-5 w-5 text-white" />
             </motion.div>
