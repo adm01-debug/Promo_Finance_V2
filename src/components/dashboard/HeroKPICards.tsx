@@ -106,7 +106,7 @@ export function HeroKPICard({
             <span className="text-[10px] font-medium text-muted-foreground">{emptyStateMessage}</span>
           ) : (
             <div className={cn(
-              'flex items-center gap-1 text-[11px] font-bold',
+              'flex items-center gap-1 text-[11px] font-medium',
               isPositive ? 'text-emerald-600' : 'text-rose-600',
             )}>
               {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
