@@ -99,7 +99,7 @@ export function DashboardFiltersHeader({
       
       <div className="flex flex-col sm:flex-row items-center gap-4 p-2 rounded-md bg-card border border-border shadow-sm">
         <div className="flex items-center gap-2 flex-1 w-full px-2">
-          <Building2 className="h-4 w-4 text-[#64748b] shrink-0" />
+          <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
           <Select value={empresaFilter} onValueChange={setEmpresaFilter}>
             <SelectTrigger className="w-full h-9 rounded-md border-transparent bg-transparent hover:bg-[#f1f3f9] transition-all font-bold text-xs focus:ring-0">
               <SelectValue placeholder="Empresa" />
