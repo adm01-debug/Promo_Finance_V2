@@ -40,7 +40,7 @@ export function RecentAndFavorites({ collapsed }: RecentAndFavoritesProps) {
             onClick={() => setIsEmpresasOpen(!isEmpresasOpen)}
             className="w-full flex items-center gap-2 px-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-all group"
           >
-            <div className="p-2 rounded-xl bg-primary/10 text-primary group-hover:bg-primary/20 transition-all shadow-sm ring-1 ring-primary/20">
+            <div className="p-1.5 rounded bg-muted text-muted-foreground group-hover:bg-muted/80 transition-all border border-border">
               <Building2 className="h-4 w-4" />
             </div>
             <span className="flex-1 text-left">Empresas do Grupo</span>
