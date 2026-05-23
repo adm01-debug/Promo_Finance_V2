@@ -29,6 +29,9 @@ import {
   Info,
   Loader2,
   RefreshCw,
+  Clock,
+  ExternalLink,
+  Github,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -41,7 +44,7 @@ import { cn } from '@/lib/utils';
 import html2canvas from 'html2canvas';
 
 // --- Comparison Utility ---
-const compareImages = (img1Data: string, img2Data: string): Promise<string> => {
+const compareImages = (img1Data: string, img2Data: string): Promise<{ heatmap: string; diffScore: number }> => {
   return new Promise((resolve) => {
     const img1 = new Image();
     const img2 = new Image();
@@ -56,43 +59,49 @@ const compareImages = (img1Data: string, img2Data: string): Promise<string> => {
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
-        if (!ctx) return resolve(img1Data);
+        if (!ctx) return resolve({ heatmap: img1Data, diffScore: 0 });
 
-        // Draw first image
         ctx.drawImage(img1, 0, 0);
+        const img1PixelData = ctx.getImageData(0, 0, width, height).data;
         
-        // Draw second image with difference blend mode
-        ctx.globalCompositeOperation = 'difference';
+        ctx.clearRect(0, 0, width, height);
         ctx.drawImage(img2, 0, 0);
+        const img2PixelData = ctx.getImageData(0, 0, width, height).data;
         
-        // Enhance difference for heatmap
-        const diffData = ctx.getImageData(0, 0, width, height);
+        const diffCanvas = document.createElement('canvas');
+        diffCanvas.width = width;
+        diffCanvas.height = height;
+        const diffCtx = diffCanvas.getContext('2d')!;
+        const diffData = diffCtx.createImageData(width, height);
         const data = diffData.data;
+        
+        let diffPixels = 0;
         for (let i = 0; i < data.length; i += 4) {
-          const r = data[i];
-          const g = data[i + 1];
-          const b = data[i + 2];
-          const brightness = (r + g + b) / 3;
+          const rDiff = Math.abs(img1PixelData[i] - img2PixelData[i]);
+          const gDiff = Math.abs(img1PixelData[i + 1] - img2PixelData[i + 1]);
+          const bDiff = Math.abs(img1PixelData[i + 2] - img2PixelData[i + 2]);
+          const brightness = (rDiff + gDiff + bDiff) / 3;
           
-          if (brightness > 0) {
-            // Highlight differences in magenta
+          if (brightness > 10) { // Tolerance
             data[i] = 255;
             data[i + 1] = 0;
             data[i + 2] = 255;
-            data[i + 3] = 200; 
+            data[i + 3] = 200;
+            diffPixels++;
           } else {
             data[i + 3] = 0;
           }
         }
-        ctx.putImageData(diffData, 0, 0);
-        resolve(canvas.toDataURL());
+        diffCtx.putImageData(diffData, 0, 0);
+        const diffScore = (diffPixels / (width * height)) * 100;
+        resolve({ heatmap: diffCanvas.toDataURL(), diffScore });
       }
     };
 
     img1.onload = onLoaded;
     img2.onload = onLoaded;
-    img1.onerror = () => resolve('');
-    img2.onerror = () => resolve('');
+    img1.onerror = () => resolve({ heatmap: '', diffScore: 0 });
+    img2.onerror = () => resolve({ heatmap: '', diffScore: 0 });
     img1.src = img1Data;
     img2.src = img2Data;
   });
