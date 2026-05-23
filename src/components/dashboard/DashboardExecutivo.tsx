@@ -285,18 +285,18 @@ export const DashboardExecutivo = () => {
                     <ShieldCheck className="h-10 w-10 text-primary" />
                   </div>
                   <div className="relative z-10 space-y-3">
-                    <div className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider">
+                    <div className="text-caption inline-flex items-center gap-2 px-2 py-1 rounded-md bg-blue-50 text-blue-700">
                       <ShieldAlert className="h-3 w-3" /> Anti-Duplicidade
                     </div>
                     <h3 className="text-lg font-black tracking-tight text-foreground font-heading">Sentinel: Proteção de Caixa</h3>
                     <div className="flex items-center gap-2 py-1">
                       <div className="flex flex-col">
-                        <span className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">Proteção</span>
+                        <span className="text-caption">Proteção</span>
                         <span className="text-sm font-semibold text-emerald-600">{formatCurrency(duplicateStats?.totalValue || 0)}</span>
                       </div>
                       <div className="h-6 w-px bg-border mx-2" />
                       <div className="flex flex-col">
-                        <span className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">Bloqueios</span>
+                        <span className="text-caption">Bloqueios</span>
                         <span className="text-sm font-semibold">{duplicateStats?.count || 0} ocorrências</span>
                       </div>
                     </div>
@@ -318,7 +318,7 @@ export const DashboardExecutivo = () => {
                     <FileText className="h-10 w-10 text-indigo-400" />
                   </div>
                   <div className="relative z-10 space-y-3">
-                    <div className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-wider">
+                    <div className="text-caption inline-flex items-center gap-2 px-2 py-1 rounded-md bg-indigo-50 text-indigo-700">
                       <Download className="h-3 w-3" /> Relatórios
                     </div>
                     <h3 className="text-lg font-black tracking-tight text-foreground font-heading">Relatórios & Conciliação</h3>
@@ -328,7 +328,7 @@ export const DashboardExecutivo = () => {
                         Gerar PDF
                       </Button>
 
-                      <Button variant="ghost" size="sm" className="rounded-md font-medium text-muted-foreground hover:text-foreground h-9 px-4">
+                      <Button variant="ghost" size="sm" className="premium-button bg-transparent border-black/5 text-muted-foreground hover:text-foreground">
                         Outros formatos
                       </Button>
                     </div>

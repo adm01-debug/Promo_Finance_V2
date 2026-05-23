@@ -112,7 +112,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input
               placeholder="Comando (Ctrl+K)..."
-              className="pl-11 bg-muted/30 border-transparent focus:bg-background focus:ring-1 focus:ring-primary/20 h-10 rounded-xl transition-all text-[13px] font-medium placeholder:text-muted-foreground/50 shadow-sm group-hover:bg-muted/50"
+              className="pl-11 bg-muted/40 border-black/5 focus:bg-background focus:ring-1 focus:ring-primary/20 h-10 rounded-xl transition-all text-[13px] font-medium placeholder:text-muted-foreground/50 shadow-sm group-hover:bg-muted/60"
               onFocus={(e) => {
                 e.preventDefault();
                 e.target.blur();
@@ -124,7 +124,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
           {empresaLabel && (
             <div className="hidden xl:flex items-center gap-2.5 px-4 py-2 rounded-xl bg-primary/5 border border-primary/10 shadow-sm transition-all hover:bg-primary/10 cursor-default">
               <div className="h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
-              <span className="text-[11px] font-black text-primary uppercase tracking-widest truncate max-w-[200px]">
+              <span className="text-caption text-primary truncate max-w-[200px]">
                 {empresaLabel}
               </span>
             </div>
