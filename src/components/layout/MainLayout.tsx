@@ -92,7 +92,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           isMobile ? 'pt-4 pb-24' : 'pt-16'
         )}
         style={{
-          width: isMobile ? '100%' : `calc(100% - ${sidebarCollapsed ? 100 : 320}px)`,
+          width: isMobile ? '100%' : `calc(100% - ${sidebarCollapsed ? 80 : 280}px)`,
         }}
       >
         <div className="w-full max-w-7xl mx-auto p-4 md:p-8 lg:p-10">
